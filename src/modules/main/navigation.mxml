@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
+						  height="40"
+						  dock="false"
+						  paddingTop="0"
+						  fillAlphas="[1.0, 1.0]"
+						  fillColors="[#919191, #FFFFFF]"
+						  creationComplete="init();">
+	<mx:HBox width="55%"
+			 horizontalAlign="left"
+			 verticalAlign="middle"
+			 height="100%">
+		<mx:LinkButton label="{resourceManager.getString('myResources', 'Home')}"
+					   fontSize="14"
+					   fontFamily="Arial"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_HOME_MODULE)"/>
+		<mx:VRule height="40"/>
+		<mx:LinkButton label="{resourceManager.getString('myResources', 'Exercises')}"
+					   fontFamily="Arial"
+					   fontSize="14"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_EXERCISE_MODULE)"/>
+		<mx:VRule height="40"/>
+		<mx:LinkButton label="{resourceManager.getString('myResources', 'Evaluations')}"
+					   fontFamily="Arial"
+					   fontSize="14"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_EVALUATION_MODULE)"/>
+		<mx:VRule height="40"/>
+		<mx:LinkButton label="{resourceManager.getString('myResources', 'Configuration')}"
+					   fontFamily="Arial"
+					   fontSize="14"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE)"/>
+		<mx:VRule height="40"/>
+		<!--<mx:LinkButton label="{resourceManager.getString('myResources', 'RANKINGS')}"
+					   fontFamily="Arial"
+					   fontSize="14"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
+		<mx:VRule height="40"/> -->
+	</mx:HBox>
+	<mx:HBox width="45%"
+			 horizontalAlign="right"
+			 height="100%"
+			 verticalAlign="middle">
+		<!--<mx:TextInput width="80%"
+					  height="26"
+					  fontFamily="Arial"
+					  fontSize="12"/>
+		<mx:Button label="Search"
+				   fontFamily="Arial"
+				   fontSize="14"
+				   fillAlphas="[0.0, 1.0, 1.0, 0.0]"
+				   fillColors="[#6FA3D3, #6FA3D3]"
+				   enabled="{!DataModel.getInstance().recordingExercise}"/>-->
+		<mx:Button label="Upload"
+				   fontFamily="Arial"
+				   fontSize="14"
+				   fillAlphas="[1.0, 0.5, 0.5, 0.5]"
+				   fillColors="[#FFC960, #FFEA60, #FF9860, #FFB260]"
+				   enabled="{!DataModel.getInstance().recordingExercise}"
+				   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
+	</mx:HBox>
+	<mx:Script>
+		<![CDATA[
+			import events.VideoStopEvent;
+			import events.ViewChangeEvent;
+			import model.DataModel;
+
+			//Initialization method
+			private function init():void
+			{
+			}
+			
+			private function changeView(event:String) : void
+			{
+				new VideoStopEvent().dispatch();
+				new ViewChangeEvent(event).dispatch();
+			}
+		]]>
+	</mx:Script>
+</mx:ApplicationControlBar>
+

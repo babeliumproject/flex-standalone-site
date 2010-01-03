@@ -1,0 +1,4 @@
+#Send pending SpinVox requests every hour and save the output into /tmp/babelia/spinvox_req_log
+0  * * * * /var/www/amfphp/services/babelia/SendRequests.php >> /tmp/babelia/spinvox_req_log
+#Get the transcriptions from spinvox server every hour at 30 past and save the output into /tmp/babelia/spinvox_trans_log
+30 * * * * /var/www/amfphp/services/babelia/GetTranscriptions.php >> /tmp/babelia/spinvox_trans_log

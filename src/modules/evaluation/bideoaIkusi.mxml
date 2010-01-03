@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+    title="Iruzkina Ikusi" width="400" height="580" layout="absolute" 
+    xmlns:ns1="modules.evaluation.*" creationComplete="init()">
+	
+		<mx:Script>
+        <![CDATA[
+        	import mx.controls.Alert;
+        
+            import mx.managers.PopUpManager;
+	
+			private static var contentFolder:String = "audio/videoComment";
+	
+			private function init():void
+			{
+				//bideoBat.setBideoIzena("audio/audio-1242656002917.flv",2);
+				bideoBat.azpi1.visible = false;
+				//bideoBat.bideobarra.visible = false;
+				//bideoBat.panel.height = 400;
+				bideoBat.azpi1.hitArea;				
+				bideoBat.bideobarra.hitArea;
+				bideoBat.pertsonaiaGorriz.visible = false;
+			}
+			
+			public function setBideoIzena(izena:String):void{
+				bideoBat.setBideoIzena(contentFolder + "/" + izena,2);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<ns1:nireBideoa id="bideoBat" height="500" width="300">
+		</ns1:nireBideoa>
+		 <mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}" click="PopUpManager.removePopUp(this);"/>
+	</mx:VBox>
+</mx:TitleWindow >

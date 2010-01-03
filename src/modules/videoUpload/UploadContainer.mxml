@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="modules.videoUpload.*">
+
+	<mx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+			import model.DataModel;
+
+			private function set onUserAuthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN).dispatch();
+			}
+
+			private function set onUserDeauthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == false)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED).dispatch();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="uploadModuleViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().viewUploadViewStackIndex }">
+		<mx:VBox id="unsignedScreen"
+				 horizontalAlign="center"
+				 verticalAlign="top"
+				 paddingTop="20" verticalGap="10">
+			<mx:Text text="You must be registered to see this area."
+					 fontWeight="bold"
+					 color="#FF0000"
+					 fontSize="16"/>
+			<mx:HBox width="100%"
+					 horizontalAlign="center"
+					 verticalAlign="middle"
+					 borderThickness="0">
+				<mx:Label text="Click"/>
+				<mx:LinkButton label="here"
+							   cornerRadius="4"/>
+				<mx:Label text="to sign in. You can sign-up for free"/>
+				<mx:LinkButton label="here"/>
+			</mx:HBox>
+		</mx:VBox>
+		<ns1:FileUpload id="signedScreen"
+						width="100%"
+						height="100%"
+						uploadUrl="{DataModel.getInstance().uploadURL}">
+		</ns1:FileUpload>
+
+	</mx:ViewStack>
+
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == true}"
+				destination="onUserAuthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == false}"
+				destination="onUserDeauthenticated"/>
+
+</mx:HBox>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 height="100%"
+		 xmlns:ns1="modules.userManagement.*"
+		 xmlns:ns2="modules.exercises.*"
+		 xmlns:ns3="modules.main.*"
+		 xmlns:ns4="modules.subtitles.*"
+		 xmlns:ns5="modules.videoUpload.*"
+		 xmlns:ns6="modules.evaluation.*"
+		 xmlns:ns7="modules.configuration.*"
+		 xmlns:ns8="modules.rankings.*"
+		 paddingTop="10"
+		 horizontalGap="0"
+		 creationComplete="init();"
+		 backgroundAlpha="0.0"
+		 borderStyle="none"
+		 horizontalAlign="right">
+
+	<mx:ViewStack id="contentViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().viewContentViewStackIndex }">
+		<ns3:ExerciseList id="homeModule" width="100%" height="100%">
+		</ns3:ExerciseList>
+
+		<ns2:Exercises id="exerciseModule">
+		</ns2:Exercises>
+		
+		<ns6:Epaiketa label=""
+							width="100%"
+							height="100%"
+							id="evaluationModule" >
+		</ns6:Epaiketa>
+		<ns1:SignUpForm label=""
+						width="100%"
+						height="100%"
+						id="registerModule">
+		</ns1:SignUpForm>
+		<ns1:AccountMain label=""
+						 width="100%"
+						 height="100%"
+						 id="accountModule">
+		</ns1:AccountMain>
+		<ns5:UploadContainer label=""
+							 width="100%"
+							 height="100%"
+							 id="uploadModule">
+		</ns5:UploadContainer>
+		<!-- viewstack ID = 6 -->
+		<ns4:VideoPlayer id="playerModule" width="100%" height="100%">
+		</ns4:VideoPlayer>
+		<ns7:principal width="100%" height="100%">
+		</ns7:principal>
+		<ns8:Rankings width="100%" height="100%">
+		</ns8:Rankings>
+
+	</mx:ViewStack>
+
+	<mx:Script>
+		<![CDATA[
+			import events.UserEvent;
+			import model.DataModel;
+
+			public function init():void
+			{
+				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

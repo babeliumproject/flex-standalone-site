@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ViewStack xmlns:mx="http://www.adobe.com/2006/mxml"
+			  label="Automatic Evaluation"
+			  width="100%"
+			  height="100%"
+			  creationPolicy="all"
+			  creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import events.EvaluationEvent;
+			import vo.TranscriptionsVO;
+			import mx.collections.ArrayCollection;
+			import model.DataModel;
+
+			public function init():void {
+				//setVisible(false);
+				exerciseTranscriptionLabel.text = "";
+				responseTranscriptionLabel.text = "";
+				scoreLabel.text = "";
+				errorLabel.text = "";
+
+				selectedChild = evaluationPanel;
+			}
+
+			public function setResponseID(responseID:int):void {
+				exerciseTranscriptionLabel.text = "";
+				responseTranscriptionLabel.text = "";
+				scoreLabel.text = "";
+				
+				new EvaluationEvent(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, responseID).dispatch();
+			}
+
+			private function set onResultReceived(val:Boolean):void {
+				if(DataModel.getInstance().autoevaluationDone) {
+					DataModel.getInstance().autoevaluationDone = false;
+
+					if(evaluationPanel != null)
+						selectedChild = evaluationPanel;
+					//setVisible(true);
+
+					var evaluation:Evaluation = DataModel.getInstance().autoevaluationResults;
+					var responseText:String = evaluation.responseText;
+					var maxScore:Number = evaluation.maxScore;
+					var minScore:Number = evaluation.minScore;
+
+					var exerHtmlText:String = "";
+					var respHtmlText:String = "";
+					var color:String = null;
+					var lastColor:String = null;
+					var lastIndex:int = 0;
+
+					var unknown:Boolean = false;
+
+					for each(var item:EvaluationItem in evaluation.words) {
+						if(item.rating == "right")
+							color = "#04B404";
+						else if(item.rating == "medium")
+							color = "#FF8000";
+						else if(item.rating == "wrong")
+							color = "#FF0000";
+						else if(item.rating == "unknown")
+							color = "#000000";
+
+						if(color != lastColor) {
+							if(lastColor != null)
+								exerHtmlText += "</font> ";
+							exerHtmlText += "<font color=\"" + color + "\">" + item.word;
+						} else
+							exerHtmlText += " " + item.word;
+
+						if(color == "#04B404") {
+							if(unknown)
+								respHtmlText += "<font color=\"#000000\">" + responseText.substring(lastIndex, item.startIndex) + "</font>";
+							else
+								respHtmlText += "<font color=\"#FF0000\">" + responseText.substring(lastIndex, item.startIndex) + "</font>";
+							respHtmlText += "<font color=\"" + color + "\">" + responseText.substring(item.startIndex, item.startIndex + item.word.length) + "</font>"
+							lastIndex = item.startIndex + item.word.length;
+							unknown = false;
+						} else if(color == "#000000")
+							unknown = true;
+
+						lastColor = color;
+					}
+
+					if(unknown)
+						respHtmlText += "<font color=\"#000000\">" + responseText.substring(lastIndex) + "</font>";
+					else
+						respHtmlText += "<font color=\"#FF0000\">" + responseText.substring(lastIndex) + "</font>";
+
+					var scoreHtmlText:String = "";
+					if(minScore < 60)
+						scoreHtmlText += "<font color=\"#FF0000\">" + minScore.toString() + "%</font>";
+					else if(minScore < 90)
+						scoreHtmlText += "<font color=\"#FF8000\">" + minScore.toString() + "%</font>";
+					else
+						scoreHtmlText += "<font color=\"#04B404\">" + minScore.toString() + "%</font>";
+
+					if(minScore != maxScore) {
+						scoreHtmlText += " - ";
+						if(maxScore < 60)
+							scoreHtmlText += "<font color=\"#FF0000\">" + maxScore.toString() + "%</font>";
+						else if(maxScore < 90)
+							scoreHtmlText += "<font color=\"#FF8000\">" + maxScore.toString() + "%</font>";
+						else
+							scoreHtmlText += "<font color=\"#04B404\">" + maxScore.toString() + "%</font>";
+					}
+
+					exerciseTranscriptionLabel.htmlText = exerHtmlText;
+					responseTranscriptionLabel.htmlText = respHtmlText;
+					scoreLabel.htmlText = scoreHtmlText;
+				} 
+				//else
+					//setVisible(false)
+			}
+
+			/*private function set setNotVisible(val:Boolean):void {
+				DataModel.getInstance().autoevaluationAvailable = true;
+				setVisible(false);
+			}*/
+
+			private function set setError(val:Boolean):void {
+				if(DataModel.getInstance().autoevaluationError != null) {
+
+					if(errorPanel != null)
+						selectedChild = errorPanel;
+					//setVisible(true);
+
+					errorLabel.text = DataModel.getInstance().autoevaluationError;
+					DataModel.getInstance().autoevaluationError = "";
+				} else {
+					//setVisible(false);
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Binding source="{DataModel.getInstance().autoevaluationDone}"
+				destination="this.onResultReceived"/>
+	<mx:Binding source="{DataModel.getInstance().autoevaluationError != null}"
+				destination="this.setError"/>
+
+	<mx:HBox id="evaluationPanel"
+			 width="100%"
+			 height="100%"
+			 paddingLeft="10"
+			 paddingRight="10"
+			 paddingBottom="10"
+			 paddingTop="10">
+		<mx:VBox width="30%"
+				 height="100%"
+				 paddingBottom="10"
+				 paddingLeft="10"
+				 paddingRight="10"
+				 paddingTop="10"
+				 verticalAlign="middle">
+			<mx:Label text="Exercise transcription:"/>
+			<mx:Label text="Your transcription:"/>
+			<mx:Label text="Score:"/>
+		</mx:VBox>
+		<mx:VBox width="70%"
+				 height="100%"
+				 paddingBottom="10"
+				 paddingLeft="10"
+				 paddingRight="10"
+				 paddingTop="10"
+				 verticalAlign="middle">
+			<mx:Label id="exerciseTranscriptionLabel"/>
+			<mx:Label id="responseTranscriptionLabel"
+					  color="red"/>
+			<mx:Label id="scoreLabel"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox id="errorPanel"
+			 width="100%"
+			 height="100%"
+			 paddingBottom="10"
+			 paddingLeft="10"
+			 paddingRight="10"
+			 paddingTop="10"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<mx:Label id="errorLabel"
+				  textAlign="center"
+				  text="ERROR"/>
+	</mx:HBox>
+</mx:ViewStack>

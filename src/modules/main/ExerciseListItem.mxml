@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+
+		 paddingTop="8"
+		 paddingBottom="8"
+		 paddingLeft="8"
+		 paddingRight="8"
+		 verticalAlign="middle"
+		 xmlns:ns1="com.asfusion.controls.*"
+		 fontFamily="Arial"
+		 creationComplete="init()">
+
+	<mx:Image id="thumbnail"
+			  scaleContent="true"
+			  source="{data.thumbnailUri}"
+			  autoLoad="true"
+			  click="imageClickHandler(event)"
+			  width="120"
+			  height="90"
+			  toolTip="{data.title}"
+			  useHandCursor="true" buttonMode="true"
+			  />
+	<mx:VBox height="90"
+			 width="100%"
+			 verticalGap="2">
+		<mx:HBox horizontalAlign="left"
+				 verticalAlign="middle"
+				 horizontalGap="2"
+				 width="100%">
+			<mx:Image width="16"
+					  height="16"
+					  toolTip="{exerciseLanguage.source}"
+					  id="exerciseLanguage"/>
+			<mx:LinkButton label="{data.title}"
+						   fontSize="12"
+						   width="100%"
+						   textAlign="left"
+						   click="titleClickHandler(event)"/>
+		</mx:HBox>
+
+		<mx:HRule height="1"
+				  width="100%"/>
+		<mx:Text text="{data.description}"
+				 width="100%"
+				 fontSize="12"/>
+		<mx:HBox verticalAlign="middle">
+			<ns1:Rating value="{data.avgRating}" liveRollOver="false"/>
+			<mx:Label text="{data.addingDate}"
+					  fontWeight="bold"/>
+			<mx:LinkButton label="{data.userName}"/>
+		</mx:HBox>
+
+	</mx:VBox>
+
+
+	<mx:Script>
+		<![CDATA[
+			import events.SubtitlesAndRolesEvent;
+			import vo.SubtitlesAndRolesVO;
+			import model.DataModel;
+			import mx.utils.ObjectUtil;
+			import mx.controls.Alert;
+			import vo.ExerciseVO;
+			import events.ExerciseEvent;
+			import modules.subtitles.VideoPlayer;
+			private var _data:Object;
+			
+			public function init():void
+			{
+				_data = data;
+				var temp:ExerciseVO = _data as ExerciseVO;
+				if (temp.language == "Basque")
+					exerciseLanguage.source = "resources/images/flags/flag_basque_country.png";
+				else if (temp.language == "Spanish")
+					exerciseLanguage.source = "resources/images/flags/flag_spain.png";
+				else if (temp.language == "English")
+					exerciseLanguage.source = "resources/images/flags/flag_united_kingdom.png";
+				else if (temp.language == "France")
+					exerciseLanguage.source = "resources/images/flags/flag_france.png";
+			}
+
+			private function imageClickHandler(event:MouseEvent):void
+			{	
+				
+			viewExercise();
+			}
+
+			private function titleClickHandler(event:MouseEvent):void
+			{
+			
+			viewExercise();
+			}
+
+			private function viewExercise():void
+			{	
+				
+				
+				
+				
+				DataModel.getInstance().videoPlayerControlsViewStack=1;
+				var temp:Object = data;
+				var tempEx:ExerciseVO = temp as ExerciseVO;
+				var obj:SubtitlesAndRolesVO = new SubtitlesAndRolesVO();
+				obj.exerciseId = tempEx.id;
+				obj.language = tempEx.language;
+				new SubtitlesAndRolesEvent(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES,obj).dispatch();
+				new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE,tempEx).dispatch();
+			}
+
+			private function trimTitle():void
+			{
+
+			}
+
+			private function trimDescription():void
+			{
+
+			}
+		]]>
+	</mx:Script>
+
+</mx:HBox>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				autoLayout="true" borderColor="#000000">
+	<mx:Script>
+		<![CDATA[
+			import model.DataModel;
+		]]>
+	</mx:Script>
+
+	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"
+		text="{DataModel.getInstance().restorePassErrorMessage}"/>
+	<mx:Form width="100%">
+		<mx:FormItem label="Username or email">
+			<mx:TextInput id="username"
+						  width="100%"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+		<mx:Button label="Restore password"
+				   id="okButton"/>
+		<mx:Button label="Cancel"
+				   id="cancelButton"/>
+	</mx:HBox>
+</mx:TitleWindow>

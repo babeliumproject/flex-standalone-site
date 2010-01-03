@@ -1,0 +1,20 @@
+// ActionScript file
+package vo
+{
+
+	[RemoteClass(alias="SubtitleLineVO")]
+	[Bindable]
+	public class SubtitleLineVO
+	{
+		
+		public var id:int;
+		public var showTime:Number;
+		public var hideTime:Number;
+		public var role:String;
+		public var text:String;
+		public var subtitleId:int;
+		
+		
+
+	}
+}

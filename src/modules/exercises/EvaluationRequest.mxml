@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  layout="vertical"
+		  width="732"
+		  height="348"
+		  horizontalAlign="center"
+		  verticalAlign="middle"
+		  headerHeight="0"
+		  borderThicknessBottom="0"
+		  borderThicknessTop="0"
+		  borderThicknessLeft="0"
+		  borderThicknessRight="0"
+		  borderStyle="none">
+	<mx:Label text="You must be registered to see this area."
+			  fontWeight="bold"
+			  color="#FF0000"
+			  fontSize="16"
+			  visible="{ !DataModel.getInstance().isLoggedIn}"/>
+	<mx:Panel id="evaluationOptions"
+			  headerHeight="0"
+			  paddingBottom="0"
+			  paddingTop="0"
+			  paddingLeft="0"
+			  paddingRight="0"
+			  visible="{ DataModel.getInstance().isLoggedIn}"
+			  horizontalAlign="center"
+			  verticalAlign="middle"
+			  width="100%"
+			  backgroundAlpha="0.0"
+			  cornerRadius="0"
+			  borderStyle="none">
+		<mx:HBox width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 borderThickness="0"
+				 visible="{!DataModel.getInstance().isLoggedIn}">
+			<mx:Label text="Click"/>
+			<mx:LinkButton label="here"
+						   cornerRadius="4"/>
+			<mx:Label text="to sign in. You can sign-up for free"/>
+			<mx:LinkButton label="here"/>
+		</mx:HBox>
+		<mx:Label text="Your exercise has been successfully saved!"
+				  fontSize="16"
+				  fontFamily="Arial"
+				  fontWeight="bold"/>
+		<mx:Label text="Do you want to ask the users for an evaluation?"
+				  fontFamily="Arial"
+				  fontSize="14"/>
+		<mx:Label text="If you ask for an evaluation, your video will be publicly available"/>
+		<mx:Label text="for the other users of Babelia. Otherways, you will be the"/>
+		<mx:Label text="only one who can see it."/>
+		<mx:HBox width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 visible="{DataModel.getInstance().isAutoevaluable}">
+			<mx:Label text="Do you want to be evaluated by a computer?"
+					  fontSize="14"/>
+			<mx:CheckBox label="Yes please"
+						 id="autoevaluateCheckbox"/>
+		</mx:HBox>
+		<mx:HBox width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 height="34">
+			<mx:Button label="Someone evaluate me!"
+					   fontSize="12"
+					   click="evaluationRequestedClickHandler()"/>
+			<mx:Button label="No, thanks!"
+					   fontSize="12"
+					   click="returnToMainClickHandler()"/>
+		</mx:HBox>
+	</mx:Panel>
+
+	<mx:Script>
+		<![CDATA[
+			import vo.ExerciseVO;
+			import events.ExerciseEvent;
+			import events.EvaluationEvent;
+			import events.UserEvent;
+			import vo.UserVO;
+			import mx.controls.Alert;
+			import events.CreditEvent;
+			import events.ViewChangeEvent;
+			import model.DataModel;
+
+			public function init():void {
+
+			}
+
+			private function evaluationRequestedClickHandler():void {
+				//Check if the user is online
+				if(DataModel.getInstance().isLoggedIn) {
+					//Get user's credit count and evaluation credit cost
+					var userInfo:UserVO = DataModel.getInstance().loggedUser;
+					var userId:int = userInfo.id;
+					var userCredCount:int = userInfo.creditCount;
+					var credsEvalRequest:int = DataModel.getInstance().prefDic['evaluationRequestCredits'];
+					if(userCredCount - credsEvalRequest >= 0) {
+						new CreditEvent(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, userId).dispatch();
+							//Let's add an entry to our credit history to track our activity
+//						new CreditEvent(CreditEvent.ADD_CREDIT_ENTRY_EVAL_REQUEST, userId).dispatch();
+							//Finally, let's get our data to see if the credits where updated successfully
+//						new UserEvent(UserEvent.GET_USER_INFO).dispatch();
+						//make it public
+						var responseID:int = DataModel.getInstance().historicData.videoResponseId;
+						var exercise:ExerciseVO = new ExerciseVO();
+						exercise.id = responseID;
+						new ExerciseEvent(ExerciseEvent.MAKE_PUBLIC, exercise).dispatch();
+					} else {
+						Alert.show("You don't have enough credits to perform this task.\n This video will remain privately available to you.", "Insuficcient Credits");
+					}
+
+					if(DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected) {
+						var responseId:int = DataModel.getInstance().historicData.videoResponseId;
+						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, responseId, 0, "spinvox").dispatch();
+					}
+
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+				} else {
+					//Do nothing but hide the evaluation options panel and remember the user
+					//he/she must login in order to get the evaluations.
+					evaluationOptions.visible = false;
+					Alert.show("You must Sign In to request an evaluation");
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+				}
+			}
+
+			private function returnToMainClickHandler():void {
+				//Finish and return to exercises main page
+				new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+			}
+
+			private function set checkAutoevaluationSupport(val:Boolean):void {
+				var responseId:int = DataModel.getInstance().historicData.videoResponseId;
+
+				new EvaluationEvent(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, responseId, 0, "spinvox").dispatch();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Binding source="{DataModel.getInstance().historicData.videoResponseId}"
+				destination="this.checkAutoevaluationSupport"/>
+
+</mx:Panel>

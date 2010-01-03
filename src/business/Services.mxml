@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceLocator xmlns="com.adobe.cairngorm.business.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:RemoteObject 
+		id="userRO" 
+		destination="empService" 
+		showBusyCursor="true" 
+		source="UserDAO"/>
+		
+	<mx:RemoteObject 
+		id="registerRO" 
+		destination="empService" 
+		showBusyCursor="true" 
+		source="RegisterUser"/>		
+		
+	<mx:RemoteObject
+		id="creditRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="CreditDAO"/>
+		
+	<mx:RemoteObject
+		id="prefRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="PreferenceDAO"/>
+		
+	<mx:RemoteObject
+		id="loginRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="LoginDAO"/>
+		
+	<mx:RemoteObject
+		id="subtitleRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="SubtitleDAO"/>
+		
+	<mx:RemoteObject
+		id="rolRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="ExerciseRoleDAO"/>
+		
+	<mx:RemoteObject
+		id="subrolesRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="SubtitlesAndRolesDAO"/>		
+		
+	<mx:RemoteObject
+		id="exerciseRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="ExerciseDAO"/>
+		
+	<mx:RemoteObject
+		id="youtubeRO"
+		destination="empService"
+		showBusyCursor="false"
+		source="YouTubeDAO"/>
+		
+	<mx:RemoteObject
+		id="autoevaluationRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="TranscriptionsDAO"/>
+	
+</ServiceLocator>

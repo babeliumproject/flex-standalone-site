@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300"
+	xmlns:ns1="modules.userManagement.*"
+	creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+
+			private function init():void
+			{
+			
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator id="rankingMenu" x="10" y="10" width="79%" height="95%">
+			
+			<mx:VBox label="Top Collaborators" id="topCollaborators" 
+					width="80%" horizontalAlign="center">
+				<ns1:TopCollaborators width="30%" horizontalAlign="center"
+						id="topCollab">
+				</ns1:TopCollaborators>
+			</mx:VBox>
+			<mx:VBox label="TO DO" id="todo">
+				
+			</mx:VBox>
+			<mx:VBox label="TO DO" id="todo1"/>
+						
+	</mx:TabNavigator>
+</mx:Canvas>

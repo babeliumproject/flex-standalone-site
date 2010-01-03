@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  layout="vertical"
+		  width="100%"
+		  title="Top Collaborators"
+		  cornerRadius="6"
+		  borderColor="#000000"
+		  creationComplete="init();">
+
+	<mx:Script>
+		<![CDATA[
+			import events.UserEvent;
+			import model.DataModel;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.utils.ArrayUtil;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+
+//			//The service used for data providing
+//			private var service:UserManagementService;
+//			
+			//Object to store the data received from the server
+			[Bindable]
+			private var dataProvider:ArrayCollection;
+			private var tableRefreshTimer:Timer;
+
+			private function init():void
+			{
+				tableRefreshTimer = new Timer(120000,0);
+				tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
+				tableRefreshTimer.start();
+			}
+			
+			private function refreshTableData(event:TimerEvent):void{
+				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
+			}
+
+			private function set setTopTenData(update:Boolean):void
+			{
+				dataProvider=DataModel.getInstance().topTenUsers;
+				DataModel.getInstance().isTopTenRetrieved = false;
+			}
+
+			private function setRowNumber(actItem:Object, colInd:int):String
+			{
+				if (dataProvider != null)
+				{
+					var rowIndex:int=dataProvider.getItemIndex(actItem) + 1;
+					return String(rowIndex);
+				}
+				else
+				{
+					return "0";
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Binding source="{DataModel.getInstance().isTopTenRetrieved}"
+				destination="this.setTopTenData"/>
+	<mx:DataGrid width="100%"
+				 sortableColumns="false"
+				 editable="false"
+				 id="topCollaboratorsTable"
+				 dataProvider="{dataProvider}">
+		<mx:columns>
+			<mx:DataGridColumn headerText=""
+							   width="30"
+							   labelFunction="setRowNumber"/>
+			<mx:DataGridColumn headerText="Name"
+							   dataField="name"/>
+			<mx:DataGridColumn headerText="Credits"
+							   width="60"
+							   dataField="creditCount"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Panel>

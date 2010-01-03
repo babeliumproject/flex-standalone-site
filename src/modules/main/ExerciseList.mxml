@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="com.asfusion.controls.*"
+		 creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import events.ExerciseEvent;
+			import model.DataModel;
+
+			public function init():void
+			{
+				new ExerciseEvent(ExerciseEvent.GET_EXERCISES).dispatch();
+			}
+
+			public function set onExercisesRetrieved(value:Boolean):void
+			{
+				var dataProvider:ArrayCollection=DataModel.getInstance().availableExercises;
+				exerciseListTable.rowCount=dataProvider.length;
+				exerciseListTable.dataProvider=dataProvider;
+				DataModel.getInstance().availableExercisesRetrieved=false;
+			}
+		]]>
+	</mx:Script>
+	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved}"
+				destination="this.onExercisesRetrieved"/>
+
+	<mx:DataGrid id="exerciseListTable"
+				 width="100%"
+				 editable="false"
+				 selectable="false"
+				 verticalScrollPolicy="off"
+				 sortableColumns="false"
+				 draggableColumns="false"
+				 headerHeight="0">
+		<mx:columns>
+			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</mx:HBox>

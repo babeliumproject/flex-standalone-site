@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+      <!-- charts/BasicColumn.mxml -->
+      <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml">
+        <mx:Script><![CDATA[
+          import mx.rpc.events.FaultEvent;
+		  import mx.rpc.events.ResultEvent;
+		  import mx.controls.Alert;
+          import mx.collections.ArrayCollection;
+          import mx.utils.ArrayUtil;
+          import mx.managers.PopUpManager;
+          
+          [Bindable]
+          private var dp:ArrayCollection;
+          [Bindable]
+          public var expenses:ArrayCollection = new ArrayCollection([
+             {Month:"Jan", Profit:2000, Expenses:1500},
+             {Month:"Feb", Profit:1000, Expenses:200},
+             {Month:"Mar", Profit:1500, Expenses:500}
+          ]);
+          
+          
+          public function datuakBidali(izena:String):void{
+          	    grafikoa.datuakLortu.send(izena);
+          }
+          
+          private function faultHandler(fault:FaultEvent):void
+	       {
+	       		Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+	       }
+	       
+	        private function epaiDatuakLortu(event:ResultEvent):void
+			{
+				dp = new ArrayCollection( ArrayUtil.toArray(event.result));
+			}
+          
+       ]]></mx:Script>
+       
+      <mx:RemoteObject id="grafikoa" destination="empService" source="Epaitu" fault="faultHandler(event)" showBusyCursor="true">
+      		<mx:method name="datuakLortu" result="epaiDatuakLortu(event)" />
+   	  </mx:RemoteObject>
+   	  
+      <mx:Panel title="{resourceManager.getString('myResources', 'VALUATION')}">
+           <mx:ColumnChart id="myChart" dataProvider="{dp}" showDataTips="true">
+           <mx:horizontalAxis>
+                 <mx:CategoryAxis
+                     dataProvider="{dp}"
+                     categoryField="Epailea"
+                /> 
+              </mx:horizontalAxis>
+              <mx:series>
+                <mx:ColumnSeries
+                     xField="Epailea"
+                     yField="Balorazioa"             
+                     displayName="{resourceManager.getString('myResources', 'GRAFTEXT')}"
+                /> 
+              </mx:series>
+           </mx:ColumnChart>
+           <mx:Legend dataProvider="{myChart}"  />
+           <mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}" click="PopUpManager.removePopUp(this);"/>
+        </mx:Panel>
+      </mx:TitleWindow>

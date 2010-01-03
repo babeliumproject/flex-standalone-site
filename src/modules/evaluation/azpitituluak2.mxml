@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:Script>
+		<![CDATA[
+					import mx.rpc.events.FaultEvent;
+					import mx.rpc.events.ResultEvent;
+					import mx.controls.Alert;
+					import mx.utils.ArrayUtil;
+					import mx.events.StateChangeEvent;
+					import mx.collections.ArrayCollection;
+				
+				[Bindable]
+         			private var dp:ArrayCollection;
+         			
+         			public var izena:String;
+         			public var bideoIzena:String;
+         			
+         			public var subTaula:ArrayCollection;
+         			public var timeTaula:ArrayCollection;
+         			public var testuTaula:ArrayCollection;
+         			
+         			public var ns_time:Number;
+         			private var timer:Timer;
+         			
+         			private var zenb1:Number;
+         			private var zenb2:int;
+         			private var zenb3:int;
+         			
+         			private var gaitu1:Boolean;
+         			private var gaitu2:Boolean;
+         			private var gaitu3:Boolean;
+         			
+         			
+         		private function onTimer(event:TimerEvent):void
+				{
+					zenb1 = ns_time * 1000;
+					zenb2 = int(ns_time) * 1000;
+					
+					/* if (timeTaula.contains("2500")){
+						trace("OEOE");
+					} */
+					
+					if (zenb1 == 0)
+					{
+						testua.text = "";
+					}
+					
+					if ((zenb1 >= zenb2) && (zenb1 < (zenb2 + 333)) && (gaitu1))
+					{
+						zenb3 = zenb2;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 100;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 200;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 300;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						gaitu1 = false;
+						gaitu2 = true;
+						gaitu3 = true;
+							
+					}
+					
+					if ((zenb1 >= (zenb2 + 333)) && (zenb1 < (zenb2 + 666)) && (gaitu2))
+					{
+						
+						zenb3 = zenb2 + 400;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 500;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						zenb3 = zenb2 + 600;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						gaitu1 = true;
+						gaitu2 = false;
+						gaitu3 = true;
+							
+					}
+					
+					if ((zenb1 >= (zenb2 + 666)) && (zenb1 < (zenb2 + 999)) && (gaitu3))
+					{
+						zenb3 = zenb2 + 700;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 800;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						zenb3 = zenb2 + 900;
+						
+						if (timeTaula.contains(zenb3.toString()))
+						{	
+							testua.text = testuTaula.getItemAt(timeTaula.getItemIndex(zenb3.toString())).toString();
+						}
+						
+						gaitu1 = true;
+						gaitu2 = true;
+						gaitu3 = false;
+							
+					}
+					
+				}
+         		public function setBideoIzena(izena:String):void{
+            	
+	            	bideoIzena =  izena;
+	            	//trace ("bideoIzena: " + bideoIzena);
+            	}
+            
+				private function faultHandler(fault:FaultEvent):void
+			       {
+			       		Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+			       }
+			      private function bidAzpiLortu(event:ResultEvent):void
+					{
+						dp = new ArrayCollection( ArrayUtil.toArray(event.result));
+						
+						subTaula = new ArrayCollection();
+            			
+            			//Subtitulurik ez pantailaratzeko
+            			subTaula.addItem("--------");
+            			
+            			for (var i:int = 0; i < dp.length; i++) {
+            				if (!subTaula.contains(dp[i].idioma))
+	            				subTaula.addItem(dp[i].idioma);
+	            			//trace("dp[i].idioma: " + dp[i].idioma);
+	            		}
+	            		
+	            		subkonboa.dataProvider = subTaula;
+	            		subkonboa.selectedIndex = 0;
+            	}
+            	
+				public function init():void
+                   {	
+                   		//hizkuntzakLortu.visible = false;
+						bideoDat.hizkuntzakLortu.send(bideoIzena);
+                   }
+                   
+           		private function changeHandler(event:Event):void
+			         {
+			         
+			           
+			         }
+			    
+			    //Bideoa aldatzen denean, aurreko bideaoren azpitituluak ez kargatzeko konbotik bat aukeratu bitartean
+			    public function taulakHustu():void
+			    {
+			    	if (timeTaula)		timeTaula = new ArrayCollection();
+            		if (testuTaula)		testuTaula = new ArrayCollection();
+			    }
+			    
+			    private function aukHizk():void
+			    {
+			    		timeTaula = new ArrayCollection();
+            			testuTaula = new ArrayCollection();
+            			
+			    		trace(" subkonboa.selectedItem.toString() : " + subkonboa.selectedItem.toString());
+			    		
+			    		for (var i:int = 0; i < dp.length; i++) {
+			    			if (dp[i].idioma == subkonboa.selectedItem.toString())
+			    					timeTaula.addItem(dp[i].tiempo);
+	            			//trace("dp[i].tiempo: " + dp[i].tiempo);
+	            		}
+	            		
+	            		for (i = 0; i < dp.length; i++) {
+	            			if (dp[i].idioma == subkonboa.selectedItem.toString())
+	            					testuTaula.addItem(dp[i].textos);
+	            			//trace("dp[i].textos: " + dp[i].textos);
+	            		}
+	            		
+	            		if (!timer)
+	            		{
+	            			timer = new Timer(25,0);
+							timer.addEventListener(TimerEvent.TIMER, onTimer );
+							timer.start();
+							
+							gaitu1 = true;
+							gaitu2 = true;
+							gaitu3 = true;
+	            		}
+			    }
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="bideoDat" destination="empService" source="Epaitu" fault="faultHandler(event)" showBusyCursor="true">
+      <mx:method name="hizkuntzakLortu" result="bidAzpiLortu(event)" />
+   </mx:RemoteObject>
+   
+		         
+	<mx:VBox horizontalAlign="center" verticalAlign="middle" borderStyle="solid" borderThickness="1">
+	    <mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#414141">
+	        <mx:Label id="testua" color="#FFFFFF" fontFamily="Arial" fontWeight="bold" fontSize="11" alpha="0.0" textAlign="center"/>
+	    </mx:HBox>
+	    <mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+	        <mx:Label text="{resourceManager.getString('myResources', 'AZPITITULUENHIZKUNTZA')}" fontSize="11" color="#414141" fontWeight="bold"/>
+	        <mx:ComboBox width="100" id="subkonboa" change="aukHizk()"></mx:ComboBox>
+	    </mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

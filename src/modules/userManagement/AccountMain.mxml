@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		  paddingLeft="8"
+		  paddingRight="8"
+		  paddingBottom="8"
+		  borderStyle="none"
+		  xmlns:ns1="modules.userManagement.*"
+		  backgroundAlpha="0.0">
+		  
+	<mx:Script>	
+		<![CDATA[
+			public var cam:Camera = Camera.getCamera();
+			import events.ViewChangeEvent;
+			import model.DataModel;
+			import mx.controls.Alert;
+			
+			private function userAcountSelect():void{
+				if (availableOptionsList.selectedItem.toString()=="Check Web-Cam"){
+					if (cam) Alert.show("Web Cam checked");
+					else Alert.show("Web Cam not checked");
+				}
+				else
+				{
+					accountOptionsViewStack.selectedIndex = 
+								availableOptionsList.selectedIndex;
+				}
+				availableOptionsList.selectedItem="null";
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox height="100%"
+			 horizontalAlign="left"
+			 width="20%">
+		<mx:Label text="User Account"
+				  fontFamily="Arial"
+				  fontSize="18"
+				  fontWeight="bold"
+				  id="navigationLabel"/>
+		<mx:List id="availableOptionsList"
+				 dataProvider="{DataModel.getInstance().accountOptions}"
+				 width="100%"
+				 cornerRadius="4"
+				 fontFamily="Arial"
+				 fontSize="12"
+				 fontWeight="bold"
+				 change="userAcountSelect()">
+		</mx:List>
+	</mx:VBox>
+
+	<mx:ViewStack id="accountOptionsViewStack"
+				  height="100%"
+				  width="80%">
+		<ns1:CreditHistoryPanel width="100%"
+								height="100%"
+								backgroundAlpha="0.0">
+		</ns1:CreditHistoryPanel>
+		<mx:VBox label="TODO" id="todo1" 
+					width="80%" horizontalAlign="center">
+		</mx:VBox>
+		<mx:VBox label="TODO" id="todo2" 
+					width="80%" horizontalAlign="center">
+		</mx:VBox>
+		<mx:VBox label="Top Collaborators" id="topCollaborators" 
+					width="80%" horizontalAlign="center">
+				<ns1:TopCollaborators width="30%" horizontalAlign="center"
+						id="topCollab">
+				</ns1:TopCollaborators>
+		</mx:VBox>
+
+	</mx:ViewStack>
+</mx:HBox>

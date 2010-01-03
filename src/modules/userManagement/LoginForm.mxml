@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				autoLayout="true" borderColor="#000000">
+	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"/>
+	<mx:Form width="100%">
+		<mx:FormItem label="User Name">
+			<mx:TextInput id="username"
+						  width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password">
+			<mx:TextInput id="password"
+						  displayAsPassword="true"
+						  width="100%"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox width="100%" verticalAlign="middle"
+		paddingLeft="12"
+		paddingRight="12">
+		<mx:CheckBox label="Remember Me!" id="rememberUser"/>
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+		<mx:Button label="OK"
+				   id="okButton"/>
+		<mx:Button label="Cancel"
+				   id="cancelButton"/>
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalAlign="center" paddingTop="10">
+		<mx:Button label="I forgot password" id="restorePassword"/>
+	</mx:HBox>
+</mx:TitleWindow>

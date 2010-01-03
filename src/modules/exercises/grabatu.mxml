@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas  xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" 
+	backgroundColor="#678594">
+<mx:Metadata>
+        [ResourceBundle("myResources")]
+    </mx:Metadata>
+	<mx:Script>
+
+		<![CDATA[
+            [Bindable]
+            private var labelString:String;
+			import flash.media.*;
+			import flash.net.*;
+			import flash.events.*;
+			import flash.utils.*;
+			import flash.net.navigateToURL;
+			import flash.external.*;
+			
+			import mx.events.*;
+			import mx.controls.Alert;
+            import mx.utils.StringUtil;
+			import model.DataModel;
+
+			NetConnection.defaultObjectEncoding = flash.net.ObjectEncoding.AMF0;
+			SharedObject.defaultObjectEncoding  = flash.net.ObjectEncoding.AMF0;
+
+			private var client_nc:NetConnection;
+			public var out_ns:NetStream;
+			
+			public var in_ns:NetStream;
+
+			public var my_mic:Microphone;
+			public var micvolumeTransform:SoundTransform = new SoundTransform();
+			
+			public var audio_pause:Boolean;
+
+			public var camera:Camera;
+           	private var video:Video;
+           	
+           	private var timer:Timer = null;
+           	private var mictimer:Timer = null;
+
+			private var anyContent:Boolean;
+            private var audioDir:String;
+           
+            private var lehena:Boolean;
+            
+            
+            public var fitxategi_izena:String = new String;
+            private var filename:String;
+            
+            public var rec:Boolean=false;
+            public var useCam:Boolean;
+
+            public function updateInfo(time:uint):void {
+                 if (ExternalInterface.available) {
+                    ExternalInterface.call("updateInfo", time);
+                 }
+            }
+
+            public function setAudioFilename(audioFilename:String):void {
+                 if (ExternalInterface.available) {
+                    ExternalInterface.call("setAudioFilename", audioFilename);
+                 }
+            }
+
+            public function checkBlankAudio():Boolean {
+				if ((ExternalInterface.available) && (anyContent)) {
+					return true;
+				} else {
+					return false;
+				}
+            }
+
+			public function init():void
+			{
+				ExternalInterface.addCallback("noAudio",checkBlankAudio);
+				audioDir = "audio";
+
+				anyContent = false;
+				// Create a connection
+				client_nc = new NetConnection();
+
+				// Connect to the application
+				client_nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+
+				// add listener for the netStatus events
+				client_nc.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
+				client_nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
+				
+				// JUANAN
+				client_nc.client = this;
+
+				audio_pause = false;
+      			NetStream.prototype.onMetaData = function(obj:Object):void{};
+      			
+      			//UNAI
+      			lehena = true;
+      			segunduak.visible = false;
+      			
+      			
+			}
+
+			private function netStatus(event:NetStatusEvent):void {
+				//trace("netStatus: " + event);
+				var info:Object = event.info;
+				//trace(info.code);
+
+				switch(info.code)
+				{
+	            	case "NetConnection.Connect.Success":
+	            		// Close and recreate streams
+	            		if (in_ns) in_ns.close();
+	            		if (out_ns) out_ns.close();
+	            		
+	            		in_ns = new NetStream(client_nc);
+	            		out_ns = new NetStream(client_nc);
+	            		
+	            		in_ns.addEventListener(NetStatusEvent.NET_STATUS, inStreamState);
+						
+						in_ns.client = this; // onPlayStatus
+						in_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+						
+
+	            		break;
+	            	case "NetConnection.Connect.Closed":
+	            		if (in_ns) in_ns.close();
+	            		if (out_ns) out_ns.close();
+	            		
+	            		break;
+    			}
+  			}
+
+			private  function inStreamState(event:NetStatusEvent):void{
+				var info:Object = event.info;
+
+				// NetStream.Pause.Notify
+
+				//if ((info.code == "NetStream.Play.Stop") || (info.code == "NetStream.Play.Start"))
+				if (info.code == "NetStream.Play.Stop")
+				//if (info.code == "NetStream.Buffer.Flush")
+				{
+					//UNAI - hau komentatuta
+					
+					/* RecStop_btn.enabled = true;
+					RecStop_btn.label = "Rec";
+
+					PlayPause_btn.enabled = true;
+					PlayPause_btn.label = "Play"; */
+
+					audio_pause = false;
+				}
+			}
+
+			private function netSecurityError(event:SecurityErrorEvent):void {
+				//trace("netSecurityError: " + event);
+			}
+			
+			//UNAI - publiko jarrita -
+			public function playAudio():void
+			{
+				if (audio_pause)
+				{
+					in_ns.resume();
+					estat.text = "*Playing...";
+					audio_pause = false;
+				}
+				else
+				{
+					// Play the recording
+					estat.text = "Playing...";
+					if (in_ns) in_ns.close();
+					in_ns = new NetStream(client_nc);
+                	in_ns.addEventListener(NetStatusEvent.NET_STATUS, inStreamState);
+                	in_ns.client = this; // onPlayStatus
+                	in_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+                	
+					in_ns.play(filename);
+					video.attachNetStream(in_ns); // JUANAN
+					estat.text = "Playing...";
+				}
+
+				// It's not possible recording or save while audio is playing
+				
+				//UNAI
+				//dena komentatu
+				
+				/* PlayPause_btn.enabled = true;
+				PlayPause_btn.label = "Pause";
+
+				RecStop_btn.enabled = true;
+				RecStop_btn.label = "Stop"; */
+			}
+			//UNAI - publiko jarrita -
+			public function pauseAudio():void
+			{
+				//in_ns.togglePause();
+				in_ns.pause();
+				estat.text = "Paused";
+				audio_pause = true;
+				
+				//UNAI
+				//ondorengoa komentatu
+				
+				// It's possible recording or save while audio is paused
+				/* RecStop_btn.enabled = true;
+				RecStop_btn.label = "Rec";
+
+				PlayPause_btn.enabled = true;
+				PlayPause_btn.label = "Play"; */
+			}
+			
+			//UNAI nik sortu det StopAudio2
+			public function stopAudio2():void
+			{
+				//UNAI
+				in_ns.togglePause();
+            	in_ns.pause();
+            	in_ns.seek(0);
+            	audio_pause = false;
+            	
+				estat.text = "Stopped";
+			}
+			
+			public function mic_ixildu(pertsonaia:String):void{
+
+				if (pertsonaia == "aukeratua"){
+					
+					//Mikrofonoa martxan jarri
+					my_mic.gain = 40;
+					mic_irudia.source="resources/images/green_mic.png"
+					videoHolder.mask = null;
+					
+				}	
+				else{
+					//mikrofonoa ixildu
+					my_mic.gain = 0;
+					mic_irudia.source="resources/images/disabled_mic.png"							
+					
+				}
+			}
+				
+			
+			public function mic_activity(evt:ActivityEvent):void{
+				trace("\n mic_activity : " + evt.toString());
+			}
+			
+			public function  mic_status(evt:StatusEvent):void{
+				if (evt.code=="Microphone.Unmuted"){ //Microphone access was allowed
+					trace("Acceso a microfono permitido");
+					if (lehena){
+                        	timer = new Timer(1000,0);
+							timer.addEventListener(TimerEvent.TIMER, onTimer );
+							timer.start();
+							lehena = false;
+                 	}
+				}else if (evt.code=="Microphone.Muted"){ //Microphone access was denied
+					trace("Acceso a microfono no permitido");
+					dispatchEvent(evt);//Iñigo. En pruebas...
+				}
+			}
+			
+			private function recAudio():void
+			{
+				my_mic=Microphone.getMicrophone();
+				var d:Date = new Date();
+				estat.text = "Recording..."
+				anyContent = true;
+	  			// Start publishing the audio output as a recorded stream
+				//my_mic = Microphone.getMicrophone();Iñigo pruebas
+				//my_mic.setUseEchoSuppression(true);
+				//my_mic.addEventListener(ActivityEvent.ACTIVITY,mic_activity);
+				//my_mic.addEventListener(StatusEvent.STATUS,mic_status); Iñigo pruebas
+				//UNAI - mikrofonoa haseran ixilik hasiko da -
+				trace("haseratu mic.gain = 0");
+				my_mic.gain = 0;
+				
+           		out_ns.attachAudio(my_mic);
+           		//trace("\n my_mic.gain : " + my_mic.gain);
+           		
+           		var audioFilename:String = "audio-"+d.getTime().toString();
+  			    setAudioFilename(audioFilename);
+				filename = audioDir + "/" + audioFilename;
+				
+				fitxategi_izena = audioFilename;
+				// Publish the stream
+				out_ns.publish(filename, "record");
+				
+				// It's not possible playing audio while recording
+				
+				//UNAI - denak komentatu -
+				
+				/* RecStop_btn.enabled = true;
+				RecStop_btn.label = "Stop";
+
+				PlayPause_btn.enabled = false;
+				PlayPause_btn.label = "Play"; */
+			}
+
+			private function stopAudio():void
+			{
+                updateInfo (out_ns.time);
+				estat.text = "Stopped ";
+
+	  			// Close output stream
+           		out_ns.close();
+				
+				
+           		// bytes
+        		// estat.text = "Stopped"
+
+				// It's not possible playing audio while recording
+				
+				//UNAI hau dena komentatu
+				/* RecStop_btn.enabled = true;
+				RecStop_btn.label = "Rec";
+
+				PlayPause_btn.enabled = true;
+				PlayPause_btn.label = "Play"; */
+			}
+
+			public function recStopAudio(egoera:String):void
+			{
+				//UNAI, aldatua, timerra sartu diot 5s pasa ondoren hasteko grabatzen
+				if (egoera == "Rec") {
+					
+					recCamera();
+					
+					if (!lehena){
+						timer.reset();
+						timer.start();
+					}
+					
+				}
+				else {
+					
+					//mikrofonoa ixildu
+					my_mic.gain = 0;
+					mic_irudia.source="resources/images/disabled_mic.png"
+					
+					stopCamera();
+					stopAudio();
+				}
+			}
+			
+			//UNAI timerra sartu diot 5s pasa ondoren hasteko grabatzen
+			private function onTimer(event:TimerEvent):void{
+
+				var denb:int
+				denb = 6 - timer.currentCount
+				
+				if (!rec) {
+					recAudio();
+					rec = true;
+				}
+				
+				if (timer.currentCount <= 6){
+						
+						segunduak.visible = true;
+						segunduak.text = denb.toString()
+				}
+				
+				if (timer.currentCount == 6){
+					//6 segundu pasa ondoren, grabatzen hasiko da
+					segunduak.visible = false;
+					//gertaera hau jaurti da, deitzaileak jakiteko noiz jarri martxan bideoa.
+					this.dispatchEvent(new StateChangeEvent(StateChangeEvent.CURRENT_STATE_CHANGE));
+
+					//recAudio();
+					
+					out_ns.attachCamera(camera);
+					
+					mictimer=new Timer(20,0);
+            		mictimer.addEventListener(TimerEvent.TIMER,onTick);
+            		mictimer.start();
+				}
+				
+				
+					
+			}
+			
+			private function onTick(event:TimerEvent):void{
+				
+				/* if (my_mic.activityLevel > 0)
+					trace(" my_mic.activityLevel : " + my_mic.activityLevel  + " max : " + max); */
+					
+				mic_barra.setProgress(my_mic.activityLevel,100);
+	      		mic_barra.label = "Mic Level:   " + my_mic.activityLevel;
+			}
+			
+			//Honi inoiz ez diot deitzen
+			private function playPauseAudio(egoera:String):void{
+				
+				//estat.text = 'playPauseAudio' + PlayPause_btn.label;
+				switch (egoera)
+				
+				{
+					case "Play"	 : playAudio(); break;
+					case "Pause" : pauseAudio(); break;
+				}
+			}
+
+		    private function stopCamera():void
+		    {
+				
+				//UNAI
+				//Lerro honek egiten dio benetan "detach" kamarari, argia itzali dadin
+				//honek EZTU sortzen bigarren bideon problema, zeren linea hau kendutare errorea emateu
+				
+				//HAU OTE?
+				//out_ns.attachCamera(null);
+				
+	        	// clear the videoContainer
+	        	video.attachCamera(null);
+	        	video.clear();
+			}
+
+
+
+			
+			
+                       public function onFCSubscribe(info:Object):void{
+                               //trace("FCworked");
+                       }
+
+                       public function onBWDone():void{
+                               //trace("BWworked");
+                       }
+                       
+                public function onPlayStatus(o:Object):void
+				{
+					if (o.code == "NetStream.Play.Complete")
+					{
+						estat.text = "";
+						
+					}
+				}
+
+			public function asyncErrorHandler(event: AsyncErrorEvent): void {
+				// ignore for now
+			}
+			//UNAI
+			//video objetuaren eta bere kontainerraren tamaina aldatu ahal izateko.
+			public function aldatuBideoTam(w:Number, h:Number, pw:Number, ph:Number): void {
+				
+				//ezta lehengo grabaketa, eta ez da tamainuz aldatuko bestela panela, eta ez gertaera emango
+				//eta ondorioz bideoan ez dira bistaratuko grabatzeko eta bideo ikusteko lehioak
+				
+				if (grabpanel.height == pw)
+				{
+					trace ("\n DISPATCH RESIZE MANUALA");
+					grabpanel.dispatchEvent(new ResizeEvent(ResizeEvent.RESIZE));
+				}
+				
+				video.height = w;
+				video.width = h;
+				videoHolder.height = w;
+				videoHolder.width = h;
+				grabpanel.height = pw;
+				grabpanel.width = ph;
+			}
+			
+			//UNAI
+			//kamararen egoera kontrolatzeko probak, martxan jartzean activating == true da, funtzionatzen du
+			//baina ez dut erabili oraingoz
+			private function camera_activity(evt:ActivityEvent):void {
+				
+                //if (evt.activating == true) trace ("aktibatzen!")
+            	
+            	//trace("\n Infor Stringa: " + evt.toString() + "\n")
+            }
+			
+			//UNAI
+			//kamararen egoera kontrolatzeko.Kamara eskaera lehen aldian bakarrik egiten da eta 
+			//berari ematen zaion erantzunaren arabera gertaera bat edo bestea ematen da. Lehen aldiz kamara
+			//eskaera onartzean, timerra martxan jarriko da, kasu honetan itxaron egin beharra baitago, erabiltzaileak
+			//kamara eskaera onartu arte, eta ondoren hasi behar baitu timerrak martxan, eta ez lehenago.
+            private function camera_status(evt:StatusEvent):void {               
+                switch (evt.code) {
+                    case "Camera.Muted": //User denied access to camera
+                    	dispatchEvent(evt);//Iñigo. En pruebas...
+                        break;
+                    case "Camera.Unmuted": //User allowed access to camera
+                        
+                        if (lehena){
+                        	timer = new Timer(1000,0);
+							timer.addEventListener(TimerEvent.TIMER, onTimer );
+							timer.start();
+							lehena = false;
+                        }
+                        break;
+                }//switch
+            }
+
+			
+			private function recCamera():void {
+               if (hasCam() && useCam){
+				   
+				   camera=Camera.getCamera();
+                   videoHolder.setActualSize(camera.width,camera.height);
+                   
+                   //UNAI - kamararen egoera aztertzeko listenerrak -
+                   camera.addEventListener(ActivityEvent.ACTIVITY, camera_activity);
+                   camera.addEventListener(StatusEvent.STATUS, camera_status);
+
+                   video = new Video(camera.width, camera.height);
+                   
+                   //trace(" camera.width :" + camera.width + " camera.height : " + camera.height)
+                   //out_ns.attachCamera(camera);
+                   video.attachCamera(camera);
+                   //trace("\n video.height: " + video.height + "\n video.width: " + video.width)
+                   // trace(connection.objectEncoding);
+                   // cout_ns.publish("red5StreamDemo", "record");
+					//video.height = 270;
+					//video.width = 480;
+					//video.y = 0
+					//trace("\n video.height: " + video.height + "\n video.width: " + video.width)
+                   	videoHolder.addChild(video);
+                   	
+                   	mic_barra.width = video.width - (2 * mic_irudia.width) - 10 - grabatzen.width
+                   	mic_barra.height = mic_irudia.width
+                   	//video.x = videoHolder.x
+                   	//080
+                   trace("\n" + video.x + videoHolder.x + grabpanel.x + "\n")
+                   //trace("\n videoHolder.height: " + videoHolder.height + "\n videoHolder.width: " + videoHolder.width)
+                   //trace("\n video.height: " + video.height + "\n video.width: " + video.width)
+                   //trace(" camera.width :" + camera.width + " camera.height : " + camera.height)
+                   
+                   // this.addChild(videoHolder);
+                   //trace("All added you should see video");
+               
+               } else {
+                  trace("You need a camera to publish");
+                                 	
+                  videoHolder.setActualSize(120,120);
+                  video = new Video(120, 120);
+				  videoHolder.addChild(video);
+                   	
+                  mic_barra.width = video.width - (2 * mic_irudia.width) - 10 - grabatzen.width;
+                  mic_barra.height = mic_irudia.width;
+                  
+                  my_mic=Microphone.getMicrophone();
+                  my_mic.setUseEchoSuppression(true); 
+                  my_mic.setLoopBack(true);
+                  my_mic.addEventListener(StatusEvent.STATUS,mic_status);
+                   	
+                   	
+                 	 // idem as status event listener for the camera 
+                 	 
+                 	  /*if (lehena){
+                        	timer = new Timer(1000,0);
+							timer.addEventListener(TimerEvent.TIMER, onTimer );
+							timer.start();
+							lehena = false;
+                 	 } Iñigo pruebas */
+                        
+                        
+           }
+          }
+          
+          public function hasCam():Boolean{
+          	if (Camera.names.length>0) return true;
+          	else return false;
+          }
+		  
+		]]>
+	</mx:Script>
+	
+		<mx:Panel id="grabpanel" layout="absolute" y="0" x="0" height="193">
+			<!--<mx:Button x="10" y="83" label="Rec" click="recStopAudio();" id="RecStop_btn" width="65" fillColors="[#ca0000, #ffffff]"/>
+			<mx:Button x="82" y="83" label="Play" click="playPauseAudio();" id="PlayPause_btn" width="65" fillColors="[#008080, #ffffff]"/>-->
+			<!-- mx:VideoDisplay id="vid" x="170" y="4" width="85" height="85"/ -->
+			<mx:VBox x="0" y="0" horizontalAlign="center" verticalAlign="middle">
+				<mx:HBox horizontalAlign="center" verticalAlign="middle">
+				
+					    <mx:HBox id="botoiak" dropShadowEnabled="true" borderStyle="solid" cornerRadius="5" x="600" y="265">
+					        <mx:LinkButton 
+					        label="{resourceManager.getString('myResources', 'REPRODUCIR')}" 
+					        click="playAudio()"/>
+					    <mx:LinkButton 
+					    	label="{resourceManager.getString('myResources', 'PAUSA')}" 
+					    	click="pauseAudio()"/>
+					    <!--<mx:LinkButton
+					    	label="Stop"
+					    	click="stopAudio2()"/>-->
+					    </mx:HBox>
+						
+				</mx:HBox>
+				<mx:UIComponent id="videoHolder" width="100%" height="100%" />
+				<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+					<mx:Image source="resources/images/disabled_mic.png" id="mic_irudia"/>
+					<mx:ProgressBar id="mic_barra" minimum="0" maximum="100" mode="manual" barColor="green" label="Mic Level: 0"/>
+					<mx:Image source="resources/images/icon_rec2.png" id="grabatzen"/>
+				</mx:HBox>
+				
+				<mx:HBox x="0" y="125" horizontalAlign="center" verticalAlign="middle" width="100%">
+					<mx:Label text="{resourceManager.getString('myResources', 'AUKERATURIKOPERTSONAIA')}" fontWeight="bold"/>
+					<mx:Label id="pertsonaial"/>
+				</mx:HBox>
+				
+				<mx:HBox x="0" y="99" horizontalAlign="center" verticalAlign="middle" width="100%">
+					<mx:Label text="Egoera:" width="65" fontWeight="bold" fontStyle="normal"/>
+					<mx:Label id="estat"/>
+				</mx:HBox>
+				
+				<mx:Label x="31" y="94" fontSize="36" fontWeight="bold" id="segunduak"/>
+				
+			</mx:VBox>
+			
+			
+		</mx:Panel>
+	
+</mx:Canvas >

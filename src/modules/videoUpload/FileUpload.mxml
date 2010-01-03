@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  xmlns:com="*"
+		  xmlns:ns1="modules.videoUpload.*"
+		  layout="vertical"
+		  width="100%"
+		  minWidth="400"
+		  height="100%"
+		  minHeight="200"
+		  title="Upload New Exercise"
+		  creationComplete="initCom()"
+		  fontFamily="Arial"
+		  fontSize="12"
+		  paddingLeft="8"
+		  paddingRight="8"
+		  paddingTop="8"
+		  paddingBottom="8">
+
+	<mx:Script>
+		<![CDATA[
+			import vo.ExerciseLevelVO;
+			import flash.sampler.NewObjectSample;
+			import events.ExerciseEvent;
+			import vo.ExerciseVO;
+			import model.DataModel;
+			import events.UploadEvent;
+			import mx.utils.ObjectUtil;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+
+			import mx.controls.*;
+			import mx.managers.*;
+			import mx.events.*;
+			import flash.events.*;
+			import flash.net.*;
+
+			private var _strUploadUrl:String;
+			private var addFileReference:FileReference;
+			//private var _refUploadFile:FileReference;
+			private var _arrUploadFiles:Array;
+			//private var _numCurrentUpload:Number=0;
+			
+			private var youtubeVideoData:ExerciseVO;
+			private var youtubeVideoLevel:ExerciseLevelVO;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
+			public var FlagEnglish:Class;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_spain.png")]
+			public var FlagSpanish:Class;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_france.png")]
+			public var FlagFrench:Class;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_basque_country.png")]
+			public var FlagBasque:Class;
+
+
+			[Bindable]
+			private var categories:Array=new Array("Autos", "Music", "Animals", "Sports", "Travel", "Games", "Comedy", "People", "News", "Entertainment", "Education", "Howto", "Nonprofit", "Tech");
+
+			[Bindable]
+			private var dificultyLevels:Array=new Array("A1 Beginner", "A2 Elementary", "B1.1 Intermediate", "B1.2 Average", "B2.1 Advanced", "B2.2 Native");
+
+			[Bindable]
+			private var flaggedLanguageData:Array=new Array({label: 'English', icon: 'FlagEnglish'}, {label: 'Spanish', icon: 'FlagSpanish'}, {label: 'Basque', icon: 'FlagBasque'}, {label: 'French', icon: 'FlagFrench'});
+
+			private var checkStatusTimer:Timer;
+
+			// Set uploadUrl
+			public function set uploadUrl(strUploadUrl:String):void
+			{
+				_strUploadUrl=strUploadUrl;
+			}
+
+			// Initalize
+			private function initCom():void
+			{
+				_arrUploadFiles=new Array();
+				enableUI();
+				uploadCheck();
+				languageComboBox.dropdown.iconField="icon";
+			}
+
+			private function addFiles():void
+			{
+				new UploadEvent(UploadEvent.UPLOAD_BROWSE).dispatch();
+			}
+
+			// Called when a file is selected
+			public function set fileSelected(selected:Boolean):void
+			{
+				addFileReference=DataModel.getInstance().uploadFileReference;
+				_arrUploadFiles.push({name: addFileReference.name, size: formatFileSize(addFileReference.size), file: addFileReference});
+				listFiles.dataProvider=_arrUploadFiles;
+				listFiles.selectedIndex=_arrUploadFiles.length - 1;
+
+				updateProgBar();
+				uploadCheck();
+				DataModel.getInstance().uploadFileSelected=false;
+			}
+
+			// Called to format number to file size
+			private function formatFileSize(numSize:Number):String
+			{
+				var strReturn:String;
+				numSize=Number(numSize / 1024);
+				strReturn=String(numSize.toFixed(1) + " KB");
+				if (numSize > 1024)
+				{
+					numSize=numSize / 1024;
+					strReturn=String(numSize.toFixed(2) + " MB");
+					if (numSize > 1024)
+					{
+						numSize=numSize / 1024;
+						strReturn=String(numSize.toFixed(2) + " GB");
+					}
+				}
+				return strReturn;
+			}
+
+			// Called to check if there is at least one file to upload
+			private function uploadCheck():void
+			{
+				if (_arrUploadFiles.length == 0)
+				{
+					btnUpload.enabled=false;
+					listFiles.verticalScrollPolicy="off";
+				}
+				else
+				{
+					btnUpload.enabled=true;
+					listFiles.verticalScrollPolicy="off";
+				}
+			}
+
+			// Disable UI control
+			private function disableUI():void
+			{
+				btnAdd.enabled=false;
+				btnUpload.enabled=false;
+				btnCancel.enabled=true;
+				listFiles.enabled=false;
+				listFiles.verticalScrollPolicy="off";
+			}
+
+			// Enable UI control
+			private function enableUI():void
+			{
+				btnAdd.enabled=true;
+				btnUpload.enabled=true;
+				btnCancel.enabled=false;
+				listFiles.enabled=true;
+				listFiles.verticalScrollPolicy="off";
+			}
+
+			private function startUpload():void
+			{
+				if (_arrUploadFiles.length > 0)
+				{
+					disableUI();
+					uploadInformationLabel.text="Uploading file...";
+					new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
+				}
+			}
+
+
+
+			private function parseTags(tags:String):String
+			{
+				return tags;
+			}
+
+			private function clearUpload():void
+			{
+				updateProgBar();
+				enableUI();
+				new UploadEvent(UploadEvent.UPLOAD_CANCEL).dispatch();
+			}
+
+			private function onUploadCanceled():void
+			{
+				clearUpload();
+			}
+
+			private function set onUploadProgress(update:Boolean):void
+			{
+				var bytesLoaded:int=DataModel.getInstance().uploadBytesLoaded;
+				var bytesTotal:int=DataModel.getInstance().uploadBytesTotal;
+				var numPerc:Number=Math.round((bytesLoaded / bytesTotal) * 100);
+				updateProgBar(bytesLoaded, bytesTotal, numPerc);
+				DataModel.getInstance().uploadProgressUpdated=false;
+
+			}
+
+			// Update progBar
+			private function updateProgBar(bytesLoaded:Number=0, bytesTotal:Number=0, numPerc:Number=0):void
+			{
+				if (addFileReference != null){
+					var strLabel:String="Uploaded " + formatFileSize(0) + " of " + formatFileSize(addFileReference.size);
+					strLabel=(numPerc > 0 && numPerc < 100) ? "Uploaded " + formatFileSize(bytesLoaded) + " of " + formatFileSize(bytesTotal) : strLabel;
+					strLabel=(numPerc == 100) ? "Upload Complete - Transfer commencing..." : strLabel;
+					strLabel=(_arrUploadFiles.length == 0) ? "" : strLabel;
+				} else {
+					numPerc = 0;
+					strLabel = "";
+				}
+				progBar.label=strLabel;
+
+				progBar.setProgress(numPerc, 100);
+				progBar.validateNow();
+			}
+
+			// Called on upload complete
+			private function set onUploadComplete(value:Boolean):void
+			{
+				enableUI();
+				clearUpload();
+				uploadInformationLabel.text="Upload successful. Now Processing file...";
+				DataModel.getInstance().uploadFinished=false;
+			}
+
+			private function set onUploadCompleteData(value:Boolean):void
+			{
+				youtubeVideoData=new ExerciseVO();
+				youtubeVideoData.title=videoTitle.text;
+				youtubeVideoData.description=videoDescription.text;
+				youtubeVideoData.tags=parseTags(videoTags.text);
+				youtubeVideoData.language=languageComboBox.selectedLabel;
+				youtubeVideoData.name=DataModel.getInstance().uploadFileReference.name;
+				
+				youtubeVideoLevel = new ExerciseLevelVO();
+				youtubeVideoLevel.suggestedLevel = dificultyComboBox.selectedIndex+1;
+				
+				DataModel.getInstance().uploadFinishedData=false;
+				new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
+			}
+
+			private function set onYoutubeTransferComplete(value:Boolean):void
+			{
+				if (DataModel.getInstance().youtubeTransferComplete == true)
+				{
+					checkStatusTimer=new Timer(30000, 0);
+					checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
+					checkStatusTimer.start();
+					DataModel.getInstance().youtubeTransferComplete = false;
+				}
+			}
+
+			private function onTimer(event:TimerEvent):void
+			{
+				var checkExercise:ExerciseVO=DataModel.getInstance().newYoutubeData;
+				new UploadEvent(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, checkExercise).dispatch();
+			}
+
+			private function set onYoutubeProcessingComplete(value:Boolean):void
+			{
+				uploadInformationLabel.text="Upload finished!";
+				checkStatusTimer.stop();
+				DataModel.getInstance().youtubeProcessingComplete=false;
+				youtubeVideoData.userId = DataModel.getInstance().loggedUser.id;
+				youtubeVideoData.source = "Youtube";
+				
+				_arrUploadFiles.pop();
+				listFiles.dataProvider = _arrUploadFiles;
+				clearUpload();
+				addFileReference = null;
+				videoTitle.text = "";
+				videoDescription.text = "";
+				videoTags.text = "";
+				
+				new ExerciseEvent(ExerciseEvent.ADD_EXERCISE,youtubeVideoData).dispatch();
+			}
+
+			private function set onYoutubeProcessUpdate(value:Boolean):void
+			{
+				uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
+				DataModel.getInstance().youtubeProcessUpdate=false;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Binding source="{DataModel.getInstance().uploadFileSelected}"
+				destination="this.fileSelected"/>
+	<mx:Binding source="{DataModel.getInstance().uploadProgressUpdated}"
+				destination="this.onUploadProgress"/>
+	<mx:Binding source="{DataModel.getInstance().uploadFinished}"
+				destination="this.onUploadComplete"/>
+	<mx:Binding source="{DataModel.getInstance().uploadFinishedData}"
+				destination="this.onUploadCompleteData"/>
+	<mx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
+				destination="this.onYoutubeTransferComplete"/>
+	<mx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
+				destination="this.onYoutubeProcessingComplete"/>
+	<mx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
+				destination="this.onYoutubeProcessUpdate"/>
+	<mx:Label text="Exercise Information"
+			  fontWeight="bold"
+			  fontFamily="Arial"
+			  fontSize="18"/>
+	<mx:Form width="100%">
+		<mx:FormItem label="Title:"
+					 width="100%"
+					 fontWeight="bold">
+			<mx:TextInput width="100%"
+						  id="videoTitle"
+						  fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Description:"
+					 width="100%"
+					 fontWeight="bold">
+			<mx:TextArea width="100%"
+						 id="videoDescription"
+						 fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Tags:"
+					 width="100%"
+					 fontWeight="bold">
+			<mx:TextArea width="100%"
+						 id="videoTags"
+						 fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Dificulty Level:"
+					 fontWeight="bold">
+			<mx:ComboBox id="dificultyComboBox"
+						 dataProvider="{dificultyLevels}"
+						 fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Language:"
+					 fontWeight="bold">
+			<ns1:IconComboBox id="languageComboBox"
+							  dataProvider="{flaggedLanguageData}"
+							  fontWeight="normal"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox width="100%"
+			 height="60"
+			 verticalAlign="middle"
+			 horizontalAlign="center">
+		<mx:DataGrid id="listFiles"
+					 allowMultipleSelection="false"
+					 rowCount="1"
+					 verticalScrollPolicy="off"
+					 draggableColumns="false"
+					 resizableColumns="false"
+					 sortableColumns="false">
+			<mx:columns>
+				<mx:DataGridColumn headerText="File"
+								   dataField="name"
+								   width="400"
+								   wordWrap="true"/>
+				<mx:DataGridColumn headerText="Size"
+								   dataField="size"
+								   width="75"
+								   textAlign="right"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%"
+				 height="100%"
+				 horizontalAlign="right"
+				 verticalAlign="middle"
+				 paddingRight="12">
+			<mx:Button id="btnAdd"
+					   toolTip="Add file(s)"
+					   click="addFiles()"
+					   icon="@Embed(source='../../resources/images/add.png')"
+					   label="Browse..."/>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:Label paddingLeft="12"
+			  paddingRight="12"
+			  text="No activity."
+			  width="100%"
+			  id="uploadInformationLabel"
+			  fontWeight="bold"/>
+	<mx:ControlBar horizontalAlign="center"
+				   verticalAlign="middle">
+		<mx:ProgressBar id="progBar"
+						mode="manual"
+						label=""
+						labelPlacement="center"
+						width="100%"/>
+		<mx:Button id="btnCancel"
+				   toolTip="Cancel upload"
+				   icon="@Embed(source='../../resources/images/cancel.png')"
+				   width="26"
+				   click="onUploadCanceled()"/>
+		<mx:Button label="Upload"
+				   toolTip="Upload file(s)"
+				   id="btnUpload"
+				   click="startUpload()"
+				   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+	</mx:ControlBar>
+</mx:Panel>

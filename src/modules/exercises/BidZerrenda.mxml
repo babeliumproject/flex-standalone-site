@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   creationComplete="init()"
+		   backgroundColor="#678594">
+	<mx:Metadata>
+        [ResourceBundle("myResources")]
+    </mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			import mx.utils.ArrayUtil;
+			import mx.events.StateChangeEvent;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import model.DataModel;
+
+			[Bindable]
+			private var dp:ArrayCollection;
+			private var dp2:ArrayCollection;
+
+			public var izena:String;
+			public var id_vid:int;
+			[Bindable]
+			public var idiomaBid:String;
+			[Bindable]
+			private var myShareObject:SharedObject;
+
+			private function faultHandler(fault:FaultEvent):void
+			{
+				Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+			}
+
+			private function baloratuGabekoakLortu(event:ResultEvent):void
+			{
+				dp=new ArrayCollection(ArrayUtil.toArray(event.result));
+			}
+
+			public function init():void
+			{
+
+				bideoDat.bideoakLortu.send();
+			}
+
+			private function changeHandler(event:Event):void
+			{
+				//trace(DataGrid(event.target).selectedItem.nombre);
+				izena=DataGrid(event.target).selectedItem.name;
+				id_vid=DataGrid(event.target).selectedItem.ID;
+				
+	           //  itemDoubleClick="itemDoubleClickHandler(event)"
+			}
+							
+		]]>
+	</mx:Script>
+
+	<mx:RemoteObject id="bideoDat"
+					 destination="empService"
+					 source="BideoaIkusi"
+					 fault="faultHandler(event)"
+					 showBusyCursor="true">
+
+		<mx:method name="bideoakLortu"
+				   result="baloratuGabekoakLortu(event)"/>
+
+	</mx:RemoteObject>
+
+	<mx:DataGrid verticalAlign="middle"
+				 id="bideoakLortu"
+				 dataProvider="{dp}"
+				 x="0"
+				 y="0"
+				 change="changeHandler(event)"
+				 doubleClickEnabled="true" 
+				 fontFamily="Arial"
+				 fontSize="15"
+				 fontWeight="bold"
+				 textAlign="center"
+				 color="#3C390B">
+		<mx:columns>
+
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRUDIA')}"
+							   dataField="Kodea"
+							   width="160">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox horizontalAlign="center"
+								 verticalAlign="middle">
+							<mx:Image id="albumImage"
+									  height="150"
+									  width="150"
+									  source="{data.thumbnail}"/>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="ID"
+							   dataField="ID"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'NOMBRE')}"
+							   dataField="nombre"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DURACION')}"
+							   dataField="duracion"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'AUTOR')}"
+							   dataField="autor"/>
+
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Button id="aukeratu_bideoa"
+			   x="570"
+			   y="0"
+			   label="{resourceManager.getString('myResources', 'BIDEOAAUKERATU')}"
+			   width="144"
+			   height="62"
+			   fillAlphas="[0.59, 1.0, 0.74, 0.59]"
+			   fillColors="[#678594, #FFFFFF]"/>
+
+</mx:Canvas>

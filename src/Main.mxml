@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				backgroundGradientAlphas="[1.0, 1.0]"
+				backgroundGradientColors="[#E5E8EA, #FFFFFF]"
+				verticalAlign="top"
+				horizontalAlign="center"
+				borderSides="0"
+				paddingTop="5"
+				paddingBottom="5"
+				xmlns:control="control.*"
+				xmlns:business="business.*"
+				xmlns:ns1="modules.main.*"
+				xmlns:ns2="modules.userManagement.*"
+				preinitialize="init();"
+				height="100%"
+				width="100%"
+				pageTitle="Babelia: Collaborative Language e-Learning">
+
+	<mx:Script>
+		<![CDATA[
+			import events.UserEvent;
+			import events.CreditEvent;
+			import events.PreferenceEvent;
+			import model.DataModel;
+			import mx.controls.Alert;
+			private var mainSO:SharedObject;
+			
+			[Bindable]
+			public var appModelLocator: DataModel;
+
+			//Initialization method
+			private function init():void
+			{
+				appModelLocator = DataModel.getInstance();
+				
+				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
+				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
+				
+				Security.allowDomain(appModelLocator.uploadDomain);
+			}
+		]]>
+	</mx:Script>
+
+	<!--Instantiate controller and services singleton -->
+
+	<!--This defines the reachable remote services -->
+	<business:Services />
+
+	<!--This defines all the actions available -->
+	<control:Controller/>
+
+	<ns1:header id="header"
+				width="100%">
+	</ns1:header>
+	<ns1:navigation id="navigation"
+					width="100%">
+	</ns1:navigation>
+	<ns1:body id="content"
+			  height="100%"
+			  width="100%">
+	</ns1:body>
+
+</mx:Application>

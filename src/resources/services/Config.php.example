@@ -1,0 +1,32 @@
+<?php
+	
+	//This file stores the info needed to connect to the application's database
+	class Config{
+		public $host = "";
+		public $db_username = "";
+		public $db_password = "";
+		public $db_name = "mydb";
+		
+		//Server path to store uploaded files
+		public $filePath = '';
+		
+		//Youtube authentication data
+		public $yt_user = '';
+		public $yt_password = '';
+		public $yt_developerKey = '';
+		
+		//Smtp server settings
+		public $smtp_server_host = 'localhost';
+		public $smtp_server_username = '';
+		public $smtp_server_password = '';
+		public $smtp_server_ssl = '';
+		public $smtp_server_port = 25;
+		public $smtp_mail_setFromMail = '';
+		public $smtp_mail_setFromName = '';
+		
+		public function Config(){
+			$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/FileUpload/streams";
+		}
+	}
+	
+?>

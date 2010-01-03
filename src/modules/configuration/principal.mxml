@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" xmlns:ns1="modules.configuration.*"
+	creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			/*La funcion de inicializacion gestionara los distintos 
+			paneles de las 3 pestañas de configuracion*/
+			private function init():void{
+				//Web-Cam Configuration:				
+				if (configurationMenu.selectedIndex==0){
+					if (Camera.names.length>0){//El usuario dispone de web-cam
+					webCamCheck.allMenu.visible=true;
+					webCamCheck.notConect.visible=false;
+					}else{//El usuario no dispone de web-cam
+					webCamCheck.allMenu.visible=false;
+					webCamCheck.notConect.visible=true;
+					}
+				//Mic Configuration:
+				}else if (configurationMenu.selectedIndex==1){
+					if (Microphone.names.length>0){//El usuario dispone de microfono
+					micCheck.allMenu.visible=false;
+					micCheck.notConect.visible=true;
+					}else{//El usuario no dispone de microfono
+					micCheck.allMenu.visible=false;
+					micCheck.notConect.visible=true;
+					}
+				//Connection Configuration:	
+				}else if (configurationMenu.selectedIndex==2){
+					//modulo por implementar
+				}
+			}//init()
+			
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator id="configurationMenu" x="10" y="10" width="79%" height="95%">
+			
+			<mx:VBox label="Web-Cam Configuration" id="camMenu">
+				<ns1:webCamCheck id="webCamCheck"/>
+			</mx:VBox>
+			<mx:VBox label="Mic Configuration" id="micMenu">
+				<ns1:micCheck id="micCheck"/>
+			</mx:VBox>
+			<mx:VBox label="Connection Configuration" id="conMenu"/>
+						
+	</mx:TabNavigator>
+</mx:Canvas>
