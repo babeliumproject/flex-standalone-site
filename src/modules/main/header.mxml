@@ -53,6 +53,8 @@
 
 			private var rememberSO:SharedObject;
 			
+			private var locales:Array = DataModel.getInstance().locales; 
+			
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int = 13;
 
@@ -239,11 +241,6 @@
 				interval=setInterval(blinkCredits, 300);
 				DataModel.getInstance().creditUpdateRetrieved=false;
 			}
-			
-			// l10n
-			
-			[Bindable]
- 			private var locales:Array = [ "en_US" , "es_SP", "eu_EK", "fr_FR"];
            
            
          
@@ -372,7 +369,7 @@
 		<mx:Canvas>
 		   <mx:HBox>
 				<mx:VRule height="20"/>
-			<mx:ComboBox id="localeComboBox" text="Selecione el idioma" dataProvider="{locales}"
+			<mx:ComboBox id="localeComboBox" text="Selecione el idioma" dataProvider="{DataModel.getInstance().locales}"
                  initialize="localeComboBox_initializeHandler(event)"
                  change="localeComboBox_changeHandler(event)"/>
 			</mx:HBox>

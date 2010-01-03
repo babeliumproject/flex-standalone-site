@@ -9,6 +9,7 @@
 		 xmlns:ns6="modules.evaluation.*"
 		 xmlns:ns7="modules.configuration.*"
 		 xmlns:ns8="modules.rankings.*"
+		 xmlns:ns9="modules.videoPlayer.*"
 		 paddingTop="10"
 		 horizontalGap="0"
 		 creationComplete="init();"
@@ -51,8 +52,11 @@
 		</ns4:VideoPlayer>
 		<ns7:principal width="100%" height="100%">
 		</ns7:principal>
-		<ns8:Rankings width="100%" height="100%">
-		</ns8:Rankings>
+		<!--<ns8:Rankings width="100%" height="100%">
+		</ns8:Rankings>-->
+		<ns9:FlexVideoPlayer>
+		</ns9:FlexVideoPlayer>
+		
 
 	</mx:ViewStack>
 

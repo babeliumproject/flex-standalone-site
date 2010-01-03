@@ -137,6 +137,10 @@ package model
 		[Bindable] public var stopVideoFlag:Boolean = false;
 		// In order to avoid tab change if recording exercise
 		[Bindable] public var recordingExercise:Boolean = false;
+		
+		// l10n
+			
+		[Bindable] public var locales:Array = [ "en_US" , "es_SP", "eu_EK", "fr_FR"];
 	
 		public function DataModel(){
 			if (instance)

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" horizontalAlign="center"
+	xmlns:video="modules.videoPlayer.*"
+	backgroundAlpha="0.0">
+
+	<video:VideoPlayer id="VP" AutoPlay="true" VideoSource="cue_cuatro.flv" 
+		StreamSource="rtmp://localhost:1935/oflaDemo" width="590" height="393" />
+	
+</mx:Application>
