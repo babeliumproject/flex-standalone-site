@@ -8,6 +8,9 @@ package modules.videoPlayer.controls
 	import flash.geom.Rectangle;
 	
 	import mx.core.UIComponent;
+	import mx.effects.AnimateProperty;
+	import mx.events.EffectEvent;
+	import mx.controls.Alert;
 
 	public class ScrubberBar extends UIComponent
 	{
@@ -45,9 +48,39 @@ package modules.videoPlayer.controls
 		public function ScrubberBar()
 		{
 			super();
+			
+			_bar = new Sprite();
+			_progBar = new Sprite();
+			_loadedBar = new Sprite();
+			_scrubber = new Sprite();
+			_bg = new Sprite();
 		}
 		
 		
+		public function enableSeek(flag:Boolean) : void
+		{
+			_bar.useHandCursor = flag;
+			_bar.buttonMode = flag;
+			
+			_progBar.useHandCursor = flag;
+			_progBar.buttonMode = flag;
+			
+			_scrubber.useHandCursor = flag;
+			_scrubber.buttonMode = flag;
+			
+			if ( flag )
+			{
+				_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag );
+				_bar.addEventListener( MouseEvent.CLICK, onBarClick );
+				_progBar.addEventListener( MouseEvent.CLICK, onBarClick );
+			}
+			else
+			{
+				_scrubber.removeEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag );
+				_bar.removeEventListener( MouseEvent.CLICK, onBarClick );
+				_progBar.removeEventListener( MouseEvent.CLICK, onBarClick );
+			}
+		}
 		
 		
 		/**
@@ -66,43 +99,36 @@ package modules.videoPlayer.controls
 			if( width == 0 ) width = _barWidth + 10;
 			if( width > _barWidth ) _barWidth = width - 10;
 			
-			CreateBG( width, height );
+			createBG( _bg, width, height );
 			
 			this.graphics.clear();
 			
-			_bar = CreateBox( _barColor, _barWidth, _barHeight );
+			createBox( _bar, _barColor, _barWidth, _barHeight );
 			_bar.y = height/2 - _bar.height/2;
 			_bar.x = width/2 - _bar.width/2;
 			addChild( _bar );
 			
 			
-			_loadedBar = CreateBox( _loadedColor, 1, _barHeight );
+			createBox( _loadedBar, _loadedColor, 1, _barHeight );
 			_loadedBar.x = _bar.x;
 			_loadedBar.y = _bar.y;
 			addChild( _loadedBar );
 			
 			
-			_progBar = CreateBox( _progColor, 1, _barHeight );
+			createBox( _progBar, _progColor, 1, _barHeight );
 			_progBar.x = _bar.x;
 			_progBar.y = _bar.y;
 			addChild( _progBar );
 			
 			
-			_scrubber = CreateBox( _scrubberColor, _barHeight, _barHeight, true, 0xefefef );
+			createBox( _scrubber, _scrubberColor, _barHeight, _barHeight, true, 0xefefef );
 			_defaultX = _scrubber.x = _bar.x;
 			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;
-			_scrubber.useHandCursor = true;
-			_scrubber.buttonMode = true;
 			addChild( _scrubber );
 			
 			
 			_minX = _scrubber.x;
 			_maxX = _bar.x + _bar.width - _scrubber.width;
-			
-			_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag );
-			_bar.addEventListener( MouseEvent.CLICK, onBarClick );
-			_progBar.addEventListener( MouseEvent.CLICK, onBarClick );
-			
 		}
 		
 		private function onBarClick( e:MouseEvent ) : void
@@ -110,7 +136,28 @@ package modules.videoPlayer.controls
 			// This pauses video before seek
 			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DRAGGING ) );
 			
-			_scrubber.x = e.localX;
+			var _x:Number = mouseX;
+			
+			if( _x > ( _bar.x + _bar.width - _scrubber.width ) ) _x = _bar.x + _bar.width - _scrubber.width;
+			
+			var a1:AnimateProperty = new AnimateProperty();
+			a1.target = _scrubber;
+			a1.property = "x";
+			a1.toValue = _x;
+			a1.duration = 250;
+			a1.play();
+			a1.addEventListener( EffectEvent.EFFECT_END, scrubberChanged );
+			
+			var a2:AnimateProperty = new AnimateProperty();
+			a2.target = _progBar;
+			a2.property = "width";
+			a2.toValue = _x - _scrubber.width/2;
+			a2.duration = 250;
+			a2.play();
+		}
+		
+		private function scrubberChanged( e:EffectEvent = null ) : void
+		{
 			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DROPPED ) );
 		}
 		
@@ -147,21 +194,17 @@ package modules.videoPlayer.controls
 		
 		
 		
-		private function CreateBox( color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ):Sprite
+		private function createBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ):void
 		{
-			var b:Sprite = new Sprite();
 			b.graphics.beginFill( color as uint );
 			if( border ) b.graphics.lineStyle( borderSize, borderColor );
 			b.graphics.drawRect( 0, 0, bWidth, bHeight );
 			b.graphics.endFill();
-			
-			return b;
 		}
 		
 		
-		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
+		private function createBG( _bg:Sprite, bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg = new Sprite();
 			_bg.graphics.beginFill( 0x343434 );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
@@ -183,7 +226,7 @@ package modules.videoPlayer.controls
 		}
 		
 		
-		public function SeekPosition( duration:Number ):Number
+		public function seekPosition( duration:Number ):Number
 		{
 			return Math.floor( ( _scrubber.x / ( _bar.width - _scrubber.width ) ) * duration );
 		}

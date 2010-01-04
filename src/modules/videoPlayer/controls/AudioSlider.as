@@ -92,7 +92,7 @@ package modules.videoPlayer.controls
 		 */
 		
 		
-		public function get CurrentVolume( ):Number
+		public function getCurrentVolume( ):Number
 		{
 			return _currentVolume;
 		}

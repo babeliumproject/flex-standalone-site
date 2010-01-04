@@ -13,11 +13,13 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.StopButton;
 	import modules.videoPlayer.controls.SubtitleTextBox;
 	import modules.videoPlayer.controls.LocaleComboBox;
+	import modules.videoPlayer.controls.SubtitleButton;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
+	import modules.videoPlayer.events.SubtitleButtonEvent;
 	
 	import model.DataModel;
 	
@@ -33,10 +35,13 @@ package modules.videoPlayer
 	import flash.utils.Timer;
 	
 	import mx.controls.Alert;
+	import mx.containers.Panel;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.utils.ArrayUtil;
 	import mx.collections.ArrayCollection;
+	import mx.controls.Button;
+	import mx.effects.AnimateProperty;
 
 	public class VideoPlayer extends UIComponent
 	{
@@ -53,16 +58,20 @@ package modules.videoPlayer
 		
 		private var _videoSource:String = null;
 		private var _streamSource:String = null;
+		private var _state:String = null;
 		private var _autoPlay:Boolean = false;
 		private var _smooth:Boolean = true;
 		private var _currentTime:Number = 0;
 		private var _duration:Number = 0;
 		
+		private var _videoBarPanel:UIComponent;
 		private var _ppBtn:PlayButton;
 		private var _stopBtn:StopButton;
 		private var _sBar:ScrubberBar;
 		private var _eTime:ElapsedTime;
 		private var _audioSlider:AudioSlider;
+		private var _subtitleButton:SubtitleButton;
+		private var _subtitlePanel:UIComponent;
 		private var _subtitleBox:SubtitleTextBox;
 		private var _localeComboBox:LocaleComboBox;
 		
@@ -85,35 +94,44 @@ package modules.videoPlayer
 			
 			addChild( _videoWrapper );
 			
+			_videoBarPanel = new UIComponent();
+			
 			_ppBtn = new PlayButton();
 			_stopBtn = new StopButton();
 			
-			addChild( _ppBtn );
-			addChild( _stopBtn );
+			_videoBarPanel.addChild( _ppBtn );
+			_videoBarPanel.addChild( _stopBtn );
 			
 			_sBar = new ScrubberBar();
 			
-			addChild( _sBar );
+			_videoBarPanel.addChild( _sBar );
 			
 			_eTime = new ElapsedTime();
 			
-			addChild( _eTime );
-			
+			_videoBarPanel.addChild( _eTime );
 			
 			_audioSlider = new AudioSlider();
 			
-			addChild( _audioSlider );
+			_videoBarPanel.addChild( _audioSlider );
 			
+			_subtitleButton = new SubtitleButton(true);
+			
+			_videoBarPanel.addChild( _subtitleButton );
+			
+			_subtitlePanel = new UIComponent();
 			_subtitleBox = new SubtitleTextBox();
 			_subtitleBox.setText("PRUEBA DE SUBTITULOS");
 
-			addChild( _subtitleBox );
+			_subtitlePanel.addChild( _subtitleBox );
 			
 			_localeComboBox = new LocaleComboBox();
 			_localeComboBox.setDataProvider(new ArrayCollection(
 									ArrayUtil.toArray(DataModel.getInstance().locales)));
-			addChild( _localeComboBox );
+			_subtitlePanel.addChild( _localeComboBox );
 			
+			addChild( _subtitlePanel );
+			addChild(_videoBarPanel);
+			_subtitlePanel.visible = false;
 			
 			//Event Listeners
 			addEventListener( VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange );
@@ -121,9 +139,8 @@ package modules.videoPlayer
 			addEventListener( VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying );
 			_ppBtn.addEventListener( PlayPauseEvent.STATE_CHANGED, onPPBtnChanged );
 			_stopBtn.addEventListener( StopEvent.STOP_CLICK, onStopBtnClick );
-			_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped );
-			_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging );
 			_audioSlider.addEventListener( VolumeEvent.VOLUME_CHANGED, onVolumeChange );
+			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
 		}
 		
 		
@@ -178,6 +195,27 @@ package modules.videoPlayer
 			_subtitleBox.setText(text);
 		}
 		
+		public function set Subtitles(flag:Boolean) : void
+		{
+			_subtitlePanel.visible = flag;
+			_subtitleButton.setEnabled(flag);
+		}
+		
+		public function set enableSeek(flag:Boolean) : void
+		{
+			if ( flag )
+			{
+				_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped );
+				_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging );
+			}
+			else
+			{
+				_sBar.removeEventListener( ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped );
+				_sBar.removeEventListener( ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging );
+			}
+			
+			_sBar.enableSeek(flag);
+		}
 		
 		
 		
@@ -201,31 +239,34 @@ package modules.videoPlayer
 			
 			this.addChildAt( bg, 0 );
 			
+			var _y:Number = _subtitlePanel.visible ? 0 : 20;
 			
-			_ppBtn.y = this.height - _ppBtn.height;
+			_videoBarPanel.width = this.width;
+			_videoBarPanel.height = 20;
+			_videoBarPanel.y = this.height - 20 - _y;
+
 			_stopBtn.x = _ppBtn.x + _ppBtn.width;
-			_stopBtn.y = _ppBtn.y;
 			
-			_sBar.x = _stopBtn.x + _stopBtn.width;
-			_sBar.y = _stopBtn.y;
-			_sBar.width = 355;
+			_sBar.x = _stopBtn.x + _stopBtn.width;;
+			_sBar.width = 312;
 			
 			_eTime.x = _sBar.x + _sBar.width;
-			_eTime.y = _sBar.y;
-			
-			
+
 			_audioSlider.x = _eTime.x + _eTime.width;
-			_audioSlider.y = _eTime.y;
+			
+			_subtitleButton.x = _audioSlider.x + _audioSlider.width;
+			_subtitleButton.resize(this.width - _audioSlider.x - _audioSlider.width, 20);
 			
 			// Put subtitle box at top
+			_subtitlePanel.y = _videoBarPanel.y - 20;
+			_subtitlePanel.width = this.width;
+			_subtitlePanel.height = 20;
+
 			_subtitleBox.x = 0;
-			_subtitleBox.y = _ppBtn.y - 20;
 			_subtitleBox.resize(this.width - 100, 20);
 			
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
-			_localeComboBox.y = _subtitleBox.y;
 			_localeComboBox.resize(this.width - _subtitleBox.width, _subtitleBox.height);
-			
 		}
 		
 		
@@ -313,7 +354,7 @@ package modules.videoPlayer
 			_ns.addEventListener( NetStatusEvent.NET_STATUS, netStatus );
 			
 			_ns.client = this;
-			_ns.soundTransform = new SoundTransform( _audioSlider.CurrentVolume ); 
+			_ns.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() ); 
 			
 			_video.attachNetStream( _ns );
 			
@@ -398,7 +439,7 @@ package modules.videoPlayer
 		
 		public function onPPBtnChanged( e:PlayPauseEvent ):void
 		{
-			if( _ppBtn.State == "pause" )
+			if( _ppBtn.getState() == "pause" )
 			{
 				if( _ns )
 				{
@@ -429,7 +470,7 @@ package modules.videoPlayer
 			_sBar.updateProgress( _currentTime, _duration );
 			
 			// if not streaming show loading progress
-			if( !_streamSource ) _sBar.updateLoaded( Math.ceil( _ns.bytesLoaded / _ns.bytesTotal ) );
+			if( !_streamSource ) _sBar.updateLoaded(  _ns.bytesLoaded / _ns.bytesTotal );
 			
 			_eTime.updateElapsedTime( _currentTime, _duration );
 		}
@@ -440,8 +481,14 @@ package modules.videoPlayer
 			if( !_ns ) return;
 			
 			_timer.stop();
-			_ns.seek( _sBar.SeekPosition( _duration ) );
-			_ns.resume();
+			_ns.seek( _sBar.seekPosition( _duration ) );
+			
+			if ( _state == "pause" ) // before seek was playing, so resume video
+			{
+				_ppBtn.changeState();
+				_ns.resume();
+			}
+			
 			_timer.start();
 		}
 		
@@ -449,9 +496,48 @@ package modules.videoPlayer
 		{
 			if( !_ns ) return;
 			
-			_ns.pause();
+			_state = _ppBtn.getState();
+			
+			if ( _ppBtn.getState() == "pause" ) // do pause
+			{
+				_ppBtn.changeState();
+				_ns.pause();
+				_timer.stop();
+			}
 		}
 		
+		
+		private function onSubtitleButtonClicked( e:SubtitleButtonEvent ) : void
+		{
+			var _bState:String = e.state;
+			if ( _bState == "enabled" )
+				doShowSubtitlePanel();
+			else
+				doHideSubtitlePanel();
+			
+		}
+		
+		private function doShowSubtitlePanel() : void
+		{
+			_subtitlePanel.visible = true;
+			var a1:AnimateProperty = new AnimateProperty();
+			a1.target = _videoBarPanel;
+			a1.property = "y";
+			a1.toValue = _videoBarPanel.y + _videoBarPanel.height;
+			a1.duration = 250;
+			a1.play();
+		}
+		
+		private function doHideSubtitlePanel() : void
+		{
+			_subtitlePanel.visible = false;
+			var a1:AnimateProperty = new AnimateProperty();
+			a1.target = _videoBarPanel;
+			a1.property = "y";
+			a1.toValue = _subtitlePanel.y;
+			a1.duration = 250;
+			a1.play();
+		}
 		
 		
 		private function onVideoFinishedPlaying( e:Event ):void

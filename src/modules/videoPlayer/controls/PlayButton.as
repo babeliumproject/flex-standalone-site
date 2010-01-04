@@ -49,7 +49,7 @@ package modules.videoPlayer.controls
 			invalidateDisplayList();
 		}
 		
-		public function get State( ):String
+		public function getState( ):String
 		{
 			return _state;
 		}
@@ -139,6 +139,10 @@ package modules.videoPlayer.controls
 			bg.alpha = 1;
 		}
 		
+		public function changeState() : void
+		{
+			this.State = _state == "play" ? "pause" : "play";
+		}
 		
 		private function onClick( e:MouseEvent ):void
 		{
