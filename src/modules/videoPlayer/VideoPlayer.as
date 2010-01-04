@@ -20,6 +20,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
 	import modules.videoPlayer.events.SubtitleButtonEvent;
+	import modules.videoPlayer.events.SubtitleComboEvent;
 	
 	import model.DataModel;
 	
@@ -141,6 +142,7 @@ package modules.videoPlayer
 			_stopBtn.addEventListener( StopEvent.STOP_CLICK, onStopBtnClick );
 			_audioSlider.addEventListener( VolumeEvent.VOLUME_CHANGED, onVolumeChange );
 			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
+			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
 		}
 		
 		
@@ -201,7 +203,7 @@ package modules.videoPlayer
 			_subtitleButton.setEnabled(flag);
 		}
 		
-		public function set enableSeek(flag:Boolean) : void
+		public function set Seek(flag:Boolean) : void
 		{
 			if ( flag )
 			{
@@ -215,6 +217,11 @@ package modules.videoPlayer
 			}
 			
 			_sBar.enableSeek(flag);
+		}
+		
+		public function setLocales(locales:ArrayCollection) : void
+		{
+			_localeComboBox.setDataProvider(locales);
 		}
 		
 		
@@ -475,7 +482,9 @@ package modules.videoPlayer
 			_eTime.updateElapsedTime( _currentTime, _duration );
 		}
 		
-		
+		/**
+		 * Seek & Resume video when scrubber stops dragging
+		 */
 		private function onScrubberDropped( e:Event ):void
 		{
 			if( !_ns ) return;
@@ -485,13 +494,16 @@ package modules.videoPlayer
 			
 			if ( _state == "pause" ) // before seek was playing, so resume video
 			{
-				_ppBtn.changeState();
+				_ppBtn.State = "play";
 				_ns.resume();
 			}
 			
 			_timer.start();
 		}
 		
+		/**
+		 * Pauses video when scrubber starts dragging
+		 **/
 		private function onScrubberDragging( e:Event ) : void
 		{
 			if( !_ns ) return;
@@ -500,23 +512,26 @@ package modules.videoPlayer
 			
 			if ( _ppBtn.getState() == "pause" ) // do pause
 			{
-				_ppBtn.changeState();
+				_ppBtn.State = "play";
 				_ns.pause();
 				_timer.stop();
 			}
 		}
 		
-		
+		/**
+		 * Catch event and do show/hide subtitle panel
+		 */
 		private function onSubtitleButtonClicked( e:SubtitleButtonEvent ) : void
 		{
-			var _bState:String = e.state;
-			if ( _bState == "enabled" )
+			if ( e.state == "enabled" )
 				doShowSubtitlePanel();
 			else
 				doHideSubtitlePanel();
-			
 		}
 		
+		/**
+		 * Subtitle Panel's show animation
+		 */
 		private function doShowSubtitlePanel() : void
 		{
 			_subtitlePanel.visible = true;
@@ -528,6 +543,9 @@ package modules.videoPlayer
 			a1.play();
 		}
 		
+		/**
+		 * Subtitle Panel's hide animation
+		 */
 		private function doHideSubtitlePanel() : void
 		{
 			_subtitlePanel.visible = false;
@@ -537,6 +555,12 @@ package modules.videoPlayer
 			a1.toValue = _subtitlePanel.y;
 			a1.duration = 250;
 			a1.play();
+		}
+		
+		// This gives the event to parent component
+		private function onLocaleChanged(e:SubtitleComboEvent) : void
+		{
+			this.dispatchEvent(e);
 		}
 		
 		

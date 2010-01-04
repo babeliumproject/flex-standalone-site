@@ -1,9 +1,12 @@
 package modules.videoPlayer.controls
 {
+	import modules.videoPlayer.events.SubtitleComboEvent;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.ComboBox;
 	import mx.core.UIComponent;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	
 	public class LocaleComboBox extends UIComponent
 	{
@@ -18,6 +21,9 @@ package modules.videoPlayer.controls
 		{
 			super();
 
+			_languageBox = new ComboBox();
+			_languageBox.addEventListener(Event.CHANGE, onChange);
+
 			resize(_boxWidth, _boxHeight);
 		}
 		
@@ -30,14 +36,17 @@ package modules.videoPlayer.controls
 			
 			CreateBG( width, height );
 			
-			if ( _languageBox == null )
-				_languageBox = new ComboBox();
-			
 			_languageBox.x = 2;
 			_languageBox.y = 2;
 			_languageBox.width = width-5;
 			_languageBox.height = height-5;
 			addChild( _languageBox );
+		}
+		
+		private function onChange(e:Event) : void
+		{
+			this.dispatchEvent(new SubtitleComboEvent(SubtitleComboEvent.SELECTED_CHANGED,
+										_languageBox.selectedIndex));
 		}
 		
 		public function setDataProvider(dataProvider:ArrayCollection) : void

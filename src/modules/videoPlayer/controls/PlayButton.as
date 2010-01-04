@@ -139,11 +139,6 @@ package modules.videoPlayer.controls
 			bg.alpha = 1;
 		}
 		
-		public function changeState() : void
-		{
-			this.State = _state == "play" ? "pause" : "play";
-		}
-		
 		private function onClick( e:MouseEvent ):void
 		{
 			trace( "play/pause btn pressed" );
