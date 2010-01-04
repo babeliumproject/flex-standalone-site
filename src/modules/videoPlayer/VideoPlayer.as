@@ -122,6 +122,7 @@ package modules.videoPlayer
 			_ppBtn.addEventListener( PlayPauseEvent.STATE_CHANGED, onPPBtnChanged );
 			_stopBtn.addEventListener( StopEvent.STOP_CLICK, onStopBtnClick );
 			_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped );
+			_sBar.addEventListener( ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging );
 			_audioSlider.addEventListener( VolumeEvent.VOLUME_CHANGED, onVolumeChange );
 		}
 		
@@ -439,10 +440,16 @@ package modules.videoPlayer
 			if( !_ns ) return;
 			
 			_timer.stop();
-			
 			_ns.seek( _sBar.SeekPosition( _duration ) );
-			
+			_ns.resume();
 			_timer.start();
+		}
+		
+		private function onScrubberDragging( e:Event ) : void
+		{
+			if( !_ns ) return;
+			
+			_ns.pause();
 		}
 		
 		

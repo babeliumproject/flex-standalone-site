@@ -100,13 +100,25 @@ package modules.videoPlayer.controls
 			_maxX = _bar.x + _bar.width - _scrubber.width;
 			
 			_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag );
+			_bar.addEventListener( MouseEvent.CLICK, onBarClick );
+			_progBar.addEventListener( MouseEvent.CLICK, onBarClick );
 			
+		}
+		
+		private function onBarClick( e:MouseEvent ) : void
+		{
+			// This pauses video before seek
+			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DRAGGING ) );
+			
+			_scrubber.x = e.localX;
+			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DROPPED ) );
 		}
 		
 		
 		private function onScrubberDrag( e:MouseEvent ):void
 		{
 			_dragging = true;
+			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DRAGGING ) );
 			this.parentApplication.addEventListener( MouseEvent.MOUSE_UP, onScrubberStopDrag );
 			_scrubber.startDrag( false, new Rectangle( _bar.x, _defaultY, ( _bar.width - _scrubber.width ), 0 ) );
 			
