@@ -65,7 +65,11 @@ package modules.videoPlayer
 		private var _smooth:Boolean = true;
 		private var _currentTime:Number = 0;
 		private var _duration:Number = 0;
+		private var _autoScale:Boolean = true;
+		private var _defaultMargin:Number = 5;
 		
+		private var _bg:Sprite;
+		private var _bgVideo:Sprite;
 		private var _videoBarPanel:UIComponent;
 		private var _ppBtn:PlayButton;
 		private var _stopBtn:StopButton;
@@ -78,24 +82,30 @@ package modules.videoPlayer
 		private var _localeComboBox:LocaleComboBox;
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
-		private var _bg:Sprite;
+		private var _bgArrow:Sprite;
+		private const _videoHeight:Number = 300;
 		
 		private var _timer:Timer;
 		
 		
 		public function VideoPlayer()
 		{
-			super();		
+			super();
 			
-			this.height += 40;				
+			_bg = new Sprite();
+			addChild(_bg);
+			
+			_bgVideo = new Sprite();
+			addChild(_bgVideo);
 			
 			_video = new Video();
-			_video.width = width;
-			_video.height = height;
+			_video.width = width - _defaultMargin*2;
+			_video.height = height - _defaultMargin*2;
 			_video.smoothing = _smooth;
 			
 			_videoWrapper = new MovieClip();
-			_videoWrapper.addChild( _video );
+			_videoWrapper.addChild(_video);
+			_videoWrapper.height = _videoHeight;
 			
 			addChild( _videoWrapper );
 			
@@ -135,9 +145,9 @@ package modules.videoPlayer
 			
 			_arrowContainer = new UIComponent();
 			
-			_bg = new Sprite();
+			_bgArrow = new Sprite();
 			
-			_arrowContainer.addChild(_bg);
+			_arrowContainer.addChild(_bgArrow);
 			_arrowPanel = new ArrowPanel();
 			_arrowContainer.visible = false;
 			_arrowContainer.addChild(_arrowPanel);
@@ -230,6 +240,11 @@ package modules.videoPlayer
 		{
 			_arrowContainer.visible = flag;
 		}
+		
+		public function set AutoScale(flag:Boolean) : void
+		{
+			_autoScale = flag;
+		}
 
 		public function set Seek(flag:Boolean) : void
 		{
@@ -266,27 +281,29 @@ package modules.videoPlayer
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
 			this.graphics.clear();
+
+			_bgVideo.graphics.beginFill( 0x000000 );
+			_bgVideo.graphics.drawRoundRect( _defaultMargin, _defaultMargin, 
+												width - _defaultMargin*2, 
+												_videoHeight,
+												5, 5 );
+			_bgVideo.graphics.endFill();
 			
-			var bg:Sprite = new Sprite();
-			bg.graphics.beginFill( 0x000000 );
-			bg.graphics.drawRect( 0, 0, this.width, this.height-20 );
-			bg.graphics.endFill();
-			
-			this.addChildAt( bg, 0 );
-			
-			var y1:Number = _subtitlePanel.visible ? 0 : 20;
-			var y2:Number = _arrowContainer.visible ? 50 : 0;
-			
-			_videoBarPanel.width = this.width;
+			_videoBarPanel.width = width - _defaultMargin*2;
 			_videoBarPanel.height = 20;
-			_videoBarPanel.y = this.height - 20 - y1 + y2;
+			_videoBarPanel.y = height - _videoBarPanel.height - _defaultMargin;
+			_videoBarPanel.x = _defaultMargin;
 			
-			_arrowContainer.width = this.width;
+			_arrowContainer.width = _videoBarPanel.width;
 			_arrowContainer.height = 50;
 			_arrowContainer.y = _videoBarPanel.y - 50;
-			_bg.graphics.beginFill( 0x454545 );
-			_bg.graphics.drawRect( 0, 0, this.width, 50 );
-			_bg.graphics.endFill();
+			_arrowContainer.x = _defaultMargin;
+			_bgArrow.graphics.beginFill( 0x000000 );
+			_bgArrow.graphics.drawRect( 0, 0, _arrowContainer.width, _arrowContainer.height );
+			_bgArrow.graphics.endFill();
+			_bgArrow.graphics.beginFill( 0x454545 );
+			_bgArrow.graphics.drawRect( 1, 1, _arrowContainer.width-2, _arrowContainer.height-2 );
+			_bgArrow.graphics.endFill();
 
 			_stopBtn.x = _ppBtn.x + _ppBtn.width;
 			
@@ -298,14 +315,15 @@ package modules.videoPlayer
 			_audioSlider.x = _eTime.x + _eTime.width;
 			
 			_subtitleButton.x = _audioSlider.x + _audioSlider.width;
-			_subtitleButton.resize(this.width - _audioSlider.x - _audioSlider.width, 20);
+			_subtitleButton.resize(this.width - _audioSlider.x - _audioSlider.width - 2*_defaultMargin, 20);
 			
 			// Put subtitle box at top
+			var y2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
 			_subtitlePanel.y = _videoBarPanel.y - 20 - y2;
-			_subtitlePanel.width = this.width;
+			_subtitlePanel.width = _videoBarPanel.width;
 			_subtitlePanel.height = 20;
+			_subtitlePanel.x = _defaultMargin;
 
-			_subtitleBox.x = 0;
 			_subtitleBox.resize(this.width - 100, 20);
 			
 			// Resize arrowPanel
@@ -314,7 +332,29 @@ package modules.videoPlayer
 			_arrowPanel.y = 4;
 			
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
-			_localeComboBox.resize(this.width - _subtitleBox.width, _subtitleBox.height);
+			_localeComboBox.resize(this.width - _subtitleBox.width - 2*_defaultMargin, _subtitleBox.height);
+			
+			
+			drawBG();
+		}
+		
+		private function drawBG() : void
+		{
+			/**
+			 * Recalculate height
+			 */
+			var h1:Number = _subtitlePanel.visible? _subtitlePanel.height : 0;
+			var h2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
+			height = _defaultMargin*2 + _videoWrapper.height + h1 + h2;
+
+			_bg.graphics.clear();
+
+			_bg.graphics.beginFill( 0x000000 );
+			_bg.graphics.drawRoundRect( 0, 0, width, height, 15, 15 );
+			_bg.graphics.endFill();
+			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.drawRoundRect( 3, 3, width-6, height-6, 12, 12 );
+			_bg.graphics.endFill();
 		}
 		
 		
@@ -458,21 +498,27 @@ package modules.videoPlayer
 			for ( var a:* in msg ) trace( a + " : " + msg[a] );
 			
 			_duration = msg.duration;
-			
 			_video.width = msg["width"];
 			_video.height = msg["height"];
-			
-			_videoWrapper.width = this.width;
-			_videoWrapper.height = this.height - 40;
 			
 			this.dispatchEvent(new VideoPlayerEvent(
 									VideoPlayerEvent.METADATA_RETRIEVED));
 			
-			/* AUTOSCALE
-			 *_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
-			 *_video.x = this.width/2 - (_video.width * _videoWrapper.scaleX)/2;
-			 *_video.y = this.height/2 - (_video.height * _videoWrapper.scaleY)/2 - 10;
-			 */
+			_videoWrapper.width = width - _defaultMargin*2;
+			_videoWrapper.height = _videoHeight;
+			// Dont remove this lines
+			var w:Number = _videoWrapper.width;
+			var h:Number = _videoWrapper.height;
+			_videoWrapper.x = _defaultMargin;
+			_videoWrapper.y = _defaultMargin;
+			drawBG();
+
+			if ( !_autoScale )
+			{
+				_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
+				_video.x = w/2 - (_video.width * _videoWrapper.scaleX)/2;
+				_video.y = h/2 - (_video.height * _videoWrapper.scaleY)/2;
+			}
 		}
 		
 		
@@ -592,6 +638,8 @@ package modules.videoPlayer
 			a2.toValue = _arrowContainer.y + _subtitlePanel.height;
 			a2.duration = 250;
 			a2.play();
+			
+			drawBG(); // Repaint bg
 		}
 		
 		/**
@@ -613,6 +661,8 @@ package modules.videoPlayer
 			a2.toValue = _arrowContainer.y - _subtitlePanel.height;
 			a2.duration = 250;
 			a2.play();
+			
+			drawBG(); // Repaint bg
 		}
 		
 		// This gives the event to parent component

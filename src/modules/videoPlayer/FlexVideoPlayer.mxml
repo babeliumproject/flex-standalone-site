@@ -5,8 +5,9 @@
 	backgroundAlpha="0.0"
 	creationComplete="init()">
 
-	<video:VideoPlayer id="VP" Subtitles="true" Arrows="true" Seek="true" AutoPlay="true" VideoSource="cue_cuatro.flv" 
-		StreamSource="rtmp://localhost:1935/oflaDemo" width="590" height="393" />
+	<video:VideoPlayer id="VP" Subtitles="true" Arrows="true" Seek="true" 
+		AutoScale="true" AutoPlay="true" VideoSource="cue_cuatro.flv" 
+		StreamSource="rtmp://localhost:1935/oflaDemo" width="600" height="393" />
 	
 	<mx:Script>
 		<![CDATA[

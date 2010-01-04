@@ -18,6 +18,9 @@ package modules.videoPlayer.controls
 		{
 			super();
 
+			_textBox = new Text();
+			_textBox.setStyle("textAlign", "center");
+
 			resize(_boxWidth, _boxHeight);
 		}
 		
@@ -30,13 +33,10 @@ package modules.videoPlayer.controls
 			
 			CreateBG( width, height );
 			
-			_box = CreateBox( _boxColor, width-5, height-5 );
+			_box = CreateBox( _boxColor, width-5, height-5, true, 0x00000 );
 			_box.x = width/2 - _box.width/2;
 			_box.y = height/2 - _box.height/2;
 			addChild( _box );
-			
-			if ( _textBox == null )
-				_textBox = new Text();
 			
 			_textBox.x = _box.x;
 			_textBox.y = _box.y;
@@ -61,7 +61,7 @@ package modules.videoPlayer.controls
 			_bg.graphics.beginFill( 0x343434 );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
-			addChild(_bg);
+			addChildAt(_bg, 0);
 			
 		}
 		
