@@ -14,6 +14,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.SubtitleTextBox;
 	import modules.videoPlayer.controls.LocaleComboBox;
 	import modules.videoPlayer.controls.SubtitleButton;
+	import modules.videoPlayer.controls.ArrowPanel;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
@@ -75,6 +76,9 @@ package modules.videoPlayer
 		private var _subtitlePanel:UIComponent;
 		private var _subtitleBox:SubtitleTextBox;
 		private var _localeComboBox:LocaleComboBox;
+		private var _arrowContainer:UIComponent;
+		private var _arrowPanel:ArrowPanel;
+		private var _bg:Sprite;
 		
 		private var _timer:Timer;
 		
@@ -120,19 +124,27 @@ package modules.videoPlayer
 			_videoBarPanel.addChild( _subtitleButton );
 			
 			_subtitlePanel = new UIComponent();
+			_subtitlePanel.visible = false;
 			_subtitleBox = new SubtitleTextBox();
 			_subtitleBox.setText("PRUEBA DE SUBTITULOS");
-
 			_subtitlePanel.addChild( _subtitleBox );
-			
 			_localeComboBox = new LocaleComboBox();
 			_localeComboBox.setDataProvider(new ArrayCollection(
 									ArrayUtil.toArray(DataModel.getInstance().locales)));
 			_subtitlePanel.addChild( _localeComboBox );
 			
-			addChild( _subtitlePanel );
+			_arrowContainer = new UIComponent();
+			
+			_bg = new Sprite();
+			
+			_arrowContainer.addChild(_bg);
+			_arrowPanel = new ArrowPanel();
+			_arrowContainer.visible = false;
+			_arrowContainer.addChild(_arrowPanel);
+			
+			addChild(_subtitlePanel);
+			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
-			_subtitlePanel.visible = false;
 			
 			//Event Listeners
 			addEventListener( VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange );
@@ -203,6 +215,22 @@ package modules.videoPlayer
 			_subtitleButton.setEnabled(flag);
 		}
 		
+		public function setArrows(arrows:Array, role:String) : void
+		{
+			_arrowPanel.setArrows(arrows, _duration, role);
+		}
+		
+		public function removeArrows() : void
+		{
+			_arrowPanel.removeArrows();
+		}
+		
+		
+		public function set Arrows(flag:Boolean) : void
+		{
+			_arrowContainer.visible = flag;
+		}
+
 		public function set Seek(flag:Boolean) : void
 		{
 			if ( flag )
@@ -246,11 +274,19 @@ package modules.videoPlayer
 			
 			this.addChildAt( bg, 0 );
 			
-			var _y:Number = _subtitlePanel.visible ? 0 : 20;
+			var y1:Number = _subtitlePanel.visible ? 0 : 20;
+			var y2:Number = _arrowContainer.visible ? 50 : 0;
 			
 			_videoBarPanel.width = this.width;
 			_videoBarPanel.height = 20;
-			_videoBarPanel.y = this.height - 20 - _y;
+			_videoBarPanel.y = this.height - 20 - y1 + y2;
+			
+			_arrowContainer.width = this.width;
+			_arrowContainer.height = 50;
+			_arrowContainer.y = _videoBarPanel.y - 50;
+			_bg.graphics.beginFill( 0x454545 );
+			_bg.graphics.drawRect( 0, 0, this.width, 50 );
+			_bg.graphics.endFill();
 
 			_stopBtn.x = _ppBtn.x + _ppBtn.width;
 			
@@ -265,12 +301,17 @@ package modules.videoPlayer
 			_subtitleButton.resize(this.width - _audioSlider.x - _audioSlider.width, 20);
 			
 			// Put subtitle box at top
-			_subtitlePanel.y = _videoBarPanel.y - 20;
+			_subtitlePanel.y = _videoBarPanel.y - 20 - y2;
 			_subtitlePanel.width = this.width;
 			_subtitlePanel.height = 20;
 
 			_subtitleBox.x = 0;
 			_subtitleBox.resize(this.width - 100, 20);
+			
+			// Resize arrowPanel
+			_arrowPanel.resize(_sBar.width, _arrowContainer.height - 8);
+			_arrowPanel.x = _sBar.x;
+			_arrowPanel.y = 4;
 			
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
 			_localeComboBox.resize(this.width - _subtitleBox.width, _subtitleBox.height);
@@ -424,6 +465,9 @@ package modules.videoPlayer
 			_videoWrapper.width = this.width;
 			_videoWrapper.height = this.height - 40;
 			
+			this.dispatchEvent(new VideoPlayerEvent(
+									VideoPlayerEvent.METADATA_RETRIEVED));
+			
 			/* AUTOSCALE
 			 *_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
 			 *_video.x = this.width/2 - (_video.width * _videoWrapper.scaleX)/2;
@@ -538,9 +582,16 @@ package modules.videoPlayer
 			var a1:AnimateProperty = new AnimateProperty();
 			a1.target = _videoBarPanel;
 			a1.property = "y";
-			a1.toValue = _videoBarPanel.y + _videoBarPanel.height;
+			a1.toValue = _videoBarPanel.y + _subtitlePanel.height;
 			a1.duration = 250;
 			a1.play();
+			
+			var a2:AnimateProperty = new AnimateProperty();
+			a2.target = _arrowContainer;
+			a2.property = "y";
+			a2.toValue = _arrowContainer.y + _subtitlePanel.height;
+			a2.duration = 250;
+			a2.play();
 		}
 		
 		/**
@@ -552,9 +603,16 @@ package modules.videoPlayer
 			var a1:AnimateProperty = new AnimateProperty();
 			a1.target = _videoBarPanel;
 			a1.property = "y";
-			a1.toValue = _subtitlePanel.y;
+			a1.toValue = _videoBarPanel.y - _subtitlePanel.height;
 			a1.duration = 250;
 			a1.play();
+			
+			var a2:AnimateProperty = new AnimateProperty();
+			a2.target = _arrowContainer;
+			a2.property = "y";
+			a2.toValue = _arrowContainer.y - _subtitlePanel.height;
+			a2.duration = 250;
+			a2.play();
 		}
 		
 		// This gives the event to parent component

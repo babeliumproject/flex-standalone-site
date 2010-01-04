@@ -2,9 +2,57 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
 	layout="vertical" horizontalAlign="center"
 	xmlns:video="modules.videoPlayer.*"
-	backgroundAlpha="0.0">
+	backgroundAlpha="0.0"
+	creationComplete="init()">
 
-	<video:VideoPlayer id="VP" Subtitles="true" Seek="true" AutoPlay="true" VideoSource="cue_cuatro.flv" 
+	<video:VideoPlayer id="VP" Subtitles="true" Arrows="true" Seek="true" AutoPlay="true" VideoSource="cue_cuatro.flv" 
 		StreamSource="rtmp://localhost:1935/oflaDemo" width="590" height="393" />
+	
+	<mx:Script>
+		<![CDATA[
+			import modules.videoPlayer.events.VideoPlayerEvent;
+			import mx.controls.Alert;
+			import vo.SubtitleLineVO;
+			import vo.SubtitleVO;
+			import events.SubtitleEvent;
+			import model.DataModel;
+			
+			private var arrows:Array = new Array();
+			private var role:String;
+			
+			public function init() : void
+			{
+				var subtitle:SubtitleVO = new SubtitleVO();
+				subtitle.exerciseId = 2;
+				subtitle.language = "Spanish";
+				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, subtitle).dispatch();
+				
+				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadata);
+			}
+			
+			public function set onSubtitleRetrieved(flag:Boolean) : void
+			{
+
+				for each ( var sub:SubtitleLineVO in DataModel.getInstance().subtitleDp )
+				{
+					var tmp:Array = new Array();
+					tmp[0] = sub.showTime;
+					tmp[1] = sub.role;
+					if ( role == null )
+						role = sub.role;
+					arrows.push(tmp);
+				}
+			}
+			
+			public function onMetadata(e:Event) : void
+			{
+				VP.setArrows(arrows, role);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Binding source="DataModel.getInstance().subtitleDp != null"
+				destination="onSubtitleRetrieved" />
 	
 </mx:Application>
