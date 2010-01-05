@@ -125,53 +125,58 @@ package modules.videoPlayer
 		 * 
 		 */
 		[Bindable]
-		public function set VideoSource( location:String ):void
+		public function set videoSource( location:String ):void
 		{
 			_videoSource = location;	
 			dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_SOURCE_CHANGED ) );	
 		}
 		
-		public function get VideoSource( ):String
+		public function get videoSource( ):String
 		{
 			return _videoSource;
 		}
 		
-		public function set StreamSource( location:String ):void
+		public function set streamSource( location:String ):void
 		{
 			_streamSource = location;
 		}
 		
-		public function get StreamSource( ):String
+		public function get streamSource( ):String
 		{
 			return _streamSource;
 		}
 		
-		public function set AutoPlay( tf:Boolean ):void
+		public function set autoPlay( tf:Boolean ):void
 		{
 			_autoPlay = tf;
 		}
 		
-		public function get AutoPlay( ):Boolean
+		public function get autoPlay( ):Boolean
 		{
 			return _autoPlay;
 		}
 		
-		public function set VideoSmooting( tf:Boolean ):void
+		public function set videoSmooting( tf:Boolean ):void
 		{
 			_autoPlay = _smooth;
 		}
 		
-		public function get VideoSmooting( ):Boolean
+		public function get videoSmooting( ):Boolean
 		{
 			return _smooth;
 		}		
 		
-		public function set AutoScale(flag:Boolean) : void
+		public function set autoScale(flag:Boolean) : void
 		{
 			_autoScale = flag;
 		}
+		
+		public function get autoScale() : Boolean
+		{
+			return _autoScale;
+		}
 
-		public function set Seek(flag:Boolean) : void
+		public function set seek(flag:Boolean) : void
 		{
 			if ( flag )
 			{
@@ -414,7 +419,7 @@ package modules.videoPlayer
 			_videoWrapper.y = _defaultMargin;
 			drawBG();
 
-			if ( !_autoScale )
+			if ( !autoScale )
 			{
 				_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
 				_video.x = _videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2;
@@ -475,6 +480,7 @@ package modules.videoPlayer
 		
 		/**
 		 * Seek & Resume video when scrubber stops dragging
+		 * or when progress bar has been clicked
 		 */
 		private function onScrubberDropped( e:Event ):void
 		{

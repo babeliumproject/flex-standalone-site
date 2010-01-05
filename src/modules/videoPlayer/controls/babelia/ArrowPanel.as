@@ -13,7 +13,6 @@ package modules.videoPlayer.controls.babelia
 		private var _dataProvider:ArrayCollection;
 		private var _boxWidth:Number = 500;
 		private var _boxHeight:Number = 50;
-		private var _defaultHeight:Number = 20;
 		
 		public function ArrowPanel(state:Boolean = false)
 		{

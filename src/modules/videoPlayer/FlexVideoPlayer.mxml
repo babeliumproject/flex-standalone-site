@@ -5,9 +5,9 @@
 	backgroundAlpha="0.0"
 	creationComplete="init()">
 
-	<video:VideoPlayerBabelia id="VP" Subtitles="true" Arrows="false" Seek="true" 
-		AutoScale="false" AutoPlay="true" VideoSource="cue_cuatro.flv" 
-		StreamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
+	<video:VideoPlayerBabelia id="VP" subtitles="true" arrows="true" seek="true" 
+		autoScale="false" autoPlay="true" videoSource="cue_cuatro.flv" 
+		streamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
 	
 	<mx:Script>
 		<![CDATA[
@@ -43,9 +43,13 @@
 				}
 			}
 			
+			/**
+			 * TODO: This method only test our new features
+			 */
 			public function onMetadata(e:Event) : void
 			{
 				VP.setArrows(arrows, role);
+				VP.startTalking("prueba_rol", 3);
 			}
 			
 		]]>

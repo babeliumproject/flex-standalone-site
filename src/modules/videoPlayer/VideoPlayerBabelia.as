@@ -1,7 +1,7 @@
 /**
  * NOTES
  * 
- * Player needs a way to tell if a video exsists when streaming video.
+ * If seek is enabled arrows must be disabled
  */
 
 package modules.videoPlayer
@@ -10,6 +10,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.LocaleComboBox;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
+	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
 	import modules.videoPlayer.VideoPlayer;
@@ -36,6 +37,7 @@ package modules.videoPlayer
 		private var _localeComboBox:LocaleComboBox;
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
+		private var _roleTalkingPanel:RoleTalkingPanel;
 		private var _bgArrow:Sprite;
 		
 		
@@ -60,8 +62,11 @@ package modules.videoPlayer
 			
 			_arrowContainer.addChild(_bgArrow);
 			_arrowPanel = new ArrowPanel();
+			_roleTalkingPanel = new RoleTalkingPanel();
+			
 			_arrowContainer.visible = false;
 			_arrowContainer.addChild(_arrowPanel);
+			_arrowContainer.addChild(_roleTalkingPanel);
 			
 			removeChild(_videoBarPanel);
 			addChild(_subtitlePanel);
@@ -83,7 +88,7 @@ package modules.videoPlayer
 			_subtitleBox.setText(text);
 		}
 		
-		public function set Subtitles(flag:Boolean) : void
+		public function set subtitles(flag:Boolean) : void
 		{
 			_subtitlePanel.visible = flag;
 			_subtitleButton.setEnabled(flag);
@@ -105,7 +110,7 @@ package modules.videoPlayer
 		}
 		
 		
-		public function set Arrows(flag:Boolean) : void
+		public function set arrows(flag:Boolean) : void
 		{
 			_arrowContainer.visible = flag;
 		}
@@ -115,7 +120,11 @@ package modules.videoPlayer
 			_localeComboBox.setDataProvider(locales);
 		}
 		
-		
+		public function startTalking(role:String, duration:Number) : void
+		{
+			if ( !_roleTalkingPanel.talking )
+				_roleTalkingPanel.setTalking(role, duration);
+		}
 		
 		/**
 		 * Methods
@@ -135,8 +144,8 @@ package modules.videoPlayer
 			
 			_arrowContainer.width = _videoBarPanel.width;
 			_arrowContainer.height = 50;
-			_arrowContainer.y = _videoBarPanel.y - 50;
-			_arrowContainer.x = _defaultMargin;
+			_arrowContainer.y = _videoBarPanel.y - _arrowContainer.height;
+			_arrowContainer.x = _defaultMargin;			
 			_bgArrow.graphics.beginFill( 0x000000 );
 			_bgArrow.graphics.drawRect( 0, 0, _arrowContainer.width, _arrowContainer.height );
 			_bgArrow.graphics.endFill();
@@ -161,8 +170,14 @@ package modules.videoPlayer
 			_arrowPanel.x = _sBar.x;
 			_arrowPanel.y = 4;
 			
+			// Resize RolePanel
+			_roleTalkingPanel.resize( _videoWidth - _defaultMargin*6 - _arrowPanel.width - _arrowPanel.x,
+										 _arrowPanel.height);
+			_roleTalkingPanel.x = _arrowPanel.x + _arrowPanel.width + _defaultMargin*3;
+			_roleTalkingPanel.y = 4;
+			
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
-			_localeComboBox.resize(this.width - _subtitleBox.width - 2*_defaultMargin, _subtitleBox.height);
+			_localeComboBox.resize(_videoWidth - _subtitleBox.width, _subtitleBox.height);
 			
 			
 			drawBG();
@@ -185,6 +200,39 @@ package modules.videoPlayer
 			_bg.graphics.beginFill( 0x343434 );
 			_bg.graphics.drawRoundRect( 3, 3, width-6, height-6, 12, 12 );
 			_bg.graphics.endFill();
+		}
+		
+		/**
+		 * Pauses talk if any role is talking
+		 */
+		override public function pauseVideo() : void
+		{
+			super.pauseVideo();
+			
+			if ( _roleTalkingPanel.talking )
+				_roleTalkingPanel.pauseTalk();
+		}
+		
+		/**
+		 * Resumes talk if any role is talking
+		 */
+		override public function resumeVideo() : void
+		{
+			super.resumeVideo();
+			
+			if ( _roleTalkingPanel.talking )
+				_roleTalkingPanel.resumeTalk();
+		}
+		
+		/**
+		 * Stops talk if any role is talking
+		 */
+		override public function stopVideo() : void
+		{
+			super.stopVideo();
+			
+			if ( _roleTalkingPanel.talking )
+				_roleTalkingPanel.stopTalk();
 		}
 		
 		/**
