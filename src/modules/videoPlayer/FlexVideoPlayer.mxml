@@ -5,7 +5,7 @@
 	backgroundAlpha="0.0"
 	creationComplete="init()">
 
-	<video:VideoPlayerBabelia id="VP" Subtitles="true" Arrows="true" Seek="true" 
+	<video:VideoPlayerBabelia id="VP" Subtitles="true" Arrows="false" Seek="true" 
 		AutoScale="false" AutoPlay="true" VideoSource="cue_cuatro.flv" 
 		StreamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
 	

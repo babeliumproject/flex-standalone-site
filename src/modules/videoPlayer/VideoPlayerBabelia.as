@@ -15,10 +15,12 @@ package modules.videoPlayer
 	import modules.videoPlayer.VideoPlayer;
 	
 	import flash.display.Sprite;
+	import flash.events.Event;
 
 	import mx.core.UIComponent;
 	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
+	import mx.events.EffectEvent;
 
 	public class VideoPlayerBabelia extends VideoPlayer
 	{
@@ -61,8 +63,10 @@ package modules.videoPlayer
 			_arrowContainer.visible = false;
 			_arrowContainer.addChild(_arrowPanel);
 			
+			removeChild(_videoBarPanel);
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
+			addChild(_videoBarPanel);
 			
 			//Event Listeners
 			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
@@ -201,18 +205,25 @@ package modules.videoPlayer
 		{
 			_subtitlePanel.visible = true;
 			var a1:AnimateProperty = new AnimateProperty();
-			a1.target = _videoBarPanel;
-			a1.property = "y";
-			a1.toValue = _videoBarPanel.y + _subtitlePanel.height;
+			a1.target = _subtitlePanel;
+			a1.property = "alpha";
+			a1.toValue = 1;
 			a1.duration = 250;
 			a1.play();
 			
 			var a2:AnimateProperty = new AnimateProperty();
-			a2.target = _arrowContainer;
+			a2.target = _videoBarPanel;
 			a2.property = "y";
-			a2.toValue = _arrowContainer.y + _subtitlePanel.height;
+			a2.toValue = _videoBarPanel.y + _subtitlePanel.height;
 			a2.duration = 250;
 			a2.play();
+			
+			var a3:AnimateProperty = new AnimateProperty();
+			a3.target = _arrowContainer;
+			a3.property = "y";
+			a3.toValue = _arrowContainer.y + _subtitlePanel.height;
+			a3.duration = 250;
+			a3.play();
 			
 			this.drawBG(); // Repaint bg
 		}
@@ -222,21 +233,32 @@ package modules.videoPlayer
 		 */
 		private function doHideSubtitlePanel() : void
 		{
-			_subtitlePanel.visible = false;
 			var a1:AnimateProperty = new AnimateProperty();
-			a1.target = _videoBarPanel;
-			a1.property = "y";
-			a1.toValue = _videoBarPanel.y - _subtitlePanel.height;
+			a1.target = _subtitlePanel;
+			a1.property = "alpha";
+			a1.toValue = 0;
 			a1.duration = 250;
 			a1.play();
+			a1.addEventListener( EffectEvent.EFFECT_END, onHideSubtitleBar );
 			
 			var a2:AnimateProperty = new AnimateProperty();
-			a2.target = _arrowContainer;
+			a2.target = _videoBarPanel;
 			a2.property = "y";
-			a2.toValue = _arrowContainer.y - _subtitlePanel.height;
+			a2.toValue = _videoBarPanel.y - _subtitlePanel.height;
 			a2.duration = 250;
 			a2.play();
 			
+			var a3:AnimateProperty = new AnimateProperty();
+			a3.target = _arrowContainer;
+			a3.property = "y";
+			a3.toValue = _arrowContainer.y - _subtitlePanel.height;
+			a3.duration = 250;
+			a3.play();
+		}
+		
+		private function onHideSubtitleBar(e:Event) : void
+		{
+			_subtitlePanel.visible = false;
 			this.drawBG(); // Repaint bg
 		}
 		
