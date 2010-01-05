@@ -2,6 +2,7 @@ package modules.videoPlayer.controls.babelia
 {
 	import mx.controls.Alert;
 	import mx.controls.ProgressBar;
+	import mx.controls.ProgressBarMode;
 	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import flash.display.Sprite;
@@ -47,8 +48,9 @@ package modules.videoPlayer.controls.babelia
 			addChild(_roleBox);
 			
 			_pBar = new ProgressBar();
-			_pBar.mode = "manual";
+			_pBar.mode = ProgressBarMode.MANUAL;
 			_pBar.setStyle("barColor", "haloOrange");
+			_pBar.label = "";
 			
 			addChild(_pBar);
 
@@ -62,7 +64,7 @@ package modules.videoPlayer.controls.babelia
 			
 			CreateBG( width, height );
 			
-			_textBox.x = _defaultMargin;
+			_textBox.x = _defaultMargin*3;
 			_textBox.y = _defaultMargin;
 			_textBox.width = 55;
 			_textBox.height = 20;
@@ -72,7 +74,7 @@ package modules.videoPlayer.controls.babelia
 			_roleBox.width = width - _textBox.width - 2*_defaultMargin;
 			_roleBox.height = 20;
 			
-			_pBar.x = _textBox.x + _defaultMargin;
+			_pBar.x = _defaultMargin*2;
 			_pBar.y = _textBox.y + _textBox.height;
 			_pBar.width = width - 4*_defaultMargin;
 		}

@@ -40,9 +40,9 @@ package modules.videoPlayer
 		 * Variables
 		 * 
 		 */
-		private var _video:Video;
+		protected var _video:Video;
 		private var _videoWrapper:MovieClip;
-		private var _ns:NetStream;
+		protected var _ns:NetStream;
 		private var _nc:NetConnection;
 		
 		private var _videoSource:String = null;
@@ -306,7 +306,9 @@ package modules.videoPlayer
 				{
 					playVideo();
 					_ppBtn.State = PlayButton.PAUSE_STATE;
-				} 
+				}
+				
+				this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
 				
 			} else
 			{
@@ -358,7 +360,7 @@ package modules.videoPlayer
 			_ns.play( _videoSource );
 			
 			if( _timer ) _timer.stop();
-			_timer = new Timer(500);
+			_timer = new Timer(100);
 			_timer.addEventListener( TimerEvent.TIMER, updateProgress );
 			_timer.start();
 		}

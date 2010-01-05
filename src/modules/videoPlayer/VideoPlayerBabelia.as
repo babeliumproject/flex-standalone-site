@@ -13,6 +13,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
+	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.VideoPlayer;
 	
 	import flash.display.Sprite;
@@ -200,6 +201,26 @@ package modules.videoPlayer
 			_bg.graphics.beginFill( 0x343434 );
 			_bg.graphics.drawRoundRect( 3, 3, width-6, height-6, 12, 12 );
 			_bg.graphics.endFill();
+		}
+		
+		/**
+		 * Adds a listener to video widget
+		 */
+		override public function playVideo() : void
+		{
+			super.playVideo();
+			
+			_video.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		}
+		
+		/**
+		 * Gives parent document an ENTER_FRAME based event
+		 * with current stream time (CuePointManager should catch this)
+		 */
+		private function onEnterFrame(e:Event) : void
+		{
+			if ( _ns != null )
+				this.dispatchEvent(new StreamEvent(StreamEvent.ENTER_FRAME, _ns.time));
 		}
 		
 		/**
