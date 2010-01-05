@@ -1,6 +1,6 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
-	import mx.controls.Alert;
+	import mx.collections.ArrayCollection;
 	import mx.controls.Image;
 	import mx.core.UIComponent;
 	import flash.display.Sprite;
@@ -9,8 +9,8 @@ package modules.videoPlayer.controls
 	public class ArrowPanel extends UIComponent
 	{
 		private var _bg:Sprite;
-		private var _arrows:Array;
-		private var _dataProvider:Array;
+		private var _arrows:ArrayCollection;
+		private var _dataProvider:ArrayCollection;
 		private var _boxWidth:Number = 500;
 		private var _boxHeight:Number = 50;
 		private var _defaultHeight:Number = 20;
@@ -19,7 +19,7 @@ package modules.videoPlayer.controls
 		{
 			super();
 
-			_arrows = new Array();
+			_arrows = new ArrayCollection();
 
 			resize(_boxWidth, _boxHeight);
 		}
@@ -37,12 +37,12 @@ package modules.videoPlayer.controls
 				addChild(img);
 		}
 		
-		public function setArrows(data:Array, duration:Number, role:String) : void
+		public function setArrows(data:ArrayCollection, duration:Number, role:String) : void
 		{
 			_dataProvider = data;
 			
 			for each ( var obj:Object in _dataProvider )
-				doShowArrow(obj[0], duration, obj[1] == role);
+				doShowArrow(obj.time, duration, obj.role == role);
 		}
 		
 		public function removeArrows() : void
@@ -50,8 +50,8 @@ package modules.videoPlayer.controls
 			while ( _arrows.length > 0 )
 			{
 				removeChildAt(1);
-				_dataProvider.pop();
-				_arrows.pop();
+				_dataProvider.removeItemAt(0);
+				_arrows.removeItemAt(0);
 			}
 		}
 		
@@ -80,7 +80,7 @@ package modules.videoPlayer.controls
 			arrow.width = 17;
 			arrow.height = 35;
 
-			_arrows.push(arrow);
+			_arrows.addItem(arrow);
 			addChild(arrow);			
 		}
 	}

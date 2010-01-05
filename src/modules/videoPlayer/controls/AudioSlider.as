@@ -52,6 +52,9 @@ package modules.videoPlayer.controls
 		{
 			super();
 			
+			width = _defaultWidth;
+			height = _defaultHeight;
+			
 			_bg = new Sprite();
 			
 			_sliderArea = new Sprite();

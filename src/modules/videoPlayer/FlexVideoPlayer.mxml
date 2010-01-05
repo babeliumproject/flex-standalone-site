@@ -5,12 +5,13 @@
 	backgroundAlpha="0.0"
 	creationComplete="init()">
 
-	<video:VideoPlayer id="VP" Subtitles="true" Arrows="true" Seek="true" 
-		AutoScale="true" AutoPlay="true" VideoSource="cue_cuatro.flv" 
-		StreamSource="rtmp://localhost:1935/oflaDemo" width="600" height="393" />
+	<video:VideoPlayerBabelia id="VP" Subtitles="true" Arrows="true" Seek="true" 
+		AutoScale="false" AutoPlay="true" VideoSource="cue_cuatro.flv" 
+		StreamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import mx.controls.Alert;
 			import vo.SubtitleLineVO;
@@ -18,7 +19,7 @@
 			import events.SubtitleEvent;
 			import model.DataModel;
 			
-			private var arrows:Array = new Array();
+			private var arrows:ArrayCollection = new ArrayCollection();
 			private var role:String;
 			
 			public function init() : void
@@ -36,12 +37,9 @@
 
 				for each ( var sub:SubtitleLineVO in DataModel.getInstance().subtitleDp )
 				{
-					var tmp:Array = new Array();
-					tmp[0] = sub.showTime;
-					tmp[1] = sub.role;
 					if ( role == null )
 						role = sub.role;
-					arrows.push(tmp);
+					arrows.addItem({time:sub.showTime,role:sub.role});
 				}
 			}
 			

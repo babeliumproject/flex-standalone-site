@@ -1,4 +1,4 @@
-package modules.videoPlayer.events
+package modules.videoPlayer.events.babelia
 {
 	import flash.events.Event;
 

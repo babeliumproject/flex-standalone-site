@@ -9,13 +9,18 @@ package modules.videoPlayer.controls
 
 	public class PlayButton extends UIComponent
 	{
+		/**
+		 * Constants
+		 */
+		public static const PLAY_STATE:String = "play";
+		public static const PAUSE_STATE:String = "pause";
 		
 		/**
 		 * Variables
 		 * 
 		 */
 		
-		private var _state:String = "play";
+		private var _state:String = PLAY_STATE;
 		private var bg:Sprite;
 		private var bgOver:Sprite;
 		
@@ -85,7 +90,7 @@ package modules.videoPlayer.controls
 			
 			var btn:Sprite = new Sprite();
 			
-			if( _state == "play" )
+			if( _state == PLAY_STATE )
 			{
 				btn = CreatePlayButton();
 				btn.x = this.width/2 - btn.width/2;
@@ -142,7 +147,7 @@ package modules.videoPlayer.controls
 		private function onClick( e:MouseEvent ):void
 		{
 			trace( "play/pause btn pressed" );
-			this.State = _state == "play" ? "pause" : "play";
+			this.State = _state == PLAY_STATE ? PAUSE_STATE : PLAY_STATE;
 			
 			dispatchEvent( new PlayPauseEvent( PlayPauseEvent.STATE_CHANGED ) );
 		}

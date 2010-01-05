@@ -17,11 +17,16 @@ package modules.videoPlayer.controls
 		private var _bg:Sprite;
 		private var _timeBox:TextField;
 		private var tf:TextFormat = new TextFormat();
+		private var _defaultWidth:Number = 75;
+		private var _defaultHeight:Number = 20;
 		
 		
 		public function ElapsedTime()
 		{
 			super();
+			
+			width = _defaultWidth;
+			height = _defaultHeight;
 			
 			_timeBox = new TextField();
 			_timeBox.text = "Loading...";
@@ -51,8 +56,8 @@ package modules.videoPlayer.controls
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
-			if( height == 0 ) height = 20;
-			if( width == 0 ) width = 75;
+			if( height == 0 ) height = _defaultHeight;
+			if( width == 0 ) width = _defaultWidth;
 			
 			CreateBG( width, height );
 			

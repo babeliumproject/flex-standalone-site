@@ -1,6 +1,6 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
-	import modules.videoPlayer.events.SubtitleComboEvent;
+	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.ComboBox;

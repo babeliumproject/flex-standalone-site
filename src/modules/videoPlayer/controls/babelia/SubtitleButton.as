@@ -1,13 +1,22 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
 	import mx.controls.Button;
 	import mx.core.UIComponent;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	import modules.videoPlayer.events.SubtitleButtonEvent;
+	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	
 	public class SubtitleButton extends UIComponent
 	{
+		/**
+		 * CONSTANTS
+		 */
+		public static const SUBTITLES_ENABLED:String = "enabled";
+		public static const SUBTITLES_DISABLED:String = "disabled";
+		
+		/**
+		 * VARIABLES
+		 */
 		private var _bg:Sprite;
 		private var _button:Button;
 		private var _state:String;
@@ -27,7 +36,7 @@ package modules.videoPlayer.controls
 			_button.setStyle("paddingTop", 2);
 			_button.setStyle("paddingBottom", 2);
 			_button.label = "SUB";
-			_state = state? "enabled" : "disabled";
+			_state = state? SUBTITLES_ENABLED : SUBTITLES_DISABLED;
 
 			_button.addEventListener(MouseEvent.CLICK, showHideSubtitles);
 
@@ -52,13 +61,13 @@ package modules.videoPlayer.controls
 		
 		public function setEnabled(flag:Boolean) : void
 		{
-			_state = (!flag) ? "disabled" : "enabled";
+			_state = (!flag) ? SUBTITLES_DISABLED: SUBTITLES_ENABLED;
 			_button.enabled = flag;
 		}
 		
 		private function showHideSubtitles(e:MouseEvent) : void
 		{
-			_state = (_state == "enabled") ? "disabled" : "enabled";
+			_state = (_state == SUBTITLES_ENABLED) ? SUBTITLES_DISABLED : SUBTITLES_ENABLED;
 			this.dispatchEvent(new SubtitleButtonEvent(SubtitleButtonEvent.STATE_CHANGED, _state));
 		}
 		

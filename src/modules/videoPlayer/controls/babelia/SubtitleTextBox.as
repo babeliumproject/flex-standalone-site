@@ -1,4 +1,4 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
 	import mx.controls.Text;
 	import mx.core.UIComponent;
@@ -20,6 +20,7 @@ package modules.videoPlayer.controls
 
 			_textBox = new Text();
 			_textBox.setStyle("textAlign", "center");
+			_textBox.selectable = false;
 
 			resize(_boxWidth, _boxHeight);
 		}
