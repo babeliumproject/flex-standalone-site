@@ -31,7 +31,6 @@ package modules.videoPlayer.controls
 		public function setSkinColor(propertyName:String, color:uint) : void
 		{
 			skinColors[propertyName] = color;
-			//Alert.show(COMPONENT_NAME + ": " + color);
 		}
 		
 		/**

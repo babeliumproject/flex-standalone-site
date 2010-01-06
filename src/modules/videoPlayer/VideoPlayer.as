@@ -275,16 +275,17 @@ package modules.videoPlayer
 			for each ( var xChild:XML in xml.child("Component") )
 			{
 				var componentName:String = xChild.attribute("name").toString();
+				var cmp:SkinableComponent = getSkinableComponent(componentName);
 				
+				if ( cmp == null )
+					continue;
+						
 				for each ( var xElement:XML in xChild.child("Property") )
 				{
 					var propertyName:String = xElement.attribute("name").toString();
 					var propertyColor:String = xElement.toString();
 					
-					var cmp:SkinableComponent = getSkinableComponent(componentName);
-					
-					if ( cmp != null )
-						cmp.setSkinColor(propertyName, new uint(propertyColor));
+					cmp.setSkinColor(propertyName, new uint(propertyColor));
 				}
 			}
 			
