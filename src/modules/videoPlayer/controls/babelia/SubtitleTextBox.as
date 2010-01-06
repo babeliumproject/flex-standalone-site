@@ -3,47 +3,64 @@ package modules.videoPlayer.controls.babelia
 	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import flash.display.Sprite;
+	import modules.videoPlayer.controls.SkinableComponent;
 	
-	public class SubtitleTextBox extends UIComponent
+	public class SubtitleTextBox extends SkinableComponent
 	{
+		/**
+		 * SKIN CONSTANTS
+		 */
+		public static const TEXT_COLOR:String = "textColor";
+		public static const BOX_COLOR:String = "boxColor";
+		public static const BORDER_COLOR:String = "borderColor";
+		public static const BG_COLOR:String = "bgColor";
+		
 		private var _box:Sprite;
 		private var _bg:Sprite;
 		private var _textBox:Text;
 		private var _boxWidth:Number = 100;
 		private var _boxHeight:Number = 20;
-		private var _boxColor:uint = 0xFFFFFF;
 		private var _defaultHeight:Number = 20;
 		
 		public function SubtitleTextBox()
 		{
-			super();
+			super("SubtitleTextBox");
+			
+			_bg = new Sprite();
+			_box = new Sprite();
+			
+			addChild(_bg);
+			addChild(_box);
 
 			_textBox = new Text();
 			_textBox.setStyle("textAlign", "center");
 			_textBox.selectable = false;
+			addChild( _textBox );
 
 			resize(_boxWidth, _boxHeight);
 		}
 		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR,BORDER_COLOR,BOX_COLOR,TEXT_COLOR]);
+		}
+		
 		public function resize(width:Number, height:Number) : void
 		{
-			while ( numChildren > 0 ) removeChildAt(0);
-			
 			this.width = width;
 			this.height = height;
 			
 			CreateBG( width, height );
 			
-			_box = CreateBox( _boxColor, width-5, height-5, true, 0x00000 );
+			CreateBox( _box, getSkinColor(BOX_COLOR), width-5, height-5, true, getSkinColor(BORDER_COLOR) );
 			_box.x = width/2 - _box.width/2;
 			_box.y = height/2 - _box.height/2;
-			addChild( _box );
 			
 			_textBox.x = _box.x;
 			_textBox.y = _box.y;
 			_textBox.width = _box.width;
 			_textBox.height = _box.height;
-			addChild( _textBox );
+			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));
 		}
 		
 		public function setText(text:String) : void
@@ -51,30 +68,22 @@ package modules.videoPlayer.controls.babelia
 			_textBox.text = text;
 		}
 		
-		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
-		{
-			//super.updateDisplayList( unscaledWidth, unscaledHeight );
-		}
-		
 		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg = new Sprite();
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.clear();
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
-			addChildAt(_bg, 0);
-			
 		}
 		
-		private function CreateBox( color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ): Sprite
+		private function CreateBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, 
+				borderColor:uint = 0, borderSize:Number = 1 ) : void
 		{
-			var b:Sprite = new Sprite();
+			b.graphics.clear();
 			b.graphics.beginFill( color as uint );
 			if( border ) b.graphics.lineStyle( borderSize, borderColor );
 			b.graphics.drawRect( 0, 0, bWidth, bHeight );
 			b.graphics.endFill();
-			
-			return b;
 		}
 	}
 }

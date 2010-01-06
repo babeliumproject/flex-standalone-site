@@ -4,16 +4,21 @@ package modules.videoPlayer.controls
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 
-	public class ElapsedTime extends UIComponent
+	public class ElapsedTime extends SkinableComponent
 	{
+		/**
+		 * Skin constants
+		 */
+		public static const BG_COLOR:String = "bgColor";
+		public static const TEXT_COLOR:String = "textColor";
+
 		/** 
 		 * Variables
 		 * 
 		 */
-		 
-		 
 		private var _bg:Sprite;
 		private var _timeBox:TextField;
 		private var tf:TextFormat = new TextFormat();
@@ -23,7 +28,10 @@ package modules.videoPlayer.controls
 		
 		public function ElapsedTime()
 		{
-			super();
+			super("ElapsedTime");
+			
+			_bg = new Sprite();
+			addChild(_bg);
 			
 			width = _defaultWidth;
 			height = _defaultHeight;
@@ -31,11 +39,11 @@ package modules.videoPlayer.controls
 			_timeBox = new TextField();
 			_timeBox.text = "Loading...";
 			_timeBox.selectable = false;
+			_timeBox.y = 2;
 			
 			
 			tf.bold = true;
 			tf.align = "center";
-			tf.color = 0xffffff;
 			tf.font = "Arial";
 			
 			_timeBox.setTextFormat( tf );
@@ -43,6 +51,10 @@ package modules.videoPlayer.controls
 			addChild( _timeBox );
 		}
 		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR,TEXT_COLOR]);
+		}
 		
 		/**
 		 * Methods
@@ -62,18 +74,17 @@ package modules.videoPlayer.controls
 			CreateBG( width, height );
 			
 			_timeBox.width = width;
+			tf.color = getSkinColor(TEXT_COLOR);
 			
 		}
 		
 		
 		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg = new Sprite();
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.clear();
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
-			
-			addChildAt( _bg, 0 );
 		}
 		
 		

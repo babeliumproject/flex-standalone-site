@@ -11,8 +11,18 @@ package modules.videoPlayer.controls
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
 
-	public class AudioSlider extends UIComponent
+	public class AudioSlider extends SkinableComponent
 	{
+		/**
+		 * Skin constants
+		 */
+		public static const BG_COLOR:String = "bgColor";
+		public static const BARBG_COLOR:String = "barBgColor";
+		public static const BAR_COLOR:String = "barColor";
+		public static const SCRUBBER_COLOR:String = "scrubberColor";
+		public static const SCRUBBERBORDER_COLOR:String = "scrubberBorderColor";
+		public static const MUTEOVERBG_COLOR:String = "muteOverBgColor";
+		public static const MUTE_COLOR:String = "muteColor";
 		
 		/**
 		 * Variables
@@ -27,12 +37,6 @@ package modules.videoPlayer.controls
 		private var _amount:Sprite;
 		private var _scrubber:Sprite;
 		
-		private var _bgColor:uint = 0x343434;
-		private var _amountColor:uint = 0x008ead;
-		private var _sliderAreaColor:uint = 0x000000;
-		private var _scrubberColor:uint = 0xababab;
-		private var _scruberBorderColor:uint = 0xffffff;
-		
 		private var _defaultY:Number = 0;
 		private var _defaultX:Number = 0;
 		
@@ -43,14 +47,13 @@ package modules.videoPlayer.controls
 		
 		private var _muteBtn:Sprite;
 		private var _mutOverBg:Sprite;
-		private var _muteOverBgColor:uint = 0x454545;
 		private var _muted:Boolean = false;
 		private var _mutedX:Number = 0;
 		
 		
 		public function AudioSlider()
 		{
-			super();
+			super("AudioSlider");
 			
 			width = _defaultWidth;
 			height = _defaultHeight;
@@ -73,6 +76,13 @@ package modules.videoPlayer.controls
 			_mutOverBg.useHandCursor = true;
 			_mutOverBg.buttonMode = true;
 			
+			addChild( _bg );
+			addChild( _mutOverBg );
+			addChild( _muteBtn );
+			addChild( _sliderArea );
+			addChild( _amount );
+			addChild( _scrubber );
+			
 			
 			//EventListeners
 			
@@ -87,19 +97,21 @@ package modules.videoPlayer.controls
 			_mutOverBg.addEventListener( MouseEvent.CLICK, muteClicked );
 		}
 		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR,BARBG_COLOR,BAR_COLOR,SCRUBBER_COLOR,
+							SCRUBBERBORDER_COLOR,MUTE_COLOR,MUTEOVERBG_COLOR]);
+		}
 		
 		
 		/**
 		 * Getters and Setters
 		 * 
 		 */
-		
-		
 		public function getCurrentVolume( ):Number
 		{
 			return _currentVolume;
-		}
-		
+		}		
 		
 		
 		/** 
@@ -116,25 +128,21 @@ package modules.videoPlayer.controls
 			if( height == 0 ) height = _defaultHeight;
 			
 			// Create Background
-			_bg.graphics.beginFill( _bgColor );
+			_bg.graphics.clear();
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, width, height );
-			_bg.graphics.endFill();
-			
-			addChild( _bg );
-			
-			
+			_bg.graphics.endFill();			
 			
 			// mute button
-			_mutOverBg.graphics.beginFill( _muteOverBgColor );
+			_mutOverBg.graphics.clear();
+			_mutOverBg.graphics.beginFill( getSkinColor(MUTEOVERBG_COLOR) );
 			_mutOverBg.graphics.drawRect( 0, 0, 20, 20 );
 			_mutOverBg.graphics.endFill();
 			
-			addChild( _mutOverBg );
-			
 			_mutOverBg.alpha = 0;
 			
-			
-			_muteBtn.graphics.beginFill( 0xffffff );
+			_muteBtn.graphics.clear();
+			_muteBtn.graphics.beginFill( getSkinColor(MUTE_COLOR) );
 			_muteBtn.graphics.drawRect( 0, 2, 3, 6 );
 			_muteBtn.graphics.moveTo( 5, 2 );
 			_muteBtn.graphics.lineTo( 9, 0 );
@@ -142,41 +150,33 @@ package modules.videoPlayer.controls
 			_muteBtn.graphics.lineTo( 5, 8 );
 			_muteBtn.graphics.endFill();
 			
-			addChild( _muteBtn );
-			
 			_muteBtn.x = _mutOverBg.width/2 - _muteBtn.width/2;
 			_muteBtn.y = _mutOverBg.height/2 - _muteBtn.height/2;
 			
 			
 			
 			// Slider Drag Area
-			_sliderArea.graphics.beginFill( _sliderAreaColor );
+			_sliderArea.graphics.clear();
+			_sliderArea.graphics.beginFill( getSkinColor(BARBG_COLOR) );
 			_sliderArea.graphics.drawRect( 0, 0, width-30, 10 );
 			_sliderArea.graphics.endFill();
-			
-			addChild( _sliderArea );
 			
 			_sliderArea.x = width - _sliderArea.width - 5;
 			_sliderArea.y = height/2 - _sliderArea.height/2;
 			
-			
-			_amount.graphics.beginFill( _amountColor );
+			_amount.graphics.clear();
+			_amount.graphics.beginFill( getSkinColor(BAR_COLOR) );
 			_amount.graphics.drawRect( 0, 0, 1, 10 );
 			_amount.graphics.endFill();
-			
-			addChild( _amount );
 			
 			_amount.x = _sliderArea.x;
 			_amount.y = _sliderArea.y;
 			
-			
-			
-			_scrubber.graphics.beginFill( _scrubberColor );
-			_scrubber.graphics.lineStyle( 1, _scruberBorderColor );
+			_scrubber.graphics.clear();
+			_scrubber.graphics.beginFill( getSkinColor(SCRUBBER_COLOR) );
+			_scrubber.graphics.lineStyle( 1, getSkinColor(SCRUBBERBORDER_COLOR) );
 			_scrubber.graphics.drawRect( 0, 0, 10, 10 );
 			_scrubber.graphics.endFill();
-			
-			addChild( _scrubber );
 			
 			_defaultX = _sliderArea.x;
 			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;

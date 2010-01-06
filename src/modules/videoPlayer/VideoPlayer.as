@@ -11,6 +11,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.ScrubberBar;
 	import modules.videoPlayer.controls.StopButton;
+	import modules.videoPlayer.controls.SkinableComponent;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
@@ -22,19 +23,35 @@ package modules.videoPlayer
 	import flash.events.Event;
 	import flash.events.NetStatusEvent;
 	import flash.events.TimerEvent;
+	import flash.events.IOErrorEvent;
 	import flash.media.SoundTransform;
 	import flash.media.Video;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	import flash.utils.Timer;
+	import flash.utils.Dictionary;
+	import flash.net.URLRequest;
+	import flash.net.URLLoader;
 	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.containers.Panel;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
+	import mx.effects.Pause;
 
-	public class VideoPlayer extends UIComponent
+	public class VideoPlayer extends SkinableComponent
 	{
+		/**
+		 * Skin related variables
+		 */
+		private const SKIN_PATH:String = "resources/videoPlayer/skin/";
+		private var _skinableComponents:Dictionary;
+		private var _skinLoader:URLLoader;
+		private var _loadingSkin:Boolean = false;
+		public static const BG_COLOR:String = "bgColor";
+		public static const BORDER_COLOR:String = "borderColor";
+		public static const VIDEOBG_COLOR:String = "videoBgColor";
 		
 		/**
 		 * Variables
@@ -69,15 +86,15 @@ package modules.videoPlayer
 		private var _timer:Timer;
 		
 		
-		public function VideoPlayer()
+		public function VideoPlayer(name:String = "VideoPlayer")
 		{
-			super();
+			super(name);
+
+			_skinableComponents = new Dictionary();
 			
 			_bg = new Sprite();
-			addChild(_bg);
 			
 			_bgVideo = new Sprite();
-			addChild(_bgVideo);
 			
 			_video = new Video();
 			_video.smoothing = _smooth;
@@ -85,8 +102,6 @@ package modules.videoPlayer
 			_videoWrapper = new MovieClip();
 			_videoWrapper.addChild(_video);
 			_videoWrapper.height = _videoHeight;
-			
-			addChild( _videoWrapper );
 			
 			_videoBarPanel = new UIComponent();
 			
@@ -108,8 +123,6 @@ package modules.videoPlayer
 			
 			_videoBarPanel.addChild( _audioSlider );
 			
-			addChild(_videoBarPanel);
-			
 			//Event Listeners
 			addEventListener( VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange );
 			addEventListener( FlexEvent.CREATION_COMPLETE, onComplete );
@@ -117,6 +130,27 @@ package modules.videoPlayer
 			_ppBtn.addEventListener( PlayPauseEvent.STATE_CHANGED, onPPBtnChanged );
 			_stopBtn.addEventListener( StopEvent.STOP_CLICK, onStopBtnClick );
 			_audioSlider.addEventListener( VolumeEvent.VOLUME_CHANGED, onVolumeChange );
+			
+			/**
+			 * Adds components to player
+			 */
+			addChild(_bg);
+			addChild(_bgVideo);
+			addChild( _videoWrapper );
+			addChild(_videoBarPanel);
+			
+			/**
+			 * Adds skinable components to dictionary
+			 */
+			putSkinableComponent(COMPONENT_NAME, this);
+			putSkinableComponent(_audioSlider.COMPONENT_NAME, _audioSlider);
+			putSkinableComponent(_eTime.COMPONENT_NAME, _eTime);
+			putSkinableComponent(_ppBtn.COMPONENT_NAME, _ppBtn);
+			putSkinableComponent(_sBar.COMPONENT_NAME, _sBar);
+			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
+			
+			// Loads default skin
+			skin = "default";
 		}
 		
 		
@@ -190,13 +224,78 @@ package modules.videoPlayer
 			}
 			
 			_sBar.enableSeek(flag);
-		}		
-		
+		}
 		
 		/**
-		 * Methods
-		 * 
+		 * Skin HashMap related commands
 		 */
+		protected function putSkinableComponent(name:String, cmp:SkinableComponent) : void
+		{
+			_skinableComponents[name] = cmp;
+		}
+		
+		protected function getSkinableComponent(name:String) : SkinableComponent
+		{
+			return _skinableComponents[name];
+		}
+		
+		public function setSkin(fileName:String) : void
+		{
+			skin = fileName;
+		}
+		
+		/**
+		 * Skin loader
+		 */
+		public function set skin(name:String) : void
+		{
+			
+			var fileName:String = SKIN_PATH + name + ".xml";
+			
+			if ( _loadingSkin )
+			{ // Maybe some skins will try to load at same time
+				flash.utils.setTimeout(setSkin, 200, name);
+				return;
+			}
+			
+			var xmlURL:URLRequest = new URLRequest(fileName);
+			_skinLoader = new URLLoader(xmlURL);
+			_skinLoader.addEventListener(Event.COMPLETE, onSkinFileReaded);
+			_skinLoader.addEventListener(IOErrorEvent.IO_ERROR, onSkinFileReadingError);
+			_loadingSkin = true;
+		}
+		
+		/**
+		 * Parses Skin file
+		 */
+		public function onSkinFileReaded(e:Event) : void
+		{
+			var xml:XML = new XML(_skinLoader.data);
+			
+			for each ( var xChild:XML in xml.child("Component") )
+			{
+				var componentName:String = xChild.attribute("name").toString();
+				
+				for each ( var xElement:XML in xChild.child("Property") )
+				{
+					var propertyName:String = xElement.attribute("name").toString();
+					var propertyColor:String = xElement.toString();
+					
+					var cmp:SkinableComponent = getSkinableComponent(componentName);
+					
+					if ( cmp != null )
+						cmp.setSkinColor(propertyName, new uint(propertyColor));
+				}
+			}
+			
+			updateDisplayList(0,0);
+			_loadingSkin = false;
+		}
+		
+		public function onSkinFileReadingError(e:Event) : void
+		{
+			_loadingSkin = false;
+		}
 		
 		/** Overriden */
 		
@@ -206,7 +305,7 @@ package modules.videoPlayer
 			
 			this.graphics.clear();
 
-			_bgVideo.graphics.beginFill( 0x000000 );
+			_bgVideo.graphics.beginFill( getSkinColor(VIDEOBG_COLOR) );
 			_bgVideo.graphics.drawRoundRect( _defaultMargin, _defaultMargin, 
 												_videoWidth, 
 												_videoHeight,
@@ -218,16 +317,24 @@ package modules.videoPlayer
 			_videoBarPanel.y = _defaultMargin + _videoHeight;
 			_videoBarPanel.x = _defaultMargin;
 
+			_ppBtn.refresh();
+
 			_stopBtn.x = _ppBtn.x + _ppBtn.width;
+			_stopBtn.refresh();
 			
-			_sBar.x = _stopBtn.x + _stopBtn.width;;
+			_sBar.x = _stopBtn.x + _stopBtn.width;
+			_sBar.refresh();
 			
 			_eTime.x = _sBar.x + _sBar.width;
+			_eTime.refresh();
 
 			_audioSlider.x = _eTime.x + _eTime.width;
+			_audioSlider.refresh();
 			
 			_sBar.width = _videoBarPanel.width - _ppBtn.width - _stopBtn.width
 							- _eTime.width - _audioSlider.width;
+							
+			drawBG();
 		}
 		
 		override public function set width(w:Number) : void
@@ -248,10 +355,10 @@ package modules.videoPlayer
 
 			_bg.graphics.clear();
 
-			_bg.graphics.beginFill( 0x000000 );
+			_bg.graphics.beginFill( getSkinColor(BORDER_COLOR) );
 			_bg.graphics.drawRoundRect( 0, 0, width, height, 15, 15 );
 			_bg.graphics.endFill();
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRoundRect( 3, 3, width-6, height-6, 12, 12 );
 			_bg.graphics.endFill();
 		}

@@ -5,14 +5,20 @@ package modules.videoPlayer.controls.babelia
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
+	import modules.videoPlayer.controls.SkinableComponent;
 	
-	public class SubtitleButton extends UIComponent
+	public class SubtitleButton extends SkinableComponent
 	{
 		/**
 		 * CONSTANTS
 		 */
 		public static const SUBTITLES_ENABLED:String = "enabled";
 		public static const SUBTITLES_DISABLED:String = "disabled";
+		
+		/**
+		 * SKIN CONSTANTS
+		 */
+		public static const BG_COLOR:String = "bgColor";
 		
 		/**
 		 * VARIABLES
@@ -27,7 +33,10 @@ package modules.videoPlayer.controls.babelia
 		
 		public function SubtitleButton(state:Boolean = false)
 		{
-			super();
+			super("SubtitleButton");
+			
+			_bg = new Sprite();
+			addChild(_bg);
 			
 			_button = new Button();
 			// Change button's padding
@@ -36,6 +45,8 @@ package modules.videoPlayer.controls.babelia
 			_button.setStyle("paddingTop", 2);
 			_button.setStyle("paddingBottom", 2);
 			_button.label = "SUB";
+			addChild( _button );
+			
 			_state = state? SUBTITLES_ENABLED : SUBTITLES_DISABLED;
 
 			_button.addEventListener(MouseEvent.CLICK, showHideSubtitles);
@@ -43,10 +54,13 @@ package modules.videoPlayer.controls.babelia
 			resize(_boxWidth, _boxHeight);
 		}
 		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR]);
+		}
+		
 		public function resize(width:Number, height:Number) : void
 		{
-			while ( numChildren > 0 ) removeChildAt(0);
-			
 			this.width = width;
 			this.height = height;
 			
@@ -56,7 +70,6 @@ package modules.videoPlayer.controls.babelia
 			_button.y = 2;
 			_button.width = _boxWidth - 4;
 			_button.height = _boxHeight -4;
-			addChild( _button );
 		}
 		
 		public function setEnabled(flag:Boolean) : void
@@ -73,23 +86,10 @@ package modules.videoPlayer.controls.babelia
 		
 		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg = new Sprite();
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.clear();
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
-			addChild(_bg);
-			
-		}
-		
-		private function CreateBox( color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ): Sprite
-		{
-			var b:Sprite = new Sprite();
-			b.graphics.beginFill( color as uint );
-			if( border ) b.graphics.lineStyle( borderSize, borderColor );
-			b.graphics.drawRect( 0, 0, bWidth, bHeight );
-			b.graphics.endFill();
-			
-			return b;
 		}
 	}
 }

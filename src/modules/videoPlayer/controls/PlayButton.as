@@ -7,8 +7,15 @@ package modules.videoPlayer.controls
 	
 	import mx.core.UIComponent;
 
-	public class PlayButton extends UIComponent
+	public class PlayButton extends SkinableComponent
 	{
+		/**
+		 * Skin related constants
+		 */
+		public static const BG_COLOR:String = "bgColor";
+		public static const OVERBG_COLOR:String = "overBgColor";
+		public static const ICON_COLOR:String = "iconColor";
+		
 		/**
 		 * Constants
 		 */
@@ -23,11 +30,12 @@ package modules.videoPlayer.controls
 		private var _state:String = PLAY_STATE;
 		private var bg:Sprite;
 		private var bgOver:Sprite;
+		private var btn:Sprite;
 		
 		
 		public function PlayButton()
 		{
-			super();
+			super("PlayButton");
 			
 			this.height = 20;
 			this.width = 20;
@@ -35,11 +43,24 @@ package modules.videoPlayer.controls
 			this.buttonMode = true;
 			this.useHandCursor = true;
 			
+			bgOver = new Sprite();
+			bg = new Sprite();
+			btn = new Sprite();
+			
+			addChild( bgOver );
+			addChild( bg );
+			addChild( btn );
+			
 			this.addEventListener( MouseEvent.ROLL_OVER, onMouseOver );
 			this.addEventListener( MouseEvent.ROLL_OUT, onMouseOut );
 			this.addEventListener( MouseEvent.CLICK, onClick );
 		}
 		
+		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR,OVERBG_COLOR,ICON_COLOR]);
+		}
 		
 		
 		/**
@@ -73,33 +94,24 @@ package modules.videoPlayer.controls
 			
 			this.graphics.clear();
 			
-			bgOver = new Sprite();
-			bgOver.graphics.beginFill( 0x454545 );
+			bgOver.graphics.clear();
+			bgOver.graphics.beginFill( getSkinColor(OVERBG_COLOR) );
 			bgOver.graphics.drawRect( 0, 0, 20, 20 );
 			bgOver.graphics.endFill();
 			
-			addChild( bgOver );
-			
-			bg = new Sprite();
-			bg.graphics.beginFill( 0x343434 );
+			bg.graphics.clear();
+			bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			bg.graphics.drawRect( 0, 0, 20, 20 );
 			bg.graphics.endFill();
 			
-			addChild( bg );
-			
-			
-			var btn:Sprite = new Sprite();
-			
 			if( _state == PLAY_STATE )
 			{
-				btn = CreatePlayButton();
+				CreatePlayButton();
 				btn.x = this.width/2 - btn.width/2;
 				btn.y = this.height/2 - btn.height/2;
-				
-				addChild( btn );
 			} else
 			{
-				btn = CreatePauseButton();
+				CreatePauseButton();
 				btn.x = this.width/2 - btn.width/2;
 				btn.y = this.height/2 - btn.height/2;
 				
@@ -108,28 +120,26 @@ package modules.videoPlayer.controls
 		}
 		
 		
-		private function CreatePlayButton():Sprite
+		private function CreatePlayButton():void
 		{
-			var g:Sprite = new Sprite();
-			g.graphics.beginFill( 0xffffff );
+			var g:Sprite = btn;
+			g.graphics.clear();
+			g.graphics.beginFill( getSkinColor(ICON_COLOR) );
 			g.graphics.lineTo( 6, 6 );
 			g.graphics.lineTo( 0, 10 );
 			g.graphics.lineTo( 0,0 );
 			g.graphics.endFill();
-			
-			return g;
 		}
 		
 		
-		private function CreatePauseButton():Sprite
+		private function CreatePauseButton():void
 		{
-			var g:Sprite = new Sprite();
-			g.graphics.beginFill( 0xffffff );
+			var g:Sprite = btn;
+			g.graphics.clear();
+			g.graphics.beginFill( getSkinColor(ICON_COLOR) );
 			g.graphics.drawRect( 0, 0, 3, 10 );
 			g.graphics.drawRect( 6, 0, 3, 10 );
 			g.graphics.endFill();
-			
-			return g;
 		}
 		
 		

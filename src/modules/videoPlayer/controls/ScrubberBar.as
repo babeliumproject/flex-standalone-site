@@ -12,8 +12,17 @@ package modules.videoPlayer.controls
 	import mx.events.EffectEvent;
 	import mx.controls.Alert;
 
-	public class ScrubberBar extends UIComponent
+	public class ScrubberBar extends SkinableComponent
 	{
+		/**
+		 * Skin constants
+		 */
+		public static const BG_COLOR:String = "bgColor";
+		public static const BARBG_COLOR:String = "barBgColor";
+		public static const BAR_COLOR:String = "barColor";
+		public static const SCRUBBER_COLOR:String = "scrubberColor";
+		public static const SCRUBBERBORDER_COLOR:String = "scrubberBorderColor";
+		public static const LOADEDBAR_COLOR:String = "loadedColor";
 		
 		/**
 		 * Variables
@@ -26,12 +35,6 @@ package modules.videoPlayer.controls
 		private var _loadedBar:Sprite;
 		private var _scrubber:Sprite;
 		private var _bg:Sprite;
-		
-		
-		private var _barColor:uint = 0x00000;
-		private var _progColor:uint = 0x008ead;
-		private var _loadedColor:uint = 0x555555;
-		private var _scrubberColor:uint = 0xababab;
 		
 		private var _barWidth:Number = 100;
 		private var _barHeight:Number = 10;
@@ -47,15 +50,26 @@ package modules.videoPlayer.controls
 		
 		public function ScrubberBar()
 		{
-			super();
+			super("ScrubberBar");
 			
 			_bar = new Sprite();
 			_progBar = new Sprite();
 			_loadedBar = new Sprite();
 			_scrubber = new Sprite();
 			_bg = new Sprite();
+			
+			addChild( _bg );
+			addChild( _bar );
+			addChild( _loadedBar );
+			addChild( _progBar );
+			addChild( _scrubber );
 		}
 		
+		override public function availableProperties(obj:Array = null) : void
+		{
+			super.availableProperties([BG_COLOR,BARBG_COLOR,BAR_COLOR,SCRUBBER_COLOR,
+							SCRUBBERBORDER_COLOR,LOADEDBAR_COLOR]);
+		}
 		
 		public function enableSeek(flag:Boolean) : void
 		{
@@ -103,29 +117,22 @@ package modules.videoPlayer.controls
 			
 			this.graphics.clear();
 			
-			createBox( _bar, _barColor, _barWidth, _barHeight );
+			createBox( _bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight );
 			_bar.y = height/2 - _bar.height/2;
 			_bar.x = width/2 - _bar.width/2;
-			addChild( _bar );
 			
-			
-			createBox( _loadedBar, _loadedColor, 1, _barHeight );
+			createBox( _loadedBar, getSkinColor(LOADEDBAR_COLOR), 1, _barHeight );
 			_loadedBar.x = _bar.x;
 			_loadedBar.y = _bar.y;
-			addChild( _loadedBar );
 			
-			
-			createBox( _progBar, _progColor, 1, _barHeight );
+			createBox( _progBar, getSkinColor(BAR_COLOR), 1, _barHeight );
 			_progBar.x = _bar.x;
-			_progBar.y = _bar.y;
-			addChild( _progBar );
+			_progBar.y = _bar.y;			
 			
-			
-			createBox( _scrubber, _scrubberColor, _barHeight, _barHeight, true, 0xefefef );
+			createBox( _scrubber, getSkinColor(SCRUBBER_COLOR), _barHeight, 
+							_barHeight, true, getSkinColor(SCRUBBERBORDER_COLOR));
 			_defaultX = _scrubber.x = _bar.x;
-			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;
-			addChild( _scrubber );
-			
+			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;			
 			
 			_minX = _scrubber.x;
 			_maxX = _bar.x + _bar.width - _scrubber.width;
@@ -196,6 +203,7 @@ package modules.videoPlayer.controls
 		
 		private function createBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ):void
 		{
+			b.graphics.clear();
 			b.graphics.beginFill( color as uint );
 			if( border ) b.graphics.lineStyle( borderSize, borderColor );
 			b.graphics.drawRect( 0, 0, bWidth, bHeight );
@@ -205,11 +213,10 @@ package modules.videoPlayer.controls
 		
 		private function createBG( _bg:Sprite, bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.clear();
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
-			
-			addChild( _bg );
 		}
 		
 		

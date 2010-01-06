@@ -18,6 +18,7 @@ package modules.videoPlayer
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import mx.controls.Alert;
 
 	import mx.core.UIComponent;
 	import mx.collections.ArrayCollection;
@@ -25,13 +26,17 @@ package modules.videoPlayer
 	import mx.events.EffectEvent;
 
 	public class VideoPlayerBabelia extends VideoPlayer
-	{
+	{		
+		/**
+		 * Skin related constants
+		 */
+		public static const ROLEBG_COLOR:String = "roleBgColor";
+		public static const ROLEBORDER_COLOR:String = "roleBorderColor";
 		
 		/**
 		 * Variables
 		 * 
 		 */
-		
 		private var _subtitleButton:SubtitleButton;
 		private var _subtitlePanel:UIComponent;
 		private var _subtitleBox:SubtitleTextBox;
@@ -41,20 +46,25 @@ package modules.videoPlayer
 		private var _roleTalkingPanel:RoleTalkingPanel;
 		private var _bgArrow:Sprite;
 		
-		
+		/**
+		 * CONSTRUCTOR
+		 */
 		public function VideoPlayerBabelia()
 		{
-			super();
+			super("VideoPlayerBabelia");
 			
 			_subtitleButton = new SubtitleButton();
 			_videoBarPanel.addChild(_subtitleButton);
 			
 			_subtitlePanel = new UIComponent();
-			_subtitlePanel.visible = false;
+			
 			_subtitleBox = new SubtitleTextBox();
 			_subtitleBox.setText("PRUEBA DE SUBTITULOS");
-			_subtitlePanel.addChild( _subtitleBox );
+			
 			_localeComboBox = new LocaleComboBox();
+			
+			_subtitlePanel.visible = false;
+			_subtitlePanel.addChild( _subtitleBox );
 			_subtitlePanel.addChild( _localeComboBox );
 			
 			_arrowContainer = new UIComponent();
@@ -69,14 +79,30 @@ package modules.videoPlayer
 			_arrowContainer.addChild(_arrowPanel);
 			_arrowContainer.addChild(_roleTalkingPanel);
 			
+			//Event Listeners
+			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
+			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
+			
+			/**
+			 * Adds components to player
+			 */
 			removeChild(_videoBarPanel);
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
 			
-			//Event Listeners
-			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
-			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
+			
+			/**
+			 * Adds skinable components to dictionary
+			 */
+			putSkinableComponent(_subtitleButton.COMPONENT_NAME, _subtitleButton);
+			putSkinableComponent(_subtitleBox.COMPONENT_NAME, _subtitleBox);
+			putSkinableComponent(_localeComboBox.COMPONENT_NAME, _localeComboBox);
+			putSkinableComponent(_arrowPanel.COMPONENT_NAME, _arrowPanel);
+			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
+			
+			// Loads default skin
+			skin = "default";
 		}
 		
 		
@@ -147,10 +173,10 @@ package modules.videoPlayer
 			_arrowContainer.height = 50;
 			_arrowContainer.y = _videoBarPanel.y - _arrowContainer.height;
 			_arrowContainer.x = _defaultMargin;			
-			_bgArrow.graphics.beginFill( 0x000000 );
+			_bgArrow.graphics.beginFill( getSkinColor(ROLEBORDER_COLOR) );
 			_bgArrow.graphics.drawRect( 0, 0, _arrowContainer.width, _arrowContainer.height );
 			_bgArrow.graphics.endFill();
-			_bgArrow.graphics.beginFill( 0x454545 );
+			_bgArrow.graphics.beginFill( getSkinColor(ROLEBG_COLOR) );
 			_bgArrow.graphics.drawRect( 1, 1, _arrowContainer.width-2, _arrowContainer.height-2 );
 			_bgArrow.graphics.endFill();
 			
@@ -195,10 +221,10 @@ package modules.videoPlayer
 			
 			_bg.graphics.clear();
 
-			_bg.graphics.beginFill( 0x000000 );
+			_bg.graphics.beginFill( getSkinColor(BORDER_COLOR) );
 			_bg.graphics.drawRoundRect( 0, 0, width, height, 15, 15 );
 			_bg.graphics.endFill();
-			_bg.graphics.beginFill( 0x343434 );
+			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRoundRect( 3, 3, width-6, height-6, 12, 12 );
 			_bg.graphics.endFill();
 		}
