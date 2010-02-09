@@ -5,8 +5,18 @@
 	backgroundAlpha="0.0"
 	creationComplete="init()">
 
+	<mx:Button label="Grabar!"
+			   fontWeight="normal"
+			   width="100"
+			   height="80"
+			   labelPlacement="bottom"
+			   click="click(event)"
+			   enabled="true"
+			   visible="true">
+	</mx:Button>
+
 	<video:VideoPlayerBabelia id="VP" subtitles="true" arrows="true" seek="true" 
-		autoScale="false" autoPlay="true" videoSource="cue_cuatro.flv" 
+		autoScale="false" autoPlay="true" videoSource="cue_cuatro.flv" skin="white"
 		streamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
 	
 	<mx:Script>
@@ -50,6 +60,11 @@
 			{
 				VP.setArrows(arrows, role);
 				VP.startTalking("prueba_rol", 3);
+			}
+			
+			public function click(e:Event) : void
+			{
+				VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE; // start "recording"
 			}
 			
 		]]>

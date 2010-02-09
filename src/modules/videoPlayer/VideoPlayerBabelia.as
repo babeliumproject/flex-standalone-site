@@ -18,12 +18,19 @@ package modules.videoPlayer
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.media.*;
+	import flash.net.*;
+	import flash.events.*;
+	import flash.utils.*;
+	
 	import mx.controls.Alert;
+	import mx.controls.Text;
 
 	import mx.core.UIComponent;
 	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
+	import events.ViewChangeEvent;
 
 	public class VideoPlayerBabelia extends VideoPlayer
 	{		
@@ -34,8 +41,7 @@ package modules.videoPlayer
 		public static const ROLEBORDER_COLOR:String = "roleBorderColor";
 		
 		/**
-		 * Variables
-		 * 
+		 * Interface variables
 		 */
 		private var _subtitleButton:SubtitleButton;
 		private var _subtitlePanel:UIComponent;
@@ -45,6 +51,25 @@ package modules.videoPlayer
 		private var _arrowPanel:ArrowPanel;
 		private var _roleTalkingPanel:RoleTalkingPanel;
 		private var _bgArrow:Sprite;
+		
+		/**
+		 * Recording related variables
+		 */
+		public static const PLAY_STATE:String = "playing";
+		public static const RECORD_BOTH_STATE:String = "recordingBoth";
+		public static const RECORD_MIC_STATE:String = "recordingMic";
+		private var _state:String;
+		
+		private var _mic:Microphone;
+		private var _micEnabled:Boolean = false;
+		private var _volumeTransform:SoundTransform = new SoundTransform();
+		
+		private var _camera:Camera;
+		private var _cameraEnabled:Boolean = false;
+		
+		private var _countdown:Timer;
+		private var _countdownTxt:Text;
+		private var _accessTimeout:Timer;
 		
 		/**
 		 * CONSTRUCTOR
@@ -79,6 +104,14 @@ package modules.videoPlayer
 			_arrowContainer.addChild(_arrowPanel);
 			_arrowContainer.addChild(_roleTalkingPanel);
 			
+			_countdownTxt = new Text();
+			_countdownTxt.text = "Hola, vamos a ver si funciona";
+			_countdownTxt.width = 300;
+			_countdownTxt.height = 100;
+			_countdownTxt.setStyle("color", 0xFFFFFF);
+			_countdownTxt.setStyle("font-size", 30);
+			_countdownTxt.visible = false;
+			
 			//Event Listeners
 			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
 			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
@@ -90,6 +123,7 @@ package modules.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
+			_videoWrapper.addChild(_countdownTxt);
 			
 			
 			/**
@@ -151,6 +185,36 @@ package modules.videoPlayer
 		{
 			if ( !_roleTalkingPanel.talking )
 				_roleTalkingPanel.setTalking(role, duration);
+		}
+		
+		public function set state(state:String) : void
+		{
+			_state = state;
+			stopVideo();
+			
+			switch ( _state )
+			{
+				case RECORD_BOTH_STATE:
+					// TODO: improve
+					_camera = Camera.getCamera();
+					_camera.addEventListener(StatusEvent.STATUS, camera_status);
+				
+					_mic = Microphone.getMicrophone();
+					_mic.setUseEchoSuppression(true); 
+					_mic.setLoopBack(true);
+					_mic.addEventListener(StatusEvent.STATUS,mic_status);
+				
+					_accessTimeout = new Timer(1000, 5); // 5 sec to accept access
+					_accessTimeout.addEventListener(TimerEvent.TIMER, onAccessTick);
+					_accessTimeout.start();
+					
+					break;
+			
+				default:
+					playVideo();
+					
+					break;
+			}
 		}
 		
 		/**
@@ -363,5 +427,96 @@ package modules.videoPlayer
 			this.dispatchEvent(e);
 		}
 		
+		/**
+		 * Recording related commands
+		 */
+		// return if users has webcam
+		public function hasCam() : Boolean
+		{
+			if (Camera.names.length>0) return true;
+			else return false;
+		}
+		
+		// Mic state - check for a mic
+		public function  mic_status(evt:StatusEvent) : void
+		{
+			switch (evt.code) 
+			{
+				case "Microphone.Muted": // User denied access to camera, or hasn't got it
+					break;
+				case "Microphone.Unmuted": // User allowed access to camera
+					if ( !_micEnabled )
+						_micEnabled = true;
+					break;
+            }
+		}
+		
+		// Camera state - check for a cam
+		private function camera_status(evt:StatusEvent) : void 
+		{
+			switch (evt.code) 
+			{
+				case "Camera.Muted": // User denied access to camera, or hasn't got it
+					break;
+				case "Camera.Unmuted": // User allowed access to camera
+					if ( !_cameraEnabled )
+						_cameraEnabled = true;
+					break;
+			}
+		}
+		
+		// Access timer as a timeout
+		private function onAccessTick(tick:TimerEvent) : void
+		{	
+			if ( _cameraEnabled && _micEnabled )
+			{
+				_accessTimeout.stop();
+				_accessTimeout.reset();
+				
+				_video.visible = false;
+				_countdownTxt.visible = true;
+				
+				_video.attachCamera(_camera);
+				
+				_countdown = new Timer(1000, 5)
+				_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
+				_countdown.start();
+			}
+			else if ( _accessTimeout.currentCount == 
+						_accessTimeout.repeatCount )
+			{
+				// back to home
+				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				// TODO: locale string
+				Alert.show("No has habilitado camara o mic");
+				_accessTimeout.reset();
+			}
+		}
+		
+		// Countdown timer
+		private function onCountdownTick(tick:TimerEvent) : void 
+		{
+			if ( _countdown.currentCount == _countdown.repeatCount )
+			{
+				_countdownTxt.visible = false;
+				_video.visible = true;
+				
+				_countdown.stop();
+				_countdown.reset();
+				
+				startRecording();
+			}
+			else
+				_countdownTxt.text = new String(5 - _countdown.currentCount);
+		}
+		
+		/**
+		 * Start recording
+		 */
+		private function startRecording() : void
+		{
+			Alert.show("start recording");
+		}
+	
 	}
 }

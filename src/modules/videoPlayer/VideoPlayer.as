@@ -58,7 +58,7 @@ package modules.videoPlayer
 		 * 
 		 */
 		protected var _video:Video;
-		private var _videoWrapper:MovieClip;
+		protected var _videoWrapper:MovieClip;
 		protected var _ns:NetStream;
 		private var _nc:NetConnection;
 		
@@ -254,6 +254,7 @@ package modules.videoPlayer
 			
 			if ( _loadingSkin )
 			{ // Maybe some skins will try to load at same time
+			  // TODO: maybe this can be improved
 				flash.utils.setTimeout(setSkin, 200, name);
 				return;
 			}
