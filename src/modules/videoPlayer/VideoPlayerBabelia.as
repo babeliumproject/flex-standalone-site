@@ -105,11 +105,11 @@ package modules.videoPlayer
 			_arrowContainer.addChild(_roleTalkingPanel);
 			
 			_countdownTxt = new Text();
-			_countdownTxt.text = "Hola, vamos a ver si funciona";
-			_countdownTxt.width = 300;
-			_countdownTxt.height = 100;
+			_countdownTxt.text = "5";
 			_countdownTxt.setStyle("color", 0xFFFFFF);
-			_countdownTxt.setStyle("font-size", 30);
+			_countdownTxt.setStyle("fontWeight", "bold");
+			_countdownTxt.setStyle("fontSize", 30);
+			_countdownTxt.selectable = false;
 			_countdownTxt.visible = false;
 			
 			//Event Listeners
@@ -123,7 +123,7 @@ package modules.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
-			_videoWrapper.addChild(_countdownTxt);
+			addChild(_countdownTxt);
 			
 			
 			/**
@@ -270,6 +270,10 @@ package modules.videoPlayer
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
 			_localeComboBox.resize(_videoWidth - _subtitleBox.width, _subtitleBox.height);
 			
+			_countdownTxt.x = _videoWidth/2 - 10;
+			_countdownTxt.y = _videoHeight/2 - 10;
+			_countdownTxt.width = _videoWidth;
+			_countdownTxt.height = _videoHeight;
 			
 			drawBG();
 		}
@@ -501,6 +505,7 @@ package modules.videoPlayer
 				_countdownTxt.visible = false;
 				_video.visible = true;
 				
+				_countdownTxt.text = "5";
 				_countdown.stop();
 				_countdown.reset();
 				
@@ -515,7 +520,7 @@ package modules.videoPlayer
 		 */
 		private function startRecording() : void
 		{
-			Alert.show("start recording");
+			
 		}
 	
 	}
