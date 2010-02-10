@@ -58,6 +58,14 @@ package modules.videoPlayer
 		/**
 		 * Recording related variables
 		 */
+		// errors
+		public static const ERR_NOCAMORMIC:String = "NOCAMORMIC";
+		public static const ERR_NOMIC:String = "NOMIC";
+		public static const ERR_CAMMICREFRESH:String = "CAMMICREFRESH";
+		public static const ERR_MICREFRESH:String = "MICREFRESH";
+		public static const ERR_ERROR:String = "ERROR"; 
+		
+		// states
 		public static const PLAY_STATE:String = "playing";
 		public static const RECORD_BOTH_STATE:String = "recordingBoth";
 		public static const RECORD_MIC_STATE:String = "recordingMic";
@@ -75,6 +83,8 @@ package modules.videoPlayer
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
 		private var _accessTimeout:Timer;
+		
+		private var _lastVideoHeight:Number;
 		
 		/**
 		 * CONSTRUCTOR
@@ -206,6 +216,18 @@ package modules.videoPlayer
 			_state = state;
 			stopVideo();
 			
+			if ( state == RECORD_MIC_STATE && DataModel.getInstance().micAccessDenied ) 
+			{
+				goBackHome(ERR_MICREFRESH);
+				return;
+			}
+			else if ( state == RECORD_BOTH_STATE && 
+						(DataModel.getInstance().micAccessDenied || DataModel.getInstance().camAccessDenied) )
+			{
+				goBackHome(ERR_CAMMICREFRESH);
+				return;
+			}
+			
 			switch ( _state )
 			{
 				case RECORD_BOTH_STATE:
@@ -225,10 +247,26 @@ package modules.videoPlayer
 					break;
 			
 				default:
+					// NOTE: problems with _videoWrapper.width
+					_videoHeight = _lastVideoHeight;
+
+					_camWrapper.visible = false;
+					_camVideo.attachCamera(null); // TODO: deattach camera
+					
+					if ( !autoScale )
+						scaleVideo();
+						
+					this.updateDisplayList(0,0);
+				
 					playVideo();
 					
 					break;
 			}
+		}
+		
+		public function get state() : String
+		{
+			return _state;
 		}
 		
 		/**
@@ -463,12 +501,12 @@ package modules.videoPlayer
 		/**
 		 * When something is wrong
 		 */
-		private function goBackHome() : void
+		private function goBackHome(err:String = ERR_ERROR) : void
 		{
 			// back to home
 			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 			// TODO: locale string
-			Alert.show("No has habilitado camara o mic");
+			Alert.show(resourceManager.getString('myResources', err));
 		}
 		
 
@@ -532,7 +570,10 @@ package modules.videoPlayer
 			else if ( _accessTimeout.currentCount == 
 						_accessTimeout.repeatCount )
 			{
-				goBackHome();
+				state == RECORD_BOTH_STATE? 
+					goBackHome(ERR_NOCAMORMIC) 
+					: goBackHome(ERR_NOMIC);
+				
 				_accessTimeout.reset();
 			}
 		}
@@ -567,6 +608,7 @@ package modules.videoPlayer
 			// should be improved
 			_videoWrapper.width = _videoWidth / 2 - 2;	
 			var h:int = (_videoWidth / 2 - 2) * _videoHeight / _videoWidth;
+			_lastVideoHeight = _videoHeight; // store last value
 			_videoWrapper.height = h;
 			_videoHeight = h;
 			_video.x = 0;

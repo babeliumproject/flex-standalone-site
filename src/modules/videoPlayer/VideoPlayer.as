@@ -533,9 +533,7 @@ package modules.videoPlayer
 
 			if ( !autoScale )
 			{
-				_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
-				_video.x = _videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2;
-				_video.y = _videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2;
+				scaleVideo();
 			}
 		}
 		
@@ -652,5 +650,12 @@ package modules.videoPlayer
 			trace( _ns.soundTransform.volume, e.volumeAmount );
 		}
 		
+		
+		protected function scaleVideo() : void
+		{
+			_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
+			_video.x = _videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2;
+			_video.y = _videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2;
+		}
 	}
 }

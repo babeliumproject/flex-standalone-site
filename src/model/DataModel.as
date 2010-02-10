@@ -138,6 +138,10 @@ package model
 		// In order to avoid tab change if recording exercise
 		[Bindable] public var recordingExercise:Boolean = false;
 		
+		// Shows if users denied access to cam or mic to video player
+		[Bindable] public var camAccessDenied:Boolean = false;
+		[Bindable] public var micAccessDenied:Boolean = false;
+		
 		// l10n
 			
 		[Bindable] public var locales:Array = [ "en_US" , "es_SP", "eu_EK", "fr_FR"];
