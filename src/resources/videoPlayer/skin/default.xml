@@ -7,10 +7,12 @@
 	</Component>
 	<Component name="VideoPlayerBabelia">
 		<Property name="bgColor">0x343434</Property>
+		<Property name="camBgColor">0x000000</Property>
 		<Property name="borderColor">0x000000</Property>
 		<Property name="videoBgColor">0x000000</Property>
 		<Property name="roleBgColor">0x454545</Property>
 		<Property name="roleBorderColor">0x000000</Property>
+		<Property name="countdownColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="ArrowPanel">
 		<Property name="bgColor">0x343434</Property>

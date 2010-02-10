@@ -280,7 +280,7 @@ package modules.videoPlayer
 				
 				if ( cmp == null )
 					continue;
-						
+				
 				for each ( var xElement:XML in xChild.child("Property") )
 				{
 					var propertyName:String = xElement.attribute("name").toString();
@@ -306,7 +306,8 @@ package modules.videoPlayer
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
 			this.graphics.clear();
-
+			
+			_bgVideo.graphics.clear();
 			_bgVideo.graphics.beginFill( getSkinColor(VIDEOBG_COLOR) );
 			_bgVideo.graphics.drawRoundRect( _defaultMargin, _defaultMargin, 
 												_videoWidth, 
