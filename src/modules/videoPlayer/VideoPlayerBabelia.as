@@ -6,31 +6,31 @@
 
 package modules.videoPlayer
 {
-	import model.DataModel;
-	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
-	import modules.videoPlayer.controls.babelia.LocaleComboBox;
-	import modules.videoPlayer.controls.babelia.SubtitleButton;
-	import modules.videoPlayer.controls.babelia.ArrowPanel;
-	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
-	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
-	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
-	import modules.videoPlayer.events.babelia.StreamEvent;
-	import modules.videoPlayer.VideoPlayer;
+	import events.ViewChangeEvent;
 	
 	import flash.display.*;
+	import flash.events.*;
 	import flash.media.*;
 	import flash.net.*;
-	import flash.events.*;
 	import flash.utils.*;
 	
+	import model.DataModel;
+	
+	import modules.videoPlayer.controls.babelia.ArrowPanel;
+	import modules.videoPlayer.controls.babelia.LocaleComboBox;
+	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
+	import modules.videoPlayer.controls.babelia.SubtitleButton;
+	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
+	import modules.videoPlayer.events.babelia.StreamEvent;
+	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
+	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
+	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.controls.Text;
-
 	import mx.core.UIComponent;
-	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
-	import events.ViewChangeEvent;
 
 	public class VideoPlayerBabelia extends VideoPlayer
 	{		
@@ -65,11 +65,22 @@ package modules.videoPlayer
 		public static const ERR_MICREFRESH:String = "MICREFRESH";
 		public static const ERR_ERROR:String = "ERROR"; 
 		
-		// states
-		public static const PLAY_STATE:String = "playing";
-		public static const RECORD_BOTH_STATE:String = "recordingBoth";
-		public static const RECORD_MIC_STATE:String = "recordingMic";
-		private var _state:String;
+		/**
+		 * States NOTE:
+		 * XXXX XXX1: split video panel into 2 views
+		 * XXXX XX1X: recording modes
+		 */
+		public static const PLAY_STATE:int = 0;			// 0000 0000
+		public static const PLAY_BOTH_STATE:int = 1;	// 0000 0001
+		public static const RECORD_MIC_STATE:int = 2;	// 0000 0010
+		public static const RECORD_BOTH_STATE:int = 3;	// 0000 0011
+		public static const RECORD_FLAG:int = 2;		// XXXX XX1X
+		public static const SPLIT_FLAG:int = 1;			// XXXX XXX1
+		private var _state:int;
+		
+		// other constants
+		public static const ACCESS_TIMEOUT_SECS:int = 5;
+		public static const COUNTDOWN_TIMER_SECS:int = 5;
 		
 		private var _mic:Microphone;
 		private var _micEnabled:Boolean = false;
@@ -211,62 +222,15 @@ package modules.videoPlayer
 				_roleTalkingPanel.setTalking(role, duration);
 		}
 		
-		public function set state(state:String) : void
-		{
-			_state = state;
-			stopVideo();
-			
-			if ( state == RECORD_MIC_STATE && DataModel.getInstance().micAccessDenied ) 
-			{
-				goBackHome(ERR_MICREFRESH);
-				return;
-			}
-			else if ( state == RECORD_BOTH_STATE && 
-						(DataModel.getInstance().micAccessDenied || DataModel.getInstance().camAccessDenied) )
-			{
-				goBackHome(ERR_CAMMICREFRESH);
-				return;
-			}
-			
-			switch ( _state )
-			{
-				case RECORD_BOTH_STATE:
-					// TODO: improve
-					_camera = Camera.getCamera();
-					_camera.addEventListener(StatusEvent.STATUS, camera_status);
-				
-					_mic = Microphone.getMicrophone();
-					_mic.setUseEchoSuppression(true); 
-					_mic.setLoopBack(true);
-					_mic.addEventListener(StatusEvent.STATUS,mic_status);
-				
-					_accessTimeout = new Timer(1000, 5); // 5 sec to accept access
-					_accessTimeout.addEventListener(TimerEvent.TIMER, onAccessTick);
-					_accessTimeout.start();
-					
-					break;
-			
-				default:
-					// NOTE: problems with _videoWrapper.width
-					_videoHeight = _lastVideoHeight;
-
-					_camWrapper.visible = false;
-					_camVideo.attachCamera(null); // TODO: deattach camera
-					
-					if ( !autoScale )
-						scaleVideo();
-						
-					this.updateDisplayList(0,0);
-				
-					playVideo();
-					
-					break;
-			}
-		}
-		
-		public function get state() : String
+		public function get state() : int
 		{
 			return _state;
+		}
+		
+		public function set state(state:int) : void
+		{
+			_state = state;
+			switchPerspective();
 		}
 		
 		/**
@@ -497,22 +461,80 @@ package modules.videoPlayer
 		}
 		
 		
+		/**
+		 * Switch video's perspective between play mode and record mode
+		 */
+		private function switchPerspective() : void
+		{
+			stopVideo();			
+			
+			switch ( _state )
+			{
+				case RECORD_BOTH_STATE:
+				
+					if ( DataModel.getInstance().micAccessDenied 
+							|| DataModel.getInstance().camAccessDenied )
+					{
+						goBackHome(ERR_CAMMICREFRESH);
+						return;
+					}
+					
+					prepareWebcam();
+					prepareMicrophone();
+					startAccessTimeout();
+					
+					break;
+				
+				case RECORD_MIC_STATE:
+					
+					if ( DataModel.getInstance().micAccessDenied ) 
+					{
+						goBackHome(ERR_MICREFRESH);
+						return;
+					}
+					
+					prepareMicrophone();
+					startAccessTimeout();
+					
+					break;
+			
+				default:
+					// NOTE: problems with _videoWrapper.width
+					_videoHeight = _lastVideoHeight;
+
+					_camWrapper.visible = false;
+					_camVideo.attachCamera(null); // TODO: deattach camera
+					
+					if ( !autoScale )
+						scaleVideo();
+						
+					this.updateDisplayList(0,0);
+					
+					// Enable seek
+					seek = true;
+					
+					if ( autoPlay )
+						playVideo();
+					
+					break;
+			}
+		}
 		
 		/**
 		 * When something is wrong
 		 */
-		private function goBackHome(err:String = ERR_ERROR) : void
+		private function goBackHome(errCode:String = ERR_ERROR) : void
 		{
 			// back to home
 			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-			// TODO: locale string
-			Alert.show(resourceManager.getString('myResources', err));
+			Alert.show(resourceManager.getString('myResources', errCode));
 		}
 		
 
 		/**
 		 * Recording related commands
 		 */
+
 		// return if users has webcam
 		public function hasCam() : Boolean
 		{
@@ -550,10 +572,24 @@ package modules.videoPlayer
 			}
 		}
 		
+		
+		/**
+		 * Access Control
+		 */
+		
+		// Prepare access timeout
+		private function startAccessTimeout() : void
+		{
+			_accessTimeout = new Timer(1000, ACCESS_TIMEOUT_SECS); // 5 sec to accept access
+			_accessTimeout.addEventListener(TimerEvent.TIMER, onAccessTick);
+			_accessTimeout.start();
+		}
+		
 		// Access timer as a timeout
 		private function onAccessTick(tick:TimerEvent) : void
 		{	
-			if ( _cameraEnabled && _micEnabled )
+			if ( (state == RECORD_BOTH_STATE && _cameraEnabled && _micEnabled)
+					|| (state == RECORD_MIC_STATE && _micEnabled) )
 			{
 				_accessTimeout.stop();
 				_accessTimeout.reset();
@@ -562,10 +598,7 @@ package modules.videoPlayer
 				_countdownTxt.visible = true;
 				
 				prepareRecording();
-				
-				_countdown = new Timer(1000, 5)
-				_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
-				_countdown.start();
+				startCountdown();
 			}
 			else if ( _accessTimeout.currentCount == 
 						_accessTimeout.repeatCount )
@@ -578,7 +611,20 @@ package modules.videoPlayer
 			}
 		}
 		
-		// Countdown timer
+		
+		/**
+		 * Countdown before recording
+		 */
+		
+		// prepare countdown timer
+		private function startCountdown() : void
+		{
+			_countdown = new Timer(1000, COUNTDOWN_TIMER_SECS)
+			_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
+			_countdown.start();
+		}
+		
+		// Countdown tick
 		private function onCountdownTick(tick:TimerEvent) : void 
 		{
 			if ( _countdown.currentCount == _countdown.repeatCount )
@@ -587,6 +633,7 @@ package modules.videoPlayer
 				_video.visible = true;
 				_camWrapper.visible = true;
 				
+				// Reset countdown timer
 				_countdownTxt.text = "5";
 				_countdown.stop();
 				_countdown.reset();
@@ -599,22 +646,40 @@ package modules.videoPlayer
 		
 		
 		/**
-		 * Split video into 2 panels
+		 * Methods for prepare the record
 		 */
+		
+		// prepare webcam
+		private function  prepareWebcam() : void
+		{
+			_camera = Camera.getCamera();
+			// Important: Access Control
+			_camera.addEventListener(StatusEvent.STATUS, camera_status);
+		}
+		
+		// prepare microphone
+		private function prepareMicrophone() : void
+		{
+			_mic = Microphone.getMicrophone();
+			_mic.setUseEchoSuppression(true); 
+			_mic.setLoopBack(true);
+			// Important: Access Control
+			_mic.addEventListener(StatusEvent.STATUS,mic_status);
+		}
+		
+		// splits panel into a 2 different views
 		private function prepareRecording() : void 
 		{
-			_camVideo.attachCamera(_camera);
+			// Disable seek
+			seek = false;
 			
-			// should be improved
-			_videoWrapper.width = _videoWidth / 2 - 2;	
-			var h:int = (_videoWidth / 2 - 2) * _videoHeight / _videoWidth;
-			_lastVideoHeight = _videoHeight; // store last value
-			_videoWrapper.height = h;
-			_videoHeight = h;
-			_video.x = 0;
-			_video.y = 0;
-			
-			updateDisplayList(0,0);
+			if ( state&SPLIT_FLAG )
+			{
+				// Attach Camera
+				_camVideo.attachCamera(_camera);
+				
+				splitVideoPanel();
+			}
 		}
 		
 		/**
@@ -623,6 +688,41 @@ package modules.videoPlayer
 		private function startRecording() : void
 		{
 			
+		}
+		
+		
+		/**
+		 * Split video panel into 2 views
+		 */
+		private function splitVideoPanel() : void
+		{
+			// Resize video panels
+			_videoWrapper.width = _videoWidth / 2 - 2;	
+			
+			var h:int = (_videoWidth / 2 - 2) * _video.height / _video.width;
+			_lastVideoHeight = _videoHeight; // store last value
+				
+			_videoWrapper.height = h;
+			_videoHeight = h;
+			_video.x = 0;
+			_video.y = 0;
+				
+			// Resize cam video image
+			_camVideo.width = 640;
+			_camVideo.height = 400;
+			// not needed scaleCamVideo();
+				
+			updateDisplayList(0,0);
+		}
+		
+		// Aux: scaling cam image
+		private function scaleCamVideo() : void
+		{
+			_camWrapper.scaleX > _camWrapper.scaleY ? 
+					_camWrapper.scaleX = _camWrapper.scaleY 
+					: _camWrapper.scaleY = _camWrapper.scaleX;
+
+			_camVideo.x = _videoWidth/4 - (_camVideo.width * _camWrapper.scaleX)/2;
 		}
 	
 	}
