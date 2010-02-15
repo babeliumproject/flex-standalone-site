@@ -1,12 +1,12 @@
 /**
  * NOTES
  * 
- * If seek is enabled arrows must be disabled
  */
 
 package modules.videoPlayer
 {
 	import events.ViewChangeEvent;
+	import modules.videoPlayer.events.VideoPlayerEvent;
 	
 	import flash.display.*;
 	import flash.events.*;
@@ -21,6 +21,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
+	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
@@ -74,13 +75,20 @@ package modules.videoPlayer
 		public static const PLAY_BOTH_STATE:int = 1;	// 0000 0001
 		public static const RECORD_MIC_STATE:int = 2;	// 0000 0010
 		public static const RECORD_BOTH_STATE:int = 3;	// 0000 0011
-		public static const RECORD_FLAG:int = 2;		// XXXX XX1X
+		
 		public static const SPLIT_FLAG:int = 1;			// XXXX XXX1
+		public static const RECORD_FLAG:int = 2;		// XXXX XX1X
+		
 		private var _state:int;
+		
+		// AUDIO DIR
+		private const AUDIO_DIR:String = "audio";
 		
 		// other constants
 		public static const ACCESS_TIMEOUT_SECS:int = 5;
 		public static const COUNTDOWN_TIMER_SECS:int = 5;
+		
+		private var _outNs:NetStream;
 		
 		private var _mic:Microphone;
 		private var _micEnabled:Boolean = false;
@@ -95,7 +103,9 @@ package modules.videoPlayer
 		private var _countdownTxt:Text;
 		private var _accessTimeout:Timer;
 		
-		private var _lastVideoHeight:Number;
+		private var _fileName:String;
+		
+		private var _lastVideoHeight:Number = 0;
 		
 		/**
 		 * CONSTRUCTOR
@@ -229,6 +239,8 @@ package modules.videoPlayer
 		
 		public function set state(state:int) : void
 		{
+			stopVideo();
+
 			_state = state;
 			switchPerspective();
 		}
@@ -337,7 +349,7 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Gives parent document an ENTER_FRAME based event
+		 * Gives parent component an ENTER_FRAME event
 		 * with current stream time (CuePointManager should catch this)
 		 */
 		private function onEnterFrame(e:Event) : void
@@ -355,6 +367,9 @@ package modules.videoPlayer
 			
 			if ( _roleTalkingPanel.talking )
 				_roleTalkingPanel.pauseTalk();
+			
+			if ( state&RECORD_FLAG ) // TODO: test
+				_outNs.pause();
 		}
 		
 		/**
@@ -366,6 +381,9 @@ package modules.videoPlayer
 			
 			if ( _roleTalkingPanel.talking )
 				_roleTalkingPanel.resumeTalk();
+			
+			if ( state&RECORD_FLAG ) // TODO: test
+				_outNs.resume();
 		}
 		
 		/**
@@ -377,6 +395,9 @@ package modules.videoPlayer
 			
 			if ( _roleTalkingPanel.talking )
 				_roleTalkingPanel.stopTalk();
+			
+			if ( state&RECORD_FLAG )
+				_outNs.close();
 		}
 		
 		/**
@@ -466,7 +487,6 @@ package modules.videoPlayer
 		 */
 		private function switchPerspective() : void
 		{
-			stopVideo();			
 			
 			switch ( _state )
 			{
@@ -500,7 +520,8 @@ package modules.videoPlayer
 			
 				default:
 					// NOTE: problems with _videoWrapper.width
-					_videoHeight = _lastVideoHeight;
+					if ( _lastVideoHeight > _videoHeight )
+						_videoHeight = _lastVideoHeight;
 
 					_camWrapper.visible = false;
 					_camVideo.attachCamera(null); // TODO: deattach camera
@@ -677,9 +698,19 @@ package modules.videoPlayer
 			{
 				// Attach Camera
 				_camVideo.attachCamera(_camera);
-				
+
 				splitVideoPanel();
 			}
+			
+			if ( state&RECORD_FLAG )
+			{
+				_outNs = new NetStream(_nc);
+				_mic.gain = 0;
+				_outNs.attachAudio(_mic);
+			}
+			
+			if ( state == RECORD_BOTH_STATE )
+				_outNs.attachCamera(_camera);
 		}
 		
 		/**
@@ -687,7 +718,20 @@ package modules.videoPlayer
 		 */
 		private function startRecording() : void
 		{
+			if ( !(state&RECORD_FLAG) ) return; // security check
 			
+			trace("Recording!");
+			
+			var d:Date = new Date();
+			var audioFilename:String = "audio-"+d.getTime().toString();
+			_fileName = AUDIO_DIR + "/" + audioFilename;
+			
+			if ( _started )
+				resumeVideo();
+			else
+				playVideo();
+
+			_outNs.publish(_fileName, "record");
 		}
 		
 		
@@ -696,6 +740,8 @@ package modules.videoPlayer
 		 */
 		private function splitVideoPanel() : void
 		{
+			if ( !(state&SPLIT_FLAG) ) return; // security check
+			
 			// Resize video panels
 			_videoWrapper.width = _videoWidth / 2 - 2;	
 			
@@ -722,8 +768,19 @@ package modules.videoPlayer
 					_camWrapper.scaleX = _camWrapper.scaleY 
 					: _camWrapper.scaleY = _camWrapper.scaleX;
 
-			_camVideo.x = _videoWidth/4 - (_camVideo.width * _camWrapper.scaleX)/2;
+			_camVideo.x = (_videoWidth/2 -2)/2 - (_camVideo.width * _camWrapper.scaleX)/2;
 		}
-	
+		
+		/**
+		 * On recording finished
+		 **/
+		override protected function onVideoFinishedPlaying( e:VideoPlayerEvent ):void
+		{
+			super.onVideoFinishedPlaying(e);
+			
+			if ( state&RECORD_FLAG )
+				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName)); 
+		}
+
 	}
 }

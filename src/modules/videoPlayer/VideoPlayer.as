@@ -60,7 +60,7 @@ package modules.videoPlayer
 		protected var _video:Video;
 		protected var _videoWrapper:MovieClip;
 		protected var _ns:NetStream;
-		private var _nc:NetConnection;
+		protected var _nc:NetConnection;
 		
 		private var _videoSource:String = null;
 		private var _streamSource:String = null;
@@ -70,6 +70,7 @@ package modules.videoPlayer
 		private var _currentTime:Number = 0;
 		private var _autoScale:Boolean = true;
 		protected var _duration:Number = 0;
+		protected var _started:Boolean = false;
 		protected var _defaultMargin:Number = 5;
 		
 		private var _bgVideo:Sprite;
@@ -412,8 +413,15 @@ package modules.videoPlayer
 			{
 				trace( "successful connection" );
 				
+				if( _ns != null ) _ns.close();
+			
+				_ns = new NetStream( _nc );
+				_ns.addEventListener( NetStatusEvent.NET_STATUS, netStatus );
+				_ns.client = this;
+				_ns.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );			
+				
 				if( _autoPlay )
-				{
+				{		
 					playVideo();
 					_ppBtn.State = PlayButton.PAUSE_STATE;
 				}
@@ -457,17 +465,11 @@ package modules.videoPlayer
 									
 			trace( "Video Started" );
 			
-			if( _ns != null ) _ns.close();
-			
-			_ns = new NetStream( _nc );
-			_ns.addEventListener( NetStatusEvent.NET_STATUS, netStatus );
-			
-			_ns.client = this;
-			_ns.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() ); 
-			
 			_video.attachNetStream( _ns );
 			
 			_ns.play( _videoSource );
+			
+			_started = true;
 			
 			if( _timer ) _timer.stop();
 			_timer = new Timer(100);
@@ -626,10 +628,12 @@ package modules.videoPlayer
 		}
 		
 		
-		private function onVideoFinishedPlaying( e:Event ):void
+		protected function onVideoFinishedPlaying( e:VideoPlayerEvent ):void
 		{
 			
 			stopVideo();
+			
+			dispatchEvent(e);
 			
 			// This code unloads the video - Not Used but kept in for future
 			// in case we want to unload the video

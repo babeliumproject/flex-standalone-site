@@ -8,7 +8,7 @@
 	<mx:HBox>
 		<mx:Button label="Grabar!"
 			   fontWeight="normal"
-			   width="60"
+			   width="80"
 			   height="30"
 			   labelPlacement="bottom"
 			   click="click(event)"
@@ -17,10 +17,19 @@
 		</mx:Button>
 		<mx:Button label="Ver!"
 			   fontWeight="normal"
-			   width="60"
+			   width="80"
 			   height="30"
 			   labelPlacement="bottom"
 			   click="click2(event)"
+			   enabled="true"
+			   visible="true">
+		</mx:Button>
+		<mx:Button label="Cambiar!"
+			   fontWeight="normal"
+			   width="80"
+			   height="30"
+			   labelPlacement="bottom"
+			   click="click3(event)"
 			   enabled="true"
 			   visible="true">
 		</mx:Button>
@@ -32,6 +41,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import mx.collections.ArrayCollection;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import mx.controls.Alert;
@@ -76,11 +86,22 @@
 			public function click(e:Event) : void
 			{
 				VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE; // start "recording"
+				VP.addEventListener(RecordingEvent.END, onFinishedRecording);
 			}
 			
 			public function click2(e:Event) : void
 			{
 				VP.state = VideoPlayerBabelia.PLAY_STATE; // start video view
+			}
+			
+			public function click3(e:Event) : void
+			{
+				VP.videoSource = "kutsi9.flv"; // start video view
+			}
+			
+			public function onFinishedRecording(e:RecordingEvent) : void
+			{
+				Alert.show("Ha terminado la grabación de: " + e.fileName);
 			}
 			
 		]]>
