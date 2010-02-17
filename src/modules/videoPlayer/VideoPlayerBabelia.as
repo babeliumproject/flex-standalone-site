@@ -16,6 +16,7 @@ package modules.videoPlayer
 	
 	import model.DataModel;
 	
+	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
 	import modules.videoPlayer.controls.babelia.LocaleComboBox;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
@@ -76,8 +77,8 @@ package modules.videoPlayer
 		public static const RECORD_MIC_STATE:int = 2;	// 0000 0010
 		public static const RECORD_BOTH_STATE:int = 3;	// 0000 0011
 		
-		public static const SPLIT_FLAG:int = 1;			// XXXX XXX1
-		public static const RECORD_FLAG:int = 2;		// XXXX XX1X
+		private const SPLIT_FLAG:int = 1;				// XXXX XXX1
+		private const RECORD_FLAG:int = 2;				// XXXX XX1X
 		
 		private var _state:int;
 		
@@ -85,8 +86,8 @@ package modules.videoPlayer
 		private const AUDIO_DIR:String = "audio";
 		
 		// other constants
-		public static const ACCESS_TIMEOUT_SECS:int = 5;
-		public static const COUNTDOWN_TIMER_SECS:int = 5;
+		private const ACCESS_TIMEOUT_SECS:int = 5;
+		private const COUNTDOWN_TIMER_SECS:int = 5;
 		
 		private var _outNs:NetStream;
 		
@@ -522,6 +523,9 @@ package modules.videoPlayer
 					// NOTE: problems with _videoWrapper.width
 					if ( _lastVideoHeight > _videoHeight )
 						_videoHeight = _lastVideoHeight;
+					
+					_videoWrapper.width = _videoWidth;
+					_videoWrapper.height = _videoHeight;
 
 					_camWrapper.visible = false;
 					_camVideo.attachCamera(null); // TODO: deattach camera
@@ -533,9 +537,6 @@ package modules.videoPlayer
 					
 					// Enable seek
 					seek = true;
-					
-					if ( autoPlay )
-						playVideo();
 					
 					break;
 			}
@@ -720,8 +721,6 @@ package modules.videoPlayer
 		{
 			if ( !(state&RECORD_FLAG) ) return; // security check
 			
-			trace("Recording!");
-			
 			var d:Date = new Date();
 			var audioFilename:String = "audio-"+d.getTime().toString();
 			_fileName = AUDIO_DIR + "/" + audioFilename;
@@ -730,8 +729,12 @@ package modules.videoPlayer
 				resumeVideo();
 			else
 				playVideo();
+				
+			_ppBtn.State = PlayButton.PAUSE_STATE;
 
 			_outNs.publish(_fileName, "record");
+			
+			trace("Started recording of " + _fileName);
 		}
 		
 		
@@ -759,6 +762,8 @@ package modules.videoPlayer
 			// not needed scaleCamVideo();
 				
 			updateDisplayList(0,0);
+			
+			trace("Video panel has been splitted");
 		}
 		
 		// Aux: scaling cam image
@@ -779,7 +784,10 @@ package modules.videoPlayer
 			super.onVideoFinishedPlaying(e);
 			
 			if ( state&RECORD_FLAG )
-				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName)); 
+			{
+				trace("Recording of " + _fileName + " has been finished");
+				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
+			} 
 		}
 
 	}

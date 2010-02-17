@@ -74,7 +74,7 @@ package modules.videoPlayer
 		protected var _defaultMargin:Number = 5;
 		
 		private var _bgVideo:Sprite;
-		private var _ppBtn:PlayButton;
+		protected var _ppBtn:PlayButton;
 		private var _stopBtn:StopButton;
 		private var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
@@ -389,7 +389,6 @@ package modules.videoPlayer
 				_nc.connect( _streamSource );
 				_nc.addEventListener( NetStatusEvent.NET_STATUS, onStreamNetConnect );
 				_nc.client = this;
-				
 			} else
 			{
 				_nc.connect( null );
@@ -411,14 +410,7 @@ package modules.videoPlayer
 			
 			if( e.info.code == "NetConnection.Connect.Success" )
 			{
-				trace( "successful connection" );
-				
-				if( _ns != null ) _ns.close();
-			
-				_ns = new NetStream( _nc );
-				_ns.addEventListener( NetStatusEvent.NET_STATUS, netStatus );
-				_ns.client = this;
-				_ns.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );			
+				trace( "successful connection" );			
 				
 				if( _autoPlay )
 				{		
@@ -465,10 +457,17 @@ package modules.videoPlayer
 									
 			trace( "Video Started" );
 			
+			if ( _ns != null ) _ns.close();
+			
+			_ns = new NetStream( _nc );
+			_ns.addEventListener( NetStatusEvent.NET_STATUS, netStatus );
+			_ns.client = this;
+			_ns.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );	
+			
 			_video.attachNetStream( _ns );
 			
 			_ns.play( _videoSource );
-			
+
 			_started = true;
 			
 			if( _timer ) _timer.stop();
@@ -519,7 +518,7 @@ package modules.videoPlayer
 			trace( "metadata: " );
 				
 			for ( var a:* in msg ) trace( a + " : " + msg[a] );
-			
+
 			_duration = msg.duration;
 			_video.width = msg["width"];
 			_video.height = msg["height"];

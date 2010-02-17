@@ -96,6 +96,7 @@
 			
 			public function click3(e:Event) : void
 			{
+				VP.removeArrows();
 				VP.videoSource = "kutsi9.flv"; // start video view
 			}
 			
