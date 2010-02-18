@@ -75,7 +75,7 @@ package modules.videoPlayer
 		
 		private var _bgVideo:Sprite;
 		protected var _ppBtn:PlayButton;
-		private var _stopBtn:StopButton;
+		protected var _stopBtn:StopButton;
 		private var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
@@ -551,7 +551,7 @@ package modules.videoPlayer
 		}
 		
 		
-		public function onPPBtnChanged( e:PlayPauseEvent ):void
+		protected function onPPBtnChanged( e:PlayPauseEvent ):void
 		{
 			if( _ppBtn.getState() == PlayButton.PAUSE_STATE )
 			{
@@ -570,7 +570,7 @@ package modules.videoPlayer
 		}
 		
 		
-		private function onStopBtnClick( e:StopEvent ):void
+		protected function onStopBtnClick( e:StopEvent ):void
 		{
 			stopVideo();
 		}

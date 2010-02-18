@@ -80,6 +80,30 @@ package modules.videoPlayer.controls
 			return _state;
 		}
 		
+		/**
+		 * Enable/disable play button
+		 **/
+		override public function set enabled(flag:Boolean) : void
+		{
+			super.enabled = flag;
+
+			this.buttonMode = flag;
+			this.useHandCursor = flag;
+
+			if ( flag )
+			{
+				this.addEventListener( MouseEvent.ROLL_OVER, onMouseOver );
+				this.addEventListener( MouseEvent.ROLL_OUT, onMouseOut );
+				this.addEventListener( MouseEvent.CLICK, onClick );
+			}
+			else
+			{
+				this.removeEventListener( MouseEvent.ROLL_OVER, onMouseOver );
+				this.removeEventListener( MouseEvent.ROLL_OUT, onMouseOut );
+				this.removeEventListener( MouseEvent.CLICK, onClick );
+			}
+		}
+		
 		
 		/**
 		 * Methods

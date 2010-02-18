@@ -61,8 +61,12 @@ package modules.videoPlayer.controls
 			_bg = new Sprite();
 			
 			_sliderArea = new Sprite();
+			_sliderArea.useHandCursor = true;
+			_sliderArea.buttonMode = true;
 			
 			_amount = new Sprite();
+			_amount.useHandCursor = true;
+			_amount.buttonMode = true;
 			
 			_scrubber = new Sprite();
 			_scrubber.useHandCursor = true;
@@ -111,7 +115,59 @@ package modules.videoPlayer.controls
 		public function getCurrentVolume( ):Number
 		{
 			return _currentVolume;
-		}		
+		}
+		
+		public function get muted() : Boolean
+		{
+			return _muted;
+		}
+		
+		public function set muted(flag:Boolean) : void
+		{
+			_sliderArea.useHandCursor = !flag;
+			_sliderArea.buttonMode = !flag;
+			
+			_amount.useHandCursor = !flag;
+			_amount.buttonMode = !flag;
+			
+			_scrubber.useHandCursor = !flag;
+			_scrubber.buttonMode = !flag;
+
+			_muteBtn.useHandCursor = !flag;
+			_muteBtn.buttonMode = !flag;
+
+			_mutOverBg.useHandCursor = !flag;
+			_mutOverBg.buttonMode = !flag;
+			
+			if ( !flag )
+			{
+				_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberMouseDown );
+				_sliderArea.addEventListener( MouseEvent.CLICK, onAreaClick );
+				_amount.addEventListener( MouseEvent.CLICK, onAreaClick );
+				_muteBtn.addEventListener( MouseEvent.MOUSE_OVER, muteOver );
+				_mutOverBg.addEventListener( MouseEvent.MOUSE_OVER, muteOver );
+				_muteBtn.addEventListener( MouseEvent.MOUSE_OUT, muteOut );
+				_mutOverBg.addEventListener( MouseEvent.MOUSE_OUT, muteOut );
+				_muteBtn.addEventListener( MouseEvent.CLICK, muteClicked );
+				_mutOverBg.addEventListener( MouseEvent.CLICK, muteClicked );
+			}
+			else
+			{
+				_scrubber.removeEventListener( MouseEvent.MOUSE_DOWN, onScrubberMouseDown );
+				_sliderArea.removeEventListener( MouseEvent.CLICK, onAreaClick );
+				_amount.removeEventListener( MouseEvent.CLICK, onAreaClick );
+				_muteBtn.removeEventListener( MouseEvent.MOUSE_OVER, muteOver );
+				_mutOverBg.removeEventListener( MouseEvent.MOUSE_OVER, muteOver );
+				_muteBtn.removeEventListener( MouseEvent.MOUSE_OUT, muteOut );
+				_mutOverBg.removeEventListener( MouseEvent.MOUSE_OUT, muteOut );
+				_muteBtn.removeEventListener( MouseEvent.CLICK, muteClicked );
+				_mutOverBg.removeEventListener( MouseEvent.CLICK, muteClicked );
+			}
+			
+			if ( muted == flag ) return;
+
+			muteClicked(null); // Click event
+		}
 		
 		
 		/** 

@@ -55,6 +55,29 @@ package modules.videoPlayer.controls
 			super.availableProperties([BG_COLOR,OVERBG_COLOR,ICON_COLOR]);
 		}
 		
+		/**
+		 * Enable/disable stop button
+		 **/
+		override public function set enabled(flag:Boolean) : void
+		{
+			super.enabled = flag;
+			
+			this.buttonMode = flag;
+			this.useHandCursor = flag;
+
+			if ( flag )
+			{
+				this.addEventListener( MouseEvent.ROLL_OVER, onMouseOver );
+				this.addEventListener( MouseEvent.ROLL_OUT, onMouseOut );
+				this.addEventListener( MouseEvent.CLICK, onClick );
+			}
+			else
+			{
+				this.removeEventListener( MouseEvent.ROLL_OVER, onMouseOver );
+				this.removeEventListener( MouseEvent.ROLL_OUT, onMouseOut );
+				this.removeEventListener( MouseEvent.CLICK, onClick );
+			}
+		}
 		
 		/**
 		 * Methods

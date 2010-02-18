@@ -6,7 +6,6 @@
 package modules.videoPlayer
 {
 	import events.ViewChangeEvent;
-	import modules.videoPlayer.events.VideoPlayerEvent;
 	
 	import flash.display.*;
 	import flash.events.*;
@@ -22,6 +21,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
+	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
@@ -84,12 +84,14 @@ package modules.videoPlayer
 		
 		// AUDIO DIR
 		private const AUDIO_DIR:String = "audio";
+		private const DEFAULT_VOLUME:Number = 40;
 		
 		// other constants
 		private const ACCESS_TIMEOUT_SECS:int = 5;
 		private const COUNTDOWN_TIMER_SECS:int = 5;
 		
 		private var _outNs:NetStream;
+		private var _inNs:NetStream;
 		
 		private var _mic:Microphone;
 		private var _micEnabled:Boolean = false;
@@ -105,6 +107,7 @@ package modules.videoPlayer
 		private var _accessTimeout:Timer;
 		
 		private var _fileName:String;
+		private var _recordingMuted:Boolean = false;
 		
 		private var _lastVideoHeight:Number = 0;
 		
@@ -233,6 +236,10 @@ package modules.videoPlayer
 				_roleTalkingPanel.setTalking(role, duration);
 		}
 		
+		
+		/**
+		 * Video player's state
+		 */
 		public function get state() : int
 		{
 			return _state;
@@ -244,6 +251,51 @@ package modules.videoPlayer
 
 			_state = state;
 			switchPerspective();
+		}
+		
+		/**
+		 * Enable/disable controls
+		 **/
+		public function toggleControls() : void
+		{
+			(_ppBtn.enabled)? disableControls() : enableControls();
+		}
+		
+		public function enableControls() : void
+		{
+			_ppBtn.enabled = true;
+			_stopBtn.enabled = true;
+		}
+		
+		public function disableControls() : void
+		{
+			_ppBtn.enabled = false;
+			_stopBtn.enabled = false;
+		}
+		
+		/**
+		 * Mute sound
+		 **/
+		public function muteVideo(flag:Boolean) : void
+		{
+			_audioSlider.muted = flag;
+		}
+		
+		public function muteRecording(flag:Boolean) : void
+		{
+			if ( _recordingMuted == flag ) return;
+			
+			if ( state&RECORD_FLAG )
+				( flag ) ? _mic.gain = 0 : _mic.gain = DEFAULT_VOLUME;
+			else if ( state == PLAY_BOTH_STATE )
+			{
+				if ( flag && _inNs != null )
+					_inNs.soundTransform = new SoundTransform(0);
+				else if ( _inNs != null )
+					_inNs.soundTransform = new SoundTransform(DEFAULT_VOLUME);
+			}
+			
+			_recordingMuted = !_recordingMuted;
 		}
 		
 		/**
@@ -571,10 +623,14 @@ package modules.videoPlayer
 			{
 				case "Microphone.Muted": // User denied access to camera, or hasn't got it
 					DataModel.getInstance().micAccessDenied = true;
+					trace("Mic access denied");
 					break;
 				case "Microphone.Unmuted": // User allowed access to camera
 					if ( !_micEnabled )
+					{
 						_micEnabled = true;
+						trace("Mic enabled");	
+					}
 					break;
             }
 		}
@@ -586,10 +642,14 @@ package modules.videoPlayer
 			{
 				case "Camera.Muted": // User denied access to camera, or hasn't got it
 					DataModel.getInstance().camAccessDenied = true;
+					trace("Cam access denied");
 					break;
 				case "Camera.Unmuted": // User allowed access to camera
 					if ( !_cameraEnabled )
+					{	
 						_cameraEnabled = true;
+						trace("Cam enabled");
+					}
 					break;
 			}
 		}
@@ -602,7 +662,8 @@ package modules.videoPlayer
 		// Prepare access timeout
 		private function startAccessTimeout() : void
 		{
-			_accessTimeout = new Timer(1000, ACCESS_TIMEOUT_SECS); // 5 sec to accept access
+			// Default: 5 sec to accept access to mic or cam
+			_accessTimeout = new Timer(1000, ACCESS_TIMEOUT_SECS);
 			_accessTimeout.addEventListener(TimerEvent.TIMER, onAccessTick);
 			_accessTimeout.start();
 		}
@@ -712,6 +773,8 @@ package modules.videoPlayer
 			
 			if ( state == RECORD_BOTH_STATE )
 				_outNs.attachCamera(_camera);
+			
+			disableControls();
 		}
 		
 		/**
@@ -735,6 +798,8 @@ package modules.videoPlayer
 			_outNs.publish(_fileName, "record");
 			
 			trace("Started recording of " + _fileName);
+			
+			//TODO: new feature - enableControls();
 		}
 		
 		
@@ -763,7 +828,7 @@ package modules.videoPlayer
 				
 			updateDisplayList(0,0);
 			
-			trace("Video panel has been splitted");
+			trace("The video panel has been splitted");
 		}
 		
 		// Aux: scaling cam image
@@ -787,6 +852,7 @@ package modules.videoPlayer
 			{
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
+				enableControls(); // TODO: new feature - enable controls while recording
 			} 
 		}
 

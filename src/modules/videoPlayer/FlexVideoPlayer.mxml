@@ -33,6 +33,15 @@
 			   enabled="true"
 			   visible="true">
 		</mx:Button>
+		<mx:Button label="Mutear!"
+			   fontWeight="normal"
+			   width="80"
+			   height="30"
+			   labelPlacement="bottom"
+			   click="click4(event)"
+			   enabled="true"
+			   visible="true">
+		</mx:Button>
 	</mx:HBox>
 
 	<video:VideoPlayerBabelia id="VP" subtitles="true" arrows="true" seek="true" 
@@ -52,6 +61,7 @@
 			
 			private var arrows:ArrayCollection = new ArrayCollection();
 			private var role:String;
+			private var muted:Boolean = false;
 			
 			public function init() : void
 			{
@@ -98,6 +108,12 @@
 			{
 				VP.removeArrows();
 				VP.videoSource = "kutsi9.flv"; // start video view
+			}
+			
+			public function click4(e:Event) : void
+			{
+				muted = !muted;
+				VP.muteVideo(muted);
 			}
 			
 			public function onFinishedRecording(e:RecordingEvent) : void
