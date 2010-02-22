@@ -46,10 +46,13 @@
 
 	<video:VideoPlayerBabelia id="VP" subtitles="true" arrows="true" seek="true" 
 		autoScale="false" autoPlay="true" videoSource="cue_cuatro.flv" skin="white"
+		subtitlingControls="true"
 		streamSource="rtmp://localhost:1935/oflaDemo" width="533" height="300" />
 	
 	<mx:Script>
 		<![CDATA[
+			import modules.videoPlayer.events.babelia.SubtitleComboEvent;
+			import modules.videoPlayer.events.babelia.SubtitlingEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import mx.collections.ArrayCollection;
 			import modules.videoPlayer.events.VideoPlayerEvent;
@@ -71,6 +74,9 @@
 				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, subtitle).dispatch();
 				
 				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadata);
+				VP.addEventListener(SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
+				VP.addEventListener(SubtitlingEvent.START, onSubtitlingStart);
+				VP.addEventListener(SubtitlingEvent.END, onSubtitlingEnd);
 			}
 			
 			public function set onSubtitleRetrieved(flag:Boolean) : void
@@ -119,6 +125,21 @@
 			public function onFinishedRecording(e:RecordingEvent) : void
 			{
 				Alert.show("Ha terminado la grabación de: " + e.fileName);
+			}
+			
+			public function onSubtitlingStart(e:SubtitlingEvent) : void
+			{
+				Alert.show("Subtitling Start: " + e.time);
+			}
+			
+			public function onSubtitlingEnd(e:SubtitlingEvent) : void
+			{
+				Alert.show("Subtitling End: " + e.time);
+			}
+			
+			public function onLocaleChanged(e:SubtitleComboEvent) : void
+			{
+				Alert.show("Locale changed: " + e.selectedIndex);
 			}
 			
 		]]>

@@ -256,7 +256,7 @@ package modules.videoPlayer
 			if ( _loadingSkin )
 			{ // Maybe some skins will try to load at same time
 			  // TODO: maybe this can be improved
-				flash.utils.setTimeout(setSkin, 200, name);
+				flash.utils.setTimeout(setSkin, 20, name);
 				return;
 			}
 			
@@ -291,7 +291,7 @@ package modules.videoPlayer
 				}
 			}
 			
-			updateDisplayList(0,0);
+			updateDisplayList(0,0); // repaint();
 			_loadingSkin = false;
 		}
 		

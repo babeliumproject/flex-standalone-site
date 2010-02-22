@@ -7,14 +7,8 @@ package modules.videoPlayer.controls
 	
 	import mx.core.UIComponent;
 
-	public class PlayButton extends SkinableComponent
+	public class PlayButton extends SkinableButton
 	{
-		/**
-		 * Skin related constants
-		 */
-		public static const BG_COLOR:String = "bgColor";
-		public static const OVERBG_COLOR:String = "overBgColor";
-		public static const ICON_COLOR:String = "iconColor";
 		
 		/**
 		 * Constants
@@ -26,34 +20,12 @@ package modules.videoPlayer.controls
 		 * Variables
 		 * 
 		 */
-		
 		private var _state:String = PLAY_STATE;
-		private var bg:Sprite;
-		private var bgOver:Sprite;
-		private var btn:Sprite;
 		
 		
 		public function PlayButton()
 		{
 			super("PlayButton");
-			
-			this.height = 20;
-			this.width = 20;
-			
-			this.buttonMode = true;
-			this.useHandCursor = true;
-			
-			bgOver = new Sprite();
-			bg = new Sprite();
-			btn = new Sprite();
-			
-			addChild( bgOver );
-			addChild( bg );
-			addChild( btn );
-			
-			this.addEventListener( MouseEvent.ROLL_OVER, onMouseOver );
-			this.addEventListener( MouseEvent.ROLL_OUT, onMouseOut );
-			this.addEventListener( MouseEvent.CLICK, onClick );
 		}
 		
 		
@@ -81,31 +53,6 @@ package modules.videoPlayer.controls
 		}
 		
 		/**
-		 * Enable/disable play button
-		 **/
-		override public function set enabled(flag:Boolean) : void
-		{
-			super.enabled = flag;
-
-			this.buttonMode = flag;
-			this.useHandCursor = flag;
-
-			if ( flag )
-			{
-				this.addEventListener( MouseEvent.ROLL_OVER, onMouseOver );
-				this.addEventListener( MouseEvent.ROLL_OUT, onMouseOut );
-				this.addEventListener( MouseEvent.CLICK, onClick );
-			}
-			else
-			{
-				this.removeEventListener( MouseEvent.ROLL_OVER, onMouseOver );
-				this.removeEventListener( MouseEvent.ROLL_OUT, onMouseOut );
-				this.removeEventListener( MouseEvent.CLICK, onClick );
-			}
-		}
-		
-		
-		/**
 		 * Methods
 		 * 
 		 */
@@ -116,24 +63,13 @@ package modules.videoPlayer.controls
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
-			this.graphics.clear();
-			
-			bgOver.graphics.clear();
-			bgOver.graphics.beginFill( getSkinColor(OVERBG_COLOR) );
-			bgOver.graphics.drawRect( 0, 0, 20, 20 );
-			bgOver.graphics.endFill();
-			
-			bg.graphics.clear();
-			bg.graphics.beginFill( getSkinColor(BG_COLOR) );
-			bg.graphics.drawRect( 0, 0, 20, 20 );
-			bg.graphics.endFill();
-			
 			if( _state == PLAY_STATE )
 			{
 				CreatePlayButton();
 				btn.x = this.width/2 - btn.width/2;
 				btn.y = this.height/2 - btn.height/2;
-			} else
+			}
+			else
 			{
 				CreatePauseButton();
 				btn.x = this.width/2 - btn.width/2;
@@ -167,18 +103,7 @@ package modules.videoPlayer.controls
 		}
 		
 		
-		private function onMouseOver( e:MouseEvent ):void
-		{
-			bg.alpha = 0;
-		}
-		
-		
-		private function onMouseOut( e:MouseEvent ):void
-		{
-			bg.alpha = 1;
-		}
-		
-		private function onClick( e:MouseEvent ):void
+		override protected function onClick( e:MouseEvent ) : void
 		{
 			trace( "play/pause btn pressed" );
 			this.State = _state == PLAY_STATE ? PAUSE_STATE : PLAY_STATE;

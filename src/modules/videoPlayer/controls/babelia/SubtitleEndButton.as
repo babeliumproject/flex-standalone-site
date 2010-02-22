@@ -1,17 +1,16 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
-	import modules.videoPlayer.events.StopEvent;
+	import modules.videoPlayer.events.babelia.SubtitlingEvent;
+	import modules.videoPlayer.controls.SkinableButton;
 	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	
-	import mx.core.UIComponent;
 
-	public class StopButton extends SkinableButton
+	public class SubtitleEndButton extends SkinableButton
 	{		
-		public function StopButton()
+		public function SubtitleEndButton()
 		{
-			super("StopButton");
+			super("SubtitleEndButton");
 		}
 		
 		/**
@@ -25,23 +24,27 @@ package modules.videoPlayer.controls
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
-			createStopBtn();
+			createBtn();
 		}
 		
 		
-		private function createStopBtn() : void
+		private function createBtn() : void
 		{
 			var g:Sprite = btn;
 			g.graphics.clear();
 			g.graphics.beginFill( getSkinColor(ICON_COLOR) );
-			g.graphics.drawRect( 0, 0, 8, 8 );
+			g.graphics.moveTo( 0, 5 );
+			g.graphics.lineTo( 12, 5 );
+			g.graphics.lineTo( 7, 0 );
+			g.graphics.lineTo( 7, 3 );
+			g.graphics.lineTo( 0, 3 );
 			g.graphics.endFill();
 		}
 				
 		
 		override protected function onClick( e:MouseEvent ) : void
 		{
-			dispatchEvent( new StopEvent( StopEvent.STOP_CLICK ) );
+			dispatchEvent( new SubtitlingEvent( SubtitlingEvent.END ) );
 		}
 		
 	}

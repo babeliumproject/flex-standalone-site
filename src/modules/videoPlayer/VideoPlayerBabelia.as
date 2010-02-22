@@ -20,12 +20,15 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.LocaleComboBox;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
+	import modules.videoPlayer.controls.babelia.SubtitleEndButton;
+	import modules.videoPlayer.controls.babelia.SubtitleStartButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
+	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -54,6 +57,10 @@ package modules.videoPlayer
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
 		private var _roleTalkingPanel:RoleTalkingPanel;
+		private var _subtitlingControls:UIComponent;
+		private var _subtitlingText:Text;
+		private var _subtitleStart:SubtitleStartButton;
+		private var _subtitleEnd:SubtitleEndButton;
 		private var _bgArrow:Sprite;
 		private var _bgCam:Sprite;
 		
@@ -68,7 +75,8 @@ package modules.videoPlayer
 		public static const ERR_ERROR:String = "ERROR"; 
 		
 		/**
-		 * States NOTE:
+		 * States
+		 * NOTE:
 		 * XXXX XXX1: split video panel into 2 views
 		 * XXXX XX1X: recording modes
 		 */
@@ -82,11 +90,9 @@ package modules.videoPlayer
 		
 		private var _state:int;
 		
-		// AUDIO DIR
+		// other constants
 		private const AUDIO_DIR:String = "audio";
 		private const DEFAULT_VOLUME:Number = 40;
-		
-		// other constants
 		private const ACCESS_TIMEOUT_SECS:int = 5;
 		private const COUNTDOWN_TIMER_SECS:int = 5;
 		
@@ -124,7 +130,7 @@ package modules.videoPlayer
 			_subtitlePanel = new UIComponent();
 			
 			_subtitleBox = new SubtitleTextBox();
-			_subtitleBox.setText("PRUEBA DE SUBTITULOS");
+			_subtitleBox.setText("PRUEBA DE SUBTITULOS"); // TODO
 			
 			_localeComboBox = new LocaleComboBox();
 			
@@ -159,20 +165,36 @@ package modules.videoPlayer
 			_camWrapper.height = 0;
 			_camWrapper.visible = false;
 			
-			//Event Listeners
+			_subtitlingControls = new UIComponent();
+			_subtitlingText = new Text();
+			_subtitlingText.setStyle("fontWeight", "bold");
+			_subtitlingText.selectable = false;
+			_subtitlingText.text = "Subtitling Controls: ";
+			_subtitleStart = new SubtitleStartButton();
+			_subtitleEnd = new SubtitleEndButton();
+			_subtitlingControls.addChild(_subtitlingText);
+			_subtitlingControls.addChild(_subtitleStart);
+			_subtitlingControls.addChild(_subtitleEnd);
+			_subtitlingControls.visible = false;
+			
+			/**
+			 * Events listeners
+			 **/
 			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
 			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
+			_subtitleStart.addEventListener( SubtitlingEvent.START, onSubtitlingEvent );
+			_subtitleEnd.addEventListener( SubtitlingEvent.END, onSubtitlingEvent );
 			
 			/**
 			 * Adds components to player
 			 */
-			removeChild(_videoBarPanel);
+			removeChild(_videoBarPanel); // order
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
 			addChild(_camWrapper);
 			addChild(_countdownTxt);
-			
+			addChild(_subtitlingControls);
 			
 			/**
 			 * Adds skinable components to dictionary
@@ -183,6 +205,8 @@ package modules.videoPlayer
 			putSkinableComponent(_localeComboBox.COMPONENT_NAME, _localeComboBox);
 			putSkinableComponent(_arrowPanel.COMPONENT_NAME, _arrowPanel);
 			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
+			putSkinableComponent(_subtitleStart.COMPONENT_NAME, _subtitleStart);
+			putSkinableComponent(_subtitleEnd.COMPONENT_NAME, _subtitleEnd);
 			
 			// Loads default skin
 			skin = "default";
@@ -236,6 +260,13 @@ package modules.videoPlayer
 				_roleTalkingPanel.setTalking(role, duration);
 		}
 		
+		/**
+		 * Enable/disable subtitling controls
+		 */
+		public function set subtitlingControls(flag:Boolean) : void
+		{
+			_subtitlingControls.visible = flag;
+		}
 		
 		/**
 		 * Video player's state
@@ -359,14 +390,31 @@ package modules.videoPlayer
 			_roleTalkingPanel.x = _arrowPanel.x + _arrowPanel.width + _defaultMargin*3;
 			_roleTalkingPanel.y = 4;
 			
+			// Locale combo box
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
 			_localeComboBox.resize(_videoWidth - _subtitleBox.width, _subtitleBox.height);
 			
+			// Countdown
 			_countdownTxt.x = _videoWidth/2 - 10;
 			_countdownTxt.y = _videoHeight/2 - 10;
 			_countdownTxt.width = _videoWidth;
 			_countdownTxt.height = _videoHeight;
 			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
+			
+			// Subtitling controls
+			_subtitlingControls.x = 0;
+			_subtitlingControls.y = _videoBarPanel.y + _videoBarPanel.height;
+			_subtitlingControls.width = _videoWidth;
+			_subtitlingControls.height = 20;
+			
+			_subtitlingText.x = _defaultMargin * 2;
+			_subtitlingText.width = 115;
+			_subtitlingText.height = 20;
+			
+			_subtitleStart.x = _subtitlingText.x + _subtitlingText.width + _defaultMargin*2;
+			_subtitleStart.refresh();
+			_subtitleEnd.x = _subtitleStart.x + _subtitleStart.width + _defaultMargin;
+			_subtitleEnd.refresh();
 			
 			drawBG();
 		}
@@ -378,8 +426,9 @@ package modules.videoPlayer
 			 */
 			var h1:Number = _subtitlePanel.visible? _subtitlePanel.height : 0;
 			var h2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
+			var h3:Number = _subtitlingControls.visible? _subtitlingControls.height : 0;
 			
-			totalHeight = _defaultMargin*2 + _videoHeight + h1 + h2 + _videoBarPanel.height;
+			totalHeight = _defaultMargin*2 + _videoHeight + h1 + h2 + h3 + _videoBarPanel.height;
 			
 			_bg.graphics.clear();
 
@@ -532,6 +581,16 @@ package modules.videoPlayer
 		private function onLocaleChanged(e:SubtitleComboEvent) : void
 		{
 			this.dispatchEvent(e);
+		}
+		
+		/**
+		 * This method adds ns.time to event and gives it to parent component
+		 */
+		private function onSubtitlingEvent(e:SubtitlingEvent) : void
+		{
+			var time:Number = _ns != null ? _ns.time : 0;
+
+			this.dispatchEvent(new SubtitlingEvent(e.type, time));
 		}
 		
 		

@@ -68,4 +68,14 @@
 		<Property name="overBgColor">0x454545</Property>
 		<Property name="iconColor">0xFFFFFF</Property>
 	</Component>
+	<Component name="SubtitleStartButton">
+		<Property name="bgColor">0x343434</Property>
+		<Property name="overBgColor">0x454545</Property>
+		<Property name="iconColor">0xFFFFFF</Property>
+	</Component>
+	<Component name="SubtitleEndButton">
+		<Property name="bgColor">0x343434</Property>
+		<Property name="overBgColor">0x454545</Property>
+		<Property name="iconColor">0xFFFFFF</Property>
+	</Component>
 </VideoPlayerSkin> 
