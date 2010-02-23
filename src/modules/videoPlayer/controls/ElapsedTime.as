@@ -28,7 +28,7 @@ package modules.videoPlayer.controls
 		
 		public function ElapsedTime()
 		{
-			super("ElapsedTime");
+			super("ElapsedTime"); // Required for setup skinable component
 			
 			_bg = new Sprite();
 			addChild(_bg);

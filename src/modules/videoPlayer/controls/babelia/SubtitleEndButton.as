@@ -10,7 +10,7 @@ package modules.videoPlayer.controls.babelia
 	{		
 		public function SubtitleEndButton()
 		{
-			super("SubtitleEndButton");
+			super("SubtitleEndButton"); // Required for setup skinable component
 		}
 		
 		/**

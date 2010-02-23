@@ -50,7 +50,7 @@ package modules.videoPlayer.controls
 		
 		public function ScrubberBar()
 		{
-			super("ScrubberBar");
+			super("ScrubberBar"); // Required for setup skinable component
 			
 			_bar = new Sprite();
 			_progBar = new Sprite();

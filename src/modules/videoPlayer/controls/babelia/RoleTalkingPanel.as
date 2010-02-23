@@ -38,7 +38,7 @@ package modules.videoPlayer.controls.babelia
 		
 		public function RoleTalkingPanel()
 		{
-			super("RoleTalkingPanel");
+			super("RoleTalkingPanel"); // Required for setup skinable component
 
 			_bg = new Sprite();
 			addChildAt(_bg, 0);

@@ -25,7 +25,7 @@ package modules.videoPlayer.controls
 		
 		public function PlayButton()
 		{
-			super("PlayButton");
+			super("PlayButton"); // Required for setup skinable component
 		}
 		
 		

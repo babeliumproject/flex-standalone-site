@@ -5,15 +5,11 @@
 
 package modules.videoPlayer
 {
-	import events.ViewChangeEvent;
-	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
-	
-	import model.DataModel;
 	
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
@@ -67,12 +63,6 @@ package modules.videoPlayer
 		/**
 		 * Recording related variables
 		 */
-		// errors
-		public static const ERR_NOCAMORMIC:String = "NOCAMORMIC";
-		public static const ERR_NOMIC:String = "NOMIC";
-		public static const ERR_CAMMICREFRESH:String = "CAMMICREFRESH";
-		public static const ERR_MICREFRESH:String = "MICREFRESH";
-		public static const ERR_ERROR:String = "ERROR"; 
 		
 		/**
 		 * States
@@ -124,7 +114,7 @@ package modules.videoPlayer
 		 */
 		public function VideoPlayerBabelia()
 		{
-			super("VideoPlayerBabelia");
+			super("VideoPlayerBabelia"); // Required for setup skinable component
 			
 			_subtitleButton = new SubtitleButton();
 			_videoBarPanel.addChild(_subtitleButton);
@@ -281,6 +271,9 @@ package modules.videoPlayer
 		public function set state(state:int) : void
 		{
 			stopVideo();
+			
+			if ( state == PLAY_BOTH_STATE || state == PLAY_STATE )
+				enableControls();
 
 			_state = state;
 			switchPerspective();
@@ -634,17 +627,9 @@ package modules.videoPlayer
 		 */
 		private function switchPerspective() : void
 		{
-			
 			switch ( _state )
 			{
 				case RECORD_BOTH_STATE:
-				
-					if ( DataModel.getInstance().micAccessDenied 
-							|| DataModel.getInstance().camAccessDenied )
-					{
-						goBackHome(ERR_CAMMICREFRESH);
-						return;
-					}
 					
 					prepareWebcam();
 					prepareMicrophone();
@@ -653,12 +638,6 @@ package modules.videoPlayer
 					break;
 				
 				case RECORD_MIC_STATE:
-					
-					if ( DataModel.getInstance().micAccessDenied ) 
-					{
-						goBackHome(ERR_MICREFRESH);
-						return;
-					}
 					
 					recoverVideoPanel(); // original size
 					prepareMicrophone();
@@ -672,8 +651,8 @@ package modules.videoPlayer
 				
 					break;
 			
-				default:
-					// NOTE: problems with _videoWrapper.width
+				default: // PLAY_STATE
+
 					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
 					
@@ -687,16 +666,6 @@ package modules.videoPlayer
 					
 					break;
 			}
-		}
-		
-		/**
-		 * When something is wrong
-		 */
-		private function goBackHome(errCode:String = ERR_ERROR) : void
-		{
-			// back to home
-			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-			Alert.show(resourceManager.getString('myResources', errCode));
 		}
 		
 
@@ -717,7 +686,7 @@ package modules.videoPlayer
 			switch (evt.code) 
 			{
 				case "Microphone.Muted": // User denied access to camera, or hasn't got it
-					DataModel.getInstance().micAccessDenied = true;
+					dispatchEvent(new RecordingEvent(RecordingEvent.MIC_DENIED));
 					trace("Mic access denied");
 					break;
 				case "Microphone.Unmuted": // User allowed access to camera
@@ -736,7 +705,7 @@ package modules.videoPlayer
 			switch (evt.code) 
 			{
 				case "Camera.Muted": // User denied access to camera, or hasn't got it
-					DataModel.getInstance().camAccessDenied = true;
+					dispatchEvent(new RecordingEvent(RecordingEvent.CAM_DENIED));
 					trace("Cam access denied");
 					break;
 				case "Camera.Unmuted": // User allowed access to camera
@@ -781,9 +750,7 @@ package modules.videoPlayer
 			else if ( _accessTimeout.currentCount == 
 						_accessTimeout.repeatCount )
 			{
-				state == RECORD_BOTH_STATE? 
-					goBackHome(ERR_NOCAMORMIC) 
-					: goBackHome(ERR_NOMIC);
+				dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 				
 				_accessTimeout.reset();
 			}
@@ -935,7 +902,8 @@ package modules.videoPlayer
 		 * Recover video panel's original size
 		 */
 		private function recoverVideoPanel() : void
-		{
+		{	
+			// NOTE: problems with _videoWrapper.width
 			if ( _lastVideoHeight > _videoHeight )
 				_videoHeight = _lastVideoHeight;
 					

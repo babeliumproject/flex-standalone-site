@@ -83,10 +83,19 @@
 				subtitle.language = "Spanish";
 				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, subtitle).dispatch();
 				
+				var tmp:ArrayCollection = new ArrayCollection();
+				tmp.addItem("Español");
+				tmp.addItem("English");
+				
+				VP.setLocales(tmp);
+				
 				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadata);
 				VP.addEventListener(SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
 				VP.addEventListener(SubtitlingEvent.START, onSubtitlingStart);
 				VP.addEventListener(SubtitlingEvent.END, onSubtitlingEnd);
+				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamDenied);
+				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicDenied);
+				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
 			}
 			
 			public function set onSubtitleRetrieved(flag:Boolean) : void
@@ -111,6 +120,13 @@
 			
 			public function click(e:Event) : void
 			{
+				if ( DataModel.getInstance().micAccessDenied 
+						|| DataModel.getInstance().camAccessDenied )
+				{
+					Alert.show("Error, has denegado el permiso a la cam o mic");
+					return;
+				}
+				
 				VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE; // start "recording"
 				VP.addEventListener(RecordingEvent.END, onFinishedRecording);
 			}
@@ -123,6 +139,7 @@
 			public function click3(e:Event) : void
 			{
 				VP.removeArrows();
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				VP.videoSource = "kutsi9.flv"; // start video view
 			}
 			
@@ -157,6 +174,21 @@
 			public function onLocaleChanged(e:SubtitleComboEvent) : void
 			{
 				Alert.show("Locale changed: " + e.selectedIndex);
+			}
+			
+			public function onCamDenied(e:RecordingEvent) : void
+			{
+				DataModel.getInstance().camAccessDenied = true;
+			}
+			
+			public function onMicDenied(e:RecordingEvent) : void
+			{
+				DataModel.getInstance().micAccessDenied = true;
+			}
+			
+			public function onRecordingAborted(e:RecordingEvent) : void
+			{
+				Alert.show("Recording aborted");
 			}
 			
 		]]>

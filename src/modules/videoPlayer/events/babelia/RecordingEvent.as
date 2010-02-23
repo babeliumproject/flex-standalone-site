@@ -6,9 +6,12 @@ package modules.videoPlayer.events.babelia
 	{
 		
 		public static const END:String = "EndRecord";
+		public static const MIC_DENIED:String = "MicDenied";
+		public static const CAM_DENIED:String = "CamDenied";
+		public static const ABORTED:String = "RecordingAborted";
 		public var fileName:String;
 		
-		public function RecordingEvent(type:String, fileName:String, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function RecordingEvent(type:String, fileName:String = "", bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			this.fileName = fileName;

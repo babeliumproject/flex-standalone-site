@@ -24,7 +24,7 @@ package modules.videoPlayer.controls.babelia
 		
 		public function SubtitleTextBox()
 		{
-			super("SubtitleTextBox");
+			super("SubtitleTextBox"); // Required for setup skinable component
 			
 			_bg = new Sprite();
 			_box = new Sprite();

@@ -33,7 +33,7 @@ package modules.videoPlayer.controls.babelia
 		
 		public function SubtitleButton(state:Boolean = false)
 		{
-			super("SubtitleButton");
+			super("SubtitleButton"); // Required for setup skinable component
 			
 			_bg = new Sprite();
 			addChild(_bg);

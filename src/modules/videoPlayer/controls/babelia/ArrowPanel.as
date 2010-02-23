@@ -24,7 +24,7 @@ package modules.videoPlayer.controls.babelia
 		
 		public function ArrowPanel(state:Boolean = false)
 		{
-			super("ArrowPanel");
+			super("ArrowPanel"); // Required for setup skinable component
 			
 			_bg = new Sprite();
 			addChild(_bg);

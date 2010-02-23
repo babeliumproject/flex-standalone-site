@@ -53,7 +53,7 @@ package modules.videoPlayer.controls
 		
 		public function AudioSlider()
 		{
-			super("AudioSlider");
+			super("AudioSlider"); // Required for setup skinable component
 			
 			width = _defaultWidth;
 			height = _defaultHeight;

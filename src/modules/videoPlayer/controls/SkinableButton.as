@@ -25,7 +25,7 @@ package modules.videoPlayer.controls
 		
 		public function SkinableButton(name:String = "SkinableButton")
 		{
-			super(name);
+			super(name); // Required for setup skinable component
 			
 			this.height = 20;
 			this.width = 20;

@@ -11,7 +11,7 @@ package modules.videoPlayer.controls
 	{		
 		public function StopButton()
 		{
-			super("StopButton");
+			super("StopButton"); // Required for setup skinable component
 		}
 		
 		/**

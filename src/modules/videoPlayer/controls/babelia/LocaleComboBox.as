@@ -25,7 +25,7 @@ package modules.videoPlayer.controls.babelia
 		
 		public function LocaleComboBox()
 		{
-			super("LocaleComboBox");
+			super("LocaleComboBox"); // Required for setup skinable component
 			
 			_bg = new Sprite();
 			addChild(_bg);
