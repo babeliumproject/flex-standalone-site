@@ -42,6 +42,15 @@
 			   enabled="true"
 			   visible="true">
 		</mx:Button>
+		<mx:Button label="Ver 2!"
+			   fontWeight="normal"
+			   width="80"
+			   height="30"
+			   labelPlacement="bottom"
+			   click="click5(event)"
+			   enabled="true"
+			   visible="true">
+		</mx:Button>
 	</mx:HBox>
 
 	<video:VideoPlayerBabelia id="VP" subtitles="true" arrows="true" seek="true" 
@@ -65,6 +74,7 @@
 			private var arrows:ArrayCollection = new ArrayCollection();
 			private var role:String;
 			private var muted:Boolean = false;
+			private var secondSource:String = "cue_cuatro.flv";
 			
 			public function init() : void
 			{
@@ -122,9 +132,16 @@
 				VP.muteVideo(muted);
 			}
 			
+			public function click5(e:Event) : void
+			{
+				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.secondSource = secondSource;
+			}
+			
 			public function onFinishedRecording(e:RecordingEvent) : void
 			{
 				Alert.show("Ha terminado la grabación de: " + e.fileName);
+				secondSource = e.fileName;
 			}
 			
 			public function onSubtitlingStart(e:SubtitlingEvent) : void

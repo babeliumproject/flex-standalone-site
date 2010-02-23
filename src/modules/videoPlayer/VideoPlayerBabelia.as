@@ -98,6 +98,8 @@ package modules.videoPlayer
 		
 		private var _outNs:NetStream;
 		private var _inNs:NetStream;
+		private var _inNc:NetConnection;
+		private var _secondStreamSource:String;
 		
 		private var _mic:Microphone;
 		private var _micEnabled:Boolean = false;
@@ -330,6 +332,27 @@ package modules.videoPlayer
 		}
 		
 		/**
+		 * Adds new source to play_both video state
+		 **/
+		public function set secondSource(source:String) : void
+		{
+			if ( state != PLAY_BOTH_STATE ) return;
+			
+			_secondStreamSource = source;
+			
+			if ( _inNc == null )
+			{
+				_inNc = new NetConnection();
+				_inNc.connect( _streamSource );
+				_inNc.addEventListener( NetStatusEvent.NET_STATUS, onSecondStreamNetConnect );
+			}
+			else
+				playSecondStream();
+				
+			splitVideoPanel();
+		}
+		
+		/**
 		 * Methods
 		 * 
 		 */
@@ -472,6 +495,9 @@ package modules.videoPlayer
 			
 			if ( state&RECORD_FLAG ) // TODO: test
 				_outNs.pause();
+			
+			if ( state == PLAY_BOTH_STATE )
+				_inNs.pause();
 		}
 		
 		/**
@@ -486,6 +512,9 @@ package modules.videoPlayer
 			
 			if ( state&RECORD_FLAG ) // TODO: test
 				_outNs.resume();
+			
+			if ( state == PLAY_BOTH_STATE )
+				_inNs.resume();
 		}
 		
 		/**
@@ -500,6 +529,12 @@ package modules.videoPlayer
 			
 			if ( state&RECORD_FLAG )
 				_outNs.close();
+			
+			if ( state == PLAY_BOTH_STATE )
+			{
+				_inNs.pause();
+				_inNs.seek( 0 );
+			}
 		}
 		
 		/**
@@ -625,20 +660,21 @@ package modules.videoPlayer
 						return;
 					}
 					
+					recoverVideoPanel(); // original size
 					prepareMicrophone();
 					startAccessTimeout();
 					
 					break;
 			
+				case PLAY_BOTH_STATE:
+					
+					//splitVideoPanel();
+				
+					break;
+			
 				default:
 					// NOTE: problems with _videoWrapper.width
-					if ( _lastVideoHeight > _videoHeight )
-						_videoHeight = _lastVideoHeight;
-					
-					_videoWrapper.width = _videoWidth;
-					_videoWrapper.height = _videoHeight;
-
-					_camWrapper.visible = false;
+					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
 					
 					if ( !autoScale )
@@ -821,6 +857,7 @@ package modules.videoPlayer
 				_camVideo.attachCamera(_camera);
 
 				splitVideoPanel();
+				_camWrapper.visible = false;
 			}
 			
 			if ( state&RECORD_FLAG )
@@ -873,7 +910,9 @@ package modules.videoPlayer
 			_videoWrapper.width = _videoWidth / 2 - 2;	
 			
 			var h:int = (_videoWidth / 2 - 2) * _video.height / _video.width;
-			_lastVideoHeight = _videoHeight; // store last value
+			
+			if ( _videoHeight != h ) // cause we can call twice to this method
+				_lastVideoHeight = _videoHeight; // store last value
 				
 			_videoWrapper.height = h;
 			_videoHeight = h;
@@ -884,10 +923,28 @@ package modules.videoPlayer
 			_camVideo.width = 640;
 			_camVideo.height = 400;
 			// not needed scaleCamVideo();
-				
+			
+			_camWrapper.visible = true;
+			
 			updateDisplayList(0,0);
 			
 			trace("The video panel has been splitted");
+		}
+		
+		/**
+		 * Recover video panel's original size
+		 */
+		private function recoverVideoPanel() : void
+		{
+			if ( _lastVideoHeight > _videoHeight )
+				_videoHeight = _lastVideoHeight;
+					
+			_videoWrapper.width = _videoWidth;
+			_videoWrapper.height = _videoHeight;
+
+			_camWrapper.visible = false;
+			
+			trace("The video panel has recover his original size");
 		}
 		
 		// Aux: scaling cam image
@@ -913,6 +970,38 @@ package modules.videoPlayer
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
 			} 
+		}
+
+		/**
+		 * PLAY_BOTH related commands
+		 **/
+		private function playSecondStream() : void
+		{
+			_inNs = new NetStream(_inNc);
+			_inNs.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );
+			_camVideo.attachNetStream(_inNs);
+			
+			_inNs.play(_secondStreamSource);
+			
+			_ns.resume();
+			_ppBtn.State = PlayButton.PAUSE_STATE;
+		}
+
+		// second net connection checks
+		private function onSecondStreamNetConnect( e:NetStatusEvent ):void
+		{
+			trace( "onStreamNetConnect" );
+			
+			if( e.info.code == "NetConnection.Connect.Success" )
+			{
+				trace("Second stream connected successfully");
+				playSecondStream();
+			} 
+			else
+			{
+				Alert.show("Unsuccessful Connection in second stream", "Information");
+				trace( "Second stream connection Fail Code: " + e.info.code );
+			}
 		}
 
 	}

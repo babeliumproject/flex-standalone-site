@@ -63,7 +63,7 @@ package modules.videoPlayer
 		protected var _nc:NetConnection;
 		
 		private var _videoSource:String = null;
-		private var _streamSource:String = null;
+		protected var _streamSource:String = null;
 		private var _state:String = null;
 		private var _autoPlay:Boolean = false;
 		private var _smooth:Boolean = true;
