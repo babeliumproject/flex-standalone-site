@@ -246,6 +246,9 @@ package modules.videoPlayer
 			_localeComboBox.setDataProvider(locales);
 		}
 		
+		/**
+		 * Duration: seconds
+		 **/
 		public function startTalking(role:String, duration:Number) : void
 		{
 			if ( !_roleTalkingPanel.talking )
@@ -674,14 +677,14 @@ package modules.videoPlayer
 		 */
 
 		// return if users has webcam
-		public function hasCam() : Boolean
+		private function hasCam() : Boolean
 		{
 			if (Camera.names.length>0) return true;
 			else return false;
 		}
 		
 		// Mic state - check for a mic
-		public function  mic_status(evt:StatusEvent) : void
+		private function  mic_status(evt:StatusEvent) : void
 		{
 			switch (evt.code) 
 			{
