@@ -213,7 +213,7 @@
 				 * Getting CuePoints FROM DB
 				 */
 				cueManager.reset();
-				cueManager.cached = cueManager.setVideo(bideoId, ns);
+				cueManager.cached = cueManager.setVideo(bideoId);
 
 				if ( !(cueManager.cached) )
 					cueManager.setCuesFromSubtitle();

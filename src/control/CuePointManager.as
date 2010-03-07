@@ -6,6 +6,10 @@ package control
 	import flash.net.*;
 	import flash.utils.*;
 	
+	import model.DataModel;
+	
+	import modules.videoPlayer.events.babelia.StreamEvent;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
@@ -17,8 +21,6 @@ package control
 	import vo.SubtitleLineVO;
 	import vo.SubtitleVO;
 	
-	import model.DataModel;
-	
 	public class CuePointManager implements IResponder
 	{
 		private static var instance:CuePointManager = new CuePointManager();
@@ -28,7 +30,6 @@ package control
 		 **/ 
 		private var cuelist:ArrayCollection;
 		private var cache:Dictionary; // as HashMap
-		private var ns:NetStream;
 		private var watchingVideo:int;
 		public var cached:Boolean = false;
 
@@ -43,7 +44,6 @@ package control
 			cuelist = new ArrayCollection();
 			cache = new Dictionary();
 			watchingVideo = -1;
-			ns = null;
 			cached = false;
 		}
 		
@@ -57,7 +57,6 @@ package control
 		 **/
 		public function reset() : void
 		{
-			ns = null;
 		 	watchingVideo = -1;
 		 	cached = false;
 		 	cuelist.removeAll();
@@ -67,10 +66,9 @@ package control
 		 * Set video.
 		 * @return true if video is successfully cached
 		 **/
-		 public function setVideo(videoId:int, ns:NetStream) : Boolean
+		 public function setVideo(videoId:int) : Boolean
 		 {
 		 	this.watchingVideo = videoId;
-		 	this.ns = ns;
 		 
 		 	if ( cache[this.watchingVideo] != null )
 		 	{
@@ -144,14 +142,14 @@ package control
 
 		
 		/**
-		 * Callback function - OnKeyFrameEnter
+		 * Callback function - OnEnterFrame
+		 * 
+		 * Comandos de inicio y final por si el vídeo
+		 * tiene silencios.
 		 **/ 
-		public function monitorCuePoints(ev:Event) : void
+		public function monitorCuePoints(ev:StreamEvent) : void
 		{
-			if ( ns == null ) 
-				throw new Error("Yoy should do setVideo before to add this method as a Listener");
-
-			var curTime:Number=ns.time;
+			var curTime:Number = ev.time;
 			
 			for each (var cueobj:CueObject in cuelist)
 			{
