@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
-	layout="vertical" horizontalAlign="center"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center"
 	xmlns:video="modules.videoPlayer.*"
 	backgroundAlpha="0.0"
 	creationComplete="init()">
@@ -140,6 +140,7 @@
 			{
 				VP.removeArrows();
 				VP.state = VideoPlayerBabelia.PLAY_STATE;
+				VP.stopVideo();
 				VP.videoSource = "kutsi9.flv"; // start video view
 			}
 			
@@ -197,4 +198,4 @@
 	<mx:Binding source="DataModel.getInstance().subtitleDp != null"
 				destination="onSubtitleRetrieved" />
 	
-</mx:Application>
+</mx:VBox>

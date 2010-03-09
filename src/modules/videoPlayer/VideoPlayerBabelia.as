@@ -341,6 +341,9 @@ package modules.videoPlayer
 				_inNc = new NetConnection();
 				_inNc.connect( _streamSource );
 				_inNc.addEventListener( NetStatusEvent.NET_STATUS, onSecondStreamNetConnect );
+				_inNc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
+				_inNc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
+				_inNc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
 			}
 			else
 				playSecondStream();
@@ -611,7 +614,7 @@ package modules.videoPlayer
 		// This gives the event to parent component
 		private function onLocaleChanged(e:SubtitleComboEvent) : void
 		{
-			this.dispatchEvent(e);
+			this.dispatchEvent(new SubtitleComboEvent(e.type, e.selectedIndex));
 		}
 		
 		/**
@@ -940,7 +943,7 @@ package modules.videoPlayer
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
-			} 
+			}
 		}
 
 		/**
@@ -950,6 +953,15 @@ package modules.videoPlayer
 		{
 			_inNs = new NetStream(_inNc);
 			_inNs.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );
+			
+			// Not metadata nor cuepoint manage needed, so
+			// create empty client for the second stream
+			// Avoids debuger messages
+			var nsClient:Object = new Object();
+			nsClient.onMetaData = function () : void {};
+			nsClient.onCuePoint = function () : void {};
+			
+			_inNs.client = nsClient;
 			_camVideo.attachNetStream(_inNs);
 			
 			_inNs.play(_secondStreamSource);

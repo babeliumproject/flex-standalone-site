@@ -6,39 +6,38 @@
 
 package modules.videoPlayer
 {
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.NetStatusEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.TimerEvent;
+	import flash.media.SoundTransform;
+	import flash.media.Video;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.utils.Dictionary;
+	import flash.utils.Timer;
+	
 	import modules.videoPlayer.controls.AudioSlider;
 	import modules.videoPlayer.controls.ElapsedTime;
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.ScrubberBar;
-	import modules.videoPlayer.controls.StopButton;
 	import modules.videoPlayer.controls.SkinableComponent;
+	import modules.videoPlayer.controls.StopButton;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
 	
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.NetStatusEvent;
-	import flash.events.TimerEvent;
-	import flash.events.IOErrorEvent;
-	import flash.media.SoundTransform;
-	import flash.media.Video;
-	import flash.net.NetConnection;
-	import flash.net.NetStream;
-	import flash.utils.Timer;
-	import flash.utils.Dictionary;
-	import flash.net.URLRequest;
-	import flash.net.URLLoader;
-	
-	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.containers.Panel;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
-	import mx.effects.Pause;
 
 	public class VideoPlayer extends SkinableComponent
 	{
@@ -388,6 +387,9 @@ package modules.videoPlayer
 			{
 				_nc.connect( _streamSource );
 				_nc.addEventListener( NetStatusEvent.NET_STATUS, onStreamNetConnect );
+				_nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
+				_nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
+				_nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
 				_nc.client = this;
 			} else
 			{
@@ -403,6 +405,25 @@ package modules.videoPlayer
 			
 		}
 		
+		protected function asyncErrorHandler(event:AsyncErrorEvent):void
+		{
+			// Avoid debug messages
+		}
+		
+		protected function netSecurityError(event:SecurityErrorEvent):void
+		{
+			// Avoid debug messages
+		}
+		
+		protected function netIOError(event:IOErrorEvent):void
+		{
+			// Avoid debug messages
+		}
+		
+		public function onCuePoint(obj:Object) : void
+		{
+			// Avoid debug messages
+		}
 		
 		private function onStreamNetConnect( e:NetStatusEvent ):void
 		{
@@ -631,8 +652,6 @@ package modules.videoPlayer
 		{
 			
 			stopVideo();
-			
-			dispatchEvent(e);
 			
 			// This code unloads the video - Not Used but kept in for future
 			// in case we want to unload the video
