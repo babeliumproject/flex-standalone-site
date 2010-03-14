@@ -1,10 +1,14 @@
 package business
 {
+	import flash.errors.IllegalOperationError;
+	import flash.errors.MemoryError;
 	import flash.events.DataEvent;
 	import flash.events.Event;
+	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.FileFilter;
 	import flash.net.FileReference;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
@@ -18,8 +22,8 @@ package business
 	{
 
 		private var responder:IResponder;
-		private var uploadReference:FileReference=DataModel.getInstance().uploadFileReference;
-		private var uploadURL:String=DataModel.getInstance().uploadURL;
+		private var uploadReference:FileReference;
+		private var uploadURL:String;
 
 		public function UploadDelegate(responder:IResponder)
 		{
@@ -29,9 +33,12 @@ package business
 		}
 		
 		public function browse():void{
+			var videosFilter:FileFilter = new FileFilter("Videos", "*.avi;*.flv;*.mp4");
 			uploadReference=DataModel.getInstance().uploadFileReference;
 			uploadReference.addEventListener(Event.SELECT, onSelectFile);
-			uploadReference.browse();
+			uploadReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
+			uploadReference.browse([videosFilter]);
+			//uploadReference.browse();
 		}				
 
 		public function upload():void
@@ -39,18 +46,32 @@ package business
 			uploadReference=DataModel.getInstance().uploadFileReference;
 			var sendVars:URLVariables=new URLVariables();
 			sendVars.action="upload";
-
+			
+			uploadURL = DataModel.getInstance().uploadURL;
+			
 			var request:URLRequest=new URLRequest();
 			request.data=sendVars;
 			request.url=uploadURL;
 			request.method=URLRequestMethod.POST;
-
 			uploadReference.addEventListener(ProgressEvent.PROGRESS, onUploadProgress);
 			uploadReference.addEventListener(Event.COMPLETE, onUploadComplete);
 			uploadReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
 			uploadReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
 			uploadReference.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onUploadCompleteData);
-			uploadReference.upload(request, "file", false);
+			uploadReference.addEventListener(HTTPStatusEvent.HTTP_STATUS, onHttpStatusError);
+			try{
+				uploadReference.upload(request, "file", false);
+			} catch (secErr:SecurityError){
+				trace("Security Error: "+secErr.message);
+			} catch (ilOpErr:IllegalOperationError){
+				trace("Illegal Operation Error: "+ilOpErr.message);
+			} catch (argErr:ArgumentError){
+				trace("Argument Error: "+argErr.message);
+			} catch (memErr:MemoryError){
+				trace("Memory Error: "+memErr.message);
+			} catch (err:Error){
+				trace("Unknown Error: "+err.message);
+			}
 		}
 		
 		public function cancel():void{
@@ -59,6 +80,7 @@ package business
 			uploadReference.removeEventListener(Event.COMPLETE, onUploadComplete);
 			uploadReference.removeEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
 			uploadReference.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+			uploadReference.removeEventListener(HTTPStatusEvent.HTTP_STATUS, onHttpStatusError);
 			uploadReference.cancel();
 		}
 
@@ -100,8 +122,13 @@ package business
 			//Pass SecurityErrorEvent to UploadOngoingCommand
 			this.responder.fault(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR,false,true, "Upload Security Error -"+event.text));
 		}
-
 		
+		public function onHttpStatusError(event:HTTPStatusEvent):void{
+			//Cancel the operation
+			this.cancel();
+			//Pass HTTPStatusEvent to UploadOngoingCommand
+			this.responder.fault(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS,false,true, event.status));
+		}	
 
 	}
 }

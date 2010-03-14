@@ -1,5 +1,8 @@
 package model
 {
+	import business.NetConnectionDelegate;
+	import business.NetStreamDelegate;
+	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
 	import flash.net.FileReference;
@@ -21,6 +24,11 @@ package model
 		
 		public var media:Media;
 		
+		//Streaming resources control
+		public var ncDelegate:NetConnectionDelegate;
+		public var nsDelegate:NetStreamDelegate;
+		public var netConnected:Boolean;
+		
 		//ViewStack management variables
 		[Bindable] public var viewContentViewStackIndex:int;
 		[Bindable] public var viewExerciseViewStackIndex:int;
@@ -34,7 +42,7 @@ package model
 		
 		//Account options list
 		[Bindable] public var accountOptions:ArrayCollection = new ArrayCollection 
-		(new Array ("General Overview","Credit History","Password Change","Top Collaborators","Check Web-Cam"));
+		(new Array ("General Overview","Credit History","Password Change","Top Collaborators"));
 		
 		//Top ten collaborators data and service state
 		[Bindable] public var topTenUsers:ArrayCollection;
@@ -61,31 +69,25 @@ package model
 		[Bindable] public var isChartDataRetrieved:Boolean = false;
 		
 		[Bindable] public var historicData:CreditHistoryVO = null;
-		
-		//Used to store the subtitles of a video file, it's an array of CuePoints
-		[Bindable] public var videoSubtitles:ArrayCollection;
-		[Bindable] public var areVideoSubtitlesRetrieved:Boolean = false;
-		
-		//Used to store the subtitles added by the current user
-		[Bindable] public var userVideoSubtitles:ArrayCollection;
-		[Bindable] public var areUserVideoSubtitlesRetrieved:Boolean = false;	
+		[Bindable] public var subHistoricData:CreditHistoryVO = null;	
 		
 		//The info of the current video
 		[Bindable] public var currentExercise:ExerciseVO;
 		[Bindable] public var currentExerciseRetrieved:Boolean = false;
 		
 		[Bindable] public var availableExercises:ArrayCollection;
-		[Bindable] public var availableExercisesRetrieved:Boolean = false;
+		[Bindable] public var availableExercisesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		[Bindable] public var evaluationPendingResponses:ArrayCollection;
 		[Bindable] public var evaluationPendingRetrieved:Boolean = false;
 		
 		//Exercise uploading related data
-		[Bindable] public var server: String = "localhost";
+		[Bindable] public var server: String = "babelia";
 		[Bindable] public var red5Port: String = "1935";
 		[Bindable] public var uploadDomain:String = "http://"+server+"/";
 		
-		[Bindable] public var uploadURL:String = uploadDomain+"amfphp/services/babelia/upload.php";
+		[Bindable] public var uploadURL:String = uploadDomain+"upload.php";
+		[Bindable] public var thumbURL:String = uploadDomain+"resources/images/thumbs";
 		
 		[Bindable] public var uploadFileReference:FileReference = null;
 		[Bindable] public var uploadFileSelected:Boolean = false;
@@ -95,6 +97,7 @@ package model
 		[Bindable] public var uploadBytesTotal: int;
 		[Bindable] public var uploadFinished:Boolean = false;
 		[Bindable] public var uploadFinishedData:Boolean = false;
+		[Bindable] public var uploadErrors:String = '';
 		
 		
 		[Bindable] public var newExerciseData:ExerciseVO = null;
@@ -106,24 +109,21 @@ package model
 		
 		[Bindable] public var youtubeThumbnailsUrl:String = "http://img.youtube.com/vi/";
 		
-		//Rol related data    
-		[Bindable] public var exerciseRoleSaveId:int;
-		[Bindable] public var exerciseRoleSaved:Boolean = false;
+		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;
 		[Bindable] public var subtitleSaved:Boolean = false;
-		[Bindable] public var subtitleGet:ArrayCollection;
-		[Bindable] public var subtitleDp:ArrayCollection;
-		[Bindable] public var subtitulosDp:ArrayCollection;	
+	
 		[Bindable] public var videoPlayerControlsViewStack:int;	
 				
 		//Used to store exercise's roles added by the user  
 		[Bindable] public var availableExerciseRoles:ArrayCollection;
 		
 		//Used to store subtitle-lines and roles in the same DP
-		[Bindable] public var availableSubtitlesAndRoles:ArrayCollection;
-					
+		[Bindable] public var availableSubtitlesAndRolesRetrieved: Boolean = false;
+		[Bindable] public var availableSubtitlesAndRoles:ArrayCollection = new ArrayCollection(); 
+		
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;
 		[Bindable] public var autoevaluationDone:Boolean = false;
@@ -142,9 +142,14 @@ package model
 		[Bindable] public var camAccessDenied:Boolean = false;
 		[Bindable] public var micAccessDenied:Boolean = false;
 		
+		//Used to configuration module
+		[Bindable] public var videoRec:Boolean = false;
+		[Bindable] public var audioRec:Boolean = false;
+		[Bindable] public var recording:Boolean = false;
+		[Bindable] public var playing:Boolean = false;
+
 		// l10n
-			
-		[Bindable] public var locales:Array = [ "en_US" , "es_SP", "eu_EK", "fr_FR"];
+		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
 	
 		public function DataModel(){
 			if (instance)

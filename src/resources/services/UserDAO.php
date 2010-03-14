@@ -24,7 +24,7 @@ class UserDAO {
 
 	public function getTopTenCredited()
 	{
-		$sql = "SELECT id, name, email, creditCount FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10 ";
+		$sql = "SELECT id, name, email, creditCount FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
 
 		$searchResults = $this->_listQuery($sql);
 
@@ -37,15 +37,15 @@ class UserDAO {
 			return false;
 		}
 
-		$sql = "SELECT id, name, email, creditCount FROM users WHERE (id = '". $userId ."') ";
+		$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate FROM users WHERE (id = %d) ";
 
-		return $this->_singleQuery($sql);
+		return $this->_singleQuery($sql, $userId);
 	}
 
 	//Returns a single User object
-	private function _singleQuery($sql){
+	private function _singleQuery($sql, $userId){
 		$valueObject = new UserVO();
-		$result = $this->conn->_execute($sql);
+		$result = $this->conn->_execute($sql, $userId);
 
 		$row = $this->conn->_nextRow($result);
 		if ($row)
@@ -54,6 +54,10 @@ class UserDAO {
 			$valueObject->name = $row[1];
 			$valueObject->email = $row[2];
 			$valueObject->creditCount = $row[3];
+			$valueObject->realName = $row[4];
+			$valueObject->realSurname = $row[5];
+			$valueObject->active = $row[6];
+			$valueObject->joiningDate = $row[7];
 		}
 		else
 		{
@@ -62,7 +66,7 @@ class UserDAO {
 		return $valueObject;
 	}
 	
-	//Returns an array of Users
+	// Returns an array of Users
 	private function _listQuery($sql)
 	{
 		$searchResults = array();
@@ -75,17 +79,14 @@ class UserDAO {
 			$temp->name = $row[1];
 			$temp->email = $row[2];
 			$temp->creditCount = $row[3];
+			$temp->realName = $row[4];
+			$temp->realSurname = $row[5];
+			$temp->active = $row[6];
+			$temp->joiningDate = $row[7];
 			array_push($searchResults, $temp);
 		}
 
 		return $searchResults;
-	}
-
-	private function _databaseUpdate($sql)
-	{
-		$result = $this->conn->_execute($sql);
-
-		return $result;
 	}
 	
 	public function restorePass($username)
@@ -101,8 +102,8 @@ class UserDAO {
 			$aux = "email";
 
 		// Username or email checking
-		$sql = "SELECT id, name, email FROM users WHERE $aux = '$username'";
-		$result = $this->conn->_execute($sql);
+		$sql = "SELECT id, name, email FROM users WHERE $aux = '%s'";
+		$result = $this->conn->_execute($sql, $username);
 		$row = $this->conn->_nextRow($result);
 
 		if ($row)
@@ -117,8 +118,8 @@ class UserDAO {
 
 		$newPassword = $this->_createNewPassword();
 		
-		$sql = "UPDATE users SET password = '".sha1($newPassword)."' WHERE id = $id";
-		$result = $this->conn->_execute($sql);
+		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
+		$result = $this->conn->_execute($sql, sha1($newPassword), $id);
 
 		$text = "user: $user\npass: $newPassword\n";
 		$htmlText = "<b>user:</b> $user<br/><b>pass:</b> $newPassword<br/>";
@@ -134,7 +135,7 @@ class UserDAO {
 	{
 		$pass = "";
 		$chars = "zbcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		$length = rand(6,10);
+		$length = rand(8, 14);
 
 		// Generate password
 		for ( $i = 0; $i < $length; $i++ )

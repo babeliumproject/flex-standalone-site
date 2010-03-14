@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
-    title="Iruzkina Ikusi" width="400" height="580" layout="absolute" 
+    title="View Comment" width="400" height="580" layout="absolute" 
     xmlns:ns1="modules.evaluation.*" creationComplete="init()">
 	
 		<mx:Script>

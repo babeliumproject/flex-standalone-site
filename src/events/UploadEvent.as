@@ -13,6 +13,9 @@ package events
 		public static const UPLOAD_START:String = "uploadStart";
 		public static const UPLOAD_CANCEL:String = "uploadCancel";
 		
+		public static const RED5_UPLOAD:String = "red5Upload";
+		public static const RED5_CHECK_VIDEO_STATUS:String = "red5CheckVideoStatus";
+		
 		public static const YOUTUBE_UPLOAD:String = "youtubeUpload";
 		public static const YOUTUBE_CHECK_VIDEO_STATUS:String = "youtubeCheckVideoStatus";
 		

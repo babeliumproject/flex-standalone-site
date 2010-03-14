@@ -6,24 +6,17 @@
 		  borderStyle="none"
 		  xmlns:ns1="modules.userManagement.*"
 		  backgroundAlpha="0.0">
-		  
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>	  
 	<mx:Script>	
 		<![CDATA[
-			public var cam:Camera = Camera.getCamera();
 			import events.ViewChangeEvent;
 			import model.DataModel;
 			import mx.controls.Alert;
 			
 			private function userAcountSelect():void{
-				if (availableOptionsList.selectedItem.toString()=="Check Web-Cam"){
-					if (cam) Alert.show("Web Cam checked");
-					else Alert.show("Web Cam not checked");
-				}
-				else
-				{
-					accountOptionsViewStack.selectedIndex = 
-								availableOptionsList.selectedIndex;
-				}
+				accountOptionsViewStack.selectedIndex = availableOptionsList.selectedIndex;
 				availableOptionsList.selectedItem="null";
 			}
 		]]>
@@ -31,7 +24,7 @@
 	<mx:VBox height="100%"
 			 horizontalAlign="left"
 			 width="20%">
-		<mx:Label text="User Account"
+		<mx:Label text="{resourceManager.getString('myResources','TEXT_USER_ACCOUNT')}"
 				  fontFamily="Arial"
 				  fontSize="18"
 				  fontWeight="bold"
@@ -46,7 +39,7 @@
 				 change="userAcountSelect()">
 		</mx:List>
 	</mx:VBox>
-
+	
 	<mx:ViewStack id="accountOptionsViewStack"
 				  height="100%"
 				  width="80%">

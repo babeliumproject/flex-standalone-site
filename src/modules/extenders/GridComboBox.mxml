@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"
+			 dataChange="setSelected()"
+			 change="onSelectionChange(event)"
+			 itemRenderer="modules.extenders.GridComboBoxItemRenderer">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CollectionEventKind;
+			import mx.events.CollectionEvent;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			import mx.controls.DataGrid;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			import mx.controls.dataGridClasses.DataGridListData;
+
+			private var _ownerData:Object;
+			private var _lookupField:String="value";
+			private var _actionField:String="action";
+			private var _valueField:String="charName";
+			private var _actionRemoveItem:String="delete";
+			private var _actionSelectItem:String="select";
+			private var _actionInsertItem:String="insert";
+			private var _actionDoNothingItem:String="nothing";
+
+			// When using this component as an itemEditor rather than an itemRenderer
+			// then set ' editorDataField="selectedItemKey"' on the column to 
+			// ensure that changes to the ComboBox are propogated.
+			[Bindable]
+			public var selectedItemKey:Object;
+
+			//The keyCode for ENTER key
+			public static const ENTER_KEY:int=13;
+
+			public var newRolePopUp:NewRolePopUp;
+
+
+
+			public function set lookupField(value:String):void
+			{
+				if (value)
+				{
+					_lookupField=value;
+					setSelected();
+				}
+			}
+
+			public function set actionField(value:String):void
+			{
+				if (value)
+				{
+					_actionField=value;
+				}
+			}
+
+			public function set valueField(value:String):void
+			{
+				if (value)
+				{
+					_valueField=value;
+				}
+			}
+
+			public function set actionRemoveItem(value:String):void
+			{
+				if (value)
+				{
+					_actionRemoveItem=value;
+				}
+			}
+
+			public function set actionSelectItem(value:String):void
+			{
+				if (value)
+				{
+					_actionSelectItem=value;
+				}
+			}
+
+			public function set actionInsertItem(value:String):void
+			{
+				if (value)
+				{
+					_actionInsertItem=value;
+				}
+			}
+
+
+			override public function set data(value:Object):void
+			{
+				if (value)
+				{
+					_ownerData=value;
+					setSelected();
+				}
+			}
+
+			override public function get data():Object
+			{
+				return _ownerData;
+			}
+
+			private function setSelected():void
+			{
+				if (dataProvider && _ownerData)
+				{
+
+					var col:DataGridListData=DataGridListData(listData);
+					if (dataProvider.length > 2 && _ownerData[col.dataField] != 0)
+					{
+						for each (var dp:Object in dataProvider)
+						{
+							if (dp[_lookupField] == _ownerData[col.dataField])
+							{
+								selectedItem=dp;
+								selectedItemKey=_ownerData[col.dataField];
+								return;
+							}
+						}
+					}
+					else
+					{
+						_ownerData[col.dataField]=-1; //Show the prompt
+						selectedItemKey=-1;
+					}
+				}
+				selectedItem=null;
+			}
+
+			private function onSelectionChange(e:ListEvent):void
+			{
+				if (selectedItem && _ownerData)
+				{
+					var col:DataGridListData=DataGridListData(listData);
+
+					if (selectedItem[_actionField] == _actionRemoveItem)
+					{
+						for each (var dp:Object in dataProvider)
+						{
+							if (selectedItem[_lookupField] == dp[_lookupField])
+								dataProvider.removeItemAt(dataProvider.getItemIndex(dp));
+						}
+						_ownerData[col.dataField]=-1; //Show the prompt
+						selectedItemKey=-1;
+					}
+					else if (selectedItem[_actionField] == _actionSelectItem)
+					{
+						_ownerData[col.dataField]=selectedItem[_lookupField];
+						selectedItemKey=selectedItem[_lookupField];
+					}
+					else if (selectedItem[_actionField] == _actionInsertItem)
+					{
+						showNewRolePopUp();
+					}
+					else if (selectedItem[_actionField] == _actionDoNothingItem)
+					{
+						//Do nothing
+						Alert.show("You must select a role to delete");
+					}
+				}
+			}
+
+			private function checkPressedKey(e:KeyboardEvent):void
+			{
+				if (e.keyCode == ENTER_KEY)
+				{
+					insertNewRole(null);
+				}
+			}
+
+			private function showNewRolePopUp():void
+			{
+
+				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(parent, NewRolePopUp, true));
+				newRolePopUp.title="Insert a new Role";
+				newRolePopUp.showCloseButton=true;
+				PopUpManager.centerPopUp(newRolePopUp);
+
+				newRolePopUp.addEventListener("close", cancelInsert);
+				newRolePopUp["cancelButton"].addEventListener("click", cancelInsert);
+				newRolePopUp["okButton"].addEventListener("click", insertNewRole);
+
+				//We add a key listener so that we can push enter to processLogin
+				newRolePopUp.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+			}
+
+			private function insertNewRole(event:Event):void
+			{
+				var maxRoleId:Number=0;
+				var roleExists:Boolean=false;
+				var newRoleName:String=newRolePopUp.newrole.text;
+				for each (var dp:Object in dataProvider)
+				{
+					if (dp[_valueField].toLowerCase() == newRoleName.toLowerCase())
+					{
+						roleExists=true;
+						newRolePopUp.errorInfo.text="That role already exists!";
+					}
+					if (dp[_lookupField] > maxRoleId)
+						maxRoleId=dp[_lookupField];
+				}
+				if (!roleExists)
+				{
+					//The role doesn't exist, we close the popup and begin the new role insertion
+					PopUpManager.removePopUp(newRolePopUp);
+					var newRoleSelectEntry:Object={roleId: maxRoleId + 1, charName: newRoleName, action: 'select', fontWeight: 'normal', indent: 10};
+					var newRoleDeleteEntry:Object={roleId: maxRoleId + 1, charName: newRoleName, action: 'delete', fontWeight: 'normal', indent: 10};
+					for each (var dpi:Object in dataProvider)
+					{
+						if (dpi[_actionField] == _actionDoNothingItem)
+						{
+							dataProvider.addItemAt(newRoleSelectEntry, dataProvider.getItemIndex(dpi));
+							break;
+						}
+					}
+					dataProvider.addItem(newRoleDeleteEntry);
+
+					//Now we select the new role as the current item
+					var col:DataGridListData=DataGridListData(listData);
+					_ownerData[col.dataField]=newRoleSelectEntry[_lookupField];
+					selectedItemKey=newRoleSelectEntry[_lookupField];
+
+				}
+
+			}
+
+			private function cancelInsert(event:Event):void
+			{
+				PopUpManager.removePopUp(newRolePopUp);
+			}
+		]]>
+	</mx:Script>
+</mx:ComboBox>

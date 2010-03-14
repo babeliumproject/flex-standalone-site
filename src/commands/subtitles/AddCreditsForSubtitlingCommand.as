@@ -7,7 +7,7 @@ package commands.subtitles
 	
 	import events.CreditEvent;
 	
-	import flash.events.Event;
+	import model.DataModel;
 	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
@@ -27,9 +27,14 @@ package commands.subtitles
 		public function result(data:Object):void
 		{
 			var successfulUpdate:Boolean = data.result as Boolean;
-			if(!successfulUpdate)
+			if(!successfulUpdate){
 				Alert.show("A problem occurred while trying to update your credits");
+			} else{
+				var userId:int = DataModel.getInstance().loggedUser.id;
+				new CreditEvent(CreditEvent.ADD_CREDIT_ENTRY_SUBTITLING, userId).dispatch();
+			}
 		}
+	
 		
 		public function fault(info:Object):void
 		{

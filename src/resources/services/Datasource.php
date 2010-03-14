@@ -7,13 +7,29 @@ class Datasource
    function Datasource($dbHost, $dbName, $dbuser, $dbpasswd)
    {
       $this->dbLink = mysql_connect ($dbHost, $dbuser, $dbpasswd);
-      mysql_select_db ($dbName, $this->dbLink);
+      mysql_select_db ($dbName, $this->dbLink);	
    }
 
-   function _execute($sql)
+   function _execute()
    {
-      $result = mysql_query($sql, $this->dbLink);
-      $this->_checkErrors($sql);
+      if ( is_array(func_get_arg(0)) ) 
+         return $this->_vexecute(func_get_arg(0)); // Recive un array con parametros
+      else
+         return $this->_vexecute(func_get_args()); // Recive parametros separados
+   }
+   
+   function _vexecute($params)
+   {
+      $query = array_shift($params);
+      
+      for ( $i = 0; $i < count($params); $i++ )
+         $params[$i] = mysql_real_escape_string($params[$i]);
+      
+      $query = vsprintf($query, $params);
+ 
+      $result = mysql_query($query, $this->dbLink);
+      $this->_checkErrors($query);
+      
       return $result;
    }
 

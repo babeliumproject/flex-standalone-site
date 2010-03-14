@@ -19,11 +19,11 @@
 				var dataProvider:ArrayCollection=DataModel.getInstance().availableExercises;
 				exerciseListTable.rowCount=dataProvider.length;
 				exerciseListTable.dataProvider=dataProvider;
-				DataModel.getInstance().availableExercisesRetrieved=false;
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false,0);
 			}
 		]]>
 	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved}"
+	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(0)}"
 				destination="this.onExercisesRetrieved"/>
 
 	<mx:DataGrid id="exerciseListTable"
@@ -33,7 +33,8 @@
 				 verticalScrollPolicy="off"
 				 sortableColumns="false"
 				 draggableColumns="false"
-				 headerHeight="0">
+				 headerHeight="0"
+				 dataProvider="{DataModel.getInstance().availableExercises}">
 		<mx:columns>
 			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 		</mx:columns>

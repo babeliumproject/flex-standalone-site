@@ -5,11 +5,12 @@ package commands.videoUpload
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import flash.events.HTTPStatusEvent;
+	
 	import model.DataModel;
 	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
-	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 
 	public class UploadBrowseCommand implements ICommand, IResponder
@@ -27,8 +28,10 @@ package commands.videoUpload
 		
 		public function fault(info:Object):void
 		{
-			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while retrieving user data:" + faultEvent.message);
+			if (info is HTTPStatusEvent)
+				Alert.show("Error while uploading file:\n" + info.status);
+			else
+				Alert.show("Error while uploading file:\n" + info.text);
 			trace(ObjectUtil.toString(info));
 		}
 		

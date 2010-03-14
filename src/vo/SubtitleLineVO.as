@@ -1,7 +1,7 @@
 // ActionScript file
 package vo
 {
-
+	
 	[RemoteClass(alias="SubtitleLineVO")]
 	[Bindable]
 	public class SubtitleLineVO
@@ -15,6 +15,6 @@ package vo
 		public var subtitleId:int;
 		
 		
-
+		
 	}
 }

@@ -5,50 +5,35 @@
 		 xmlns:ns2="view.*"
 		 xmlns:ns3="view.VideoPlayer.*"
 		 xmlns:ns4="modules.videoUpload.*"
+		 xmlns:extenders="modules.extenders.*"
 		 backgroundAlpha="0.0"
-		 creationComplete="init()">
-
+		 creationComplete="init()"
+		 xmlns:local="*">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import commands.cuepointManager.ShowSubtitleCommand;
-			import vo.CueObject;
-			import control.CuePointManager;
-			import vo.ExerciseRoleVO;
-			import events.ExerciseRoleEvent;
-			import flash.sampler.getInvocationCount;
-			import events.SubtitleEvent;
-			import vo.SubtitleVO;
-			import mx.utils.ObjectUtil;
-			import vo.ExerciseVO;
-			
 			import events.SubtitlesAndRolesEvent;
-			import vo.SubtitlesAndRolesVO;
+			import events.SubtitlesEvent;
 			
-			import mx.rpc.events.ResultEvent;
-			import mx.utils.ArrayUtil;
-			import mx.rpc.events.FaultEvent;
-			
-			import mx.events.VideoEvent;
-
-			import mx.controls.dataGridClasses.DataGridColumn;
-			import mx.formatters.DateFormatter;
-			import vo.SubtitleLineVO;
-			import mx.controls.VideoDisplay;
-			import mx.controls.Alert;
-			import events.ViewChangeEvent;
-			import model.DataModel;
-			import mx.events.FlexEvent;
-			import mx.events.StateChangeEvent;
-			import mx.events.ResizeEvent;
-			import mx.controls.Label;
-			import mx.events.SliderEvent;
-			import mx.controls.sliderClasses.Slider;
-			import mx.collections.ArrayCollection;
 			import flash.utils.*;
-			import mx.collections.*
+			
+			import model.DataModel;
+			
+			import mx.collections.*;
+			import mx.controls.Alert;
+			import mx.controls.Label;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.CloseEvent;
+			import mx.events.SliderEvent;
+			
 			import view.*;
-
-
+			
+			import vo.CreditHistoryVO;
+			import vo.ExerciseVO;
+			import vo.SubtitleAndSubtitleLinesVO;
+			import vo.SubtitlesAndRolesVO;
 
 			[Embed(source='../../resources/images/playerPlayIcon.png')]
 			[Bindable]
@@ -56,8 +41,8 @@
 			[Embed(source='../../resources/images/playerPauseIcon.png')]
 			[Bindable]
 			private var pauseImageEmbed:Class;
-			
-			
+
+
 			[Bindable]
 			[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
 			public var FlagEnglish:Class;
@@ -75,197 +60,86 @@
 			public var FlagBasque:Class;
 
 			[Bindable]
-			private var flaggedLanguageData:Array=new Array({label: 'English', icon: 'FlagEnglish'}, {label: 'Spanish', icon: 'FlagSpanish'}, {label: 'Basque', icon: 'FlagBasque'}, {label: 'French', icon: 'FlagFrench'});
-			
-			
+			private var flaggedLanguageData:Array=new Array({label: 'English', icon: 'FlagEnglish'}, 
+															{label: 'Spanish', icon: 'FlagSpanish'}, 
+															{label: 'Basque', icon: 'FlagBasque'}, 
+															{label: 'French', icon: 'FlagFrench'});
+
 
 			public var vid:Video;
 			private var nc:NetConnection;
 			private var ns:NetStream;
 			private var nsClient:Object=new Object();
 			private var availableRoles:ArrayCollection;
-			private var rolzerr:Array;
-			private var iraupena:Number=0;
-			private var timer:Timer=null;
-			private var hizlaria_hitzegiten:Boolean=new Boolean;
-			private var rol_bukaera:Number=new Number;
-			private var rol_tartea:Number=new Number;
-			private var rol_hasera:Number=new Number;
+			
+			private var progressUpdateTimer:Timer=null;
 
-			//private var bideo_zabalera:Number=new Number;
-			//private var bideo_altuera:Number=new Number;
-
-			private var reportedVideoHeight:int;
-			private var reportedVideoWidth:int;
+			[Bindable] private var videoDuration:Number=0;
+			[Bindable] private var videoHeight:int = 240;
+			[Bindable] private var videoWidth:int = 320;
+			
+			private var playbackFinished:Boolean = false;
+			private var playbackReady:Boolean = false;
+			[Bindable] private var playbackStarted:Boolean = false;
 
 			private var playButtonClicked:Boolean=false;
 
-			private var cuekont:Number=new Number;
-			private var badago_taulan:Boolean;
-			//private var camera:Camera=Camera.getCamera();
-			//private var rvideo:Video;
-
 			private var volumeTransform:SoundTransform;
-			private var micvolumeTransform:SoundTransform=new SoundTransform;
 
-			private var hasera_da:Boolean=new Boolean;
-			private var in_ns:NetStream;
-			private var aukeratua:Boolean=new Boolean;
-
-			private var audioDir:String;
-			private var red5Host:String;
-			private var red5Port:String;
-
-			//private var rec_so:SharedObject;
-
-			private var egoera:String;
-			private var egoera2:String;
-			private var rol_aukeratua:String;
-
-			public var childTaula:ArrayCollection=new ArrayCollection();
-
-			private var bideoIzena:String=new String;
-			private var bideoId:int=new int;
-			private var prest:Boolean=new Boolean;
-			public var kamera_ukatua:Boolean=false;
+			private var exerciseFileName:String;
+			private var exerciseId:int;
+			private var exerciseLanguage:String;
 
 			[Bindable]
-			public var cuetaula:ArrayCollection;
-			public var cuetimetaula:ArrayCollection;
-
-			// Make it Bindable so it can be used in bind 
-			// expressions ({colorAC}). */
-			[Bindable]
-			public var rolTaula:ArrayCollection;
-
-			
-			//true if you press sub button ; false if you press roles
-			[Bindable]private var subMode:Boolean = true;
-			[Bindable]public var infoDatagrid:ArrayCollection;
-			
-			// CuePoint Manager
-			private var cueManager:CuePointManager = CuePointManager.getInstance();
+			private var videoPlayerControlsViewStack:int=1;
 			
 			public function init():void
 			{
-	
 				if (DataModel.getInstance().currentExercise != null)
 				{
 					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise;
 					setBideoIzena(watchExercise.name, watchExercise.id);
 					exerciseTitle.text=watchExercise.title;
-					
-					getSubtitlesAndRolesFromDB(watchExercise);
-				}else{
-					setBideoIzena("kutsi9", 1);
-				
 				}
-		
+				else
+				{
+					setBideoIzena("kutsi9", 1);
+				}
 			}
-			
-			/**
-			 * Getting Subtitles and Roles from DB
-			 */
-			private function getSubtitlesAndRolesFromDB(watchExercise:ExerciseVO) : void
+
+			private function resolveIdToRole(item:Object, column:DataGridColumn):String
 			{
-				/**
-				 *  Retrieving subtitle lines
-				 */
-				var obj:SubtitleVO = new SubtitleVO();
-				obj.exerciseId = watchExercise.id;
-				obj.language = watchExercise.language;
-				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, obj).dispatch();
-				
-				/**
-				 * Retrieving subtitle roles from DB
-				 */
-				var exerciseRole:ExerciseRoleVO = new ExerciseRoleVO();
-				exerciseRole.exerciseId = watchExercise.id;
-				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, exerciseRole).dispatch();
-					
+				for each (var dp:Object in comboData)
+				{
+					if (dp.roleId == item.roleId)
+						return dp.charName;
+				}
+				return "";
 			}
-			
-			/**
-			 * Setup Video
-			 */
+
 			private function setup():void
 			{
 				nsClient.onMetaData=this.onMetaData;
-				
+
 				nc=new NetConnection();
 
-				nc.connect("rtmp://"+ DataModel.getInstance().server + "/oflaDemo");
+				nc.connect("rtmp://" + DataModel.getInstance().server + "/oflaDemo");
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
 				nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
 				nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError);
-
-				hasera_da=true;
-				//panel.addEventListener(ResizeEvent.RESIZE, aldakeapanelean);
-			}
-			
-			/**
-			 * Setup for cuepoints
-			 */
-			private function setupCuePointManager() : void
-			{
-				/**
-				 * Getting CuePoints FROM DB
-				 */
-				cueManager.reset();
-				cueManager.cached = cueManager.setVideo(bideoId);
-
-				if ( !(cueManager.cached) )
-					cueManager.setCuesFromSubtitle();
-				else // cueManager need to reset his cuepoint's commands
-					DataModel.getInstance().areVideoSubtitlesRetrieved = true;
-
-				vid.addEventListener(Event.ENTER_FRAME, cueManager.monitorCuePoints);
-			}
-			
-			/**
-			 * Setup for CuePoints commands
-			 */
-			private function set setupCueManagerCommands(bol:Boolean) : void
-			{	
-				for each ( var cue:CueObject in cueManager.getCuelist() )
-				{
-					cue.setStartCommand(new ShowSubtitleCommand(cue.getText(), subHolder));
-					cue.setEndCommand(new ShowSubtitleCommand("", subHolder));
-				}
-				
-				if ( !(cueManager.cached) )
-					cueManager.saveCache();
-				
-				DataModel.getInstance().areVideoSubtitlesRetrieved = false;
-			}
-			
-			/**
-			 * Setup for Roles
-			 */
-			private function set setupRoles(bol:Boolean) : void
-			{
-				rolTaula = new ArrayCollection();
-				
-				for each ( var role:ExerciseRoleVO in DataModel.getInstance().availableExerciseRoles )
-					rolTaula.addItem(role.characterName);
-				
-				DataModel.getInstance().availableExerciseRoles = null;
 			}
 
 			public function asyncErrorHandler(event:AsyncErrorEvent):void
 			{
-				// ignore for now
 			}
 
-			private function netSecurityError(event:SecurityErrorEvent):void
+			public function netSecurityError(event:SecurityErrorEvent):void
 			{
-			
 			}
 
-			private function netIOError(event:IOErrorEvent):void
+			public function netIOError(event:IOErrorEvent):void
 			{
-
 			}
 
 			private function volumeChangeHandler(event:SliderEvent):void
@@ -274,14 +148,10 @@
 				ns.soundTransform=volumeTransform;
 
 			}
-			
-			
-		
-		
+
 			public function playPauseClickHandler():void
 			{
 				playButtonClicked=!playButtonClicked;
-
 				if (playButtonClicked)
 				{
 					playPauseButton.setStyle('icon', pauseImageEmbed);
@@ -294,30 +164,20 @@
 				}
 			}
 
-			public function stopVid():void
+			public function exerciseStopHandler():void
 			{
+				playbackFinished = false;
 				ns.pause();
 				ns.seek(0);
 				playPauseButton.setStyle('icon', playImageEmbed);
 				playButtonClicked=false;
-				// Clear subtitles text
-				subHolder.text = "";
-
-//				rolbarra.visible=false;
-
-			}
-			
-			private function set stopVideo(flag:Boolean) : void
-			{
-				if ( playButtonClicked )
-					this.stopVid();
+				doHideCuePoint(new SubtitlesAndRolesVO());
 			}
 
-			public function setBideoIzena(izena:String, bideo_id:int):void
+			public function setBideoIzena(exerciseFileName:String, exerciseId:int):void
 			{
-				//Nagusitik aukeratua izan den bideoaren izena lortzen da eta azpititutluen zatiari pasatzen zaio, berau martxan jarriz.
-				bideoIzena=izena;
-				bideoId=bideo_id;
+				this.exerciseFileName=exerciseFileName;
+				this.exerciseId=exerciseId;
 				setup();
 			}
 
@@ -328,55 +188,55 @@
 					DataModel.getInstance().currentExerciseRetrieved=false;
 					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise;
 					exerciseTitle.text=watchExercise.title;
-					bideoIzena=watchExercise.name;
-					bideoId=watchExercise.id;
+					exerciseFileName=watchExercise.name;
+					exerciseId=watchExercise.id;
+					exerciseLanguage=watchExercise.language;
+
+					//When requested to watch this exercise we also asked to grab the subtitles it may have.
+					//In case it has subtitles, we populate our subtitleCollection with them.
+					if (DataModel.getInstance().availableSubtitlesAndRoles != null)
+					{
+						subtitleCollection=DataModel.getInstance().availableSubtitlesAndRoles;
+					}
 
 					if (ns == null)
 						setup();
 					else
 					{
-						timer.stop();
-						vid.removeEventListener(Event.ENTER_FRAME, cueManager.monitorCuePoints);
-
-						ns.play(bideoIzena);
+						progressUpdateTimer.stop();
+						vid.removeEventListener(Event.ENTER_FRAME, monitorCuePoints);
+						ns.close();
+						ns = new NetStream(nc);
+						ns.play(exerciseFileName);
 						ns.client=nsClient;
-						//ns.addEventListener(NetStatusEvent.NET_STATUS, bideoEgoeraAztertu);
+						ns.addEventListener(NetStatusEvent.NET_STATUS, checkVideoStatus);
 
 						vid=new Video();
 						vid.attachNetStream(ns);
-						vid.addEventListener(Event.ENTER_FRAME, cueManager.monitorCuePoints);
+						vid.addEventListener(Event.ENTER_FRAME, monitorCuePoints);
 						uic.removeChildAt(0);
 						uic.addChild(vid);
-						
-						// Reset cuepoint manager
-						getSubtitlesAndRolesFromDB(watchExercise);
-						setupCuePointManager();
-						subHolder.text = "";
 
 						ns.soundTransform=volumeTransform;
-						timer.start();
+						progressUpdateTimer.start();
 					}
 				}
 			}
 
 			private function netStatusHandler(event:NetStatusEvent):void
 			{
-
 				ns=new NetStream(nc);
-				ns.play(bideoIzena);
+				ns.play(exerciseFileName);
 				ns.client=nsClient;
-				ns.addEventListener(NetStatusEvent.NET_STATUS, bideoEgoeraAztertu);
-
+				ns.addEventListener(NetStatusEvent.NET_STATUS, checkVideoStatus);
 
 				vid=new Video();
 				vid.attachNetStream(ns);
-				// Setup cuepoint manager
-				setupCuePointManager();
+				vid.addEventListener(Event.ENTER_FRAME, monitorCuePoints);
 				uic.addChild(vid);
 
-				//Bolumena kontrolatzeko objetuen balioak haseratu
-
-				volumeTransform=new SoundTransform();
+				//Initialize the volume control components
+				volumeTransform = new SoundTransform();
 				volumeSlider.value=volumeTransform.volume;
 				volumeSlider.minimum=0;
 				volumeSlider.maximum=1;
@@ -385,52 +245,51 @@
 				volumeSlider.liveDragging=true;
 				volumeSlider.addEventListener(SliderEvent.CHANGE, volumeChangeHandler);
 
-				//Bolumena ixildu haseran, seek egiterakoan ez hotsik entzuteko
+				//At first set the volume to 0 so that nothing is heard during seek
 				volumeTransform.volume=0
 				ns.soundTransform=volumeTransform;
 
-				//segundu laurden bateko maiztasuna erlojua sortu eta hasieratu, segunduro progressbarrak eguneratzeko
-
-				timer=new Timer(250, 0);
-				timer.addEventListener(TimerEvent.TIMER, onTimer);
-				timer.start();
+				//Instantiate a timer object to update the video player's progress bar every 1/4 second
+				progressUpdateTimer=new Timer(250, 0);
+				progressUpdateTimer.addEventListener(TimerEvent.TIMER, onExerciseProgressUpdate);
+				progressUpdateTimer.start();
 
 			}
 
-			private function bideoEgoeraAztertu(event:NetStatusEvent):void
+			private function checkVideoStatus(event:NetStatusEvent):void
 			{
-				trace("status:" + event.info.code);
-
-				//Hemen egoera ezberdinak dokumentatuta
-				//http://livedocs.adobe.com/flash/9.0_es/ActionScriptLangRefV3/flash/events/NetStatusEvent.html
-
 				switch (event.info.code)
 				{
 					//Data is not being received quickly enough to fill the buffer.
 					//Data flow will be interrupted until the buffer refills, at which time 
 					//a NetStream.Buffer.Full message will be sent and the stream will begin playing again
 					case "NetStream.Buffer.Empty":
-						//Notify the user that the video is in buffering state
+						if(playbackFinished){
+							playbackStarted = false;
+							exerciseStopHandler();
+						}
 						break;
 
 					//The buffer is full and the stream will begin playing.
 					case "NetStream.Buffer.Full":
-						//Remove the buffering state indicator
+						if(playbackReady){
+							playbackStarted = true;
+						}
+							
 						break;
 
-					//Data has finished streaming, and the remaining buffer will be emptied.
+					//Data has stopped streaming, and the remaining buffer will be emptied.
 					case "NetStream.Buffer.Flush":
-						//bideoBukaeraTratatu();
-						// NOT HERE stopVid();
 						break;
 
 					//Playback has stopped.
 					case "NetStream.Play.Stop":
-						//You can add some checks here
+						playbackFinished = true;
 						break;
 
 					//Playback has started.	
 					case "NetStream.Play.Start":
+						playbackReady = true;
 						break;
 
 					//An error has occurred in playback for a reason other than those listed elsewhere 
@@ -442,172 +301,56 @@
 					case "NetStream.Play.StreamNotFound":
 						break;
 
-				}
-
-			}
-
-			private function bideoBukaeraTratatu():void
-			{
-
-				//trace("bideoBukaeraTratatu");
-				trace("iraupena : " + iraupena);
-				trace(" ns.time : " + ns.time)
-
-				var last_time:Number=new Number
-
-				if ((ns.time + 0.5) >= iraupena)
-				{
-
-					if (egoera == "ikusten")
-					{
-						stopVid();
-							//trace("ikusten");
-					}
-
-					//Bolumena aktibatu. Nolaz berriz erreproduzitzean ez den "batera ikusi" botoirik sakatzen, bolumena hemen aktibatu egin behar da. Azkenekoa aukeraturiko rola izan bada, ixildu egingo bait du.
-					volumeTransform.volume=1;
-					ns.soundTransform=volumeTransform;
-
-					last_time=ns.time;
+					case "NetStream.Pause.Notify":
+						playbackStarted = false;
+						break;
 				}
 			}
 
-			private function elementuakHasieratu():void
+			private function initializeVideoPlayerComponents():void
 			{
-				//vid.height=reportedVideoHeight;
-				//vid.width=reportedVideoWidth;
-				//vid.height=260;
-				//vid.width=320;
+				vid.height=videoHeight;
+				vid.width=videoWidth;
 
 				// Resize UIComponent to same size as Video object.
 				uic.width=vid.width;
 				uic.height=vid.height;
 
-				bideobarra.visible=true;
-				//bideobarra.width=vid.width - 10;
-				bideobarra.minimum=0;
-				bideobarra.maximum=iraupena;
+				exerciseLoadProgressBar.visible=true;
 
-				//rolbarra
-//				rolbarra.width=bideobarra.width;
-
-				//seekbarra
-//				seek_denb.width=bideobarra.width;
-
-//				seek_barra.minimum=0;
-//				seek_barra.maximum=iraupena;
-//				seek_barra.visible=true
-
-
-
+				exerciseLoadProgressBar.minimum=0;
+				exerciseLoadProgressBar.maximum=videoDuration;
 			}
 
 			private function onMetaData(obj:Object):void
 			{
-				iraupena=obj.duration;
+				videoDuration=obj.duration;
+				videoHeight=obj.height;
+				videoWidth=obj.width;
 
-				reportedVideoHeight=obj.height;
-				reportedVideoWidth=obj.width;
+				initializeVideoPlayerComponents();
 
-				elementuakHasieratu();
+				exerciseStopHandler();
 
-				stopVid();
-
-				//Bolumena piztu haseran, seek egiterakoan ez hotsik entzuteko
-				volumeTransform.volume=1
+				volumeTransform.volume=1;
 				ns.soundTransform=volumeTransform;
 			}
 
-			private function rolAldaketa():void
-			{
-
-				for (var i:int=0; i < cuetaula.length; i++)
-				{
-
-					var irudia:Image=new Image;
-
-//					if (cuetaula[i].parameters.izena == rolkonboa.selectedItem)
-//					{
-//
-//						irudia.source="resources/images/fletxa_gorri.png"
-//					}
-//					else
-//					{
-//						irudia.source="resources/images/fletxa_beltza.png"
-//					}
-
-					//17 x 35 da fletxa
-
-					irudia.x=panel.x + 10 + ((bideobarra.x + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
-					irudia.y=panel.y + bideobarra.y - 6
-
-					//Aukeratutako rolari dagozkion cuepoint-en fletxak pantailaratzen dira
-					//Amaieran ezabatu ahal izateko, taula batean gordetzen dira denak.
-					childTaula.addItem(this.addChild(irudia));
-				}
-
-			}
-
-			private function kamaraUkatua(evt:FlexEvent):void
-			{
-				//this.dispatchEvent(new FlexEvent(FlexEvent.DATA_CHANGE));
-				kamera_ukatua=true;
-//				onAukerakIkusi();
-			}
-
-			private function bideoaMartxanJarri(evt:StateChangeEvent):void
-			{
-				ns.seek(0);
-				ns.resume();
-			}
-
-			private function camera_activity(evt:ActivityEvent):void
-			{
-
-				//if (evt.activating == true) trace ("aktibatzen!")
-
-				//trace("\n Infor Stringa: " + evt.toString() + "\n")
-			}
-
-
-			private function onTimer(event:TimerEvent):void
+			private function onExerciseProgressUpdate(event:TimerEvent):void
 			{
 				var currentTime:int=ns.time;
-				var ehunekoa:int;
+				var percentageLoaded:int;
 
-
-				//bideoaren progresu barra eguneratu
-				bideobarra.setProgress(currentTime, iraupena);
-				ehunekoa=(100 * currentTime) / iraupena;
-//				seek_barra.value=currentTime;
+				//Update the position of the ProgressBar
+				exerciseLoadProgressBar.setProgress(currentTime, videoDuration);
+				percentageLoaded=(100 * currentTime) / videoDuration;
 
 				var totalBytes:Number=ns.bytesTotal;
 				var bytesLoaded:Number=ns.bytesLoaded;
-				ehunekoa=(bytesLoaded * 100) / totalBytes;
-//				trace(seek_barra.value);
+				percentageLoaded=(bytesLoaded * 100) / totalBytes;
 				var fTime:TimeFormatter=new TimeFormatter();
 				fTime.outputMilliseconds=false;
-				bideobarra.label=fTime.format(currentTime) + "/" + fTime.format(iraupena);
-
-			}
-
-			private function onBideoaIkusi():void
-			{
-
-				panel.visible=true
-				if (!botoiak.enabled)
-					botoiak.enabled=true
-//				if (!seek_barra.enabled)
-//					seek_barra.enabled=true
-
-				//bideoa erreproduzitzean berriro bolumena aktibatu
-				volumeTransform.volume=1;
-				ns.soundTransform=volumeTransform;
-				volumeSlider.enabled=true;
-
-				egoera="ikusten";
-
-				stopVid();
+				exerciseLoadProgressBar.label=fTime.format(currentTime) + "/" + fTime.format(videoDuration);
 			}
 
 
@@ -615,6 +358,9 @@
 			// SUBTITLE ADDITION ALPHA EDITION
 			// ALSO MUST CHECK WHETHER IT'S POSSIBLE TO USE NON-ENBEDDED CUEPOINTS IN EXERCISE MODULE
 			//
+
+			[Bindable]
+			private var isVideoPlaying:Boolean=false;
 
 			[Bindable]
 			private var subtitleStartTime:Number=0;
@@ -628,238 +374,362 @@
 			private var endEntry:SubtitlesAndRolesVO;
 			private var detailEntry:SubtitlesAndRolesVO;
 
-			private var entrySelected:Boolean=false;
+			private var preUpdateFinished:Boolean=true;
 
 			[Bindable]
 			private var outlinedSubtitle:TextOutlines=new TextOutlines(320, 50, 1.8);
 
+			[Bindable]
+			private var subtitleStarted:Boolean=false;
+			
+			private var subtitleEditorVisible:Boolean=false;
+
+
+			public function set onSubtitlesAndRolesRetrieved(value:Boolean):void
+			{
+				if (DataModel.getInstance().availableSubtitlesAndRolesRetrieved)
+				{
+					DataModel.getInstance().availableSubtitlesAndRolesRetrieved=false;
+					subtitleCollection=DataModel.getInstance().availableSubtitlesAndRoles;
+					subtitleList.dataProvider=subtitleCollection;
+				}
+			}
+
 			private function subtitleStartHandler():void
 			{
-				
-				if(infoDatagrid==null)
-				{
-					infoDatagrid= new ArrayCollection();
-				}
+				subtitleStarted=true;
 				subtitleStartTime=ns.time;
-				showStepper.value=subtitleStartTime;
-				hideStepper.value=subtitleStartTime;
 				startEntry=new SubtitlesAndRolesVO();
-				startEntry.id = infoDatagrid.length + 1;
-				startEntry.showTime = subtitleStartTime;
-				startEntry.hideTime = 0;
-				startEntry.text = "";
-				startEntry.subtitleId = 0;
-				infoDatagrid.addItem(startEntry);
-				
-				// Insert into cuepoint manager
-				var cueobj:CueObject = new CueObject(ns.time, -1, "", "", 
-											new ShowSubtitleCommand("", subHolder),
-											new ShowSubtitleCommand("", subHolder));
-				cueManager.addCue(cueobj);
-				
+				startEntry.id=subtitleCollection.length + 1;
+				startEntry.showTime=subtitleStartTime;
+				startEntry.hideTime=subtitleStartTime + 0.5;
+				startEntry.role="";
+				startEntry.text="";
+				startEntry.subtitleId=0;
+				subtitleCollection.addItem(startEntry);
+
+				var showTimeSort:SortField=new SortField();
+				showTimeSort.name="showTime";
+				showTimeSort.numeric=true;
+				var numericDataSort:Sort=new Sort();
+				numericDataSort.fields=[showTimeSort];
+				subtitleCollection.sort=numericDataSort;
+				subtitleCollection.refresh();
+
 				insertDataGridRow();
 			}
 
 			private function subtitleEndHandler():void
 			{
-				subtitleEndTime=ns.time;
-				//subtitleLength=subtitleEndTime - subtitleStartTime;
-				hideStepper.value=subtitleEndTime;
-				endEntry=new SubtitlesAndRolesVO();
-				endEntry.id = infoDatagrid.length;
-				endEntry.showTime = subtitleStartTime;
-				endEntry.hideTime = subtitleEndTime;
-				endEntry.text = "text";
-				endEntry.subtitleId = 0;
-
-				if(infoDatagrid.getItemIndex(startEntry)>=0)
+				subtitleStarted=false;
+				if (subtitleCollection.length > 0)
 				{
-					var updIndex:int = infoDatagrid.getItemIndex(startEntry);
-					infoDatagrid.setItemAt(endEntry, updIndex);
-					
-					// Updating cuepoint manager
-					var cueobj:CueObject = cueManager.getCue(updIndex);
-					cueobj.setStartTime(subtitleStartTime);
-					cueobj.setEndTime(subtitleEndTime);
-					cueobj.setText(startEntry.text);
-					cueobj.setStartCommand(new ShowSubtitleCommand(startEntry.text, subHolder));
-					cueManager.setCue(updIndex, cueobj);
-					
+					subtitleEndTime=ns.time;
+					endEntry=new SubtitlesAndRolesVO();
+					endEntry.id=subtitleCollection.length;
+					endEntry.showTime=subtitleStartTime;
+					endEntry.hideTime=subtitleEndTime;
+					endEntry.role="";
+					endEntry.text="";
+					endEntry.subtitleId=0;
+
+					subtitleCollection.setItemAt(endEntry, subtitleCollection.getItemIndex(startEntry));
 					insertDataGridRow();
 				}
-				
+			}
+
+			private function subtitleInsertHandler():void
+			{
+
+			}
+
+			private function subtitleRemoveHandler():void
+			{
+				if (subtitleList.selectedIndex != -1)
+				{
+
+					var previouslySelectedIndex:Number=subtitleList.selectedIndex;
+					var indexToBeSelected:Number;
+					if (previouslySelectedIndex == subtitleList.rowCount)
+					{
+						indexToBeSelected=previouslySelectedIndex - 1;
+					}
+					else if (previouslySelectedIndex == 0 && subtitleList.rowCount == 1)
+					{
+						//nothing
+					}
+					else
+					{
+						indexToBeSelected=previouslySelectedIndex;
+					}
+					subtitleCollection.removeItemAt(subtitleList.selectedIndex);
+					insertDataGridRow();
+					subtitleList.selectedIndex=indexToBeSelected;
+
+				}
+			}
+
+			private function subtitleClearHandler():void
+			{
+				Alert.show(resourceManager.getString('myResources','WARNING_CLEAR_SUBTITLE_LINES'), 
+						   resourceManager.getString('myResources','TITLE_CONFIRM_ACTION'), 
+						   Alert.YES | Alert.NO, null, subtitleClearConfirmation, null, Alert.NO);
+			}
+
+			private function subtitleClearConfirmation(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES)
+					subtitleCollection.removeAll();
+			}
+
+			private function subtitleNextHandler():void
+			{
+				var currentlySelectedIndex:Number=subtitleList.selectedIndex;
+				if (currentlySelectedIndex != -1 && currentlySelectedIndex < subtitleList.rowCount)
+				{
+					subtitleList.selectedIndex=currentlySelectedIndex + 1;
+				}
+			}
+
+			private function subtitlePreviousHandler():void
+			{
+				var currentlySelectedIndex:Number=subtitleList.selectedIndex;
+				if (currentlySelectedIndex != -1 && currentlySelectedIndex > 0)
+				{
+					subtitleList.selectedIndex=currentlySelectedIndex - 1;
+				}
 			}
 
 			private function insertDataGridRow():void
 			{
-				subtitleList.dataProvider=infoDatagrid;
-			}
-
-			private function updateDataGridRow():void
-			{
-				if (entrySelected)
-				{
-
-					detailEntry.showTime=showStepper.value;
-					detailEntry.hideTime=hideStepper.value;
-					//detailEntry.length=detailEntry.hideTime - detailEntry.showTime;
-					detailEntry.text=subtitleDetailTextArea.text;
-					if( (infoDatagrid.length > 0 || infoDatagrid) && subtitleList.selectedIndex >= 0)
-					{
-						var updIndex:int=infoDatagrid.getItemIndex(infoDatagrid.getItemAt(subtitleList.selectedIndex));
-						infoDatagrid.setItemAt(detailEntry, updIndex);
-						
-						// Updating cuepoint manager
-						var cueobj:CueObject = cueManager.getCue(updIndex);
-						cueobj.setStartTime(detailEntry.showTime);
-						cueobj.setEndTime(detailEntry.hideTime);
-						cueobj.setText(detailEntry.text);
-						cueobj.setStartCommand(new ShowSubtitleCommand(detailEntry.text, subHolder));
-						cueManager.setCue(updIndex, cueobj);
-					}
-				}
+				subtitleList.dataProvider=subtitleCollection;
 			}
 
 			private function goToTimeHandler():void
 			{
-				if ( entrySelected && infoDatagrid.length >0 )
+				if (subtitleList.selectedIndex != -1)
 				{
-					var tempEntry:SubtitlesAndRolesVO=infoDatagrid.getItemAt(subtitleList.selectedIndex) as SubtitlesAndRolesVO;
+					var tempEntry:SubtitlesAndRolesVO=subtitleCollection.getItemAt(subtitleList.selectedIndex) as SubtitlesAndRolesVO;
 					//ns.pause();
 					ns.seek(tempEntry.showTime);
-					//ns.resume();	
+						//ns.resume();
 				}
 			}
 
-			private function showCurrentLineDetail():void
+			private function monitorCuePoints(e:Event):void
 			{
-				entrySelected = true;
-				detailEntry=infoDatagrid.getItemAt(subtitleList.selectedIndex) as SubtitlesAndRolesVO;
-				showStepper.value=detailEntry.showTime;
-				hideStepper.value=detailEntry.hideTime;
-			
-				subtitleDetailTextArea.text=detailEntry.text;
+				var curTime:Number=ns.time;
+				for each (var ob1:SubtitlesAndRolesVO in subtitleCollection)
+				{
+					if ((curTime - 0.08) < ob1.showTime && ob1.showTime < (curTime + 0.08))
+					{
+						doShowCuePoint(ob1);
+						break;
+					}
+				}
+				for each (var ob2:SubtitlesAndRolesVO in subtitleCollection)
+				{
+					if ((curTime - 0.08) < ob2.hideTime && ob2.hideTime < (curTime + 0.08))
+					{
+						doHideCuePoint(ob2);
+						break;
+					}
+				}
 			}
 
-			private function formatStartTimeColumn(item:Object, col:DataGridColumn):String
+			private function doShowCuePoint(obj:SubtitlesAndRolesVO):void
 			{
-				return timeFormatter.format(item.showTime);
-			}
-			
-			private function formatRolColumn(item:Object, col:DataGridColumn):String
-			{
-				var rolText:String = item.role;
-				//return subLineText.replace(/[\\r\\n\\v]/, ",");
-				return item.role;
+				outlinedSubtitle.setText(obj.text);
+				subHolder.text=obj.text;
 			}
 
-			private function formatEndTimeColumn(item:Object, col:DataGridColumn):String
+			private function doHideCuePoint(obj:SubtitlesAndRolesVO):void
 			{
-				return timeFormatter.format(item.hideTime);
+				outlinedSubtitle.setText("");
+				subHolder.text="";
 			}
-
-			private function formatTextColumn(item:Object, col:DataGridColumn):String{
-				var subLineText:String = item.text;
-				//return subLineText.replace(/[\\r\\n\\v]/, ",");
-				return item.text;
-			}
-
 
 			private function viewSubtitlingControls(event:MouseEvent):void
 			{
-				
-				subMode = true ;
-				panelEditor.title="Subtitle Editor" ;
-				viewSubRolControls();
-				infoDatagrid=DataModel.getInstance().availableSubtitlesAndRoles;
-				if ( infoDatagrid == null )
-					infoDatagrid = new ArrayCollection();
-			}
-			
-			private function viewRolesControls(event:MouseEvent):void
-			{		
-				subMode = false ;
-				panelEditor.title="Rol Editor" ;
-				viewSubRolControls() ;													
-			}
-			
-			private function viewSubRolControls():void
-			{
-				DataModel.getInstance().videoPlayerControlsViewStack=0;
-				subtitlingControls.minHeight=24;
-				subtitlingControls.height=24;
-				subtitlingControls.visible=true;
-				videoControls.height=subtitlingControls.minHeight;
-				if ( subtitleDetailTextArea )subtitleDetailTextArea.text = "";
-			}
-			
-			private function removeDatagridContent():void
-			{
-				if(infoDatagrid) infoDatagrid.removeAll();
-				
-				// CueManager also need an update
-				cueManager.removeAllCue();
-				subtitleDetailTextArea.text="";
-				
-			}
-			
-			private function removeSelectedLine():void
-			{
-				if(infoDatagrid.length >0 && subtitleList.selectedIndex >= 0)
-				{
-					var rmvIndex:int = subtitleList.selectedIndex;
-					infoDatagrid.removeItemAt(rmvIndex);
-					subtitleDetailTextArea.text="";
-					// Update cueManager
-					cueManager.removeCue(rmvIndex);
+				if(!subtitleEditorVisible){
+					videoPlayerControlsViewStack=0;
+					subtitlingControls.minHeight=24;
+					subtitlingControls.height=24;
+					subtitlingControls.visible=true;
+					videoControls.height=subtitlingControls.minHeight;
+					subtitleEditorVisible = !subtitleEditorVisible;
+				} else {
+					videoPlayerControlsViewStack=1;
+					subtitlingControls.visible=false;
+					videoControls.height=0;
+					subtitleEditorVisible = !subtitleEditorVisible;
 				}
 			}
 			
-			private function saveSubtitlesHandler():void{
-				var pruebaSave:SubtitleVO=new SubtitleVO();
-				pruebaSave.exerciseId = DataModel.getInstance().currentExercise.id;
-				pruebaSave.language = DataModel.getInstance().currentExercise.language;
-				new SubtitleEvent (SubtitleEvent.SAVE_SUBTITLE_LINES,pruebaSave,null).dispatch();
-				
-				// Save cuepoint manager's cache
-				cueManager.saveCache();
+			private function hideSubtitlingControls(event:MouseEvent):void{
+				videoPlayerControlsViewStack=1;
+				subtitlingControls.visible=false;
+				videoControls.height=0;
+				subtitleEditorVisible = false;
+			}
 
-//				var subtitle:SubtitleVO = new SubtitleVO();
-//				subtitle.exerciseId = bideoId;
-//				subtitle.userId = DataModel.getInstance().loggedUser.id;
-//				subtitle.language = languageComboBox.selectedLabel;
-//				new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE,subtitle,null).dispatch();
-//				
+			private function saveSubtitlesHandler():void
+			{
+				if (subtitleCollection.length > 0)
+				{
+					var errors:String=checkSubtitleErrors();
+					if (errors.length == 0)
+					{
+						for each (var s:SubtitlesAndRolesVO in subtitleCollection)
+						{
+							for each (var dp:Object in comboData)
+							{
+								if (dp.roleId == s.roleId)
+								{
+									s.singleName=dp.charName;
+									s.role=dp.charName;
+								}
+							}
+						}
+						var subtitleLines:Array=subtitleCollection.toArray();
+						var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO();
+						subtitles.exerciseId=exerciseId;
+						subtitles.userId=DataModel.getInstance().loggedUser.id;
+						subtitles.language=languageComboBox.selectedLabel;
+						subtitles.subtitleLines=subtitleLines;
+						if (DataModel.getInstance().availableSubtitlesAndRoles.length == 0)
+							subtitles.id=0;
+						else
+							subtitles.id=DataModel.getInstance().availableSubtitlesAndRoles.getItemAt(0).subtitleId;
+
+						var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
+						subHistoricData.videoExerciseId=exerciseId;
+						subHistoricData.videoExerciseName=exerciseFileName;
+						DataModel.getInstance().subHistoricData=subHistoricData;
+
+						new SubtitlesEvent(SubtitlesEvent.SAVE_SUBTITLES, subtitles).dispatch();
+					}
+					else
+					{
+						Alert.show(errors,resourceManager.getString('myResources','WARNING_SUBTITLE_HAS_ERRORS'));
+					}
+				}
+				else
+				{
+					Alert.show(resourceManager.getString('myResources','WARNING_EMPTY_SUBTITLE'),
+							   resourceManager.getString('myResources','TITLE_INFORMATION_MESSAGE'));
+				}
+
+			}
+
+			private function checkSubtitleErrors():String
+			{
+				var errorMessage:String="";
+				//Check empty roles, time overlappings and empty texts
+				for (var i:int=0; i < subtitleCollection.length; i++)
+				{
+					if (subtitleCollection.getItemAt(i).roleId < 1)
+						errorMessage+="The role on the line " + (i + 1) + " is empty.\n";
+					var lineText:String=subtitleCollection.getItemAt(i).text;
+					lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
+					if (lineText.length < 1)
+						errorMessage+="The text on the line " + (i + 1) + " is empty.\n";
+					if (i > 0)
+					{
+						if (subtitleCollection.getItemAt((i-1)).hideTime >= subtitleCollection.getItemAt(i).showTime)
+							errorMessage+="The subtitle on the line " + i + " overlaps with the next subtitle.\n";
+					}
+				}
+				return errorMessage;
+			}
+
+			private function set onSubtitleSaved(value:Boolean):void
+			{
+				if (DataModel.getInstance().subtitleSaved)
+				{
+					DataModel.getInstance().subtitleSaved=false;
+					var sarvo:SubtitlesAndRolesVO=new SubtitlesAndRolesVO();
+					sarvo.exerciseId=exerciseId;
+					sarvo.language=languageComboBox.selectedLabel;
+					new SubtitlesAndRolesEvent(SubtitlesAndRolesEvent.GET_ROLES, sarvo).dispatch();
+					new SubtitlesAndRolesEvent(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES, sarvo).dispatch();
+				}
+
+			}
+
+			private function set availableRolesRetrieved(value:Boolean):void
+			{
+
+				if (DataModel.getInstance().availableExerciseRoles)
+				{
+					var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles;
+					var cData:ArrayCollection=new ArrayCollection;
+					var insertLine:Object={roleId: 0, charName: resourceManager.getString('myResources','OPTION_INSERT_NEW_ROLE'), action: 'insert', fontWeight: 'bold', indent: 0};
+					cData.addItem(insertLine);
+					if (avrol.length > 0)
+					{
+						for each (var item:Object in avrol)
+						{
+							var comboline:Object={roleId: item.data, charName: item.label, action: 'select', fontWeight: 'normal', indent: 10};
+							cData.addItem(comboline);
+						}
+						var deleteLine:Object={roleId: 0, charName: resourceManager.getString('myResources','OPTION_DELETE_A_ROLE'), action: 'nothing', fontWeight: 'bold', indent: 0};
+						cData.addItem(deleteLine);
+						for each (var item2:Object in avrol)
+						{
+							var comboline2:Object={roleId: item2.data, charName: item2.label, action: 'delete', fontWeight: 'normal', indent: 10};
+							cData.addItem(comboline2);
+						}
+						comboData.removeAll();
+						comboData=cData;
+					}
+					else
+					{
+						var deleteLineEmpty:Object={roleId: 0, charName: resourceManager.getString('myResources','OPTION_DELETE_A_ROLE'), action: 'nothing', fontWeight: 'bold', indent: 0};
+						cData.addItem(deleteLineEmpty);
+						comboData.removeAll();
+						comboData=cData;
+					}
+				}
+			}
+
+			private function lfRowNum(oItem:Object, iCol:int):String
+			{
+				var iIndex:int=subtitleCollection.getItemIndex(oItem) + 1;
+				return String(iIndex);
 			}
 			
-			private function set onSubtitleSaved(value:Boolean):void{
-//				if (DataModel.getInstance().subtitleSaved){
-//					DataModel.getInstance().subtitleSaved = false;
-//					var subtitleId:int = DataModel.getInstance().subtileSaveId;
-//					for each (var s:SubtitleLineVO in subtitleCollection){
-//						s.subtitleId = subtitleId;
-//					}
-//					var lines:Array = subtitleCollection.toArray();
-//					new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE_LINES,null,lines).dispatch();
-//				}
-					
+			private function set onTabChange(value:Boolean):void{
+				exerciseStopHandler();
+				ns.close();
+				hideSubtitlingControls(null);
+			}
+			
+			private function set onLogout(value:Boolean):void{
+				if(DataModel.getInstance().isLoggedIn == false){
+					onTabChange = false;
+				}
 			}
 		]]>
 
 	</mx:Script>
 
+	<mx:ArrayCollection id="comboData"/>
+
+	<mx:Binding source="DataModel.getInstance().availableExerciseRoles"
+				destination="availableRolesRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved}"
 				destination="this.onExerciseSelected"/>
+	<mx:Binding source="{DataModel.getInstance().availableSubtitlesAndRolesRetrieved}"
+				destination="this.onSubtitlesAndRolesRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().subtitleSaved}"
 				destination="this.onSubtitleSaved"/>
+	
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
-				destination="this.stopVideo"/>
-	<mx:Binding source="{DataModel.getInstance().availableExerciseRoles != null}"
-				destination="this.setupRoles"/>
-	<mx:Binding source="{DataModel.getInstance().areVideoSubtitlesRetrieved == true}"
-				destination="this.setupCueManagerCommands"/>
-
-
+				destination="this.onTabChange"/>
+	
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="this.onLogout"/>
 
 	<mx:Panel id="panel"
 			  title="Video Player"
@@ -891,19 +761,18 @@
 		<mx:Canvas backgroundColor="#000000"
 				   borderStyle="solid"
 				   borderColor="#929292"
+				   verticalScrollPolicy="off"
+				   horizontalScrollPolicy="off"
+				   height="{videoHeight}"
 				   width="{videoControlBar.width}">
 			<mx:UIComponent id="uic"
-							x="{(videoControlBar.width-320)/2}"
-							width="320"
-							height="260"/>
-			<!--
-				 <mx:TextArea backgroundAlpha="0.5" backgroundColor="0" borderStyle="none" color="#00ffffff" fontSize="10" height="50" id="captionText" paddingLeft="3" paddingRight="3" visible="true" width="320" y="210" fontFamily="Arial" textAlign="center" fontWeight="bold"/>
-			-->
+							y="0"
+							x="{(videoControlBar.width-videoWidth)/2}"/>
 			<mx:Text id="subHolder"
-					 width="320"
-					 height="50"
-					 x="{(videoControlBar.width-320)/2}"
-					 y="210"
+					 width="{videoControlBar.width}"
+					 height="30"
+					 x="{(videoControlBar.width-videoWidth)/2}"
+					 y="190"
 					 color="#FFFFFF"
 					 fontFamily="Arial"
 					 fontSize="14"
@@ -912,12 +781,13 @@
 		</mx:Canvas>
 		<mx:HBox verticalAlign="middle"
 				 horizontalAlign="left"
-				 width="100%"
+				 width="{videoHeight*(16/9)}"
 				 borderStyle="solid"
 				 borderColor="#929292"
 				 backgroundColor="#DCD9D9"
 				 backgroundAlpha="1.0"
 				 id="videoControlBar"
+				 horizontalScrollPolicy="off"
 				 horizontalGap="2">
 			<mx:HBox id="botoiak"
 					 borderStyle="none"
@@ -937,7 +807,7 @@
 					<mx:icon>@Embed(source='../../resources/images/playerPlayIcon.png')</mx:icon>
 				</mx:Button>
 				<mx:Button id="stopButton"
-						   click="stopVid()"
+						   click="exerciseStopHandler()"
 						   width="20"
 						   height="20">
 					<mx:icon>@Embed(source='../../resources/images/playerStopIcon.png')</mx:icon>
@@ -947,7 +817,7 @@
 			</mx:HBox>
 			<mx:VBox>
 
-				<mx:ProgressBar id="bideobarra"
+				<mx:ProgressBar id="exerciseLoadProgressBar"
 								mode="manual"
 								label="00:00/00:00"
 								labelWidth="75"
@@ -990,30 +860,33 @@
 					 borderStyle="solid"
 					 horizontalGap="4"
 					 height="0">
-				<mx:Label text="Subtitling Controls:"
+				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUBTITLING_CONTROLS')}"
 						  color="#000000"
 						  fontWeight="bold"/>
 				<mx:Button click="subtitleStartHandler()"
 						   width="20"
 						   height="20"
-						   toolTip="Subtitle start">
+						   toolTip="{resourceManager.getString('myResources','TOOLTIP_START_SUBTITLE_LINE')}">
 					<mx:icon>@Embed(source='../../resources/images/subStartButtonIcon.png')</mx:icon>
 				</mx:Button>
 				<mx:Button click="subtitleEndHandler()"
 						   width="20"
 						   height="20"
-						   toolTip="Subtitle end">
+						   enabled="{subtitleStarted}"
+						   toolTip="{resourceManager.getString('myResources','TOOLTIP_END_SUBTITLE_LINE')}">
 					<mx:icon>@Embed(source='../../resources/images/subEndButtonIcon.png')</mx:icon>
 				</mx:Button>
 				<mx:VRule height="20"/>
 				<mx:Button width="20"
 						   height="20"
-						   toolTip="Previous subtitle line">
+						   click="subtitlePreviousHandler()"
+						   toolTip="{resourceManager.getString('myResources','TOOLTIP_PREVIOUS_SUBTITLE_LINE')}">
 					<mx:icon>@Embed(source='../../resources/images/prevSubButtonIcon.png')</mx:icon>
 				</mx:Button>
 				<mx:Button width="20"
 						   height="20"
-						   toolTip="Next subtitle line">
+						   click="subtitleNextHandler()"
+						   toolTip="{resourceManager.getString('myResources','TOOLTIP_NEXT_SUBTITLE_LINE')}">
 					<mx:icon>@Embed(source='../../resources/images/nextSubButtonIcon.png')</mx:icon>
 				</mx:Button>
 				<mx:VRule height="20"/>
@@ -1026,181 +899,126 @@
 				 verticalAlign="middle"
 				 paddingTop="4"
 				 paddingBottom="4">
-			<mx:Button label="Record"
+			<!--
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_RECORD_RESPONSE')}"
 					   fontWeight="normal"
 					   labelPlacement="bottom"
 					   width="80"
 					   height="80"
 					   enabled="false"
-					   toolTip="Record a video response following this exercise">
+					   toolTip="{resourceManager.getString('myResources','TOOLTIP_RECORD_RESPONSE')}">
 				<mx:icon>@Embed(source='../../resources/images/addRecording.png')</mx:icon>
 			</mx:Button>
-			<mx:Button label="Subtitle"
+			-->
+			<mx:Button id="subtitleExerciseButton"
+					   label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLES_TO_EXERCISE')}"
 					   fontWeight="normal"
 					   labelPlacement="bottom"
-					   click="viewSubtitlingControls(event)"					
+					   click="viewSubtitlingControls(event)"
 					   width="80"
 					   height="80"
-					   toolTip="Add your own subtitles to this exercise" enabled="true">
+					   enabled="{DataModel.getInstance().isLoggedIn}"
+					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_SUBTITLES_TO_EXERCISE')}">
 				<mx:icon>@Embed(source='../../resources/images/addSubtitles.png')</mx:icon>
 			</mx:Button>
-			<mx:Button label="Roles"
+			<!--
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_ROLES_TO_EXERCISE')}"
 					   fontWeight="normal"
 					   width="80"
 					   height="80"
 					   labelPlacement="bottom"
-					   click="viewRolesControls(event)"
-					   enabled="true"
-					   toolTip="Define the characters/roles appearing on this exercise">
+					   enabled="false"
+					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_ROLES_TO_EXERCISE')}">
 				<mx:icon>@Embed(source='../../resources/images/addRolesSmall.png')</mx:icon>
 			</mx:Button>
+			-->
 		</mx:HBox>
 	</mx:Panel>
 	<mx:ViewStack height="100%"
 				  width="100%"
-				  selectedIndex="{DataModel.getInstance().videoPlayerControlsViewStack}">
-
+				  selectedIndex="{this.videoPlayerControlsViewStack}">
 
 		<mx:Panel width="100%"
 				  height="100%"
 				  layout="vertical"
-				  title="Subtitle Editor"
+				  title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"
 				  fontFamily="Arial"
-				  fontSize="12" horizontalAlign="center" verticalAlign="middle" id="panelEditor">
-			<mx:HBox horizontalAlign="center" verticalAlign="middle" width="100%" visible ="{subMode}">
-				<mx:Label text="Select subtitle language"/>
+				  fontSize="12"
+				  horizontalAlign="center"
+				  verticalAlign="middle"
+				  visible="{DataModel.getInstance().isLoggedIn}">
+			<mx:HBox horizontalAlign="center"
+					 verticalAlign="middle"
+					 width="100%">
+				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_SUBTITLE_LANGUAGE')}"/>
 				<ns4:IconComboBox id="languageComboBox"
-							  dataProvider="{flaggedLanguageData}"
-							  fontWeight="normal"/>
+								  dataProvider="{flaggedLanguageData}"
+								  fontWeight="normal"/>
 			</mx:HBox>
-			
-			
-			
-			
-			
+
 			<mx:DataGrid id="subtitleList"
 						 sortableColumns="false"
 						 width="100%"
 						 height="70%"
 						 doubleClick="goToTimeHandler()"
 						 doubleClickEnabled="true"
-						 change="showCurrentLineDetail()" 
-						 dataProvider="{DataModel.getInstance().availableSubtitlesAndRoles}"
-						 >
+						 editable="true"
+						 dataProvider="{this.subtitleCollection}">
 				<mx:columns>
-					<mx:DataGridColumn headerText="ID"
-									   dataField="id"
-									   width="60"
-									   visible ="true"
-									   />
-					<mx:DataGridColumn headerText="Show"
-									   dataField="showTime"
-									   width="80"
-									   labelFunction="formatStartTimeColumn"
-									   visible ="{subMode}"
-									   />
-					<mx:DataGridColumn headerText="Hide"
-									   dataField="hideTime"
-									   width="80"
-									   labelFunction="formatEndTimeColumn"
-									   visible ="{subMode}"
-									   />
-					<mx:DataGridColumn headerText="Rol ID"
-									   dataField="roleId"
-									   width="80"
-									   visible ="{subMode}"
-									   />
-									   
-					<mx:DataGridColumn headerText="Roles"
-									   dataField="singleName"
-									   width="80"
-									   visible ="{subMode}"
-									   />
-									   
-					<mx:DataGridColumn headerText="Character Name"
-									   dataField="characterName"
-									   width="80"
-									   visible ="{!subMode}"
-									   />									   
-									   
-					<mx:DataGridColumn headerText="Rol"
-									   width = "200"
-									   dataField="singleName"
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
+									   editable="false"
+									   labelFunction="{lfRowNum}"
+									   width="60"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
+									   editable="true"
 									   editorDataField="value"
-									   textAlign="center"
+									   width="85"
 									   rendererIsEditor="true"
-									   visible ="{subMode}">
-					<mx:itemRenderer><mx:Component>
-						<mx:ComboBox dataProvider="{parentDocument.rolTaula}"/>
-					</mx:Component></mx:itemRenderer></mx:DataGridColumn>
-									   									   
-									   
-					<mx:DataGridColumn headerText="Text"
-									   dataField="text"
-									   labelFunction="formatTextColumn"
-									   visible ="{subMode}"
-									   
-									   />
+									   itemRenderer="modules.subtitles.ShowNumericStepperRenderer">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
+									   width="85"
+									   editable="true"
+									   editorDataField="value"
+									   rendererIsEditor="true"
+									   itemRenderer="modules.subtitles.HideNumericStepperRenderer"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
+									   dataField="text">
+						<mx:itemEditor>
+							<mx:Component>
+								<mx:TextInput maxChars="80"/>
+							</mx:Component>
+						</mx:itemEditor>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn id="comboColumn"
+									   width="200"
+									   dataField="roleId"
+									   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
+									   rendererIsEditor="true"
+									   labelFunction="{resolveIdToRole}"
+									   editorDataField="selectedItemKey">
+						<mx:itemRenderer>
+							<mx:Component>
+								<extenders:GridComboBox dataProvider="{outerDocument.comboData}"
+														labelField="charName"
+														lookupField="roleId"
+														prompt="Select a role..."/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
 				</mx:columns>
 			</mx:DataGrid>
 			<mx:VBox width="100%"
 					 height="30%"
 					 id="subtitleDetailHolder"
 					 horizontalAlign="center"
-					 verticalAlign="middle"
-					 visible = "{DataModel.getInstance().isLoggedIn}">
-				<mx:VBox width="100%"
-						 id="subtitleDetailTextHolder"
-						 paddingBottom="8"
-						 paddingLeft="8"
-						 paddingRight="8"
-						 verticalGap="2"
-						 visible="true">
-					<mx:Label text="Text:"/>
-					<mx:TextArea width="100%"
-								 height="100%"
-								 id="subtitleDetailTextArea"
-								 change="updateDataGridRow()" textAlign="center"/>
-
-				</mx:VBox>
+					 verticalAlign="middle">
 				<mx:HBox width="100%"
 						 id="subtitleDetailTimesHolder"
 						 horizontalAlign="center"
 						 verticalAlign="middle"
 						 paddingBottom="4"
 						 paddingTop="4">
-					<mx:VBox id="showVBox"
-							 height="100%"
-							 verticalAlign="middle"
-							 horizontalAlign="center"
-							 paddingLeft="4"
-							 paddingRight="4" 
-							 visible="{subMode}"
-							 >
-						<mx:Label text="Show:"/>
-						<ns2:FormattedStepper id="showStepper"
-											  change="updateDataGridRow()"
-											  stepSize="0.01"
-											  formatter="{this.timeFormatter2}"
-											  width="90"
-											  maximum="250000"/>
-					</mx:VBox>
-					<mx:VBox id="hideVBox"
-							 height="100%"
-							 horizontalAlign="center"
-							 verticalAlign="middle"
-							 paddingLeft="4"
-							 paddingRight="4" 
-							 visible="{subMode}"
-							 >
-						<mx:Label text="Hide:"/>
-						<ns2:FormattedStepper id="hideStepper"
-											  change="updateDataGridRow()"
-											  stepSize="0.01"
-											  formatter="{this.timeFormatter3}"
-											  width="90"
-											  maximum="250000"/>
-					</mx:VBox>
 					<mx:HBox height="100%"
 							 verticalAlign="middle"
 							 horizontalAlign="center"
@@ -1209,26 +1027,32 @@
 							 borderStyle="solid"
 							 cornerRadius="8"
 							 backgroundColor="#DDDDDD">
-						<mx:Button label="Add"
-								   paddingLeft="6"
-								   paddingRight="6"
-								   cornerRadius="8" icon="@Embed(source='../../resources/images/add.png')" click="subtitleStartHandler()" id="addSubtitleLine"/>
-						<mx:Button label="Remove"
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
 								   paddingLeft="6"
 								   paddingRight="6"
 								   cornerRadius="8"
-								   click="removeSelectedLine()">
+								   enabled="{playbackStarted}"
+								   icon="@Embed(source='../../resources/images/add.png')"
+								   click="subtitleStartHandler()"
+								   id="addSubtitleLine"/>
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   cornerRadius="8"
+								   enabled="{subtitleCollection.length > 0}"
+								   click="subtitleRemoveHandler()">
 							<mx:icon>@Embed(source='../../resources/images/delete.png')</mx:icon>
 						</mx:Button>
-						<mx:Button label="Clear"
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
 								   paddingLeft="6"
 								   paddingRight="6"
 								   cornerRadius="8"
-								   click="removeDatagridContent()">
+								   enabled="{subtitleCollection.length > 0}"
+								   click="subtitleClearHandler()">
 							<mx:icon>@Embed(source='../../resources/images/cancel.png')</mx:icon>
 						</mx:Button>
 						<mx:VRule height="30"/>
-						<mx:Button label="Save"
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
 								   paddingLeft="6"
 								   paddingRight="6"
 								   cornerRadius="8"
@@ -1244,9 +1068,4 @@
 
 		</mx:HBox>
 	</mx:ViewStack>
-	<ns2:TimeFormatter id="timeFormatter"/>
-	<ns2:TimeFormatter id="timeFormatter2"/>
-	<ns2:TimeFormatter id="timeFormatter3"/>
 </mx:HBox>
-
-

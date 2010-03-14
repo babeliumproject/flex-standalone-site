@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
-	<mx:VBox horizontalAlign="center" verticalAlign="middle">
-		<mx:Text color="red" text="Losiento, pero al parecer no dispones de microfono" fontSize="20"/>
-		<mx:Text color="red" text="Si tienes uno instalado, por favor, verifica que este habilitado." fontSize="20"/>
-	</mx:VBox>
-</mx:Canvas>

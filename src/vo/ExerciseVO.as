@@ -20,6 +20,7 @@ package vo
 		public var addingDate:String;
 		public var duration:int;
 		public var transcriptionId:int;
+		public var status:String;
 		
 		public var avgRating:Number;
 		public var avgDifficulty:Number;

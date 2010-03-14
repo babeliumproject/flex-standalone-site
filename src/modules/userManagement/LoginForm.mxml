@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				autoLayout="true" borderColor="#000000">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"/>
 	<mx:Form width="100%">
-		<mx:FormItem label="User Name">
+		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
 			<mx:TextInput id="username"
 						  width="100%"/>
 		</mx:FormItem>
-		<mx:FormItem label="Password">
+		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}">
 			<mx:TextInput id="password"
 						  displayAsPassword="true"
 						  width="100%"/>
@@ -16,15 +19,15 @@
 	<mx:HBox width="100%" verticalAlign="middle"
 		paddingLeft="12"
 		paddingRight="12">
-		<mx:CheckBox label="Remember Me!" id="rememberUser"/>
+		<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_REMEMBER_ME')}" id="rememberUser"/>
 	</mx:HBox>
 	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
-		<mx:Button label="OK"
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
 				   id="okButton"/>
-		<mx:Button label="Cancel"
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				   id="cancelButton"/>
 	</mx:HBox>
 	<mx:HBox width="100%" horizontalAlign="center" paddingTop="10">
-		<mx:Button label="I forgot password" id="restorePassword"/>
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}" id="restorePassword"/>
 	</mx:HBox>
 </mx:TitleWindow>

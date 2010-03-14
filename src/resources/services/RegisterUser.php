@@ -11,19 +11,31 @@ class RegisterUser{
 	private $settings;
 	
 	public function RegisterUser(){
-		$this->settings = new Config();
-		$this->conn = new DataSource($this->settings->host, $this->settings->db_name, $this->settings->db_username, $this->settings->db_password);
+		try{
+			$this->settings = new Config();
+			$this->conn = new Datasource($this->settings->host, $this->settings->db_name, $this->settings->db_username, $this->settings->db_password);
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}	
 	}
 
 	public function register(NewUserVO $user) 
-	{
-
+	{		
+	
+		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='initialCredits' )";
+		
+		$initialCredits = $this->_getInitialCreditsQuery($sql);
+	
 		$hash = $this->_createRegistrationHash();
-		$insert = "INSERT INTO users (ID, name, password, email, realName, realSurname, creditCount, activation_hash)";
-		$insert .= " VALUES ('', '".$user->name."', '".$user->pass."', '".$user->email."' , '". $user->realName . "', '". $user->realSurname . "', 10, '";
-		$insert .= $hash . "');";
+		$insert = "INSERT INTO users (name, password, email, realName, realSurname, creditCount, activation_hash)";
+		$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
 
-		$result = $this->_create ( $insert, $user );
+		$realName = $user->realName? $user->realName : "unknown";
+		$realSurname = $user->realSurname? $user->realSurname : "unknown";
+
+		$result = $this->_create ( $user, $insert, $user->name, $user->pass, $user->email,
+									$realName, $realSurname, $initialCredits, $hash );
+		
 		
 		if ( $result != false )
 		{
@@ -37,28 +49,33 @@ class RegisterUser{
 			return $result;
 		}
 
-		return "user or email already exists";	
+		return "User or email already exists";	
 	}
+	
 
-	public function _create($data, $user) {
+
+	public function _create() {
+		$data = func_get_args();
+		$user = array_shift($data); // remove User VO
+		
 		// Check user with same name or same email
-		$sql = "SELECT id FROM users WHERE name='". $user->name ."' OR email = '" . $user->email . "';";
-		$result = $this->conn->_execute($sql);
+		$sql = "SELECT ID FROM users WHERE (name='%s' OR email = '%s' ) ";
+		$result = $this->conn->_execute($sql, $user->name, $user->email);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
 			return false;
 
-		$this->_databaseUpdate ( $data );
+		$this->conn->_execute( $data );
 		
 		$sql = "SELECT last_insert_id()";
-		$result = $this->_databaseUpdate ( $sql );
+		$result = $this->conn->_execute ( $sql );
 		
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
-			$sql = "SELECT id, name, email, creditCount FROM users WHERE id=". $row[0];
+			$sql = "SELECT ID, name, email, creditCount FROM users WHERE (ID= '%d' ) ";
 			
 			$valueObject = new UserVO();
-			$result = $this->conn->_execute($sql);
+			$result = $this->conn->_execute($sql, $row[0]);
 
 			$row = $this->conn->_nextRow($result);
 			if ($row)
@@ -93,15 +110,9 @@ class RegisterUser{
 		return $hash;
 	}
 	
-	function _databaseUpdate($sql) {
-		$result = $this->conn->_execute ( $sql );
-		
-		return $result;
-	}	
-	
 	private function _getHashLength()
 	{
-		$sql = "SELECT prefValue FROM preferences WHERE prefName = 'hashLength';"; 
+		$sql = "SELECT prefValue FROM preferences WHERE ( prefName = 'hashLength' ) "; 
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
@@ -112,13 +123,23 @@ class RegisterUser{
 	
 	private function _getHashChars()
 	{
-		$sql = "SELECT prefValue FROM preferences WHERE prefName = 'hashChars';"; 
+		$sql = "SELECT prefValue FROM preferences WHERE ( prefName = 'hashChars' ) "; 
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
 			return $row[0];
 		else
 			return "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
+	}
+	
+	private function _getInitialCreditsQuery($sql){
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		if ($row)
+			return $row[0];
+		else
+			throw new Exception("An unexpected error occurred while trying to save your registration data.");
 	}
 }
 ?>

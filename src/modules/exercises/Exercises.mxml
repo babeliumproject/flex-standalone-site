@@ -29,11 +29,15 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import model.DataModel;
-
-			public function init():void
-			{
-
+			
+			public function onTabHide():void{
+				Alert.show("Exercise tab is now hidden");
+			}
+			
+			public function onTabShow():void{
+				Alert.show("Exercise tab is now showing");
 			}
 		]]>
 	</mx:Script>

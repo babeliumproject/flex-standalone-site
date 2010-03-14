@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `credithistory` (
   KEY `FK_credithistory_1` (`fk_user_id`),
   KEY `FK_credithistory_3` (`fk_response_id`),
   KEY `FK_credithistory_2` (`fk_exercise_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `evaluation` (
   PRIMARY KEY  (`id`),
   KEY `FK_evaluation_1` (`fk_response_id`),
   KEY `FK_evaluation_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_video` (
   `duration` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK_evaluation_video_1` (`fk_evaluation_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -90,12 +90,14 @@ CREATE TABLE IF NOT EXISTS `exercise` (
   `fk_user_id` int(10) unsigned NOT NULL COMMENT 'Who suggested or uploaded this video',
   `tags` varchar(100) NOT NULL COMMENT 'Tag list each item separated with a comma',
   `title` varchar(80) NOT NULL,
-  `thumbnail_uri` varchar(200) NOT NULL,
+  `thumbnail_uri` varchar(200) NOT NULL DEFAULT 'nothumb.png',
   `adding_date` datetime NOT NULL,
   `duration` int(10) unsigned NOT NULL,
+  `status` enum('Processing','Available','Rejected','Error','Unavailable') NOT NULL DEFAULT 'Processing',
+  `filehash` varchar(32) NOT NULL DEFAULT 'none',
   PRIMARY KEY  (`id`),
   KEY `FK_exercises_1` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -112,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `exercise_comment` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_comments_1` (`fk_exercise_id`),
   KEY `FK_exercise_comments_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -129,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `exercise_level` (
   PRIMARY KEY  USING BTREE (`id`),
   KEY `FK_exercise_level_1` (`fk_exercise_id`),
   KEY `FK_exercise_level_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -145,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `exercise_role` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_characters_1` (`fk_exercise_id`),
   KEY `FK_exercise_characters_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -162,23 +164,10 @@ CREATE TABLE IF NOT EXISTS `exercise_score` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_score_1` (`fk_exercise_id`),
   KEY `FK_exercise_score_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `grabaciones`
---
-
-CREATE TABLE IF NOT EXISTS `grabaciones` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_user` int(10) unsigned NOT NULL,
-  `id_vid` int(10) unsigned NOT NULL,
-  `id_grab` varchar(45) NOT NULL,
-  PRIMARY KEY  USING BTREE (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `preferences`
@@ -189,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   `prefName` varchar(45) NOT NULL,
   `prefValue` varchar(200) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -212,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `response` (
   PRIMARY KEY  (`id`),
   KEY `FK_response_1` (`fk_user_id`),
   KEY `FK_response_2` (`fk_exercise_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -230,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `subtitle` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
   KEY `FK_exercise_subtitle_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -248,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `subtitle_line` (
   PRIMARY KEY  (`id`),
   KEY `FK_subtitle_line_1` (`fk_subtitle_id`),
   KEY `FK_subtitle_line_2` (`fk_exercise_role_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -265,23 +254,7 @@ CREATE TABLE IF NOT EXISTS `subtitle_score` (
   PRIMARY KEY  (`id`),
   KEY `FK_subtitle_score_1` (`fk_subtitle_id`),
   KEY `FK_subtitle_score_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `subtitulos`
---
-
-CREATE TABLE IF NOT EXISTS `subtitulos` (
-  `ID_SUB` int(11) NOT NULL auto_increment,
-  `ID_VID` int(11) NOT NULL,
-  `idioma` varchar(45) default NULL,
-  `textos` varchar(200) default NULL,
-  `tiempo` int(11) NOT NULL,
-  `duracion` int(11) NOT NULL,
-  PRIMARY KEY  (`ID_SUB`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -297,8 +270,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `realName` varchar(45) NOT NULL,
   `realSurname` varchar(45) NOT NULL,
   `creditCount` int(10) unsigned NOT NULL default '0',
+  `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -313,29 +287,10 @@ CREATE TABLE IF NOT EXISTS `user_languages` (
   `level` int(10) unsigned NOT NULL COMMENT 'Level goes from 1 to 6. 7 used for mother tongue',
   `positives_to_next_level` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `videos`
---
-
-CREATE TABLE IF NOT EXISTS `videos` (
-  `ID` int(10) unsigned NOT NULL auto_increment,
-  `nombre` varchar(45) default NULL,
-  `desc` varchar(45) default NULL,
-  `autor` varchar(45) default NULL,
-  `fecha_envio` timestamp NULL default NULL,
-  `thumbnail` varchar(45) default NULL,
-  `duracion` int(11) default NULL,
-  `etiquetas` varchar(45) default NULL,
-  `MetaInfBabelia_ID_VIDEO` int(11) NOT NULL,
-  `Subtitulos_ID_SUB` int(11) NOT NULL,
-  PRIMARY KEY  USING BTREE (`ID`),
-  KEY `fk_Videos_MetaInfBabelia` (`MetaInfBabelia_ID_VIDEO`),
-  KEY `fk_Videos_Subtitulos` (`Subtitulos_ID_SUB`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Filtros para las tablas descargadas (dump)
@@ -347,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `videos` (
 ALTER TABLE `credithistory`
   ADD CONSTRAINT `FK_credithistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `FK_credithistory_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `FK_credithistory_3` FOREIGN KEY (`fk_response_id`) REFERENCES `grabaciones` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `FK_credithistory_3` FOREIGN KEY (`fk_response_id`) REFERENCES `response` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `evaluation`
@@ -452,42 +407,30 @@ INSERT INTO `credithistory` (`id`, `fk_user_id`, `fk_exercise_id`, `fk_response_
 (12, 3, 2, 43, 0, '2009-08-21 12:03:31', 'eval_request', -2),
 (13, 1, 2, 44, 0, '2009-08-26 18:07:56', 'eval_request', -2),
 (14, 2, 2, 45, 0, '2009-08-30 18:32:39', 'eval_request', -2),
-(15, 1, 2, 46, 0, '2009-09-01 00:45:34', 'eval_request', -2),
-(20, 1, 2, NULL, NULL, '2009-09-04 20:56:31', 'subtitling', -2),
-(22, 1, 2, NULL, NULL, '2009-09-04 21:09:51', 'subtitling', -2),
-(24, 3, 2, NULL, NULL, '2009-09-04 21:51:36', 'subtitling', -2),
-(25, 3, 15, NULL, NULL, '2009-09-04 21:57:18', 'exercise_upload', 2),
-(27, 1, 2, NULL, NULL, '2009-09-07 15:14:04', 'subtitling', -2);
+(15, 1, 2, 46, 0, '2009-09-01 00:45:34', 'eval_request', -2);
 
 --
 -- Volcar la base de datos para la tabla `evaluation`
 --
 
-INSERT INTO `evaluation` (`id`, `fk_response_id`, `fk_user_id`, `score`, `comment`, `adding_date`) VALUES
-(1, 1, 2, 2, 'ddssaa', '2009-09-30'),
-(2, 2, 3, 4, 'Oso ondo', '2009-09-29'),
-(3, 3, 3, 2, 'Hori da', '2009-09-29'),
-(4, 1, 3, 5, 'Perfekto', '2009-09-30'),
-(5, 1, 5, 1, 'Nahiko kaxkar', '2009-09-29');
-
 --
 -- Volcar la base de datos para la tabla `evaluation_video`
 --
-
-INSERT INTO `evaluation_video` (`id`, `fk_evaluation_id`, `video_identifier`, `source`, `thumbnail_uri`, `duration`) VALUES
-(1, 5, 'audio-1242656002917', 'Red5', '', 34);
 
 --
 -- Volcar la base de datos para la tabla `exercise`
 --
 
-INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_user_id`, `tags`, `title`, `thumbnail_uri`, `adding_date`, `duration`) VALUES
-(1, 'kutsi9', 'Kutsidazu bidea ixabel filmeko zatia', 'Red5', 'Basque', 1, 'euskaltegia, berri', 'Kutsidazu bidea ixabel', 'http://sids01.si.ehu.es/thumbs/kutsi9.jpg', '2009-09-01 00:24:04', 21),
-(2, 'cue_cuatro', 'Escena de serie', 'Red5', 'Spanish', 1, 'cuatro, serie', 'Extracto serie', '/resources/images/thumbs/cue_cuatro.jpg', '2009-09-01 00:24:04', 34),
-(3, 'cue_cuatro2', 'Escena de serie 2', 'Red5', 'Spanish', 1, 'cuatro, serie', 'Extracto serie 2', '/resources/images/thumbs/cue_cuatro2.jpg', '2009-09-01 00:24:04', 55),
-(4, 'cue_cuatro3', 'Escena de serie 3', 'Red5', 'Spanish', 1, 'cuatro, serie', 'Extracto serie 3', '/resources/images/thumbs/cue_cuatro3.jpg', '2009-09-01 00:24:04', 33),
-(12, '9', 'Tim Burton''s latest animation movie is here. It''s name is nine, and speaks about 9 creations.', 'Red5', 'English', 3, 'tim, burton, movie, trailer', '9 Movie Trailer', 'http://img.youtube.com/vi/OnoJecu9e7c/default.jpg', '2009-09-04 20:12:34', 12),
-(15, 'A974tvk13mM', 'Relaxing video with a waterfall', 'Youtube', 'English', 3, 'water, relax', 'Water video', 'http://img.youtube.com/vi/A974tvk13mM/1.jpg', '2009-09-04 21:57:18', 21);
+INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_user_id`, `tags`, `title`, `thumbnail_uri`, `adding_date`, `duration`, `status`, `filehash`) VALUES
+(1, 'kutsidazu_zatia', 'Kutsidazu bidea ixabel filmeko zatia', 'Red5', 'Basque', 1, 'euskaltegia, berri', 'Kutsidazu bidea ixabel', 'kutsidazu_zatia.jpg', '2009-09-01 00:24:04', 129.64, 'Unavailable', '6990471c4ac782c4329a662b061e17e2'),
+(2, 'serie_cuatro', 'Escena de serie', 'Red5', 'Spanish', 1, 'cuatro, serie', 'Extracto serie', 'serie_cuatro.jpg', '2009-09-01 00:24:04', 9.8, 'Unavailable', '9d9bd82503637191e53ef955f9ea0ea4'),
+(3, 'mafiosos_conv', 'Conversación entre mafiosos', 'Red5', 'Spanish', 1, 'serie, mafiosos', 'Conversación mafiosos', 'mafiosos_conv.jpg', '2010-02-02 00:23:33', 38.48, 'Unavailable', 'bc1f4ee5459657d761e70582d6c12bfc'),
+(4, 'pokemon_zatia', 'Pokemon marrazki bizidunen zatia', 'Red5', 'Basque', 1, 'pokemon, zatia', 'Pokemon zatia', 'pokemon_zatia.jpg', '2010-02-02 01:23:34', 84.28, 'Unavailable', '00c843cdaccae236dc4e33f6bf9423c6'),
+(5, 'tdes_1065_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1065 Fragment', 'tdes_1065_qa.jpg', '2010-03-08 12:10:00', 43.09, 'Available', '161abc5e831c545305f55f4139fd4799'),
+(6, 'tdes_1170_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1170 Fragment', 'tdes_1170_qa.jpg', '2010-03-08 12:10:00', 51.97, 'Available', '38b99457f8cd8af5b56728c5e2f0485b'),
+(7, 'tdes_1179_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1179 Fragment', 'tdes_1179_qa.jpg', '2010-03-08 12:10:00', 29.73, 'Available', '4fe59e622c208b53dc4e61cfdcb7b2a8'),
+(8, 'tdes_1183_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1183 Fragment', 'tdes_1183_qa.jpg', '2010-03-08 12:10:00', 40.12, 'Available', '2f8d1bde45ae7a7d303d663bcdf2ae8c'),
+(9, 'tdes_1187_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1187 Fragment', 'tdes_1187_qa.jpg', '2010-03-08 12:10:00', 57.15, 'Available', 'a0cd07a3ac94d2dbf77ca1c02c6278cc');
 
 --
 -- Volcar la base de datos para la tabla `exercise_comment`
@@ -502,19 +445,15 @@ INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_u
 --
 -- Volcar la base de datos para la tabla `exercise_role`
 --
-INSERT INTO `exercise_role` (`fk_exercise_id`, `fk_user_id`, `character_name`) VALUES
-(2,1,'Prueba exercise_id 2'),
-(2,1,'Pepito'),
-(2,1,'Greimito'),
-(2,1,'Aitor'),
-(2,1,'Xabier'),
-(1,1,'Joxetxo'),
-(1,1,'Coco1'),
-(1,1,'Coco2'),
-(1,1,'Coco3'),
-(1,1,'Coco4'),
-(1,1,'Coco5'),
-(1,1,'Coco6');
+INSERT INTO `exercise_role` (`id`, `fk_exercise_id`, `fk_user_id`, `character_name`) VALUES
+(1, 2, 1, 'Capataz'),
+(2, 2, 1, 'Joven'),
+(3, 2, 1, 'Tipo zaharra'),
+(4, 2, 1, 'Tipo gaztea'),
+(5, 2, 1, 'Old guy'),
+(6, 2, 1, 'Young guy'),
+(7, 1, 1, 'Koro'),
+(8, 1, 1, 'Joxe Mari');
 
 
 --
@@ -554,11 +493,6 @@ INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES
 -- Volcar la base de datos para la tabla `response`
 --
 
-INSERT INTO `response` (`id`, `fk_user_id`, `fk_exercise_id`, `file_identifier`, `is_private`, `thumbnail_uri`, `source`, `duration`, `adding_date`, `rating_amount`, `character_name`) VALUES
-(1, 1, 2, 'cue_cuatro', 0, '', 'Red5', 23, '2009-09-20 11:01:21', 2, 'tipo_zaharra'),
-(2, 1, 1, 'kutsi9', 0, '', 'Red5', 11, '2009-09-20 11:40:03', 2, 'koro'),
-(3, 3, 2, 'cue_cuatro', 0, '', 'Red5', 23, '2009-09-22 12:07:34', 3, 'tipo_gaztea');
-
 --
 -- Volcar la base de datos para la tabla `subtitle`
 --
@@ -566,25 +500,30 @@ INSERT INTO `response` (`id`, `fk_user_id`, `fk_exercise_id`, `file_identifier`,
 INSERT INTO `subtitle` (`id`, `fk_exercise_id`, `fk_user_id`, `language`, `translation`, `adding_date`) VALUES
 (1, 2, 2, 'Spanish', 0, '2009-09-10 13:52:37'),
 (2, 2, 1, 'Basque', 1, '2009-09-10 13:52:37'),
-(3, 2, 3, 'English', 1, '2009-09-10 13:52:37');
+(3, 2, 3, 'English', 1, '2009-09-10 13:52:37'),
+(4, 1, 1, 'Basque', 0, '2010-03-01 10:59:20');
 
 --
 -- Volcar la base de datos para la tabla `subtitle_line`
 --
 
 INSERT INTO `subtitle_line` (`id`, `fk_subtitle_id`, `show_time`, `hide_time`, `text`, `fk_exercise_role_id`) VALUES
-(1, 1, 1.6, 3.76, '?Por qu? quiere un boxeador trabajar en la construcci?n?', 1),
-(2, 1, 4.96, 6.76, 'Est? arruinado, y no tiene trabajo y...', 2),
+(1, 1, 1.6, 3.76, '¿Por qué quiere un boxeador trabajar en la construcción?', 1),
+(2, 1, 4.96, 6.76, 'Está arruinado, y no tiene trabajo y...', 2),
 (3, 1, 6.92, 8, 'y quiere que le contrate...', 1),
-(4, 1, 8.1, 9.4, 'Yo podr?a ense?arle a manejar la excavadora.', 2),
-(5, 2, 1.6, 3.76, 'Zergatik nahi du boxeolari batek eraikuntzan lan egin?', 1),
-(6, 2,  4.96, 6.76, 'Dirurik ez du, eta ez lanik ere...', 2),
-(7, 2, 6.92, 8, 'eta nik kontratatzea nahi duzu...', 1),
-(8, 2, 8.1, 9.4, 'Nik erakutsi niezaioke eskabadora erabiltzen.', 2),
-(9, 3, 1.6, 3.76, 'Why a boxer wants to work in construction?', 1),
-(10, 3,  4.96, 6.76, 'He is ruined, and doesn''t have a job', 2),
-(11, 3, 6.92, 8, 'and you want me to hire him...', 1),
-(12, 3, 8.1, 9.4, 'I could teach him to handle the excavator.', 2);
+(4, 1, 8.1, 9.4, 'Yo podría enseñarle a manejar la excavadora.', 2),
+(5, 2, 1.6, 3.76, 'Zergatik nahi du boxeolari batek eraikuntzan lan egin?', 3),
+(6, 2, 4.96, 6.76, 'Dirurik ez du, eta ez lanik ere...', 4),
+(7, 2, 6.92, 8, 'eta nik kontratatzea nahi duzu...', 3),
+(8, 2, 8.1, 9.4, 'Nik erakutsi niezaioke eskabadora erabiltzen.', 4),
+(9, 3, 1.6, 3.76, 'Why a boxer wants to work in construction?', 5),
+(10, 3, 4.96, 6.76, 'He is ruined, and doesn''t have a job', 6),
+(11, 3, 6.92, 8, 'and you want me to hire him...', 5),
+(12, 3, 8.1, 9.4, 'I could teach him to handle the excavator.', 6),
+(13, 4, 5.8, 7.48, 'Esan zertan ari zareten. Ikasten...', 7),
+(14, 4, 7.79, 11.2, 'edo lanean, edo alferkeri goxo-goxoan... e?', 7),
+(15, 4, 11.34, 15.04, 'eta zergaitik etorri zareten udako eskola honetara.', 7),
+(16, 4, 18.96, 22.32, 'Ni? bueno ni Joxemari naiz. Haragizko... ez, haragijale', 8);
 
 --
 -- Volcar la base de datos para la tabla `subtitle_score`
@@ -592,50 +531,18 @@ INSERT INTO `subtitle_line` (`id`, `fk_subtitle_id`, `show_time`, `hide_time`, `
 
 
 --
--- Volcar la base de datos para la tabla `subtitulos`
---
-
-INSERT INTO `subtitulos` (`ID_SUB`, `ID_VID`, `idioma`, `textos`, `tiempo`, `duracion`) VALUES
-(10, 1, 'euskara', 'sasdasdasdasdasd', 2500, 1000),
-(11, 1, 'euskara', 'dffdfdfdasdasas', 4200, 1000),
-(15, 2, 'euskara', 'Zergatik boxeolari batek eraikuntzan lan egin nahi du?', 1700, 0),
-(16, 2, 'euskara', 'Dirurik ez du, eta ezta lanik ere..', 3800, 0),
-(17, 2, 'euskara', 'eta nik kontratatzea nahi duzu..', 6700, 0),
-(18, 2, 'euskara', 'Nik erakutsi niezaioke "eskabadora" erabiltzen!', 7800, 0),
-(19, 2, 'espa?ol', 'Porque quiere un boxeador trabajar en la construccion?', 1700, 0),
-(20, 2, 'espa?ol', 'Esta arruinado, y no tiene trabajo y...', 3800, 0),
-(21, 2, 'espa?ol', 'y quieres que le contrate..', 6700, 0),
-(22, 2, 'espa?ol', 'Yo podria ense?arle a manejar la escavadora!', 7800, 0),
-(23, 2, 'english', 'Why a boxer wants to work in construction?', 1700, 0),
-(24, 2, 'english', 'He is ruined, and don?t have a job ...', 3800, 0),
-(25, 2, 'english', 'and want to hire ..', 6700, 0),
-(26, 2, 'english', 'I could teach him to handle the excavator!', 7800, 0);
-
---
 -- Volcar la base de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`ID`, `name`, `password`, `email`, `realName`, `realSurname`, `creditCount`) VALUES
-(1, 'erab1', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab1@gmail.com', 'erab1', 'erab1', 13),
-(2, 'erab2', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab2@gmail.com', 'erab2', 'erab2', 9),
-(3, 'erab3', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab3@gmail.com', 'erab3', 'erab3', 5),
-(5, 'erab4', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab4@gmail.com', 'erab4', 'erab4', 5);
+INSERT INTO `users` (`ID`, `name`, `password`, `email`, `realName`, `realSurname`, `creditCount`, `joiningDate`) VALUES
+(1, 'erab1', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab1@gmail.com', 'erab1', 'erab1', 13, '2009-07-02 12:30:00'),
+(2, 'erab2', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab2@gmail.com', 'erab2', 'erab2', 9, '2009-07-02 12:30:00'),
+(3, 'erab3', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab3@gmail.com', 'erab3', 'erab3', 5, '2009-07-02 12:30:00'),
+(5, 'erab4', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab4@gmail.com', 'erab4', 'erab4', 5, '2009-07-02 12:30:00');
 
 --
 -- Volcar la base de datos para la tabla `user_languages`
 --
-
-
---
--- Volcar la base de datos para la tabla `videos`
---
-
-INSERT INTO `videos` (`ID`, `nombre`, `desc`, `autor`, `fecha_envio`, `thumbnail`, `duracion`, `etiquetas`, `MetaInfBabelia_ID_VIDEO`, `Subtitulos_ID_SUB`) VALUES
-(1, 'kutsi9', NULL, 'AEK', '2009-05-03 10:38:57', 'http://sids01.si.ehu.es:5080/thumbs/kutsi9.jpg', 123, 'asdasdsdas', 1, 10),
-(2, 'cue_cuatro', NULL, 'CUATRO', '2009-05-03 10:38:49', 'http://sids01.si.ehu.es:5080/thumbs/cue_cuatro.jpg', 12322, 'sdfsdfsdf', 2, 11),
-(3, 'cue_cuatro2', NULL, 'autorea2', '2009-05-03 11:24:07', 'ewrwrewer', 2345, 'asdasd', 1, 10),
-(4, 'cue_cuatro3', NULL, 'autorea3', '2009-05-03 11:24:47', 'ewrwrewersadasd', 100034, 'asdasdsdas', 1, 11),
-(5, 'cue_cuatro4', 'qweqwe', 'wwwqewe', '2009-05-03 11:25:18', 'ewrwrewersadasd', 12356, 'asdasdsdas', 2, 11);
 
 --
 -- ============== register_module_schema.sql ==============
@@ -663,7 +570,7 @@ CREATE TABLE `transcription` (
   `transcription_date` datetime DEFAULT NULL,
   `system` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- 
@@ -688,7 +595,7 @@ ALTER TABLE `spinvox_request`
 --
 -- Filtros para la tabla `exercise`
 --
-ALTER TABLE `exercise` ADD COLUMN `fk_transcription_id` INT(10) UNSIGNED DEFAULT null AFTER `duration`,
+ALTER TABLE `exercise` ADD COLUMN `fk_transcription_id` INT(10) UNSIGNED DEFAULT null AFTER `filehash`,
  ADD CONSTRAINT `fk_exercise_transcriptions1` FOREIGN KEY `fk_exercise_transcriptions1` (`fk_transcription_id`)
     REFERENCES `transcription` (`id`)
     ON DELETE SET NULL
@@ -720,22 +627,18 @@ INSERT INTO `transcription` VALUES (2, '2009-10-20 16:24:59', 'pending', NULL, N
 -- Volcar la base de datos para la tabla `exercise`
 --
 
-INSERT INTO `exercise` VALUES (16, 'english_long', 'english lessons', 'Red5', 'English', 1, 'english', 'English lessons', 'http://i1.ytimg.com/vi/xoXMSAtJ0og/default.jpg', '2009-10-22 18:00:00', 59, NULL);
-INSERT INTO `exercise` VALUES (17, 'english', 'english lessons', 'Red5', 'English', 1, 'english', 'English lessons short', 'http://i1.ytimg.com/vi/xoXMSAtJ0og/default.jpg', '2009-10-22 18:00:00', 12, 1);
+INSERT INTO `exercise` VALUES (10, 'english_long', 'english lessons', 'Red5', 'English', 1, 'english', 'English lessons', 'english_long.jpg', '2009-10-22 18:00:00', 59, 'Unavailable', 'e1fdbb47ead995d5973a30d466e7533d', NULL);
+INSERT INTO `exercise` VALUES (11, 'english', 'english lessons', 'Red5', 'English', 1, 'english', 'English lessons short', 'english.jpg', '2009-10-22 18:00:00', 12, 'Unavailable', 'fc1b11475ce5233acf10bfb39925cacc', 1);
 
 
 --
 -- Volcar la base de datos para la tabla `response`
 --
 
-INSERT INTO `response` VALUES (4, 1, 17, 'english', 0, 'http://i1.ytimg.com/vi/xoXMSAtJ0og/default.jpg', 'Red5', 12, '2009-10-22 18:00:00', 0, 'neska', 2);
-
 
 --
 -- Volcar la base de datos para la tabla `evaluation`
 --
-
-INSERT INTO `evaluation` VALUES (6, 4, 3, 2, NULL, '2009-09-29');
 
 
 

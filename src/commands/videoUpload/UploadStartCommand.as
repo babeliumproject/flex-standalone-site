@@ -7,13 +7,13 @@ package commands.videoUpload
 	
 	import flash.events.DataEvent;
 	import flash.events.Event;
+	import flash.events.HTTPStatusEvent;
 	import flash.events.ProgressEvent;
 	
 	import model.DataModel;
 	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
-	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 
 	public class UploadStartCommand implements ICommand, IResponder
@@ -34,17 +34,26 @@ package commands.videoUpload
 				DataModel.getInstance().uploadProgressUpdated = true;
 			}
 			//Upload finished and sent some data
-			else if (data is DataEvent)
+			else if (data is DataEvent){
+				var controlMessage:String = (data as DataEvent).data;
+				//success, data, data.filepath, data.filemimetype, error
+				var messageXML:XML = new XML(controlMessage);
+				if(messageXML.success == "true")
+					DataModel.getInstance().uploadErrors = '';
+				else
+					DataModel.getInstance().uploadErrors = messageXML.error;
 				DataModel.getInstance().uploadFinishedData = true;
 			//Upload finished
-			else if (data is Event)
+			}else if (data is Event)
 				DataModel.getInstance().uploadFinished = true;
 		}
 		
 		public function fault(info:Object):void
 		{
-			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while uploading file:" + faultEvent.message);
+			if (info is HTTPStatusEvent)
+				Alert.show("Error while uploading file:\n" + info.status);
+			else
+				Alert.show("Error while uploading file:\n" + info.text);
 			trace(ObjectUtil.toString(info));
 		}
 		

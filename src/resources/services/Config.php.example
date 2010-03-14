@@ -5,10 +5,13 @@
 		public $host = "";
 		public $db_username = "";
 		public $db_password = "";
-		public $db_name = "mydb";
+		public $db_name = "babeliumproject";
 		
 		//Server path to store uploaded files
 		public $filePath = '';
+		public $imagePath = '';
+		public $red5Path = 'C:/Archivos de programa/Red5/webapps/oflaDemo/streams';
+		//public $red5Path = '/opt/red5_0_8/webapps/oflaDemo/streams';
 		
 		//Youtube authentication data
 		public $yt_user = '';
@@ -16,16 +19,35 @@
 		public $yt_developerKey = '';
 		
 		//Smtp server settings
-		public $smtp_server_host = 'localhost';
-		public $smtp_server_username = '';
+		public $smtp_server_host = 'smtp.googlemail.com';
+		public $smtp_server_username = ''; //example -> from example@gmail.com
 		public $smtp_server_password = '';
-		public $smtp_server_ssl = '';
-		public $smtp_server_port = 25;
-		public $smtp_mail_setFromMail = '';
-		public $smtp_mail_setFromName = '';
+		public $smtp_server_ssl = 'ssl';
+		public $smtp_server_port = 465;
+		public $smtp_mail_setFromMail = ''; //example@gmail.com
+		public $smtp_mail_setFromName = 'Babelium Project Admin';
+		
+		//Video upload constants
+		public $frameHeight = 240;
+		public $frameWidth16_9 = 426;
+		public $frameWidth4_3 = 320;
+		public $maxDuration = 120; //seconds
+		public $maxSize = 180; //MByte
+		
+		/*
+		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and 
+		 * cut off the subfolders or use a variable and remember to change it.
+		 */ 
+		public $webRootPath = "/var/www/babelia";
 		
 		public function Config(){
-			$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/FileUpload/streams";
+			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
+				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
+				$this->imagePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/thumbs";
+			} else {
+				$this->filePath = $this->webRootPath . "/resources/uploads";
+				$this->imagePath = $this->webRootPath . "/resources/images/thumbs";
+			}	
 		}
 	}
 	

@@ -67,5 +67,11 @@
 		destination="empService"
 		showBusyCursor="true"
 		source="TranscriptionsDAO"/>
+		
+	<mx:RemoteObject
+		id="responseRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="ResponseDAO"/>
 	
 </ServiceLocator>

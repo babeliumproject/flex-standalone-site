@@ -22,17 +22,17 @@ class ExerciseRoleDAO
 		
 		$sql = "SELECT *
 				FROM exercise_role
-				where fk_exercise_id  = $exerciseId";
+				where fk_exercise_id  = %d";
 		
-		$searchResults = $this->_listRolesQuery ( $sql );
+		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId );
 		
 		return $searchResults;
 	}
 	
-	function _listRolesQuery($sql) 
+	function _listRolesQuery() 
 	{
 		$searchResults = array ();
-		$result = $this->conn->_execute ( $sql );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$temp = new ExerciseRoleVO ( );
@@ -54,36 +54,37 @@ class ExerciseRoleDAO
 	public function deleteSingleExerciseRol($id)
 	 {
 	 	$sql = "DELETE FROM exercise_role
-		     	WHERE       id = $id";
+		     	WHERE       id = %d";
 		     	
-		$result = $this->conn->_execute($sql);
+		$result = $this->conn->_execute($sql,$id);
 	}
 	 	
 	public function deleteAllExerciseRoles($exerciseId)
 	 {
 	 	$sql = "DELETE FROM exercise_role
-		     	WHERE       fk_exercise_id = $exerciseId";
+		     	WHERE       fk_exercise_id = %d";
 		     	
-		$result = $this->conn->_execute($sql);	 	 
+		$result = $this->conn->_execute($sql,$exerciseId);	 	 
 	 }
 	 
 	 	
 	public function saveExerciseRoles($roles)
 	 {
 	 	$sql = "INSERT INTO exercise_role (fk_exercise_id, fk_user_id, character_name)";
-	 	$sql = $sql . " VALUES ('" . $roles [0]->exerciseId . "', '" . $roles [0]->userId . "', '" . $roles [0]->characterName . "' ) ";
+	 	$sql = $sql . " VALUES ('%d', '%d', '%s' ) ";
 
-			for($i = 1; $i < count ( $roles ); $i ++)
-			 {
-				$sql = $sql . ", ('" . $roles [0]->exerciseId . "', '" . $roles [$i]->userId . "', '" . $roles [$i]->characterName . "') ";	
-			 }
-		return $this->_create ( $sql );
-	 }
-	 
+		$params = array();
+		array_push($params, $roles[0]->exerciseId, $roles[0]->userId, $roles[0]->characterName);
 
-	public function _create($data) {
+		for($i = 1; $i < count ( $roles ); $i ++)
+		{
+			$sql = $sql . ", ('%d', '%d', '%s' ) ";	
+			array_push($params, $roles[$i]->exerciseId, $roles[$i]->userId, $roles[$i]->characterName);
+		}
 		
-		$this->_databaseUpdate ( $data );
+		$merge = array_merge((array)$sql, $params);
+		
+		$this->conn->_execute ( $merge );
 		
 		$sql = "SELECT last_insert_id()";
 		$result = $this->_databaseUpdate ( $sql );

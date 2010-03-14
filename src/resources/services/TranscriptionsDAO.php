@@ -17,8 +17,8 @@ class TranscriptionsDAO {
 	public function getResponseTranscriptions($responseId) {
 		$valueObject = new TranscriptionsVO();
 		
-		$sql = "SELECT T.id AS transID, R.id AS responseID, R.fk_exercise_id AS exerciseID, T.adding_date AS transAddDate, T.status AS status, T.transcription AS transcription, T.transcription_date AS transDate, T.system AS system FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id WHERE R.id = " . $responseId;
-		$result = $this->conn->_execute($sql);
+		$sql = "SELECT T.id AS transID, R.id AS responseID, R.fk_exercise_id AS exerciseID, T.adding_date AS transAddDate, T.status AS status, T.transcription AS transcription, T.transcription_date AS transDate, T.system AS system FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id WHERE R.id = %d";
+		$result = $this->conn->_execute($sql, $responseId);
 		
 		$row = $this->conn->_nextRow($result);
 		if ($row) {
@@ -33,8 +33,8 @@ class TranscriptionsDAO {
 		} else
 			return null;
 		
-		$sql = "SELECT T.id AS transID, E.id AS exerciseID, T.adding_date AS transAddDate, T.status AS status, T.transcription AS transcription, T.transcription_date AS transDate, T.system AS system FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id WHERE E.id = " . $valueObject->exerciseID;
-		$result = $this->conn->_execute($sql);
+		$sql = "SELECT T.id AS transID, E.id AS exerciseID, T.adding_date AS transAddDate, T.status AS status, T.transcription AS transcription, T.transcription_date AS transDate, T.system AS system FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id WHERE E.id = %d";
+		$result = $this->conn->_execute($sql, $valueObject->exerciseID);
 		
 		$row = $this->conn->_nextRow($result);
 		if ($row) {
@@ -53,15 +53,15 @@ class TranscriptionsDAO {
 	
 	public function enableTranscriptionToExercise($exerciseId, $transcriptionSystem) {
 		if ($exerciseId > 0 && $transcriptionSystem != null) {
-			$sql = "SELECT * FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id WHERE E.id = " . $exerciseId;
-			$result = $this->conn->_execute($sql);
+			$sql = "SELECT * FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id WHERE E.id = %d";
+			$result = $this->conn->_execute($sql, $exerciseId);
 			$row = $this->conn->_nextRow($result);
 			if ($row == null) {
-				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '" . strtolower($transcriptionSystem) . "')";
-				$i = $this->_create($insert);
+				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '%s')";
+				$i = $this->_create($insert, strtolower($transcriptionSystem));
 				if ($i > 0) {
-					$update = "UPDATE exercise SET fk_transcription_id = LAST_INSERT_ID() WHERE id = " . $exerciseId;
-					if ($this->_databaseUpdate($update) > 0)
+					$update = "UPDATE exercise SET fk_transcription_id = LAST_INSERT_ID() WHERE id = %d";
+					if ($this->_databaseUpdate($update, $exerciseId) > 0)
 						return $i;
 					else
 						return "error";
@@ -75,15 +75,15 @@ class TranscriptionsDAO {
 	
 	public function enableTranscriptionToResponse($responseId, $transcriptionSystem) {
 		if ($responseId > 0 && $transcriptionSystem != null) {
-			$sql = "SELECT * FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id WHERE R.id = " . $responseId;
-			$result = $this->conn->_execute($sql);
+			$sql = "SELECT * FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id WHERE R.id = %d";
+			$result = $this->conn->_execute($sql, $responseId);
 			$row = $this->conn->_nextRow($result);
 			if ($row == null) {
-				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '" . strtolower($transcriptionSystem) . "')";
-				$i = $this->_create($insert);
+				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '%s')";
+				$i = $this->_create($insert, strtolower($transcriptionSystem));
 				if ($i > 0) {
-					$update = "UPDATE response SET fk_transcription_id = LAST_INSERT_ID() WHERE id = " . $responseId;
-					if ($this->_databaseUpdate($update) > 0)
+					$update = "UPDATE response SET fk_transcription_id = LAST_INSERT_ID() WHERE id = %d";
+					if ($this->_databaseUpdate($update, $responseId) > 0)
 						return $i;
 					else
 						return "error";
@@ -98,8 +98,8 @@ class TranscriptionsDAO {
 	// transcriptionSystem = spinvox (maybe we will change this system in the future)
 	public function checkAutoevaluationSupportResponse($responseId, $transcriptionSystem) {
 		if ($responseId > 0 && $transcriptionSystem != null) {
-			$sql = "SELECT prefValue FROM preferences WHERE prefName='" . strtolower($transcriptionSystem) . ".max_duration'";
-			$result = $this->conn->_execute($sql);
+			$sql = "SELECT prefValue FROM preferences WHERE prefName='%s.max_duration'";
+			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem));
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				$maxDuration = $row[0];
@@ -121,7 +121,7 @@ class TranscriptionsDAO {
 			        WHERE 
 			           R.id=$responseId 
 			             AND 
-			           P.prefName = '" . strtolower($transcriptionSystem) . ".language' 
+			           P.prefName = '%s.language' 
 			             AND 
 			           E.fk_transcription_id IS NOT NULL 
 			             AND 
@@ -129,9 +129,9 @@ class TranscriptionsDAO {
 			             
 			             
 			if ($maxDuration > 0)
-				$sql = $sql . " AND R.duration<=" . $maxDuration;
+				$sql = $sql . " AND R.duration<=%s";
 			
-			$result = $this->conn->_execute($sql);
+			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem), $maxDuration);
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				return true;
@@ -143,19 +143,19 @@ class TranscriptionsDAO {
 	
 	public function checkAutoevaluationSupportExercise($exerciseId, $transcriptionSystem) {
 		if ($exerciseId > 0 && $transcriptionSystem != null) {
-			$sql = "SELECT prefValue FROM preferences WHERE prefName='" . strtolower($transcriptionSystem) . ".max_duration'";
-			$result = $this->conn->_execute($sql);
+			$sql = "SELECT prefValue FROM preferences WHERE prefName='%s.max_duration'";
+			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem));
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				$maxDuration = $row[0];
 			else
 				$maxDuration = 0;
 			
-			$sql = "SELECT E.id FROM exercise AS E  INNER JOIN preferences AS P ON E.language=P.prefValue WHERE E.id=$exerciseId AND P.prefName = '" . strtolower($transcriptionSystem) . ".language' AND E.fk_transcription_id IS NULL";
+			$sql = "SELECT E.id FROM exercise AS E  INNER JOIN preferences AS P ON E.language=P.prefValue WHERE E.id=$exerciseId AND P.prefName = '%s.language' AND E.fk_transcription_id IS NULL";
 			if ($maxDuration > 0)
-				$sql = $sql . " AND E.duration<=" . $maxDuration;
+				$sql = $sql . " AND E.duration<=%s";
 			
-			$result = $this->conn->_execute($sql);
+			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem), $maxDuration);
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				return true;
@@ -165,9 +165,9 @@ class TranscriptionsDAO {
 			return false;
 	}
 	
-	public function _create($data) {
+	public function _create() {
 		
-		$this->_databaseUpdate($data);
+		$this->conn->_execute(func_get_args());
 		
 		$sql = "SELECT LAST_INSERT_ID()";
 		$result = $this->_databaseUpdate($sql);
@@ -180,8 +180,8 @@ class TranscriptionsDAO {
 		}
 	}
 	
-	function _databaseUpdate($sql) {
-		$result = $this->conn->_execute($sql);
+	function _databaseUpdate() {
+		$result = $this->conn->_execute(func_get_args());
 		
 		return $result;
 	}

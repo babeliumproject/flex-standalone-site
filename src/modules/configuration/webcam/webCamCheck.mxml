@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	xmlns:ns1="modules.configuration.webcam.*" creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import modules.configuration.ConfigurationResultEvent;
+			import mx.controls.Alert;
+			import model.DataModel;
+			import flash.ui.Mouse;
+						
+			public var cam:Camera;
+			public var mic:Microphone=Microphone.getMicrophone();
+			private var video:Video;
+			private var nc:NetConnection;
+			public var rec_ns:NetStream;
+			public var play_ns:NetStream;
+			public var rec:Boolean=false;
+			public var timerRec:Timer;
+			public var timerPlay:Timer;
+            
+			private function init():void{															
+				nc = new NetConnection();
+  				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+    			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+    			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
+    			inicializarTimers();		
+			}
+			
+			private function netStatusHandler(e:NetStatusEvent):void{   
+				if(e.info.code == "NetConnection.Connect.Success"){
+        			rec_ns = new NetStream(nc);
+        			play_ns = new NetStream(nc); 
+        			rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+    				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+				}else   
+					//Problemas en la conexion
+   					trace(e.info.code); 
+			}
+			
+			private function asyncErrrorHandler(e:AsyncErrorEvent):void{
+				//No se usa, pero evita que aparezcan errores con flash player debugg version
+			}
+			
+			private function recStart():void{
+				try{	
+					//Las siguientes 2 lineas de codigo permiten al usuario la grabacion de varios videos
+					rec_ns.close();
+					play_ns.close();
+					cam=Camera.getCamera();
+					cam.addEventListener(StatusEvent.STATUS,camera_status);
+					rec_ns.attachCamera(cam);
+					model.DataModel.getInstance().videoRec=true;
+			
+					/*Se comprueba si se ha grabado un fichero de audio en la pestaña microphone
+					o si previamente el usuario ha grabado otro fichero de video.
+					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
+					de un video no seria posible sin las siguientes lineas de codigo*/
+					if (rec || model.DataModel.getInstance().audioRec){
+						DataModel.getInstance().recording=true;
+						statusTextFunc("recording");
+                    	video = new Video();
+                    	video.attachCamera(cam);
+                    	videoHolder.addChild(video);
+                    	timerRec.start();
+                    	mic.rate = 44;
+        				rec_ns.attachAudio(mic);
+   						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo",
+   						 'record');
+   						inicializarContador();	
+					}  					
+				}catch(err:Error){
+					Alert.show( err.toString() );
+				}
+			}
+			
+			private function playStart():void{
+				if (rec){//Rec file exists
+					DataModel.getInstance().playing=true;
+					inicializarContador();
+					statusTextFunc("playing");
+					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationVideo.flv");
+					video.attachNetStream(play_ns);
+					videoHolder.addChild(video);
+					timerPlay.start();
+				}else{//Rec file not exists
+					Alert.show("No has grabado ningun video!");
+				}
+			}
+			
+			private function camera_status(e:StatusEvent):void{
+            	switch (e.code) {
+                    case "Camera.Muted": //User denied access to camera 
+                    	var ev:ConfigurationResultEvent = new ConfigurationResultEvent
+							(ConfigurationResultEvent.WEBCAM_RESULT,false);
+						dispatchEvent(ev);                  	
+                        break;
+                    case "Camera.Unmuted": //User allowed access to camera
+                   	 	DataModel.getInstance().recording=true;
+                    	statusTextFunc("recording");
+                    	video = new Video();
+                    	video.attachCamera(cam);
+                    	videoHolder.addChild(video);
+                    	timerRec.start();
+                    	mic.rate = 44;
+        				rec_ns.attachAudio(mic);
+   						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
+   						inicializarContador();                    
+                        break;
+                }//switch
+            }
+			
+			private function timerRecFunc(event:TimerEvent):void{				
+				var denb:int
+				denb = timerRec.currentCount;
+				if (timerRec.currentCount <= 10){					
+					contador.text = denb.toString();
+				}else if(timerRec.currentCount>10){
+					finGrabacion();
+					esconderInfo();
+					rec=true;
+					timerRec.reset();//Se prepara para la proxima grabacion
+				}
+			}
+			
+			private function timerPlayFunc(event:TimerEvent):void{
+				var denb:int;
+				denb = timerPlay.currentCount;
+				if (timerPlay.currentCount <= 10){					
+					contador.text = denb.toString();
+				}else if (timerPlay.currentCount>10){
+					DataModel.getInstance().playing=false;
+					var ev:ConfigurationResultEvent = new ConfigurationResultEvent
+						(ConfigurationResultEvent.WEBCAM_RESULT,true);
+					dispatchEvent(ev);
+					esconderInfo();
+					timerPlay.reset();//Se prepara para la proxima reproduccion
+				}
+			}
+			
+			private function inicializarContador():void{
+				contador.text="0";
+				contador.visible=true;
+			}
+			
+			private function inicializarTimers():void{
+				//Timer utilizado en la grabacion del video
+				timerRec = new Timer(1000,0);
+				timerRec.addEventListener(TimerEvent.TIMER, timerRecFunc);
+				//Timer utilizado en la reproduccion del video
+				timerPlay = new Timer(1000,0);
+				timerPlay.addEventListener(TimerEvent.TIMER, timerPlayFunc);	
+			}
+			
+			private function esconderInfo():void{
+				contador.visible=false;
+				statusText.visible=false;
+			}
+			
+			private function finGrabacion():void{
+				DataModel.getInstance().recording=false;
+				rec_ns.attachCamera(null);
+				rec_ns.attachAudio(null);
+				video.attachCamera(null);
+				video.clear();
+			}
+			
+			private function statusTextFunc(s:String):void{
+				statusText.text=s;
+				statusText.visible=true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox x="10" y="10" width="100%" height="90%" id="allMenu" visible="true">
+		
+		<mx:VBox id="explicacion" height="90%" width="347">
+			<mx:Text/>
+			<mx:Text text="COMPROBACION DE WEB-CAM" fontSize="17" fontWeight="bold" textDecoration="underline" fontStyle="italic"/>			
+			<ns1:explicacionCam height="100%" width="100%" id="texto"/>
+		</mx:VBox>
+		
+		<mx:VBox id="videoPanel" width="400" height="322" horizontalAlign="center" verticalAlign="top">
+			<mx:VBox borderStyle="solid" cornerRadius="3" backgroundColor="#e9edee" width="350" height="320"
+				horizontalAlign="center" verticalAlign="middle">
+				<mx:VBox borderStyle="solid" width="320" height="240" backgroundColor="black">
+					<mx:UIComponent id="videoHolder" width="100%" height="100%"/>
+					<mx:Text id="statusText" visible="false" color="red" fontSize="13" fontWeight="bold"/>
+				</mx:VBox>
+				<mx:HBox horizontalAlign="center">
+					<mx:Button label="REC" click="recStart()" horizontalCenter="true"
+						enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							!DataModel.getInstance().recording}"/>
+					<mx:Button label="PLAY" click="playStart()" horizontalCenter="true"
+						enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							!DataModel.getInstance().recording}"/>
+				</mx:HBox>
+				<mx:VBox horizontalAlign="center" fontSize="15">
+					<mx:Text id="contador" text="10" visible="false" fontWeight="bold"/>
+				</mx:VBox>				
+			</mx:VBox>			
+		</mx:VBox>
+				
+	</mx:HBox>
+		
+		
+	<mx:HBox id="notConect" horizontalAlign="center" verticalAlign="middle" visible="false"
+		width="100%" height="100%">
+		<ns1:notCamText/>
+	</mx:HBox>
+</mx:Canvas>

@@ -13,7 +13,7 @@ class SubtitlesAndRolesVO
 	public $exerciseId;
 	public $userId;	
 	public $singleName;
-	public $characterName;
+	public $role; //$characterName;
 	
 	public $_explicitType = "SubtitlesAndRolesVO";
 }

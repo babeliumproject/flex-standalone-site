@@ -25,78 +25,94 @@ class CreditDAO {
 	public function addCreditsForEvaluating($userId) {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount+p.prefValue
-			WHERE (u.ID= " . $userId . " AND p.prefName='evaluationDoneCredits') ";
-		return $this->_databaseUpdate ( $sql );
+			WHERE (u.ID=%d AND p.prefName='evaluationDoneCredits') ";
+		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
 	public function addCreditsForSubtitling($userId) {
 		$sql = "UPDATE (users u JOIN preferences p) 
 			SET u.creditCount=u.creditCount+p.prefValue 
-			WHERE (u.ID= " . $userId . " AND p.prefName='subtitleAdditionCredits') ";
-		return $this->_databaseUpdate ( $sql );
+			WHERE (u.ID=%d AND p.prefName='subtitleAdditionCredits') ";
+		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
 	public function addCreditsForExerciseAdvising($userId) {
 		$sql = "UPDATE (users u JOIN preferences p) 
 				SET u.creditCount=u.creditCount+p.prefValue 
-				WHERE (u.ID= " . $userId . " AND p.prefName='evaluationDoneCredits') ";
-		return $this->_databaseUpdate ( $sql );
+				WHERE (u.ID=%d AND p.prefName='evaluationDoneCredits') ";
+		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
 	public function addCreditsForUploading($userId) {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
-				WHERE (u.ID= " . $userId . " AND p.prefName='uploadExerciseCredits') ";
-		return $this->_databaseUpdate ( $sql );
+				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
+		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
 	public function subCreditsForEvalRequest($userId) {
 		$sql = "UPDATE (users u JOIN preferences p) 
 			SET u.creditCount=u.creditCount-p.prefValue 
-			WHERE (u.ID= " . $userId . " AND p.prefName='evaluationRequestCredits') ";
-		return $this->_databaseUpdate ( $sql );
+			WHERE (u.ID=%d AND p.prefName='evaluationRequestCredits') ";
+		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
 	public function getCurrentDayCreditHistory($userId) {
-		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.id_grab 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN grabaciones r on r.id=c.fk_response_id) 
-				WHERE (c.fk_user_id = " . $userId . " AND CURDATE() <= c.changeDate ) ORDER BY changeDate DESC ";
+		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.file_identifier 
+				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				WHERE (c.fk_user_id = %d AND CURDATE() <= c.changeDate ) ORDER BY changeDate DESC ";
 		
-		return $this->_listQuery ( $sql );
+		return $this->_listQuery ( $sql, $userId );
 	}
 	
 	public function getLastWeekCreditHistory($userId) {
-		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.id_grab 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN grabaciones r on r.id=c.fk_response_id) 
-				WHERE (c.fk_user_id = " . $userId . " AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
+		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.file_identifier 
+				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				WHERE (c.fk_user_id = %d AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
 		
-		return $this->_listQuery ( $sql );
+		return $this->_listQuery ( $sql, $userId );
 	}
 	
 	public function getLastMonthCreditHistory($userId) {
-		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.id_grab 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN grabaciones r on r.id=c.fk_response_id) 
-				WHERE (c.fk_user_id = " . $userId . " AND DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
+		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.file_identifier 
+				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				WHERE (c.fk_user_id = %d AND DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
 		
-		return $this->_listQuery ( $sql );
+		return $this->_listQuery ( $sql, $userId );
 	}
 	
 	public function getAllTimeCreditHistory($userId) {
-		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.id_grab 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN grabaciones r on r.id=c.fk_response_id) 
-				WHERE (c.fk_user_id = " . $userId . " ) ORDER BY changeDate DESC ";
+		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_user_id, u.name, c.fk_exercise_id, e.name, c.fk_response_id, r.file_identifier 
+				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				WHERE (c.fk_user_id = %d ) ORDER BY changeDate DESC ";
 		
-		return $this->_listQuery ( $sql );
+		return $this->_listQuery ( $sql, $userId );
 	}
 	
 	public function addEntryToCreditHistory(CreditHistoryVO $data) {
-		return $this->_create ( $data );
+		
+		$result = 0;
+		
+		if ($data->changeType == "exercise_upload" || $data->changeType == "subtitling" ){
+			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
+			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
+			$result = $this->_create($sql, $data->userId, $data->videoExerciseId, $data->changeType, $data->changeAmount);
+
+		} elseif ($data->changeType == "eval_request"){
+			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, changeDate, changeType, changeAmount) ";
+			$sql = $sql . "VALUES ('%d', '%d', '%d', NOW(), '%s', '%d') ";
+			$result = $this->_create($sql, $data->userId, $data->videoExerciseId, $data->videoResponseId, $data->changeType, $data->changeAmount);
+		} elseif ($data->changeType == "evaluation"){
+			//Something else
+		}
+		
+		return $result;
 	}
 	
 	//Returns a single object
-	public function _singleQuery($sql) {
+	public function _singleQuery() {
 		$valueObject = new UserVO ( );
-		$result = $this->conn->_execute ( $sql );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
@@ -111,9 +127,9 @@ class CreditDAO {
 	}
 	
 	//Returns an array of objects
-	public function _listQuery($sql) {
+	public function _listQuery() {
 		$searchResults = array ();
-		$result = $this->conn->_execute ( $sql );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$temp = new CreditHistoryVO ( );
@@ -138,23 +154,13 @@ class CreditDAO {
 			return false;
 	}
 	
-	public function _create(CreditHistoryVO $valueObject) {
-		
-		if ($valueObject->changeType == "exercise_upload" || $valueObject->changeType="subtitling"){
-			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
-			$sql = $sql . "VALUES ('" . $valueObject->userId . "', '" . $valueObject->videoExerciseId . "', NOW(), '" . $valueObject->changeType . "', '" . $valueObject->changeAmount . "') ";
-		} elseif ($valueObject->changeType == "eval_request"){
-			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, changeDate, changeType, changeAmount) ";
-			$sql = $sql . "VALUES ('" . $valueObject->userId . "', '" . $valueObject->videoExerciseId . "', '" . $valueObject->videoResponseId . "', NOW(), '" . $valueObject->changeType . "', '" . $valueObject->changeAmount . "') ";
-		} elseif ($valueObject->changeType == "evaluation"){
-			//Something else
-		}
-		
-		$this->_databaseUpdate ( $sql );
-		
+	private function _create() {
+
+		$this->conn->_execute ( func_get_args() );
+
 		$sql = "SELECT last_insert_id()";
 		$result = $this->conn->_execute ( $sql );
-		
+
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
 			return $row [0];
@@ -163,8 +169,8 @@ class CreditDAO {
 		}
 	}
 	
-	public function _databaseUpdate($sql) {
-		$result = $this->conn->_execute ( $sql );
+	public function _databaseUpdate() {
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		return $result;
 	}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns2="view.*"
+		 verticalScrollPolicy="off"
+		 horizontalScrollPolicy="off"
+		 horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			public function get value():Number
+			{
+				return (data.hideTime);
+			}
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+				HideTimeStepper.value=data.hideTime;
+			}
+		]]>
+	</mx:Script>
+	<ns2:FormattedStepper id="HideTimeStepper"
+						  stepSize="0.01"
+						  width="81"
+						  maximum="250000"
+						  formatter="{formater1}"
+						  valueCommit="{data.hideTime = Number(HideTimeStepper.value); }"/>
+	<ns2:TimeFormatter id="formater1"/>
+</mx:HBox>

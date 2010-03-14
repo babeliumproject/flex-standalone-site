@@ -6,7 +6,6 @@ package business
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
 	
-	
 	import vo.ExerciseVO;
 
 
@@ -27,16 +26,15 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getExercises():void{
+		public function addUnprocessedExercise(exercise:ExerciseVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getExercises();
+			var pendingCall:AsyncToken=service.addUnprocessedExercise(exercise);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function makePublic(responseID:Number) : void
-		{
+		public function getExercises():void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.makePublic(responseID);
+			var pendingCall:AsyncToken=service.getExercises();
 			pendingCall.addResponder(responder);
 		}
 

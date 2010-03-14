@@ -42,11 +42,13 @@ package commands.main
 					//Set the data to the application's model
 					DataModel.getInstance().availableExercises=resultCollection;
 					//Reflect the visual changes
-					DataModel.getInstance().availableExercisesRetrieved=true;
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, 0);
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, 1);
 				}
 			} else {
 				DataModel.getInstance().availableExercises.removeAll();
-				DataModel.getInstance().availableExercisesRetrieved = true;
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, 0);
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, 1);
 			}
 			
 			

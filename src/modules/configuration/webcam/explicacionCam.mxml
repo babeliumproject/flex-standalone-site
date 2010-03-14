@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="348" height="300">
+		<mx:Text/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1')}" fontWeight="bold"/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}" fontWeight="bold"/>
+		<mx:Text/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3')}" fontWeight="bold"/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}" fontWeight="bold"/>
+</mx:VBox>

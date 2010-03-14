@@ -74,6 +74,9 @@
 
 	<mx:Script>
 		<![CDATA[
+			import events.ResponseEvent;
+			import vo.ResponseVO;
+			import com.adobe.protocols.dict.Response;
 			import vo.ExerciseVO;
 			import events.ExerciseEvent;
 			import events.EvaluationEvent;
@@ -97,23 +100,16 @@
 					var userCredCount:int = userInfo.creditCount;
 					var credsEvalRequest:int = DataModel.getInstance().prefDic['evaluationRequestCredits'];
 					if(userCredCount - credsEvalRequest >= 0) {
-						new CreditEvent(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, userId).dispatch();
-							//Let's add an entry to our credit history to track our activity
-//						new CreditEvent(CreditEvent.ADD_CREDIT_ENTRY_EVAL_REQUEST, userId).dispatch();
-							//Finally, let's get our data to see if the credits where updated successfully
-//						new UserEvent(UserEvent.GET_USER_INFO).dispatch();
-						//make it public
-						var responseID:int = DataModel.getInstance().historicData.videoResponseId;
-						var exercise:ExerciseVO = new ExerciseVO();
-						exercise.id = responseID;
-						new ExerciseEvent(ExerciseEvent.MAKE_PUBLIC, exercise).dispatch();
+						var responseId:int = DataModel.getInstance().historicData.videoResponseId;
+						var response:ResponseVO = new ResponseVO(responseId,0,0,"",false,"","",0,"",0,"",0);
+						new ResponseEvent(ResponseEvent.MAKE_RESPONSE_PUBLIC, response).dispatch();
 					} else {
 						Alert.show("You don't have enough credits to perform this task.\n This video will remain privately available to you.", "Insuficcient Credits");
 					}
 
 					if(DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected) {
-						var responseId:int = DataModel.getInstance().historicData.videoResponseId;
-						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, responseId, 0, "spinvox").dispatch();
+						var aeResponseId:int = DataModel.getInstance().historicData.videoResponseId;
+						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, aeResponseId, 0, "spinvox").dispatch();
 					}
 
 					new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();

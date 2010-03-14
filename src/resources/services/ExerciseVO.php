@@ -17,6 +17,7 @@ class ExerciseVO {
 	public $addingDate;
 	public $duration;
 	public $transcriptionId;
+	public $status;
 	
 	public $avgRating;
 	public $avgDifficulty;

@@ -7,10 +7,13 @@
 		  paddingRight="8"
 		  fontFamily="Arial"
 		  fontSize="12"
-		  title="User's Credit History"
+		  title="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
 		  layout="vertical"
 		  creationComplete="init()"
 		  xmlns:ns1="modules.userManagement.*">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import mx.formatters.DateFormatter;
@@ -41,7 +44,7 @@
 			private function formatVideoExerciseName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoExerciseName == null)
-					return "None";
+					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoExerciseName;
 			}
@@ -49,7 +52,7 @@
 			private function formatVideoResponseName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoResponseName == null)
-					return "None";
+					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoResponseName;
 			}
@@ -57,7 +60,7 @@
 			private function formatVideoEvaluationName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoEvaluationName == null)
-					return "None";
+					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoEvaluationName;
 			}
@@ -95,6 +98,19 @@
 			private function allTimeClickHandler():void
 			{
 				var userId:int=DataModel.getInstance().loggedUser.id;
+				var initDate:Date = lineChartContainer.chartMaximum;
+				
+				var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
+				var dateAndTime:Array = rawDbDate.split(" ");
+				var splittedDate:Array = (dateAndTime[0] as String).split("-");
+				var splittedTime:Array = (dateAndTime[1] as String).split(":");
+				var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
+				
+				var prevDate:Date = joiningDate;
+				
+				lineChartContainer.chartMinimum = prevDate;
+				lineChartContainer.labelUnits = "months";
+				
 				new CreditEvent(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, userId).dispatch();
 			}
 
@@ -114,16 +130,16 @@
 			 backgroundColor="#DDDDDD"
 			 borderStyle="solid"
 			 horizontalGap="12">
-		<mx:Button label="Last Hours"
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
 				   cornerRadius="8"
 				   click="todayClickHandler()"/>
-		<mx:Button label="Last Week"
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_WEEK_CREDITS')}"
 				   cornerRadius="8"
 				   click="lastWeekClickHandler()"/>
-		<mx:Button label="Last Month"
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_MONTH_CREDITS')}"
 				   cornerRadius="8"
 				   click="lastMonthClickHandler()"/>
-		<mx:Button label="All-time"
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_ALL_TIME_CREDITS')}"
 				   cornerRadius="8"
 				   click="allTimeClickHandler()"/>
 	</mx:HBox>
@@ -131,21 +147,21 @@
 				 height="250"
 				 id="creditHistoryTable">
 		<mx:columns>
-			<mx:DataGridColumn headerText="Date"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_DATE_CREDIT_TABLE')}"
 							   dataField="changeDate"/>
-			<mx:DataGridColumn headerText="Change Type"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_CHANGE_TYPE_CREDIT_TABLE')}"
 							   dataField="changeType"/>
-			<mx:DataGridColumn headerText="Credit Amount"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_CHANGE_AMOUNT_CREDIT_TABLE')}"
 							   dataField="changeAmount"/>
-			<mx:DataGridColumn headerText="Exercise Name"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_EXERCISE_NAME_CREDIT_TABLE')}"
 							   dataField="videoExerciseName"
 							   labelFunction="formatVideoExerciseName"
 							   itemRenderer="modules.userManagement.ExerciseClickRenderer">
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="Response Name"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_RESPONSE_NAME_CREDIT_TABLE')}"
 							   dataField="videoResponseName"
 							   labelFunction="formatVideoResponseName"/>
-			<mx:DataGridColumn headerText="Evaluation Name"
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_EVALUATION_NAME_CREDIT_TABLE')}"
 							   dataField="videoEvaluationName"
 							   labelFunction="formatVideoEvaluationName"/>
 		</mx:columns>

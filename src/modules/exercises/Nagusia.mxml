@@ -49,12 +49,12 @@
 				{
 					BidZerrenda1.visible=true;
 					//Tras pulsar 'bideoa aldatu' no se queda seleccionado el video anterior
-					BidZerrenda1.bideoakLortu.selectedItem=null;
-					BidZerrenda1.izena=null;
+					BidZerrenda1.exerciseListDatagrid.selectedItem=null;
+					BidZerrenda1.exerciseName=null;
 				}
 
 				//Bideo bat aukeratzen denean, gertaera hau gertatuko da.
-				BidZerrenda1.aukeratu_bideoa.addEventListener(MouseEvent.CLICK, aukeratua);
+				BidZerrenda1.selectExercise.addEventListener(MouseEvent.CLICK, aukeratua);
 				
 				//Doubleclick on the datagrid element to select it's video
 				BidZerrenda1.addEventListener(MouseEvent.DOUBLE_CLICK , selectVideo);
@@ -69,15 +69,15 @@
 				//BidZerrenda1.bideoakLortu.width = this.width - BidZerrenda1.aukeratu_bideoa.width - 100;
 				BidZerrenda1.x=100;
 				BidZerrenda1.y=25;
-				BidZerrenda1.bideoakLortu.height=this.height - 50;
+				BidZerrenda1.exerciseListDatagrid.height=this.height - 50;
 				BidZerrenda1.visible=true;
 			}
 			
 			private function selectVideo(evt:MouseEvent):void
 			{
 								
-				bideo_izena=BidZerrenda1.izena
-				bideo_id=BidZerrenda1.id_vid
+				bideo_izena=BidZerrenda1.exerciseName;
+				bideo_id=BidZerrenda1.exerciseId;
 
 				BidZerrenda1.visible=false;
 		
@@ -91,11 +91,8 @@
 			private function aukeratua(evt:MouseEvent):void
 			{
 				//Bideo Zerrendan, bideo bat aukeratzeko botoia sakatzean, bideoa objetua berrabiaraziko da bideo berriarekin
-				bideo_izena=BidZerrenda1.izena
-				bideo_id=BidZerrenda1.id_vid
-
-//				mx.controls.Alert.show("Izena." + bideo_izena);
-//				mx.controls.Alert.show("Bideo:" + bideo_id);
+				bideo_izena=BidZerrenda1.exerciseName
+				bideo_id=BidZerrenda1.exerciseId
 
 				if (bideo_izena != null)
 				{
@@ -108,9 +105,6 @@
 					//Aukeretako panelean, BIDEOA ALDATU aukera sakatzen bada, gertaera hau altxako da, eta berriro zerrenda bistaratuko da
 					//BIDEOA ALDATU aukera, grabaketa hasi aurretik soilik agertuko da. Behin grabaketa hasi ondoren, prozesua amaitu arte, ez da bideoa aldatzeko aukera emango
 					bideo_zatia.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, bideoAldatu);
-						//bideo_zatia.addEventListener(FlexEvent.EXIT_STATE,grabaketaAmaiera);
-
-						//bideo_zatia.addEventListener(FlexEvent.DATA_CHANGE,kamaraUkatua);
 				}
 				else
 					mx.controls.Alert.show('Aukeratu bideo bat!')
@@ -151,5 +145,3 @@
 				  visible="false">
 	</ns1:bzNeurtu>
 </mx:Canvas>
-
-<!--flvtool2 -APUt kutsi1.xml kutsidazu.flv kutsi1.flv-->

@@ -6,7 +6,7 @@ package events
 	import flash.events.Event;
 	
 	import vo.SubtitleLineVO;
-	import vo.SubtitleVO;
+	import vo.SubtitleAndSubtitleLinesVO;
 
 	public class SubtitleEvent extends CairngormEvent
 	{
@@ -14,11 +14,11 @@ package events
 		public static const SAVE_SUBTITLE:String = "saveSubtitle";
 		public static const SAVE_SUBTITLE_LINES:String = "saveSubtitleLines";
 		public static const GET_SUBTITLE_LINES:String = "getSubtitleLines";
-		public var subtitle:SubtitleVO;
+		public var subtitle:SubtitleAndSubtitleLinesVO;
 		public var lines:SubtitleLineVO;
 
 		
-		public function SubtitleEvent(type:String, subtitle:SubtitleVO = null, lines:SubtitleLineVO = null)
+		public function SubtitleEvent(type:String, subtitle:SubtitleAndSubtitleLinesVO = null, lines:SubtitleLineVO = null)
 		{
 			super(type);
 			this.subtitle = subtitle;

@@ -53,8 +53,7 @@
 
 			private var rememberSO:SharedObject;
 			
-			private var locales:Array = DataModel.getInstance().locales; 
-			
+			[Bindable] private var locales:Array = DataModel.getInstance().locales; 
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int = 13;
 
@@ -89,7 +88,7 @@
 			private function showLogin():void
 			{
 				loginPop=LoginForm(PopUpManager.createPopUp(parent, LoginForm, true));
-				loginPop.title="Please enter your login information.";
+				loginPop.title=resourceManager.getString('myResources','TITLE_LOGIN_FORM');
 				loginPop.showCloseButton=true;
 				PopUpManager.centerPopUp(loginPop);
 
@@ -100,6 +99,9 @@
 				
 				//We add a key listener so that we can push enter to processLogin
 				loginPop.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+				
+				// Give the focus to username textfield
+				focusManager.setFocus(loginPop.username);
 			}
 
 			private function hideLogin(event:Event):void
@@ -112,7 +114,7 @@
 				hideLogin(null);
 				DataModel.getInstance().restorePassErrorMessage = "";
 				restorePop=RestorePassForm(PopUpManager.createPopUp(parent, RestorePassForm, true));
-				restorePop.title="Please enter your username or email.";
+				restorePop.title=resourceManager.getString('myResources','TITLE_RESTORE_PASS_FORM');
 				restorePop.showCloseButton=true;
 				PopUpManager.centerPopUp(restorePop);
 
@@ -241,7 +243,7 @@
 				interval=setInterval(blinkCredits, 300);
 				DataModel.getInstance().creditUpdateRetrieved=false;
 			}
-           
+
            
          
 		private function localeComboBox_initializeHandler(event:Event):void  {
@@ -289,9 +291,9 @@
 
 	<mx:HBox width="30%"
 			 height="100%">
-		<mx:Image width="300"
+		<mx:Image width="396"
 				  height="60"
-				  source="resources/images/banner.png"/>
+				  source="resources/images/babelium_project.png"/>
 	</mx:HBox>
 	<mx:HBox width="70%"
 			 height="100%"
@@ -306,13 +308,13 @@
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="true">
-				<mx:LinkButton label="{resourceManager.getString('myResources', 'ENTRAR')}"
+				<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
 							   fontFamily="Arial"
 							   fontSize="12"
 							   fontWeight="normal"
 							   click="signInClickHandler()"
 							   enabled="{!DataModel.getInstance().recordingExercise}"/>
-				<mx:LinkButton label="{resourceManager.getString('myResources', 'REGISTRAR')}"
+				<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
 							   fontFamily="Arial"
 							   fontSize="12"
 							   click="signUpClickHandler()"
@@ -337,7 +339,7 @@
 						 paddingLeft="6"
 						 paddingRight="6"
 						 height="60%">
-					<mx:Label text="Credits:"
+					<mx:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
 							  fontFamily="Arial"
 							  fontSize="12"
 							  fontWeight="bold"/>
@@ -354,12 +356,12 @@
 							   label="UserName"
 							   fontFamily="Arial"
 							   fontSize="12"/>
-				<mx:LinkButton label="Account"
+				<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_USER_ACCOUNT')}"
 							   fontFamily="Arial"
 							   fontSize="12"
 							   click="accountClickHandler()"
 							   enabled="{!DataModel.getInstance().recordingExercise}"/>
-				<mx:LinkButton label="Sign Out"
+				<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   fontFamily="Arial"
 							   fontSize="12"
 							   click="signOutClickHandler()"
@@ -369,7 +371,7 @@
 		<mx:Canvas>
 		   <mx:HBox>
 				<mx:VRule height="20"/>
-			<mx:ComboBox id="localeComboBox" text="Selecione el idioma" dataProvider="{DataModel.getInstance().locales}"
+			<mx:ComboBox id="localeComboBox" dataProvider="{locales}"
                  initialize="localeComboBox_initializeHandler(event)"
                  change="localeComboBox_changeHandler(event)"/>
 			</mx:HBox>

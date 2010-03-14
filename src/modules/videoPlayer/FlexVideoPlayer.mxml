@@ -67,7 +67,6 @@
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import mx.controls.Alert;
 			import vo.SubtitleLineVO;
-			import vo.SubtitleVO;
 			import events.SubtitleEvent;
 			import model.DataModel;
 			
@@ -78,11 +77,11 @@
 			
 			public function init() : void
 			{
-				var subtitle:SubtitleVO = new SubtitleVO();
+				/*var subtitle:SubtitleVO = new SubtitleVO();
 				subtitle.exerciseId = 2;
 				subtitle.language = "Spanish";
 				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, subtitle).dispatch();
-				
+				*/
 				var tmp:ArrayCollection = new ArrayCollection();
 				tmp.addItem("Español");
 				tmp.addItem("English");
@@ -98,7 +97,7 @@
 				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
 			}
 			
-			public function set onSubtitleRetrieved(flag:Boolean) : void
+			/*public function set onSubtitleRetrieved(flag:Boolean) : void
 			{
 
 				for each ( var sub:SubtitleLineVO in DataModel.getInstance().subtitleDp )
@@ -107,7 +106,7 @@
 						role = sub.role;
 					arrows.addItem({time:sub.showTime,role:sub.role});
 				}
-			}
+			}*/
 			
 			/**
 			 * TODO: This method only test our new features
@@ -194,8 +193,5 @@
 			
 		]]>
 	</mx:Script>
-	
-	<mx:Binding source="DataModel.getInstance().subtitleDp != null"
-				destination="onSubtitleRetrieved" />
 	
 </mx:VBox>

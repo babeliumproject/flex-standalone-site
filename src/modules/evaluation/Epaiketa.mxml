@@ -178,15 +178,24 @@
 				else{
 					epaiketaDat.insertEpaiketa.send(response_id,erabiltzaile_id,balioa,iruzkinak.text.toString());
 				}
-				epaiketaDat.updateGrabaketa.send(response_id);
-				balo.setVisible(false);
-				epaiketaDat.baloratuGabekoak.send(erabiltzaile_id);
-				epaiketaDat.nikEpaitutakoak.send(erabiltzaile_id);
 				reset();
-	            Alert.show("Bideoa epaitua izan da");
+	            Alert.show("Your assessment has been successfully saved");
 	        } else {
-	            Alert.show("Aukera bat aukeratu, eta iruzkinetan zerbait idatzi behar da");
+	            Alert.show("You must specify a score and write a comment with your opinion of the response");
 	        }
+		 }
+		 
+		 private function evaluationAddedHandler(event:ResultEvent):void{
+		 	//Data inserted on evaluation successfully.
+		 	epaiketaDat.updateGrabaketa.send(response_id);
+			balo.setVisible(false);
+		 }
+		 
+		 private function ratingAmountUpdatedHandler(event:ResultEvent):void{
+		 	//We updated the rating amount from this response now we want to update the datagrid
+		 	epaiketaDat.baloratuGabekoak.send(erabiltzaile_id);
+		 	//We want to see our recent evaluation on the tab Responses I assessed
+		 	epaiketaDat.nikEpaitutakoak.send(erabiltzaile_id);
 		 }
 		 
 		 //Epaiketari dagokion "reset" botoia sakatzean exekutatuko den funtzioa
@@ -390,7 +399,7 @@
            //grabaketa.stopVid();
            grabaketa.ezabatuFletxak();
            grabaketa.setRolAukeratua(ep.AukeratutakoPertsonaia);
-           batazb.text = "Batazbestekoa: " + ep.Batazbestekoa;
+           batazb.text = resourceManager.getString('myResources', 'AVG') + ": " + ep.Batazbestekoa;
            
            aukeratutakoPertsonaia = ep.AukeratutakoPertsonaia;
            
@@ -517,9 +526,12 @@
       <mx:method name="epaitutakoGrabaketa" result="resultHandlerNiriEpaituta(event)" />
       <mx:method name="baloratuGabekoakLoginGabe" result="baloratuGabekoakLortuLoginGabe(event)" />
       <mx:method name="baloratuGabekoak" result="baloratuGabekoakLortu(event)" />
-      <mx:method name="updateGrabaketa" result="resultHandler(event)"/>
+      <mx:method name="updateGrabaketa" result="ratingAmountUpdatedHandler(event)"/>
       <mx:method name="norberariEpaitutakoak" result="norberariEpaitutakoakLortu(event)" />
       <mx:method name="nikEpaitutakoak" result="nikEpaitutakoakLortu(event)" />
+      <mx:method name="insertEpaiketa" result="evaluationAddedHandler(event)" />
+      <mx:method name="insertVideoEpaiketa" result="resultHandler(event)" />
+      <mx:method name="bideoaEzabatu" result="resultHandler(event)" />
    </mx:RemoteObject>
 
     <!-- Bideo objektuak -->
@@ -565,7 +577,7 @@
 		</mx:HBox>
         <mx:FormItem>
         	<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}" click="bideoaGehitu()" id="bideoaGehituBot" />
-        	<mx:Label id="izenb" text="Bideoa gehitu:" visible="false" />
+        	<mx:Label id="izenb" text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}" visible="false" />
         	<mx:CheckBox id="txek" visible="false" />
         </mx:FormItem>
          <mx:FormItem>
@@ -688,7 +700,7 @@
          	 dropShadowEnabled="true" label="Human Evaluation">        
         <mx:HBox>
          	<mx:Label id="batazb" x="870" y="400" />
-         	<mx:Label id="grafikoakIkusi" text="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}" click="grafikoaIkusi()" />
+         	<mx:Button id="grafikoakIkusi" label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}" click="grafikoaIkusi()" />
           	<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
 		</mx:HBox>
 		

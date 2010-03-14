@@ -2,13 +2,13 @@ package business
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
+	import mx.controls.Alert;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
-	import mx.controls.Alert;
+	import mx.utils.ObjectUtil;
 	
-	import vo.SubtitleLineVO;
-	import vo.SubtitleVO;
+	import vo.SubtitleAndSubtitleLinesVO;
 	
 	public class SubtitleDelegate
 	{
@@ -20,15 +20,9 @@ package business
 			this.responder = responder;
 		}
 		
-		public function saveSubtitle(subtitle:SubtitleVO):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
-			var pendingCall:AsyncToken = service.saveSubtitle(subtitle);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function saveSubtitleLines(subtitle:SubtitleVO):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
-			var pendingCall:AsyncToken = service.saveSubtitleLines(subtitle.exerciseId,subtitle.language);
+		public function saveSubtitles(subtitles:SubtitleAndSubtitleLinesVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subrolesRO");
+			var pendingCall:AsyncToken = service.saveSubtitles(subtitles);
 			pendingCall.addResponder(responder);
 		}
 		
@@ -60,7 +54,7 @@ package business
 		public function getExerciseSubtitles():void{
 		}
 		
-		public function getSubtitleLines(subtitle:SubtitleVO):void{
+		public function getSubtitleLines(subtitle:SubtitleAndSubtitleLinesVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getSubtitleLines(subtitle.exerciseId,subtitle.language);
 			pendingCall.addResponder(responder);

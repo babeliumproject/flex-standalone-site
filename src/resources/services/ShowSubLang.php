@@ -13,22 +13,23 @@ class ShowSubLang {
 		$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 	}
 	
-	public function hizkuntzakLortu($key) {
+	public function hizkuntzakLortu($key){
 		
-		$sql = "SELECT A.ID_SUB, A.ID_VID, A.idioma, A.textos, A.tiempo, A.duracion 
-				FROM subtitulos AS A INNER JOIN videos AS B ON (A.ID_VID = B.ID)
-				WHERE B.nombre = '" . $key . "'";
-		
-		$searchResults = $this->_listQuery ( $sql );
+		$sql = "SELECT S.id, E.id, S.language, L.text, TRUNCATE(L.show_time*1000,0), L.hide_time*0 "; 
+		$sql .="FROM exercise AS E INNER JOIN subtitle AS S ON (E.id = S.fk_exercise_id) INNER JOIN ";
+		$sql .="subtitle_line AS L ON (S.id = L.fk_subtitle_id) ";
+		$sql .="WHERE (E.name = '%s' ) ";
+				
+		$searchResults = $this->_listQuery ( $sql, $key );
 		
 		return $searchResults;
 	
 	}
 	
-	private function _listQuery($sql) {
+	private function _listQuery() {
 		
 		$searchResults = array ();
-		$result = $this->conn->_execute ( $sql );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$temp = new Sub ( );

@@ -8,5 +8,9 @@ package vo
 		public var name:String;
 		public var email:String;
 		public var creditCount:int;
+		public var realName:String;
+		public var realSurname:String;
+		public var active:Boolean;
+		public var joiningDate:String;
 	}
 }

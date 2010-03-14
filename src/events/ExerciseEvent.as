@@ -8,9 +8,9 @@ package events
 	{
 
 		public static const ADD_EXERCISE:String="addExercise";
+		public static const ADD_UNPROCESSED_EXERCISE:String="addUnprocessedExercise";
 		public static const GET_EXERCISES:String="getExercises";
 		public static const WATCH_EXERCISE:String="watchExercise";
-		public static const MAKE_PUBLIC:String="makeExercisePublic";
 
 		public var exercise:ExerciseVO;
 		public var response:Number;

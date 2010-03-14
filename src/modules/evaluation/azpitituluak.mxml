@@ -12,7 +12,7 @@
 					import mx.events.StateChangeEvent;
 					import mx.collections.ArrayCollection;
 				
-				[Bindable]
+					[Bindable]
          			private var dp:ArrayCollection;
          			
          			public var izena:String;
@@ -33,7 +33,7 @@
          			private var gaitu2:Boolean;
          			private var gaitu3:Boolean;
          			[Bindable]
-			public var idiomaAzpi:String;
+					public var idiomaAzpi:String;
          			
          			
          		private function onTimer(event:TimerEvent):void
@@ -152,87 +152,85 @@
             	}
             
 				private function faultHandler(fault:FaultEvent):void
-			       {
-			       		Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
-			       }
-			      private function baloratuGabekoakLortu(event:ResultEvent):void
-					{
-						dp = new ArrayCollection( ArrayUtil.toArray(event.result));
+			    {
+			    	Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+			    }
+			    private function baloratuGabekoakLortu(event:ResultEvent):void
+				{
+					dp = new ArrayCollection( ArrayUtil.toArray(event.result));
 						
-						subTaula = new ArrayCollection();
+					subTaula = new ArrayCollection();
             			
-            			//Subtitulurik ez pantailaratzeko
-            			subTaula.addItem("--------");
+            		//Subtitulurik ez pantailaratzeko
+            		subTaula.addItem("--------");
             			
-            			for (var i:int = 0; i < dp.length; i++) {
-            				if (!subTaula.contains(dp[i].idioma))
-	            				subTaula.addItem(dp[i].idioma);
-	            			//trace("dp[i].idioma: " + dp[i].idioma);
-	            		}
+            		for (var i:int = 0; i < dp.length; i++) {
+            			if (!subTaula.contains(dp[i].idioma))
+	            			subTaula.addItem(dp[i].idioma);
+	            		//trace("dp[i].idioma: " + dp[i].idioma);
+	            	}
 	            		
-	            		subkonboa.dataProvider = subTaula;
-	            		subkonboa.selectedIndex = 0;
+	            	subkonboa.dataProvider = subTaula;
+	            	subkonboa.selectedIndex = 0;
             	}
             	
 				public function init():void
-                   {	
-                   		//hizkuntzakLortu.visible = false;
-						bideoDat.hizkuntzakLortu.send(bideoIzena);
-                   }
+                {	
+                	//hizkuntzakLortu.visible = false;
+					bideoDat.hizkuntzakLortu.send(bideoIzena);
+                }
                    
            		private function changeHandler(event:Event):void
-			         {
-			          
-			           
-			         }
+			    {
+			    }
 			         
 			    private function aukHizk():void
 			    {
-			    		timeTaula = new ArrayCollection();
-            			testuTaula = new ArrayCollection();
-            			
-			    		trace(" subkonboa.selectedItem.toString() : " + subkonboa.selectedItem.toString());
-			    		
-			    		for (var i:int = 0; i < dp.length; i++) {
-			    			if (dp[i].idioma == subkonboa.selectedItem.toString())
-			    					timeTaula.addItem(dp[i].tiempo);
+			    	timeTaula = new ArrayCollection();
+            		testuTaula = new ArrayCollection();
+            		
+			    	trace(" subkonboa.selectedItem.toString() : " + subkonboa.selectedItem.toString());
+			    	
+			    	for (var i:int = 0; i < dp.length; i++) {
+			    		if (dp[i].idioma == subkonboa.selectedItem.toString())
+			    			timeTaula.addItem(dp[i].tiempo);
 	            			//trace("dp[i].tiempo: " + dp[i].tiempo);
-	            		}
+	            	}
 	            		
-	            		for (var i:int = 0; i < dp.length; i++) {
-	            			if (dp[i].idioma == subkonboa.selectedItem.toString())
-	            					testuTaula.addItem(dp[i].textos);
-	            			//trace("dp[i].textos: " + dp[i].textos);
-	            		}
+	            	for (var i:int = 0; i < dp.length; i++) {
+	            		if (dp[i].idioma == subkonboa.selectedItem.toString())
+	            			testuTaula.addItem(dp[i].textos);
+	            		//trace("dp[i].textos: " + dp[i].textos);
+	            	}
 	            		
-	            		if (!timer)
-	            		{
-	            			timer = new Timer(25,0);
-							timer.addEventListener(TimerEvent.TIMER, onTimer );
-							timer.start();
-							
-							gaitu1 = true;
-							gaitu2 = true;
-							gaitu3 = true;
-	            		}
+	            	if (!timer)
+	            	{
+	            		timer = new Timer(25,0);
+						timer.addEventListener(TimerEvent.TIMER, onTimer );
+						timer.start();
+						
+						gaitu1 = true;
+						gaitu2 = true;
+						gaitu3 = true;
+	            	}
 			    }
 		]]>
-	</mx:Script>
+</mx:Script>
 	
-	<mx:RemoteObject id="bideoDat" destination="empService" source="ShowSubLang" fault="faultHandler(event)" showBusyCursor="true">
+<mx:RemoteObject id="bideoDat" destination="empService" source="ShowSubLang" fault="faultHandler(event)" showBusyCursor="true">
      
-      <mx:method name="hizkuntzakLortu" result="baloratuGabekoakLortu(event)" />
+	<mx:method name="hizkuntzakLortu" result="baloratuGabekoakLortu(event)" />
       
-   </mx:RemoteObject>
+</mx:RemoteObject>
 		         
-	<mx:VBox horizontalAlign="center" verticalAlign="middle" borderStyle="solid" borderThickness="1">
-	    <mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#414141">
-	        <mx:Label id="testua" color="#FFFFFF" fontFamily="Arial" fontWeight="bold" fontSize="11" alpha="0.0" textAlign="center"/>
-	    </mx:HBox>
-	    <mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
-	        <mx:Label text="{resourceManager.getString('myResources', 'AZPITITULUENHIZKUNTZA')}" fontSize="11" color="#414141" fontWeight="bold"/>
-	        <mx:ComboBox width="100" id="subkonboa" change="aukHizk()"></mx:ComboBox>
-	    </mx:HBox>
-	</mx:VBox>
+<mx:VBox horizontalAlign="center" verticalAlign="middle" borderStyle="solid" borderThickness="1">
+	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#414141">
+		<mx:Label id="testua" color="#FFFFFF" fontFamily="Arial" fontWeight="bold" fontSize="11" alpha="0.0" textAlign="center"/>
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+		<mx:Label text="{resourceManager.getString('myResources', 'AZPITITULUENHIZKUNTZA')}" fontSize="11" color="#414141" fontWeight="bold"/>
+	   	<mx:ComboBox width="100" id="subkonboa" change="aukHizk()"></mx:ComboBox>
+	</mx:HBox>
+</mx:VBox>
 	
 </mx:Canvas>

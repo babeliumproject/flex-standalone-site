@@ -14,6 +14,6 @@ package vo
 		public var exerciseId:int;
 		public var userId:int;		
 		public var singleName:String;
-		public var characterName:String;
+		public var role:String;
 	}
 }

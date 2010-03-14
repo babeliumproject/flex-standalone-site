@@ -12,7 +12,7 @@
 
 	<mx:Image id="thumbnail"
 			  scaleContent="true"
-			  source="{data.thumbnailUri}"
+			  source="resources/images/thumbs/nothumb.png"
 			  autoLoad="true"
 			  click="imageClickHandler(event)"
 			  width="120"
@@ -55,14 +55,15 @@
 
 	<mx:Script>
 		<![CDATA[
-			import events.SubtitlesAndRolesEvent;
-			import vo.SubtitlesAndRolesVO;
-			import model.DataModel;
-			import mx.utils.ObjectUtil;
-			import mx.controls.Alert;
-			import vo.ExerciseVO;
 			import events.ExerciseEvent;
-			import modules.subtitles.VideoPlayer;
+			import events.SubtitlesAndRolesEvent;
+			
+			import model.DataModel;
+			
+			import mx.controls.Alert;
+			
+			import vo.ExerciseVO;
+			import vo.SubtitlesAndRolesVO;
 			private var _data:Object;
 			
 			public function init():void
@@ -77,32 +78,40 @@
 					exerciseLanguage.source = "resources/images/flags/flag_united_kingdom.png";
 				else if (temp.language == "France")
 					exerciseLanguage.source = "resources/images/flags/flag_france.png";
+				thumbnail.source = getImageSource(temp);
 			}
 
 			private function imageClickHandler(event:MouseEvent):void
-			{	
-				
-			viewExercise();
+			{		
+				viewExercise();
 			}
 
 			private function titleClickHandler(event:MouseEvent):void
 			{
+				viewExercise();
+			}
 			
-			viewExercise();
+			public function getImageSource(temp:ExerciseVO):String{
+				var url:String = '';
+				if (temp.source == "Red5")
+					url = DataModel.getInstance().thumbURL + "/" + temp.thumbnailUri;
+				else
+					url = temp.thumbnailUri;
+				return url;
 			}
 
 			private function viewExercise():void
-			{	
-				
-				
-				
-				
+			{		
 				DataModel.getInstance().videoPlayerControlsViewStack=1;
 				var temp:Object = data;
 				var tempEx:ExerciseVO = temp as ExerciseVO;
 				var obj:SubtitlesAndRolesVO = new SubtitlesAndRolesVO();
 				obj.exerciseId = tempEx.id;
 				obj.language = tempEx.language;
+
+				//If it doesn't work this way, we can chain the events
+				new SubtitlesAndRolesEvent(SubtitlesAndRolesEvent.GET_ROLES, obj).dispatch();
+				
 				new SubtitlesAndRolesEvent(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES,obj).dispatch();
 				new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE,tempEx).dispatch();
 			}

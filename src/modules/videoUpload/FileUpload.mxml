@@ -18,30 +18,33 @@
 
 	<mx:Script>
 		<![CDATA[
-			import vo.ExerciseLevelVO;
-			import flash.sampler.NewObjectSample;
+			import mx.validators.Validator;
 			import events.ExerciseEvent;
-			import vo.ExerciseVO;
-			import model.DataModel;
 			import events.UploadEvent;
-			import mx.utils.ObjectUtil;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
 
-			import mx.controls.*;
-			import mx.managers.*;
-			import mx.events.*;
 			import flash.events.*;
 			import flash.net.*;
+
+			import model.DataModel;
+
+			import mx.controls.*;
+			import mx.events.*;
+			import mx.managers.*;
+
+			import vo.ExerciseLevelVO;
+			import vo.ExerciseVO;
 
 			private var _strUploadUrl:String;
 			private var addFileReference:FileReference;
 			//private var _refUploadFile:FileReference;
 			private var _arrUploadFiles:Array;
 			//private var _numCurrentUpload:Number=0;
-			
+
 			private var youtubeVideoData:ExerciseVO;
 			private var youtubeVideoLevel:ExerciseLevelVO;
+
+			private var red5VideoData:ExerciseVO;
+			private var red5VideoLevel:ExerciseLevelVO;
 
 			[Bindable]
 			[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
@@ -71,6 +74,13 @@
 
 			private var checkStatusTimer:Timer;
 
+			[Bindable]
+			public var formIsValid:Boolean=false;
+
+			// Holds a reference to the currently focussed 
+			// control on the form.
+			private var focussedFormControl:DisplayObject;
+
 			// Set uploadUrl
 			public function set uploadUrl(strUploadUrl:String):void
 			{
@@ -88,6 +98,7 @@
 
 			private function addFiles():void
 			{
+				clearUpload();
 				new UploadEvent(UploadEvent.UPLOAD_BROWSE).dispatch();
 			}
 
@@ -95,6 +106,7 @@
 			public function set fileSelected(selected:Boolean):void
 			{
 				addFileReference=DataModel.getInstance().uploadFileReference;
+				_arrUploadFiles.pop();
 				_arrUploadFiles.push({name: addFileReference.name, size: formatFileSize(addFileReference.size), file: addFileReference});
 				listFiles.dataProvider=_arrUploadFiles;
 				listFiles.selectedIndex=_arrUploadFiles.length - 1;
@@ -200,14 +212,17 @@
 			// Update progBar
 			private function updateProgBar(bytesLoaded:Number=0, bytesTotal:Number=0, numPerc:Number=0):void
 			{
-				if (addFileReference != null){
+				if (addFileReference != null)
+				{
 					var strLabel:String="Uploaded " + formatFileSize(0) + " of " + formatFileSize(addFileReference.size);
 					strLabel=(numPerc > 0 && numPerc < 100) ? "Uploaded " + formatFileSize(bytesLoaded) + " of " + formatFileSize(bytesTotal) : strLabel;
 					strLabel=(numPerc == 100) ? "Upload Complete - Transfer commencing..." : strLabel;
 					strLabel=(_arrUploadFiles.length == 0) ? "" : strLabel;
-				} else {
-					numPerc = 0;
-					strLabel = "";
+				}
+				else
+				{
+					numPerc=0;
+					strLabel="";
 				}
 				progBar.label=strLabel;
 
@@ -218,26 +233,59 @@
 			// Called on upload complete
 			private function set onUploadComplete(value:Boolean):void
 			{
-				enableUI();
-				clearUpload();
-				uploadInformationLabel.text="Upload successful. Now Processing file...";
-				DataModel.getInstance().uploadFinished=false;
+				if (DataModel.getInstance().uploadFinished)
+				{
+					enableUI();
+					clearUpload();
+					//uploadInformationLabel.text="Upload successful. Now Processing file...";
+					//uploadInformationLabel.text="Successful Upload.";
+					DataModel.getInstance().uploadFinished=false;
+				}
 			}
 
 			private function set onUploadCompleteData(value:Boolean):void
 			{
-				youtubeVideoData=new ExerciseVO();
-				youtubeVideoData.title=videoTitle.text;
-				youtubeVideoData.description=videoDescription.text;
-				youtubeVideoData.tags=parseTags(videoTags.text);
-				youtubeVideoData.language=languageComboBox.selectedLabel;
-				youtubeVideoData.name=DataModel.getInstance().uploadFileReference.name;
-				
-				youtubeVideoLevel = new ExerciseLevelVO();
-				youtubeVideoLevel.suggestedLevel = dificultyComboBox.selectedIndex+1;
-				
-				DataModel.getInstance().uploadFinishedData=false;
-				new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
+				if (DataModel.getInstance().uploadFinishedData)
+				{
+					if (DataModel.getInstance().uploadErrors == '')
+					{
+						uploadInformationLabel.text="Successful upload";
+
+						/*
+						   youtubeVideoData=new ExerciseVO();
+						   youtubeVideoData.title=videoTitle.text;
+						   youtubeVideoData.description=videoDescription.text;
+						   youtubeVideoData.tags=parseTags(videoTags.text);
+						   youtubeVideoData.language=languageComboBox.selectedLabel;
+						   youtubeVideoData.name=DataModel.getInstance().uploadFileReference.name;
+
+						   youtubeVideoLevel = new ExerciseLevelVO();
+						   youtubeVideoLevel.suggestedLevel = dificultyComboBox.selectedIndex+1;
+						 */
+
+						red5VideoData=new ExerciseVO();
+						red5VideoData.title=videoTitle.text;
+						red5VideoData.description=videoDescription.text;
+						red5VideoData.tags=parseTags(videoTags.text);
+						red5VideoData.language=languageComboBox.selectedLabel;
+						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
+						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+
+						red5VideoLevel=new ExerciseLevelVO();
+						red5VideoLevel.suggestedLevel=dificultyComboBox.selectedIndex + 1;
+
+						DataModel.getInstance().uploadFinishedData=false;
+						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
+						/*
+						   new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
+						 */
+					}
+					else
+					{
+						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
+						DataModel.getInstance().uploadFinishedData=false;
+					}
+				}
 			}
 
 			private function set onYoutubeTransferComplete(value:Boolean):void
@@ -247,7 +295,7 @@
 					checkStatusTimer=new Timer(30000, 0);
 					checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
 					checkStatusTimer.start();
-					DataModel.getInstance().youtubeTransferComplete = false;
+					DataModel.getInstance().youtubeTransferComplete=false;
 				}
 			}
 
@@ -262,24 +310,90 @@
 				uploadInformationLabel.text="Upload finished!";
 				checkStatusTimer.stop();
 				DataModel.getInstance().youtubeProcessingComplete=false;
-				youtubeVideoData.userId = DataModel.getInstance().loggedUser.id;
-				youtubeVideoData.source = "Youtube";
-				
+				youtubeVideoData.userId=DataModel.getInstance().loggedUser.id;
+				youtubeVideoData.source="Youtube";
+
 				_arrUploadFiles.pop();
-				listFiles.dataProvider = _arrUploadFiles;
+				listFiles.dataProvider=_arrUploadFiles;
 				clearUpload();
-				addFileReference = null;
-				videoTitle.text = "";
-				videoDescription.text = "";
-				videoTags.text = "";
-				
-				new ExerciseEvent(ExerciseEvent.ADD_EXERCISE,youtubeVideoData).dispatch();
+				addFileReference=null;
+				videoTitle.text="";
+				videoDescription.text="";
+				videoTags.text="";
+
+				new ExerciseEvent(ExerciseEvent.ADD_EXERCISE, youtubeVideoData).dispatch();
 			}
 
 			private function set onYoutubeProcessUpdate(value:Boolean):void
 			{
 				uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
 				DataModel.getInstance().youtubeProcessUpdate=false;
+			}
+
+			private function set onUnprocessedExerciseComplete(value:Boolean):void
+			{
+				if (DataModel.getInstance().unprocessedExerciseSaved)
+				{
+					_arrUploadFiles.pop();
+					listFiles.dataProvider=_arrUploadFiles;
+					clearUpload();
+					addFileReference=null;
+					videoTitle.text="";
+					videoDescription.text="";
+					videoTags.text="";
+					DataModel.getInstance().unprocessedExerciseSaved=false;
+				}
+				//uploadInformationLabel.text="Successful Upload. You can check your exercises' status on Account:My Exercises";
+			}
+
+			// Validate the form
+			private function validateForm(event:Event):void
+			{
+				// Save a reference to the currently focussed form control
+				// so that the isValid() helper method can notify only
+				// the currently focussed form control and not affect
+				// any of the other form controls.
+				focussedFormControl=event.target as DisplayObject;
+
+				// Mark the form as valid to start with                
+				formIsValid=true;
+
+				// Run each validator in turn, using the isValid() 
+				// helper method and update the value of formIsValid
+				// accordingly.
+				validate(titleValidator);
+				validate(descriptionValidator);
+				validate(tagValidator);
+				//validate(fileGridValidator);
+			}
+
+			// Helper method. Performs validation on a passed Validator instance.
+			// Validator is the base class of all Flex validation classes so 
+			// you can pass any validation class to this method.  
+			private function validate(validator:Validator):Boolean
+			{
+				// Get a reference to the component that is the
+				// source of the validator.
+				var validatorSource:DisplayObject=validator.source as DisplayObject;
+
+				// Suppress events if the current control being validated is not
+				// the currently focussed control on the form. This stops the user
+				// from receiving visual validation cues on other form controls.
+				var suppressEvents:Boolean=(validatorSource != focussedFormControl);
+
+				// Carry out validation. Returns a ValidationResultEvent.
+				// Passing null for the first parameter makes the validator 
+				// use the property defined in the property tag of the
+				// <mx:Validator> tag.
+				var event:ValidationResultEvent=validator.validate(null, suppressEvents);
+
+				// Check if validation passed and return a boolean value accordingly.
+				var currentControlIsValid:Boolean=(event.type == ValidationResultEvent.VALID);
+
+				// Update the formIsValid flag
+				formIsValid=formIsValid && currentControlIsValid;
+
+				return currentControlIsValid;
 			}
 		]]>
 	</mx:Script>
@@ -298,6 +412,8 @@
 				destination="this.onYoutubeProcessingComplete"/>
 	<mx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
 				destination="this.onYoutubeProcessUpdate"/>
+	<mx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
+				destination="this.onUnprocessedExerciseComplete"/>
 	<mx:Label text="Exercise Information"
 			  fontWeight="bold"
 			  fontFamily="Arial"
@@ -305,24 +421,31 @@
 	<mx:Form width="100%">
 		<mx:FormItem label="Title:"
 					 width="100%"
-					 fontWeight="bold">
+					 fontWeight="bold"
+					 required="true">
 			<mx:TextInput width="100%"
 						  id="videoTitle"
-						  fontWeight="normal"/>
+						  fontWeight="normal"
+						  change="validateForm(event);"/>
 		</mx:FormItem>
 		<mx:FormItem label="Description:"
 					 width="100%"
-					 fontWeight="bold">
+					 fontWeight="bold"
+					 required="true">
 			<mx:TextArea width="100%"
 						 id="videoDescription"
-						 fontWeight="normal"/>
+						 fontWeight="normal"
+						 change="validateForm(event);"/>
 		</mx:FormItem>
 		<mx:FormItem label="Tags:"
 					 width="100%"
-					 fontWeight="bold">
+					 fontWeight="bold"
+					 toolTip="Comma separated words"
+					 required="true">
 			<mx:TextArea width="100%"
 						 id="videoTags"
-						 fontWeight="normal"/>
+						 fontWeight="normal"
+						 change="validateForm(event);"/>
 		</mx:FormItem>
 		<mx:FormItem label="Dificulty Level:"
 					 fontWeight="bold">
@@ -347,7 +470,8 @@
 					 verticalScrollPolicy="off"
 					 draggableColumns="false"
 					 resizableColumns="false"
-					 sortableColumns="false">
+					 sortableColumns="false"
+					 change="validateForm(event)">
 			<mx:columns>
 				<mx:DataGridColumn headerText="File"
 								   dataField="name"
@@ -393,6 +517,25 @@
 				   toolTip="Upload file(s)"
 				   id="btnUpload"
 				   click="startUpload()"
+				   enabled="{formIsValid}"
 				   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
 	</mx:ControlBar>
+
+	<mx:StringValidator id="titleValidator"
+						source="{videoTitle}"
+						property="text"
+						minLength="3"
+						maxLength="80"/>
+	<mx:StringValidator id="descriptionValidator"
+						source="{videoDescription}"
+						property="text"
+						minLength="3"
+						maxLength="512"/>
+	<mx:StringValidator id="tagValidator"
+						source="{videoTags}"
+						property="text"
+						minLength="3"
+						maxLength="255"/>
+
+
 </mx:Panel>

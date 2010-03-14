@@ -40,11 +40,13 @@ package commands.subtitles
 					if(resultCollection[0] is SubtitlesAndRolesVO)
 					{
 					DataModel.getInstance().availableSubtitlesAndRoles=resultCollection;
+					DataModel.getInstance().availableSubtitlesAndRolesRetrieved = true;
 					}
 				}
 				else 
 				{
-					DataModel.getInstance().availableSubtitlesAndRoles=null;
+					DataModel.getInstance().availableSubtitlesAndRoles= new ArrayCollection();
+					DataModel.getInstance().availableSubtitlesAndRolesRetrieved = true;
 				}
 					
 				

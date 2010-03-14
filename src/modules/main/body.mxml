@@ -62,12 +62,30 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.controls.Alert;
+			import mx.events.IndexChangedEvent;
 			import events.UserEvent;
 			import model.DataModel;
 
 			public function init():void
 			{
+				contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
 				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
+			}
+			
+			public function handleIndexChange(evt:IndexChangedEvent):void{
+				
+				//First, we retrieve the the previous tab and the current tab components
+				var previousTab:Object = contentViewStack.getChildAt(evt.oldIndex);
+				var currentTab:Object = contentViewStack.getChildAt(evt.newIndex);
+				
+				//We stop all the components from the now hidden tab
+				//previousTab.onTabHide();
+				
+				//We refresh the components of tab now showing
+				//currentTab.onTabShow();
+					
 			}
 		]]>
 	</mx:Script>

@@ -30,8 +30,8 @@ class Mailer
 		if ( Mailer::checkEmail($username) )
 			$aux = "email";
 
-		$sql = "SELECT name, email FROM users WHERE (".$aux." = '". $username ."') ";
-		$result = $this->_conn->_execute($sql);
+		$sql = "SELECT name, email FROM users WHERE (".$aux." = '%s') ";
+		$result = $this->_conn->_execute($sql, $username);
 		$row = $this->_conn->_nextRow($result);
 
 		if ($row)

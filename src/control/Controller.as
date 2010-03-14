@@ -10,12 +10,12 @@ package control {
 	import commands.autoevaluation.EnableAutoevaluationExerciseCommand;
 	import commands.autoevaluation.EnableAutoevaluationResponseCommand;
 	import commands.configuration.ViewConfigurationModuleCommand;
-	import commands.main.ViewRankingModuleCommand;
 	import commands.evaluation.AddCreditEntryEvaluatingCommand;
 	import commands.evaluation.AddCreditsForEvaluatingCommand;
 	import commands.evaluation.ViewEvaluationModuleCommand;
 	import commands.exercises.AddCreditEntryEvalRequestCommand;
-	import commands.exercises.MakeExercisePublicCommand;
+	import commands.exercises.MakeResponsePublicCommand;
+	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
@@ -25,15 +25,13 @@ package control {
 	import commands.main.GetTopTenCreditedCommand;
 	import commands.main.ViewHomeModuleCommand;
 	import commands.main.ViewPlayerModuleCommand;
+	import commands.main.ViewRankingModuleCommand;
 	import commands.main.WatchExerciseCommand;
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
 	import commands.subtitles.GetExerciseRoleCommand;
-	import commands.subtitles.GetSubtitleLinesCommand;
 	import commands.subtitles.GetSubtitlesAndRolesCommand;
-	import commands.subtitles.SaveExerciseRoleCommand;
-	import commands.subtitles.SaveSubtitleCommand;
-	import commands.subtitles.SaveSubtitleLinesCommand;
+	import commands.subtitles.SaveSubtitlesCommand;
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
 	import commands.userManagement.GetCurrentDayCreditHistoryCommand;
 	import commands.userManagement.GetLastMonthCreditHistoryCommand;
@@ -48,6 +46,7 @@ package control {
 	import commands.videoUpload.AddCreditEntryUploadingCommand;
 	import commands.videoUpload.AddCreditsForUploadingCommand;
 	import commands.videoUpload.AddExerciseCommand;
+	import commands.videoUpload.AddUnprocessedExerciseCommand;
 	import commands.videoUpload.UploadBrowseCommand;
 	import commands.videoUpload.UploadCancelCommand;
 	import commands.videoUpload.UploadStartCommand;
@@ -64,8 +63,10 @@ package control {
 	import events.LoginEvent;
 	import events.PreferenceEvent;
 	import events.RegisterUserEvent;
+	import events.ResponseEvent;
 	import events.SubtitleEvent;
 	import events.SubtitlesAndRolesEvent;
+	import events.SubtitlesEvent;
 	import events.UploadEvent;
 	import events.UserEvent;
 	import events.VideoStopEvent;
@@ -132,24 +133,27 @@ package control {
 			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
 			addCommand(UploadEvent.YOUTUBE_UPLOAD, YoutubeUploadCommand);
 			addCommand(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, YoutubeCheckStatusCommand);
+			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
 
 			//Exercise management commands
 			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
 			addCommand(ExerciseEvent.WATCH_EXERCISE, WatchExerciseCommand);
-			addCommand(ExerciseEvent.MAKE_PUBLIC, MakeExercisePublicCommand);
+			
+			//Response management commands
+			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
+			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
 			
 			//Roles management commands
 			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRoleCommand);
-			addCommand(ExerciseRoleEvent.SAVE_EXERCISE_ROLES, SaveExerciseRoleCommand);
+
 
 			addCommand(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES, GetSubtitlesAndRolesCommand);
+			addCommand(SubtitlesAndRolesEvent.GET_ROLES , GetExerciseRoleCommand);
 
 			//Subtitle management commands
-			addCommand(SubtitleEvent.SAVE_SUBTITLE, SaveSubtitleCommand);
-			addCommand(SubtitleEvent.SAVE_SUBTITLE_LINES, SaveSubtitleLinesCommand);
-			addCommand(SubtitleEvent.GET_SUBTITLE_LINES, GetSubtitleLinesCommand);
 			
+			addCommand(SubtitlesEvent.SAVE_SUBTITLES, SaveSubtitlesCommand);
 
 			//Evaluation management commands
 			addCommand(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, AutoEvaluateCommand);

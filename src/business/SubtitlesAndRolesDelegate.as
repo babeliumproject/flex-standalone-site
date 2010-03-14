@@ -25,6 +25,14 @@ package business
 			var pendingCall:AsyncToken = service.getInfoSubRoles(info.exerciseId,info.language);
 			pendingCall.addResponder(responder);			
 		}		
+		
+		public function getRoles(info:SubtitlesAndRolesVO):void
+		{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subrolesRO");
+			var pendingCall:AsyncToken = service.getRoles(info.exerciseId);
+			pendingCall.addResponder(responder);			
+		}
+		
 
 	}
 }

@@ -3,21 +3,26 @@
 		   height="100%"
 		   xmlns:ns1="modules.exercises.*"
 		   cornerRadius="20">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import flash.sampler.getMemberNames;
-			import mx.controls.Alert;
-			import events.ViewChangeEvent;
-			import model.DataModel;
-			import mx.events.FlexEvent;
-			import mx.events.StateChangeEvent;
-			import mx.events.ResizeEvent;
-			import mx.controls.Label;
-			import mx.events.SliderEvent;
-			import mx.controls.sliderClasses.Slider;
-			import mx.collections.ArrayCollection;
+			import events.ResponseEvent;
+			
 			import flash.utils.*;
-			import mx.collections.*
+			
+			import model.DataModel;
+			
+			import mx.collections.*;
+			import mx.controls.Label;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			import mx.events.SliderEvent;
+			import mx.events.StateChangeEvent;
+			
+			import vo.CreditHistoryVO;
+			import vo.ResponseVO;
 
 
 			public var vid:Video;
@@ -79,7 +84,7 @@
 				nsClient.onCuePoint=this.onCuePoint;
 
 				nc=new NetConnection();
-				nc.connect("rtmp://" + DataModel.getInstance().server  + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
 
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
@@ -90,23 +95,18 @@
 
 			private function aldakeapanelean(event:Event):void
 			{
-				/* rol_zerrenda.x = panel.x
-				   rol_zerrenda.y = panel.y + panel.height + 50
-				   rol_zerrenda.width = panel.width
-				 rol_zerrenda.height = panel.height */
-
 				rolkonboa.visible=true;
 			}
 
 			public function denaEzkutatu():void
 			{
-				if (kamera_ukatua) 
-				{	
+				if (kamera_ukatua)
+				{
 					aukerak.visible=false;
 					aukerak3.visible=true;
 				}
 				else //sabe que estas registrado...
-				{	
+				{
 					aukerak.visible=true;
 					aukerak3.visible=false;
 				}
@@ -132,7 +132,7 @@
 				aukerak2.y=this.height / 2 - aukerak2.height / 2 - 60
 
 				aukerak3.x=this.width / 2 - aukerak3.width / 2
-				aukerak3.y=this.height / 2 - aukerak3.height / 2 - 60 
+				aukerak3.y=this.height / 2 - aukerak3.height / 2 - 60
 			}
 
 			public function asyncErrorHandler(event:AsyncErrorEvent):void
@@ -162,20 +162,12 @@
 
 			public function playVid():void
 			{
-
-				/* if (egoera == "batera"){
-
-				   grabatu1.playAudio();
-				   ns.resume();
-				   }else{
-				   ns.togglePause();
-				 } */
 				if (egoera == "batera")
 				{
 
 					grabatu1.playAudio();
 				}
-				ns.resume();
+				ns.togglePause();
 
 			}
 
@@ -193,22 +185,15 @@
 					grabatu1.stopAudio2();
 				}
 
-				//Lehenik pause egin eta bideo gelditu, eta ondoren egin seek, honela ustez ondo egiten du.
-				ns.seek(0);
-				//ns.togglePause();
 				ns.pause();
-
-				trace("stop --> ns.time : " + ns.time)
+				ns.seek(0);
 			}
 
-			private function set stopVideo(flag:Boolean) : void
+			private function set stopVideo(flag:Boolean):void
 			{
-				//if ( playButtonClicked )
-				//	this.stopVid();
 				if (egoera == "ikusten")
 				{
 					stopVid();
-						//trace("ikusten");
 				}
 
 				//prest aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
@@ -239,7 +224,6 @@
 				//Nagusitik aukeratua izan den bideoaren izena lortzen da eta azpitituluen zatiari pasatzen zaio, berau martxan jarriz.
 				bideoIzena=izena;
 				bideoId=bideo_id;
-				//trace ("bideoIzena: " + bideoIzena);
 				setup();
 				azpi1.setBideoIzena(izena);
 				azpi1.init();
@@ -282,30 +266,23 @@
 
 			private function bideoEgoeraAztertu(event:NetStatusEvent):void
 			{
-
-				trace("status:" + event.info.code);
-
-				//Hemen egoera ezberdinak dokumentatuta
-				//http://livedocs.adobe.com/flash/9.0_es/ActionScriptLangRefV3/flash/events/NetStatusEvent.html
-
 				switch (event.info.code)
 				{
-
+					//Data is not being received quickly enough to fill the buffer.
 					case "NetStream.Buffer.Empty":
-
-						//trace("buffera hutsik dago -buffering-\n");
-						bideoBukaeraTratatu();
-
+						//Should pause both playback/recording and show a "Buffering..." flag
 						break;
 
+					//The buffer is full and the stream will begin playing.
 					case "NetStream.Buffer.Full":
-
-						//trace("full dago -erreproduzitzen-\n");
-
 						break;
 
 					case "NetStream.Play.Stop":
-
+						break;
+					
+					//Data has finished streaming, and the remaining buffer will be emptied.
+					case "NetStream.Buffer.Flush":
+						bideoBukaeraTratatu();
 						break;
 
 				}
@@ -314,50 +291,37 @@
 
 			private function bideoBukaeraTratatu():void
 			{
-
-				//trace("bideoBukaeraTratatu");
-				trace("iraupena : " + iraupena);
-				trace(" ns.time : " + ns.time)
-
-				var last_time:Number=new Number
-
-				if ((ns.time + 0.5) >= iraupena)
+				if (egoera == "ikusten")
 				{
-
-					if (egoera == "ikusten")
-					{
-						stopVid();
-							//trace("ikusten");
-					}
-
-					//prest aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
-					if ((egoera == "grabatzen") && (prest))
-					{
-
-						grabatu1.recStopAudio("Stop");
-						stopVid();
-
-						panel.enabled=false
-						grabatu1.enabled=false
-
-						aukerak2.visible=true
-
-						//aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
-						prest=false;
-					}
-
-					if (egoera == "batera")
-					{
-						stopVid();
-						grabatu1.stopAudio2();
-					}
-
-					//Bolumena aktibatu. Nolaz berriz erreproduzitzean ez den "batera ikusi" botoirik sakatzen, bolumena hemen aktibatu egin behar da. Azkenekoa aukeraturiko rola izan bada, ixildu egingo bait du.
-					volumeTransform.volume=1;
-					ns.soundTransform=volumeTransform;
-
-					last_time=ns.time;
+					stopVid();
 				}
+
+				//prest aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
+				if ((egoera == "grabatzen") && (prest))
+				{
+					grabatu1.recStopAudio("Stop");
+					stopVid();
+					
+					panel.enabled=false
+					grabatu1.enabled=false
+
+					aukerak2.visible=true
+
+					//aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
+					prest=false;
+				}
+
+				if (egoera == "batera")
+				{
+					stopVid();
+					grabatu1.stopAudio2();
+				}
+
+				//Bolumena aktibatu. Nolaz berriz erreproduzitzean ez den "batera ikusi" botoirik sakatzen, bolumena hemen aktibatu egin behar da. Azkenekoa aukeraturiko rola izan bada, ixildu egingo bait du.
+				volumeTransform.volume=1;
+				ns.soundTransform=volumeTransform;
+
+				var last_time:Number=ns.time;
 			}
 
 			private function elementuakHasieratu():void
@@ -398,29 +362,6 @@
 
 				//azpitituluen labelaren tamaina, bideoarenarekin berdindu.
 				azpi1.testua.width=vid.width;
-
-				//trace("\n panel.x : "+ panel.x + " panel.y : " + panel.y);
-				//trace("\n 2 panel.x : "+ panel.x + " panel.y : " + panel.y);
-				//trace("\n 2 panel.height : "+ panel.height + " panel.width : " + panel.width);
-
-				//trace("\n this.width : "+ this.width + " vid.width " + vid.width);
-				//trace("\n this.width /4 : "+ this.width /4 + 	" vid.width/2 " + vid.width/2);
-
-				//trace(" this.width : " + this.width +  " this.height : " + this.height)
-				// trace("\n vid.height : "+ vid.height + " vid.width : " + vid.width);
-
-				//trace("\n panel.height : "+ panel.height + " panel.width : " + panel.width);
-				//trace("\n bideo_zabalera : "+ bideo_zabalera + " bideo_altuera : " + bideo_zabalera);
-
-				//trace(" vid.x : " + vid.x + " vid.y : " + vid.y + "vid.width : " + vid.width);
-				//trace(" bideobarra.height : " + bideobarra.height + "bideobarra.width : " + bideobarra.width);
-				//trace(" bideobarra.x : " + bideobarra.x + "bideobarra.y : " + bideobarra.y);
-				//trace("panel.x :" + panel.x + "panel.y :" + panel.y + " uic.x : " + uic.x + " uic.y : " + uic.y);
-				//trace(" uic.width : " + uic.width +" uic.heigth : " + uic.height);
-				//trace("uic.x :" + uic.x + "uic.y :" + uic.y);
-
-				//azpi1.x = panel.x;
-				//azpi1.y = panel.y + uic.height;
 
 			}
 
@@ -476,10 +417,11 @@
 
 			//Esta funcion solo se ejecuta cuando el usuario no tiene web cam conectada
 			private function rolAldaketa():void
-			{								
-					rol_aukeratua=rolkonboa.selectedItem.toString();
-					rolaukpane.visible=false
-					for (var i:int=0; i < cuetaula.length; i++){
+			{
+				rol_aukeratua=rolkonboa.selectedItem.toString();
+				rolaukpane.visible=false
+				for (var i:int=0; i < cuetaula.length; i++)
+				{
 
 					var irudia:Image=new Image;
 
@@ -501,8 +443,8 @@
 					//Aukeratutako rolari dagozkion cuepoint-en fletxak pantailaratzen dira
 					//Amaieran ezabatu ahal izateko, taula batean gordetzen dira denak.
 					childTaula.addItem(this.addChild(irudia));
-				}//for
-				
+				} //for
+
 				grabatu1.recStopAudio("Rec");
 				grabatu1.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, bideoaMartxanJarri);
 				grabatu1.addEventListener(FlexEvent.DATA_CHANGE, kamaraUkatua);
@@ -648,7 +590,7 @@
 				bideobarra.setProgress(ns.time, iraupena);
 				ehunekoa=(100 * ns.time) / iraupena;
 				seek_barra.value=ns.time
-				bideobarra.label="Uneko denbora:   " + ns.time + " s / " + iraupena.toString() + " s   ( % " + ehunekoa + ")";
+				bideobarra.label="Current time:   " + ns.time + " s / " + iraupena.toString() + " s   ( % " + ehunekoa + ")";
 
 
 				//aukeraturiko pertsonaia hitzegiten hasten bada, bere rol barra martxan jarriko da.
@@ -715,8 +657,8 @@
 			}
 
 			public function onBideoaIkusi():void
-			{			
-			
+			{
+
 				if (aukerak.visible)
 					aukerak.visible=false;
 
@@ -753,8 +695,8 @@
 				egoera="ikusten";
 
 				stopVid();
-				
-				
+
+
 			}
 
 			private function onGrabatuaIkusi():void
@@ -792,33 +734,37 @@
 				aukerak_ikusi.visible=false;
 				grabatu1.enabled=false;
 				panel.enabled=false;
-				grabatu1.addEventListener(StatusEvent.STATUS,grabatuEventListener);//Iñigo
-								
+				grabatu1.addEventListener(StatusEvent.STATUS, grabatuEventListener); //Iñigo
+
 				/*COMPROBACION DE WEB CAM: Iñigo
-				*En caso de que el usuario disponga de web cam le daremos a elegir la forma de grabar 
-				*el ejercicio (cam+micro o micro). Si por el contrario, el usuario no dispone de web cam, 
-				*la asignacion a grabacion con micro se realiza automaticamente*/
-				if (grabatu1.hasCam()){//Usuario con web cam. Hacemos visible el panel rolRecOptions
+				 *En caso de que el usuario disponga de web cam le daremos a elegir la forma de grabar
+				 *el ejercicio (cam+micro o micro). Si por el contrario, el usuario no dispone de web cam,
+				 *la asignacion a grabacion con micro se realiza automaticamente*/
+				if (grabatu1.hasCam())
+				{ //Usuario con web cam. Hacemos visible el panel rolRecOptions
 					rolRecText.visible=false;
-					if(!gogoratu){
+					if (!gogoratu)
+					{
 						rolRecCam.selected=false;
 						rolRecMic.selected=false;
 					}
 					rolRecRola.selectedItem=null;
 					rolRecOptions.visible=true;
-				}else{//Usuario sin web cam. Hacemos visible el panel rolAukPane	
+				}
+				else
+				{ //Usuario sin web cam. Hacemos visible el panel rolAukPane	
 					rolkonboa.selectedItem=null
 					rolaukpane.x=this.width / 2 - aukerak.width / 2
 					rolaukpane.y=this.height / 2 - aukerak.height / 2 - 60
 					rolaukpane.visible=true
 				}
-								
+
 				grabatu1.grabatzen.visible=false;
 				seek_barra.enabled=false
 				botoiak.enabled=false
 				grabatu1.botoiak.enabled=false;
 				egoera="grabatzen";
-				DataModel.getInstance().recordingExercise = true;
+				DataModel.getInstance().recordingExercise=true;
 				stopVid();
 			}
 
@@ -898,20 +844,24 @@
 
 				ezabatuFletxak();
 
-				//We first get the id of the user who recorded the video
-				//since the user must be logged in to record anything
+				//First, we retrieve all of this response's data
 				var user:int=DataModel.getInstance().loggedUser.id;
+				var responseFilename:String=grabatu1.fitxategi_izena;
+				//This must be changed by some function that takes a snapshot of the Response video
+				var responseThumbnail:String="noVideo";
 
+				var responseData:ResponseVO=new ResponseVO(0, user, bideoId, responseFilename, true, responseThumbnail, "Red5", iraupena, (new Date().toString()), 0, rol_aukeratua, 0);
 
-				//trace(" bideoId,  user  ,grabatu1.fitxategi_izena : " + bideoId + user + grabatu1.fitxategi_izena);
-
-				regRec.setDatuak(user, bideoId, grabatu1.fitxategi_izena, iraupena, rol_aukeratua);
-				regRec.init();
-
-				DataModel.getInstance().recordingExercise = false;
+				//Second, we create an historic data container to store the info we have so far.
+				var creditChange:CreditHistoryVO = new CreditHistoryVO();
+				creditChange.videoExerciseId = bideoId;
+				DataModel.getInstance().historicData = creditChange;
 				
-				//this.dispatchEvent(new FlexEvent(FlexEvent.EXIT_STATE));
-				new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS).dispatch();
+				//Third, we notify the model that the recording has ended
+				DataModel.getInstance().recordingExercise = false;
+
+				new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
+
 			}
 
 			private function ezabatuFletxak():void
@@ -932,66 +882,77 @@
 				//gertaera bat jaurti da, berriro zerrenda bistaratu dadin, beste guztia ezkutatuz
 				this.dispatchEvent(new StateChangeEvent(StateChangeEvent.CURRENT_STATE_CHANGE));
 			}
-			
+
 			//Esta funcion se ejecuta al pulsar el boton ADOS del panel rolRecOption
 			private function recStart():void
 			{
-				if (rolRecRola.selectedItem!=null && (rolRecCam.selected==true || rolRecMic.selected==true)){
+				if (rolRecRola.selectedItem != null && (rolRecCam.selected == true || rolRecMic.selected == true))
+				{
 					rol_aukeratua=rolRecRola.selectedItem.toString();
 					rolRecOptions.visible=false;
-						for (var i:int=0; i < cuetaula.length; i++){
-							
-							var irudia:Image=new Image;
-							if (cuetaula[i].parameters.izena == rolRecRola.selectedItem)
-								irudia.source="resources/images/fletxa_gorri.png"
-							else
-								irudia.source="resources/images/fletxa_beltza.png"
-								
-							//17 x 35 da fletxa
-							irudia.x=panel.x + 10 + ((bideobarra.x + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
-							irudia.y=panel.y + bideobarra.y - 6
+					for (var i:int=0; i < cuetaula.length; i++)
+					{
 
-							//Aukeratutako rolari dagozkion cuepoint-en fletxak pantailaratzen dira
-							//Amaieran ezabatu ahal izateko, taula batean gordetzen dira denak.
-							childTaula.addItem(this.addChild(irudia));
-						}//for
+						var irudia:Image=new Image;
+						if (cuetaula[i].parameters.izena == rolRecRola.selectedItem)
+							irudia.source="resources/images/fletxa_gorri.png"
+						else
+							irudia.source="resources/images/fletxa_beltza.png"
 
-				grabatu1.recStopAudio("Rec");
-				grabatu1.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, bideoaMartxanJarri);
-				grabatu1.addEventListener(FlexEvent.DATA_CHANGE, kamaraUkatua);
-				//aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
-				prest=true;
-				
-				grabaketaLeihoaHaseratu();
-				
-				}else{//El usuario no ha introducido correctamente los parametros para grabar el ejercicio
-					if (rolRecRola.selectedItem==null && rolRecCam.selected==false
-					&& rolRecMic.selected==false){
-						rolRecText.text="Pertsonaia eta grabaketa modua aukeratu behar duzu";
-					}else if (rolRecRola.selectedItem!=null){
-						rolRecText.text="Grabaketa modua aukeratu behar duzu";
-					}else{
-						rolRecText.text="Pertsonaia aukeratu behar duzu";
+						//17 x 35 da fletxa
+						irudia.x=panel.x + 10 + ((bideobarra.x + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
+						irudia.y=panel.y + bideobarra.y - 6
+
+						//Aukeratutako rolari dagozkion cuepoint-en fletxak pantailaratzen dira
+						//Amaieran ezabatu ahal izateko, taula batean gordetzen dira denak.
+						childTaula.addItem(this.addChild(irudia));
+					} //for
+
+					grabatu1.recStopAudio("Rec");
+					grabatu1.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, bideoaMartxanJarri);
+					grabatu1.addEventListener(FlexEvent.DATA_CHANGE, kamaraUkatua);
+					//aldagai honen bitartez grabaketa ondoren aukerak2 panelaren agerpena kontrolatzen da, behin bakarrik agertzea delarik helburua
+					prest=true;
+
+					grabaketaLeihoaHaseratu();
+
+				}
+				else
+				{ //El usuario no ha introducido correctamente los parametros para grabar el ejercicio
+					if (rolRecRola.selectedItem == null && rolRecCam.selected == false && rolRecMic.selected == false)
+					{
+						rolRecText.text=resourceManager.getString('myResources','WARNING_CHOOSE_ROLE_REC_METHOD');
+					}
+					else if (rolRecRola.selectedItem != null)
+					{
+						rolRecText.text=resourceManager.getString('myResources','WARNING_CHOOSE_REC_METHOD');
+					}
+					else
+					{
+						rolRecText.text=resourceManager.getString('myResources','WARNING_CHOOSE_ROLE');
 					}
 					rolRecText.visible=true;
 				}
 			}
-			
-			private function setCam(b:Boolean):void{
+
+			private function setCam(b:Boolean):void
+			{
 				grabatu1.useCam=b;
 			}
-			
-			private function setGogoratu():void{
+
+			private function setGogoratu():void
+			{
 				gogoratu=!gogoratu;
 			}
-			
-			private function grabatuEventListener(event:StatusEvent):void{
+
+			private function grabatuEventListener(event:StatusEvent):void
+			{
 				dispatchEvent(event);
 				ezabatuFletxak();
-				DataModel.getInstance().recordingExercise = false;
+				DataModel.getInstance().recordingExercise=false;
 			}
 		]]>
-	
+
 	</mx:Script>
 	<!--<mx:Button  click="startVid()" label="Load" x="24" width="76" height="22" id="LoadButton"/>
 		 <mx:Button click="resumeVid()" label="Resume" x="106" width="76" id="Resume_button"/>
@@ -1016,11 +977,9 @@
 					 cornerRadius="5"
 					 x="600"
 					 y="265">
-				<mx:LinkButton label="Play/Pause"
+				<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_PLAY_PAUSE')}"
 							   click="playVid();"/>
-				<mx:LinkButton label="Pause"
-							   click="pauseVid();"/>
-				<mx:LinkButton label="Stop"
+				<mx:LinkButton label="{resourceManager.getString('myResources', 'BUTTON_STOP')}"
 							   click="stopVid()"/>
 			</mx:HBox>
 			<mx:HBox id="bolumen_kaxa"
@@ -1088,15 +1047,15 @@
 				 x="585"
 				 y="88">
 	</ns1:grabatu>
-	
-	
+
+
 	<mx:Panel x="147"
 			  y="198"
 			  layout="absolute"
 			  id="aukerak"
 			  cornerRadius="20"
 			  backgroundAlpha="1.0"
-			  title="ZER EGIN NAHI DUZU?">
+			  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
 		<mx:HBox x="0"
 				 y="0"
 				 id="aukbotoiak"
@@ -1107,14 +1066,14 @@
 				 cornerRadius="20"
 				 alpha="1.0"
 				 backgroundAlpha="0.0">
-			<mx:Button label="BIDEOA IKUSI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
 					   fontSize="12"
 					   id="bideoa_ikusi"
 					   click="onBideoaIkusi()"/>
-			<mx:Button label="BIDEOA ALDATU"
+			<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_SELECT_ANOTHER_EXERCISE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1122,7 +1081,7 @@
 					   alpha="1.0"
 					   id="grabaketa_hasi"
 					   click="onBideoaAldatu()"/>
-			<mx:Button label="GRABAKETA HASI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_START_RECORDING')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1140,7 +1099,7 @@
 			  id="aukerak2"
 			  cornerRadius="20"
 			  backgroundAlpha="1.0"
-			  title="ZER EGIN NAHI DUZU?">
+			  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
 		<mx:HBox x="0"
 				 y="0"
 				 id="aukbotoiak0"
@@ -1151,7 +1110,7 @@
 				 backgroundAlpha="0.0"
 				 width="866"
 				 height="129">
-			<mx:Button label="BIDEOA IKUSI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1159,7 +1118,7 @@
 					   id="bideoa_ikusi0"
 					   click="onBideoaIkusi()"
 					   color="#464141"/>
-			<mx:Button label="BIAK BATERA IKUSI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1169,7 +1128,7 @@
 					   fillAlphas="[1.0, 1.0]"
 					   fillColors="[#A9F6B4, #A9F6B4]"
 					   color="#464141"/>
-			<mx:Button label="GRABATUA IKUSI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1180,7 +1139,7 @@
 					   fillAlphas="[1.0, 1.0]"
 					   fillColors="[#A9F6B4, #A9F6B4]"
 					   color="#464141"/>
-			<mx:Button label="BERRIRO GRABATU"
+			<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1190,7 +1149,7 @@
 					   click="onGrabaketaHasi()"
 					   fillAlphas="[1.0, 1.0]"
 					   fillColors="[#F68B8B, #F68B8B]"/>
-			<mx:Button label="GRABAKETA AMAITU"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
 					   width="169"
 					   height="105"
 					   cornerRadius="20"
@@ -1201,12 +1160,12 @@
 					   enabled="{ DataModel.getInstance().isLoggedIn }"/>
 		</mx:HBox>
 	</mx:Panel>
-	
-	
+
+
 	<mx:Panel x="199"
 			  y="375"
 			  layout="absolute"
-			  title="AUKERATU PERTSONAIA:"
+			  title="{resourceManager.getString('myResources','TITLE_CHOOSE_ROLE')}"
 			  id="rolaukpane"
 			  cornerRadius="20">
 		<mx:VBox x="0"
@@ -1216,11 +1175,11 @@
 				 verticalAlign="middle"
 				 width="350"
 				 height="129">
-			<mx:Label text="Aukeratu berri duzun bideoko pertsonaietatik,"
+			<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_ROLES')}"
 					  fontFamily="Arial"
 					  fontSize="11"
 					  fontWeight="bold"/>
-			<mx:Label text="ordezkatu nahi duzuna aukeratu ezazu:"
+			<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_ROLES_SELECT')}"
 					  fontFamily="Arial"
 					  fontSize="11"
 					  fontWeight="bold"/>
@@ -1230,12 +1189,12 @@
 						 width="220"
 						 height="48"
 						 fontSize="20"
-						 text="Ordezkatu nahi duzun pertsonaia aukeratu ezazu:"/>
+						 text="{resourceManager.getString('myResources','MESSAGE_EXERCISE_CHOOSE_A_ROLE')}"/>
 		</mx:VBox>
 	</mx:Panel>
-	
-	
-	<mx:Button label="AUKERAK IKUSI"
+
+
+	<mx:Button label="{resourceManager.getString('myResources','BUTTON_SHOW_AVAILABLE_OPTIONS')}"
 			   width="161"
 			   height="105"
 			   cornerRadius="20"
@@ -1245,19 +1204,14 @@
 			   click="onAukerakIkusi()"
 			   x="388"
 			   y="159"/>
-			   
-	<ns1:registerRec x="406"
-					 y="58"
-					 id="regRec">
-	</ns1:registerRec>
-	
+
 	<mx:Panel x="156"
 			  y="40"
 			  layout="absolute"
 			  id="aukerak3"
 			  cornerRadius="20"
 			  backgroundAlpha="1.0"
-			  title="ZER EGIN NAHI DUZU?">
+			  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
 		<mx:HBox x="0"
 				 y="0"
 				 id="aukbotoiak1"
@@ -1268,14 +1222,14 @@
 				 cornerRadius="20"
 				 alpha="1.0"
 				 backgroundAlpha="0.0">
-			<mx:Button label="BIDEOA IKUSI"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
 					   fontSize="12"
 					   id="bideoa_ikusi3"
 					   click="onBideoaIkusi()"/>
-			<mx:Button label="BIDEOA ALDATU"
+			<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_SELECT_ANOTHER_EXERCISE')}"
 					   width="161"
 					   height="105"
 					   cornerRadius="20"
@@ -1285,49 +1239,75 @@
 					   click="onBideoaAldatu()"/>
 		</mx:HBox>
 	</mx:Panel>
-	
-	
-	
+
+
+
 	<mx:Panel x="100"
 			  y="100"
 			  layout="absolute"
-			  title="AUKERATU PERTSONAIA ETA GRABAKETA MODUA"
+			  title="{resourceManager.getString('myResources','TITLE_CHOOSE_ROLE_REC_METHOD')}"
 			  id="rolRecOptions"
-			  cornerRadius="20" height="336" width="370">
+			  cornerRadius="20"
+			  height="336"
+			  width="370">
 		<mx:VBox x="10"
 				 y="10"
 				 width="330"
-				 height="100" borderStyle="solid" cornerRadius="5">
-			<mx:Label text="Aukeratu pertsonaia"
-					  fontFamily="Arial"
-				      fontSize="11"
-					  fontWeight="bold"/>
-			<mx:VBox horizontalAlign="center" width="328" height="50">
-				<mx:ComboBox id="rolRecRola"
-							 dataProvider="{rolTaula}"
-							 width="220"
-						     height="48"
-							 fontSize="20"/>
-			</mx:VBox>
-		</mx:VBox>	
-	<mx:VBox x="10"
-			 y="118"
-			 width="330"
-			 height="115" borderStyle="solid" cornerRadius="5">
-		<mx:Label text="Aukeratu grabaketa modua"			
+				 height="100"
+				 borderStyle="solid"
+				 cornerRadius="5">
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_ROLE')}"
 					  fontFamily="Arial"
 					  fontSize="11"
 					  fontWeight="bold"/>
-		<mx:RadioButton label="Web kamera eta mikrofonoa erabiliz" click="setCam(true)" id="rolRecCam"/>
-		<mx:RadioButton label="Mikrofonoa erabiliz" click="setCam(false)" id="rolRecMic"/>
-		<mx:VBox width="328" height="24"
-			horizontalAlign="center">
-			<mx:CheckBox label="Gogoratu" click="setGogoratu()"/>
+			<mx:VBox horizontalAlign="center"
+					 width="328"
+					 height="50">
+				<mx:ComboBox id="rolRecRola"
+							 dataProvider="{rolTaula}"
+							 width="220"
+							 height="48"
+							 fontSize="20"/>
+			</mx:VBox>
 		</mx:VBox>
-	</mx:VBox>
-	<mx:Button x="145" y="250" label="ADOS" click="recStart()"/>
-	<mx:VBox horizontalAlign="center" width="330" height="15" x="10" y="280">
-		<mx:Text color="red" x="125.5" y="276" visible="false" height="15" id="rolRecText"/>	
-	</mx:VBox>		
-	</mx:Panel>	
+		<mx:VBox x="10"
+				 y="118"
+				 width="330"
+				 height="115"
+				 borderStyle="solid"
+				 cornerRadius="5">
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_REC_METHOD')}"
+					  fontFamily="Arial"
+					  fontSize="11"
+					  fontWeight="bold"/>
+			<mx:RadioButton label="{resourceManager.getString('myResources','OPTION_WEBCAM_AND_MIC')}"
+							click="setCam(true)"
+							id="rolRecCam"/>
+			<mx:RadioButton label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"
+							click="setCam(false)"
+							id="rolRecMic"/>
+			<mx:VBox width="328"
+					 height="24"
+					 horizontalAlign="center">
+				<mx:CheckBox label="{resourceManager.getString('myResources','OPTION_REMEMBER_SETTINGS')}"
+							 click="setGogoratu()"/>
+			</mx:VBox>
+		</mx:VBox>
+		<mx:Button x="145"
+				   y="250"
+				   label="{resourceManager.getString('myResources','BUTTON_OK')}"
+				   click="recStart()"/>
+		<mx:VBox horizontalAlign="center"
+				 width="330"
+				 height="15"
+				 x="10"
+				 y="280">
+			<mx:Text color="red"
+					 x="125.5"
+					 y="276"
+					 visible="false"
+					 height="15"
+					 id="rolRecText"/>
+		</mx:VBox>
+	</mx:Panel>
 </mx:Canvas>

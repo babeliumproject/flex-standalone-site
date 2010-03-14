@@ -10,6 +10,7 @@ package events
 	public class SubtitlesAndRolesEvent extends CairngormEvent
 	{
 		public static const GET_INFO_SUB_ROLES:String ="getInfoSubRoles";
+		public static const GET_ROLES:String ="getRoles";
 		public var info:SubtitlesAndRolesVO;
 		
 		public function SubtitlesAndRolesEvent(type:String, info:SubtitlesAndRolesVO=null)

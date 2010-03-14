@@ -11,7 +11,10 @@ class ResponseVO {
 	public $source;
 	public $duration;
 	public $addingDate;
+	public $ratingAmount;
+	public $characterName;
+	public $transcriptionId;
 	
-	public $_explicitType = "babelia.ResponseVO";
+	public $_explicitType = "ResponseVO";
 }
 ?>
