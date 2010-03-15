@@ -504,6 +504,7 @@
 			private function set onTabChange(value:Boolean) : void {
 				VP.endVideo();
 				VP.subtitlingControls = false;
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
 				hideSubtitlingControls(null);
 			}
 			
