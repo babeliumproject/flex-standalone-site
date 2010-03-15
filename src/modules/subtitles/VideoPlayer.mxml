@@ -157,9 +157,11 @@
 					{
 						subtitleCollection=DataModel.getInstance().availableSubtitlesAndRoles;
 					}
-
+					
 					if ( videoPlayerReady )
 					{
+						// Avoid bug #188, streaming error on tab change
+						VP.videoSource = "";
 						VP.videoSource = watchExercise.name;
 						VP.removeEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
 						VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
