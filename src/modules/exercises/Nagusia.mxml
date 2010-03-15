@@ -4,7 +4,7 @@
 		   width="100%"
 		   height="100%"
 		   creationComplete="init()"
-		   backgroundColor="#678594"
+		   backgroundAlpha="0.0"
 		   label="nagusiaIden">
 	<mx:Script>
 		<![CDATA[

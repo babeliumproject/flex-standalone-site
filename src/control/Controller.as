@@ -20,6 +20,7 @@ package control {
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
+	import commands.exercises.ExerciseSelectedCommand;
 	import commands.main.GetAppPreferencesCommand;
 	import commands.main.GetExercisesCommand;
 	import commands.main.GetTopTenCreditedCommand;
@@ -64,7 +65,6 @@ package control {
 	import events.PreferenceEvent;
 	import events.RegisterUserEvent;
 	import events.ResponseEvent;
-	import events.SubtitleEvent;
 	import events.SubtitlesAndRolesEvent;
 	import events.SubtitlesEvent;
 	import events.UploadEvent;
@@ -139,6 +139,7 @@ package control {
 			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
 			addCommand(ExerciseEvent.WATCH_EXERCISE, WatchExerciseCommand);
+			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
 			
 			//Response management commands
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);

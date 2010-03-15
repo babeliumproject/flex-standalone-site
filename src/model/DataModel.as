@@ -72,8 +72,8 @@ package model
 		[Bindable] public var subHistoricData:CreditHistoryVO = null;	
 		
 		//The info of the current video
-		[Bindable] public var currentExercise:ExerciseVO;
-		[Bindable] public var currentExerciseRetrieved:Boolean = false;
+		[Bindable] public var currentExercise:ArrayCollection = new ArrayCollection(new Array(null, null));
+		[Bindable] public var currentExerciseRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		[Bindable] public var availableExercises:ArrayCollection;
 		[Bindable] public var availableExercisesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));

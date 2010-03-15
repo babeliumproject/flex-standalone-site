@@ -19,8 +19,8 @@ package commands.main
 		public function execute(event:CairngormEvent):void
 		{
 			var selectedEx:ExerciseVO = (event as ExerciseEvent).exercise;
-			DataModel.getInstance().currentExercise = selectedEx;
-			DataModel.getInstance().currentExerciseRetrieved = true;
+			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
+			DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 0);
 			new ViewChangeEvent(ViewChangeEvent.VIEW_PLAYER_MODULE).dispatch();
 		}
 		

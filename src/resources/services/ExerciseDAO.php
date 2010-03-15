@@ -41,7 +41,7 @@ class ExerciseDAO {
 		//        FROM exercise e INNER JOIN users u ON e.fk_user_id=u.ID ORDER BY e.adding_date DESC";
 		
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
        					avg (suggested_level) as avgLevel
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -58,7 +58,7 @@ class ExerciseDAO {
 	
 	public function getUsersExercises($userId){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
        					avg (suggested_level) as avgLevel, e.status
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -123,10 +123,11 @@ class ExerciseDAO {
 			$temp->thumbnailUri = $row[7];
 			$temp->addingDate = $row[8];
 			$temp->userId = $row[9];
-			$temp->userName = $row[10];
-			$temp->avgRating = $row[11];
-			$temp->avgDifficulty = $row[12];
-			$temp->status = $row[13];
+			$temp->duration = $row[10];
+			$temp->userName = $row[11];
+			$temp->avgRating = $row[12];
+			$temp->avgDifficulty = $row[13];
+			$temp->status = $row[14];
 			
 			array_push ( $searchResults, $temp );
 		}

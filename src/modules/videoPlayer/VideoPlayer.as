@@ -514,8 +514,9 @@ package modules.videoPlayer
 			{ 
 				_ns.pause();
 				_ns.seek( 0 );
-				_ppBtn.State = PlayButton.PLAY_STATE;
 			}
+			
+			_ppBtn.State = PlayButton.PLAY_STATE;
 		}
 		
 		public function endVideo() : void
@@ -558,8 +559,6 @@ package modules.videoPlayer
 			for ( var a:* in msg ) trace( a + " : " + msg[a] );
 
 			_duration = msg.duration;
-			_video.width = msg["width"];
-			_video.height = msg["height"];
 			
 			this.dispatchEvent(new VideoPlayerEvent(
 									VideoPlayerEvent.METADATA_RETRIEVED));
@@ -568,10 +567,14 @@ package modules.videoPlayer
 			_videoWrapper.height = _videoHeight;
 			_videoWrapper.x = _defaultMargin;
 			_videoWrapper.y = _defaultMargin;
-			drawBG();
+			
+			_video.width = msg.width;
+			_video.height = msg.height;
 
 			if ( !autoScale )
 				scaleVideo();
+			
+			drawBG();
 		}
 		
 		
@@ -696,8 +699,8 @@ package modules.videoPlayer
 		protected function scaleVideo() : void
 		{
 			_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
-			_video.x = _videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2;
-			_video.y = _videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2;
+			_video.y = Math.floor(_videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2);
+			_video.x = Math.floor(_videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2);
 		}
 	}
 }

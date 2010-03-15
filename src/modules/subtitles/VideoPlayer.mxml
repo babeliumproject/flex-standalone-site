@@ -8,7 +8,8 @@
 		 xmlns:extenders="modules.extenders.*"
 		 backgroundAlpha="0.0"
 		 creationComplete="init()"
-		 xmlns:local="*" xmlns:videoPlayer="modules.videoPlayer.*">
+		 xmlns:local="*" 
+		 xmlns:videoPlayer="modules.videoPlayer.*">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
@@ -80,8 +81,6 @@
 			
 			private var progressUpdateTimer:Timer=null;
 
-			[Bindable] private var videoHeight:int = 250;
-			[Bindable] private var videoWidth:int = 400;
 			[Bindable] private var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
 
 			private var volumeTransform:SoundTransform;
@@ -95,9 +94,9 @@
 			
 			public function init():void
 			{
-				if (DataModel.getInstance().currentExercise != null)
+				if (DataModel.getInstance().currentExercise.getItemAt(0) != null)
 				{
-					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise;
+					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 					setBideoIzena(watchExercise.name, watchExercise.id);
 					setupVideoPlayer();
 					exerciseTitle.text=watchExercise.title;
@@ -142,10 +141,10 @@
 
 			private function set onExerciseSelected(value:Boolean):void
 			{
-				if (DataModel.getInstance().currentExerciseRetrieved == true)
+				if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(0) == true)
 				{
-					DataModel.getInstance().currentExerciseRetrieved=false;
-					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise;
+					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, 0);
+					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 					exerciseTitle.text=watchExercise.title;
 					exerciseFileName=watchExercise.name;
 					exerciseId=watchExercise.id;
@@ -524,7 +523,7 @@
 
 	<mx:Binding source="DataModel.getInstance().availableExerciseRoles"
 				destination="availableRolesRetrieved"/>
-	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved}"
+	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(0)}"
 				destination="this.onExerciseSelected"/>
 	<mx:Binding source="{DataModel.getInstance().availableSubtitlesAndRolesRetrieved}"
 				destination="this.onSubtitlesAndRolesRetrieved"/>
@@ -544,7 +543,8 @@
 				fontWeight="bold"/>
 		<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
 				seek="true" subtitles="true" autoScale="false" arrows="false"
-				subtitlingControls="false" width="400" height="{VP.width * 800 / 1280}"
+				subtitlingControls="false" width="400" 
+				height="{Math.floor(VP.width * 800 / 1280)}"
 				streamSource="{streamSource}" />
 		<mx:HBox width="100%"
 				 horizontalAlign="center"

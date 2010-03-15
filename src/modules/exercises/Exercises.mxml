@@ -1,45 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  headerHeight="0"
-		  borderThicknessBottom="0"
-		  borderThicknessTop="0"
-		  borderThicknessLeft="0"
-		  borderThicknessRight="0"
-		  layout="vertical"
 		  backgroundAlpha="0.0"
 		  borderStyle="none"
 		  width="100%"
 		  height="100%"
-		  xmlns:ns1="modules.exercises.*">
-
-	<mx:ViewStack id="exercisesViewStack"
-				  width="100%"
-				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().viewExerciseViewStackIndex }">
-		<ns1:Nagusia id="exerciseModule"
-					 width="100%"
-					 height="100%">
-		</ns1:Nagusia>
-		<ns1:EvaluationRequest id="exerciseEvaluationRequest"
-							   width="100%"
-							   height="100%">
-		</ns1:EvaluationRequest>
-
-	</mx:ViewStack>
-
+		  xmlns:ns1="modules.exercises.*" 
+		  xmlns:videoPlayer="modules.videoPlayer.*"
+		  creationComplete="init()"
+		  headerHeight="0">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
+			import control.CuePointManager;
+			
 			import model.DataModel;
 			
-			public function onTabHide():void{
-				Alert.show("Exercise tab is now hidden");
+			import modules.videoPlayer.events.VideoPlayerEvent;
+			
+			import mx.collections.ArrayCollection;
+			
+			import vo.ExerciseVO;
+			
+			/**
+			 * CONSTANTS
+			 **/
+			private const SELECT_EXERCISE:String = "SELECT_EXERCISE";
+			
+			/**
+			 * Exercise Related variables
+			 **/
+			[Bindable] private var _currentExercise:ExerciseVO;
+			[Bindable] private var thumbURL:String = DataModel.getInstance().thumbURL + "/";
+			private var _exerciseName:String;
+			private var _exerciseId:int;
+			[Bindable] private var _exerciseTitle:String;
+			
+			
+			/**
+			 * Others
+			 **/
+			private var cueManager:CuePointManager = CuePointManager.getInstance();
+			[Bindable] private var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
+
+			public var videoPlayerReady:Boolean = false;
+			
+			/**
+			 * On creation complete
+			 **/
+			private function init() : void
+			{
+				_exerciseTitle = resourceManager.getString('myResources', SELECT_EXERCISE);
+				setupVideoPlayer();
 			}
 			
-			public function onTabShow():void{
-				Alert.show("Exercise tab is now showing");
+			/**
+			 * Setup for videoplayer
+			 **/
+			public function setupVideoPlayer() : void
+			{
+				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.setLocales(new ArrayCollection(DataModel.getInstance().locales));
 			}
+			
+			public function onVideoPlayerReady(e:VideoPlayerEvent) : void
+			{
+				videoPlayerReady = true;
+				// TODO VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
+			}
+			
+			/**
+			 * Preparing exercise
+			 **/
+			public function prepareExercise() : void
+			{
+				VP.stopVideo();
+				VP.videoSource = _exerciseName;
+			}
+			
+			/**
+			 * On select an exercise from list
+			 **/
+			public function set onExerciseSelected(value:Boolean) : void
+			{
+				if ( value == true )
+				{
+					var tmp:ExerciseVO = DataModel.getInstance().currentExercise.getItemAt(1) as ExerciseVO;
+					_exerciseName = tmp.name;
+					_exerciseTitle = tmp.title;
+					_exerciseId = tmp.id;
+					_currentExercise = tmp;
+					DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 1);
+					
+					prepareExercise();
+				}
+			}
+			
 		]]>
 	</mx:Script>
+	
+	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(1)}"
+				destination="this.onExerciseSelected"/>
+	
+	<mx:HBox width="100%" verticalAlign="top">
+		<!-- Video Player -->
+		<mx:VBox>
+			<mx:Label id="exerciseTitle"
+					  text="{_exerciseTitle}"
+					  width="100%"
+					  fontSize="16"
+					  fontWeight="bold"/>
+			<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
+						seek="true" subtitles="true" autoScale="true" arrows="false"
+						subtitlingControls="false" width="500" 
+						height="{Math.floor(VP.width * 800 / 1280)}"
+						streamSource="{streamSource}" />
+		</mx:VBox>
+		<mx:Spacer width="20" />
+		<!-- Exercise List -->
+		<mx:Panel width="100%"
+				  height="100%"
+				  layout="vertical"
+				  fontFamily="Arial"
+				  fontSize="12"
+				  horizontalAlign="center"
+				  verticalAlign="middle"
+				  headerHeight="0">
+			<mx:Panel width="100%"
+					  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}"
+					  visible="{_currentExercise != null}">
+				<mx:HBox>
+					<mx:Image id="thumbnail"
+							  scaleContent="true"
+							  source="{thumbURL + _currentExercise.thumbnailUri}"
+							  autoLoad="true"
+							  width="120"
+							  height="90"
+							  toolTip="{_currentExercise.title}"
+							  useHandCursor="true" buttonMode="true"/>
+					<mx:VBox width="100%"
+							 verticalGap="2">
+						<mx:LinkButton label="{_currentExercise.title}"
+									fontSize="12"
+									width="100%"
+									textAlign="left"/>
+						<mx:HRule height="1"
+								  width="100%"/>
+						<mx:Spacer height="5"/>
+						<mx:HBox>
+							<mx:HBox>
+								<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}" />
+								<mx:ComboBox width="100" />
+							</mx:HBox>
+							<mx:HBox>
+								<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}" />
+								<mx:ComboBox width="100" />
+							</mx:HBox>
+						</mx:HBox>
+						<mx:Spacer height="5"/>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}" />
+							<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}" />
+							<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}" />
+						</mx:HBox>
+						<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}" />
+						<mx:Spacer height="5"/>
+					</mx:VBox>
+				</mx:HBox>
+			</mx:Panel>
+			<mx:Panel title="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}" width="100%"
+					  verticalAlign="top">
+				<ns1:VideoList width="100%" />
+			</mx:Panel>
+		</mx:Panel>
+	
+	</mx:HBox>
 
 </mx:Panel>
