@@ -75,6 +75,8 @@ package modules.videoPlayer.controls
 				this.removeEventListener( MouseEvent.ROLL_OUT, onMouseOut );
 				this.removeEventListener( MouseEvent.CLICK, onClick );
 			}
+			
+			if ( bg ) onMouseOut(null);
 		}
 		
 		/**

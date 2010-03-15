@@ -122,7 +122,6 @@ package modules.videoPlayer
 			_subtitlePanel = new UIComponent();
 			
 			_subtitleBox = new SubtitleTextBox();
-			_subtitleBox.setText("PRUEBA DE SUBTITULOS"); // TODO
 			
 			_localeComboBox = new LocaleComboBox();
 			
@@ -261,6 +260,21 @@ package modules.videoPlayer
 		public function set subtitlingControls(flag:Boolean) : void
 		{
 			_subtitlingControls.visible = flag;
+			enableSubtitlingEndButton = false;
+			drawBG(); // repaint bg
+		}
+		
+		public function get subtitlingControls() : Boolean
+		{
+			return _subtitlingControls.visible;
+		}
+		
+		/**
+		 * Enable-disable subtitling end button
+		 **/
+		public function set enableSubtitlingEndButton(flag:Boolean) : void
+		{
+			_subtitleEnd.enabled = flag;
 		}
 		
 		/**
@@ -352,6 +366,14 @@ package modules.videoPlayer
 		}
 		
 		/**
+		 * Get video time
+		 **/
+		public function get streamTime() : Number
+		{
+			return _ns? _ns.time : 0;
+		}
+		
+		/**
 		 * Methods
 		 * 
 		 */
@@ -371,15 +393,10 @@ package modules.videoPlayer
 			_bgCam.graphics.beginFill( getSkinColor(CAMBG_COLOR) );
 			_bgCam.graphics.drawRect( 0, 0, _arrowContainer.width, _arrowContainer.height );
 			_bgCam.graphics.endFill();
-			
-			var y1:Number = _subtitlePanel.visible? _subtitlePanel.height : 0;
-			var y2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
-			
-			_videoBarPanel.y += (y1+y2);
+
 			
 			_arrowContainer.width = _videoBarPanel.width;
 			_arrowContainer.height = 50;
-			_arrowContainer.y = _videoBarPanel.y - _arrowContainer.height;
 			_arrowContainer.x = _defaultMargin;
 			_bgArrow.graphics.clear();	
 			_bgArrow.graphics.beginFill( getSkinColor(ROLEBORDER_COLOR) );
@@ -394,12 +411,24 @@ package modules.videoPlayer
 			_sBar.width -= _subtitleButton.width;
 			
 			// Put subtitle box at top
-			_subtitlePanel.y = _videoBarPanel.y - _videoBarPanel.height - y2;
 			_subtitlePanel.width = _videoBarPanel.width;
-			_subtitlePanel.height = 20;
+			_subtitlePanel.height = 30;
 			_subtitlePanel.x = _defaultMargin;
 
-			_subtitleBox.resize(_videoWidth - 100, 20);
+			/*
+			 * Subtitle panel
+			 */
+			var y1:Number = _subtitlePanel.visible? _subtitlePanel.height : 0;
+			var y2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
+			
+			_videoBarPanel.y += (y1+y2);
+			
+			_arrowContainer.y = _videoBarPanel.y - _arrowContainer.height;
+			_subtitlePanel.y = _videoBarPanel.y - y2 - _subtitlePanel.height;
+			
+			
+			_subtitleBox.y = 0;
+			_subtitleBox.resize(_videoWidth - 100, 30);
 			
 			// Resize arrowPanel
 			_arrowPanel.resize(_sBar.width, _arrowContainer.height - 8);
@@ -413,8 +442,9 @@ package modules.videoPlayer
 			_roleTalkingPanel.y = 4;
 			
 			// Locale combo box
+			_localeComboBox.y = (_subtitleBox.height - 20)/2;
 			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
-			_localeComboBox.resize(_videoWidth - _subtitleBox.width, _subtitleBox.height);
+			_localeComboBox.resize(_videoWidth - _subtitleBox.width, 20);
 			
 			// Countdown
 			_countdownTxt.x = _videoWidth/2 - 10;
@@ -534,7 +564,19 @@ package modules.videoPlayer
 				_inNs.pause();
 				_inNs.seek( 0 );
 			}
+			
+			setSubtitle("");
 		}
+		
+		/**
+		 * On seek end
+		 **/
+		/*override protected function onScrubberDropped(e:Event) : void
+		{
+			super.onScrubberDropped(e);
+			
+			this.setSubtitle("");
+		}*/
 		
 		/**
 		 * Catch event and do show/hide subtitle panel
@@ -574,6 +616,13 @@ package modules.videoPlayer
 			a3.duration = 250;
 			a3.play();
 			
+			var a4:AnimateProperty = new AnimateProperty();
+			a4.target = _subtitlingControls;
+			a4.property = "y";
+			a4.toValue = _subtitlingControls.y + _subtitlePanel.height;
+			a4.duration = 250;
+			a4.play();
+			
 			this.drawBG(); // Repaint bg
 		}
 		
@@ -603,6 +652,13 @@ package modules.videoPlayer
 			a3.toValue = _arrowContainer.y - _subtitlePanel.height;
 			a3.duration = 250;
 			a3.play();
+			
+			var a4:AnimateProperty = new AnimateProperty();
+			a4.target = _subtitlingControls;
+			a4.property = "y";
+			a4.toValue = _subtitlingControls.y - _subtitlePanel.height;
+			a4.duration = 250;
+			a4.play();
 		}
 		
 		private function onHideSubtitleBar(e:Event) : void

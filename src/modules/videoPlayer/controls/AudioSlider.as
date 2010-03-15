@@ -29,7 +29,7 @@ package modules.videoPlayer.controls
 		 * 
 		 */
 		
-		private var _defaultWidth:Number = 120;
+		private var _defaultWidth:Number = 80;
 		private var _defaultHeight:Number = 20;
 		
 		private var _bg:Sprite;

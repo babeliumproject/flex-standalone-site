@@ -226,6 +226,13 @@ package modules.videoPlayer
 			_sBar.enableSeek(flag);
 		}
 		
+		public function seekTo(time:Number) : void
+		{
+			pauseVideo();
+			_sBar.updateProgress( time, _duration );
+			this.onScrubberDropped(null);
+		}
+		
 		/**
 		 * Skin HashMap related commands
 		 */
@@ -403,6 +410,9 @@ package modules.videoPlayer
 				} 
 			}
 			
+			// Dispatch CREATION_COMPLETE event
+			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
+			
 		}
 		
 		protected function asyncErrorHandler(event:AsyncErrorEvent):void
@@ -492,7 +502,7 @@ package modules.videoPlayer
 			_started = true;
 			
 			if( _timer ) _timer.stop();
-			_timer = new Timer(100);
+			_timer = new Timer(300);
 			_timer.addEventListener( TimerEvent.TIMER, updateProgress );
 			_timer.start();
 		}
@@ -506,6 +516,13 @@ package modules.videoPlayer
 				_ns.seek( 0 );
 				_ppBtn.State = PlayButton.PLAY_STATE;
 			}
+		}
+		
+		public function endVideo() : void
+		{
+			stopVideo();
+			if ( _ns )
+				_ns.close();
 		}
 		
 		
@@ -554,9 +571,7 @@ package modules.videoPlayer
 			drawBG();
 
 			if ( !autoScale )
-			{
 				scaleVideo();
-			}
 		}
 		
 		
@@ -568,6 +583,10 @@ package modules.videoPlayer
 			if( _ns ) 
 			{
 				playVideo();
+				_ppBtn.State = PlayButton.PAUSE_STATE;
+				
+				if ( !autoPlay )
+					pauseVideo();
 			}
 		}
 		
@@ -614,11 +633,12 @@ package modules.videoPlayer
 		 * Seek & Resume video when scrubber stops dragging
 		 * or when progress bar has been clicked
 		 */
-		private function onScrubberDropped( e:Event ):void
+		protected function onScrubberDropped( e:Event ):void
 		{
 			if( !_ns ) return;
 			
 			_timer.stop();
+			
 			_ns.seek( _sBar.seekPosition( _duration ) );
 			
 			if ( _state == PlayButton.PAUSE_STATE ) // before seek was playing, so resume video

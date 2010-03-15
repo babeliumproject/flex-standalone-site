@@ -8,7 +8,7 @@
 		 xmlns:extenders="modules.extenders.*"
 		 backgroundAlpha="0.0"
 		 creationComplete="init()"
-		 xmlns:local="*">
+		 xmlns:local="*" xmlns:videoPlayer="modules.videoPlayer.*">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
@@ -21,12 +21,15 @@
 			
 			import model.DataModel;
 			
+			import modules.videoPlayer.events.VideoPlayerEvent;
+			import modules.videoPlayer.events.babelia.StreamEvent;
+			import modules.videoPlayer.events.babelia.SubtitlingEvent;
+			
 			import mx.collections.*;
 			import mx.controls.Alert;
 			import mx.controls.Label;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
-			import mx.events.SliderEvent;
 			
 			import view.*;
 			
@@ -65,24 +68,14 @@
 															{label: 'Basque', icon: 'FlagBasque'}, 
 															{label: 'French', icon: 'FlagFrench'});
 
-
-			public var vid:Video;
-			private var nc:NetConnection;
-			private var ns:NetStream;
-			private var nsClient:Object=new Object();
+			private var videoPlayerReady:Boolean = false;
 			private var availableRoles:ArrayCollection;
 			
 			private var progressUpdateTimer:Timer=null;
 
-			[Bindable] private var videoDuration:Number=0;
-			[Bindable] private var videoHeight:int = 240;
-			[Bindable] private var videoWidth:int = 320;
-			
-			private var playbackFinished:Boolean = false;
-			private var playbackReady:Boolean = false;
-			[Bindable] private var playbackStarted:Boolean = false;
-
-			private var playButtonClicked:Boolean=false;
+			[Bindable] private var videoHeight:int = 250;
+			[Bindable] private var videoWidth:int = 400;
+			[Bindable] private var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
 
 			private var volumeTransform:SoundTransform;
 
@@ -99,6 +92,7 @@
 				{
 					var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise;
 					setBideoIzena(watchExercise.name, watchExercise.id);
+					setupVideoPlayer();
 					exerciseTitle.text=watchExercise.title;
 				}
 				else
@@ -117,68 +111,26 @@
 				return "";
 			}
 
-			private function setup():void
-			{
-				nsClient.onMetaData=this.onMetaData;
-
-				nc=new NetConnection();
-
-				nc.connect("rtmp://" + DataModel.getInstance().server + "/oflaDemo");
-				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
-				nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
-				nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError);
-			}
-
-			public function asyncErrorHandler(event:AsyncErrorEvent):void
-			{
-			}
-
-			public function netSecurityError(event:SecurityErrorEvent):void
-			{
-			}
-
-			public function netIOError(event:IOErrorEvent):void
-			{
-			}
-
-			private function volumeChangeHandler(event:SliderEvent):void
-			{
-				volumeTransform.volume=event.value;
-				ns.soundTransform=volumeTransform;
-
-			}
-
-			public function playPauseClickHandler():void
-			{
-				playButtonClicked=!playButtonClicked;
-				if (playButtonClicked)
-				{
-					playPauseButton.setStyle('icon', pauseImageEmbed);
-					ns.resume();
-				}
-				else
-				{
-					playPauseButton.setStyle('icon', playImageEmbed);
-					ns.pause();
-				}
-			}
-
-			public function exerciseStopHandler():void
-			{
-				playbackFinished = false;
-				ns.pause();
-				ns.seek(0);
-				playPauseButton.setStyle('icon', playImageEmbed);
-				playButtonClicked=false;
-				doHideCuePoint(new SubtitlesAndRolesVO());
-			}
-
 			public function setBideoIzena(exerciseFileName:String, exerciseId:int):void
 			{
 				this.exerciseFileName=exerciseFileName;
 				this.exerciseId=exerciseId;
-				setup();
+			}
+			
+			public function setupVideoPlayer() : void
+			{
+				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.setLocales(new ArrayCollection(DataModel.getInstance().locales));
+				VP.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
+				VP.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
+			}
+			
+			public function onVideoPlayerReady(e:VideoPlayerEvent) : void
+			{
+				videoPlayerReady = true;
+				VP.videoSource = exerciseFileName;
+				VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
+				VP.enableSubtitlingEndButton = false;
 			}
 
 			private function set onExerciseSelected(value:Boolean):void
@@ -199,158 +151,14 @@
 						subtitleCollection=DataModel.getInstance().availableSubtitlesAndRoles;
 					}
 
-					if (ns == null)
-						setup();
-					else
+					if ( videoPlayerReady )
 					{
-						progressUpdateTimer.stop();
-						vid.removeEventListener(Event.ENTER_FRAME, monitorCuePoints);
-						ns.close();
-						ns = new NetStream(nc);
-						ns.play(exerciseFileName);
-						ns.client=nsClient;
-						ns.addEventListener(NetStatusEvent.NET_STATUS, checkVideoStatus);
-
-						vid=new Video();
-						vid.attachNetStream(ns);
-						vid.addEventListener(Event.ENTER_FRAME, monitorCuePoints);
-						uic.removeChildAt(0);
-						uic.addChild(vid);
-
-						ns.soundTransform=volumeTransform;
-						progressUpdateTimer.start();
+						VP.videoSource = watchExercise.name;
+						VP.removeEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
+						VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
+						VP.enableSubtitlingEndButton = false;	
 					}
 				}
-			}
-
-			private function netStatusHandler(event:NetStatusEvent):void
-			{
-				ns=new NetStream(nc);
-				ns.play(exerciseFileName);
-				ns.client=nsClient;
-				ns.addEventListener(NetStatusEvent.NET_STATUS, checkVideoStatus);
-
-				vid=new Video();
-				vid.attachNetStream(ns);
-				vid.addEventListener(Event.ENTER_FRAME, monitorCuePoints);
-				uic.addChild(vid);
-
-				//Initialize the volume control components
-				volumeTransform = new SoundTransform();
-				volumeSlider.value=volumeTransform.volume;
-				volumeSlider.minimum=0;
-				volumeSlider.maximum=1;
-				volumeSlider.snapInterval=0.1;
-				volumeSlider.tickInterval=volumeSlider.snapInterval;
-				volumeSlider.liveDragging=true;
-				volumeSlider.addEventListener(SliderEvent.CHANGE, volumeChangeHandler);
-
-				//At first set the volume to 0 so that nothing is heard during seek
-				volumeTransform.volume=0
-				ns.soundTransform=volumeTransform;
-
-				//Instantiate a timer object to update the video player's progress bar every 1/4 second
-				progressUpdateTimer=new Timer(250, 0);
-				progressUpdateTimer.addEventListener(TimerEvent.TIMER, onExerciseProgressUpdate);
-				progressUpdateTimer.start();
-
-			}
-
-			private function checkVideoStatus(event:NetStatusEvent):void
-			{
-				switch (event.info.code)
-				{
-					//Data is not being received quickly enough to fill the buffer.
-					//Data flow will be interrupted until the buffer refills, at which time 
-					//a NetStream.Buffer.Full message will be sent and the stream will begin playing again
-					case "NetStream.Buffer.Empty":
-						if(playbackFinished){
-							playbackStarted = false;
-							exerciseStopHandler();
-						}
-						break;
-
-					//The buffer is full and the stream will begin playing.
-					case "NetStream.Buffer.Full":
-						if(playbackReady){
-							playbackStarted = true;
-						}
-							
-						break;
-
-					//Data has stopped streaming, and the remaining buffer will be emptied.
-					case "NetStream.Buffer.Flush":
-						break;
-
-					//Playback has stopped.
-					case "NetStream.Play.Stop":
-						playbackFinished = true;
-						break;
-
-					//Playback has started.	
-					case "NetStream.Play.Start":
-						playbackReady = true;
-						break;
-
-					//An error has occurred in playback for a reason other than those listed elsewhere 
-					//in this table, such as the subscriber not having read access.
-					case "NetStream.Play.Failed":
-						break;
-
-					//The FLV passed to the play() method can't be found.	
-					case "NetStream.Play.StreamNotFound":
-						break;
-
-					case "NetStream.Pause.Notify":
-						playbackStarted = false;
-						break;
-				}
-			}
-
-			private function initializeVideoPlayerComponents():void
-			{
-				vid.height=videoHeight;
-				vid.width=videoWidth;
-
-				// Resize UIComponent to same size as Video object.
-				uic.width=vid.width;
-				uic.height=vid.height;
-
-				exerciseLoadProgressBar.visible=true;
-
-				exerciseLoadProgressBar.minimum=0;
-				exerciseLoadProgressBar.maximum=videoDuration;
-			}
-
-			private function onMetaData(obj:Object):void
-			{
-				videoDuration=obj.duration;
-				videoHeight=obj.height;
-				videoWidth=obj.width;
-
-				initializeVideoPlayerComponents();
-
-				exerciseStopHandler();
-
-				volumeTransform.volume=1;
-				ns.soundTransform=volumeTransform;
-			}
-
-			private function onExerciseProgressUpdate(event:TimerEvent):void
-			{
-				var currentTime:int=ns.time;
-				var percentageLoaded:int;
-
-				//Update the position of the ProgressBar
-				exerciseLoadProgressBar.setProgress(currentTime, videoDuration);
-				percentageLoaded=(100 * currentTime) / videoDuration;
-
-				var totalBytes:Number=ns.bytesTotal;
-				var bytesLoaded:Number=ns.bytesLoaded;
-				percentageLoaded=(bytesLoaded * 100) / totalBytes;
-				var fTime:TimeFormatter=new TimeFormatter();
-				fTime.outputMilliseconds=false;
-				exerciseLoadProgressBar.label=fTime.format(currentTime) + "/" + fTime.format(videoDuration);
 			}
 
 
@@ -378,9 +186,6 @@
 
 			[Bindable]
 			private var outlinedSubtitle:TextOutlines=new TextOutlines(320, 50, 1.8);
-
-			[Bindable]
-			private var subtitleStarted:Boolean=false;
 			
 			private var subtitleEditorVisible:Boolean=false;
 
@@ -395,10 +200,10 @@
 				}
 			}
 
-			private function subtitleStartHandler():void
+			private function subtitleStartHandler(e:SubtitlingEvent):void
 			{
-				subtitleStarted=true;
-				subtitleStartTime=ns.time;
+				VP.enableSubtitlingEndButton = true;
+				subtitleStartTime=e.time;
 				startEntry=new SubtitlesAndRolesVO();
 				startEntry.id=subtitleCollection.length + 1;
 				startEntry.showTime=subtitleStartTime;
@@ -419,12 +224,13 @@
 				insertDataGridRow();
 			}
 
-			private function subtitleEndHandler():void
+			private function subtitleEndHandler(e:SubtitlingEvent):void
 			{
-				subtitleStarted=false;
+				VP.enableSubtitlingEndButton = false;
+
 				if (subtitleCollection.length > 0)
 				{
-					subtitleEndTime=ns.time;
+					subtitleEndTime=e.time;
 					endEntry=new SubtitlesAndRolesVO();
 					endEntry.id=subtitleCollection.length;
 					endEntry.showTime=subtitleStartTime;
@@ -511,14 +317,14 @@
 				{
 					var tempEntry:SubtitlesAndRolesVO=subtitleCollection.getItemAt(subtitleList.selectedIndex) as SubtitlesAndRolesVO;
 					//ns.pause();
-					ns.seek(tempEntry.showTime);
+					//VP.seekTo(tempEntry.showTime);
 						//ns.resume();
 				}
 			}
 
-			private function monitorCuePoints(e:Event):void
+			private function monitorCuePoints(e:StreamEvent):void
 			{
-				var curTime:Number=ns.time;
+				var curTime:Number=e.time;
 				for each (var ob1:SubtitlesAndRolesVO in subtitleCollection)
 				{
 					if ((curTime - 0.08) < ob1.showTime && ob1.showTime < (curTime + 0.08))
@@ -539,38 +345,27 @@
 
 			private function doShowCuePoint(obj:SubtitlesAndRolesVO):void
 			{
-				outlinedSubtitle.setText(obj.text);
-				subHolder.text=obj.text;
+				VP.setSubtitle(obj.text);
 			}
 
 			private function doHideCuePoint(obj:SubtitlesAndRolesVO):void
 			{
-				outlinedSubtitle.setText("");
-				subHolder.text="";
+				VP.setSubtitle("");
 			}
 
 			private function viewSubtitlingControls(event:MouseEvent):void
 			{
-				if(!subtitleEditorVisible){
+				if( !VP.subtitlingControls ){
 					videoPlayerControlsViewStack=0;
-					subtitlingControls.minHeight=24;
-					subtitlingControls.height=24;
-					subtitlingControls.visible=true;
-					videoControls.height=subtitlingControls.minHeight;
-					subtitleEditorVisible = !subtitleEditorVisible;
+					VP.subtitlingControls = true;
 				} else {
 					videoPlayerControlsViewStack=1;
-					subtitlingControls.visible=false;
-					videoControls.height=0;
-					subtitleEditorVisible = !subtitleEditorVisible;
+					VP.subtitlingControls = false;
 				}
 			}
 			
 			private function hideSubtitlingControls(event:MouseEvent):void{
-				videoPlayerControlsViewStack=1;
-				subtitlingControls.visible=false;
-				videoControls.height=0;
-				subtitleEditorVisible = false;
+				// TODO hide subtitle controls
 			}
 
 			private function saveSubtitlesHandler():void
@@ -699,9 +494,9 @@
 				return String(iIndex);
 			}
 			
-			private function set onTabChange(value:Boolean):void{
-				exerciseStopHandler();
-				ns.close();
+			private function set onTabChange(value:Boolean) : void {
+				VP.endVideo();
+				VP.subtitlingControls = false;
 				hideSubtitlingControls(null);
 			}
 			
@@ -710,6 +505,7 @@
 					onTabChange = false;
 				}
 			}
+
 		]]>
 
 	</mx:Script>
@@ -724,192 +520,25 @@
 				destination="this.onSubtitlesAndRolesRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().subtitleSaved}"
 				destination="this.onSubtitleSaved"/>
-	
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
-	
 	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="this.onLogout"/>
 
-	<mx:Panel id="panel"
-			  title="Video Player"
-			  visible="true"
-			  horizontalAlign="center"
-			  verticalAlign="top"
-			  verticalGap="0"
-			  paddingLeft="4"
-			  paddingRight="4"
-			  paddingTop="4"
-			  paddingBottom="4"
-			  fontFamily="Arial"
-			  fontSize="12"
-			  headerHeight="0"
-			  borderThicknessBottom="0"
-			  borderThicknessTop="0"
-			  borderThicknessLeft="0"
-			  borderThicknessRight="0"
-			  height="100%"
-			  backgroundAlpha="0.0"
-			  borderStyle="none"
-			  cornerRadius="0">
+	<!-- Video Player -->
+	<mx:VBox>
 		<mx:Label id="exerciseTitle"
-				  text="ExerciseTitle"
-				  width="100%"
-				  fontSize="16"
-				  fontWeight="bold"/>
-
-		<mx:Canvas backgroundColor="#000000"
-				   borderStyle="solid"
-				   borderColor="#929292"
-				   verticalScrollPolicy="off"
-				   horizontalScrollPolicy="off"
-				   height="{videoHeight}"
-				   width="{videoControlBar.width}">
-			<mx:UIComponent id="uic"
-							y="0"
-							x="{(videoControlBar.width-videoWidth)/2}"/>
-			<mx:Text id="subHolder"
-					 width="{videoControlBar.width}"
-					 height="30"
-					 x="{(videoControlBar.width-videoWidth)/2}"
-					 y="190"
-					 color="#FFFFFF"
-					 fontFamily="Arial"
-					 fontSize="14"
-					 fontWeight="bold"
-					 textAlign="center"/>
-		</mx:Canvas>
-		<mx:HBox verticalAlign="middle"
-				 horizontalAlign="left"
-				 width="{videoHeight*(16/9)}"
-				 borderStyle="solid"
-				 borderColor="#929292"
-				 backgroundColor="#DCD9D9"
-				 backgroundAlpha="1.0"
-				 id="videoControlBar"
-				 horizontalScrollPolicy="off"
-				 horizontalGap="2">
-			<mx:HBox id="botoiak"
-					 borderStyle="none"
-					 cornerRadius="0"
-					 paddingLeft="4"
-					 paddingRight="4"
-					 height="100%"
-					 horizontalAlign="center"
-					 verticalAlign="middle"
-					 horizontalGap="4">
-				<mx:Button id="playPauseButton"
-						   click="playPauseClickHandler()"
-						   cornerRadius="4"
-						   labelPlacement="bottom"
-						   width="20"
-						   height="20">
-					<mx:icon>@Embed(source='../../resources/images/playerPlayIcon.png')</mx:icon>
-				</mx:Button>
-				<mx:Button id="stopButton"
-						   click="exerciseStopHandler()"
-						   width="20"
-						   height="20">
-					<mx:icon>@Embed(source='../../resources/images/playerStopIcon.png')</mx:icon>
-				</mx:Button>
-
-
-			</mx:HBox>
-			<mx:VBox>
-
-				<mx:ProgressBar id="exerciseLoadProgressBar"
-								mode="manual"
-								label="00:00/00:00"
-								labelWidth="75"
-								trackHeight="15"
-								labelPlacement="right"
-								fontSize="10"
-								fontWeight="normal"
-								paddingLeft="0"
-								paddingRight="0"/>
-			</mx:VBox>
-
-
-
-			<mx:HBox id="bolumen_kaxa"
-					 borderStyle="solid"
-					 cornerRadius="0"
-					 width="93"
-					 height="100%"
-					 horizontalAlign="center"
-					 verticalAlign="middle">
-				<mx:Image source="resources/images/bol.png"
-						  width="19"
-						  height="19"/>
-				<mx:HSlider id="volumeSlider"
-							width="35"/>
-			</mx:HBox>
-
-		</mx:HBox>
-		<mx:ViewStack id="videoControls"
-					  width="100%">
-			<mx:HBox id="subtitlingControls"
-					 width="100%"
-					 paddingTop="2"
-					 paddingBottom="2"
-					 paddingLeft="2"
-					 paddingRight="2"
-					 horizontalAlign="left"
-					 verticalAlign="middle"
-					 backgroundColor="#DCD9D9"
-					 borderStyle="solid"
-					 horizontalGap="4"
-					 height="0">
-				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUBTITLING_CONTROLS')}"
-						  color="#000000"
-						  fontWeight="bold"/>
-				<mx:Button click="subtitleStartHandler()"
-						   width="20"
-						   height="20"
-						   toolTip="{resourceManager.getString('myResources','TOOLTIP_START_SUBTITLE_LINE')}">
-					<mx:icon>@Embed(source='../../resources/images/subStartButtonIcon.png')</mx:icon>
-				</mx:Button>
-				<mx:Button click="subtitleEndHandler()"
-						   width="20"
-						   height="20"
-						   enabled="{subtitleStarted}"
-						   toolTip="{resourceManager.getString('myResources','TOOLTIP_END_SUBTITLE_LINE')}">
-					<mx:icon>@Embed(source='../../resources/images/subEndButtonIcon.png')</mx:icon>
-				</mx:Button>
-				<mx:VRule height="20"/>
-				<mx:Button width="20"
-						   height="20"
-						   click="subtitlePreviousHandler()"
-						   toolTip="{resourceManager.getString('myResources','TOOLTIP_PREVIOUS_SUBTITLE_LINE')}">
-					<mx:icon>@Embed(source='../../resources/images/prevSubButtonIcon.png')</mx:icon>
-				</mx:Button>
-				<mx:Button width="20"
-						   height="20"
-						   click="subtitleNextHandler()"
-						   toolTip="{resourceManager.getString('myResources','TOOLTIP_NEXT_SUBTITLE_LINE')}">
-					<mx:icon>@Embed(source='../../resources/images/nextSubButtonIcon.png')</mx:icon>
-				</mx:Button>
-				<mx:VRule height="20"/>
-			</mx:HBox>
-
-		</mx:ViewStack>
-		<mx:HBox id="exerciseOptions"
-				 width="100%"
+				text="ExerciseTitle"
+				width="100%"
+				fontSize="16"
+				fontWeight="bold"/>
+		<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
+				seek="true" subtitles="true" autoScale="false" arrows="false"
+				subtitlingControls="false" width="400" height="{VP.width * 800 / 1280}"
+				streamSource="{streamSource}" />
+		<mx:HBox width="100%"
 				 horizontalAlign="center"
-				 verticalAlign="middle"
-				 paddingTop="4"
-				 paddingBottom="4">
-			<!--
-			<mx:Button label="{resourceManager.getString('myResources','OPTION_RECORD_RESPONSE')}"
-					   fontWeight="normal"
-					   labelPlacement="bottom"
-					   width="80"
-					   height="80"
-					   enabled="false"
-					   toolTip="{resourceManager.getString('myResources','TOOLTIP_RECORD_RESPONSE')}">
-				<mx:icon>@Embed(source='../../resources/images/addRecording.png')</mx:icon>
-			</mx:Button>
-			-->
+				 verticalAlign="middle">
 			<mx:Button id="subtitleExerciseButton"
 					   label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLES_TO_EXERCISE')}"
 					   fontWeight="normal"
@@ -921,19 +550,10 @@
 					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_SUBTITLES_TO_EXERCISE')}">
 				<mx:icon>@Embed(source='../../resources/images/addSubtitles.png')</mx:icon>
 			</mx:Button>
-			<!--
-			<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_ROLES_TO_EXERCISE')}"
-					   fontWeight="normal"
-					   width="80"
-					   height="80"
-					   labelPlacement="bottom"
-					   enabled="false"
-					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_ROLES_TO_EXERCISE')}">
-				<mx:icon>@Embed(source='../../resources/images/addRolesSmall.png')</mx:icon>
-			</mx:Button>
-			-->
 		</mx:HBox>
-	</mx:Panel>
+	</mx:VBox>
+
+	<!-- Subtitle datagrid -->
 	<mx:ViewStack height="100%"
 				  width="100%"
 				  selectedIndex="{this.videoPlayerControlsViewStack}">
@@ -1031,9 +651,9 @@
 								   paddingLeft="6"
 								   paddingRight="6"
 								   cornerRadius="8"
-								   enabled="{playbackStarted}"
+								   enabled="{true}"
 								   icon="@Embed(source='../../resources/images/add.png')"
-								   click="subtitleStartHandler()"
+								   click="subtitleStartHandler(new SubtitlingEvent(SubtitlingEvent.START, VP.streamTime))"
 								   id="addSubtitleLine"/>
 						<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
 								   paddingLeft="6"

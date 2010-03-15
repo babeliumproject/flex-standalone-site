@@ -19,8 +19,8 @@ package modules.videoPlayer.controls.babelia
 		private var _bg:Sprite;
 		private var _textBox:Text;
 		private var _boxWidth:Number = 100;
-		private var _boxHeight:Number = 20;
-		private var _defaultHeight:Number = 20;
+		private var _boxHeight:Number = 30;
+		private var _defaultHeight:Number = 30;
 		
 		public function SubtitleTextBox()
 		{
