@@ -14,6 +14,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import control.CuePointManager;
+			
 			import events.SubtitlesAndRolesEvent;
 			import events.SubtitlesEvent;
 			
@@ -68,6 +70,11 @@
 															{label: 'Basque', icon: 'FlagBasque'}, 
 															{label: 'French', icon: 'FlagFrench'});
 
+			/**
+			 * CONTROL
+			 **/
+			private var cueManager:CuePointManager = CuePointManager.getInstance();
+			
 			private var videoPlayerReady:Boolean = false;
 			private var availableRoles:ArrayCollection;
 			

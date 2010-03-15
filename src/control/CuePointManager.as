@@ -2,11 +2,11 @@ package control
 {
 	import business.SubtitleDelegate;
 	
+	import events.CueManagerEvent;
+	
 	import flash.events.*;
 	import flash.net.*;
 	import flash.utils.*;
-	
-	import model.DataModel;
 	
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	
@@ -18,10 +18,10 @@ package control
 	
 	import vo.CueObject;
 	import vo.CueObjectCache;
+	import vo.SubtitleAndSubtitleLinesVO;
 	import vo.SubtitleLineVO;
-	import vo.SubtitleVO;
 	
-	public class CuePointManager implements IResponder
+	public class CuePointManager extends EventDispatcher implements IResponder
 	{
 		private static var instance:CuePointManager = new CuePointManager();
 		
@@ -173,11 +173,11 @@ package control
 		/**
 		 * Get cuepoints from subtitle
 		 **/ 
-		public function setCuesFromSubtitle() : void
+		public function setCuesFromSubtitle(language:String) : void
 		{
-			var subtitle:SubtitleVO = new SubtitleVO();
+			var subtitle:SubtitleAndSubtitleLinesVO = new SubtitleAndSubtitleLinesVO();
 			subtitle.exerciseId = this.watchingVideo;
-			subtitle.language = "Spanish";
+			subtitle.language = language;
 			
 			// add this manager as iresponder and get subtitle lines
 			new SubtitleDelegate(this).getSubtitleLines(subtitle);
@@ -220,14 +220,14 @@ package control
 					}
 				}
 			}
-
-			DataModel.getInstance().areVideoSubtitlesRetrieved = true;
+			
+			dispatchEvent(new CueManagerEvent(CueManagerEvent.SUBTITLES_RETRIEVED));
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = info as FaultEvent;
-			Alert.show("Error while saving your subtitle lines: "+faultEvent.message);
+			Alert.show("Error while getting your subtitle lines: "+faultEvent.message);
 		}
 	}
 }
