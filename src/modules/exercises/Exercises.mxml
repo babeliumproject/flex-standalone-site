@@ -63,7 +63,6 @@
 			public function setupVideoPlayer() : void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
-				VP.setLocales(new ArrayCollection(DataModel.getInstance().locales));
 			}
 			
 			public function onVideoPlayerReady(e:VideoPlayerEvent) : void
@@ -155,7 +154,7 @@
 					  fontSize="16"
 					  fontWeight="bold"/>
 			<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
-						seek="true" subtitles="true" autoScale="true" arrows="false"
+						seek="true" subtitles="true" autoScale="false" arrows="false"
 						subtitlingControls="false" width="500" 
 						height="{Math.floor(VP.width * 800 / 1280)}"
 						streamSource="{_streamSource}"

@@ -1,9 +1,11 @@
 package modules.videoPlayer.controls.babelia
 {
-	import mx.controls.Text;
-	import mx.core.UIComponent;
 	import flash.display.Sprite;
+	import flash.text.FontStyle;
+	
 	import modules.videoPlayer.controls.SkinableComponent;
+	
+	import mx.controls.Text;
 	
 	public class SubtitleTextBox extends SkinableComponent
 	{
@@ -34,6 +36,8 @@ package modules.videoPlayer.controls.babelia
 
 			_textBox = new Text();
 			_textBox.setStyle("textAlign", "center");
+			_textBox.setStyle("fontWeight", FontStyle.BOLD);
+			_textBox.setStyle("fontSize", 13);
 			_textBox.selectable = false;
 			addChild( _textBox );
 
@@ -57,7 +61,7 @@ package modules.videoPlayer.controls.babelia
 			_box.y = height/2 - _box.height/2;
 			
 			_textBox.x = _box.x;
-			_textBox.y = _box.y;
+			_textBox.y = _box.y+2;
 			_textBox.width = _box.width;
 			_textBox.height = _box.height;
 			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));

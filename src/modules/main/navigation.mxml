@@ -52,6 +52,13 @@
 					   enabled="{!DataModel.getInstance().recordingExercise}"
 					   click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
 		<mx:VRule height="40"/> -->
+		
+		<!--<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_RANKINGS')}"
+		fontFamily="Arial"
+		fontSize="14"
+		enabled="{!DataModel.getInstance().recordingExercise}"
+		click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
+		<mx:VRule height="40"/>-->
 	</mx:HBox>
 	<mx:HBox width="45%"
 			 horizontalAlign="right"

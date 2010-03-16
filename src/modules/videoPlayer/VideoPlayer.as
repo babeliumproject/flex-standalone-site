@@ -57,7 +57,6 @@ package modules.videoPlayer
 		 * 
 		 */
 		protected var _video:Video;
-		protected var _videoWrapper:MovieClip;
 		protected var _ns:NetStream;
 		protected var _nc:NetConnection;
 		
@@ -85,7 +84,9 @@ package modules.videoPlayer
 		
 		private var _timer:Timer;
 		
-		
+		/**
+		 * CONSTRUCTOR
+		 **/
 		public function VideoPlayer(name:String = "VideoPlayer")
 		{
 			super(name);
@@ -98,10 +99,6 @@ package modules.videoPlayer
 			
 			_video = new Video();
 			_video.smoothing = _smooth;
-			
-			_videoWrapper = new MovieClip();
-			_videoWrapper.addChild(_video);
-			_videoWrapper.height = _videoHeight;
 			
 			_videoBarPanel = new UIComponent();
 			
@@ -136,7 +133,7 @@ package modules.videoPlayer
 			 */
 			addChild(_bg);
 			addChild(_bgVideo);
-			addChild( _videoWrapper );
+			addChild( _video );
 			addChild(_videoBarPanel);
 			
 			/**
@@ -155,10 +152,9 @@ package modules.videoPlayer
 		
 		
 		/**
-		 * Setters and Getters
+		 * Video streaming source
 		 * 
 		 */
-		[Bindable]
 		public function set videoSource( location:String ):void
 		{
 			_videoSource = location;
@@ -175,6 +171,9 @@ package modules.videoPlayer
 			return _videoSource;
 		}
 		
+		/**
+		 * Flash server 
+		 */
 		public function set streamSource( location:String ):void
 		{
 			_streamSource = location;
@@ -185,6 +184,9 @@ package modules.videoPlayer
 			return _streamSource;
 		}
 		
+		/**
+		 * Autoplay
+		 */
 		public function set autoPlay( tf:Boolean ):void
 		{
 			_autoPlay = tf;
@@ -195,6 +197,9 @@ package modules.videoPlayer
 			return _autoPlay;
 		}
 		
+		/**
+		 * Smooting
+		 */
 		public function set videoSmooting( tf:Boolean ):void
 		{
 			_autoPlay = _smooth;
@@ -205,6 +210,9 @@ package modules.videoPlayer
 			return _smooth;
 		}		
 		
+		/**
+		 * Autoscale
+		 */
 		public function set autoScale(flag:Boolean) : void
 		{
 			_autoScale = flag;
@@ -215,6 +223,9 @@ package modules.videoPlayer
 			return _autoScale;
 		}
 
+		/**
+		 * Seek
+		 */
 		public function set seek(flag:Boolean) : void
 		{
 			if ( flag )
@@ -236,6 +247,34 @@ package modules.videoPlayer
 			pauseVideo();
 			_sBar.updateProgress( time, _duration );
 			this.onScrubberDropped(null);
+		}
+		
+		/**
+		 * Enable/disable controls
+		 **/
+		public function set controlsEnabled(flag:Boolean) : void
+		{
+			flag ?
+				enableControls()
+				: disableControls();
+			
+		}
+		
+		public function toggleControls() : void
+		{
+			(_ppBtn.enabled)? disableControls() : enableControls();
+		}
+		
+		public function enableControls() : void
+		{
+			_ppBtn.enabled = true;
+			_stopBtn.enabled = true;
+		}
+		
+		public function disableControls() : void
+		{
+			_ppBtn.enabled = false;
+			_stopBtn.enabled = false;
 		}
 		
 		/**
@@ -266,7 +305,6 @@ package modules.videoPlayer
 			
 			if ( _loadingSkin )
 			{ // Maybe some skins will try to load at same time
-			  // TODO: maybe this can be improved
 				flash.utils.setTimeout(setSkin, 20, name);
 				return;
 			}
@@ -352,6 +390,9 @@ package modules.videoPlayer
 			drawBG();
 		}
 		
+		/**
+		 * Set width/height of video widget
+		 */
 		override public function set width(w:Number) : void
 		{
 			totalWidth = w;
@@ -364,6 +405,22 @@ package modules.videoPlayer
 			_videoHeight = h - 2*_defaultMargin;
 		}
 		
+		/**
+		 * Set total width/height of videoplayer
+		 */
+		protected function set totalWidth(w:Number) : void
+		{
+			super.width = w;
+		}
+		
+		protected function set totalHeight(h:Number) : void
+		{
+			super.height = h;
+		}
+		
+		/**
+		 * Draws a background for videoplayer
+		 */
 		protected function drawBG() : void
 		{
 			totalHeight =  _defaultMargin*2 + _videoHeight + _videoBarPanel.height;
@@ -378,20 +435,13 @@ package modules.videoPlayer
 			_bg.graphics.endFill();
 		}
 		
-		protected function set totalWidth(w:Number) : void
-		{
-			super.width = w;
-		}
-		
-		protected function set totalHeight(h:Number) : void
-		{
-			super.height = h;
-		}
-		
-		
+		/**
+		 * On creation complete
+		 */
 		private function onComplete( e:FlexEvent ):void
 		{
 			_nc = new NetConnection();
+			disableControls(); // Disable controls until video streaming connect
 			
 			trace( _streamSource );
 			
@@ -440,6 +490,9 @@ package modules.videoPlayer
 			// Avoid debug messages
 		}
 		
+		/**
+		 * On stream connect
+		 */
 		private function onStreamNetConnect( e:NetStatusEvent ):void
 		{
 			trace( "onStreamNetConnect" );
@@ -454,11 +507,13 @@ package modules.videoPlayer
 					_ppBtn.State = PlayButton.PAUSE_STATE;
 				}
 				
+				enableControls();
+				
 				this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
 				
 			} else
 			{
-				Alert.show("Unsuccessful Connection", "Information");
+				disableControls();
 				trace( "Connection Fail Code: " + e.info.code );
 			}
 		}
@@ -481,7 +536,9 @@ package modules.videoPlayer
 			
 		}
 		
-		
+		/**
+		 * Stream controls
+		 */
 		public function playVideo():void
 		{
 			if( !_nc.connected ) 
@@ -557,7 +614,9 @@ package modules.videoPlayer
 			trace( e );
 		}
 		
-		
+		/**
+		 * On video information retrieved
+		 */
 		public function onMetaData( msg:Object ):void
 		{
 			trace( "metadata: " );
@@ -569,21 +628,16 @@ package modules.videoPlayer
 			this.dispatchEvent(new VideoPlayerEvent(
 									VideoPlayerEvent.METADATA_RETRIEVED));
 			
-			_videoWrapper.width = _videoWidth;
-			_videoWrapper.height = _videoHeight;
-			_videoWrapper.x = _defaultMargin;
-			_videoWrapper.y = _defaultMargin;
-			
 			_video.width = msg.width;
 			_video.height = msg.height;
 
-			if ( !autoScale )
-				scaleVideo();
-			
+			scaleVideo();
 			drawBG();
 		}
 		
-		
+		/**
+		 * On video source changed
+		 */
 		public function onSourceChange( e:VideoPlayerEvent ):void
 		{
 			trace( "source has changed" );
@@ -599,7 +653,9 @@ package modules.videoPlayer
 			}
 		}
 		
-		
+		/**
+		 * On play button clicked
+		 */
 		protected function onPPBtnChanged( e:PlayPauseEvent ):void
 		{
 			if( _ppBtn.getState() == PlayButton.PAUSE_STATE )
@@ -618,13 +674,17 @@ package modules.videoPlayer
 			}
 		}
 		
-		
+		/**
+		 * On stop button clicked
+		 */
 		protected function onStopBtnClick( e:StopEvent ):void
 		{
 			stopVideo();
 		}
 		
-		
+		/**
+		 * Updatting video progress
+		 */
 		private function updateProgress( e:TimerEvent ):void
 		{
 			if( !_ns ) return; //Fail safe in case someone drags the scrubber.
@@ -676,22 +736,18 @@ package modules.videoPlayer
 			}
 		}
 		
-		
+		/**
+		 * On video finished playing
+		 */
 		protected function onVideoFinishedPlaying( e:VideoPlayerEvent ):void
 		{
-			
 			stopVideo();
-			
-			// This code unloads the video - Not Used but kept in for future
-			// in case we want to unload the video
-			/* _ppBtn.State = "play";
-			_ns.close();
-			_timer.stop();
-			_ns = null; */
 		}
 		
 		
-		
+		/**
+		 * On volume change
+		 */
 		private function onVolumeChange( e:VolumeEvent ):void
 		{
 			if( !_ns ) return;
@@ -701,12 +757,36 @@ package modules.videoPlayer
 			trace( _ns.soundTransform.volume, e.volumeAmount );
 		}
 		
-		
+		/**
+		 * Scaling video image
+		 */
 		protected function scaleVideo() : void
 		{
-			_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
-			_video.y = Math.floor(_videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2);
-			_video.x = Math.floor(_videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2);
+			if ( !autoScale )
+			{
+				var scaleY:Number = _videoHeight / _video.height;
+				var scaleX:Number = _videoWidth / _video.width;
+				var scaleC:Number = scaleX < scaleY ? scaleX : scaleY;
+				
+				_video.y = Math.floor(_videoHeight/2 - (_video.height * scaleC)/2);
+				_video.x = Math.floor(_videoWidth/2 - (_video.width * scaleC)/2);
+				_video.y += _defaultMargin;
+				_video.x += _defaultMargin;
+				
+				_video.width *= scaleC;
+				_video.height *= scaleC;
+				
+				// 1 black pixel, being smarter
+				_video.y += 1; _video.height -= 2;
+				_video.x += 1; _video.width -= 2;
+			}
+			else
+			{
+				_video.width = _videoWidth;
+				_video.height = _videoHeight;
+				_video.y = _defaultMargin+2; _video.height -= 4;
+				_video.x = _defaultMargin+2; _video.width -= 4;
+			}
 		}
 		
 		/**

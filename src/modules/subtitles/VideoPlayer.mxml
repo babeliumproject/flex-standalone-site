@@ -126,7 +126,6 @@
 			public function setupVideoPlayer() : void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
-				VP.setLocales(new ArrayCollection(DataModel.getInstance().locales));
 				VP.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
 				VP.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
 			}

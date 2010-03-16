@@ -54,7 +54,7 @@
 		</ns7:principal>
 		<!--<ns8:Rankings width="100%" height="100%">
 		</ns8:Rankings>-->
-		<ns9:FlexVideoPlayer>
+		<ns9:FlexVideoPlayer width="100%" height="100%" label="Videoplayer">
 		</ns9:FlexVideoPlayer>
 		
 

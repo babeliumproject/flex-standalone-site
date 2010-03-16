@@ -13,7 +13,6 @@ package modules.videoPlayer
 	
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
-	import modules.videoPlayer.controls.babelia.LocaleComboBox;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleEndButton;
@@ -38,7 +37,6 @@ package modules.videoPlayer
 		/**
 		 * Skin related constants
 		 */
-		public static const CAMBG_COLOR:String = "camBgColor";
 		public static const COUNTDOWN_COLOR:String = "countdownColor";
 		public static const ROLEBG_COLOR:String = "roleBgColor";
 		public static const ROLEBORDER_COLOR:String = "roleBorderColor";
@@ -49,7 +47,6 @@ package modules.videoPlayer
 		private var _subtitleButton:SubtitleButton;
 		private var _subtitlePanel:UIComponent;
 		private var _subtitleBox:SubtitleTextBox;
-		private var _localeComboBox:LocaleComboBox;
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
 		private var _roleTalkingPanel:RoleTalkingPanel;
@@ -58,7 +55,6 @@ package modules.videoPlayer
 		private var _subtitleStart:SubtitleStartButton;
 		private var _subtitleEnd:SubtitleEndButton;
 		private var _bgArrow:Sprite;
-		private var _bgCam:Sprite;
 		
 		/**
 		 * Recording related variables
@@ -97,8 +93,9 @@ package modules.videoPlayer
 		
 		private var _camera:Camera;
 		private var _cameraEnabled:Boolean = false;
-		private var _camWrapper:MovieClip;
 		private var _camVideo:Video;
+		private var _defaultCamWidth:Number = 320;
+		private var _defaultCamHeight:Number = 240;
 		
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -123,11 +120,8 @@ package modules.videoPlayer
 			
 			_subtitleBox = new SubtitleTextBox();
 			
-			_localeComboBox = new LocaleComboBox();
-			
 			_subtitlePanel.visible = false;
 			_subtitlePanel.addChild( _subtitleBox );
-			_subtitlePanel.addChild( _localeComboBox );
 			
 			_arrowContainer = new UIComponent();
 			
@@ -147,14 +141,9 @@ package modules.videoPlayer
 			_countdownTxt.setStyle("fontSize", 30);
 			_countdownTxt.selectable = false;
 			_countdownTxt.visible = false;
-			
-			_camWrapper = new MovieClip();
+
 			_camVideo = new Video();
-			_bgCam = new Sprite();
-			_camWrapper.addChild(_bgCam);
-			_camWrapper.addChild(_camVideo);
-			_camWrapper.height = 0;
-			_camWrapper.visible = false;
+			_camVideo.visible = false;
 			
 			_subtitlingControls = new UIComponent();
 			_subtitlingText = new Text();
@@ -172,7 +161,6 @@ package modules.videoPlayer
 			 * Events listeners
 			 **/
 			_subtitleButton.addEventListener( SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
-			_localeComboBox.addEventListener( SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
 			_subtitleStart.addEventListener( SubtitlingEvent.START, onSubtitlingEvent );
 			_subtitleEnd.addEventListener( SubtitlingEvent.END, onSubtitlingEvent );
 			
@@ -183,7 +171,7 @@ package modules.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
-			addChild(_camWrapper);
+			addChild(_camVideo);
 			addChild(_countdownTxt);
 			addChild(_subtitlingControls);
 			
@@ -193,7 +181,6 @@ package modules.videoPlayer
 			putSkinableComponent(COMPONENT_NAME, this);
 			putSkinableComponent(_subtitleButton.COMPONENT_NAME, _subtitleButton);
 			putSkinableComponent(_subtitleBox.COMPONENT_NAME, _subtitleBox);
-			putSkinableComponent(_localeComboBox.COMPONENT_NAME, _localeComboBox);
 			putSkinableComponent(_arrowPanel.COMPONENT_NAME, _arrowPanel);
 			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
 			putSkinableComponent(_subtitleStart.COMPONENT_NAME, _subtitleStart);
@@ -238,11 +225,6 @@ package modules.videoPlayer
 		public function set arrows(flag:Boolean) : void
 		{
 			_arrowContainer.visible = flag;
-		}
-		
-		public function setLocales(locales:ArrayCollection) : void
-		{
-			_localeComboBox.setDataProvider(locales);
 		}
 		
 		/**
@@ -294,34 +276,6 @@ package modules.videoPlayer
 
 			_state = state;
 			switchPerspective();
-		}
-		
-		/**
-		 * Enable/disable controls
-		 **/
-		public function set controlsEnabled(flag:Boolean) : void
-		{
-			flag ?
-				enableControls()
-				: disableControls();
-			
-		}
-		
-		public function toggleControls() : void
-		{
-			(_ppBtn.enabled)? disableControls() : enableControls();
-		}
-		
-		public function enableControls() : void
-		{
-			_ppBtn.enabled = true;
-			_stopBtn.enabled = true;
-		}
-		
-		public function disableControls() : void
-		{
-			_ppBtn.enabled = false;
-			_stopBtn.enabled = false;
 		}
 		
 		/**
@@ -392,17 +346,6 @@ package modules.videoPlayer
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
-			_camWrapper.width = _videoWidth/2 - 2;
-			_camWrapper.height = _videoHeight;
-			_camWrapper.x = _defaultMargin + _videoWidth/2 + 2;
-			_camWrapper.y = _defaultMargin;
-			
-			_bgCam.graphics.clear();
-			_bgCam.graphics.beginFill( getSkinColor(CAMBG_COLOR) );
-			_bgCam.graphics.drawRect( 0, 0, _arrowContainer.width, _arrowContainer.height );
-			_bgCam.graphics.endFill();
-
-			
 			_arrowContainer.width = _videoBarPanel.width;
 			_arrowContainer.height = 50;
 			_arrowContainer.x = _defaultMargin;
@@ -436,7 +379,7 @@ package modules.videoPlayer
 			
 			
 			_subtitleBox.y = 0;
-			_subtitleBox.resize(_videoWidth - 100, 30);
+			_subtitleBox.resize(_videoWidth, 30);
 			
 			// Resize arrowPanel
 			_arrowPanel.resize(_sBar.width, _arrowContainer.height - 8);
@@ -448,11 +391,6 @@ package modules.videoPlayer
 										 _arrowPanel.height);
 			_roleTalkingPanel.x = _arrowPanel.x + _arrowPanel.width + _defaultMargin*3;
 			_roleTalkingPanel.y = 4;
-			
-			// Locale combo box
-			_localeComboBox.y = (_subtitleBox.height - 20)/2;
-			_localeComboBox.x = _subtitleBox.x + _subtitleBox.width;
-			_localeComboBox.resize(_videoWidth - _subtitleBox.width, 20);
 			
 			// Countdown
 			_countdownTxt.x = _videoWidth/2 - 10;
@@ -726,9 +664,6 @@ package modules.videoPlayer
 					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
 					
-					if ( !autoScale )
-						scaleVideo();
-						
 					this.updateDisplayList(0,0);
 					
 					// Enable seek
@@ -846,7 +781,7 @@ package modules.videoPlayer
 			{
 				_countdownTxt.visible = false;
 				_video.visible = true;
-				_camWrapper.visible = true;
+				_camVideo.visible = true;
 				
 				// Reset countdown timer
 				_countdownTxt.text = "5";
@@ -894,7 +829,7 @@ package modules.videoPlayer
 				_camVideo.attachCamera(_camera);
 
 				splitVideoPanel();
-				_camWrapper.visible = false;
+				_camVideo.visible = false;
 			}
 			
 			if ( state&RECORD_FLAG )
@@ -943,25 +878,33 @@ package modules.videoPlayer
 		{
 			if ( !(state&SPLIT_FLAG) ) return; // security check
 			
-			// Resize video panels
-			_videoWrapper.width = _videoWidth / 2 - 2;	
-			
-			var h:int = (_videoWidth / 2 - 2) * _video.height / _video.width;
+			/*
+			 * Resize video image
+			 */
+			var w:Number = _videoWidth / 2 - 2;
+			var h:int = w * _video.height / _video.width;
 			
 			if ( _videoHeight != h ) // cause we can call twice to this method
 				_lastVideoHeight = _videoHeight; // store last value
-				
-			_videoWrapper.height = h;
+
 			_videoHeight = h;
-			_video.x = 0;
-			_video.y = 0;
-				
-			// Resize cam video image
-			_camVideo.width = 640;
-			_camVideo.height = 400;
-			// not needed scaleCamVideo();
 			
-			_camWrapper.visible = true;
+			var scaleY:Number = h / _video.height;
+			var scaleX:Number = w / _video.width;
+			var scaleC:Number = scaleX < scaleY ? scaleX : scaleY;
+			
+			_video.y = Math.floor(h/2 - (_video.height * scaleC)/2);
+			_video.x = Math.floor(w/2 - (_video.width * scaleC)/2);
+			_video.y += _defaultMargin;
+			_video.x += _defaultMargin;
+			
+			_video.width *= scaleC;
+			_video.height *= scaleC;
+				
+			/*
+			 * Resize cam image
+			 */
+			scaleCamVideo(w, h);
 			
 			updateDisplayList(0,0);
 			
@@ -976,23 +919,32 @@ package modules.videoPlayer
 			// NOTE: problems with _videoWrapper.width
 			if ( _lastVideoHeight > _videoHeight )
 				_videoHeight = _lastVideoHeight;
-					
-			_videoWrapper.width = _videoWidth;
-			_videoWrapper.height = _videoHeight;
 
-			_camWrapper.visible = false;
+			scaleVideo();
 			
-			trace("The video panel has recover his original size");
+			_camVideo.visible = false;
+			
+			trace("The video panel has recovered his original size");
 		}
 		
 		// Aux: scaling cam image
-		private function scaleCamVideo() : void
+		private function scaleCamVideo(w:Number, h:Number) : void
 		{
-			_camWrapper.scaleX > _camWrapper.scaleY ? 
-					_camWrapper.scaleX = _camWrapper.scaleY 
-					: _camWrapper.scaleY = _camWrapper.scaleX;
-
-			_camVideo.x = (_videoWidth/2 -2)/2 - (_camVideo.width * _camWrapper.scaleX)/2;
+			var scaleY:Number = h / _defaultCamHeight;
+			var scaleX:Number = w / _defaultCamWidth;
+			var scaleC:Number = scaleX < scaleY ? scaleX : scaleY;
+			
+			_camVideo.width = _defaultCamWidth * scaleC;
+			_camVideo.height = _defaultCamHeight * scaleC;
+			
+			_camVideo.y = Math.floor(h/2 - _camVideo.height/2);
+			_camVideo.x = Math.floor(w/2 - _camVideo.width/2);
+			_camVideo.y += _defaultMargin;
+			_camVideo.x += (w + _defaultMargin);
+			
+			// 1 black pixel, being smarter
+			_camVideo.y += 1; _camVideo.height -= 2;
+			_camVideo.x += 1; _camVideo.width -= 2;
 		}
 		
 		/**
@@ -1027,6 +979,7 @@ package modules.videoPlayer
 			
 			_inNs.client = nsClient;
 			_camVideo.attachNetStream(_inNs);
+			_camVideo.visible = true;
 			
 			_inNs.play(_secondStreamSource);
 			
@@ -1046,7 +999,6 @@ package modules.videoPlayer
 			} 
 			else
 			{
-				Alert.show("Unsuccessful Connection in second stream", "Information");
 				trace( "Second stream connection Fail Code: " + e.info.code );
 			}
 		}

@@ -82,11 +82,6 @@
 				subtitle.language = "Spanish";
 				new SubtitleEvent(SubtitleEvent.GET_SUBTITLE_LINES, subtitle).dispatch();
 				*/
-				var tmp:ArrayCollection = new ArrayCollection();
-				tmp.addItem("Español");
-				tmp.addItem("English");
-				
-				VP.setLocales(tmp);
 				
 				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadata);
 				VP.addEventListener(SubtitleComboEvent.SELECTED_CHANGED, onLocaleChanged);
