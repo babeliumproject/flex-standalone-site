@@ -32,17 +32,18 @@
 			 * Exercise Related variables
 			 **/
 			[Bindable] private var _currentExercise:ExerciseVO;
-			[Bindable] private var thumbURL:String = DataModel.getInstance().thumbURL + "/";
+			[Bindable] private var _thumbURL:String = DataModel.getInstance().thumbURL + "/";
+			[Bindable] private var _exerciseTitle:String;
+			[Bindable] private var _exerciseSelected:Boolean = false;
 			private var _exerciseName:String;
 			private var _exerciseId:int;
-			[Bindable] private var _exerciseTitle:String;
 			
 			
 			/**
 			 * Others
 			 **/
-			private var cueManager:CuePointManager = CuePointManager.getInstance();
-			[Bindable] private var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
+			private var _cueManager:CuePointManager = CuePointManager.getInstance();
+			[Bindable] private var _streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
 
 			public var videoPlayerReady:Boolean = false;
 			
@@ -53,6 +54,7 @@
 			{
 				_exerciseTitle = resourceManager.getString('myResources', SELECT_EXERCISE);
 				setupVideoPlayer();
+				hideSelectedExercise();
 			}
 			
 			/**
@@ -67,6 +69,7 @@
 			public function onVideoPlayerReady(e:VideoPlayerEvent) : void
 			{
 				videoPlayerReady = true;
+				VP.stopVideo();
 				// TODO VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
 			}
 			
@@ -77,6 +80,27 @@
 			{
 				VP.stopVideo();
 				VP.videoSource = _exerciseName;
+			}
+			
+			/**
+			 * Show/Hide selected exercise
+			 **/
+			public function showSelectedExercise() : void
+			{
+				panelSelectedExercise.minHeight = 0;
+				panelSelectedExercise.height = 170;
+				panelSelectedExercise.visible = true;
+				
+				_exerciseSelected = true;
+			}
+			
+			public function hideSelectedExercise() : void
+			{
+				panelSelectedExercise.minHeight = 0;
+				panelSelectedExercise.height = 0;
+				panelSelectedExercise.visible = false;
+				
+				_exerciseSelected = false;
 			}
 			
 			/**
@@ -93,8 +117,25 @@
 					_currentExercise = tmp;
 					DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 1);
 					
+					showSelectedExercise();
 					prepareExercise();
 				}
+			}
+			
+			/**
+			 * On tab change - reset selected video and stop streaming
+			 **/
+			public function set onTabChange(value:Boolean) : void
+			{
+				VP.endVideo(); // Stop video
+				VP.setSubtitle(""); // Clear subtitles if any
+				VP.videoSource = ""; // Reset video source
+				VP.arrows = false; // Hide arrows
+				
+				_exerciseTitle = resourceManager.getString('myResources', SELECT_EXERCISE);
+				_currentExercise = null; // Reset current exercise
+				
+				hideSelectedExercise(); // Information of selected exercise
 			}
 			
 		]]>
@@ -102,6 +143,8 @@
 	
 	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(1)}"
 				destination="this.onExerciseSelected"/>
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="this.onTabChange" />
 	
 	<mx:HBox width="100%" verticalAlign="top">
 		<!-- Video Player -->
@@ -115,7 +158,8 @@
 						seek="true" subtitles="true" autoScale="true" arrows="false"
 						subtitlingControls="false" width="500" 
 						height="{Math.floor(VP.width * 800 / 1280)}"
-						streamSource="{streamSource}" />
+						streamSource="{_streamSource}"
+						controlsEnabled="{_exerciseSelected}" />
 		</mx:VBox>
 		<mx:Spacer width="20" />
 		<!-- Exercise List -->
@@ -127,13 +171,12 @@
 				  horizontalAlign="center"
 				  verticalAlign="middle"
 				  headerHeight="0">
-			<mx:Panel width="100%"
-					  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}"
-					  visible="{_currentExercise != null}">
-				<mx:HBox>
+			<mx:Panel id="panelSelectedExercise" width="100%" minHeight="0"
+					  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
+				<mx:HBox id="hboxSelectedExercise">
 					<mx:Image id="thumbnail"
 							  scaleContent="true"
-							  source="{thumbURL + _currentExercise.thumbnailUri}"
+							  source="{_thumbURL + _currentExercise.thumbnailUri}"
 							  autoLoad="true"
 							  width="120"
 							  height="90"

@@ -64,7 +64,7 @@ package control
 
 		/**
 		 * Set video.
-		 * @return true if video is successfully cached
+		 * @return true if video was cached
 		 **/
 		 public function setVideo(videoId:int) : Boolean
 		 {

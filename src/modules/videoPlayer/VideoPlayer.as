@@ -161,8 +161,13 @@ package modules.videoPlayer
 		[Bindable]
 		public function set videoSource( location:String ):void
 		{
-			_videoSource = location;	
-			dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_SOURCE_CHANGED ) );	
+			_videoSource = location;
+			_video.visible = true;
+			
+			if ( location != "" )
+				dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_SOURCE_CHANGED ) );	
+			else
+				resetAppearance();
 		}
 		
 		public function get videoSource( ):String
@@ -524,6 +529,7 @@ package modules.videoPlayer
 			stopVideo();
 			if ( _ns )
 				_ns.close();
+			_timer.stop();
 		}
 		
 		
@@ -701,6 +707,17 @@ package modules.videoPlayer
 			_videoWrapper.scaleX > _videoWrapper.scaleY ? _videoWrapper.scaleX = _videoWrapper.scaleY : _videoWrapper.scaleY = _videoWrapper.scaleX;
 			_video.y = Math.floor(_videoHeight/2 - (_video.height * _videoWrapper.scaleY)/2);
 			_video.x = Math.floor(_videoWidth/2 - (_video.width * _videoWrapper.scaleX)/2);
+		}
+		
+		/**
+		 * Resets videoplayer appearance
+		 **/
+		protected function resetAppearance() : void
+		{
+			_sBar.updateProgress(0,10);
+			_video.attachNetStream(null);
+			_video.visible = false;
+			_eTime.updateElapsedTime(0, 0);
 		}
 	}
 }

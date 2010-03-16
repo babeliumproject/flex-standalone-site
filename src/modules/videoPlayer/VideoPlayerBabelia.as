@@ -299,6 +299,14 @@ package modules.videoPlayer
 		/**
 		 * Enable/disable controls
 		 **/
+		public function set controlsEnabled(flag:Boolean) : void
+		{
+			flag ?
+				enableControls()
+				: disableControls();
+			
+		}
+		
 		public function toggleControls() : void
 		{
 			(_ppBtn.enabled)? disableControls() : enableControls();
