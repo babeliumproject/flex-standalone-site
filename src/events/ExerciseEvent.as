@@ -12,6 +12,7 @@ package events
 		public static const GET_EXERCISES:String="getExercises";
 		public static const WATCH_EXERCISE:String="watchExercise";
 		public static const EXERCISE_SELECTED:String="exerciseSelected";
+		public static const GET_EXERCISE_LOCALES:String="exerciseLocales";
 
 		public var exercise:ExerciseVO;
 		public var response:Number;

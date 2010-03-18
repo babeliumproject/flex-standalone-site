@@ -71,6 +71,19 @@ class ExerciseDAO {
 		$searchResults = $this->_listQuery($sql, $userId);
 	}
 	
+	public function getExerciseLocales($exerciseId) {
+		$sql = "SELECT DISTINCT language FROM subtitle
+				WHERE fk_exercise_id = %d";
+		
+		$searchResults = array ();
+		$result = $this->conn->_execute ( $sql, $exerciseId );
+		
+		while ( $row = $this->conn->_nextRow ( $result ) )
+			array_push($searchResults, $row[0]);
+		
+		return $searchResults; // return languages
+	}
+	
 	private function deleteLocalVideoCopy($fileName) {
 		$path = $this->filePath . "/" . $fileName;
 		$success = @unlink ( $path );

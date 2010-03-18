@@ -461,10 +461,9 @@
 
 			private function set availableRolesRetrieved(value:Boolean):void
 			{
-
-				if (DataModel.getInstance().availableExerciseRoles)
+				if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(0) == true)
 				{
-					var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles;
+					var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(0) as ArrayCollection;
 					var cData:ArrayCollection=new ArrayCollection;
 					var insertLine:Object={roleId: 0, charName: resourceManager.getString('myResources','OPTION_INSERT_NEW_ROLE'), action: 'insert', fontWeight: 'bold', indent: 0};
 					cData.addItem(insertLine);
@@ -520,8 +519,8 @@
 
 	<mx:ArrayCollection id="comboData"/>
 
-	<mx:Binding source="DataModel.getInstance().availableExerciseRoles"
-				destination="availableRolesRetrieved"/>
+	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(0)}"
+				destination="this.availableRolesRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(0)}"
 				destination="this.onExerciseSelected"/>
 	<mx:Binding source="{DataModel.getInstance().availableSubtitlesAndRolesRetrieved}"

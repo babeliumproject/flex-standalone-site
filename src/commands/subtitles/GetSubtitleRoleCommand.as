@@ -13,11 +13,14 @@ package commands.subtitles
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
-	import mx.utils.ObjectUtil;
 	import mx.utils.ArrayUtil;
+	import mx.utils.ObjectUtil;
+	
+	import vo.ExerciseRoleVO;
+	import vo.SubtitleAndSubtitleLinesVO;
 
 
-	public class GetExerciseRoleCommand implements ICommand, IResponder
+	public class GetSubtitleRoleCommand implements ICommand, IResponder
 	{
 
 		public function execute(event:CairngormEvent):void
@@ -32,20 +35,21 @@ package commands.subtitles
 			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
 			
-		if (result is Array)
+			if (result is Array)
 			{
 				resultCollection=new ArrayCollection( ArrayUtil.toArray(result));	
-//					
-//				if ( resultCollection.length > 0 && (resultCollection[0] is ExerciseRoleVO ) )
-//				{		
+			
+				if ( resultCollection.length > 0 )
+				{		
 					//Set the data to the application's model
-					DataModel.getInstance().availableExerciseRoles=resultCollection;
+					DataModel.getInstance().availableExerciseRoles.setItemAt(resultCollection, 0);
+					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
 					// Alert.show("RESULTADO:" + ObjectUtil.toString(resultCollection ));
-//				}	
-//				if (!(resultCollection[0] is ExerciseRoleVO ))
-//				{
-//					Alert.show("The Result is not a well-formed object");
-//				}
+				}	
+				else
+				{
+					Alert.show("No roles available");
+				}
 
 			}
 		}

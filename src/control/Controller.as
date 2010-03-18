@@ -14,13 +14,15 @@ package control {
 	import commands.evaluation.AddCreditsForEvaluatingCommand;
 	import commands.evaluation.ViewEvaluationModuleCommand;
 	import commands.exercises.AddCreditEntryEvalRequestCommand;
+	import commands.exercises.ExerciseSelectedCommand;
+	import commands.exercises.GetExerciseLocalesCommand;
+	import commands.exercises.GetExerciseRoleCommand;
 	import commands.exercises.MakeResponsePublicCommand;
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
-	import commands.exercises.ExerciseSelectedCommand;
 	import commands.main.GetAppPreferencesCommand;
 	import commands.main.GetExercisesCommand;
 	import commands.main.GetTopTenCreditedCommand;
@@ -30,7 +32,7 @@ package control {
 	import commands.main.WatchExerciseCommand;
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
-	import commands.subtitles.GetExerciseRoleCommand;
+	import commands.subtitles.GetSubtitleRoleCommand;
 	import commands.subtitles.GetSubtitlesAndRolesCommand;
 	import commands.subtitles.SaveSubtitlesCommand;
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
@@ -138,6 +140,7 @@ package control {
 			//Exercise management commands
 			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
+			addCommand(ExerciseEvent.GET_EXERCISE_LOCALES, GetExerciseLocalesCommand);
 			addCommand(ExerciseEvent.WATCH_EXERCISE, WatchExerciseCommand);
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
 			
@@ -150,7 +153,7 @@ package control {
 
 
 			addCommand(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES, GetSubtitlesAndRolesCommand);
-			addCommand(SubtitlesAndRolesEvent.GET_ROLES , GetExerciseRoleCommand);
+			addCommand(SubtitlesAndRolesEvent.GET_ROLES , GetSubtitleRoleCommand);
 
 			//Subtitle management commands
 			

@@ -78,6 +78,9 @@ package model
 		[Bindable] public var availableExercises:ArrayCollection;
 		[Bindable] public var availableExercisesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
+		[Bindable] public var availableExerciseLocales:Array;
+		[Bindable] public var availableExerciseLocalesRetrieved:Boolean = false;
+		
 		[Bindable] public var evaluationPendingResponses:ArrayCollection;
 		[Bindable] public var evaluationPendingRetrieved:Boolean = false;
 		
@@ -118,7 +121,8 @@ package model
 		[Bindable] public var videoPlayerControlsViewStack:int;	
 				
 		//Used to store exercise's roles added by the user  
-		[Bindable] public var availableExerciseRoles:ArrayCollection;
+		[Bindable] public var availableExerciseRoles:ArrayCollection = new ArrayCollection(new Array(null, null));
+		[Bindable] public var availableExerciseRolesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		//Used to store subtitle-lines and roles in the same DP
 		[Bindable] public var availableSubtitlesAndRolesRetrieved: Boolean = false;

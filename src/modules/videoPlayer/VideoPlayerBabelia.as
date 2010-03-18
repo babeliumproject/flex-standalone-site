@@ -694,7 +694,7 @@ package modules.videoPlayer
 					dispatchEvent(new RecordingEvent(RecordingEvent.MIC_DENIED));
 					trace("Mic access denied");
 					break;
-				case "Microphone.Unmuted": // User allowed access to camera
+				case "Microphone.Unmuted": // User allow access to camera
 					if ( !_micEnabled )
 					{
 						_micEnabled = true;
@@ -713,7 +713,7 @@ package modules.videoPlayer
 					dispatchEvent(new RecordingEvent(RecordingEvent.CAM_DENIED));
 					trace("Cam access denied");
 					break;
-				case "Camera.Unmuted": // User allowed access to camera
+				case "Camera.Unmuted": // User allow access to camera
 					if ( !_cameraEnabled )
 					{	
 						_cameraEnabled = true;

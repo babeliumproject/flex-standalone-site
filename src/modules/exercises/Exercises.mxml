@@ -3,7 +3,7 @@
 		  backgroundAlpha="0.0"
 		  borderStyle="none"
 		  width="100%"
-		  height="100%"
+		  height="700"
 		  xmlns:ns1="modules.exercises.*" 
 		  xmlns:videoPlayer="modules.videoPlayer.*"
 		  creationComplete="init()"
@@ -15,12 +15,17 @@
 		<![CDATA[
 			import control.CuePointManager;
 			
+			import events.ExerciseEvent;
+			import events.ExerciseRoleEvent;
+			
 			import model.DataModel;
 			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			
+			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			
 			/**
@@ -35,9 +40,21 @@
 			[Bindable] private var _thumbURL:String = DataModel.getInstance().thumbURL + "/";
 			[Bindable] private var _exerciseTitle:String;
 			[Bindable] private var _exerciseSelected:Boolean = false;
+			[Bindable] private var _locales:Array;
+			[Bindable] private var _characterNames:ArrayCollection = new ArrayCollection();
+			private var _roles:ArrayCollection;
 			private var _exerciseName:String;
 			private var _exerciseId:int;
 			
+			/**
+			 * Recording related variables
+			 **/
+			[Bindable] private var _rolesReady:Boolean;
+			[Bindable] private var _localesReady:Boolean;
+			[Bindable] private var _subtitlesReady:Boolean;
+			[Bindable] private var _cueManagerReady:Boolean;
+			
+			private var _recordedFilename:Boolean;
 			
 			/**
 			 * Others
@@ -60,12 +77,12 @@
 			/**
 			 * Setup for videoplayer
 			 **/
-			public function setupVideoPlayer() : void
+			private function setupVideoPlayer() : void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
 			}
 			
-			public function onVideoPlayerReady(e:VideoPlayerEvent) : void
+			private function onVideoPlayerReady(e:VideoPlayerEvent) : void
 			{
 				videoPlayerReady = true;
 				VP.stopVideo();
@@ -75,25 +92,88 @@
 			/**
 			 * Preparing exercise
 			 **/
-			public function prepareExercise() : void
+			private function prepareExercise() : void
 			{
+				// Prepare new video in VideoPlayer
 				VP.stopVideo();
 				VP.videoSource = _exerciseName;
+				
+				// Retrieving roles for selected exercise
+				var auxExRol:ExerciseRoleVO = new ExerciseRoleVO();
+				auxExRol.exerciseId = _exerciseId;
+				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, auxExRol).dispatch();
+				
+				// Retrieving available locales for selected exercise's subtitles
+				var auxEx:ExerciseVO = new ExerciseVO();
+				auxEx.id = _exerciseId;
+				new ExerciseEvent(ExerciseEvent.GET_EXERCISE_LOCALES, auxEx).dispatch();
+			}
+			
+			/**
+			 * On locales retrieved
+			 **/
+			private function set onLocalesRetrieved(value:Boolean) : void
+			{
+				if ( value )
+				{	
+					_locales = DataModel.getInstance().availableExerciseLocales;
+					
+					if ( _locales == null )
+					{
+						availableLocales.enabled = false;
+						_localesReady = false;
+					}
+					else
+					{
+						availableLocales.enabled = true;
+						_localesReady = true;
+					}
+						
+					DataModel.getInstance().availableExerciseLocalesRetrieved = false;
+				}
+			}
+			
+			/**
+			 * On roles retrieved
+			 **/
+			private function set onRolesRetrieved(value:Boolean) : void
+			{
+				if ( value )
+				{
+					_roles = DataModel.getInstance().availableExerciseRoles.getItemAt(1) as ArrayCollection;
+					_characterNames.removeAll();
+					
+					if ( _roles == null )
+					{
+						availableRoles.enabled = false;
+						_rolesReady = false;
+					}
+					else
+					{
+						availableRoles.enabled = true;
+						_rolesReady = true;
+						
+						for each ( var role:ExerciseRoleVO in _roles )
+							_characterNames.addItem(role.characterName);
+					}
+					
+					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, 1);
+				}
 			}
 			
 			/**
 			 * Show/Hide selected exercise
 			 **/
-			public function showSelectedExercise() : void
+			private function showSelectedExercise() : void
 			{
 				panelSelectedExercise.minHeight = 0;
-				panelSelectedExercise.height = 170;
+				panelSelectedExercise.height = 200;
 				panelSelectedExercise.visible = true;
 				
 				_exerciseSelected = true;
 			}
 			
-			public function hideSelectedExercise() : void
+			private function hideSelectedExercise() : void
 			{
 				panelSelectedExercise.minHeight = 0;
 				panelSelectedExercise.height = 0;
@@ -105,17 +185,24 @@
 			/**
 			 * On select an exercise from list
 			 **/
-			public function set onExerciseSelected(value:Boolean) : void
+			private function set onExerciseSelected(value:Boolean) : void
 			{
 				if ( value == true )
 				{
+					// Retrieving selected exercise information
 					var tmp:ExerciseVO = DataModel.getInstance().currentExercise.getItemAt(1) as ExerciseVO;
 					_exerciseName = tmp.name;
 					_exerciseTitle = tmp.title;
 					_exerciseId = tmp.id;
 					_currentExercise = tmp;
-					DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 1);
+					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, 1);
 					
+					// Need to retrieve again exercise's information
+					_rolesReady = false;
+					_localesReady = false;
+					_subtitlesReady = false;
+					_cueManagerReady = false;
+
 					showSelectedExercise();
 					prepareExercise();
 				}
@@ -124,7 +211,7 @@
 			/**
 			 * On tab change - reset selected video and stop streaming
 			 **/
-			public function set onTabChange(value:Boolean) : void
+			private function set onTabChange(value:Boolean) : void
 			{
 				VP.endVideo(); // Stop video
 				VP.setSubtitle(""); // Clear subtitles if any
@@ -144,8 +231,12 @@
 				destination="this.onExerciseSelected"/>
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange" />
+	<mx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
+				destination="this.onLocalesRetrieved" />
+	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(1)}"
+				destination="this.onRolesRetrieved" />
 	
-	<mx:HBox width="100%" verticalAlign="top">
+	<mx:HBox width="100%" verticalAlign="top" horizontalAlign="center">
 		<!-- Video Player -->
 		<mx:VBox>
 			<mx:Label id="exerciseTitle"
@@ -162,25 +253,31 @@
 		</mx:VBox>
 		<mx:Spacer width="20" />
 		<!-- Exercise List -->
-		<mx:Panel width="100%"
+		<mx:Panel width="500"
 				  height="100%"
 				  layout="vertical"
 				  fontFamily="Arial"
 				  fontSize="12"
 				  horizontalAlign="center"
 				  verticalAlign="middle"
+				  horizontalScrollPolicy="off"
 				  headerHeight="0">
 			<mx:Panel id="panelSelectedExercise" width="100%" minHeight="0"
 					  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
 				<mx:HBox id="hboxSelectedExercise">
-					<mx:Image id="thumbnail"
-							  scaleContent="true"
-							  source="{_thumbURL + _currentExercise.thumbnailUri}"
-							  autoLoad="true"
-							  width="120"
-							  height="90"
-							  toolTip="{_currentExercise.title}"
-							  useHandCursor="true" buttonMode="true"/>
+					<mx:VBox>
+						<mx:Image id="thumbnail"
+								  scaleContent="true"
+								  source="{_thumbURL + _currentExercise.thumbnailUri}"
+								  autoLoad="true"
+								  width="120"
+								  height="90"
+								  toolTip="{_currentExercise.title}"
+								  useHandCursor="true" buttonMode="true"/>
+						<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+								   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp;
+								   			_subtitlesReady &amp;&amp; _cueManagerReady}" />
+					</mx:VBox>
 					<mx:VBox width="100%"
 							 verticalGap="2">
 						<mx:LinkButton label="{_currentExercise.title}"
@@ -191,27 +288,27 @@
 								  width="100%"/>
 						<mx:Spacer height="5"/>
 						<mx:HBox>
-							<mx:HBox>
-								<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}" />
-								<mx:ComboBox width="100" />
-							</mx:HBox>
-							<mx:HBox>
-								<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}" />
-								<mx:ComboBox width="100" />
-							</mx:HBox>
+							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}" />
+							<mx:ComboBox width="100" id="availableRoles" 
+									dataProvider="{_characterNames}" />
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}" />
+							<mx:ComboBox width="100" id="availableLocales"
+									dataProvider="{_locales}" />
 						</mx:HBox>
 						<mx:Spacer height="5"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}" />
-							<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}" />
-							<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}" />
+							<mx:VBox>
+								<mx:RadioButton selected="true" groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}" />
+								<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}" />
+							</mx:VBox>
 						</mx:HBox>
-						<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}" />
-						<mx:Spacer height="5"/>
 					</mx:VBox>
 				</mx:HBox>
 			</mx:Panel>
-			<mx:Panel title="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}" width="100%"
+			<mx:Panel width="100%"
 					  verticalAlign="top">
 				<ns1:VideoList width="100%" />
 			</mx:Panel>

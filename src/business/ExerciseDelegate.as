@@ -38,5 +38,17 @@ package business
 			pendingCall.addResponder(responder);
 		}
 
+		public function getExerciseLocales(exercise:ExerciseVO):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.getExerciseLocales(exercise.id);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function getExerciseRoles(exercise:ExerciseVO) : void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.getExerciseRoles(exercise.id);
+			pendingCall.addResponder(responder);
+		}
+		
 	}
 }

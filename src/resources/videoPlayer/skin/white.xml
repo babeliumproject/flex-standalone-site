@@ -21,7 +21,7 @@
 	</Component>
 	<Component name="SubtitleTextBox">
 		<Property name="bgColor">0xFFFFFF</Property>
-		<Property name="boxColor">0xA1ABD2</Property>
+		<Property name="boxColor">0xB2E1FF</Property>
 	</Component>
 	<Component name="AudioSlider">
 		<Property name="bgColor">0xFFFFFF</Property>
