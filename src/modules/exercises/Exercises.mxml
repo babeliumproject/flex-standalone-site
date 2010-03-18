@@ -13,18 +13,23 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import commands.cuepointManager.ShowSubtitleCommand;
+			
 			import control.CuePointManager;
 			
+			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			
 			import model.DataModel;
 			
 			import modules.videoPlayer.events.VideoPlayerEvent;
+			import modules.videoPlayer.events.babelia.StreamEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			
+			import vo.CueObject;
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			
@@ -127,6 +132,9 @@
 					{
 						availableLocales.enabled = true;
 						_localesReady = true;
+						
+						// Preparing subtitles
+						prepareCueManager();
 					}
 						
 					DataModel.getInstance().availableExerciseLocalesRetrieved = false;
@@ -159,6 +167,68 @@
 					
 					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, 1);
 				}
+			}
+			
+			/**
+			 * Reset Cuepoint Manager
+			 **/
+			private function resetCueManager() : void
+			{
+				_cueManager.reset();
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+				
+			}
+			
+			/**
+			 * Prepare Cuepoint Manager
+			 **/
+			private function prepareCueManager() : void
+			{
+				var cached:Boolean = _cueManager.setVideo(_exerciseId);
+				
+				if ( cached ) // Cuepoints are cached, only need to setup commands
+					setupPlayCommands();
+				else // Need to get cuepoints for this video manually
+				{ 
+					_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+					_cueManager.setCuesFromSubtitle(availableLocales.selectedItem.toString());
+				}	
+
+				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			}
+			
+			/**
+			 * On subtitles retrieved
+			 **/
+			private function onSubtitlesRetrieved(e:CueManagerEvent) : void
+			{
+				setupPlayCommands();
+			}
+			
+			/**
+			 * Setup commands for playing sample video
+			 **/
+			private function setupPlayCommands() : void
+			{
+				var auxList:ArrayCollection = _cueManager.getCuelist();
+				
+				if ( auxList.length <= 0 ) return;
+				
+				for each ( var cueobj:CueObject in auxList )
+				{
+					cueobj.setStartCommand(new ShowSubtitleCommand(cueobj.getText(), VP));
+					cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
+				}
+			}
+			
+			/**
+			 * On locale combo box change
+			 **/
+			private function onLocaleComboChanged(e:Event) : void
+			{
+				resetCueManager();
+				prepareCueManager();
 			}
 			
 			/**
@@ -205,6 +275,7 @@
 
 					showSelectedExercise();
 					prepareExercise();
+					resetCueManager();
 				}
 			}
 			
@@ -222,6 +293,9 @@
 				_currentExercise = null; // Reset current exercise
 				
 				hideSelectedExercise(); // Information of selected exercise
+				
+				// Remove cueManager's Listeners
+				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 			}
 			
 		]]>
@@ -295,7 +369,8 @@
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}" />
 							<mx:ComboBox width="100" id="availableLocales"
-									dataProvider="{_locales}" />
+									dataProvider="{_locales}"
+									change="this.onLocaleComboChanged(event)" />
 						</mx:HBox>
 						<mx:Spacer height="5"/>
 						<mx:HBox>

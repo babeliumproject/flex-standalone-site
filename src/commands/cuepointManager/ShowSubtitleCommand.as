@@ -3,16 +3,14 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import mx.controls.Text;
-	
-	import vo.CueObject;
+	import modules.videoPlayer.VideoPlayerBabelia;
 
 	public class ShowSubtitleCommand implements ICommand
 	{
-		private var subHolder:Text;
+		private var subHolder:VideoPlayerBabelia;
 		private var text:String;
 		
-		public function ShowSubtitleCommand(text:String, subHolder:Text)
+		public function ShowSubtitleCommand(text:String, subHolder:VideoPlayerBabelia)
 		{
 			this.subHolder = subHolder;
 			this.text = text;
@@ -20,7 +18,7 @@ package commands.cuepointManager
 
 		public function execute(event:CairngormEvent):void
 		{
-			subHolder.text = text;
+			subHolder.setSubtitle(text);
 		}	
 	}
 }
