@@ -55,6 +55,7 @@
 					 height="520"
 					 id="exerciseListDatagrid"
 					 dataProvider="{dp}"
+					 enabled="{!DataModel.getInstance().recordingExercise}"
 					 change="changeHandler(event)"
 					 fontFamily="Arial"
 					 fontSize="13"

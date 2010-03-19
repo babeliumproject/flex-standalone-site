@@ -13,7 +13,10 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import commands.cuepointManager.RecordingOtherRoleCommand;
 			import commands.cuepointManager.ShowSubtitleCommand;
+			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
+			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
 			import control.CuePointManager;
 			
@@ -24,6 +27,7 @@
 			import model.DataModel;
 			
 			import modules.videoPlayer.events.VideoPlayerEvent;
+			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			
 			import mx.collections.ArrayCollection;
@@ -56,7 +60,6 @@
 			 **/
 			[Bindable] private var _rolesReady:Boolean;
 			[Bindable] private var _localesReady:Boolean;
-			[Bindable] private var _subtitlesReady:Boolean;
 			[Bindable] private var _cueManagerReady:Boolean;
 			
 			private var _recordedFilename:Boolean;
@@ -85,6 +88,10 @@
 			private function setupVideoPlayer() : void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.addEventListener(RecordingEvent.END, onRecordingEnd);
+				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
+				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied);
+				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied);
 			}
 			
 			private function onVideoPlayerReady(e:VideoPlayerEvent) : void
@@ -195,6 +202,7 @@
 					_cueManager.setCuesFromSubtitle(availableLocales.selectedItem.toString());
 				}	
 
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			}
 			
@@ -221,8 +229,40 @@
 					cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
 				}
 				
-				_subtitlesReady = true;
 				_cueManagerReady = true;
+			}
+			
+			/**
+			 * Setup recording commands
+			 **/
+			private function setupRecordingCommands(selectedRole:String) : void
+			{
+				var auxList:ArrayCollection = _cueManager.getCuelist();
+				
+				if ( auxList.length <= 0 ) return;
+				
+				for each ( var cueobj:CueObject in auxList )
+				{
+					if ( cueobj.getRole() != selectedRole )
+					{
+						cueobj.setStartCommand(
+							new RecordingOtherRoleCommand(cueobj.getText(), selectedRole, 
+								cueobj.getEndTime() - cueobj.getStartTime(), VP));
+						
+						cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
+					}
+					else
+					{
+						cueobj.setStartCommand(
+							new StartRecordingSelectedRoleCommand(cueobj.getText(), selectedRole, 
+								cueobj.getEndTime() - cueobj.getStartTime(), VP));
+						
+						cueobj.setEndCommand(new StopRecordingSelectedRoleCommand(VP));
+					}
+				}
+				
+				_cueManagerReady = true;
+				
 			}
 			
 			/**
@@ -273,13 +313,78 @@
 					// Need to retrieve again exercise's information
 					_rolesReady = false;
 					_localesReady = false;
-					_subtitlesReady = false;
 					_cueManagerReady = false;
 
 					showSelectedExercise();
 					prepareExercise();
 					resetCueManager();
 				}
+			}
+			
+			/**
+			 * On start recording clicked
+			 **/
+			private function onStartRecordingClicked(e:MouseEvent) : void
+			{
+				var role:String = availableRoles.selectedItem.toString();
+				setupRecordingCommands(role);
+				
+				if ( micOnly.selected ) 
+					VP.state = VideoPlayerBabelia.RECORD_MIC_STATE;
+				else
+					VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE;
+				
+				VP.arrows = true;
+				VP.setArrows(_cueManager.cues2rolearray(), role);
+				
+				// Disable events and tabs
+				DataModel.getInstance().recordingExercise = true;
+			}
+			
+			/**
+			 * On recording end successfully
+			 **/
+			private function onRecordingEnd(e:RecordingEvent) : void
+			{
+				Alert.show("Recording has ended");
+				
+				VP.arrows = false;
+				VP.removeArrows();
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
+				
+				DataModel.getInstance().recordingExercise = false;
+				
+				// TODO: show menu with options
+			}
+			
+			/**
+			 * On recording aborted
+			 **/
+			private function onRecordingAborted(e:RecordingEvent) : void
+			{
+				Alert.show("Aborted");
+				
+				// TODO: something
+			}
+			
+			/**
+			 * On cam access denied
+			 **/
+			private function onCamAccessDenied(e:RecordingEvent) : void
+			{
+				Alert.show("Cam denied");
+				
+				// TODO: something
+			}
+			
+			/**
+			 * On mic access denied
+			 **/
+			private function onMicAccessDenied(e:RecordingEvent) : void
+			{
+				Alert.show("Mic denied");
+				
+				// TODO: something
 			}
 			
 			/**
@@ -352,8 +457,9 @@
 								  toolTip="{_currentExercise.title}"
 								  useHandCursor="true" buttonMode="true"/>
 						<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
-								   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp;
-								   			_subtitlesReady &amp;&amp; _cueManagerReady}" />
+								   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
+								   			&amp;&amp; !DataModel.getInstance().recordingExercise}" 
+								   click="onStartRecordingClicked(event)" />
 					</mx:VBox>
 					<mx:VBox width="100%"
 							 verticalGap="2">
@@ -367,20 +473,22 @@
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}" />
 							<mx:ComboBox width="100" id="availableRoles" 
-									dataProvider="{_characterNames}" />
+									dataProvider="{_characterNames}"
+									enabled="{!DataModel.getInstance().recordingExercise}"/>
 						</mx:HBox>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}" />
 							<mx:ComboBox width="100" id="availableLocales"
 									dataProvider="{_locales}"
-									change="this.onLocaleComboChanged(event)" />
+									change="this.onLocaleComboChanged(event)"
+									enabled="{!DataModel.getInstance().recordingExercise}" />
 						</mx:HBox>
 						<mx:Spacer height="5"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}" />
 							<mx:VBox>
-								<mx:RadioButton selected="true" groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}" />
-								<mx:RadioButton groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}" />
+								<mx:RadioButton id="micOnly" selected="true" groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}" />
+								<mx:RadioButton id="micAndCam" groupName="recMode" label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}" />
 							</mx:VBox>
 						</mx:HBox>
 					</mx:VBox>

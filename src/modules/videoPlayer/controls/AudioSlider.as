@@ -49,6 +49,7 @@ package modules.videoPlayer.controls
 		private var _mutOverBg:Sprite;
 		private var _muted:Boolean = false;
 		private var _mutedX:Number = 0;
+		private var _doingMute:Boolean = false;
 		
 		
 		public function AudioSlider()
@@ -124,6 +125,8 @@ package modules.videoPlayer.controls
 		
 		public function set muted(flag:Boolean) : void
 		{
+			if ( flag == _muted ) return;
+			
 			_sliderArea.useHandCursor = !flag;
 			_sliderArea.buttonMode = !flag;
 			
@@ -163,8 +166,6 @@ package modules.videoPlayer.controls
 				_muteBtn.removeEventListener( MouseEvent.CLICK, muteClicked );
 				_mutOverBg.removeEventListener( MouseEvent.CLICK, muteClicked );
 			}
-			
-			if ( muted == flag ) return;
 
 			muteClicked(null); // Click event
 		}
@@ -322,6 +323,10 @@ package modules.videoPlayer.controls
 		
 		private function muteClicked( e:MouseEvent ):void
 		{
+			if ( _doingMute ) return; // Avoiding stack overflow
+			
+			_doingMute = true;
+			
 			var _x:Number = _muted == true ? _mutedX : _defaultX;
 			
 			if( _currentVolume == 0 && !_muted ) 
@@ -352,6 +357,7 @@ package modules.videoPlayer.controls
 					_muted = true;
 				}
 				
+				_doingMute = false;
 			} );
 			
 			a2 = new AnimateProperty();

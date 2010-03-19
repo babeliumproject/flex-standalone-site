@@ -199,6 +199,19 @@ package control
 			return cuelist;
 		}
 		
+		/**
+		 * Return cuepoint list in array mode with startTime and role
+		 **/
+		public function cues2rolearray() : ArrayCollection
+		{
+			var arrows:ArrayCollection = new ArrayCollection();
+			
+			for each ( var cue:CueObject in getCuelist() )
+				arrows.addItem({time:cue.getStartTime(),role:cue.getRole()});
+				
+			return arrows;
+		}
+		
 
 		/**
 		 * Implements IResponder methods for subtitle lines retrieve

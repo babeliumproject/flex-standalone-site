@@ -27,6 +27,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
@@ -210,6 +211,7 @@ package modules.videoPlayer
 		{
 			_subtitlePanel.visible = flag;
 			_subtitleButton.setEnabled(flag);
+			this.updateDisplayList(0,0);
 		}
 		
 		/**
@@ -231,6 +233,7 @@ package modules.videoPlayer
 		public function set arrows(flag:Boolean) : void
 		{
 			_arrowContainer.visible = flag;
+			this.updateDisplayList(0,0);
 		}
 		
 		/**
@@ -661,6 +664,7 @@ package modules.videoPlayer
 				case RECORD_MIC_STATE:
 					
 					recoverVideoPanel(); // original size
+					prepareWebcam(); // needed
 					prepareMicrophone();
 					startAccessTimeout();
 					
@@ -794,7 +798,9 @@ package modules.videoPlayer
 			{
 				_countdownTxt.visible = false;
 				_video.visible = true;
-				_camVideo.visible = true;
+				
+				if ( state == RECORD_BOTH_STATE )
+					_camVideo.visible = true;
 				
 				// Reset countdown timer
 				_countdownTxt.text = "5";
@@ -922,7 +928,7 @@ package modules.videoPlayer
 			 */
 			scaleCamVideo(w, h);
 			
-			updateDisplayList(0,0);
+			updateDisplayList(0,0); // repaint
 			
 			trace("The video panel has been splitted");
 		}
@@ -976,7 +982,6 @@ package modules.videoPlayer
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
-				_micActivityBar.visible = false;
 			}
 		}
 
