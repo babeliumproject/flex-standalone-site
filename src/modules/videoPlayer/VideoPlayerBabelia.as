@@ -13,6 +13,7 @@ package modules.videoPlayer
 	
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
+	import modules.videoPlayer.controls.babelia.MicActivityBar;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleEndButton;
@@ -26,7 +27,6 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
@@ -50,6 +50,7 @@ package modules.videoPlayer
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
 		private var _roleTalkingPanel:RoleTalkingPanel;
+		private var _micActivityBar:MicActivityBar;
 		private var _subtitlingControls:UIComponent;
 		private var _subtitlingText:Text;
 		private var _subtitleStart:SubtitleStartButton;
@@ -157,6 +158,9 @@ package modules.videoPlayer
 			_subtitlingControls.addChild(_subtitleEnd);
 			_subtitlingControls.visible = false;
 			
+			_micActivityBar = new MicActivityBar();
+			_micActivityBar.visible = false;
+			
 			/**
 			 * Events listeners
 			 **/
@@ -174,6 +178,7 @@ package modules.videoPlayer
 			addChild(_camVideo);
 			addChild(_countdownTxt);
 			addChild(_subtitlingControls);
+			addChild(_micActivityBar);
 			
 			/**
 			 * Adds skinable components to dictionary
@@ -185,6 +190,7 @@ package modules.videoPlayer
 			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
 			putSkinableComponent(_subtitleStart.COMPONENT_NAME, _subtitleStart);
 			putSkinableComponent(_subtitleEnd.COMPONENT_NAME, _subtitleEnd);
+			putSkinableComponent(_micActivityBar.COMPONENT_NAME, _micActivityBar);
 			
 			// Loads default skin
 			skin = "default";
@@ -413,6 +419,13 @@ package modules.videoPlayer
 			_subtitleStart.refresh();
 			_subtitleEnd.x = _subtitleStart.x + _subtitleStart.width + _defaultMargin;
 			_subtitleEnd.refresh();
+			
+			// Mic gain bar
+			_micActivityBar.x = _defaultMargin;
+			_micActivityBar.y = _defaultMargin + _videoHeight - 30;
+			_micActivityBar.width = _videoWidth;
+			_micActivityBar.height = 22;
+			_micActivityBar.refresh();
 			
 			drawBG();
 		}
@@ -843,6 +856,9 @@ package modules.videoPlayer
 				_outNs.attachCamera(_camera);
 			
 			disableControls();
+			
+			_micActivityBar.visible = true;
+			_micActivityBar.mic = _mic;
 		}
 		
 		/**
@@ -923,6 +939,7 @@ package modules.videoPlayer
 			scaleVideo();
 			
 			_camVideo.visible = false;
+			_micActivityBar.visible = false;
 			
 			trace("The video panel has recovered his original size");
 		}
@@ -959,6 +976,7 @@ package modules.videoPlayer
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
+				_micActivityBar.visible = false;
 			}
 		}
 

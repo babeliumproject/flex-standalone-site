@@ -220,6 +220,9 @@
 					cueobj.setStartCommand(new ShowSubtitleCommand(cueobj.getText(), VP));
 					cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
 				}
+				
+				_subtitlesReady = true;
+				_cueManagerReady = true;
 			}
 			
 			/**
