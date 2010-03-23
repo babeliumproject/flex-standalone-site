@@ -300,6 +300,7 @@ package modules.videoPlayer
 		public function muteRecording(flag:Boolean) : void
 		{
 			if ( _recordingMuted == flag ) return;
+			_recordingMuted = flag;
 			
 			if ( state&RECORD_FLAG )
 				( flag ) ? _mic.gain = 0 : _mic.gain = DEFAULT_VOLUME;
@@ -310,8 +311,6 @@ package modules.videoPlayer
 				else if ( _inNs != null )
 					_inNs.soundTransform = new SoundTransform(DEFAULT_VOLUME);
 			}
-			
-			_recordingMuted = !_recordingMuted;
 		}
 		
 		/**
@@ -847,6 +846,7 @@ package modules.videoPlayer
 			_mic = Microphone.getMicrophone();
 			_mic.setUseEchoSuppression(true); 
 			_mic.setLoopBack(true);
+			_mic.setSilenceLevel(0, 60000);
 			// Important: Access Control
 			_mic.addEventListener(StatusEvent.STATUS,mic_status);
 		}
@@ -856,6 +856,7 @@ package modules.videoPlayer
 		{
 			// Disable seek
 			seek = false;
+			_mic.setLoopBack(false);
 			
 			if ( state&SPLIT_FLAG )
 			{

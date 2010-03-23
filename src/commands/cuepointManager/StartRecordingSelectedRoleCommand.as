@@ -25,7 +25,7 @@ package commands.cuepointManager
 		public function execute(event:CairngormEvent):void
 		{
 			VP.setSubtitle(text);
-			VP.muteVideo(true);
+			TODO Problems: VP.muteVideo(true);
 			VP.muteRecording(false);
 			VP.startTalking(role, time);
 		}		
