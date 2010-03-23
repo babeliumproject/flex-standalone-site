@@ -5,7 +5,7 @@ package vo
 	[Bindable]
 	public class CueObject
 	{
-		private var startTime:Number;
+		public var startTime:Number;
 		private var endTime:Number;
 		private var roleId:int;
 		private var role:String;
