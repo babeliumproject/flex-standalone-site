@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+			layout="absolute"
+			cornerRadius="20"
+			backgroundAlpha="1.0"
+			title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
+		<mx:HBox x="0"
+				 y="0"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 cornerRadius="20"
+				 alpha="1.0"
+				 backgroundAlpha="0.0"
+				 width="866"
+				 height="129">
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
+					   width="161"
+					   height="105"
+					   cornerRadius="20"
+					   fontSize="12"
+					   fillAlphas="[1.0, 1.0]"
+					   fillColors="[#A9F6B4, #A9F6B4]"
+					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
+					   color="#464141"/>
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
+					   width="161"
+					   height="105"
+					   cornerRadius="20"
+					   fontSize="12"
+					   labelPlacement="top"
+					   fillAlphas="[1.0, 1.0]"
+					   fillColors="[#A9F6B4, #A9F6B4]"
+					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_RESPONSE))"
+					   color="#464141"/>
+			<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
+					   width="161"
+					   height="105"
+					   cornerRadius="20"
+					   fontSize="12"
+					   alpha="1.0"
+					   fillAlphas="[1.0, 1.0]"
+					   fillColors="[#F68B8B, #F68B8B]"/>
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
+					   width="169"
+					   height="105"
+					   cornerRadius="20"
+					   fontSize="12"
+					   alpha="1.0"/>
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
+					   width="169"
+					   height="105"
+					   cornerRadius="20"
+					   fontSize="12"
+					   alpha="1.0"
+					   enabled="{ DataModel.getInstance().isLoggedIn }"/>
+		</mx:HBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import events.RecordingEndOptionEvent;
+			
+			import model.DataModel;
+		]]>
+	</mx:Script>
+</mx:Panel>

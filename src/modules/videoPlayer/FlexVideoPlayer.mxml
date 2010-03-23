@@ -123,6 +123,7 @@
 				
 				VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE; // start "recording"
 				VP.addEventListener(RecordingEvent.END, onFinishedRecording);
+				VP.muteRecording(false);
 			}
 			
 			public function click2(e:Event) : void

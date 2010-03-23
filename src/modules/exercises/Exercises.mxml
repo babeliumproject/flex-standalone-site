@@ -23,6 +23,7 @@
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
+			import events.RecordingEndOptionEvent;
 			
 			import model.DataModel;
 			
@@ -32,6 +33,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
 			
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -62,15 +64,16 @@
 			[Bindable] private var _localesReady:Boolean;
 			[Bindable] private var _cueManagerReady:Boolean;
 			
-			private var _recordedFilename:Boolean;
+			private var _selectedRole:String;
+			private var _recordedFilename:String;
 			
 			/**
 			 * Others
 			 **/
 			private var _cueManager:CuePointManager = CuePointManager.getInstance();
 			[Bindable] private var _streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
-
-			public var videoPlayerReady:Boolean = false;
+			private var _recordingEndOptions:RecordingEndOptions;
+			public var _videoPlayerReady:Boolean = false;
 			
 			/**
 			 * On creation complete
@@ -96,9 +99,8 @@
 			
 			private function onVideoPlayerReady(e:VideoPlayerEvent) : void
 			{
-				videoPlayerReady = true;
+				_videoPlayerReady = true;
 				VP.stopVideo();
-				// TODO VP.addEventListener(StreamEvent.ENTER_FRAME, monitorCuePoints);
 			}
 			
 			/**
@@ -235,7 +237,7 @@
 			/**
 			 * Setup recording commands
 			 **/
-			private function setupRecordingCommands(selectedRole:String) : void
+			private function setupRecordingCommands() : void
 			{
 				var auxList:ArrayCollection = _cueManager.getCuelist();
 				
@@ -243,10 +245,10 @@
 				
 				for each ( var cueobj:CueObject in auxList )
 				{
-					if ( cueobj.getRole() != selectedRole )
+					if ( cueobj.getRole() != _selectedRole )
 					{
 						cueobj.setStartCommand(
-							new RecordingOtherRoleCommand(cueobj.getText(), selectedRole, 
+							new RecordingOtherRoleCommand(cueobj.getText(), cueobj.getRole(), 
 								cueobj.getEndTime() - cueobj.getStartTime(), VP));
 						
 						cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
@@ -254,7 +256,7 @@
 					else
 					{
 						cueobj.setStartCommand(
-							new StartRecordingSelectedRoleCommand(cueobj.getText(), selectedRole, 
+							new StartRecordingSelectedRoleCommand(cueobj.getText(), _selectedRole, 
 								cueobj.getEndTime() - cueobj.getStartTime(), VP));
 						
 						cueobj.setEndCommand(new StopRecordingSelectedRoleCommand(VP));
@@ -262,7 +264,6 @@
 				}
 				
 				_cueManagerReady = true;
-				
 			}
 			
 			/**
@@ -326,16 +327,18 @@
 			 **/
 			private function onStartRecordingClicked(e:MouseEvent) : void
 			{
-				var role:String = availableRoles.selectedItem.toString();
-				setupRecordingCommands(role);
+				// Commands with selected role
+				_selectedRole = availableRoles.selectedItem.toString();
+				setupRecordingCommands();
 				
+				// Recording mode
 				if ( micOnly.selected ) 
 					VP.state = VideoPlayerBabelia.RECORD_MIC_STATE;
 				else
 					VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE;
 				
-				VP.arrows = true;
-				VP.setArrows(_cueManager.cues2rolearray(), role);
+				// Prepare arrows
+				showArrows();
 				
 				// Disable events and tabs
 				DataModel.getInstance().recordingExercise = true;
@@ -346,15 +349,26 @@
 			 **/
 			private function onRecordingEnd(e:RecordingEvent) : void
 			{
-				Alert.show("Recording has ended");
+				// Store response's filename
+				_recordedFilename = e.fileName;
 				
-				VP.arrows = false;
-				VP.removeArrows();
+				// Remove arrows
+				hideArrows();
 				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				
 				DataModel.getInstance().recordingExercise = false;
 				
-				// TODO: show menu with options
+				// Show menu options
+				_recordingEndOptions = RecordingEndOptions(PopUpManager.createPopUp(parent, RecordingEndOptions, true));
+				_recordingEndOptions.title = resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS');
+				PopUpManager.centerPopUp(_recordingEndOptions);
+				
+				// Add Listeners
+				_recordingEndOptions.removeEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
+				_recordingEndOptions.removeEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
+
 			}
 			
 			/**
@@ -388,6 +402,24 @@
 			}
 			
 			/**
+			 * Show Arrows
+			 **/
+			private function showArrows() : void
+			{
+				VP.arrows = true;
+				VP.setArrows(_cueManager.cues2rolearray(), _selectedRole);
+			}
+			
+			/**
+			 * Hide Arroes
+			 **/
+			private function hideArrows() : void
+			{
+				VP.arrows = false;
+				VP.removeArrows();
+			}
+			
+			/**
 			 * On tab change - reset selected video and stop streaming
 			 **/
 			private function set onTabChange(value:Boolean) : void
@@ -404,6 +436,24 @@
 				
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+			}
+			
+			
+			/**
+			 * Recording end options
+			 **/
+			private function onWatchExerciseAndResponse(e:Event) : void
+			{
+				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.secondSource = _recordedFilename;
+				PopUpManager.removePopUp(_recordingEndOptions);
+			}
+			
+			private function onWatchResponse(e:Event) : void
+			{
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				VP.videoSource = _recordedFilename;
+				PopUpManager.removePopUp(_recordingEndOptions);
 			}
 			
 		]]>

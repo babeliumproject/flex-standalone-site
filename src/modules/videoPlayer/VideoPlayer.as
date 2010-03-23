@@ -73,13 +73,13 @@ package modules.videoPlayer
 		private var _bgVideo:Sprite;
 		protected var _ppBtn:PlayButton;
 		protected var _stopBtn:StopButton;
-		private var _eTime:ElapsedTime;
+		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
 		protected var _sBar:ScrubberBar;
 		protected var _audioSlider:AudioSlider;
-		protected var _videoHeight:Number = 300;
-		protected var _videoWidth:Number = 500;
+		protected var _videoHeight:Number = 200;
+		protected var _videoWidth:Number = 320;
 		
 		private var _timer:Timer;
 		
@@ -372,6 +372,7 @@ package modules.videoPlayer
 			_videoBarPanel.y = _defaultMargin + _videoHeight;
 			_videoBarPanel.x = _defaultMargin;
 
+			_ppBtn.x = 0;
 			_ppBtn.refresh();
 
 			_stopBtn.x = _ppBtn.x + _ppBtn.width;
@@ -379,16 +380,17 @@ package modules.videoPlayer
 			
 			_sBar.x = _stopBtn.x + _stopBtn.width;
 			_sBar.refresh();
-			
-			_eTime.x = _sBar.x + _sBar.width;
-			_eTime.refresh();
 
-			_audioSlider.x = _eTime.x + _eTime.width;
+			_eTime.refresh();
+			
 			_audioSlider.refresh();
 			
-			_sBar.width = _videoBarPanel.width - _ppBtn.width - _stopBtn.width
+			_sBar.width = _videoWidth - _ppBtn.width - _stopBtn.width
 							- _eTime.width - _audioSlider.width;
-							
+			
+			_eTime.x = _sBar.x + _sBar.width;
+			_audioSlider.x = _eTime.x + _eTime.width;
+			
 			drawBG();
 		}
 		
@@ -399,12 +401,14 @@ package modules.videoPlayer
 		{
 			totalWidth = w;
 			_videoWidth = w - 2*_defaultMargin;
+			this.updateDisplayList(0,0); // repaint
 		}
 		
 		override public function set height(h:Number) : void
 		{
 			totalHeight = h;
 			_videoHeight = h - 2*_defaultMargin;
+			this.updateDisplayList(0,0); // repaint
 		}
 		
 		/**

@@ -43,7 +43,7 @@ package modules.videoPlayer
 		public static const ROLEBORDER_COLOR:String = "roleBorderColor";
 		
 		/**
-		 * Interface variables
+		 * Interface components
 		 */
 		private var _subtitleButton:SubtitleButton;
 		private var _subtitlePanel:UIComponent;
@@ -78,7 +78,7 @@ package modules.videoPlayer
 		
 		private var _state:int;
 		
-		// other constants
+		// Other constants
 		private const AUDIO_DIR:String = "audio";
 		private const DEFAULT_VOLUME:Number = 40;
 		private const ACCESS_TIMEOUT_SECS:int = 5;
@@ -224,12 +224,13 @@ package modules.videoPlayer
 			_arrowPanel.setArrows(arrows, _duration, selectedRole);
 		}
 		
+		// remove arrows from panel
 		public function removeArrows() : void
 		{
 			_arrowPanel.removeArrows();
 		}
 		
-		
+		// show/hide arrow panel
 		public function set arrows(flag:Boolean) : void
 		{
 			_arrowContainer.visible = flag;
@@ -237,7 +238,8 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Duration: seconds
+		 * Set role to talk in role talking panel
+		 * @param duration in seconds
 		 **/
 		public function startTalking(role:String, duration:Number) : void
 		{
@@ -333,6 +335,7 @@ package modules.videoPlayer
 			else
 				playSecondStream();
 				
+			// splits video panel into 2 views
 			splitVideoPanel();
 		}
 		
@@ -349,7 +352,7 @@ package modules.videoPlayer
 		 * 
 		 */
 		
-		/** Overriden */
+		/** Overriden repaint */
 		
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
@@ -366,9 +369,16 @@ package modules.videoPlayer
 			_bgArrow.graphics.drawRect( 1, 1, _arrowContainer.width-2, _arrowContainer.height-2 );
 			_bgArrow.graphics.endFill();
 			
-			_subtitleButton.x = _audioSlider.x + _audioSlider.width;
 			_subtitleButton.resize(45, 20);
-			_sBar.width -= _subtitleButton.width;
+			_sBar.width = _videoWidth - _ppBtn.width - _stopBtn.width
+								- _eTime.width - _audioSlider.width - 45;
+			_eTime.x = _sBar.x + _sBar.width;
+			_audioSlider.x = _eTime.x + _eTime.width;
+			_sBar.refresh();
+			_eTime.refresh();
+			_audioSlider.refresh();
+			_subtitleButton.x = _audioSlider.x + _audioSlider.width;
+			_subtitleButton.refresh();
 			
 			// Put subtitle box at top
 			_subtitlePanel.width = _videoBarPanel.width;
@@ -436,7 +446,7 @@ package modules.videoPlayer
 		override protected function drawBG() : void
 		{
 			/**
-			 * Recalculate height
+			 * Recalculate total height
 			 */
 			var h1:Number = _subtitlePanel.visible? _subtitlePanel.height : 0;
 			var h2:Number = _arrowContainer.visible? _arrowContainer.height : 0;
@@ -455,7 +465,8 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Adds a listener to video widget
+		 * Overriden play video:
+		 * - Adds a listener to video widget
 		 */
 		override public function playVideo() : void
 		{
@@ -475,7 +486,9 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Pauses talk if any role is talking
+		 * Overriden pause video:
+		 * - Pauses talk if any role is talking
+		 * - Pauses second stream if any
 		 */
 		override public function pauseVideo() : void
 		{
@@ -492,7 +505,9 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Resumes talk if any role is talking
+		 * Overriden resume video:
+		 * - Resumes talk if any role is talking
+		 * - Resumes secon stream if any
 		 */
 		override public function resumeVideo() : void
 		{
@@ -509,7 +524,9 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * Stops talk if any role is talking
+		 * Overriden stop video:
+		 * - Stops talk if any role is talking
+		 * - Stops second stream if any
 		 */
 		override public function stopVideo() : void
 		{
@@ -531,17 +548,19 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * On seek end
+		 * Overriden on seek end:
+		 * - clear subtitles from panel
 		 **/
-		/*override protected function onScrubberDropped(e:Event) : void
+		override protected function onScrubberDropped(e:Event) : void
 		{
 			super.onScrubberDropped(e);
 			
 			this.setSubtitle("");
-		}*/
+		}
 		
 		/**
-		 * Catch event and do show/hide subtitle panel
+		 * On subtitle button clicked:
+		 * - Do show/hide subtitle panel
 		 */
 		private function onSubtitleButtonClicked( e:SubtitleButtonEvent ) : void
 		{
@@ -629,13 +648,8 @@ package modules.videoPlayer
 			this.drawBG(); // Repaint bg
 		}
 		
-		// This gives the event to parent component
-		private function onLocaleChanged(e:SubtitleComboEvent) : void
-		{
-			this.dispatchEvent(new SubtitleComboEvent(e.type, e.selectedIndex));
-		}
-		
 		/**
+		 * On subtitling controls clicked: start or end subtitling button
 		 * This method adds ns.time to event and gives it to parent component
 		 */
 		private function onSubtitlingEvent(e:SubtitlingEvent) : void
@@ -647,7 +661,8 @@ package modules.videoPlayer
 		
 		
 		/**
-		 * Switch video's perspective between play mode and record mode
+		 * Switch video's perspective based on video player's 
+		 * actual state
 		 */
 		private function switchPerspective() : void
 		{
@@ -707,11 +722,11 @@ package modules.videoPlayer
 		{
 			switch (evt.code) 
 			{
-				case "Microphone.Muted": // User denied access to camera, or hasn't got it
+				case "Microphone.Muted": // User denied access to mic, or hasn't got it
 					dispatchEvent(new RecordingEvent(RecordingEvent.MIC_DENIED));
 					trace("Mic access denied");
 					break;
-				case "Microphone.Unmuted": // User allow access to camera
+				case "Microphone.Unmuted": // User allowed access to mic
 					if ( !_micEnabled )
 					{
 						_micEnabled = true;
@@ -730,7 +745,7 @@ package modules.videoPlayer
 					dispatchEvent(new RecordingEvent(RecordingEvent.CAM_DENIED));
 					trace("Cam access denied");
 					break;
-				case "Camera.Unmuted": // User allow access to camera
+				case "Camera.Unmuted": // User allowed access to camera
 					if ( !_cameraEnabled )
 					{	
 						_cameraEnabled = true;
@@ -783,7 +798,7 @@ package modules.videoPlayer
 		 * Countdown before recording
 		 */
 		
-		// prepare countdown timer
+		// Prepare countdown timer
 		private function startCountdown() : void
 		{
 			_countdown = new Timer(1000, COUNTDOWN_TIMER_SECS)
@@ -791,7 +806,7 @@ package modules.videoPlayer
 			_countdown.start();
 		}
 		
-		// Countdown tick
+		// On Countdown tick
 		private function onCountdownTick(tick:TimerEvent) : void 
 		{
 			if ( _countdown.currentCount == _countdown.repeatCount )
@@ -815,7 +830,7 @@ package modules.videoPlayer
 		
 		
 		/**
-		 * Methods for prepare the record
+		 * Methods for prepare the recording
 		 */
 		
 		// prepare webcam
@@ -854,8 +869,8 @@ package modules.videoPlayer
 			if ( state&RECORD_FLAG )
 			{
 				_outNs = new NetStream(_nc);
-				_mic.gain = 0;
 				_outNs.attachAudio(_mic);
+				muteRecording(true); // mic starts muted
 			}
 			
 			if ( state == RECORD_BOTH_STATE )
@@ -971,7 +986,8 @@ package modules.videoPlayer
 		}
 		
 		/**
-		 * On recording finished
+		 * Overriden on recording finished:
+		 * Gives the filename to de parent component
 		 **/
 		override protected function onVideoFinishedPlaying( e:VideoPlayerEvent ):void
 		{
@@ -994,8 +1010,8 @@ package modules.videoPlayer
 			_inNs.soundTransform = new SoundTransform( _audioSlider.getCurrentVolume() );
 			
 			// Not metadata nor cuepoint manage needed, so
-			// create empty client for the second stream
-			// Avoids debuger messages
+			// create an empty client for the second stream
+			// Avoids debbuger messages
 			var nsClient:Object = new Object();
 			nsClient.onMetaData = function () : void {};
 			nsClient.onCuePoint = function () : void {};
@@ -1005,6 +1021,10 @@ package modules.videoPlayer
 			_camVideo.visible = true;
 			
 			_inNs.play(_secondStreamSource);
+			
+			// Needed for video mute
+			muteRecording(false);
+			muteRecording(true);
 			
 			_ns.resume();
 			_ppBtn.State = PlayButton.PAUSE_STATE;
