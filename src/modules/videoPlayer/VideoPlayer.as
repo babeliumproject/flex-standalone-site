@@ -6,7 +6,6 @@
 
 package modules.videoPlayer
 {
-	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
@@ -83,6 +82,9 @@ package modules.videoPlayer
 		protected var _videoWidth:Number = 500;
 		
 		private var _timer:Timer;
+		
+		[Bindable] public var playbackReady:Boolean = false;
+		[Bindable] public var playbackStarted:Boolean = false;
 		
 		/**
 		 * CONSTRUCTOR
@@ -529,7 +531,20 @@ package modules.videoPlayer
 				trace( "Stream not found code: " + e.info.code + " for video " + _videoSource );
 			} else if( e.info.code == "NetStream.Play.Stop" )
 			{
+				playbackReady = false;
+				playbackStarted = false;
 				dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_FINISHED_PLAYING ) );
+			} else if( e.info.code == "NetStream.Play.Start" ){
+				playbackReady = true;
+			} else if( e.info.code == "NetStream.Buffer.Full" ){
+				if(playbackReady)
+					playbackStarted = true;
+			} else if (e.info.code == "NetStream.Buffer.Empty"){
+				playbackReady = false;
+				playbackStarted = false;
+			} else if (e.info.code == "NetStream.Pause.Notify"){
+				playbackReady = false;
+				playbackStarted = false;
 			}
 			
 			trace( "code: " + e.info.code, "level: " + e.info.level );

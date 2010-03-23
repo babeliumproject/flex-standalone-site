@@ -32,8 +32,7 @@ package control {
 	import commands.main.WatchExerciseCommand;
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
-	import commands.subtitles.GetSubtitleRoleCommand;
-	import commands.subtitles.GetSubtitlesAndRolesCommand;
+	import commands.subtitles.GetExerciseSubtitleLinesCommand;
 	import commands.subtitles.SaveSubtitlesCommand;
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
 	import commands.userManagement.GetCurrentDayCreditHistoryCommand;
@@ -67,8 +66,7 @@ package control {
 	import events.PreferenceEvent;
 	import events.RegisterUserEvent;
 	import events.ResponseEvent;
-	import events.SubtitlesAndRolesEvent;
-	import events.SubtitlesEvent;
+	import events.SubtitleEvent;
 	import events.UploadEvent;
 	import events.UserEvent;
 	import events.VideoStopEvent;
@@ -152,12 +150,10 @@ package control {
 			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRoleCommand);
 
 
-			addCommand(SubtitlesAndRolesEvent.GET_INFO_SUB_ROLES, GetSubtitlesAndRolesCommand);
-			addCommand(SubtitlesAndRolesEvent.GET_ROLES , GetSubtitleRoleCommand);
-
 			//Subtitle management commands
 			
-			addCommand(SubtitlesEvent.SAVE_SUBTITLES, SaveSubtitlesCommand);
+			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
 
 			//Evaluation management commands
 			addCommand(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, AutoEvaluateCommand);

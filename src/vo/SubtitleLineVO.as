@@ -10,8 +10,9 @@ package vo
 		public var id:int;
 		public var showTime:Number;
 		public var hideTime:Number;
-		public var role:String;
 		public var text:String;
+		public var roleId:int;
+		public var role:String;
 		public var subtitleId:int;
 		
 		

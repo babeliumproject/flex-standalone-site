@@ -11,22 +11,19 @@ package events
 	public class SubtitleEvent extends CairngormEvent
 	{
 		
-		public static const SAVE_SUBTITLE:String = "saveSubtitle";
-		public static const SAVE_SUBTITLE_LINES:String = "saveSubtitleLines";
-		public static const GET_SUBTITLE_LINES:String = "getSubtitleLines";
+		public static const SAVE_SUBTITLE_AND_SUBTITLE_LINES:String = "saveSubtitle";
+		public static const GET_EXERCISE_SUBTITLE_LINES:String = "getSubtitleLines";
 		public var subtitle:SubtitleAndSubtitleLinesVO;
-		public var lines:SubtitleLineVO;
 
 		
-		public function SubtitleEvent(type:String, subtitle:SubtitleAndSubtitleLinesVO = null, lines:SubtitleLineVO = null)
+		public function SubtitleEvent(type:String, subtitle:SubtitleAndSubtitleLinesVO = null)
 		{
 			super(type);
 			this.subtitle = subtitle;
-			this.lines = lines;
 		}
 		
 		override public function clone():Event{
-			return new SubtitleEvent(type,subtitle,lines);
+			return new SubtitleEvent(type,subtitle);
 		}
 		
 	}

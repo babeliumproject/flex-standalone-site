@@ -1,11 +1,11 @@
 package commands.subtitles
 {
-	import business.SubtitlesAndRolesDelegate;
+	import business.SubtitleDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.SubtitlesAndRolesEvent;
+	import events.SubtitleEvent;
 	
 	import model.DataModel;
 	
@@ -16,14 +16,14 @@ package commands.subtitles
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
 	
-	import vo.SubtitlesAndRolesVO;
+	import vo.SubtitleLineVO;
 
-	public class GetSubtitlesAndRolesCommand implements ICommand, IResponder
+	public class GetExerciseSubtitleLinesCommand implements ICommand, IResponder
 	{
 
 		public function execute(event:CairngormEvent):void
 		{
-			new SubtitlesAndRolesDelegate(this).getInfoSubRoles((event as SubtitlesAndRolesEvent).info);
+			new SubtitleDelegate(this).getSubtitleLines((event as SubtitleEvent).subtitle);
 		}
 		
 		public function result(data:Object):void
@@ -37,16 +37,16 @@ package commands.subtitles
 					
 				if ( resultCollection.length > 0 )
 				{		
-					if(resultCollection[0] is SubtitlesAndRolesVO)
+					if(resultCollection[0] is SubtitleLineVO)
 					{
-					DataModel.getInstance().availableSubtitlesAndRoles=resultCollection;
-					DataModel.getInstance().availableSubtitlesAndRolesRetrieved = true;
+					DataModel.getInstance().availableSubtitleLines=resultCollection;
+					DataModel.getInstance().availableSubtitleLinesRetrieved = true;
 					}
 				}
 				else 
 				{
-					DataModel.getInstance().availableSubtitlesAndRoles= new ArrayCollection();
-					DataModel.getInstance().availableSubtitlesAndRolesRetrieved = true;
+					DataModel.getInstance().availableSubtitleLines= new ArrayCollection();
+					DataModel.getInstance().availableSubtitleLinesRetrieved = true;
 				}
 					
 				
@@ -59,7 +59,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving app's sub&roles:\n\n"+faultEvent.message);
+			Alert.show("Error while retrieving exercise's subtitle lines:\n"+faultEvent.message);
 			trace(ObjectUtil.toString(info));
 		}
 		

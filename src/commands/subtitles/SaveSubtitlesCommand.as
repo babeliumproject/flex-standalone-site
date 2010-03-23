@@ -6,8 +6,7 @@ package commands.subtitles
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import events.CreditEvent;
-	import events.SubtitlesAndRolesEvent;
-	import events.SubtitlesEvent;
+	import events.SubtitleEvent;
 	
 	import model.DataModel;
 	
@@ -21,7 +20,7 @@ package commands.subtitles
 
 		public function execute(event:CairngormEvent):void
 		{
-			new SubtitleDelegate(this).saveSubtitles((event as SubtitlesEvent).subtitles);
+			new SubtitleDelegate(this).saveSubtitles((event as SubtitleEvent).subtitle);
 		}
 		
 		public function result(data:Object):void

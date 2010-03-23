@@ -22,7 +22,7 @@ package commands.exercises
 
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseRoleDelegate(this).getExerciseRoles((event as ExerciseRoleEvent).rol);
+			new ExerciseRoleDelegate(this).getExerciseRoles((event as ExerciseRoleEvent).exerciseRoles);
 		}
 		
 		public function result(data:Object):void

@@ -14,19 +14,17 @@ package events
 		public static const DELETE_ALL_EXERCISE_ROLES:String = "deleteAllExerciseRoles";
 		public static const SAVE_EXERCISE_ROLES:String = "saveExerciseRoles";
 		
-		public var rol:ExerciseRoleVO;
-		public var roles:Array;
+		public var exerciseRoles:ExerciseRoleVO;
 
 		
-		public function ExerciseRoleEvent(type:String, rol:ExerciseRoleVO = null, roles:Array = null)
+		public function ExerciseRoleEvent(type:String, exerciseRoles:ExerciseRoleVO = null)
 		{
 			super(type);
-			this.rol   = rol ;
-			this.roles = roles ;
+			this.exerciseRoles = exerciseRoles;
 		}
 		
 		override public function clone():Event{
-			return new ExerciseRoleEvent(type,rol,roles);
+			return new ExerciseRoleEvent(type,exerciseRoles);
 		}
 		
 	}

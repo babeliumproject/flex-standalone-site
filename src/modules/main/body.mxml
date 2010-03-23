@@ -48,8 +48,8 @@
 							 id="uploadModule">
 		</ns5:UploadContainer>
 		<!-- viewstack ID = 6 -->
-		<ns4:VideoPlayer id="playerModule" width="100%" height="100%">
-		</ns4:VideoPlayer>
+		<ns4:SubtitleEditor id="subtitlingModule" width="100%" height="100%">
+		</ns4:SubtitleEditor>
 		<ns7:principal width="100%" height="100%">
 		</ns7:principal>
 		<!--<ns8:Rankings width="100%" height="100%">

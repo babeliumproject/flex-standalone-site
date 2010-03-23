@@ -1,7 +1,5 @@
 package model
 {
-	import business.NetConnectionDelegate;
-	import business.NetStreamDelegate;
 	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
@@ -23,11 +21,6 @@ package model
 		private static var instance:DataModel = new DataModel();
 		
 		public var media:Media;
-		
-		//Streaming resources control
-		public var ncDelegate:NetConnectionDelegate;
-		public var nsDelegate:NetStreamDelegate;
-		public var netConnected:Boolean;
 		
 		//ViewStack management variables
 		[Bindable] public var viewContentViewStackIndex:int;
@@ -125,8 +118,9 @@ package model
 		[Bindable] public var availableExerciseRolesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		//Used to store subtitle-lines and roles in the same DP
-		[Bindable] public var availableSubtitlesAndRolesRetrieved: Boolean = false;
-		[Bindable] public var availableSubtitlesAndRoles:ArrayCollection = new ArrayCollection(); 
+		[Bindable] public var availableSubtitleLinesRetrieved: Boolean = false;
+		[Bindable] public var availableSubtitleLines:ArrayCollection = new ArrayCollection();
+		[Bindable] public var unmodifiedAvailableSubtitleLines:ArrayCollection = new ArrayCollection();
 		
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;

@@ -1,89 +1,101 @@
 package vo
 {
 	import com.adobe.cairngorm.commands.ICommand;
-	
+
+	[Bindable]
 	public class CueObject
 	{
 		private var startTime:Number;
 		private var endTime:Number;
+		private var roleId:int;
 		private var role:String;
 		private var text:String;
 		private var startCommand:ICommand;
 		private var endCommand:ICommand;
 
 
-		public function CueObject(startTime:Number, endTime:Number = -1, text:String = null,
-				role:String = null, startCommand:ICommand = null, endCommand:ICommand = null)
+		public function CueObject(startTime:Number, endTime:Number=-1, text:String=null, roleId:int=0, role:String=null, startCommand:ICommand=null, endCommand:ICommand=null)
 		{
-			this.startTime = startTime;
-			this.endTime = endTime;
-			this.text = text;
-			this.role = role;
-			this.startCommand = startCommand;
-			this.endCommand = endCommand;
+			this.startTime=startTime;
+			this.endTime=endTime;
+			this.text=text;
+			this.roleId=roleId;
+			this.role=role;
+			this.startCommand=startCommand;
+			this.endCommand=endCommand;
 		}
-		
-		public function executeStartCommand() : void
+
+		public function executeStartCommand():void
 		{
 			startCommand.execute(null);
 		}
-		
-		public function executeEndCommand() : void
+
+		public function executeEndCommand():void
 		{
 			endCommand.execute(null);
 		}
-		
+
 		/*
 		 * GETTERS & SETTERS
 		 */
-		public function getStartTime() : Number
+		public function getStartTime():Number
 		{
 			return this.startTime;
 		}
-		
-		public function getEndTime() : Number
+
+		public function getEndTime():Number
 		{
 			return this.endTime;
 		}
-		
-		public function getText() : String
+
+		public function getText():String
 		{
 			return this.text;
 		}
-		
-		public function getRole() : String
+
+		public function getRoleId():int
+		{
+			return this.roleId;
+		}
+
+		public function getRole():String
 		{
 			return this.role;
 		}
-		
-		public function setStartTime(time:Number) : void
+
+		public function setStartTime(time:Number):void
 		{
-			this.startTime = time;
+			this.startTime=time;
 		}
-		
-		public function setEndTime(time:Number) : void
+
+		public function setEndTime(time:Number):void
 		{
-			this.endTime = time;
+			this.endTime=time;
 		}
-		
-		public function setText(text:String) : void
+
+		public function setText(text:String):void
 		{
-			this.text = text;
+			this.text=text;
 		}
-		
-		public function setRole(role:String) : void
+
+		public function setRoleId(roleId:int):void
 		{
-			this.role = role;
+			this.roleId=roleId;
 		}
-		
-		public function setStartCommand(command:ICommand) : void
+
+		public function setRole(role:String):void
 		{
-			this.startCommand = command;
+			this.role=role;
 		}
-		
-		public function setEndCommand(command:ICommand) : void
+
+		public function setStartCommand(command:ICommand):void
 		{
-			this.endCommand = command;
+			this.startCommand=command;
+		}
+
+		public function setEndCommand(command:ICommand):void
+		{
+			this.endCommand=command;
 		}
 
 	}

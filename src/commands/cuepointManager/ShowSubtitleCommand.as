@@ -7,18 +7,18 @@ package commands.cuepointManager
 
 	public class ShowSubtitleCommand implements ICommand
 	{
-		private var subHolder:VideoPlayerBabelia;
+		private var VP:VideoPlayerBabelia;
 		private var text:String;
 		
 		public function ShowSubtitleCommand(text:String, subHolder:VideoPlayerBabelia)
 		{
-			this.subHolder = subHolder;
+			this.VP = subHolder;
 			this.text = text;
 		}
 
 		public function execute(event:CairngormEvent):void
 		{
-			subHolder.setSubtitle(text);
+			VP.setSubtitle(text);
 		}	
 	}
 }

@@ -2,7 +2,7 @@
 <mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"
 			 dataChange="setSelected()"
 			 change="onSelectionChange(event)"
-			 itemRenderer="modules.extenders.GridComboBoxItemRenderer">
+			 itemRenderer="modules.subtitles.GridComboBoxItemRenderer">
 	<mx:Script>
 		<![CDATA[
 			import mx.events.CollectionEventKind;

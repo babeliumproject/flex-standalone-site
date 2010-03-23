@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subtitles:SubtitleEditorClass xmlns:mx="http://www.adobe.com/2006/mxml"
+							   xmlns:subtitles="modules.subtitles.*"
+							   xmlns:videoPlayer="modules.videoPlayer.*"
+							   xmlns:videoUpload="modules.videoUpload.*">
+
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import modules.videoPlayer.events.babelia.SubtitlingEvent;
+		]]>
+	</mx:Script>
+	<mx:ArrayCollection id="comboData"/>
+
+	<!-- Video Player -->
+	<mx:VBox>
+		<mx:Label id="exerciseTitle"
+				  text="ExerciseTitle"
+				  width="100%"
+				  fontSize="16"
+				  fontWeight="bold"/>
+		<videoPlayer:VideoPlayerBabelia id="VP"
+										autoPlay="true"
+										skin="white"
+										seek="true"
+										subtitles="true"
+										autoScale="false"
+										arrows="false"
+										subtitlingControls="false"
+										width="400"
+										height="{Math.floor(VP.width * 800 / 1280)}"
+										streamSource="{streamSource}"/>
+		<mx:HBox width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:Button id="subtitleExerciseButton"
+					   label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLES_TO_EXERCISE')}"
+					   fontWeight="normal"
+					   labelPlacement="bottom"
+					   click="viewSubtitlingControls(event)"
+					   width="80"
+					   height="80"
+					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_SUBTITLES_TO_EXERCISE')}">
+				<mx:icon>@Embed(source='../../resources/images/addSubtitles.png')</mx:icon>
+			</mx:Button>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:ViewStack height="100%"
+				  width="100%"
+				  selectedIndex="{this.videoPlayerControlsViewStack}">
+
+
+		<mx:Panel id="subtitleEditor"
+				  width="100%"
+				  height="100%"
+				  layout="vertical"
+				  title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"
+				  fontFamily="Arial"
+				  fontSize="12"
+				  horizontalAlign="center"
+				  verticalAlign="middle"
+				  xmlns:extenders="modules.extenders.*"
+				  xmlns:videoupload="modules.videoUpload.*">
+			<mx:HBox horizontalAlign="center"
+					 verticalAlign="middle"
+					 width="100%">
+				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_SUBTITLE_LANGUAGE')}"/>
+				<videoUpload:IconComboBox id="languageComboBox"
+										  dataProvider="{flaggedLanguageData}"
+										  fontWeight="normal"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="subtitleList"
+						 sortableColumns="false"
+						 width="100%"
+						 height="70%"
+						 doubleClick="goToTimeHandler()"
+						 doubleClickEnabled="true"
+						 editable="true"
+						 dataProvider="{this.subtitleCollection}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
+									   editable="false"
+									   labelFunction="{lfRowNum}"
+									   width="60"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
+									   editable="true"
+									   editorDataField="value"
+									   width="85"
+									   rendererIsEditor="true"
+									   itemRenderer="modules.subtitles.ShowNumericStepperRenderer">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
+									   width="85"
+									   editable="true"
+									   editorDataField="value"
+									   rendererIsEditor="true"
+									   itemRenderer="modules.subtitles.HideNumericStepperRenderer"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
+									   dataField="text">
+						<mx:itemEditor>
+							<mx:Component>
+								<mx:TextInput maxChars="80"/>
+							</mx:Component>
+						</mx:itemEditor>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn id="comboColumn"
+									   width="200"
+									   dataField="roleId"
+									   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
+									   rendererIsEditor="true"
+									   labelFunction="{resolveIdToRole}"
+									   editorDataField="selectedItemKey">
+						<mx:itemRenderer>
+							<mx:Component>
+								<subtitles:GridComboBox dataProvider="{outerDocument.comboData}"
+														labelField="charName"
+														lookupField="roleId"
+														prompt="Select a role..."/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:VBox width="100%"
+					 height="30%"
+					 id="subtitleDetailHolder"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:HBox width="100%"
+						 id="subtitleDetailTimesHolder"
+						 horizontalAlign="center"
+						 verticalAlign="middle"
+						 paddingBottom="4"
+						 paddingTop="4">
+					<mx:HBox height="100%"
+							 verticalAlign="middle"
+							 horizontalAlign="center"
+							 paddingLeft="4"
+							 paddingRight="4"
+							 borderStyle="solid"
+							 cornerRadius="8"
+							 backgroundColor="#DDDDDD">
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   cornerRadius="8"
+								   enabled="{VP.playbackStarted}"
+								   icon="@Embed(source='../../resources/images/add.png')"
+								   click="{dispatchEvent( new SubtitlingEvent( SubtitlingEvent.START ) );}"
+								   id="addSubtitleLine"/>
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   cornerRadius="8"
+								   enabled="{subtitleCollection.length > 0}"
+								   click="subtitleRemoveHandler()">
+							<mx:icon>@Embed(source='../../resources/images/delete.png')</mx:icon>
+						</mx:Button>
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   cornerRadius="8"
+								   enabled="{subtitleCollection.length > 0}"
+								   click="subtitleClearHandler()">
+							<mx:icon>@Embed(source='../../resources/images/cancel.png')</mx:icon>
+						</mx:Button>
+						<mx:VRule height="30"/>
+						<mx:Button label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   cornerRadius="8"
+								   icon="@Embed(source='../../resources/images/save.png')"
+								   click="saveSubtitlesHandler()"/>
+					</mx:HBox>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:Panel>
+
+		<mx:HBox width="100%"
+				 height="100%"/>
+	</mx:ViewStack>
+
+</subtitles:SubtitleEditorClass>

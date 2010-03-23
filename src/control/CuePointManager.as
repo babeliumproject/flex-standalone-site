@@ -2,6 +2,8 @@ package control
 {
 	import business.SubtitleDelegate;
 	
+	import com.adobe.cairngorm.commands.ICommand;
+	
 	import events.CueManagerEvent;
 	
 	import flash.events.*;
@@ -11,6 +13,8 @@ package control
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.Sort;
+	import mx.collections.SortField;
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -28,6 +32,7 @@ package control
 		/**
 		 * Used variables
 		 **/ 
+		[Bindable] 
 		private var cuelist:ArrayCollection;
 		private var cache:Dictionary; // as HashMap
 		private var watchingVideo:int;
@@ -94,21 +99,27 @@ package control
 		public function addCue(cueobj:CueObject) : void
 		{
 			cuelist.addItem(cueobj);
+			sortByStartTime();
 		}
 		
-		public function setCue(pos:int, cueobj:CueObject) : void
+		public function setCueAt(cueobj:CueObject, pos:int) : void
 		{
 			cuelist.setItemAt(cueobj, pos);
 		}
 		
-		public function getCue(pos:int) : CueObject
+		public function getCueAt(pos:int) : CueObject
 		{
 			return cuelist.getItemAt(pos) as CueObject;
 		}
 		
-		public function removeCue(pos:int) : CueObject
+		public function removeCueAt(pos:int) : CueObject
 		{
 			return cuelist.removeItemAt(pos) as CueObject;
+		}
+		
+		public function getCueIndex(cueobj:CueObject): int 
+		{
+			return cuelist.getItemIndex(cueobj);
 		}
 		
 		public function removeAllCue() : void
@@ -120,6 +131,46 @@ package control
 		{
 			this.cuelist = cuelist;
 			saveCache(); // auto-cache
+		}
+		
+		public function getCueList():ArrayCollection{
+			return this.cuelist;
+		}
+		
+		
+		/**
+		 * Cuelist sorting functions
+		 **/
+		public function sortByStartTime():void{
+			var showTimeSort:SortField=new SortField();
+			showTimeSort.name="startTime";
+			showTimeSort.numeric=true;
+			var numericDataSort:Sort=new Sort();
+			numericDataSort.fields=[showTimeSort];
+			cuelist.sort=numericDataSort;
+			cuelist.refresh();
+		}
+		
+		public function sortByEndTime():void{
+			var showTimeSort:SortField=new SortField();
+			showTimeSort.name="endTime";
+			showTimeSort.numeric=true;
+			var numericDataSort:Sort=new Sort();
+			numericDataSort.fields=[showTimeSort];
+			cuelist.sort=numericDataSort;
+			cuelist.refresh();
+		}
+		
+		public function setCueListStartCommand(command:ICommand):void{
+			for each (var cuepoint:CueObject in cuelist){
+				cuepoint.setStartCommand(command);
+			}
+		}
+		
+		public function setCueListEndCommand(command:ICommand):void{
+			for each (var cuepoint:CueObject in cuelist){
+				cuepoint.setEndCommand(command);
+			}
 		}
 		
 		
@@ -186,7 +237,7 @@ package control
 		private function addCueFromSubtitleLine(subline:SubtitleLineVO) : void
 		{
 			var cueObj:CueObject = new CueObject(subline.showTime, subline.hideTime, 
-														subline.text, subline.role);
+														subline.text, subline.roleId, subline.role);
 			this.addCue(cueObj);
 		}
 		

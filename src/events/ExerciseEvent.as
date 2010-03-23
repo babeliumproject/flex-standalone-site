@@ -2,6 +2,8 @@ package events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import flash.events.Event;
+	
 	import vo.ExerciseVO;
 
 	public class ExerciseEvent extends CairngormEvent
@@ -15,12 +17,15 @@ package events
 		public static const GET_EXERCISE_LOCALES:String="exerciseLocales";
 
 		public var exercise:ExerciseVO;
-		public var response:Number;
 
 		public function ExerciseEvent(type:String, exercise:ExerciseVO = null)
 		{
 			super(type);
 			this.exercise=exercise;
+		}
+		
+		override public function clone():Event{
+			return new ExerciseEvent(type,exercise);
 		}
 
 	}
