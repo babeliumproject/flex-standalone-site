@@ -42,13 +42,7 @@
 		id="rolRO"
 		destination="empService"
 		showBusyCursor="true"
-		source="ExerciseRoleDAO"/>
-		
-	<mx:RemoteObject
-		id="subrolesRO"
-		destination="empService"
-		showBusyCursor="true"
-		source="SubtitlesAndRolesDAO"/>		
+		source="ExerciseRoleDAO"/>	
 		
 	<mx:RemoteObject
 		id="exerciseRO"

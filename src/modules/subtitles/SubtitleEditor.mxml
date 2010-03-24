@@ -29,9 +29,9 @@
 										subtitles="true"
 										autoScale="false"
 										arrows="false"
-										subtitlingControls="false"
 										width="400"
-										height="{Math.floor(VP.width * 800 / 1280)}"
+										height="250"
+										subtitlingControls="false"
 										streamSource="{streamSource}"/>
 		<mx:HBox width="100%"
 				 horizontalAlign="center"
@@ -62,9 +62,7 @@
 				  fontFamily="Arial"
 				  fontSize="12"
 				  horizontalAlign="center"
-				  verticalAlign="middle"
-				  xmlns:extenders="modules.extenders.*"
-				  xmlns:videoupload="modules.videoUpload.*">
+				  verticalAlign="middle">
 			<mx:HBox horizontalAlign="center"
 					 verticalAlign="middle"
 					 width="100%">

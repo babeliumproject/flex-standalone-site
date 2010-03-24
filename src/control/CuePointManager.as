@@ -234,10 +234,10 @@ package control
 			new SubtitleDelegate(this).getSubtitleLines(subtitle);
 		}
 		
-		private function addCueFromSubtitleLine(subline:SubtitleLineVO) : void
+		public function addCueFromSubtitleLine(subline:SubtitleLineVO) : void
 		{
 			var cueObj:CueObject = new CueObject(subline.showTime, subline.hideTime, 
-														subline.text, subline.roleId, subline.role);
+														subline.text, subline.exerciseRoleId, subline.exerciseRoleName);
 			this.addCue(cueObj);
 		}
 		

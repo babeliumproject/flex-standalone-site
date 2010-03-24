@@ -1,6 +1,8 @@
 package modules.subtitles
 {
 
+	import commands.cuepointManager.ShowHideSubtitleCommand;
+	
 	import control.CuePointManager;
 	
 	import events.ExerciseRoleEvent;
@@ -24,6 +26,7 @@ package modules.subtitles
 	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
+	import mx.controls.Label;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
@@ -32,6 +35,7 @@ package modules.subtitles
 	import vo.CueObject;
 	import vo.ExerciseRoleVO;
 	import vo.ExerciseVO;
+	import vo.RoleComboDataVO;
 	import vo.SubtitleAndSubtitleLinesVO;
 
 
@@ -90,28 +94,29 @@ package modules.subtitles
 
 		//Visual components declaration
 		[Bindable]
-		public var VP:VideoPlayerBabelia=new VideoPlayerBabelia();
+		public var VP:VideoPlayerBabelia;
+		public var exerciseTitle:Label;
+		public var subtitleExerciseButton:Button;
 
 		public var subtitleEditor:Panel;
-		public var subtitleExerciseButton:Button;
 		public var subtitleList:DataGrid=new DataGrid();
 		public var languageComboBox:IconComboBox;
-		public var subtitlingControls:HBox;
-		public var videoControls:ViewStack;
 
 		public function SubtitleEditorClass()
 		{
-			this.addEventListener(FlexEvent.CREATION_COMPLETE, setBindings);
-			setupVideoPlayer();
+			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
 
-		private function setBindings(event:FlexEvent):void
+		private function onCreationComplete(event:FlexEvent):void
 		{
 			var model:DataModel=DataModel.getInstance();
+			VP = new VideoPlayerBabelia();
+			setupVideoPlayer();
+
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
-			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitlesAndRolesRetrieved");
+			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			BindingUtils.bindSetter(availableRolesRetrieved, model, "availableExerciseRoles");
+			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
@@ -144,6 +149,7 @@ package modules.subtitles
 				exerciseFileName=watchExercise.name;
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
+				exerciseTitle.text = watchExercise.title;
 				
 				if ( videoPlayerReady )
 				{
@@ -175,6 +181,47 @@ package modules.subtitles
 			{
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
 				subtitleCollection=cueManager.getCuelist();
+				for each (var cueObj:CueObject in subtitleCollection){
+					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj.text, VP));
+					cueObj.setEndCommand(new ShowHideSubtitleCommand(cueObj.text, VP));
+				}		
+			}
+		}
+		
+		private function onRolesRetrieved(value:Boolean):void
+		{
+			
+			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(0) == true)
+			{
+				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(0) as ArrayCollection;
+				var cData:ArrayCollection=new ArrayCollection;
+				var insertOption:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+				cData.addItem(insertOption);
+				if (avrol.length > 0)
+				{
+					for each (var itemIns:ExerciseRoleVO in avrol)
+					{
+						var selectLine:RoleComboDataVO = new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+						cData.addItem(selectLine);
+					}
+					var deleteOption:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+					cData.addItem(deleteOption);
+					for each (var itemDel:ExerciseRoleVO in avrol)
+					{
+						var deleteLine:RoleComboDataVO = new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+						cData.addItem(deleteLine);
+					}
+					comboData.removeAll();
+					comboData=cData;
+				}
+				else
+				{
+					var deleteOptionEmpty:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+					cData.addItem(deleteOptionEmpty);
+					comboData.removeAll();
+					comboData=cData;
+				}
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
 			}
 		}
 
@@ -182,7 +229,7 @@ package modules.subtitles
 		{
 			VP.enableSubtitlingEndButton = true;
 			subtitleStartTime=e.time;
-			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'');
+			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'',new ShowHideSubtitleCommand(endEntry.text,VP),new ShowHideSubtitleCommand('',VP));
 
 			cueManager.addCue(startEntry);
 
@@ -194,7 +241,7 @@ package modules.subtitles
 			if (subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;
-				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'');
+				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'',new ShowHideSubtitleCommand(endEntry.text,VP),new ShowHideSubtitleCommand('',VP));
 				
 				cueManager.setCueAt(endEntry, cueManager.getCueIndex(startEntry));
 			}
@@ -377,41 +424,7 @@ package modules.subtitles
 
 		}
 
-		private function availableRolesRetrieved(value:Boolean):void
-		{
-
-			if (DataModel.getInstance().availableExerciseRoles)
-			{
-				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(0) as ArrayCollection;
-				var cData:ArrayCollection=new ArrayCollection;
-				var insertLine:Object={roleId: 0, charName: resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), action: 'insert', fontWeight: 'bold', indent: 0};
-				cData.addItem(insertLine);
-				if (avrol.length > 0)
-				{
-					for each (var item:Object in avrol)
-					{
-						var comboline:Object={roleId: item.data, charName: item.label, action: 'select', fontWeight: 'normal', indent: 10};
-						cData.addItem(comboline);
-					}
-					var deleteLine:Object={roleId: 0, charName: resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), action: 'nothing', fontWeight: 'bold', indent: 0};
-					cData.addItem(deleteLine);
-					for each (var item2:Object in avrol)
-					{
-						var comboline2:Object={roleId: item2.data, charName: item2.label, action: 'delete', fontWeight: 'normal', indent: 10};
-						cData.addItem(comboline2);
-					}
-					comboData.removeAll();
-					comboData=cData;
-				}
-				else
-				{
-					var deleteLineEmpty:Object={roleId: 0, charName: resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), action: 'nothing', fontWeight: 'bold', indent: 0};
-					cData.addItem(deleteLineEmpty);
-					comboData.removeAll();
-					comboData=cData;
-				}
-			}
-		}
+		
 
 		public function lfRowNum(oItem:Object, iCol:int):String
 		{
@@ -436,9 +449,12 @@ package modules.subtitles
 
 		public function onTabChange(value:Boolean):void
 		{
-			VP.endVideo();
-			VP.subtitlingControls = false;
-			VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+			if (videoPlayerReady){
+				VP.endVideo();
+				VP.subtitlingControls = false;
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+				videoPlayerReady = false;
+			}
 			hideSubtitlingControls(null);
 		}
 

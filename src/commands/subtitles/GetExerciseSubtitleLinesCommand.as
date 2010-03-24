@@ -5,6 +5,8 @@ package commands.subtitles
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.CuePointManager;
+	
 	import events.SubtitleEvent;
 	
 	import model.DataModel;
@@ -20,6 +22,7 @@ package commands.subtitles
 
 	public class GetExerciseSubtitleLinesCommand implements ICommand, IResponder
 	{
+		private var cueManager:CuePointManager = CuePointManager.getInstance();
 
 		public function execute(event:CairngormEvent):void
 		{
@@ -39,13 +42,16 @@ package commands.subtitles
 				{		
 					if(resultCollection[0] is SubtitleLineVO)
 					{
-					DataModel.getInstance().availableSubtitleLines=resultCollection;
-					DataModel.getInstance().availableSubtitleLinesRetrieved = true;
+						cueManager.removeAllCue();
+						for ( var i:int = 0; i < resultCollection.length; i++ )
+						{
+							cueManager.addCueFromSubtitleLine(resultCollection.getItemAt(i) as SubtitleLineVO);
+						}
+						DataModel.getInstance().availableSubtitleLinesRetrieved = true;
 					}
 				}
 				else 
 				{
-					DataModel.getInstance().availableSubtitleLines= new ArrayCollection();
 					DataModel.getInstance().availableSubtitleLinesRetrieved = true;
 				}
 					

@@ -14,7 +14,7 @@
 	<mx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
-			import commands.cuepointManager.ShowSubtitleCommand;
+			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
@@ -227,8 +227,8 @@
 				
 				for each ( var cueobj:CueObject in auxList )
 				{
-					cueobj.setStartCommand(new ShowSubtitleCommand(cueobj.getText(), VP));
-					cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
+					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj.getText(), VP));
+					cueobj.setEndCommand(new ShowHideSubtitleCommand("", VP));
 				}
 				
 				_cueManagerReady = true;
@@ -251,7 +251,7 @@
 							new RecordingOtherRoleCommand(cueobj.getText(), cueobj.getRole(), 
 								cueobj.getEndTime() - cueobj.getStartTime(), VP));
 						
-						cueobj.setEndCommand(new ShowSubtitleCommand("", VP));
+						cueobj.setEndCommand(new ShowHideSubtitleCommand("", VP));
 					}
 					else
 					{

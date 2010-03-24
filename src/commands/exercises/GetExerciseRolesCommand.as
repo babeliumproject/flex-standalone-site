@@ -17,7 +17,7 @@ package commands.exercises
 	import mx.utils.ObjectUtil;
 
 
-	public class GetExerciseRoleCommand implements ICommand, IResponder
+	public class GetExerciseRolesCommand implements ICommand, IResponder
 	{
 
 		public function execute(event:CairngormEvent):void
@@ -33,21 +33,25 @@ package commands.exercises
 			{
 				var resAr:ArrayCollection = new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data to the application's model
+				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 0);
 				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 1);
 				//Reflect the visual changes
 				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 1);
+				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
 			} else {
 				//Set the data to the application's model
 				DataModel.getInstance().availableExerciseRoles.setItemAt(null, 1);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(null, 0);
 				//Reflect the visual changes
 				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 1);
+				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
 			}
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving app's roles:\n\n"+faultEvent.message);
+			Alert.show("Error while retrieving exercise's roles:\n\n"+faultEvent.message);
 			trace(ObjectUtil.toString(info));
 		}
 		

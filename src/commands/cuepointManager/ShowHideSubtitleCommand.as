@@ -5,12 +5,12 @@ package commands.cuepointManager
 	
 	import modules.videoPlayer.VideoPlayerBabelia;
 
-	public class ShowSubtitleCommand implements ICommand
+	public class ShowHideSubtitleCommand implements ICommand
 	{
 		private var VP:VideoPlayerBabelia;
 		private var text:String;
 		
-		public function ShowSubtitleCommand(text:String, subHolder:VideoPlayerBabelia)
+		public function ShowHideSubtitleCommand(text:String, subHolder:VideoPlayerBabelia)
 		{
 			this.VP = subHolder;
 			this.text = text;

@@ -16,7 +16,7 @@ package control {
 	import commands.exercises.AddCreditEntryEvalRequestCommand;
 	import commands.exercises.ExerciseSelectedCommand;
 	import commands.exercises.GetExerciseLocalesCommand;
-	import commands.exercises.GetExerciseRoleCommand;
+	import commands.exercises.GetExerciseRolesCommand;
 	import commands.exercises.MakeResponsePublicCommand;
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
@@ -147,7 +147,7 @@ package control {
 			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
 			
 			//Roles management commands
-			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRoleCommand);
+			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
 
 
 			//Subtitle management commands

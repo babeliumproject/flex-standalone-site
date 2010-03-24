@@ -7,7 +7,8 @@ class SubtitleLineVO {
 	public $showTime;
 	public $hideTime;
 	public $text;
-	public $exercise_role_id;
+	public $exerciseRoleId;
+	public $exerciseRoleName;
 	
 	public $_explicitType = "SubtitleLineVO";
 }

@@ -21,7 +21,7 @@ package business
 		}
 		
 		public function saveSubtitles(subtitles:SubtitleAndSubtitleLinesVO):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subrolesRO");
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.saveSubtitles(subtitles);
 			pendingCall.addResponder(responder);
 		}

@@ -6,16 +6,12 @@ package vo
 	[Bindable]
 	public class SubtitleLineVO
 	{
-		
 		public var id:int;
+		public var subtitleId:int;
 		public var showTime:Number;
 		public var hideTime:Number;
 		public var text:String;
-		public var roleId:int;
-		public var role:String;
-		public var subtitleId:int;
-		
-		
-		
+		public var exerciseRoleId:int;
+		public var exerciseRoleName:String;	
 	}
 }

@@ -6,10 +6,11 @@ package vo
 	public class CueObject
 	{
 		public var startTime:Number;
-		private var endTime:Number;
-		private var roleId:int;
-		private var role:String;
-		private var text:String;
+		public var endTime:Number;
+		public var roleId:int;
+		public var role:String;
+		public var text:String;
+		
 		private var startCommand:ICommand;
 		private var endCommand:ICommand;
 
