@@ -23,11 +23,9 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
-	import modules.videoPlayer.events.babelia.SubtitleComboEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
@@ -294,7 +292,12 @@ package modules.videoPlayer
 		 **/
 		public function muteVideo(flag:Boolean) : void
 		{
-			_audioSlider.muted = flag;
+			//_audioSlider.muted = flag;
+			
+			if ( flag )
+				_ns.soundTransform = new SoundTransform(0);
+			else
+				_ns.soundTransform = new SoundTransform(0.5);
 		}
 		
 		public function muteRecording(flag:Boolean) : void

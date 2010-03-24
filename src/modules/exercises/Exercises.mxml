@@ -444,6 +444,7 @@
 			 **/
 			private function onWatchExerciseAndResponse(e:Event) : void
 			{
+				showArrows();
 				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.secondSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
@@ -451,7 +452,7 @@
 			
 			private function onWatchResponse(e:Event) : void
 			{
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				showArrows();
 				VP.videoSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
 			}

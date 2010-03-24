@@ -60,9 +60,10 @@ package modules.videoPlayer.controls.babelia
 			while ( _arrows.length > 0 )
 			{
 				removeChildAt(1);
-				_dataProvider.removeItemAt(0);
 				_arrows.removeItemAt(0);
 			}
+			
+			_dataProvider.removeAll();
 		}
 		
 		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
