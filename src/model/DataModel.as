@@ -18,7 +18,7 @@ package model
 	{
 		//This solution for singleton implementation was found in
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
-		private static var instance:DataModel = new DataModel();
+		public static var instance:DataModel = new DataModel();
 		
 		public var media:Media;
 		

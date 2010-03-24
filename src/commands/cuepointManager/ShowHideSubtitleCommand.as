@@ -4,21 +4,26 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import modules.videoPlayer.VideoPlayerBabelia;
+	
+	import vo.CueObject;
 
 	public class ShowHideSubtitleCommand implements ICommand
 	{
 		private var VP:VideoPlayerBabelia;
-		private var text:String;
+		public var cue:CueObject;
 		
-		public function ShowHideSubtitleCommand(text:String, subHolder:VideoPlayerBabelia)
+		public function ShowHideSubtitleCommand(cue:CueObject, subHolder:VideoPlayerBabelia)
 		{
 			this.VP = subHolder;
-			this.text = text;
+			this.cue = cue;
 		}
 
 		public function execute(event:CairngormEvent):void
 		{
-			VP.setSubtitle(text);
+			if(cue)
+				VP.setSubtitle(cue.text);
+			else
+				VP.setSubtitle('');
 		}	
 	}
 }

@@ -8,13 +8,13 @@
 		<![CDATA[
 			public function get value():Number
 			{
-				return (data.showTime);
+				return (data.startTime);
 			}
 
 			override public function set data(value:Object):void
 			{
 				super.data=value;
-				ShowTimeStepper.value=data.showTime;
+				ShowTimeStepper.value=data.startTime;
 			}
 		]]>
 	</mx:Script>
@@ -23,6 +23,6 @@
 						  width="81"
 						  maximum="250000"
 						  formatter="{formater1}"
-						  valueCommit="{data.showTime = Number(ShowTimeStepper.value); }"/>
+						  valueCommit="{data.startTime = Number(ShowTimeStepper.value); }"/>
 	<ns2:TimeFormatter id="formater1"/>
 </mx:HBox>

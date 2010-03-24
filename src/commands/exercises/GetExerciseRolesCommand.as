@@ -40,8 +40,8 @@ package commands.exercises
 				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
 			} else {
 				//Set the data to the application's model
-				DataModel.getInstance().availableExerciseRoles.setItemAt(null, 1);
-				DataModel.getInstance().availableExerciseRoles.setItemAt(null, 0);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 1);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 0);
 				//Reflect the visual changes
 				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 1);
 				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);

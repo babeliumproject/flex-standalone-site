@@ -8,13 +8,13 @@
 		<![CDATA[
 			public function get value():Number
 			{
-				return (data.hideTime);
+				return (data.endTime);
 			}
 
 			override public function set data(value:Object):void
 			{
 				super.data=value;
-				HideTimeStepper.value=data.hideTime;
+				HideTimeStepper.value=data.endTime;
 			}
 		]]>
 	</mx:Script>
@@ -23,6 +23,6 @@
 						  width="81"
 						  maximum="250000"
 						  formatter="{formater1}"
-						  valueCommit="{data.hideTime = Number(HideTimeStepper.value); }"/>
+						  valueCommit="{data.endTime = Number(HideTimeStepper.value); }"/>
 	<ns2:TimeFormatter id="formater1"/>
 </mx:HBox>

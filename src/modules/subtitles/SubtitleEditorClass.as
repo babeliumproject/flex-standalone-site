@@ -22,7 +22,6 @@ package modules.subtitles
 	import mx.collections.ArrayCollection;
 	import mx.containers.HBox;
 	import mx.containers.Panel;
-	import mx.containers.ViewStack;
 	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
@@ -42,6 +41,7 @@ package modules.subtitles
 	public class SubtitleEditorClass extends HBox
 	{
 		private var cueManager:CuePointManager = CuePointManager.getInstance();
+		[Bindable]
 		private var videoPlayerReady:Boolean = false;
 		
 		[Bindable] 
@@ -94,7 +94,7 @@ package modules.subtitles
 
 		//Visual components declaration
 		[Bindable]
-		public var VP:VideoPlayerBabelia;
+		public var VP:VideoPlayerBabelia = new VideoPlayerBabelia();
 		public var exerciseTitle:Label;
 		public var subtitleExerciseButton:Button;
 
@@ -110,13 +110,12 @@ package modules.subtitles
 		private function onCreationComplete(event:FlexEvent):void
 		{
 			var model:DataModel=DataModel.getInstance();
-			VP = new VideoPlayerBabelia();
 			setupVideoPlayer();
 
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
+			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRoles");
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
@@ -135,14 +134,12 @@ package modules.subtitles
 		public function onVideoPlayerReady(e:VideoPlayerEvent) : void
 		{
 			videoPlayerReady = true;
-			VP.videoSource = exerciseFileName;
-			VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-			VP.enableSubtitlingEndButton = false;
+			onExerciseSelected(true);
 		}
 
 		public function onExerciseSelected(value:Boolean):void
 		{
-			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(0) == true)
+			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(0) == true && videoPlayerReady)
 			{
 				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, 0);
 				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
@@ -150,16 +147,14 @@ package modules.subtitles
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
 				exerciseTitle.text = watchExercise.title;
-				
-				if ( videoPlayerReady )
-				{
-					// Avoid bug #188, streaming error on tab change
-					VP.videoSource = "";
-					VP.videoSource = watchExercise.name;
-					VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-					VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-					VP.enableSubtitlingEndButton = false;	
-				}
+
+				// Avoid bug #188, streaming error on tab change
+				VP.videoSource = "";
+				VP.videoSource = exerciseFileName;
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+				VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+				VP.enableSubtitlingEndButton = false;	
+
 			}
 		}
 
@@ -182,8 +177,8 @@ package modules.subtitles
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
 				subtitleCollection=cueManager.getCuelist();
 				for each (var cueObj:CueObject in subtitleCollection){
-					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj.text, VP));
-					cueObj.setEndCommand(new ShowHideSubtitleCommand(cueObj.text, VP));
+					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP));
+					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 				}		
 			}
 		}
@@ -228,8 +223,10 @@ package modules.subtitles
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
 			VP.enableSubtitlingEndButton = true;
-			subtitleStartTime=e.time;
-			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'',new ShowHideSubtitleCommand(endEntry.text,VP),new ShowHideSubtitleCommand('',VP));
+			subtitleStartTime=e.time; 
+			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'');
+			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry,VP));
+			startEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
 
 			cueManager.addCue(startEntry);
 
@@ -241,8 +238,9 @@ package modules.subtitles
 			if (subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;
-				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'',new ShowHideSubtitleCommand(endEntry.text,VP),new ShowHideSubtitleCommand('',VP));
-				
+				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'');
+				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry,VP));
+				endEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
 				cueManager.setCueAt(endEntry, cueManager.getCueIndex(startEntry));
 			}
 		}
@@ -435,10 +433,14 @@ package modules.subtitles
 
 		public function viewSubtitlingControls(event:MouseEvent):void
 		{
-			if( !VP.subtitlingControls ){
+			if(!subtitleEditorVisible){
+				videoPlayerControlsViewStack=0;
 				VP.subtitlingControls = true;
+				subtitleEditorVisible=!subtitleEditorVisible;
 			} else {
+				videoPlayerControlsViewStack=1;
 				VP.subtitlingControls = false;
+				subtitleEditorVisible=!subtitleEditorVisible;
 			}
 		}
 
