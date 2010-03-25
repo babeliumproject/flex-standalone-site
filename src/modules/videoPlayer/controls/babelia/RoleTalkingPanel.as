@@ -56,9 +56,11 @@ package modules.videoPlayer.controls.babelia
 			
 			addChild(_roleBox);
 			
-			_pBar = new ProgressBar();
+			_pBar = new ProgressBar( );
 			_pBar.mode = ProgressBarMode.MANUAL;
 			_pBar.label = "";
+			_pBar.width = 20;
+			_pBar.height = 20;
 			
 			addChild(_pBar);
 
