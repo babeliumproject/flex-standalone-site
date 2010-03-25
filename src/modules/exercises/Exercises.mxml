@@ -359,14 +359,6 @@
 				// Show menu options
 				showEndOptions();
 				
-				// Add Listeners
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onDiscardResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
-				
-				
 				// on replay end
 				VP.addEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 			}
@@ -427,6 +419,13 @@
 				_recordingEndOptions = RecordingEndOptions(PopUpManager.createPopUp(parent, RecordingEndOptions, true));
 				_recordingEndOptions.title = resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS');
 				PopUpManager.centerPopUp(_recordingEndOptions);
+				
+				// Add Listeners
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onDiscardResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
 			}
 			
 			/**
@@ -461,17 +460,25 @@
 			private function onWatchExerciseAndResponse(e:Event) : void
 			{
 				showArrows();
+				setupRecordingCommands();
+				
 				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.secondSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
+				
+				VP.seek = false;
 			}
 			
 			// Watch response
 			private function onWatchResponse(e:Event) : void
 			{
 				showArrows();
+				setupPlayCommands();
+				
 				VP.videoSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
+				
+				VP.seek = false;
 			}
 			
 			// Record again
@@ -485,6 +492,8 @@
 					VP.state = VideoPlayerBabelia.RECORD_MIC_STATE;
 				else
 					VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE;
+
+				PopUpManager.removePopUp(_recordingEndOptions);
 			}
 			
 			// On discard response
