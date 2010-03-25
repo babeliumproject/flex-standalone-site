@@ -312,7 +312,7 @@ package modules.videoPlayer
 				if ( flag && _inNs != null )
 					_inNs.soundTransform = new SoundTransform(0);
 				else if ( _inNs != null )
-					_inNs.soundTransform = new SoundTransform(DEFAULT_VOLUME);
+					_inNs.soundTransform = new SoundTransform(DEFAULT_VOLUME/100);
 			}
 		}
 		
@@ -1003,6 +1003,8 @@ package modules.videoPlayer
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
 			}
+			else
+				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
 		}
 
 		/**

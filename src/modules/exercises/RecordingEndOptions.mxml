@@ -38,6 +38,7 @@
 					   cornerRadius="20"
 					   fontSize="12"
 					   alpha="1.0"
+					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
 					   fillAlphas="[1.0, 1.0]"
 					   fillColors="[#F68B8B, #F68B8B]"/>
 			<mx:Button label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
@@ -45,12 +46,14 @@
 					   height="105"
 					   cornerRadius="20"
 					   fontSize="12"
+					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
 					   alpha="1.0"/>
 			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
 					   width="169"
 					   height="105"
 					   cornerRadius="20"
 					   fontSize="12"
+					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
 					   alpha="1.0"
 					   enabled="{ DataModel.getInstance().isLoggedIn }"/>
 		</mx:HBox>

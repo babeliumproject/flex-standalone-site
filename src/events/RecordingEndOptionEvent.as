@@ -7,6 +7,7 @@ package events
 		public static const VIEW_BOTH:String = "viewBoth";
 		public static const VIEW_RESPONSE:String = "viewResponse";
 		public static const RECORD_AGAIN:String = "recordAgain";
+		public static const DISCARD_RESPONSE:String = "discardResponse";
 		public static const SAVE_RESPONSE:String = "saveResponse";
 		
 		public function RecordingEndOptionEvent(type:String)

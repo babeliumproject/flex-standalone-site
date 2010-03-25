@@ -356,19 +356,19 @@
 				hideArrows();
 				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				
-				DataModel.getInstance().recordingExercise = false;
-				
 				// Show menu options
-				_recordingEndOptions = RecordingEndOptions(PopUpManager.createPopUp(parent, RecordingEndOptions, true));
-				_recordingEndOptions.title = resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS');
-				PopUpManager.centerPopUp(_recordingEndOptions);
+				showEndOptions();
 				
 				// Add Listeners
-				_recordingEndOptions.removeEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
 				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
-				_recordingEndOptions.removeEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
 				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
-
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onDiscardResponse);
+				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
+				
+				
+				// on replay end
+				VP.addEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 			}
 			
 			/**
@@ -420,6 +420,16 @@
 			}
 			
 			/**
+			 * Show recording end menu
+			 **/
+			private function showEndOptions() : void
+			{
+				_recordingEndOptions = RecordingEndOptions(PopUpManager.createPopUp(parent, RecordingEndOptions, true));
+				_recordingEndOptions.title = resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS');
+				PopUpManager.centerPopUp(_recordingEndOptions);
+			}
+			
+			/**
 			 * On tab change - reset selected video and stop streaming
 			 **/
 			private function set onTabChange(value:Boolean) : void
@@ -442,6 +452,12 @@
 			/**
 			 * Recording end options
 			 **/
+			private function onReplayEnd(e:Event) : void
+			{
+				showEndOptions();
+			}
+			
+			// Watch both
 			private function onWatchExerciseAndResponse(e:Event) : void
 			{
 				showArrows();
@@ -450,11 +466,38 @@
 				PopUpManager.removePopUp(_recordingEndOptions);
 			}
 			
+			// Watch response
 			private function onWatchResponse(e:Event) : void
 			{
 				showArrows();
 				VP.videoSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
+			}
+			
+			// Record again
+			private function onRecordAgain(e:Event) : void
+			{
+				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
+				showArrows();
+
+				// Recording mode
+				if ( micOnly.selected ) 
+					VP.state = VideoPlayerBabelia.RECORD_MIC_STATE;
+				else
+					VP.state = VideoPlayerBabelia.RECORD_BOTH_STATE;
+			}
+			
+			// On discard response
+			private function onDiscardResponse(e:Event) : void
+			{
+				DataModel.getInstance().recordingExercise = false;
+				PopUpManager.removePopUp(_recordingEndOptions);
+			}
+			
+			// Save response
+			private function onSaveResponse(e:Event) : void
+			{
+				
 			}
 			
 		]]>
@@ -485,7 +528,8 @@
 						controlsEnabled="{_exerciseSelected}" />
 		</mx:VBox>
 		<mx:Spacer width="20" />
-		<!-- Exercise List -->
+		
+		<!-- Selected Video -->
 		<mx:Panel width="500"
 				  height="100%"
 				  layout="vertical"
@@ -545,6 +589,8 @@
 					</mx:VBox>
 				</mx:HBox>
 			</mx:Panel>
+			
+			<!-- Video List -->
 			<mx:Panel width="100%"
 					  verticalAlign="top">
 				<ns1:VideoList width="100%" />

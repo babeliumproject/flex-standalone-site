@@ -6,6 +6,7 @@ package modules.videoPlayer.events.babelia
 	{
 		
 		public static const END:String = "EndRecord";
+		public static const REPLAY_END:String = "EndReplay";
 		public static const MIC_DENIED:String = "MicDenied";
 		public static const CAM_DENIED:String = "CamDenied";
 		public static const ABORTED:String = "RecordingAborted";
