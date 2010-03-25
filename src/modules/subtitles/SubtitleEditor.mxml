@@ -7,12 +7,6 @@
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
-
-	<mx:Script>
-		<![CDATA[
-			import modules.videoPlayer.events.babelia.SubtitlingEvent;
-		]]>
-	</mx:Script>
 	<mx:ArrayCollection id="comboData"/>
 
 	<!-- Video Player -->
@@ -147,9 +141,9 @@
 								   paddingLeft="6"
 								   paddingRight="6"
 								   cornerRadius="8"
-								   enabled="{VP.playbackStarted}"
+								   enabled="{VP.playbackState == videoPlaybackStartedState}"
 								   icon="@Embed(source='../../resources/images/add.png')"
-								   click="{dispatchEvent( new SubtitlingEvent( SubtitlingEvent.START ) );}"
+								   click="{subtitleInsertHandler(event)}"
 								   id="addSubtitleLine"/>
 						<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
 								   paddingLeft="6"

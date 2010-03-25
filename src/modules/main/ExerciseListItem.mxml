@@ -102,10 +102,9 @@
 
 			private function viewExercise():void
 			{		
-				DataModel.getInstance().videoPlayerControlsViewStack=1;
 				var temp:Object = data;
 				var tempEx:ExerciseVO = temp as ExerciseVO;
-				var subtitles:SubtitleAndSubtitleLinesVO = new SubtitleAndSubtitleLinesVO(0,tempEx.id,0,tempEx.language);
+				var subtitles:SubtitleAndSubtitleLinesVO = new SubtitleAndSubtitleLinesVO(0,tempEx.id,0,'',tempEx.language);
 				var roles:ExerciseRoleVO = new ExerciseRoleVO();
 				roles.exerciseId = tempEx.id;
 

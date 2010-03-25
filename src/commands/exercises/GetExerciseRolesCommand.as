@@ -36,15 +36,14 @@ package commands.exercises
 				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 0);
 				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 1);
 				//Reflect the visual changes
-				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 1);
-				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
+				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
 			} else {
 				//Set the data to the application's model
-				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 1);
 				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 0);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 1);
+
 				//Reflect the visual changes
-				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 1);
-				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(true, 0);
+				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
 			}
 		}
 		

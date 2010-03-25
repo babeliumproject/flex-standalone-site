@@ -12,6 +12,7 @@ package modules.subtitles
 	
 	import model.DataModel;
 	
+	import modules.videoPlayer.VideoPlayer;
 	import modules.videoPlayer.VideoPlayerBabelia;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
@@ -29,6 +30,7 @@ package modules.subtitles
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
+	import mx.utils.ObjectUtil;
 	
 	import vo.CreditHistoryVO;
 	import vo.CueObject;
@@ -36,6 +38,7 @@ package modules.subtitles
 	import vo.ExerciseVO;
 	import vo.RoleComboDataVO;
 	import vo.SubtitleAndSubtitleLinesVO;
+	import vo.SubtitleLineVO;
 
 
 	public class SubtitleEditorClass extends HBox
@@ -43,6 +46,8 @@ package modules.subtitles
 		private var cueManager:CuePointManager = CuePointManager.getInstance();
 		[Bindable]
 		private var videoPlayerReady:Boolean = false;
+		
+		[Bindable] public var videoPlaybackStartedState:int = VideoPlayer.PLAYBACK_STARTED_STATE;
 		
 		[Bindable] 
 		public var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
@@ -115,7 +120,7 @@ package modules.subtitles
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRoles");
+			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
@@ -185,7 +190,7 @@ package modules.subtitles
 		
 		private function onRolesRetrieved(value:Boolean):void
 		{
-			
+
 			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(0) == true)
 			{
 				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(0) as ArrayCollection;
@@ -245,9 +250,9 @@ package modules.subtitles
 			}
 		}
 
-		public function subtitleInsertHandler():void
+		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-
+			dispatchEvent( new SubtitlingEvent( SubtitlingEvent.START ) );
 		}
 
 		public function subtitleRemoveHandler():void
@@ -316,39 +321,42 @@ package modules.subtitles
 		public function saveSubtitlesHandler():void
 		{
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
+			var subLines:ArrayCollection = new ArrayCollection();
 			if (subtitleCollection.length > 0)
 			{
-				if (subtitlesWereModified())
+				for each (var s:CueObject in subtitleCollection)
+				{
+					var subLine:SubtitleLineVO = new SubtitleLineVO(0,0,s.startTime,s.endTime,s.text,s.roleId)
+					for each (var dp:Object in comboData)
+					{
+						if (dp.roleId == subLine.exerciseRoleId)
+						{
+							subLine.exerciseRoleName = dp.charName;
+						}
+					}
+					subLines.addItem(subLine);
+				}
+				if (subtitlesWereModified(subLines))
 				{
 					var errors:String=checkSubtitleErrors();
 					if (errors.length == 0)
 					{
-						for each (var s:CueObject in subtitleCollection)
-						{
-							for each (var dp:Object in comboData)
-							{
-								if (dp.roleId == s.getRoleId())
-								{
-									s.setRole(dp.charName);
-								}
-							}
-						}
-						var subtitleLines:Array=subtitleCollection.toArray();
+
+						var subtitleLines:Array=subLines.toArray();
 						var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO();
 						subtitles.exerciseId=currentExercise.id;
 						subtitles.userId=DataModel.getInstance().loggedUser.id;
 						subtitles.language=exerciseLanguage;
 						subtitles.subtitleLines=subtitleLines;
-						if (DataModel.getInstance().availableSubtitleLines.length == 0)
+						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)
 							subtitles.id=0;
-						else
-							subtitles.id=DataModel.getInstance().availableSubtitleLines.getItemAt(0).subtitleId;
+						//else
+						//	subtitles.id=DataModel.getInstance().availableSubtitleLines.getItemAt(0).subtitleId;
 
 						var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
 						subHistoricData.videoExerciseId=currentExercise.id;
 						subHistoricData.videoExerciseName=currentExercise.name;
 						DataModel.getInstance().subHistoricData=subHistoricData;
-
 						new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, subtitles).dispatch();
 					}
 					else
@@ -368,16 +376,16 @@ package modules.subtitles
 
 		}
 
-		private function subtitlesWereModified():Boolean
+		private function subtitlesWereModified(compareSubject:ArrayCollection):Boolean
 		{
 			var modified:Boolean = false;
 			var unmodifiedSubtitlesLines:ArrayCollection = DataModel.getInstance().unmodifiedAvailableSubtitleLines;
-			if (unmodifiedSubtitlesLines.length != subtitleCollection.length)
+			if (unmodifiedSubtitlesLines.length != compareSubject.length)
 				modified = true;
 			else{
 				var i:int;
 				for(i=0; i<unmodifiedSubtitlesLines.length; i++){
-					if(unmodifiedSubtitlesLines.getItemAt(i).text != subtitleCollection.getItemAt(i).text){
+					if(unmodifiedSubtitlesLines.getItemAt(i).text != compareSubject.getItemAt(i).text){
 						modified = true;
 						break;
 					}
@@ -400,7 +408,7 @@ package modules.subtitles
 					errorMessage+="The text on the line " + (i + 1) + " is empty.\n";
 				if (i > 0)
 				{
-					if (subtitleCollection.getItemAt((i - 1)).hideTime >= subtitleCollection.getItemAt(i).showTime)
+					if (subtitleCollection.getItemAt((i - 1)).endTime >= subtitleCollection.getItemAt(i).startTime)
 						errorMessage+="The subtitle on the line " + i + " overlaps with the next subtitle.\n";
 				}
 			}
@@ -455,7 +463,6 @@ package modules.subtitles
 				VP.endVideo();
 				VP.subtitlingControls = false;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-				videoPlayerReady = false;
 			}
 			hideSubtitlingControls(null);
 		}

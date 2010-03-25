@@ -83,8 +83,14 @@ package modules.videoPlayer
 		
 		private var _timer:Timer;
 		
-		[Bindable] public var playbackReady:Boolean = false;
-		[Bindable] public var playbackStarted:Boolean = false;
+		public static const PLAYBACK_READY_STATE:int = 0;
+		public static const PLAYBACK_STARTED_STATE:int = 1;
+		public static const PLAYBACK_STOPPED_STATE:int = 2;
+		public static const PLAYBACK_FINISHED_STATE:int = 3;
+		public static const PLAYBACK_PAUSED_STATE:int = 4;
+		public static const PLAYBACK_BUFFERING_STATE:int = 5;
+		
+		[Bindable] public var playbackState:int;
 		
 		/**
 		 * CONSTRUCTOR
@@ -535,20 +541,22 @@ package modules.videoPlayer
 				trace( "Stream not found code: " + e.info.code + " for video " + _videoSource );
 			} else if( e.info.code == "NetStream.Play.Stop" )
 			{
-				playbackReady = false;
-				playbackStarted = false;
-				dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_FINISHED_PLAYING ) );
+				playbackState = VideoPlayer.PLAYBACK_STOPPED_STATE;
+				//dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_FINISHED_PLAYING ) );
 			} else if( e.info.code == "NetStream.Play.Start" ){
-				playbackReady = true;
+				playbackState = VideoPlayer.PLAYBACK_READY_STATE;
 			} else if( e.info.code == "NetStream.Buffer.Full" ){
-				if(playbackReady)
-					playbackStarted = true;
+				if(playbackState == VideoPlayer.PLAYBACK_READY_STATE)
+					playbackState = VideoPlayer.PLAYBACK_STARTED_STATE;
 			} else if (e.info.code == "NetStream.Buffer.Empty"){
-				playbackReady = false;
-				playbackStarted = false;
+				if (playbackState == VideoPlayer.PLAYBACK_STOPPED_STATE){
+					playbackState = VideoPlayer.PLAYBACK_FINISHED_STATE;
+					dispatchEvent( new VideoPlayerEvent( VideoPlayerEvent.VIDEO_FINISHED_PLAYING ) );
+				} else {
+					playbackState = VideoPlayer.PLAYBACK_BUFFERING_STATE;
+				}
 			} else if (e.info.code == "NetStream.Pause.Notify"){
-				playbackReady = false;
-				playbackStarted = false;
+				playbackState = VideoPlayer.PLAYBACK_PAUSED_STATE;
 			}
 			
 			trace( "code: " + e.info.code, "level: " + e.info.level );

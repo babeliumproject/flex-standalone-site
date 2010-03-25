@@ -5,16 +5,12 @@
 			 itemRenderer="modules.subtitles.GridComboBoxItemRenderer">
 	<mx:Script>
 		<![CDATA[
-			import mx.events.CollectionEventKind;
-			import mx.events.CollectionEvent;
-			import mx.collections.Sort;
-			import mx.collections.SortField;
-			import mx.managers.PopUpManager;
-			import mx.utils.ObjectUtil;
-			import mx.controls.DataGrid;
 			import mx.controls.Alert;
-			import mx.events.ListEvent;
 			import mx.controls.dataGridClasses.DataGridListData;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			
+			import vo.RoleComboDataVO;
 
 			private var _ownerData:Object;
 			private var _lookupField:String="value";
@@ -205,8 +201,9 @@
 				{
 					//The role doesn't exist, we close the popup and begin the new role insertion
 					PopUpManager.removePopUp(newRolePopUp);
-					var newRoleSelectEntry:Object={roleId: maxRoleId + 1, charName: newRoleName, action: 'select', fontWeight: 'normal', indent: 10};
-					var newRoleDeleteEntry:Object={roleId: maxRoleId + 1, charName: newRoleName, action: 'delete', fontWeight: 'normal', indent: 10};
+					var newRoleSelectEntry:RoleComboDataVO = new RoleComboDataVO(maxRoleId +1, newRoleName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					var newRoleDeleteEntry:RoleComboDataVO = new RoleComboDataVO(maxRoleId +1, newRoleName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					
 					for each (var dpi:Object in dataProvider)
 					{
 						if (dpi[_actionField] == _actionDoNothingItem)
