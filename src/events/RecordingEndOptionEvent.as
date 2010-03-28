@@ -9,6 +9,7 @@ package events
 		public static const RECORD_AGAIN:String = "recordAgain";
 		public static const DISCARD_RESPONSE:String = "discardResponse";
 		public static const SAVE_RESPONSE:String = "saveResponse";
+		public static const CLOSE_REQUEST:String = "closeRequest";
 		
 		public function RecordingEndOptionEvent(type:String)
 		{

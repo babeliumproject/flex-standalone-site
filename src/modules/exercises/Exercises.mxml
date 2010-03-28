@@ -24,6 +24,7 @@
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.RecordingEndOptionEvent;
+			import events.ResponseEvent;
 			
 			import model.DataModel;
 			
@@ -35,9 +36,11 @@
 			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			
+			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
+			import vo.ResponseVO;
 			
 			/**
 			 * CONSTANTS
@@ -68,11 +71,16 @@
 			private var _recordedFilename:String;
 			
 			/**
-			 * Others
+			 * Options menus
+			 **/
+			private var _recordingEndOptions:RecordingEndOptions;
+			private var _evaluationRequest:EvaluationRequest;
+			
+			/**
+			 * Video player related vaiables
 			 **/
 			private var _cueManager:CuePointManager = CuePointManager.getInstance();
 			[Bindable] private var _streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
-			private var _recordingEndOptions:RecordingEndOptions;
 			public var _videoPlayerReady:Boolean = false;
 			
 			/**
@@ -196,13 +204,13 @@
 			{
 				var cached:Boolean = _cueManager.setVideo(_exerciseId);
 				
-				if ( cached ) // Cuepoints are cached, only need to setup commands
-					setupPlayCommands();
-				else // Need to get cuepoints for this video manually
-				{ 
+				// TODO: if ( cached ) // Cuepoints are cached, only need to setup commands
+				// TODO:	setupPlayCommands();
+				// TODO: else // Need to get cuepoints for this video manually
+				//{ 
 					_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 					_cueManager.setCuesFromSubtitle(availableLocales.selectedItem.toString());
-				}	
+				//}	
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -267,7 +275,7 @@
 			}
 			
 			/**
-			 * On locale combo box change
+			 * On locale combo box changed
 			 **/
 			private function onLocaleComboChanged(e:Event) : void
 			{
@@ -360,7 +368,7 @@
 				showEndOptions();
 				
 				// on replay end
-				VP.addEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
+				VP.addEventListener(RecordingEvent.REPLAY_END, onReplayEnd);	
 			}
 			
 			/**
@@ -507,6 +515,45 @@
 			private function onSaveResponse(e:Event) : void
 			{
 				
+				//First, we retrieve all of this response's data
+				var user:int = DataModel.getInstance().loggedUser.id;
+				
+				//This must be changed by some function that takes a snapshot of the Response video
+				var responseThumbnail:String="noVideo";
+				var responseData:ResponseVO = new ResponseVO(0, user, _exerciseId, _recordedFilename, true, responseThumbnail,
+					"Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0);
+				
+				//Second, we create an historic data container to store the info we have so far.
+				var creditChange:CreditHistoryVO = new CreditHistoryVO();
+				creditChange.videoExerciseId = _exerciseId;
+				DataModel.getInstance().historicData = creditChange;
+				
+				//Third, save response				
+				new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
+				
+				// Close options
+				PopUpManager.removePopUp(_recordingEndOptions);
+				showEvaluationRequest();
+				
+				// End record mode
+				DataModel.getInstance().recordingExercise = false;
+			}
+			
+			// Evaluation request
+			private function showEvaluationRequest() : void
+			{
+				_evaluationRequest = EvaluationRequest(PopUpManager.createPopUp(parent, EvaluationRequest, true));
+				_evaluationRequest.title = "Evaluation Request";
+				PopUpManager.centerPopUp(_evaluationRequest);
+				
+				_evaluationRequest.addEventListener(RecordingEndOptionEvent.CLOSE_REQUEST, onCloseRequest);
+			}
+			
+			// On close request
+			private function onCloseRequest(e:Event) : void
+			{
+				// Close options
+				PopUpManager.removePopUp(_evaluationRequest);
 			}
 			
 		]]>

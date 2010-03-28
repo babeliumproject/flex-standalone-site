@@ -304,6 +304,14 @@ package modules.videoPlayer
 		}
 		
 		/**
+		 * Duration
+		 */
+		public function get duration() : Number
+		{
+			return _duration;
+		}
+		
+		/**
 		 * Skin loader
 		 */
 		public function set skin(name:String) : void

@@ -74,18 +74,17 @@
 
 	<mx:Script>
 		<![CDATA[
-			import events.ResponseEvent;
-			import vo.ResponseVO;
-			import com.adobe.protocols.dict.Response;
-			import vo.ExerciseVO;
-			import events.ExerciseEvent;
 			import events.EvaluationEvent;
-			import events.UserEvent;
-			import vo.UserVO;
-			import mx.controls.Alert;
-			import events.CreditEvent;
+			import events.RecordingEndOptionEvent;
+			import events.ResponseEvent;
 			import events.ViewChangeEvent;
+			
 			import model.DataModel;
+			
+			import mx.controls.Alert;
+			
+			import vo.ResponseVO;
+			import vo.UserVO;
 
 			public function init():void {
 
@@ -112,13 +111,15 @@
 						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, aeResponseId, 0, "spinvox").dispatch();
 					}
 
-					new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+					dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
 				} else {
 					//Do nothing but hide the evaluation options panel and remember the user
 					//he/she must login in order to get the evaluations.
 					evaluationOptions.visible = false;
 					Alert.show("You must Sign In to request an evaluation");
-					new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+					dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
 				}
 			}
 
