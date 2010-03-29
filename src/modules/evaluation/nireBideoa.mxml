@@ -297,7 +297,7 @@
 	      		bideobarra.setProgress(ns.time,iraupena);
 	      		ehunekoa = (100 * ns.time) / iraupena;
 	      		seek_barra.value = ns.time
-	      		bideobarra.label = resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + ns.time + " s / " + iraupena.toString() + " s   ( % " + ehunekoa +")";
+	      		bideobarra.label = resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + ns.time.toFixed(1) + " s / " + iraupena.toFixed(1) + " s   ( % " + ehunekoa +")";
 			
 				//azpitituluen moduluak ns-a zein segundutan doan jakin behar du, azpitituluak kargatzeko algoritmoak funtzionatzeko.
 	      		//timerrak gertaera jaurtitzen duen bakoitzean (25ms?) azpitituluen moduluari ns.time eguneratuko zaio
