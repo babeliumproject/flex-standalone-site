@@ -292,12 +292,12 @@ package modules.videoPlayer
 		 **/
 		public function muteVideo(flag:Boolean) : void
 		{
-			//_audioSlider.muted = flag;
+			_audioSlider.muted = flag;
 			
-			if ( flag )
+			/*if ( flag )
 				_ns.soundTransform = new SoundTransform(0);
 			else
-				_ns.soundTransform = new SoundTransform(0.5);
+				_ns.soundTransform = new SoundTransform(0.5);*/
 		}
 		
 		public function muteRecording(flag:Boolean) : void

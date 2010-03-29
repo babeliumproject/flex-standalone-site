@@ -20,6 +20,9 @@ package model
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel = new DataModel();
 		
+		[Bindable] public static var SUBTITLE_MODULE:int = 0;
+		[Bindable] public static var RECORDING_MODULE:int = 1;
+		
 		public var media:Media;
 		
 		//ViewStack management variables

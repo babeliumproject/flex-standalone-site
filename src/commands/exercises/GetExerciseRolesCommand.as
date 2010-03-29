@@ -33,14 +33,14 @@ package commands.exercises
 			{
 				var resAr:ArrayCollection = new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data to the application's model
-				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 0);
-				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, 1);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, DataModel.SUBTITLE_MODULE);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(resAr, DataModel.RECORDING_MODULE);
 				//Reflect the visual changes
 				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
 			} else {
 				//Set the data to the application's model
-				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 0);
-				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), 1);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), DataModel.SUBTITLE_MODULE);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(new ArrayCollection(), DataModel.RECORDING_MODULE);
 
 				//Reflect the visual changes
 				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));

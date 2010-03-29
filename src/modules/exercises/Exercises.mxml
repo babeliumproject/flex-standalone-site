@@ -165,7 +165,7 @@
 			{
 				if ( value )
 				{
-					_roles = DataModel.getInstance().availableExerciseRoles.getItemAt(1) as ArrayCollection;
+					_roles = DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.RECORDING_MODULE) as ArrayCollection;
 					_characterNames.removeAll();
 					
 					if ( _roles == null )
@@ -182,7 +182,7 @@
 							_characterNames.addItem(role.characterName);
 					}
 					
-					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, 1);
+					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
 			}
 			
@@ -312,12 +312,12 @@
 				if ( value == true )
 				{
 					// Retrieving selected exercise information
-					var tmp:ExerciseVO = DataModel.getInstance().currentExercise.getItemAt(1) as ExerciseVO;
+					var tmp:ExerciseVO = DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
 					_exerciseName = tmp.name;
 					_exerciseTitle = tmp.title;
 					_exerciseId = tmp.id;
 					_currentExercise = tmp;
-					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, 1);
+					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 					
 					// Need to retrieve again exercise's information
 					_rolesReady = false;
@@ -470,6 +470,7 @@
 				showArrows();
 				setupRecordingCommands();
 				
+				VP.videoSource = _exerciseName;
 				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.secondSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
@@ -559,13 +560,13 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(1)}"
+	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onExerciseSelected"/>
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange" />
 	<mx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved" />
-	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(1)}"
+	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onRolesRetrieved" />
 	
 	<mx:HBox width="100%" verticalAlign="top" horizontalAlign="center">

@@ -192,9 +192,9 @@ package modules.subtitles
 		private function onRolesRetrieved(value:Boolean):void
 		{
 
-			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(0) == true)
+			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) == true)
 			{
-				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(0) as ArrayCollection;
+				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.SUBTITLE_MODULE) as ArrayCollection;
 				var cData:ArrayCollection=new ArrayCollection;
 				var insertOption:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 				cData.addItem(insertOption);
@@ -222,7 +222,7 @@ package modules.subtitles
 					comboData.removeAll();
 					comboData=cData;
 				}
-				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, 0);
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
 			}
 		}
 
