@@ -7,7 +7,6 @@
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
-	<mx:ArrayCollection id="comboData"/>
 
 	<!-- Video Player -->
 	<mx:VBox>

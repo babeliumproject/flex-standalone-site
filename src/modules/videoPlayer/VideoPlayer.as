@@ -670,6 +670,10 @@ package modules.videoPlayer
 			drawBG();
 		}
 		
+		public function onBWDone() : void {
+			
+		}
+		
 		/**
 		 * On video source changed
 		 */

@@ -95,7 +95,7 @@ package modules.subtitles
 
 
 		[Bindable]
-		public var comboData:ArrayCollection;
+		public var comboData:ArrayCollection = new ArrayCollection();
 
 		//Visual components declaration
 		[Bindable]
@@ -120,7 +120,7 @@ package modules.subtitles
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
+			//BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
@@ -184,7 +184,8 @@ package modules.subtitles
 				for each (var cueObj:CueObject in subtitleCollection){
 					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP));
 					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
-				}		
+				}
+				onRolesRetrieved(true);
 			}
 		}
 		
@@ -221,7 +222,7 @@ package modules.subtitles
 					comboData.removeAll();
 					comboData=cData;
 				}
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
+				DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, 0);
 			}
 		}
 

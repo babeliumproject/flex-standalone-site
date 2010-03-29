@@ -24,6 +24,9 @@ package vo
 		
 		public var avgRating:Number;
 		public var avgDifficulty:Number;
+		
+		public var score:Number; //is used to sort the searches
+		public var idIndex:int; //is used to delete exercises
 
 	}
 }
