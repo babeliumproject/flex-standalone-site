@@ -653,8 +653,11 @@ package modules.videoPlayer
 		/**
 		 * On subtitling controls clicked: start or end subtitling button
 		 * This method adds ns.time to event and gives it to parent component
+		 * 
+		 * NOTE: Made public because the subtitling module has it's own subtitling 
+		 * controls that need access to the current video time.
 		 */
-		private function onSubtitlingEvent(e:SubtitlingEvent) : void
+		public function onSubtitlingEvent(e:SubtitlingEvent) : void
 		{
 			var time:Number = _ns != null ? _ns.time : 0;
 

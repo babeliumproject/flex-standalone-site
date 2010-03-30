@@ -138,6 +138,7 @@ package modules.subtitles
 		
 		public function onVideoPlayerReady(e:VideoPlayerEvent) : void
 		{
+			VP.stopVideo();
 			videoPlayerReady = true;
 			onExerciseSelected(true);
 		}
@@ -153,8 +154,7 @@ package modules.subtitles
 				exerciseLanguage=watchExercise.language;
 				exerciseTitle.text = watchExercise.title;
 
-				// Avoid bug #188, streaming error on tab change
-				VP.videoSource = "";
+				VP.stopVideo();
 				VP.videoSource = exerciseFileName;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
@@ -180,7 +180,7 @@ package modules.subtitles
 			if (DataModel.getInstance().availableSubtitleLinesRetrieved)
 			{
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
-				subtitleCollection=cueManager.getCuelist();
+				subtitleCollection=cueManager.cuelist;
 				for each (var cueObj:CueObject in subtitleCollection){
 					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP));
 					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
@@ -253,7 +253,7 @@ package modules.subtitles
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			dispatchEvent( new SubtitlingEvent( SubtitlingEvent.START ) );
+			VP.onSubtitlingEvent(new SubtitlingEvent( SubtitlingEvent.START ));
 		}
 
 		public function subtitleRemoveHandler():void
@@ -475,7 +475,6 @@ package modules.subtitles
 				onTabChange(false);
 			}
 		}
-
 
 	}
 }

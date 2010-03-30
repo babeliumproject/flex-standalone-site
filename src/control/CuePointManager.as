@@ -33,7 +33,8 @@ package control
 		 * Used variables
 		 **/ 
 		[Bindable] 
-		private var cuelist:ArrayCollection;
+		public var cuelist:ArrayCollection;
+		
 		private var cache:Dictionary; // as HashMap
 		private var watchingVideo:int;
 		public var cached:Boolean = false;
@@ -131,10 +132,6 @@ package control
 		{
 			this.cuelist = cuelist;
 			saveCache(); // auto-cache
-		}
-		
-		public function getCueList():ArrayCollection{
-			return this.cuelist;
 		}
 		
 		
