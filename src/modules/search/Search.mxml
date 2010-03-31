@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" 
+	height="100%"
+	creationComplete="init()" >
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.collections.ArrayCollection;
+			import mx.events.ItemClickEvent;
+			import model.DataModel;
+			
+			[Bindable] private var dataProvider:ArrayCollection = new ArrayCollection();
+			[Bindable] private var dataTemp:ArrayCollection = new ArrayCollection();
+			[Bindable] private var nav:ArrayCollection =new ArrayCollection();
+			[Bindable] public var sortFields:ArrayCollection = new ArrayCollection(
+                [ {label:"Automatico", data:"score"}, 
+                  {label:"Usuario", data:"userName"}, 
+                  {label:"Idioma", data:"language"},
+                  {label:"Valorado", data:"avgRating"},
+                  {label:"Dificultad", data:"avgDifficulty"},
+                  {label:"Fecha", data:"addingDate"},]);
+			
+			public function init():void{
+				
+			}
+
+			public function set onSearchRetrieved(value:Boolean):void{
+				if (DataModel.getInstance().videoSearchesRetrieved){
+					dataProvider=DataModel.getInstance().videoSearches;
+					DataModel.getInstance().currentPage=1;
+					if(dataProvider.length >0){
+						labelSort.enabled=true;
+						sort.enabled=true;
+						pageNav.enabled=true;
+					}else{
+						labelSort.enabled=false;
+						sort.enabled=false;
+						pageNav.enabled=false;
+					}
+					createNavigatePage();
+					DataModel.getInstance().videoSearchesRetrieved = false;
+					numResul.text="Resultados encontrados: "+dataProvider.length;
+				}
+			}
+			
+			public function refreshDataProvider():void{
+             	var current:int=DataModel.getInstance().currentPage-1;
+             	var pageSize:int=DataModel.getInstance().pageSize;
+             	dataTemp = new ArrayCollection( dataProvider.source.slice((current * pageSize),(current * pageSize) + pageSize) );
+        		searchListTable.rowCount=dataTemp.length;
+				searchListTable.dataProvider=dataTemp;
+        	}
+        	public function closeHandler(event:Event):void {
+        		var dataSortField:SortField=new SortField();
+         		var dataSort:Sort=new Sort();
+        		var name:String = event.target.selectedItem.data;
+        		//Create the SortField object for the data
+        		dataSortField.numeric=false;
+        		dataSortField.name=name;
+        		dataSortField.descending=true;
+        		//Create the Sort object and add the SortField object to the array of fields to sort
+        		dataSort.fields=[dataSortField];
+        		//Set the ArrayCollection objects sort property to our custom sort, and refresh
+        		dataProvider.sort=dataSort;
+        		dataProvider.refresh();
+        		dataProvider.source=dataProvider.toArray();
+        		
+        		DataModel.getInstance().currentPage=1;
+        		createNavigatePage();
+        	}
+        	public function createNavigatePage():void{
+        		var upm:int =DataModel.getInstance().numberOfPagesNav;
+        		var upmt:int;
+        		var psize:int=DataModel.getInstance().pageSize;
+        		var tpxpm:int;
+        		if (dataProvider.length%psize==0){
+        			tpxpm =dataProvider.length/psize;
+        		}else{
+        			tpxpm =dataProvider.length/psize+1;
+        		}
+        		var current:int =DataModel.getInstance().currentPage;
+        		var limit:int=(DataModel.getInstance().numberOfPagesNav+1)/2;
+        		nav.removeAll();
+        		nav.addItem({label:"|<",data:1});
+        		if (current>1){
+        			nav.addItem({label:"<",data:current-1});
+        		}else{
+        			nav.addItem({label:"<",data:1});
+        		}
+        		if (current<=limit){
+        			for(upmt = 1; (upmt <= tpxpm && upmt <= upm); upmt++){
+        				nav.addItem({label:upmt,data:upmt});
+        			}
+        		}else if(current>tpxpm-limit){
+        			for(upmt = tpxpm-upm+1; upmt <= tpxpm; upmt++){
+        				nav.addItem({label:upmt,data:upmt});
+        			}
+        		}else{
+        			for(upmt = current-limit+1; upmt <= current+limit-1; upmt++){
+        				nav.addItem({label:upmt,data:upmt});
+        			}
+        		}
+        		//upm=upmt;
+        		if (current<tpxpm){
+        			nav.addItem({label:">",data:current+1});
+        		}else{
+        			nav.addItem({label:">",data:tpxpm});
+        		}
+				nav.addItem({label:">|",data:tpxpm});
+				//DataModel.getInstance().lastPageShow=upm;
+				refreshDataProvider();
+				pageNav.dataProvider=nav;
+        	}
+        	public function navigatePage(event:ItemClickEvent):void{
+        		var pag:int=event.item.data;
+        		DataModel.getInstance().currentPage=pag;
+        		createNavigatePage();  	      		
+        	}
+
+
+		]]>
+	</mx:Script>
+	
+	<mx:Binding source="{DataModel.getInstance().videoSearchesRetrieved}"
+				destination="this.onSearchRetrieved"/>
+	<mx:HBox>
+		<mx:Label id="numResul"/>
+		<mx:Label id="labelSort"
+				text="Ordenar por"
+				enabled="false"/>
+		<mx:ComboBox id="sort"
+				fontWeight="normal"
+				dataProvider="{sortFields}"
+				close="closeHandler(event)" 
+				editable="false"
+				enabled="false"/>
+		<mx:LinkBar id="pageNav" 
+              	itemClick="navigatePage(event)"
+              	horizontalGap="1" 
+              	width="100%"
+              	enabled="false"/>
+	</mx:HBox>
+	<mx:DataGrid id="searchListTable"
+				 width="100%"
+				 editable="false"
+				 selectable="false"
+				 verticalScrollPolicy="off"
+				 sortableColumns="false"
+				 draggableColumns="false"
+				 headerHeight="0">
+		<mx:columns>
+			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	
+</mx:VBox>

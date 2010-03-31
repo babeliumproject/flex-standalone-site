@@ -28,7 +28,8 @@ class Epaitu {
 			$temp->AukeratutakoPertsonaia = $row [5];
 			$temp->Data = $row [6];
 			$temp->Jabea = $row [7];
-			$temp->Batazbestekoa = $row [8];
+			$temp->exerciseId = $row[8];
+			$temp->Batazbestekoa = $row [9];
 			array_push ( $searchResults, $temp );
 		}
 		
@@ -121,13 +122,13 @@ class Epaitu {
 		
 
 		//Bideo bat inork ez duenean baloratu, c.fk_user_id null izango da, eta true itzultzen du konparaketak
-		$sql = "SELECT DISTINCT A.file_identifier,B.name,A.id,B.duration,A.rating_amount,A.character_name,A.adding_date,F.name
+		$sql = "SELECT DISTINCT A.file_identifier,B.name,A.id,B.duration,A.rating_amount,A.character_name,A.adding_date,F.name,B.id
 				FROM (response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id) INNER JOIN users AS F on A.fk_user_id = F.ID 
 		     	LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
-				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> '%d' AND A.is_private = 0
+				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
 				AND NOT EXISTS (SELECT *
                                 FROM evaluation AS D INNER JOIN response AS E on D.fk_response_id = E.id
-                                WHERE E.id = A.id AND D.fk_user_id = '%d')";
+                                WHERE E.id = A.id AND D.fk_user_id = %d)";
 		
 		$searchResults = $this->_listQuery ( $sql, $MAXBAL, $erabiltzaile, $erabiltzaile );
 
@@ -144,7 +145,7 @@ class Epaitu {
 		
 
 		//Bideo bat inork ez duenean baloratu, c.fk_user_id null izango da, eta true itzultzen du konparaketak
-		$sql = "Select DISTINCT B.file_identifier,A.name,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,D.name
+		$sql = "Select DISTINCT B.file_identifier,A.name,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,D.name,A.id
 		From (exercise As A Inner Join response As B on (A.id = B.fk_exercise_id)) Inner Join users AS D on B.fk_user_id = D.ID Left Outer Join evaluation As C on C.fk_response_id = B.id
 		Where A.status = 'Available' AND B.rating_amount < %d
 		AND B.is_private = 0;";
@@ -157,7 +158,7 @@ class Epaitu {
 	
 	public function nikEpaitutakoak($key) {
 		
-		$sql = "Select DISTINCT A.name,B.file_identifier,C.fk_response_id,A.duration,B.rating_amount,B.character_name
+		$sql = "Select DISTINCT A.name,B.file_identifier,C.fk_response_id,A.duration,B.rating_amount,B.character_name,A.id
 			From (exercise As A Inner Join response As B on A.id = B.fk_exercise_id) Inner Join evaluation As C on C.fk_response_id = B.id
 			Where C.fk_user_id = '%d'";
 		
@@ -167,7 +168,7 @@ class Epaitu {
 	
 	public function norberariEpaitutakoak($key) {
 		
-		$sql = "Select A.name,B.file_identifier,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,B.adding_date,avg(C.score) AS Batazbestekoa 
+		$sql = "Select A.name,B.file_identifier,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,B.adding_date, A.id, avg(C.score) AS Batazbestekoa  
 		 From (exercise As A Inner Join response As B on A.id = B.fk_exercise_id) Inner Join evaluation As C on C.fk_response_id = B.id
 		 Where B.fk_user_id = '%d' Group By A.id";
 

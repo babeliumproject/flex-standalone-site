@@ -25,7 +25,7 @@ class CreditDAO {
 	public function addCreditsForEvaluating($userId) {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount+p.prefValue
-			WHERE (u.ID=%d AND p.prefName='evaluationDoneCredits') ";
+			WHERE (u.ID=%d AND p.prefName='evaluatedWithVideoCredits') ";
 		return $this->_databaseUpdate ( $sql, $userId );
 	}
 	
@@ -103,7 +103,9 @@ class CreditDAO {
 			$sql = $sql . "VALUES ('%d', '%d', '%d', NOW(), '%s', '%d') ";
 			$result = $this->_create($sql, $data->userId, $data->videoExerciseId, $data->videoResponseId, $data->changeType, $data->changeAmount);
 		} elseif ($data->changeType == "evaluation"){
-			//Something else
+			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, fk_eval_id, changeDate, changeType, changeAmount) ";
+			$sql = $sql . "VALUES ('%d', '%d', '%d', '%d', NOW(), '%s', '%d') ";
+			$result = $this->_create($sql, $data->userId, $data->videoExerciseId, $data->videoResponseId, $data->videoEvaluationId, $data->changeType, $data->changeAmount);
 		}
 		
 		return $result;

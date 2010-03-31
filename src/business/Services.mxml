@@ -51,6 +51,12 @@
 		source="ExerciseDAO"/>
 		
 	<mx:RemoteObject
+		id="searchRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="SearchDAO"/>
+		
+	<mx:RemoteObject
 		id="youtubeRO"
 		destination="empService"
 		showBusyCursor="false"

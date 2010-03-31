@@ -21,7 +21,7 @@ package modules.videoUpload
 			
 			//setup the properties on the factory before init so that
 			//the drop down will gracefully adopt them.
-			internalDropdownFactory.properties = { iconField:"",iconFunction:null };
+			internalDropdownFactory.properties = { iconField:"icon",iconFunction:null };
 			dropdownFactory = internalDropdownFactory;
 		}
 		
@@ -87,7 +87,6 @@ package modules.videoUpload
 				textInput.x=0;
 				return;
 			}
-			
 			//add and size the obejct
 			displayIconObject = new displayIcon;
 			displayIconObject.name="displayIconObject";

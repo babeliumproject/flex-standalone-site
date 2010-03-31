@@ -114,8 +114,7 @@
 			
 			public function click(e:Event) : void
 			{
-				if ( DataModel.getInstance().micAccessDenied 
-						|| DataModel.getInstance().camAccessDenied )
+				if ( !DataModel.getInstance().micCamAllowed  )
 				{
 					Alert.show("Error, has denegado el permiso a la cam o mic");
 					return;
@@ -174,12 +173,12 @@
 			
 			public function onCamDenied(e:RecordingEvent) : void
 			{
-				DataModel.getInstance().camAccessDenied = true;
+				DataModel.getInstance().micCamAllowed = false;
 			}
 			
 			public function onMicDenied(e:RecordingEvent) : void
 			{
-				DataModel.getInstance().micAccessDenied = true;
+				DataModel.getInstance().micCamAllowed = false;
 			}
 			
 			public function onRecordingAborted(e:RecordingEvent) : void

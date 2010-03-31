@@ -17,7 +17,7 @@ class SpinvoxConnection {
 	/**
 	 * Constructor
 	 *
-	 * @param $url
+	 * @param $url Request URL
 	 * @param $user
 	 * @param $pass
 	 * @param $appname
@@ -44,7 +44,7 @@ class SpinvoxConnection {
 	 * @param $refnumber A reference number for the SpinVox conversion. It can't be the same as the ones of previus conversions.
 	 * @return an associative array with the location url of the conversion, the x-error, the x-reference, error code and date.
 	 */
-	public function transcript($filePath, $refnumber) {
+	public function transcript($filePath, $refnumber, $language = null) {
 		$wavfile = $this->tmpFolder . "/" . $refnumber . ".wav";
 		
 		if (file_exists($filePath)) {
@@ -60,7 +60,7 @@ class SpinvoxConnection {
 		
 		$refnumber = $refnumber;
 		$mimeboundary = $this->generateMIMEBoundary($refnumber);
-		$request = $this->buildPostData($this->accountId, $this->appname, $refnumber, $this->encodeFile($wavfile), $mimeboundary);
+		$request = $this->buildPostData($this->accountId, $this->appname, $refnumber, $this->encodeFile($wavfile), $mimeboundary, $language = null);
 		
 		unlink($wavfile);
 		
@@ -203,10 +203,14 @@ class SpinvoxConnection {
 	 * @param $refNumber The refference number of the request
 	 * @param $encodedAudio The audio thas is going to be sent to SpinVox encoded in base64
 	 * @param $mimeboundary
+	 * @param $language The language of the audio file
 	 * @return string
 	 */
-	private function buildPostData($accountId, $appName, $refNumber, $encodedAudio, $mimeboundary) {
-		$xml = "<?xml version=\"1.0\" ?>\n<request>\n<account-id>$accountId</account-id>\n<reference>$refNumber</reference>\n<app-name>$appName</app-name>\n</request>\n";
+	private function buildPostData($accountId, $appName, $refNumber, $encodedAudio, $mimeboundary, $language = null) {
+		$xml = "<?xml version=\"1.0\" ?>\n<request>\n<account-id>$accountId</account-id>\n<reference>$refNumber</reference>\n<app-name>$appName</app-name>\n";
+		if($language)
+			$xml = $xml . "<language>$language</language>\n";
+		$xml = $xml . "</request>\n";
 		return "--" . $mimeboundary . "\n" . "Content-Type: text/xml\n" . "Content-Length: " . strlen($xml) . "\n\n" . $xml . "\n" . "--" . $mimeboundary . "\n" . "Content-Type: audio/wav\n" . "Content-Transfer-Encoding: base64\n" . "Content-Length: " . strlen($encodedAudio) . "\n\n" . $encodedAudio . "\n" . "--" . $mimeboundary . "--\n\n";
 	}
 	

@@ -119,7 +119,7 @@ class TranscriptionsDAO {
 			                     INNER JOIN exercise AS E ON R.fk_exercise_id=E.id  
 			                     INNER JOIN preferences AS P ON E.language=P.prefValue 
 			        WHERE 
-			           R.id=$responseId 
+			           R.id=%d 
 			             AND 
 			           P.prefName = '%s.language' 
 			             AND 
@@ -131,7 +131,7 @@ class TranscriptionsDAO {
 			if ($maxDuration > 0)
 				$sql = $sql . " AND R.duration<=%s";
 			
-			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem), $maxDuration);
+			$result = $this->conn->_execute($sql, $responseId, strtolower($transcriptionSystem), $maxDuration);
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				return true;
@@ -151,11 +151,11 @@ class TranscriptionsDAO {
 			else
 				$maxDuration = 0;
 			
-			$sql = "SELECT E.id FROM exercise AS E  INNER JOIN preferences AS P ON E.language=P.prefValue WHERE E.id=$exerciseId AND P.prefName = '%s.language' AND E.fk_transcription_id IS NULL";
+			$sql = "SELECT E.id FROM exercise AS E  INNER JOIN preferences AS P ON E.language=P.prefValue WHERE E.id=%d AND P.prefName = '%s.language' AND E.fk_transcription_id IS NULL";
 			if ($maxDuration > 0)
-				$sql = $sql . " AND E.duration<=%s";
+				$sql = $sql . " AND E.duration<=%d";
 			
-			$result = $this->conn->_execute($sql, strtolower($transcriptionSystem), $maxDuration);
+			$result = $this->conn->_execute($sql, $exerciseId, strtolower($transcriptionSystem), $maxDuration);
 			$row = $this->conn->_nextRow($result);
 			if ($row)
 				return true;

@@ -47,33 +47,37 @@
 					   click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE)"/>
 		<mx:VRule height="40"/>
 		<!--<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_RANKINGS')}"
-					   fontFamily="Arial"
+			 fontFamily="Arial"
+			 fontSize="14"
+			 enabled="{!DataModel.getInstance().recordingExercise}"
+			 click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
+			 <mx:VRule height="40"/> -->
+		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_ABOUT')}"
 					   fontSize="14"
-					   enabled="{!DataModel.getInstance().recordingExercise}"
-					   click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
-		<mx:VRule height="40"/> -->
-		
-		<!--<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_RANKINGS')}"
-		fontFamily="Arial"
-		fontSize="14"
-		enabled="{!DataModel.getInstance().recordingExercise}"
-		click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
-		<mx:VRule height="40"/>-->
+					   fontFamily="Arial"
+					   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
+					   		!DataModel.getInstance().recording &amp;&amp;
+					   		!DataModel.getInstance().playing}"
+					   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
+		<mx:VRule height="40"/>
 	</mx:HBox>
 	<mx:HBox width="45%"
 			 horizontalAlign="right"
 			 height="100%"
 			 verticalAlign="middle">
-		<!--<mx:TextInput width="80%"
+		<mx:TextInput id="searchField"
+					  width="80%"
 					  height="26"
 					  fontFamily="Arial"
-					  fontSize="12"/>
+					  fontSize="12"
+					  enter="launchSearch()"/>
 		<mx:Button label="Search"
 				   fontFamily="Arial"
 				   fontSize="14"
 				   fillAlphas="[0.0, 1.0, 1.0, 0.0]"
 				   fillColors="[#6FA3D3, #6FA3D3]"
-				   enabled="{!DataModel.getInstance().recordingExercise}"/>-->
+				   enabled="true"
+				   click="launchSearch()"/>
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 				   fontFamily="Arial"
 				   fontSize="14"
@@ -86,18 +90,29 @@
 		<![CDATA[
 			import events.VideoStopEvent;
 			import events.ViewChangeEvent;
+			import events.SearchEvent;
 			import model.DataModel;
 
 			//Initialization method
 			private function init():void
 			{
 			}
-			
+						
 			private function changeView(event:String) : void
 			{
 				new VideoStopEvent().dispatch();
 				new ViewChangeEvent(event).dispatch();
 			}
+			
+			private function launchSearch() : void{
+				DataModel.getInstance().searchField = searchField.text;
+				if (DataModel.getInstance().viewContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX){ 
+					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
+				}
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+
+			}
+			
 		]]>
 	</mx:Script>
 </mx:ApplicationControlBar>

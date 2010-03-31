@@ -7,8 +7,8 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import model.DataModel;
 		
+		import model.DataModel;		
 		import mx.events.IndexChangedEvent;		
 		import modules.configuration.ConfigurationResultEvent;
 		import flash.utils.Timer;
@@ -25,6 +25,7 @@
 					webCamCheck.allMenu.visible=true;
 					webCamCheck.notConect.visible=false;
 				}else{//El usuario no dispone de webcam
+					refreshCamButton.visible=true;
 					webCamCheck.allMenu.visible=false;
 					webCamCheck.notConect.visible=true;
 					webCamStatus.text="Webcam: X";
@@ -40,6 +41,7 @@
 					micCheck.allMenu.visible=true;
 					micCheck.notConect.visible=false;
 					}else{//El usuario no dispone de microfono
+					refreshMicButton.visible=true;
 					micCheck.allMenu.visible=false;
 					micCheck.notConect.visible=true;
 					microphoneStatus.text="Microphone: X";
@@ -78,6 +80,7 @@
 				else
 					bandwidthStatus.text="Bandwidth: X";					
 			}
+			/*Fin funciones para el control de los resultados*/
 			
 			public function onTimer(e:TimerEvent):void{
 				if (timer.currentCount<8){//4 parpadeos
@@ -95,6 +98,25 @@
 				}				
 			}
 			
+			/*Funciones para el control de refresh*/
+			private function refreshMic():void{
+				if (Microphone.names.length>0){//El usuario ha conectado su microfono
+					micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT,microphoneResult);
+					micCheck.allMenu.visible=true;
+					micCheck.notConect.visible=false;
+					refreshMicButton.visible=false;
+				}
+			}
+			
+			private function refreshWebCam():void{
+				if (Camera.names.length>0){//El usuario ha conectado su webcam
+					webCamCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT,webcamResult);
+					webCamCheck.allMenu.visible=true;
+					webCamCheck.notConect.visible=false;
+					refreshCamButton.visible=false;
+				}
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -102,10 +124,14 @@
 		<mx:TabNavigator id="configurationMenu" x="10" y="10" width="64%" height="95%" >			
 			<mx:VBox label="WebCam Configuration">
 				<mod1:webCamCheck id="webCamCheck"/>
+				<mx:LinkButton id="refreshCamButton" visible="false" color="red" textDecoration="underline"
+					label="Conectala y pulsa aqui para recargar la pagina" click="refreshWebCam()"/>
 			</mx:VBox>
 			
 			<mx:VBox label="Mic Configuration">
 				<mod2:micCheck id="micCheck"/>
+				<mx:LinkButton id="refreshMicButton" visible="false" color="red" textDecoration="underline"
+					label="Conectalo y pulsa aqui para recargar la pagina" click="refreshMic()"/>
 			</mx:VBox>
 			
 			<mx:VBox label="BandWidth Configuration">
@@ -119,6 +145,5 @@
 			<mx:Text text="Bandwidth: " id="bandwidthStatus" fontSize="20"/>
 		</mx:VBox>
 	</mx:HBox>
-	
-	
+
 </mx:Canvas>

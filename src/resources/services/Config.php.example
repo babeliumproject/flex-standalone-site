@@ -33,6 +33,9 @@
 		public $frameWidth4_3 = 320;
 		public $maxDuration = 120; //seconds
 		public $maxSize = 180; //MByte
+
+		//Server path to store the search index. Must be a folder with write permissions set for www-data
+		public $indexPath = 'docIndex';
 		
 		/*
 		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and 

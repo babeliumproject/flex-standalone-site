@@ -11,6 +11,7 @@ package vo
       public var Jabea:String;
       
       public var response_id:String;
+      public var exerciseId:int;
       public var AukeratutakoPertsonaia:String;
       
       public var Epailea:String;

@@ -13,6 +13,8 @@ package events
 		public static const VIEW_PLAYER_MODULE:String="viewPlayerModule";
 		public static const VIEW_CONFIGURATION_MODULE:String="viewConfigurationModule";
 		public static const VIEW_RANKING_MODULE:String="viewRankingModule";
+		public static const VIEW_ABOUT_MODULE:String="viewAboutModule";
+		public static const VIEW_SEARCH_MODULE:String="viewSearchModule";
 
 		//User related views
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";
@@ -41,6 +43,8 @@ package events
 		public static const VIEWSTACK_PLAYER_MODULE_INDEX:int = 6;
 		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:int = 7;
 		public static const VIEWSTACK_RANKING_MODULE_INDEX:int = 8;
+		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 9;
+		public static const VIEWSTACK_SEARCH_MODULE_INDEX:int = 10;
 
 		public function ViewChangeEvent(type:String)
 		{

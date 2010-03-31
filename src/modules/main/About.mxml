@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="init()"
+		 backgroundAlpha="0.0"
+		 verticalGap="14">
+	<mx:Label text="About Babelium Project"
+			  fontFamily="Arial"
+			  fontSize="18"
+			  fontWeight="bold"/>
+	<mx:HRule width="100%"/>
+	<mx:Label text="Application Info"
+			  fontFamily="Arial"
+			  fontWeight="bold"
+			  fontSize="14"
+			  textDecoration="underline"/>
+	<mx:VBox width="100%"
+			 fontSize="12">
+		<mx:HBox width="100%">
+			<mx:Label text="Application Version: "
+					  fontSize="12"/>
+			<mx:Label id="appRevisionLabel"
+					  fontSize="12"
+					  fontWeight="bold"/>
+		</mx:HBox>
+		<mx:Label text="License: all contents, names, images and resources on this site are licensed under GPLv2."/>
+
+	</mx:VBox>
+	<mx:Label text="Who are we?"
+			  fontStyle="normal"
+			  fontSize="14"
+			  fontWeight="bold"
+			  textDecoration="underline"
+			  fontFamily="Arial"/>
+	<mx:VBox width="100%" fontSize="12">
+		<mx:TextArea text="We are a group of researchers and students from the Basque Country's Public University (UPV/EHU) hypermedia and multimedia research group (GHyM). This group is primarily focused on developing innovational long distance educational applications and services." width="100%" wordWrap="true" editable="false" backgroundAlpha="0.0" borderStyle="none"/>
+	</mx:VBox>
+	<mx:Label text="Contact Info"
+			  fontFamily="Arial"
+			  fontWeight="bold"
+			  fontSize="14"
+			  textDecoration="underline"/>
+	<mx:VBox width="100%"
+			 fontFamily="Verdana"
+			 fontSize="12">
+		<mx:Label text="Feel free to send us your comments, questions or suggestions to:"/>
+		<mx:LinkButton label="babeliumproject@gmail.com"
+					   textDecoration="underline"
+					   click="emailButtonClickHandler(event)"/>
+	</mx:VBox>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import flash.net.navigateToURL;
+			import model.DataModel;
+			
+			public function init():void{
+				appRevisionLabel.text= "r"+DataModel.getInstance().prefDic['appRevision'];
+			}
+
+			public function emailButtonClickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest('mailto:babeliumproject@gmail.com'));
+			}
+		]]>
+	</mx:Script>
+
+</mx:VBox>

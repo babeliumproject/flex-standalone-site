@@ -1,6 +1,5 @@
 package model
 {
-	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
 	import flash.net.FileReference;
@@ -67,6 +66,14 @@ package model
 		[Bindable] public var historicData:CreditHistoryVO = null;
 		[Bindable] public var subHistoricData:CreditHistoryVO = null;	
 		
+		//The info of the video searches
+		[Bindable] public var videoSearches: ArrayCollection;
+		[Bindable] public var videoSearchesRetrieved:Boolean = false;
+		[Bindable] public var searchField:String = "";
+		[Bindable] public var currentPage:int = 1;
+		[Bindable] public var pageSize:int = 7;          		 //Number of results displayed per page
+		[Bindable] public var numberOfPagesNav:int = 7;			 //This number must be odd and greater than three
+		
 		//The info of the current video
 		[Bindable] public var currentExercise:ArrayCollection = new ArrayCollection(new Array(null, null));
 		[Bindable] public var currentExerciseRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
@@ -124,7 +131,7 @@ package model
 		[Bindable] public var availableSubtitleLinesRetrieved: Boolean = false;
 		[Bindable] public var availableSubtitleLines:ArrayCollection = new ArrayCollection();
 		[Bindable] public var unmodifiedAvailableSubtitleLines:ArrayCollection = new ArrayCollection();
-		
+
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;
 		[Bindable] public var autoevaluationDone:Boolean = false;
@@ -138,10 +145,7 @@ package model
 		[Bindable] public var stopVideoFlag:Boolean = false;
 		// In order to avoid tab change if recording exercise
 		[Bindable] public var recordingExercise:Boolean = false;
-		
-		// Shows if users denied access to cam or mic to video player
-		[Bindable] public var camAccessDenied:Boolean = false;
-		[Bindable] public var micAccessDenied:Boolean = false;
+
 		
 		//Used to configuration module
 		[Bindable] public var videoRec:Boolean = false;
@@ -151,6 +155,9 @@ package model
 
 		// l10n
 		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
+		
+		// Shows if users denied access to cam or mic to video player
+		[Bindable] public var micCamAllowed:Boolean = false;
 	
 		public function DataModel(){
 			if (instance)

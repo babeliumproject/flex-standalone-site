@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="modules.evaluation.*" width="500" height="300">
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:ns1="modules.evaluation.*"
+		   width="500"
+		   height="300">
 
-<mx:Metadata>
+	<mx:Metadata>
 	//bideoaren egoera aldaketa bat suertatzen denean altxatzen da
    [ Event( name="myCustomEvent", type="flash.events.Event") ]
    //bideoa bukatzean altxatzen da
@@ -14,463 +17,471 @@
 
 
 	<mx:Script>
-        <![CDATA[
-	        
-			import mx.events.FlexEvent;
-			import mx.events.StateChangeEvent;
-			import mx.events.ResizeEvent;
+		<![CDATA[
+			import events.AddCuepointEvent;
+			
+			import flash.utils.*;
+			
+			import model.DataModel;
+			
+			import mx.collections.*;
+			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.events.SliderEvent;
-			import mx.controls.sliderClasses.Slider;
-			import mx.collections.ArrayCollection;
-			import flash.utils.*;
-			import mx.collections.*
-			import mx.controls.Alert;
-			import events.AddCuepointEvent;
-			import model.DataModel;
-	        
-	        public var vid:Video;
-	        private var nc:NetConnection;
-	        private var ns:NetStream;
-	        private var nsClient:Object = {};
-	        private var iraupena:Number = 0;
-	        private var volumeTransform:SoundTransform;
-	        private var timer:Timer = null;
-	        
-	        private var bideoIzena:String = new String;
-            private var bideoId:int = new int;
-                       
-            
-            private var hasera_da:Boolean = new Boolean;
-            private var rol_aukeratua:String = new String;
-             public var childTaula:ArrayCollection = new ArrayCollection();
-             
-			private var isStarted:Boolean = false;
-                       
-            [Bindable]
-         	public var rolTaula:ArrayCollection;
-            public function setup():void {
-                nsClient.onMetaData = this.onMetaData;
-                nsClient.onCuePoint = this.onCuePoint;  
- 
+			
+			import org.gif.player.GIFPlayer;
 
-                nc = new NetConnection();
-				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port  + "/oflaDemo");
+			public var vid:Video;
+			private var nc:NetConnection;
+			private var ns:NetStream;
+			private var nsClient:Object={};
+			private var iraupena:Number=0;
+			private var volumeTransform:SoundTransform;
+			private var timer:Timer=null;
+
+			public var bideoIzena:String=new String;
+			public var bideoId:int=new int;
+			
+			[Bindable] public var myGIFPlayer:GIFPlayer;
+
+
+
+			private var hasera_da:Boolean=new Boolean;
+			private var rol_aukeratua:String=new String;
+			public var childTaula:ArrayCollection=new ArrayCollection();
+
+			private var isStarted:Boolean=false;
+
+			private var playbackFinished:Boolean=false;
+			private var playbackStarted:Boolean=false;
+
+			[Bindable]
+			public var rolTaula:ArrayCollection;
+			
+			[Bindable]
+			public var cuetaula:ArrayCollection;
+			public var cuetimetaula:ArrayCollection;
+			
+			public var spr:HBox;
+
+			public function setup():void
+			{
+				myGIFPlayer = new GIFPlayer();
+				bufferingImage.source = myGIFPlayer;
+				myGIFPlayer.load ( new URLRequest (DataModel.getInstance().uploadDomain+"resources/images/buffering.gif") );
+				
+				nsClient.onMetaData=this.onMetaData;
+				nsClient.onCuePoint=this.onCuePoint;
+
+				nc=new NetConnection();
+				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrorHandler);
-               
-            	hasera_da = true;
-            	panel.addEventListener(ResizeEvent.RESIZE,aldakeapanelean);
-            }
-            
-            
-			  private function botoiaSakatu():void{
-			  		var botoiaSakatuObj:Event = new Event( "botoiaSakatuta" );		
-			    	dispatchEvent( botoiaSakatuObj );
-			  }            
-	      
-			  public function playVid():void {
-					ns.resume();
-					isStarted = true;
-			  }
-			  
-			  public function pauseVid():void {    	
-            	ns.pause();      	
-            }
-			  
-			  public function stopVid():void {
+				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+
+				hasera_da=true;
+			}
+
+			private function botoiaSakatu():void
+			{
+				var botoiaSakatuObj:Event=new Event("botoiaSakatuta");
+				dispatchEvent(botoiaSakatuObj);
+			}
+
+			public function playVid():void
+			{
+				ns.resume();
+				isStarted=true;
+			}
+
+			public function pauseVid():void
+			{
+				ns.pause();
+			}
+
+			public function stopVid():void
+			{
 				ns.pause();
 				ns.seek(0);
-				isStarted = false;
-            }
-            
-            private function set stopVideo(flag:Boolean) : void
+				isStarted=false;
+			}
+
+			private function set stopVideo(flag:Boolean):void
 			{
-				if ( isStarted )
+				if (isStarted)
 				{
 					stopVid();
 				}
 			}
-            
-            public function setRolAukeratua(izena:String):void
-            {
-            	this.rol_aukeratua = izena;
-            }
-            
-            
-            public function setBideoIzena(izena:String,bideo_id:int):void
-            {
-            	bideoIzena =  izena;
-            	bideoId = bideo_id;
-            	
-            	setup();
-            	//Alert.show("bai bai");
-            	
-            	azpi1.setBideoIzena(izena);
-            	azpi1.init();
-            	/*
-            	azpi1.taulakHustu();
-            	*/
-            }
-	        
-	        public function asyncErrorHandler(event: AsyncErrorEvent): void {
-				// ignore for now
-			}
-			
-			private function aldakeapanelean(event:Event):void 
-			{ 
-		  		//Momentuz ez du ezer egiten
-		  		
-		  		
-		  		/* rol_zerrenda.x = panel.x
-		  		rol_zerrenda.y = panel.y + panel.height + 50
-		  		rol_zerrenda.width = panel.width
-		  		rol_zerrenda.height = panel.height */
-		  		
-		  		//rolkonboa.visible = true;
-			}
-	        
-	        
-	        [Bindable]
-         	public var cuetaula:ArrayCollection;
-         	public var cuetimetaula:ArrayCollection;
-	        private function onMetaData(obj:Object):void 
-            {
-                iraupena = obj.duration;
-                
-                elementuakHasieratu();
-                
-                
-		  		cuetaula = new ArrayCollection();
-		  		cuetimetaula = new ArrayCollection();
-		  		
-		  		//metadata informazioaren cuePoints eremuko cuepoint guztien informazio cuetaula taulan sartuko dugu,
-		  		//honela hasieratik cuepointen informazio eskuragarri izateko
- 		  		for each(var o:Object in obj.cuePoints) {
- 		  			trace("cuepointen inguruko INFO");
-		  			cuetaula.addItem(o);
-		  			cuetimetaula.addItem(o.time);
-			 	}
-			 	
-			 	//oraingoz erabiltzaileak informazioa ikusteko daukan DataGrid-a hemen beteko dugu
-			 	//HAU ORAINDIK ONDO PENTSATU BEHARRA DAGO NOLA EGIN NAHI DUGUN!!
-			 	//rol_zerrenda.dataProvider= cuetaula;
-			 	
-				//onMetadata-n bete dugun cuepointen taulatik, parte hartzen duten izen ezberdinak roltaulan
-				//sartuko ditugu, ondoren pertsonaien konboa beronekin betetzeko	 	
-         		rolTaula=new ArrayCollection();
-            	
-            	for (var i:int = 0; i < cuetaula.length; i++) {
-            		
-            		if (!rolTaula.contains(cuetaula[i].parameters.izena)){
-            			rolTaula.addItem(cuetaula[i].parameters.izena);
-            		}
-            	}
 
-            	
-            	stopVid();
-            	
-            	//Bolumena piztu haseran, seek egiterakoan ez hotsik entzuteko
-				volumeTransform.volume = 1
-				ns.soundTransform = volumeTransform;
-				
-				trace("rol aldaketari deia");
+			public function setRolAukeratua(izena:String):void
+			{
+				this.rol_aukeratua=izena;
+			}
+
+
+			public function setBideoIzena(izena:String, bideo_id:int):void
+			{
+				bideoIzena=izena;
+				bideoId=bideo_id;
+
+				setup();
+
+				azpi1.setBideoIzena(izena);
+				azpi1.init();
+			}
+
+			public function asyncErrorHandler(event:AsyncErrorEvent):void
+			{
+			}
+
+			private function onMetaData(obj:Object):void
+			{
+				iraupena=obj.duration;
+
+				elementuakHasieratu();
+
+				cuetaula=new ArrayCollection();
+				cuetimetaula=new ArrayCollection();
+
+				for each (var o:Object in obj.cuePoints)
+				{
+					cuetaula.addItem(o);
+					cuetimetaula.addItem(o.time);
+				}
+	 	
+				rolTaula=new ArrayCollection();
+
+				for (var i:int=0; i < cuetaula.length; i++)
+				{
+
+					if (!rolTaula.contains(cuetaula[i].parameters.izena))
+					{
+						rolTaula.addItem(cuetaula[i].parameters.izena);
+					}
+				}
+
+
+				stopVid();
+
+				//Bolumena piztu haseran, seek egiterakoan ez hotsik entzuteko
+				volumeTransform.volume=1
+				ns.soundTransform=volumeTransform;
+
 				this.rolAldaketa();
-           }
-           
-           private function netStatusHandler(event:NetStatusEvent):void {
-            	
-				ns = new NetStream(nc);
+			}
+
+			private function netStatusHandler(event:NetStatusEvent):void
+			{
+
+				ns=new NetStream(nc);
 				ns.play(bideoIzena);
-                ns.client = nsClient;
-				ns.addEventListener(NetStatusEvent.NET_STATUS,bideoEgoeraAztertu);
-				
-                vid = new Video();
-                vid.attachNetStream(ns);
-                uic.addChild(vid);
-            	
-            	//Bolumena kontrolatzeko objetuen balioak haseratu
-                volumeTransform = new SoundTransform();
-	    		volumeSlider.value = volumeTransform.volume;
-				volumeSlider.minimum = 0;
-				volumeSlider.maximum = 1;
-				volumeSlider.snapInterval = 0.1; 
-				volumeSlider.tickInterval = volumeSlider.snapInterval; 
-				volumeSlider.liveDragging = true; 
+				ns.client=nsClient;
+				ns.addEventListener(NetStatusEvent.NET_STATUS, bideoEgoeraAztertu);
+
+				vid=new Video();
+				vid.attachNetStream(ns);
+				uic.addChild(vid);
+
+				//Bolumena kontrolatzeko objetuen balioak haseratu
+				volumeTransform=new SoundTransform();
+				volumeSlider.value=volumeTransform.volume;
+				volumeSlider.minimum=0;
+				volumeSlider.maximum=1;
+				volumeSlider.snapInterval=0.1;
+				volumeSlider.tickInterval=volumeSlider.snapInterval;
+				volumeSlider.liveDragging=true;
 				volumeSlider.addEventListener(SliderEvent.CHANGE, volumeChangeHandler);
-				
+
 				//Bolumena ixildu haseran, seek egiterakoan ez hotsik entzuteko
-				volumeTransform.volume = 0
-				ns.soundTransform = volumeTransform;
-				
+				volumeTransform.volume=0
+				ns.soundTransform=volumeTransform;
+
 				//segundu laurden bateko maiztasuna erlojua sortu eta hasieratu, segunduro progressbarrak eguneratzeko
-				
-                timer = new Timer(10,0);
-				timer.addEventListener(TimerEvent.TIMER, onTimer );
+
+				timer=new Timer(10, 0);
+				timer.addEventListener(TimerEvent.TIMER, onTimer);
 				timer.start();
-				
-            }
 
-			private function bideoEgoeraAztertu(event:NetStatusEvent):void {
-            	
-            	//trace("status:" + event.info.code);
-            	
-            	//Hemen egoera ezberdinak dokumentatuta
+			}
+
+			private function bideoEgoeraAztertu(event:NetStatusEvent):void
+			{
+
+				//trace("status:" + event.info.code);
+
+				//Hemen egoera ezberdinak dokumentatuta
 				//http://livedocs.adobe.com/flash/9.0_es/ActionScriptLangRefV3/flash/events/NetStatusEvent.html
-				var myEventObj:Event = new Event( "myCustomEvent" );		
-			    dispatchEvent( myEventObj );
-				
-				switch( event.info.code ) {
-					
-                    case "NetStream.Buffer.Empty":
+				var myEventObj:Event=new Event("myCustomEvent");
+				dispatchEvent(myEventObj);
+
+				switch (event.info.code)
+				{
+
+					//Data is not being received quickly enough to fill the buffer.
+					case "NetStream.Buffer.Empty":
 						
-						//trace("buffera hutsik dago -buffering-\n");
-						egoera.text = "buffering";
-						bideoBukaeraTratatu();
-                    break;
+						
+						if (playbackFinished)
+						{
+							egoera.text = "finished";
+							playbackFinished=false;
+							bideoBukaeraTratatu();
+						} else {
+							egoera.text="buffering";
+							bufferingScreen.visible = true;
+						}
+						break;
 
-                    case "NetStream.Buffer.Full":
-                    	egoera.text = "playing";
-                    	//trace("full dago -erreproduzitzen-\n");
-                    break;
-                    
-                    case "NetStream.Buffer.Full":
-                    	egoera.text = "Errorea";
-                    break;
-                    
-                    case "NetStream.Play.Start":
-                    	egoera.text = "playing";
-                    break;
-                    
-                    case "NetStream.Pause.Notify":
-                    	egoera.text = "paused";
-					break;
-					
+					//The buffer is full and the stream will begin playing.
+					case "NetStream.Buffer.Full":
+						bufferingScreen.visible = false;
+						egoera.text="playing";
+						break;
+
+					case "NetStream.Play.Stop":
+						playbackFinished=true;
+						break;
+
+					case "NetStream.Play.Start":
+						break;
+
+					case "NetStream.Buffer.Flush":
+						break;
+
+					case "NetStream.Pause.Notify":
+						break;
+
 					case "NetStream.Unpause.Notify":
-						egoera.text = "playing";
-					break;
-					                    
-                    case "NetStream.Play.Stop":
-                    	egoera.text = "stoped";
-                    	
-                    break;
-                    
-                }
-                
-
-            }
+						break;
+				}
 
 
-			private function bideoBukaeraTratatu():void{            	
-	            //trace("bideoBukaeraTratatu");
-	            //Alert.show("ee");
-	            trace ("iraupena : " + iraupena);
-	            trace (" ns.time : " + ns.time);
-	            
-	           	var last_time:Number = new Number
-	            
-	            if ((ns.time + 0.5) >= iraupena){
-	            	//bideoa bukatu den Ebentoa altxarazten du
-	            	var bukatuDaObj:Event = new Event( "bukatuDa" );		
-			    	dispatchEvent( bukatuDaObj );
-					
-					stopVid();	      			
-					volumeTransform.volume = 1;
-					ns.soundTransform = volumeTransform;
-					
-					last_time = ns.time;
-		      	}
-      	  }
-      	  
-      	    private function volumeChangeHandler(event:SliderEvent):void 
-			{ 
-				volumeTransform.volume = event.value; 
-			    ns.soundTransform = volumeTransform;
-			    
 			}
-			
+
+
+			private function bideoBukaeraTratatu():void
+			{
+				//bideoa bukatu den Ebentoa altxarazten du
+				var bukatuDaObj:Event=new Event("bukatuDa");
+				dispatchEvent(bukatuDaObj);
+
+				stopVid();
+				volumeTransform.volume=1;
+				ns.soundTransform=volumeTransform;
+
+			}
+
+			private function volumeChangeHandler(event:SliderEvent):void
+			{
+				volumeTransform.volume=event.value;
+				ns.soundTransform=volumeTransform;
+
+			}
+
 			private function onTimer(event:TimerEvent):void
-			{	
+			{
 				var ehunekoa:int
-				
 				//bideoaren progresu barra eguneratu
-	      		bideobarra.setProgress(ns.time,iraupena);
-	      		ehunekoa = (100 * ns.time) / iraupena;
-	      		seek_barra.value = ns.time
-	      		bideobarra.label = resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + ns.time.toFixed(1) + " s / " + iraupena.toFixed(1) + " s   ( % " + ehunekoa +")";
-			
+				bideobarra.setProgress(ns.time, iraupena);
+				ehunekoa=(100 * ns.time) / iraupena;
+				seek_barra.value=ns.time
+				bideobarra.label=resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + ns.time + " s / " + iraupena.toString() + " s   ( % " + ehunekoa + ")";
+
 				//azpitituluen moduluak ns-a zein segundutan doan jakin behar du, azpitituluak kargatzeko algoritmoak funtzionatzeko.
-	      		//timerrak gertaera jaurtitzen duen bakoitzean (25ms?) azpitituluen moduluari ns.time eguneratuko zaio
-	      		azpi1.ns_time = ns.time;
+				//timerrak gertaera jaurtitzen duen bakoitzean (25ms?) azpitituluen moduluari ns.time eguneratuko zaio
+				azpi1.ns_time=ns.time;
 			}
-			
-			
-			private function elementuakHasieratu():void{
-            	
-            	vid.width = this.width / 1.9239
-                vid.height = this.height / 2.820
-                
-                panel.x = (this.width /4)-(vid.width/2)
-                panel.y =(this.height /3)-(vid.height/2) -  (this.height /12)
-                
-                // Resize UIComponent to same size as Video object.
-                uic.width = vid.width;
-                uic.height = vid.height;
-                
-                //bideoari dagokion progressbarra bistaratu eta hasieratu
-               /*
-                bideobarra.visible = true;
-		  		bideobarra.width = vid.width - 10;
-		  		bideobarra.minimum = 0;
-		  		bideobarra.maximum = iraupena;
-		  		
-		  		bideobarra.x = vid.x + 5;
-		  		bideobarra.y = vid.y + vid.height + 38;
-		  	    */
+
+
+			private function elementuakHasieratu():void
+			{
+
+				vid.width=this.width / 1.9239
+				vid.height=this.height / 2.820
+
+				panel.x=(this.width / 4) - (vid.width / 2)
+				panel.y=(this.height / 3) - (vid.height / 2) - (this.height / 12)
+
+				// Resize UIComponent to same size as Video object.
+				uic.width=vid.width;
+				uic.height=vid.height;
+
 				//seekbarra
-		  		seek_denb.width = bideobarra.width
-		  		
-		  		seek_barra.minimum = 0;
-		  		seek_barra.maximum = iraupena;
-		  		//seek_barra.visible = true
-		  		
-		  		//azpitituluen labelaren tamaina, bideoarenarekin berdindu.
-		  		azpi1.testua.width = vid.width;
-		  				  	
-            }
-            
-            public function muteatu():void{
-            	volumeTransform.volume = 0;
-            	ns.soundTransform = volumeTransform;
-				volumeSlider.enabled = false;
-				trace("estamos dentro");
-            }
-            
-            public function bolumenaAktibatu():void{
-            	volumeTransform.volume = 1;
-				ns.soundTransform = volumeTransform;
-				volumeSlider.enabled = true;
-            }
-            
-            
-            
-            private function onCuePoint(obj:Object):void {				
-					//trace("cuepoint al canto");
-					//trace("denbora: " + obj.time);
-					//trace("hizketan: " + obj.parameters.izena);
-					
-					 //cuePoint bat dagoenean altxatuko da
-				    var myEventObj:AddCuepointEvent = new AddCuepointEvent( "cuePoint", obj.parameters.izena );			
-				    dispatchEvent( myEventObj );										
-        	}
-        	
-        	//geziak jartzeko
-        	public function rolAldaketa():void
-			{				
+				seek_denb.width=bideobarra.width
+
+				seek_barra.minimum=0;
+				seek_barra.maximum=iraupena;
+				//seek_barra.visible = true
+
+				//azpitituluen labelaren tamaina, bideoarenarekin berdindu.
+				azpi1.testua.width=vid.width;
+
+			}
+
+			public function muteatu():void
+			{
+				volumeTransform.volume=0;
+				ns.soundTransform=volumeTransform;
+				volumeSlider.enabled=false;
+			}
+
+			public function bolumenaAktibatu():void
+			{
+				volumeTransform.volume=1;
+				ns.soundTransform=volumeTransform;
+				volumeSlider.enabled=true;
+			}
+
+
+
+			private function onCuePoint(obj:Object):void
+			{
+
+
+				//cuePoint bat dagoenean altxatuko da
+				var myEventObj:AddCuepointEvent=new AddCuepointEvent("cuePoint", obj.parameters.izena);
+				dispatchEvent(myEventObj);
+			}
+
+			//geziak jartzeko
+			public function rolAldaketa():void
+			{
 				//gorde egingo dugu rola ondoren erabili ahal izateko
 				//rol_aukeratua = rolkonboa.selectedItem.toString();	
-				
-				trace("R O L   A L D A K E T A");			
-				for (var i:int = 0; i < cuetaula.length; i++) {
-            		
-            		var irudia:Image = new Image;
-            		
-            		//trace(rol_aukeratua);
-            		if (cuetaula[i].parameters.izena == rol_aukeratua){
-            			
-	            		irudia.source="resources/images/fletxa_gorri.png";
-	            	}
-	            	else{
-	            		irudia.source="resources/images/fletxa_beltza.png";
-	            	}
-	            	
-	            	//17 x 35 da fletxa
-	            	
-	            	
-	            	/*
-	            		bideobarra.x eta bideobarra.y balioak gaizki hartzen ditu lehenengo pasaldian
-	            		berez, lehenengo formulan jartzen duen moduan izan beharko litzateke, baina
-	            		bigarrenean eskuz jarri ditut balioak
-	            	*/
-	            	
-	            	//irudia.x = panel.x + 10 + ((bideobarra.x + ((bideobarra.width/iraupena) * (cuetaula[i].time/1000))) - (17/2))
-	            	//irudia.y = panel.y +  bideobarra.y - 6
-	            	
-	            	irudia.x = panel.x + 10 + ((34 + ((bideobarra.width/iraupena) * (cuetaula[i].time/1000))) - (17/2))
-	            	irudia.y = panel.y +  390 - 6
-	            	
-	            	trace("x bideobarra: " + bideobarra.x);
-	            	trace("y bideobarra: " + bideobarra.y);
-	            	
-	            	//trace ("x: " + irudia.x.toString());
-	            	//trace ("y: " + irudia.y.toString());
-	            	
-	            	//Aukeratutako rolari dagozkion cuepoint-en fletxak pantailaratzen dira
-	            	//Amaieran ezabatu ahal izateko, taula batean gordetzen dira denak.
-	            	childTaula.addItem(this.addChild(irudia));
-	            	
+
+				trace("R O L   A L D A K E T A");
+				for (var i:int=0; i < cuetaula.length; i++)
+				{
+
+					var irudia:Image=new Image;
+
+					//trace(rol_aukeratua);
+					if (cuetaula[i].parameters.izena == rol_aukeratua)
+					{
+
+						irudia.source="resources/images/fletxa_gorri.png";
+					}
+					else
+					{
+						irudia.source="resources/images/fletxa_beltza.png";
+					}
+
+					irudia.x=panel.x + 10 + ((34 + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
+					irudia.y=panel.y + 390 - 6
+
+					trace("x bideobarra: " + bideobarra.x);
+					trace("y bideobarra: " + bideobarra.y);
+
+					childTaula.addItem(this.addChild(irudia));
+
 				}
-             	
+
 			}
-			
-		    
-		    public function ezabatuFletxak():void
+
+
+			public function ezabatuFletxak():void
 			{
-				for (var i:int = 0; i < childTaula.length; i++) {
-					
-	            	this.removeChild(childTaula[i]);
-	            }
-	            //taulak daukan eduki guztia ezabatu, bestela gero errorea ematen du
-	            //esistitzen ez diren irudiak ezabatzen hasten baita!
-	            
-	            childTaula = new ArrayCollection();
+				for (var i:int=0; i < childTaula.length; i++)
+				{
+
+					this.removeChild(childTaula[i]);
+				}
+				//taulak daukan eduki guztia ezabatu, bestela gero errorea ematen du
+				//esistitzen ez diren irudiak ezabatzen hasten baita!
+
+				childTaula=new ArrayCollection();
 			}
+		]]>
+	</mx:Script>
 
-
-	        
-	        ]]>
-    </mx:Script>
-	
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.stopVideo"/>
-	
-	<mx:Panel id="panel" visible="true" horizontalAlign="center" verticalAlign="middle">
-		<mx:Label id="egoera" text="Stoped" />
-	    <mx:HBox x="24" y="541" height="42" verticalAlign="middle" horizontalAlign="center">
-		    <mx:HBox id="botoiak" dropShadowEnabled="true" borderStyle="solid" cornerRadius="5" x="600" y="265">
-		        <mx:LinkButton 
-					label="Play" 
-					click="playVid(); botoiaSakatu();"/>
-				<mx:LinkButton 
-					label="Pause" 
-					click="pauseVid(); botoiaSakatu();"/>
-				<mx:LinkButton
-					label="Stop"
-					click="stopVid(); botoiaSakatu();"/>
+
+	<mx:Panel id="panel"
+			  visible="true"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<mx:Label id="egoera"
+				  text="Stopped"/>
+		<mx:HBox x="24"
+				 y="541"
+				 height="42"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<mx:HBox id="botoiak"
+					 dropShadowEnabled="true"
+					 borderStyle="solid"
+					 cornerRadius="5"
+					 x="600"
+					 y="265">
+				<mx:LinkButton label="Play"
+							   click="playVid(); botoiaSakatu();"/>
+				<mx:LinkButton label="Pause"
+							   click="pauseVid(); botoiaSakatu();"/>
+				<mx:LinkButton label="Stop"
+							   click="stopVid(); botoiaSakatu();"/>
 			</mx:HBox>
-		    <mx:HBox id="bolumen_kaxa" dropShadowEnabled="true" borderStyle="solid" cornerRadius="5" width="93" height="24" horizontalAlign="center" verticalAlign="middle">
-		        <mx:Image source="resources/images/bol.png" width="19" height="19"/>
-		        <mx:HSlider id="volumeSlider" width="35"/>
-		    </mx:HBox>
-	        
-	    </mx:HBox>
-	    
-        <mx:UIComponent id="uic" />
-        <ns1:azpitituluak2 x="51" y="453" id="azpi1">
-    	</ns1:azpitituluak2>
-        <mx:HBox id="fletxak" width="100%" height="35">
-	    </mx:HBox>
-	    
-	    <!--bideo barraren x eta y balioak aldatu eskero, rolAldaketa funtzioan kontutan hartu behar da -->
-       <mx:ProgressBar id="bideobarra" x="24" y="419" mode="manual" />
-       <mx:Label id="pertsonaiaGorriz" text="{resourceManager.getString('myResources', 'YOURCHARACTER')}" textAlign="center" fontWeight="bold" color="#FF0000" height="22"/>
-    	
-    	<mx:HBox id="seek_denb" width="283" height="31" horizontalAlign="center" verticalAlign="middle">
-	        <mx:HBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
-	            <mx:Image source="resources/images/ezk.png"/>
-	            <mx:HSlider  minimum="0" enabled="true" id="seek_barra" change="ns.seek(seek_barra.value)" width="100%" height="100%"/>
-	            <mx:Image source="resources/images/esk.png"/>
-	        </mx:HBox>
-    	</mx:HBox>
-    </mx:Panel>
+			<mx:HBox id="bolumen_kaxa"
+					 dropShadowEnabled="true"
+					 borderStyle="solid"
+					 cornerRadius="5"
+					 width="93"
+					 height="24"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:Image source="resources/images/bol.png"
+						  width="19"
+						  height="19"/>
+				<mx:HSlider id="volumeSlider"
+							width="35"/>
+			</mx:HBox>
+
+		</mx:HBox>
+		<mx:Canvas horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:UIComponent id="uic" width="100%" height="100%"/>
+			<mx:HBox backgroundColor="#000000" width="100%" height="100%" backgroundAlpha="0.9" id="bufferingScreen" verticalAlign="middle" horizontalAlign="center" visible="false">
+				<mx:Image id="bufferingImage" width="31" height="31"/>
+				<mx:Text text="Buffering..." color="#FFFFFF" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<ns1:azpitituluak2 x="51"
+						   y="453"
+						   id="azpi1">
+		</ns1:azpitituluak2>
+		<mx:HBox id="fletxak"
+				 width="100%"
+				 height="35">
+		</mx:HBox>
+
+		<!--bideo barraren x eta y balioak aldatu eskero, rolAldaketa funtzioan kontutan hartu behar da -->
+		<mx:ProgressBar id="bideobarra"
+						x="24"
+						y="419"
+						mode="manual"/>
+		<mx:Label id="pertsonaiaGorriz"
+				  text="{resourceManager.getString('myResources', 'YOURCHARACTER')}"
+				  textAlign="center"
+				  fontWeight="bold"
+				  color="#FF0000"
+				  height="22"/>
+
+		<mx:HBox id="seek_denb"
+				 width="283"
+				 height="31"
+				 horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:HBox width="100%"
+					 height="100%"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:Image source="resources/images/ezk.png"/>
+				<mx:HSlider minimum="0"
+							enabled="true"
+							id="seek_barra"
+							width="100%"
+							height="100%"/>
+				<mx:Image source="resources/images/esk.png"/>
+			</mx:HBox>
+		</mx:HBox>
+	</mx:Panel>
 </mx:Canvas>

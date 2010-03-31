@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  xmlns:upload="modules.videoUpload.*"
 		  height="60"
 		  cornerRadius="0"
 		  borderStyle="none"
@@ -11,13 +12,13 @@
 		  backgroundAlpha="0.0"
 		  layout="horizontal"
 		  creationComplete="init()">
-<mx:Metadata>
+	<mx:Metadata>
         [ResourceBundle("myResources")]
     </mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import modules.userManagement.RestorePassForm;
-			
+
 			import business.LoginDelegate;
 			import com.adobe.crypto.SHA1;
 			import events.LoginEvent;
@@ -41,7 +42,7 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ObjectUtil;
 			import vo.LoginVO;
-			
+
 			//Login related members
 			public var loginPop:LoginForm;
 			public var restorePop:RestorePassForm;
@@ -52,18 +53,36 @@
 			private var intervalLoops:int;
 
 			private var rememberSO:SharedObject;
-			
-			[Bindable] private var locales:Array = DataModel.getInstance().locales; 
+
 			//The keyCode for ENTER key
-			public static const ENTER_KEY:int = 13;
+			public static const ENTER_KEY:int=13;
+			
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
+			public var FlagEnglish:Class;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_spain.png")]
+			public var FlagSpanish:Class;
+
+			[Bindable]
+			[Embed(source="../../resources/images/flags/flag_basque_country.png")]
+			public var FlagBasque:Class;
+			
+			[Bindable]
+			private var flaggedLanguageData:Array = new Array({code:'en_US', icon:FlagEnglish},
+															  {code:'es_ES', icon:FlagSpanish},
+															  {code:'eu_ES', icon:FlagBasque});
+			
 
 			public function init():void
 			{
+				
 				//First, check if any user cookie is present and if so, make the login
 				rememberSO=SharedObject.getLocal("babeliaData");
 				if (rememberSO.data.username != undefined && rememberSO.data.hash != undefined)
 				{
-					
+
 					processCachedLogin();
 				}
 				else
@@ -78,9 +97,11 @@
 				//Create and show login popup
 				showLogin();
 			}
-			
-			private function checkPressedKey(e:KeyboardEvent):void{
-				if (e.keyCode == ENTER_KEY){
+
+			private function checkPressedKey(e:KeyboardEvent):void
+			{
+				if (e.keyCode == ENTER_KEY)
+				{
 					processLogin(null);
 				}
 			}
@@ -88,7 +109,7 @@
 			private function showLogin():void
 			{
 				loginPop=LoginForm(PopUpManager.createPopUp(parent, LoginForm, true));
-				loginPop.title=resourceManager.getString('myResources','TITLE_LOGIN_FORM');
+				loginPop.title=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
 				loginPop.showCloseButton=true;
 				PopUpManager.centerPopUp(loginPop);
 
@@ -96,10 +117,10 @@
 				loginPop["cancelButton"].addEventListener("click", hideLogin);
 				loginPop["okButton"].addEventListener("click", processLogin);
 				loginPop["restorePassword"].addEventListener("click", showRestorePass);
-				
+
 				//We add a key listener so that we can push enter to processLogin
 				loginPop.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
-				
+
 				// Give the focus to username textfield
 				focusManager.setFocus(loginPop.username);
 			}
@@ -108,13 +129,13 @@
 			{
 				PopUpManager.removePopUp(loginPop);
 			}
-			
+
 			private function showRestorePass(event:Event):void
 			{
 				hideLogin(null);
-				DataModel.getInstance().restorePassErrorMessage = "";
+				DataModel.getInstance().restorePassErrorMessage="";
 				restorePop=RestorePassForm(PopUpManager.createPopUp(parent, RestorePassForm, true));
-				restorePop.title=resourceManager.getString('myResources','TITLE_RESTORE_PASS_FORM');
+				restorePop.title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
 				restorePop.showCloseButton=true;
 				PopUpManager.centerPopUp(restorePop);
 
@@ -127,12 +148,12 @@
 			{
 				PopUpManager.removePopUp(restorePop);
 			}
-			
+
 			private function set passRecoveryDone(flag:Boolean):void
 			{
 				hideRestorePass(null);
 			}
-			
+
 			private function processRestorePass(event:Event):void
 			{
 				var user:LoginVO=new LoginVO(restorePop.username.text, "");
@@ -204,7 +225,7 @@
 					userCPName.label=DataModel.getInstance().loggedUser.name;
 					uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.visible=true;
-					DataModel.getInstance().isSuccessfullyLogged = false;
+					DataModel.getInstance().isSuccessfullyLogged=false;
 				}
 			}
 
@@ -244,39 +265,40 @@
 				DataModel.getInstance().creditUpdateRetrieved=false;
 			}
 
-           
-         
-		private function localeComboBox_initializeHandler(event:Event):void  {
-			localeComboBox.selectedIndex=locales.indexOf(resourceManager.localeChain[0]);
-        }
-
-   	private function localeComboBox_changeHandler(event:Event):void{
-        	rememberSO.data.idioma=localeComboBox.selectedItem;
-            var newLocale:String =String(localeComboBox.selectedItem);
-
-            if (resourceManager.getLocales().indexOf(newLocale) != -1)
-            {
-                completeHandler(null);
-            }
-            else
-            {
-     var resourceModuleURL:String = "Resources_" +newLocale + ".swf";
-     var eventDispatcher:IEventDispatcher=resourceManager.loadResourceModule(resourceModuleURL);
-                eventDispatcher.addEventListener(
-                ResourceEvent.COMPLETE, completeHandler);
-            }
-        }
-        
-        private function completeHandler(event:ResourceEvent):void{
-         resourceManager.localeChain = [localeComboBox.selectedItem ];
-        }
-        
-         private function faultHandler(fault:FaultEvent):void
-         {
-            Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
-         }
+			// l10n
+	
+			private function labelfunction(item:Object):String{
+				var locale:String = String (item.code);
+				var upperLocale:String = locale.toUpperCase();
+				return resourceManager.getString('myResources', 'LOCALE_'+upperLocale);
+			}
 			
-			
+			private function localeComboBox_changeHandler(event:Event):void
+			{
+				rememberSO.data.idioma=localeComboBox.selectedItem.code;
+				var newLocale:String=String(localeComboBox.selectedItem.code);
+
+				if (resourceManager.getLocales().indexOf(newLocale) != -1)
+				{
+					completeHandler(null);
+				}
+				else
+				{
+					var resourceModuleURL:String="Resources_" + newLocale + ".swf";
+					var eventDispatcher:IEventDispatcher=resourceManager.loadResourceModule(resourceModuleURL);
+					eventDispatcher.addEventListener(ResourceEvent.COMPLETE, completeHandler);
+				}
+			}
+
+			private function completeHandler(event:ResourceEvent):void
+			{
+				resourceManager.localeChain=[localeComboBox.selectedItem.code];
+			}
+
+			private function faultHandler(fault:FaultEvent):void
+			{
+				Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+			}
 		]]>
 	</mx:Script>
 
@@ -369,12 +391,15 @@
 			</mx:HBox>
 		</mx:Canvas>
 		<mx:Canvas>
-		   <mx:HBox>
+			<mx:HBox>
 				<mx:VRule height="20"/>
-			<mx:ComboBox id="localeComboBox" dataProvider="{locales}"
-                 initialize="localeComboBox_initializeHandler(event)"
-                 change="localeComboBox_changeHandler(event)"/>
+				<upload:IconComboBox id="localeComboBox"
+									 dataProvider="{flaggedLanguageData}"
+									 fontWeight="normal"
+									 labelFunction="labelfunction"
+									 change="localeComboBox_changeHandler(event)"/>
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:HBox>
+
 </mx:Panel>

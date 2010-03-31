@@ -1,6 +1,6 @@
 <?php
 
-class ExerciseVO {
+class SearchVO {
 	
 	public $id;
 	public $name;
@@ -22,11 +22,9 @@ class ExerciseVO {
 	public $avgRating;
 	public $avgDifficulty;
 	
-	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
 	public $score;
-	public $idIndex;
 	
-	public $_explicitType = "ExerciseVO";
+	public $_explicitType = "SearchVO";
 
 }
 

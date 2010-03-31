@@ -4,15 +4,19 @@ package control {
 	import commands.AddCreditEntryExAdvisingCommand;
 	import commands.AddCreditsForExerciseAdvisingCommand;
 	import commands.VideoStopCommand;
+	
 	import commands.autoevaluation.AutoEvaluateCommand;
 	import commands.autoevaluation.CheckAutoevaluationSupportExerciseCommand;
 	import commands.autoevaluation.CheckAutoevaluationSupportResponseCommand;
 	import commands.autoevaluation.EnableAutoevaluationExerciseCommand;
 	import commands.autoevaluation.EnableAutoevaluationResponseCommand;
+	
 	import commands.configuration.ViewConfigurationModuleCommand;
+	
 	import commands.evaluation.AddCreditEntryEvaluatingCommand;
 	import commands.evaluation.AddCreditsForEvaluatingCommand;
 	import commands.evaluation.ViewEvaluationModuleCommand;
+	
 	import commands.exercises.AddCreditEntryEvalRequestCommand;
 	import commands.exercises.ExerciseSelectedCommand;
 	import commands.exercises.GetExerciseLocalesCommand;
@@ -23,17 +27,24 @@ package control {
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
+	
 	import commands.main.GetAppPreferencesCommand;
 	import commands.main.GetExercisesCommand;
 	import commands.main.GetTopTenCreditedCommand;
+	import commands.main.ViewAboutModuleCommand;
 	import commands.main.ViewHomeModuleCommand;
 	import commands.main.ViewPlayerModuleCommand;
 	import commands.main.ViewRankingModuleCommand;
 	import commands.main.WatchExerciseCommand;
+	
+	import commands.search.LaunchSearchCommand;
+	import commands.search.ViewSearchModuleCommand;
+	
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
 	import commands.subtitles.GetExerciseSubtitleLinesCommand;
 	import commands.subtitles.SaveSubtitlesCommand;
+
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
 	import commands.userManagement.GetCurrentDayCreditHistoryCommand;
 	import commands.userManagement.GetLastMonthCreditHistoryCommand;
@@ -45,6 +56,7 @@ package control {
 	import commands.userManagement.SignOutCommand;
 	import commands.userManagement.ViewAccountModuleCommand;
 	import commands.userManagement.ViewRegisterModuleCommand;
+	
 	import commands.videoUpload.AddCreditEntryUploadingCommand;
 	import commands.videoUpload.AddCreditsForUploadingCommand;
 	import commands.videoUpload.AddExerciseCommand;
@@ -66,7 +78,9 @@ package control {
 	import events.PreferenceEvent;
 	import events.RegisterUserEvent;
 	import events.ResponseEvent;
+	import events.SearchEvent;
 	import events.SubtitleEvent;
+	import events.SubtitlesEvent;
 	import events.UploadEvent;
 	import events.UserEvent;
 	import events.VideoStopEvent;
@@ -85,6 +99,8 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_MODULE, ViewUploadModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_PLAYER_MODULE, ViewPlayerModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_RANKING_MODULE, ViewRankingModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
 
 
 			//Exercise ViewStack related commands
@@ -119,6 +135,9 @@ package control {
 			addCommand(UserEvent.GET_TOP_TEN_CREDITED, GetTopTenCreditedCommand);
 			addCommand(UserEvent.GET_USER_INFO, GetUserInfoCommand);
 
+			//Search management commands
+			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand)
+
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);
 			addCommand(LoginEvent.SIGN_OUT, SignOutCommand);
@@ -145,13 +164,13 @@ package control {
 			//Response management commands
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
 			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
+
 			
 			//Roles management commands
 			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
 
 
 			//Subtitle management commands
-			
 			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
 

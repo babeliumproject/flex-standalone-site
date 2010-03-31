@@ -487,6 +487,7 @@ INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES
 ('subtitleTranslationCredits', 1.5),
 ('uploadExerciseCredits', 2),
 ('dbrevision', '$Revision$'),
+('appRevision', 0),
 ('trial.threshold', 10);
 
 --

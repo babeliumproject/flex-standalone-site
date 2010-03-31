@@ -15,6 +15,7 @@ class Epai
       var $Jabea;
       
       var $response_id;
+      var $exerciseId;
       var $AukeratutakoPertsonaia;
       var $BideoIruzkina;
       
