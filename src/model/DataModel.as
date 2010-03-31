@@ -6,6 +6,7 @@ package model
 	import flash.utils.Dictionary;
 	
 	import modules.autoevaluation.Evaluation;
+	import modules.main.HeaderClass;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -18,6 +19,8 @@ package model
 		//This solution for singleton implementation was found in
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel = new DataModel();
+		
+		public var headerComponentInstance:HeaderClass;
 		
 		[Bindable] public static var SUBTITLE_MODULE:int = 0;
 		[Bindable] public static var RECORDING_MODULE:int = 1;

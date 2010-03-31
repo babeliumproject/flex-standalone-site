@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main:HeaderClass xmlns:mx="http://www.adobe.com/2006/mxml"
+				  xmlns:main="modules.main.*">
+
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:HBox width="30%"
+			 height="100%">
+		<mx:Image width="396"
+				  height="60"
+				  source="resources/images/babelium_project.png"/>
+	</mx:HBox>
+	<mx:HBox width="70%"
+			 height="100%"
+			 horizontalAlign="right"
+			 verticalAlign="middle">
+		<mx:Canvas>
+			<mx:HBox id="anonymousCP"
+					 x="0"
+					 y="0"
+					 width="360"
+					 height="60"
+					 horizontalAlign="right"
+					 verticalAlign="middle"
+					 visible="true">
+				<mx:LinkButton id="signInButton"
+							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
+							   fontFamily="Arial"
+							   fontSize="12"
+							   fontWeight="normal"
+							   click="signInClickHandler()"/>
+				<mx:LinkButton id="signUpButton"
+							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
+							   fontFamily="Arial"
+							   fontSize="12"
+							   click="signUpClickHandler()"/>
+			</mx:HBox>
+			<mx:HBox id="userCP"
+					 x="0"
+					 y="0"
+					 width="360"
+					 height="60"
+					 horizontalAlign="right"
+					 verticalAlign="middle"
+					 visible="false">
+				<mx:HBox cornerRadius="4"
+						 borderStyle="solid"
+						 backgroundColor="#9AA3B9"
+						 borderColor="#FFFFFF"
+						 alpha="1.0"
+						 borderThickness="0"
+						 horizontalAlign="center"
+						 verticalAlign="middle"
+						 paddingLeft="6"
+						 paddingRight="6"
+						 height="60%">
+					<mx:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
+							  fontFamily="Arial"
+							  fontSize="12"
+							  fontWeight="bold"/>
+					<mx:LinkButton id="uCrds"
+								   label="uCrds"
+								   fontFamily="Arial"
+								   fontSize="14"
+								   fontWeight="bold"
+								   color="#FFFFFF"
+								   themeColor="#FFFFFF"/>
+				</mx:HBox>
+				<mx:VRule height="20"/>
+				<mx:LinkButton id="userCPName"
+							   label="UserName"
+							   fontFamily="Arial"
+							   fontSize="12"/>
+				<mx:LinkButton id="userAccountButton"
+							   label="{resourceManager.getString('myResources','LABEL_USER_ACCOUNT')}"
+							   fontFamily="Arial"
+							   fontSize="12"
+							   click="accountClickHandler()"/>
+				<mx:LinkButton id="signOutButton"
+							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
+							   fontFamily="Arial"
+							   fontSize="12"
+							   click="signOutClickHandler()"/>
+			</mx:HBox>
+		</mx:Canvas>
+
+		<main:LocalizationComboBox/>
+
+	</mx:HBox>
+</main:HeaderClass>

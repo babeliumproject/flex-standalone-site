@@ -5,7 +5,12 @@
 	<mx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
+			
 			import model.DataModel;
+			
+			import modules.main.HeaderClass;
+
+			private var signInComponent:HeaderClass=new HeaderClass();
 
 			private function set onUserAuthenticated(value:Boolean):void
 			{
@@ -18,6 +23,19 @@
 				if (DataModel.getInstance().isLoggedIn == false)
 					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED).dispatch();
 			}
+
+
+
+			protected function signInLink_clickHandler(event:MouseEvent):void
+			{
+				DataModel.getInstance().headerComponentInstance.showLogin();
+			}
+
+			protected function signUpLink_clickHandler(event:MouseEvent):void
+			{
+				new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
+			}
+
 		]]>
 	</mx:Script>
 
@@ -28,7 +46,8 @@
 		<mx:VBox id="unsignedScreen"
 				 horizontalAlign="center"
 				 verticalAlign="top"
-				 paddingTop="20" verticalGap="10">
+				 paddingTop="20"
+				 verticalGap="10">
 			<mx:Text text="You must be registered to see this area."
 					 fontWeight="bold"
 					 color="#FF0000"
@@ -38,10 +57,14 @@
 					 verticalAlign="middle"
 					 borderThickness="0">
 				<mx:Label text="Click"/>
-				<mx:LinkButton label="here"
-							   cornerRadius="4"/>
+				<mx:LinkButton id="signInLink"
+							   label="here"
+							   cornerRadius="4"
+							   click="signInLink_clickHandler(event)"/>
 				<mx:Label text="to sign in. You can sign-up for free"/>
-				<mx:LinkButton label="here"/>
+				<mx:LinkButton id="signUpLink"
+							   label="here"
+							   click="signUpLink_clickHandler(event)"/>
 			</mx:HBox>
 		</mx:VBox>
 		<ns1:FileUpload id="signedScreen"

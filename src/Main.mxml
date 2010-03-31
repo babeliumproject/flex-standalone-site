@@ -53,9 +53,9 @@
 	<!--This defines all the actions available -->
 	<control:Controller/>
 
-	<ns1:header id="header"
+	<ns1:Header id="header"
 				width="100%">
-	</ns1:header>
+	</ns1:Header>
 	<ns1:navigation id="navigation"
 					width="100%">
 	</ns1:navigation>
