@@ -14,6 +14,7 @@
 	<mx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
+			import commands.cuepointManager.ReplayResponseCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
@@ -237,6 +238,24 @@
 				{
 					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj, VP));
 					cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
+				}
+				
+				_cueManagerReady = true;
+			}
+			
+			/**
+			 * Setup commands for playing the recorded response
+			 **/
+			private function setupReplayCommands() : void
+			{
+				var auxList:ArrayCollection = _cueManager.getCuelist();
+				
+				if ( auxList.length <= 0 ) return;
+				
+				for each ( var cueobj:CueObject in auxList )
+				{
+					cueobj.setStartCommand(new ReplayResponseCommand(cueobj, VP));
+					cueobj.setEndCommand(new ReplayResponseCommand(null, VP));
 				}
 				
 				_cueManagerReady = true;
@@ -486,7 +505,7 @@
 			private function onWatchResponse(e:Event) : void
 			{
 				showArrows();
-				setupPlayCommands();
+				setupReplayCommands();
 				
 				VP.videoSource = _recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
