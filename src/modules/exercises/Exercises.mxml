@@ -377,8 +377,7 @@
 			private function onRecordingAborted(e:RecordingEvent) : void
 			{
 				Alert.show("Aborted");
-				
-				// TODO: something
+				recordingError();
 			}
 			
 			/**
@@ -387,8 +386,7 @@
 			private function onCamAccessDenied(e:RecordingEvent) : void
 			{
 				Alert.show("Cam denied");
-				
-				// TODO: something
+				recordingError();
 			}
 			
 			/**
@@ -397,8 +395,14 @@
 			private function onMicAccessDenied(e:RecordingEvent) : void
 			{
 				Alert.show("Mic denied");
-				
-				// TODO: something
+				recordingError();
+			}
+			
+			private function recordingError():void{
+				DataModel.getInstance().recordingExercise = false;
+				hideArrows();
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			}
 			
 			/**
