@@ -88,7 +88,7 @@
 			 **/
 			private function init() : void
 			{
-				_exerciseTitle = resourceManager.getString('myResources', SELECT_EXERCISE);
+				_exerciseTitle = resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				setupVideoPlayer();
 				hideSelectedExercise();
 			}
@@ -446,7 +446,7 @@
 				VP.videoSource = ""; // Reset video source
 				VP.arrows = false; // Hide arrows
 				
-				_exerciseTitle = resourceManager.getString('myResources', SELECT_EXERCISE);
+				_exerciseTitle = resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				_currentExercise = null; // Reset current exercise
 				
 				hideSelectedExercise(); // Information of selected exercise

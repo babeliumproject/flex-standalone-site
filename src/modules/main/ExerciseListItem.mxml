@@ -12,7 +12,7 @@
 
 	<mx:Image id="thumbnail"
 			  scaleContent="true"
-			  source="resources/images/thumbs/nothumb.png"
+			  source="{getImageSource(data as ExerciseVO)}"
 			  autoLoad="true"
 			  click="imageClickHandler(event)"
 			  width="120"
@@ -78,7 +78,6 @@
 					exerciseLanguage.source = "resources/images/flags/flag_united_kingdom.png";
 				else if (temp.language == "France")
 					exerciseLanguage.source = "resources/images/flags/flag_france.png";
-				thumbnail.source = getImageSource();
 			}
 
 			private function imageClickHandler(event:MouseEvent):void
@@ -91,12 +90,12 @@
 				viewExercise();
 			}
 			
-			public function getImageSource():String{
+			public function getImageSource(temp:ExerciseVO):String{
 				var url:String = '';
-				if (_data.source == "Red5")
-					url = DataModel.getInstance().thumbURL + "/" + _data.thumbnailUri;
+				if (temp.source == "Red5")
+					url = DataModel.getInstance().thumbURL + "/" + temp.thumbnailUri;
 				else
-					url = _data.thumbnailUri;
+					url = temp.thumbnailUri;
 				return url;
 			}
 

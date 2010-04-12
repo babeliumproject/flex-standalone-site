@@ -14,7 +14,7 @@
 		<mx:Text text="{data.title}" selectable="false" y="0" />
 		<mx:HRule width="100%" height="1" />
 		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('myResources', 'AUTOR') + ': ' + data.userName}" />
+			<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_UPLOADER') + ': ' + data.userName}" />
 			<mx:Label text="{data.duration + ' ' + resourceManager.getString('myResources', 'MESSAGE_SECONDS')}"/>
 		</mx:HBox>
 	</mx:VBox>

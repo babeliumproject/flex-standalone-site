@@ -5,9 +5,11 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
 			import events.ExerciseEvent;
+
 			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
 
 			public function init():void
 			{
@@ -16,10 +18,13 @@
 
 			public function set onExercisesRetrieved(value:Boolean):void
 			{
-				var dataProvider:ArrayCollection=DataModel.getInstance().availableExercises;
-				exerciseListTable.rowCount=dataProvider.length;
-				exerciseListTable.dataProvider=dataProvider;
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false,0);
+				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(0))
+				{
+					var dataProvider:ArrayCollection=DataModel.getInstance().availableExercises;
+					exerciseListTable.rowCount=dataProvider.length;
+					exerciseListTable.dataProvider=dataProvider;
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
+				}
 			}
 		]]>
 	</mx:Script>

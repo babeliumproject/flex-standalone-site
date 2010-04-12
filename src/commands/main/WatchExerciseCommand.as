@@ -8,8 +8,7 @@ package commands.main
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
-	import mx.utils.ObjectUtil;
+	import mx.collections.ArrayCollection;
 	
 	import vo.ExerciseVO;
 
@@ -19,8 +18,9 @@ package commands.main
 		public function execute(event:CairngormEvent):void
 		{
 			var selectedEx:ExerciseVO = (event as ExerciseEvent).exercise;
+			var recModuleCurrentExerciseRetr:Boolean = DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
-			DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 0);
+			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
 			new ViewChangeEvent(ViewChangeEvent.VIEW_PLAYER_MODULE).dispatch();
 		}
 		

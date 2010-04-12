@@ -14,12 +14,14 @@
 
 			private var _ownerData:Object;
 			private var _lookupField:String="value";
-			private var _actionField:String="action";
 			private var _valueField:String="charName";
-			private var _actionRemoveItem:String="delete";
-			private var _actionSelectItem:String="select";
-			private var _actionInsertItem:String="insert";
-			private var _actionDoNothingItem:String="nothing";
+			
+			private var _actionField:String="action";
+
+			private var _actionRemoveItem:String=RoleComboDataVO.ACTION_DELETE;
+			private var _actionSelectItem:String=RoleComboDataVO.ACTION_SELECT;
+			private var _actionInsertItem:String=RoleComboDataVO.ACTION_INSERT;
+			private var _actionDoNothingItem:String=RoleComboDataVO.ACTION_NO_ACTION;
 
 			// When using this component as an itemEditor rather than an itemRenderer
 			// then set ' editorDataField="selectedItemKey"' on the column to 

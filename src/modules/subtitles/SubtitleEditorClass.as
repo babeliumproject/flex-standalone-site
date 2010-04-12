@@ -30,7 +30,6 @@ package modules.subtitles
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
-	import mx.utils.ObjectUtil;
 	
 	import vo.CreditHistoryVO;
 	import vo.CueObject;
@@ -120,7 +119,7 @@ package modules.subtitles
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			//BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
+			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
@@ -138,40 +137,47 @@ package modules.subtitles
 		
 		public function onVideoPlayerReady(e:VideoPlayerEvent) : void
 		{
-			VP.stopVideo();
 			videoPlayerReady = true;
+			VP.stopVideo();
+
 			onExerciseSelected(true);
 		}
 
 		public function onExerciseSelected(value:Boolean):void
 		{
-			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(0) == true && videoPlayerReady)
+			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) && videoPlayerReady)
 			{
-				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, 0);
-				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
+				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
+				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
 				exerciseFileName=watchExercise.name;
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
 				exerciseTitle.text = watchExercise.title;
 
-				VP.stopVideo();
-				VP.videoSource = exerciseFileName;
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-				VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-				VP.enableSubtitlingEndButton = false;	
+				prepareVideoPlayer();
 
 			}
 		}
-
+		
+		public function prepareVideoPlayer():void{
+			VP.stopVideo();
+			VP.videoSource = exerciseFileName;
+			VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+			VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+			VP.enableSubtitlingEndButton = false;	
+		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
 		{
-			for each (var dp:Object in comboData)
+			var label:String = "";
+			for each (var dp:RoleComboDataVO in comboData)
 			{
-				if (dp.roleId == item.roleId)
-					return dp.charName;
+				if (dp.roleId == item.roleId){
+					label = dp.charName;
+					break;
+				}
 			}
-			return "";
+			return label;
 		}
 
 
@@ -185,7 +191,6 @@ package modules.subtitles
 					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP));
 					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 				}
-				onRolesRetrieved(true);
 			}
 		}
 		
@@ -214,6 +219,7 @@ package modules.subtitles
 					}
 					comboData.removeAll();
 					comboData=cData;
+					
 				}
 				else
 				{
@@ -421,8 +427,9 @@ package modules.subtitles
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 			if (DataModel.getInstance().subtitleSaved)
 			{
+				cueManager.removeAllCue();
 				DataModel.getInstance().subtitleSaved=false;
-				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, 0, currentExercise.language);
+				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, 0, '', currentExercise.language);
 				var roles:ExerciseRoleVO = new ExerciseRoleVO();
 				roles.exerciseId = currentExercise.id;
 				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
@@ -462,6 +469,8 @@ package modules.subtitles
 		{
 			if (videoPlayerReady){
 				VP.endVideo();
+				VP.setSubtitle(""); // Clear subtitles if any
+				VP.videoSource = ""; // Reset video source
 				VP.subtitlingControls = false;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
 			}
