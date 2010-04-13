@@ -1,12 +1,9 @@
 package modules.main
 {
-	import flash.events.IEventDispatcher;
-	
 	import modules.videoUpload.IconComboBox;
 	
 	import mx.containers.HBox;
 	import mx.events.FlexEvent;
-	import mx.events.ResourceEvent;
 	
 	public class LanguageComboBoxClass extends HBox
 	{
@@ -24,7 +21,19 @@ package modules.main
 		public var FlagBasque:Class;
 		
 		[Bindable]
-		public var flaggedLanguageData:Array=new Array({code: 'en_US', icon: FlagEnglish}, {code: 'es_ES', icon: FlagSpanish}, {code: 'eu_ES', icon: FlagBasque});
+		[Embed(source="../../resources/images/flags/flag_france.png")]
+		public var FlagFrench:Class;
+		
+		[Bindable]
+		public var flaggedLanguageData:Array=new Array({code: 'en_US', icon: FlagEnglish}, 
+													   {code: 'es_ES', icon: FlagSpanish}, 
+													   {code: 'eu_ES', icon: FlagBasque},
+													   {code: 'fr_FR', icon: FlagFrench});
+		
+		public var backupLanguageData:Array=new Array({code: 'en_US', icon: FlagEnglish}, 
+													  {code: 'es_ES', icon: FlagSpanish},
+													  {code: 'eu_ES', icon: FlagBasque},
+													  {code: 'fr_FR', icon: FlagFrench});
 		
 		//Visual component declaration
 		public var languageComboBox:IconComboBox;

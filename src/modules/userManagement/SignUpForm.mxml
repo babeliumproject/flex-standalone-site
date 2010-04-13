@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:main="modules.main.*"
+		 xmlns:userManagement="modules.userManagement.*"
 		 fontFamily="Arial"
-		 fontSize="12" xmlns:userManagement="modules.userManagement.*">
+		 fontSize="12"
+		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
@@ -12,11 +14,38 @@
 			import model.DataModel;
 			
 			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
 			
 			import vo.NewUserVO;
-			
-			private var knownLanguagesArray:ArrayCollection = new ArrayCollection();
+
+			public static const AVAILABLE_LANGUAGES:int=4;
+
+			//These variables are used to store the several combobox's info the user might add
+			private var knownLanguagesArray:ArrayCollection=new ArrayCollection();
 			private var otherKnownLanguage:LanguageKnowledgeBox;
+
+			private var languagesOfInterestArray:ArrayCollection=new ArrayCollection();
+			private var otherLanguageOfInterest:LanguageKnowledgeBox;
+
+			private var selectedLanguages:ArrayCollection=new ArrayCollection();
+
+			public function onCreationComplete():void
+			{
+				if (!knownLanguagesArray.contains(firstKnownLang))
+					knownLanguagesArray.addItem(firstKnownLang);
+				if (!languagesOfInterestArray.contains(firstLanguageOfInterest))
+					languagesOfInterestArray.addItem(firstLanguageOfInterest);
+			}
+
+			public function motherTongueComboBox_changeHandler(event:ListEvent):void
+			{
+				//Pop the selected language from the rest of language comboboxes
+			}
+
+			public function firstKnownLang_changeHandler(event:ListEvent):void
+			{
+				//Pop the selected language from the rest of language comboboxes
+			}
 
 			private function processNewUser():void
 			{
@@ -27,6 +56,18 @@
 				// \w = [a-zA-Z0-9_]
 				var mailPattern:RegExp=/^[a-zA-Z]\w+([.]\w+)*[@]\w+([.]\w+)*[.][a-zA-Z]{2,4}$/;
 				var fieldPattern:RegExp=/^[a-zA-Z_]\w*$/;
+
+				selectedLanguages.addItem(motherTongueComboBox.languageComboBox.selectedItem.code);
+				selectedLanguages.addItem(firstKnownLang.languageCombo.languageComboBox.selectedItem.code);
+				selectedLanguages.addItem(firstLanguageOfInterest.languageCombo.languageComboBox.selectedItem.code);
+				for each (var knownLangBox:LanguageKnowledgeBox in knownLanguagesArray)
+				{
+					selectedLanguages.addItem(knownLangBox.languageCombo.languageComboBox.selectedItem.code);
+				}
+				for each (var interestLangBox:LanguageKnowledgeBox in languagesOfInterestArray)
+				{
+					selectedLanguages.addItem(interestLangBox.languageCombo.languageComboBox.selectedItem.code);
+				}
 
 				// TODO: get constants values from preferences
 				if (username.text.length < 4)
@@ -85,11 +126,28 @@
 
 			protected function addAnotherKnownLang_clickHandler(event:MouseEvent):void
 			{
-				otherKnownLanguage = new LanguageKnowledgeBox();
+				otherKnownLanguage=new LanguageKnowledgeBox();
 				knownLanguagesArray.addItem(otherKnownLanguage);
 				knownLanguagesFormItem.addChild(otherKnownLanguage);
 			}
 
+			protected function preferedLang_clickHandler(event:MouseEvent):void
+			{
+				otherLanguageOfInterest=new LanguageKnowledgeBox();
+				languagesOfInterestArray.addItem(otherLanguageOfInterest);
+				languagesOfInterestFormItem.addChild(otherLanguageOfInterest);
+			}
+
+			protected function resetToInitialStatus():void
+			{
+
+			}
+
+
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+
+			}
 		]]>
 	</mx:Script>
 
@@ -103,80 +161,97 @@
 			  textAlign="center"
 			  width="100%"
 			  text="{DataModel.getInstance().registrationErrorMessage}"/>
-	<mx:Form borderStyle="solid"
-			 width="100%"
-			 borderThickness="2"
-			 labelWidth="200">
-		<mx:FormItem label="User Name:"
-					 fontWeight="bold"
-					 required="true">
-			<mx:TextInput id="username"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem label="eMail:"
-					 fontWeight="bold"
-					 required="true">
-			<mx:TextInput id="email"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem label="Password:"
-					 fontWeight="bold"
-					 required="true">
-			<mx:TextInput id="password"
-						  displayAsPassword="true"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem label="Re-enter password:"
-					 fontWeight="bold"
-					 required="true"
-					 borderStyle="none">
-			<mx:TextInput id="repassword"
-						  displayAsPassword="true"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem>
-			<mx:Label/>
-		</mx:FormItem>
-		<mx:FormItem label="Real Name:"
-					 fontWeight="bold">
-			<mx:TextInput id="realName"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem label="Real Surname:"
-					 fontWeight="bold">
-			<mx:TextInput id="surname"
-						  width="100%"/>
-		</mx:FormItem>
-	</mx:Form>
-	<mx:Form borderStyle="solid" width="100%" borderThickness="2">
-		<mx:Label text="Tell us which is your main language or mother tongue"/>
-		<mx:Spacer/>
-		<mx:FormItem label="First Language (Mother Tongue):"
-					 fontWeight="bold"
-					 required="true">
-			<main:LanguageComboBox id="motherTongueComboBox"/>
-		</mx:FormItem>
-		<mx:Spacer/>
-		<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
-		<mx:Spacer/>
-		<mx:FormItem id="knownLanguagesFormItem"
-					 label="Other Languages:"
-					 fontWeight="bold">
-			<mx:HBox>
-				<userManagement:LanguageKnowledgeBox/>
-				<mx:LinkButton id="addAnotherKnownLang" click="addAnotherKnownLang_clickHandler(event)" label="Add another"/>
-			</mx:HBox>
+	<mx:VBox width="100%"
+			 horizontalAlign="center"
+			 paddingLeft="10"
+			 paddingRight="10">
+
+		<mx:Form borderStyle="solid"
+				 width="100%"
+				 borderThickness="2"
+				 labelWidth="200">
+			<mx:FormItem label="User Name:"
+						 fontWeight="bold"
+						 required="true">
+				<mx:TextInput id="username"
+							  width="100%"/>
 			</mx:FormItem>
+			<mx:FormItem label="eMail:"
+						 fontWeight="bold"
+						 required="true">
+				<mx:TextInput id="email"
+							  width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem label="Password:"
+						 fontWeight="bold"
+						 required="true">
+				<mx:TextInput id="password"
+							  displayAsPassword="true"
+							  width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem label="Re-enter password:"
+						 fontWeight="bold"
+						 required="true"
+						 borderStyle="none">
+				<mx:TextInput id="repassword"
+							  displayAsPassword="true"
+							  width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:Label/>
+			</mx:FormItem>
+			<mx:FormItem label="Real Name:"
+						 fontWeight="bold">
+				<mx:TextInput id="realName"
+							  width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem label="Real Surname:"
+						 fontWeight="bold">
+				<mx:TextInput id="surname"
+							  width="100%"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form borderStyle="solid"
+				 width="100%"
+				 borderThickness="2">
+			<mx:Label text="Tell us which is your main language or mother tongue"/>
+			<mx:Spacer/>
+			<mx:FormItem label="First Language (Mother Tongue):"
+						 fontWeight="bold"
+						 required="true">
+				<main:LanguageComboBox id="motherTongueComboBox"/>
+			</mx:FormItem>
+			<mx:Spacer/>
+			<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
+			<mx:Spacer/>
+			<mx:FormItem id="knownLanguagesFormItem"
+						 label="Other Languages:"
+						 fontWeight="bold">
+				<mx:HBox>
+					<userManagement:LanguageKnowledgeBox id="firstKnownLang"/>
+					<mx:LinkButton id="addAnotherKnownLang"
+								   click="addAnotherKnownLang_clickHandler(event)"
+								   label="Add another"
+								   textDecoration="underline"
+								   icon="@Embed(source='../../resources/images/add.png')"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:Spacer/>
+			<mx:Label text="Which languages would you like to practise?"/>
+			<mx:Spacer/>
+			<mx:FormItem id="languagesOfInterestFormItem"
+						 label="Languages you're interested in:"
+						 fontWeight="bold">
+				<mx:HBox>
+					<userManagement:LanguageKnowledgeBox id="firstLanguageOfInterest"/>
+					<mx:LinkButton id="preferedLang"
+								   click="preferedLang_clickHandler(event)"
+								   label="Add another"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
 		<mx:Spacer/>
-		<mx:Label text="Which languages would you like to practise?"/>
-		<mx:Spacer/>
-		<mx:FormItem id="eagerToLearnLanguages"
-					 label="Languages you want to brush up:"
-					 fontWeight="bold">
-			<main:LanguageComboBox id="preferredLanguageCombobox1"/>
-			<main:LanguageComboBox id="preferredLanguageCombobox2"/>
-		</mx:FormItem>
-	</mx:Form>
+	</mx:VBox>
 	<mx:HBox width="100%"
 			 horizontalAlign="center"
 			 verticalAlign="middle">
@@ -184,7 +259,8 @@
 				   label="Register"
 				   click="processNewUser()"/>
 		<mx:Button id="cancelButton"
-				   label="Cancel"/>
+				   label="Cancel"
+				   click="cancelButton_clickHandler(event)"/>
 	</mx:HBox>
 
 </mx:VBox>

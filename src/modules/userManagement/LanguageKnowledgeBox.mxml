@@ -3,6 +3,7 @@
 		 xmlns:main="modules.main.*">
 	
 		<main:LanguageComboBox id="languageCombo"/>
+		<mx:Label text="Knowledge:" fontWeight="normal"/>
 		<main:DifficultyLevelComboBox id="levelCombo"/>
 	
 </mx:HBox>
