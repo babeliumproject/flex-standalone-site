@@ -1,165 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  layout="vertical"
-		  verticalAlign="middle"
-		  headerHeight="0"
-		  borderThicknessBottom="0"
-		  borderThicknessTop="0"
-		  borderThicknessLeft="0"
-		  borderThicknessRight="0"
-		  borderStyle="none"
-		  width="598"
-		  height="478" alpha="1.0">
-  	<mx:Script>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:main="modules.main.*"
+		 fontFamily="Arial"
+		 fontSize="12" xmlns:userManagement="modules.userManagement.*">
+	<mx:Script>
 		<![CDATA[
-		import com.adobe.crypto.SHA1;
-		
-		import events.RegisterUserEvent;
-		
-		import model.DataModel;
-		
-		import vo.NewUserVO;
-		
-		private function processNewUser():void
-		{
-			var hasErrors:Boolean = false;
-			var errorText:String = "";
-			var errorCount:int = 0;
+			import com.adobe.crypto.SHA1;
 			
-			// \w = [a-zA-Z0-9_]
-			var mailPattern:RegExp = /^[a-zA-Z]\w+([.]\w+)*[@]\w+([.]\w+)*[.][a-zA-Z]{2,4}$/;
-			var fieldPattern:RegExp = /^[a-zA-Z_]\w*$/;
+			import events.RegisterUserEvent;
 			
-			// TODO: get constants values from preferences
-			if ( username.text.length < 4 )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","SHORT_USERNAME") + "\n";
-				errorCount++;
-			}
+			import model.DataModel;
 			
-			if ( !fieldPattern.test(username.text) )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","INVALID_USERNAME") +
-							resourceManager.getString("myResources","VALID_CHARACTERS") + "\n";
-				errorCount++;
-			}
+			import mx.collections.ArrayCollection;
 			
-			if ( password.text.length < 6 )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","SHORT_PASSWORD") + "\n";
-				errorCount++;
-			}
+			import vo.NewUserVO;
 			
-			if ( !fieldPattern.test(password.text) )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","INVALID_PASSWORD") +
-					resourceManager.getString("myResources","VALID_CHARACTERS") + "\n";
-				errorCount++;
-			}
-			
-			if ( password.text != repassword.text )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","PASSWORDS_DONOT_MATCH") + "\n";
-				errorCount++;
-			}
-			
-			if ( !mailPattern.test(email.text) )
-			{
-				hasErrors = true;
-				errorText = errorText + resourceManager.getString("myResources","INVALID_EMAIL") + "\n";
-				errorCount++;
-			}
-			
-			if ( !hasErrors )
-			{
-				var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text),realName.text, surname.text, email.text);
-				new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
-			}
-			else
-			{
-				DataModel.getInstance().registrationErrorMessage = errorText;
-				errorInfo.height = 18*errorCount;
-			}
-		}
+			private var knownLanguagesArray:ArrayCollection = new ArrayCollection();
+			private var otherKnownLanguage:LanguageKnowledgeBox;
 
+			private function processNewUser():void
+			{
+				var hasErrors:Boolean=false;
+				var errorText:String="";
+				var errorCount:int=0;
+
+				// \w = [a-zA-Z0-9_]
+				var mailPattern:RegExp=/^[a-zA-Z]\w+([.]\w+)*[@]\w+([.]\w+)*[.][a-zA-Z]{2,4}$/;
+				var fieldPattern:RegExp=/^[a-zA-Z_]\w*$/;
+
+				// TODO: get constants values from preferences
+				if (username.text.length < 4)
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "SHORT_USERNAME") + "\n";
+					errorCount++;
+				}
+
+				if (!fieldPattern.test(username.text))
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "INVALID_USERNAME") + resourceManager.getString("myResources", "VALID_CHARACTERS") + "\n";
+					errorCount++;
+				}
+
+				if (password.text.length < 6)
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "SHORT_PASSWORD") + "\n";
+					errorCount++;
+				}
+
+				if (!fieldPattern.test(password.text))
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "INVALID_PASSWORD") + resourceManager.getString("myResources", "VALID_CHARACTERS") + "\n";
+					errorCount++;
+				}
+
+				if (password.text != repassword.text)
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "PASSWORDS_DONOT_MATCH") + "\n";
+					errorCount++;
+				}
+
+				if (!mailPattern.test(email.text))
+				{
+					hasErrors=true;
+					errorText=errorText + resourceManager.getString("myResources", "INVALID_EMAIL") + "\n";
+					errorCount++;
+				}
+
+				if (!hasErrors)
+				{
+					var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text);
+					new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
+				}
+				else
+				{
+					DataModel.getInstance().registrationErrorMessage=errorText;
+					errorInfo.height=18 * errorCount;
+				}
+			}
+
+			protected function addAnotherKnownLang_clickHandler(event:MouseEvent):void
+			{
+				otherKnownLanguage = new LanguageKnowledgeBox();
+				knownLanguagesArray.addItem(otherKnownLanguage);
+				knownLanguagesFormItem.addChild(otherKnownLanguage);
+			}
 
 		]]>
 	</mx:Script>
 
-	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"
-		text="{DataModel.getInstance().registrationErrorMessage}"/>
-	<mx:Label text="Sign up on Babelia" fontFamily="Arial" fontSize="16" fontWeight="bold"/>
-	<mx:Form borderStyle="none" width="100%" alpha="1.0">
-		<mx:FormItem label="User Name:" fontFamily="Verdana" fontWeight="bold" horizontalAlign="center" required="true">
-			<mx:TextInput id="username" width="100%"/>
+	<mx:Label text="Sign up on Babelium Project"
+			  fontSize="18"
+			  fontWeight="bold"/>
+	<mx:Label id="errorInfo"
+			  fontSize="12"
+			  color="#FF0000"
+			  fontWeight="bold"
+			  textAlign="center"
+			  width="100%"
+			  text="{DataModel.getInstance().registrationErrorMessage}"/>
+	<mx:Form borderStyle="solid"
+			 width="100%"
+			 borderThickness="2"
+			 labelWidth="200">
+		<mx:FormItem label="User Name:"
+					 fontWeight="bold"
+					 required="true">
+			<mx:TextInput id="username"
+						  width="100%"/>
 		</mx:FormItem>
-		<mx:FormItem label="eMail:" fontFamily="Verdana" fontWeight="bold" horizontalAlign="center" required="true">
-			<mx:TextInput id="email" width="100%"/>
+		<mx:FormItem label="eMail:"
+					 fontWeight="bold"
+					 required="true">
+			<mx:TextInput id="email"
+						  width="100%"/>
 		</mx:FormItem>
-		<mx:FormItem label="Password:" fontFamily="Verdana" fontWeight="bold" horizontalAlign="center" required="true">
-			<mx:TextInput id="password" displayAsPassword="true" width="100%"/>
+		<mx:FormItem label="Password:"
+					 fontWeight="bold"
+					 required="true">
+			<mx:TextInput id="password"
+						  displayAsPassword="true"
+						  width="100%"/>
 		</mx:FormItem>
-		<mx:FormItem label="Re-enter password:" fontWeight="bold" required="true" borderStyle="none">
-			<mx:TextInput id="repassword" displayAsPassword="true" width="100%"/>
+		<mx:FormItem label="Re-enter password:"
+					 fontWeight="bold"
+					 required="true"
+					 borderStyle="none">
+			<mx:TextInput id="repassword"
+						  displayAsPassword="true"
+						  width="100%"/>
 		</mx:FormItem>
 		<mx:FormItem>
 			<mx:Label/>
 		</mx:FormItem>
-		<mx:FormItem label="Real Name:" fontWeight="bold">
-			<mx:TextInput id="realName" width="100%"/>
+		<mx:FormItem label="Real Name:"
+					 fontWeight="bold">
+			<mx:TextInput id="realName"
+						  width="100%"/>
 		</mx:FormItem>
-		<mx:FormItem label="Real Surname:" fontWeight="bold">
-			<mx:TextInput id="surname" width="100%"/>
-		</mx:FormItem>
-		<mx:HRule width="100%">
-			
-		</mx:HRule>
-		<mx:Label text="Tell us which is your main language or mother tongue"/>
-		<mx:FormItem label="First Language (Mother Tongue):" fontWeight="bold" required="true">
-			<mx:ComboBox id="languageSelector">
-				<mx:ArrayCollection>
-         		<mx:String>Spanish</mx:String>
-         		<mx:String>Basque</mx:String>
-         		<mx:String>English</mx:String>
-      			</mx:ArrayCollection>
-			</mx:ComboBox>
-		</mx:FormItem>
-		<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
-		<mx:FormItem label="Second Language:" fontWeight="bold">
-			<mx:ComboBox id="languageSelector2">
-				<mx:ArrayCollection>
-         		<mx:String>Spanish</mx:String>
-         		<mx:String>Basque</mx:String>
-         		<mx:String>English</mx:String>
-      			</mx:ArrayCollection>
-			</mx:ComboBox>
-		</mx:FormItem>
-		<mx:Label text="Which languages would you like to practise?"/>
-		<mx:FormItem label="Interest languages">
-			<mx:ComboBox id="preferredLanguageSelector">
-				<mx:ArrayCollection>
-         		<mx:String>Spanish</mx:String>
-         		<mx:String>Basque</mx:String>
-         		<mx:String>English</mx:String>
-      			</mx:ArrayCollection>
-      		</mx:ComboBox>
-			<mx:ComboBox id="preferredLanguageSelector2">
-				<mx:ArrayCollection>
-         		<mx:String>Spanish</mx:String>
-         		<mx:String>Basque</mx:String>
-         		<mx:String>English</mx:String>
-      			</mx:ArrayCollection>
-			</mx:ComboBox>
+		<mx:FormItem label="Real Surname:"
+					 fontWeight="bold">
+			<mx:TextInput id="surname"
+						  width="100%"/>
 		</mx:FormItem>
 	</mx:Form>
-	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
-		<mx:Button id="saveButton" label="Register" click="processNewUser()"/>
-		<mx:Button id="cancelButton" label="Cancel"/>
+	<mx:Form borderStyle="solid" width="100%" borderThickness="2">
+		<mx:Label text="Tell us which is your main language or mother tongue"/>
+		<mx:Spacer/>
+		<mx:FormItem label="First Language (Mother Tongue):"
+					 fontWeight="bold"
+					 required="true">
+			<main:LanguageComboBox id="motherTongueComboBox"/>
+		</mx:FormItem>
+		<mx:Spacer/>
+		<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
+		<mx:Spacer/>
+		<mx:FormItem id="knownLanguagesFormItem"
+					 label="Other Languages:"
+					 fontWeight="bold">
+			<mx:HBox>
+				<userManagement:LanguageKnowledgeBox/>
+				<mx:LinkButton id="addAnotherKnownLang" click="addAnotherKnownLang_clickHandler(event)" label="Add another"/>
+			</mx:HBox>
+			</mx:FormItem>
+		<mx:Spacer/>
+		<mx:Label text="Which languages would you like to practise?"/>
+		<mx:Spacer/>
+		<mx:FormItem id="eagerToLearnLanguages"
+					 label="Languages you want to brush up:"
+					 fontWeight="bold">
+			<main:LanguageComboBox id="preferredLanguageCombobox1"/>
+			<main:LanguageComboBox id="preferredLanguageCombobox2"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox width="100%"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<mx:Button id="saveButton"
+				   label="Register"
+				   click="processNewUser()"/>
+		<mx:Button id="cancelButton"
+				   label="Cancel"/>
 	</mx:HBox>
 
-</mx:Panel>
+</mx:VBox>

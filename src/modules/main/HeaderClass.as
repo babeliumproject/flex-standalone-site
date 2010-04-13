@@ -267,7 +267,7 @@ package modules.main
 
 		private function creditsUpdated(retr:Boolean):void
 		{
-			if (DataModel.getInstance().loggedUser)
+			if (DataModel.getInstance().loggedUser && DataModel.getInstance().creditUpdateRetrieved)
 			{
 				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
 				intervalLoops=0;

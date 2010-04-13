@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main:LanguageComboBoxClass xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:main="modules.main.*"
+		   xmlns:upload="modules.videoUpload.*">
+	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+	
+	<mx:VRule height="20"/>
+	<upload:IconComboBox id="languageComboBox"
+						 dataProvider="{flaggedLanguageData}"
+						 fontWeight="normal"
+						 labelFunction="languageComboBoxLabelFunction"
+						 change="languageComboBox_changeHandler(event)"/>
+	
+</main:LanguageComboBoxClass>
