@@ -3,8 +3,8 @@ package commands.configuration
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.BabeliaBrowserManager;
 	import events.ViewChangeEvent;
-	
 	import model.DataModel;
 
 	public class ViewConfigurationModuleCommand implements ICommand
@@ -12,8 +12,12 @@ package commands.configuration
 
 		public function execute(event:CairngormEvent):void
 		{
-			DataModel.getInstance().viewContentViewStackIndex =
-					ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX;
+			var index:int = ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX;
+			DataModel.getInstance().viewContentViewStackIndex = index;
+					
+			
+			BabeliaBrowserManager.getInstance().updateURL(
+						BabeliaBrowserManager.index2fragment(index));
 		}
 		
 	}

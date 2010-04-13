@@ -15,21 +15,27 @@
 				preinitialize="init();"
 				height="100%"
 				width="100%"
-				pageTitle="Babelia: Collaborative Language e-Learning">
+				pageTitle="Babelia: Collaborative Language e-Learning"
+				historyManagementEnabled="false"
+				creationComplete="onComplete()">
 
 	<mx:Script>
 		<![CDATA[
+			import control.*;
+			
 			import events.PreferenceEvent;
 			import events.UserEvent;
 			
 			import model.DataModel;
-			import control.CuePointManager;
+			
 			private var mainSO:SharedObject;
 			
 			[Bindable]
 			public var appModelLocator: DataModel;
 			[Bindable]
 			public var cuePointManager: CuePointManager;
+			[Bindable]
+			public var browserManager:BabeliaBrowserManager;
 
 			//Initialization method
 			private function init():void
@@ -41,6 +47,12 @@
 				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
 				
 				Security.allowDomain(appModelLocator.uploadDomain);
+			}
+			
+			private function onComplete(e:Event = null) : void
+			{
+				browserManager = BabeliaBrowserManager.getInstance();
+				browserManager.parseURL();
 			}
 		]]>
 	</mx:Script>
