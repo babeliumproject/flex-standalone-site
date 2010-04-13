@@ -501,7 +501,7 @@ package modules.videoPlayer
 			if (_roleTalkingPanel.talking)
 				_roleTalkingPanel.pauseTalk();
 
-			if (state & RECORD_FLAG) // TODO: test
+			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
 				_outNs.pause();
 
 			if (state == PLAY_BOTH_STATE)
@@ -520,7 +520,7 @@ package modules.videoPlayer
 			if (_roleTalkingPanel.talking)
 				_roleTalkingPanel.resumeTalk();
 
-			if (state & RECORD_FLAG) // TODO: test
+			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
 				_outNs.resume();
 
 			if (state == PLAY_BOTH_STATE)
@@ -539,7 +539,7 @@ package modules.videoPlayer
 			if (_roleTalkingPanel.talking)
 				_roleTalkingPanel.stopTalk();
 
-			if (state & RECORD_FLAG)
+			if (state & RECORD_FLAG && _micCamEnabled)
 				_outNs.close();
 
 			if (state == PLAY_BOTH_STATE)
@@ -723,6 +723,7 @@ package modules.videoPlayer
 			switch (evt.code)
 			{
 				case "Microphone.Muted": // User denied access to mic, or hasn't got it
+					clearPrivacyVariables();
 					dispatchEvent(new RecordingEvent(RecordingEvent.MIC_DENIED));
 					trace("Mic access denied");
 					break;
@@ -742,6 +743,7 @@ package modules.videoPlayer
 			switch (evt.code)
 			{
 				case "Camera.Muted": // User denied access to camera, or hasn't got it
+					clearPrivacyVariables();
 					dispatchEvent(new RecordingEvent(RecordingEvent.CAM_DENIED));
 					trace("Cam access denied");
 					break;
@@ -785,8 +787,8 @@ package modules.videoPlayer
 			}
 			else if (_accessTimeout.currentCount == _accessTimeout.repeatCount)
 			{
+				clearPrivacyVariables();
 				dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-
 				_accessTimeout.reset();
 			}
 		}
@@ -850,6 +852,7 @@ package modules.videoPlayer
 			if (webcamAvailable())
 			{
 				_camera=Camera.getCamera();
+				if(_camera.muted)
 				// Important: Access Control
 				_camera.addEventListener(StatusEvent.STATUS, camera_status);
 			}
@@ -898,6 +901,11 @@ package modules.videoPlayer
 
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
+		}
+		
+		private function clearPrivacyVariables():void{
+			//Security.showSettings(SecurityPanel.DEFAULT);
+			_camVideo = new Video();
 		}
 
 		/**
