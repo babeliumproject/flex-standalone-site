@@ -8,6 +8,7 @@ package modules.main
 	
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
@@ -53,6 +54,7 @@ package modules.main
 		public var signUpButton:LinkButton;
 		public var userAccountButton:LinkButton;
 		public var signOutButton:LinkButton;
+		public var helpFAQButton:LinkButton;
 
 
 		public function HeaderClass()
@@ -282,6 +284,10 @@ package modules.main
 			signUpButton.enabled = status;
 			signOutButton.enabled = status;
 			userAccountButton.enabled = status;
+		}
+		
+		public function helpFAQ_clickHandler(event:MouseEvent):void{
+			//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();	
 		}
 
 	}

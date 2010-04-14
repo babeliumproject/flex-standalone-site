@@ -453,7 +453,17 @@ INSERT INTO `exercise_role` (`id`, `fk_exercise_id`, `fk_user_id`, `character_na
 (5, 2, 1, 'Old guy'),
 (6, 2, 1, 'Young guy'),
 (7, 1, 1, 'Koro'),
-(8, 1, 1, 'Joxe Mari');
+(8, 1, 1, 'Joxe Mari'),
+(9, 5, 1, 'NPC'),
+(10, 5, 1, 'Yourself'),
+(11, 6, 1, 'NPC'),
+(12, 6, 1, 'Yourself'),
+(13, 7, 1, 'NPC'),
+(14, 7, 1, 'Yourself'),
+(15, 8, 1, 'NPC'),
+(16, 8, 1, 'Yourself'),
+(17, 9, 1, 'NPC'),
+(18, 9, 1, 'Yourself');
 
 
 --
@@ -465,6 +475,7 @@ INSERT INTO `exercise_score` (`id`, `fk_exercise_id`, `fk_user_id`, `suggested_s
 (2, 1, 1, 2, '2009-09-03 02:41:43'),
 (3, 1, 2, 4, '2009-09-03 02:41:43'),
 (4, 1, 3, 1, '2009-09-03 02:41:43');
+
 
 --
 -- Volcar la base de datos para la tabla `grabaciones`
@@ -502,29 +513,133 @@ INSERT INTO `subtitle` (`id`, `fk_exercise_id`, `fk_user_id`, `language`, `trans
 (1, 2, 2, 'Spanish', 0, '2009-09-10 13:52:37'),
 (2, 2, 1, 'Basque', 1, '2009-09-10 13:52:37'),
 (3, 2, 3, 'English', 1, '2009-09-10 13:52:37'),
-(4, 1, 1, 'Basque', 0, '2010-03-01 10:59:20');
+(4, 1, 1, 'Basque', 0, '2010-03-01 10:59:20'),
+(5, 5, 1, 'English', 0, NOW()),
+(6, 6, 1, 'English', 0, NOW()),
+(7, 7, 1, 'English', 0, NOW()),
+(8, 8, 1, 'English', 0, NOW()),
+(9, 9, 1, 'English', 0, NOW());
 
 --
 -- Volcar la base de datos para la tabla `subtitle_line`
 --
 
-INSERT INTO `subtitle_line` (`id`, `fk_subtitle_id`, `show_time`, `hide_time`, `text`, `fk_exercise_role_id`) VALUES
-(1, 1, 1.6, 3.76, '¿Por qué quiere un boxeador trabajar en la construcción?', 1),
-(2, 1, 4.96, 6.76, 'Está arruinado, y no tiene trabajo y...', 2),
-(3, 1, 6.92, 8, 'y quiere que le contrate...', 1),
-(4, 1, 8.1, 9.4, 'Yo podría enseñarle a manejar la excavadora.', 2),
-(5, 2, 1.6, 3.76, 'Zergatik nahi du boxeolari batek eraikuntzan lan egin?', 3),
-(6, 2, 4.96, 6.76, 'Dirurik ez du, eta ez lanik ere...', 4),
-(7, 2, 6.92, 8, 'eta nik kontratatzea nahi duzu...', 3),
-(8, 2, 8.1, 9.4, 'Nik erakutsi niezaioke eskabadora erabiltzen.', 4),
-(9, 3, 1.6, 3.76, 'Why a boxer wants to work in construction?', 5),
-(10, 3, 4.96, 6.76, 'He is ruined, and doesn''t have a job', 6),
-(11, 3, 6.92, 8, 'and you want me to hire him...', 5),
-(12, 3, 8.1, 9.4, 'I could teach him to handle the excavator.', 6),
-(13, 4, 5.8, 7.48, 'Esan zertan ari zareten. Ikasten...', 7),
-(14, 4, 7.79, 11.2, 'edo lanean, edo alferkeri goxo-goxoan... e?', 7),
-(15, 4, 11.34, 15.04, 'eta zergaitik etorri zareten udako eskola honetara.', 7),
-(16, 4, 18.96, 22.32, 'Ni? bueno ni Joxemari naiz. Haragizko... ez, haragijale', 8);
+INSERT INTO `subtitle_line` (`fk_subtitle_id`, `show_time`, `hide_time`, `text`, `fk_exercise_role_id`) VALUES
+(1, 1.6, 3.76, '¿Por qué quiere un boxeador trabajar en la construcción?', 1),
+(1, 4.96, 6.76, 'Está arruinado, y no tiene trabajo y...', 2),
+(1, 6.92, 8, 'y quiere que le contrate...', 1),
+(1, 8.1, 9.4, 'Yo podría enseñarle a manejar la excavadora.', 2),
+
+(2, 1.6, 3.76, 'Zergatik nahi du boxeolari batek eraikuntzan lan egin?', 3),
+(2, 4.96, 6.76, 'Dirurik ez du, eta ez lanik ere...', 4),
+(2, 6.92, 8, 'eta nik kontratatzea nahi duzu...', 3),
+(2, 8.1, 9.4, 'Nik erakutsi niezaioke eskabadora erabiltzen.', 4),
+
+(3, 1.6, 3.76, 'Why a boxer wants to work in construction?', 5),
+(3, 4.96, 6.76, 'He is ruined, and doesn''t have a job', 6),
+(3, 6.92, 8, 'and you want me to hire him...', 5),
+(3, 8.1, 9.4, 'I could teach him to handle the excavator.', 6),
+
+(4, 5.8, 7.48, 'Esan zertan ari zareten. Ikasten...', 7),
+(4, 7.79, 11.2, 'edo lanean, edo alferkeri goxo-goxoan... e?', 7),
+(4, 11.34, 15.04, 'eta zergaitik etorri zareten udako eskola honetara.', 7),
+(4, 18.96, 22.32, 'Ni? bueno ni Joxemari naiz. Haragizko... ez, haragijale', 8),
+
+(5, 0.300, 1.204, 'What''s that?',9),
+(5, 1.404, 2.904, 'What''s that?',10),
+(5, 3.104, 5.215, 'Can''t you just use your sleeve?',9),
+(5, 5.415, 8.204, 'Can''t you just use your sleeve?',10),
+(5, 8.404, 9.226, 'Who gave it to you?',9),
+(5, 9.426, 11.504, 'Who gave it to you?',10),
+(5, 11.704, 14.307, 'Look I got a present',9),
+(5, 14.507, 15.604, 'What''s that?',10),
+(5, 15.804, 18.519, 'It''s a Key-tay kabino',9),
+(5, 18.719, 19.600, 'What''s that?',10),
+(5, 19.800, 28.513, 'Well, Keytime is so fun and this has material on the back of it and it''s for cleaning your cellphone''s screen',9),
+(5, 28.713, 30.900, 'Can''t you just use your sleeve?',10),
+(5, 31.100, 32.825, 'Well... yeah, but...',9),
+(5, 33.025, 34.300, 'Who gave it to you?',10),
+(5, 34.500, 43.000, 'Am Anichke. They made a new website, and they used a few seconds of one of my videos, so they sent me this.',9),
+
+(6, 0.300, 2.307, 'Oh, it''s going that well, huh?',11),
+(6, 2.507, 4.900, 'Oh, it''s going that well, huh?',12),
+(6, 5.100, 8.023, 'When do I get to meet the phantom physician?',11),
+(6, 8.223, 10.700, 'When do I get to meet the phantom physician?',12),
+(6, 10.900, 12.205, 'You guys got plans tonight?',11),
+(6, 12.405, 13.900, 'You guys got plans tonight?',12),
+(6, 14.100, 15.410, 'You know what you should do?',11),
+(6, 15.610, 17.000, 'You know what you should do?',12),
+(6, 17.200, 19.321, 'You should fly up and surprise him.',11),
+(6, 19.521, 21.900, 'You should fly up and surprise him.',12),
+(6, 22.100, 23.232, 'Yeah, why not?',11),
+(6, 23.432, 25.000, 'Yeah, why not?',12),
+(6, 25.200, 26.716, 'He''s just the first decent guy I dated in a long time.',11),
+(6, 26.916, 31.200, 'Oh, it''s going that well, huh?',12),
+(6, 31.400, 34.831, 'I''m so sick of dating. I''m so jealous of you guys.',11),
+(6, 35.031, 37.600, 'When do I get to meet the phantom physician?',12),
+(6, 37.800, 38.608, 'I think soon.',11),
+(6, 38.808, 40.700, 'You guys got plans tonight?',12),
+(6, 40.900, 45.828, 'No, nothing. Just... he has to go to San Francisco so we''re gonna talk on the phone.',11),
+(6, 46.028, 49.900, 'You know what you should do? You should fly up and surprise him.',12),
+(6, 50.100, 50.808, 'You think so?',11),
+(6, 51.008, 52.400, 'Yeah, why not?',12),
+
+(7, 0.300, 1.605, 'OK, now what?',13),
+(7, 1.805, 3.100, 'OK, now what?',14),
+(7, 3.300, 5.917, 'OK, that''s fair. On three?',13),
+(7, 6.117, 7.600, 'OK, that''s fair. On three?',14),
+(7, 7.800, 10.129, 'One, two, three.',13),
+(7, 10.329, 12.100, 'One, two, three.',14),
+(7, 12.300, 13.505, 'I threw paper!',13),
+(7, 13.705, 15.100, 'I threw paper!',14),
+(7, 17.114, 17.700, 'OK, now what?',14),
+(7, 17.900, 19.722, 'Rock-paper-scissors for it',13),
+(7, 19.922, 21.600, 'OK, that''s fair. On three?',14),
+(7, 21.800, 23.031, 'Yeah.',13),
+(7, 23.231, 27.510, 'One, two, three.',14),
+(7, 27.710, 28.700, 'I threw paper!',14),
+(7, 28.900, 29.300, 'I threw a rock!',13),
+
+(8, 0.300, 1.806, 'How was your day?',15),
+(8, 2.006, 3.100, 'How was your day?',16),
+(8, 3.300, 4.012, 'What about?',15),
+(8, 4.212, 5.300, 'What about?',16),
+(8, 5.500, 6.920, 'What''s gonna happen to it?',15),
+(8, 7.120, 9.000, 'What''s gonna happen to it?',16),
+(8, 9.200, 10.831, 'So they''re gonna get rid of it?',15),
+(8, 11.031, 13.700, 'So they''re gonna get rid of it?',16),
+(8, 14.507, 16.100, 'How was your day?',16),
+(8, 16.300, 19.923, 'Good! I went to a protest this afternoon',15),
+(8, 20.123, 21.200, 'What about?',16),
+(8, 21.400, 26.106, 'It was about protecting national public service radio broadcasting',15),
+(8, 26.306, 27.900, 'What''s gonna happen to it?',16),
+(8, 28.100, 31.923, 'Well... the government wants to save money...',15),
+(8, 32.123, 33.300, 'So they''re gonna get rid of it?',16),
+(8, 33.500, 39.800, 'Not quite, but they suggested stuff like introducing advertising, which would really suck.',15),
+
+(9, 0.300, 2.006, 'What are you up to this weekend?',17),
+(9, 2.206, 3.600, 'What are you up to this weekend?',18),
+(9, 3.800, 4.613, 'Where''s that?',17),
+(9, 4.813, 5.800, 'Where''s that?',18),
+(9, 6.000, 8.123, 'Oh yeah, I know where the Albert Park is.',17),
+(9, 8.323, 10.800, 'Oh yeah, I know where the Albert Park is.',18),
+(9, 11.000, 13.906, 'That''s were the lantern festival was last week.',17),
+(9, 14.106, 17.400, 'That''s were the lantern festival was last week.',18),
+(9, 17.600, 19.120, 'Yeah, did you?',17),
+(9, 19.320, 20.800, 'Yeah, did you?',18),
+(9, 21.000, 23.700, 'Yeah. What day did you go?',17),
+(9, 23.900, 26.500, 'Yeah. What day did you go?',18),
+(9, 27.309, 29.100, 'What are you up to this weekend?',18),
+(9, 29.300, 34.229, 'Ah, I''m not sure yet. I might go and check out the concert on sunday.',17),
+(9, 34.429, 35.500, 'Where''s that?',18),
+(9, 35.700, 39.611, 'It''s in Albert Park which is the park near the university.',17),
+(9, 39.811, 45.200, 'Oh yeah, I know where the Albert Park is. That''s were the lantern festival was last week.',18),
+(9, 45.400, 48.201, 'Yeah that''s the one. Did you go to that festival?',17),
+(9, 48.401, 49.600, 'Yeah, did you?',18),
+(9, 49.800, 52.012, 'Yeah, it was awesome, wasn''t it?',17),
+(9, 52.212, 53.800, 'Yeah. What day did you go?',18),
+(9, 54.000, 57.100, 'Am, Sunday I think it was. Yeah, yeah, Sunday night.',17);
+
 
 --
 -- Volcar la base de datos para la tabla `subtitle_score`

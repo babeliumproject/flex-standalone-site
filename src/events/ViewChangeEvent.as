@@ -15,6 +15,7 @@ package events
 		public static const VIEW_RANKING_MODULE:String="viewRankingModule";
 		public static const VIEW_ABOUT_MODULE:String="viewAboutModule";
 		public static const VIEW_SEARCH_MODULE:String="viewSearchModule";
+		public static const VIEW_HELP_MODULE:String="viewHelpModule";
 
 		//User related views
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";

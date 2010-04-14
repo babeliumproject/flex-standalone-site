@@ -60,6 +60,9 @@
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
 		<mx:VRule height="40"/>
+		<mx:LinkButton id="helpFAQButton"
+					   icon="@Embed(source='../../resources/images/help.png')"
+					   click="changeView(ViewChangeEvent.VIEW_HELP_MODULE)"/>
 	</mx:HBox>
 	<mx:HBox width="45%"
 			 horizontalAlign="right"
@@ -77,12 +80,18 @@
 				   fillAlphas="[0.0, 1.0, 1.0, 0.0]"
 				   fillColors="[#6FA3D3, #6FA3D3]"
 				   enabled="true"
+				   paddingLeft="6"
+				   paddingRight="6"
+				   cornerRadius="8"
 				   click="launchSearch()"/>
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 				   fontFamily="Arial"
 				   fontSize="14"
 				   fillAlphas="[1.0, 0.5, 0.5, 0.5]"
 				   fillColors="[#FFC960, #FFEA60, #FF9860, #FFB260]"
+				   paddingLeft="6"
+				   paddingRight="6"
+				   cornerRadius="8"
 				   enabled="{!DataModel.getInstance().recordingExercise}"
 				   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
 	</mx:HBox>
@@ -97,22 +106,23 @@
 			private function init():void
 			{
 			}
-						
-			private function changeView(event:String) : void
+
+			private function changeView(event:String):void
 			{
 				new VideoStopEvent().dispatch();
 				new ViewChangeEvent(event).dispatch();
 			}
-			
-			private function launchSearch() : void{
-				DataModel.getInstance().searchField = searchField.text;
-				if (DataModel.getInstance().viewContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX){ 
+
+			private function launchSearch():void
+			{
+				DataModel.getInstance().searchField=searchField.text;
+				if (DataModel.getInstance().viewContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				{
 					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
 				}
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 
 			}
-			
 		]]>
 	</mx:Script>
 </mx:ApplicationControlBar>
