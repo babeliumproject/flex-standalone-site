@@ -394,7 +394,8 @@
 				bideoa.setRolAukeratua(ep.AukeratutakoPertsonaia);
 
 
-				grabaketa.setBideoIzena(grabaketenKarpeta + "/" + ep.Id, 1);
+				grabaketa.setBideoIzena(ep.Id, 1);
+				trace(ep.Id);
 				//grabaketa.stopVid();
 				grabaketa.ezabatuFletxak();
 				grabaketa.setRolAukeratua(ep.AukeratutakoPertsonaia);
@@ -448,7 +449,7 @@
 				bideoa.ezabatuFletxak();
 				bideoa.setRolAukeratua(ep.AukeratutakoPertsonaia);
 
-				grabaketa.setBideoIzena(grabaketenKarpeta + "/" + ep.Id, 1);
+				grabaketa.setBideoIzena(ep.Id, 1);
 				//grabaketa.stopVid();
 				grabaketa.ezabatuFletxak();
 				grabaketa.setRolAukeratua(ep.AukeratutakoPertsonaia);
@@ -515,7 +516,7 @@
 				bideoa.ezabatuFletxak();
 				bideoa.setRolAukeratua(ep.AukeratutakoPertsonaia);
 
-				grabaketa.setBideoIzena(grabaketenKarpeta + "/" + ep.Id, 1);
+				grabaketa.setBideoIzena(ep.Id, 1);
 				//grabaketa.stopVid();
 				grabaketa.ezabatuFletxak();
 				grabaketa.setRolAukeratua(ep.AukeratutakoPertsonaia);
