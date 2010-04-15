@@ -60,9 +60,6 @@
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
 		<mx:VRule height="40"/>
-		<mx:LinkButton id="helpFAQButton"
-					   icon="@Embed(source='../../resources/images/help.png')"
-					   click="changeView(ViewChangeEvent.VIEW_HELP_MODULE)"/>
 	</mx:HBox>
 	<mx:HBox width="45%"
 			 horizontalAlign="right"

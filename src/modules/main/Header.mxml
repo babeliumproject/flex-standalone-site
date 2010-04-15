@@ -87,12 +87,12 @@
 		</mx:Canvas>
 
 		<main:LocalizationComboBox/>
-		<!--
+		
 		<mx:VRule height="20"/>
 		<mx:LinkButton id="helpFAQButton"
 					   icon="@Embed(source='../../resources/images/help.png')"
-					   click="helpFAQ_clickHandler(event)"/>
-		-->
+					   click="helpFAQ_clickHandler(event)"
+					   toolTip="Help/FAQ"/>
 
 	</mx:HBox>
 </main:HeaderClass>

@@ -7,24 +7,35 @@
 		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.crypto.SHA1;
+			
+			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
 			
 			import model.DataModel;
+			
+			import modules.main.LanguageComboBox;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.ToolTip;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
+			
+			import vo.NewUserVO;
+			import vo.UserLanguageVO;
 
 			public static const AVAILABLE_LANGUAGES:int=4;
 
 			//These variables are used to store the several combobox's info the user might add
+			private var motherLanguagesArray:ArrayCollection = new ArrayCollection();
 			private var knownLanguagesArray:ArrayCollection=new ArrayCollection();
-			private var otherKnownLanguage:LanguageKnowledgeBox;
-
-			private var languagesOfInterestArray:ArrayCollection=new ArrayCollection();
-			private var otherLanguageOfInterest:LanguageKnowledgeBox;
+			private var interestLanguagesArray:ArrayCollection=new ArrayCollection();
+			
+			private var motherTongue:LanguageComboBox;
+			private var knownLanguage:LanguageKnowledgeBox;
+			private var interestLanguage:LanguageKnowledgeBox;
+			
 
 			private var selectedLanguages:ArrayCollection=new ArrayCollection();
 			
@@ -36,10 +47,21 @@
 
 			public function onCreationComplete():void
 			{
-				if (!knownLanguagesArray.contains(firstKnownLang))
-					knownLanguagesArray.addItem(firstKnownLang);
-				if (!languagesOfInterestArray.contains(firstLanguageOfInterest))
-					languagesOfInterestArray.addItem(firstLanguageOfInterest);
+				addInitialComboboxes();
+			}
+			
+			public function addInitialComboboxes():void{
+				motherTongue = new LanguageComboBox();
+				motherLanguagesBox.addChild(motherTongue);
+				motherLanguagesArray.addItem(motherTongue);
+				
+				knownLanguage = new LanguageKnowledgeBox();
+				knownLanguagesBox.addChild(knownLanguage);
+				knownLanguagesArray.addItem(knownLanguage);
+				
+				interestLanguage = new LanguageKnowledgeBox();
+				interestLanguagesBox.addChild(interestLanguage);
+				interestLanguagesArray.addItem(interestLanguage);
 			}
 
 			public function motherTongueComboBox_changeHandler(event:ListEvent):void
@@ -56,7 +78,7 @@
 											   matchPattern:RegExp, checkEmpty:Boolean = true, 
 											   checkLength:Boolean = true, checkPattern:Boolean = true, 
 											   checkString:Boolean = false, minLength:int = 1, 
-											   maxLength:int = 200, matchString:String=''):void
+											   maxLength:int = 200, matchString:String=''):Boolean
 			{
 				// Has the error message ToolTip already been created?
 				// (A reference to created ToolTip instances is saved in a hash called errorMessageToolTips.)
@@ -101,6 +123,12 @@
 					// Save a reference to the error message ToolTip in a hash for later use.
 					errorMessageToolTips[target.name]=errorTip;
 					(errorMessageToolTips[target.name] as ToolTip).visible=true;
+					
+					return false; //The filed has errors, so we return false
+				} 
+				else 
+				{
+					return true; //The field has valid input, so we return true
 				}
 			}
 
@@ -108,48 +136,93 @@
 			private function processNewUser():void
 			{
 
-				knownLanguagesArray.toArray().concat(languagesOfInterestArray.toArray());
+				var languagesCollection:ArrayCollection = new ArrayCollection();
 				
-				Alert.show(errorMessageToolTips.length.toString());
+				for each (var mLang:LanguageComboBox in motherLanguagesArray){
+					languagesCollection.addItem(new UserLanguageVO(0,0,mLang.languageComboBox.selectedItem.code,7,0));	
+				}
+				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray){
+					languagesCollection.addItem(new UserLanguageVO(0,0,kLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.dificultyLevelComboBox.selectedIndex +1,0));	
+				}
+				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray){
+					languagesCollection.addItem(new UserLanguageVO(0,0,iLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.dificultyLevelComboBox.selectedIndex +1,0));	
+				}
+				
+				var languages:Array = languagesCollection.toArray();
+				
 
-				validateTextInput(username,'USERNAME',fieldPattern,true,true,true,false,4,20);
-				validateTextInput(email,'EMAIL',mailPattern,false,false);
-				validateTextInput(password, 'PASSWORD', anyPattern, true, true, false, false, 6, 40);
-				validateTextInput(repassword, 'REPASSWORD', anyPattern, false, false, false, true, 1, 200, password.text);
-				
-				
-				/*
-				if(errorMessageToolTips.length == 0)				
+				if(validateTextInput(username,'USERNAME',fieldPattern,true,true,true,false,4,20) &&
+				   validateTextInput(email,'EMAIL',mailPattern,false,false) &&
+				   validateTextInput(password, 'PASSWORD', anyPattern, true, true, false, false, 6, 40) &&
+				   validateTextInput(repassword, 'REPASSWORD', anyPattern, false, false, false, true, 1, 200, password.text))
 				{
-					var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text);
+					var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, languages);
 					new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
-				}*/
+				} else {
+					Alert.show("You have errors in your form");
+				}
 			}
 
 			protected function addAnotherKnownLang_clickHandler(event:MouseEvent):void
 			{
-				otherKnownLanguage=new LanguageKnowledgeBox();
-				knownLanguagesArray.addItem(otherKnownLanguage);
-				knownLanguagesFormItem.addChild(otherKnownLanguage);
+				if(knownLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES -1){
+					var otherKnownLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					knownLanguagesBox.addChild(otherKnownLanguage);
+					knownLanguagesArray.addItem(otherKnownLanguage);
+				}
 			}
 
-			protected function preferedLang_clickHandler(event:MouseEvent):void
+			protected function addAnotherInterestLang_clickHandler(event:MouseEvent):void
 			{
-				otherLanguageOfInterest=new LanguageKnowledgeBox();
-				languagesOfInterestArray.addItem(otherLanguageOfInterest);
-				languagesOfInterestFormItem.addChild(otherLanguageOfInterest);
+				if(interestLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES -1){
+					var otherInterestLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					interestLanguagesBox.addChild(otherInterestLanguage);
+					interestLanguagesArray.addItem(otherInterestLanguage);
+				}
+			}
+			
+			protected function addAnotherMotherLang_clickHandler(event:MouseEvent):void
+			{
+				if(motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES -1){
+					var otherMotherLanguage:LanguageComboBox=new LanguageComboBox();
+					motherLanguagesBox.addChild(otherMotherLanguage);
+					motherLanguagesArray.addItem(otherMotherLanguage);
+				}
 			}
 
 			protected function resetToInitialStatus():void
 			{
-				for each (var item:ToolTip in errorMessageToolTips){
-					ToolTipManager.destroyToolTip(item);
-				}
+				username.text = '';
+				email.text = '';
+				password.text = '';
+				repassword.text = '';
+				realName.text = '';
+				surname.text = '';
+				
+				if(errorMessageToolTips.hasOwnProperty(username.name))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[username.name] as ToolTip);
+				if(errorMessageToolTips.hasOwnProperty(email.name))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[email.name] as ToolTip);
+				if(errorMessageToolTips.hasOwnProperty(password.name))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[password.name] as ToolTip);
+				if(errorMessageToolTips.hasOwnProperty(repassword.name))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[repassword.name] as ToolTip);
 				errorMessageToolTips = null;
+				errorMessageToolTips = new Array();
+				
+				
+				motherLanguagesBox.removeAllChildren();
+				knownLanguagesBox.removeAllChildren();
+				interestLanguagesBox.removeAllChildren();
+				motherLanguagesArray.removeAll();
+				knownLanguagesArray.removeAll();
+				interestLanguagesArray.removeAll();
+				
+				addInitialComboboxes();
 			}
 			
 			protected function set onTabChange(value:Boolean):void{
-				
+				resetToInitialStatus();	
 			}
 
 
@@ -158,6 +231,7 @@
 				resetToInitialStatus();
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 			}
+
 		]]>
 	</mx:Script>
 	
@@ -253,35 +327,49 @@
 			<mx:FormItem label="First Language (Mother Tongue):"
 						 fontWeight="bold"
 						 required="true">
-				<main:LanguageComboBox id="motherTongueComboBox"/>
+				<mx:HBox>
+					<mx:VBox id="motherLanguagesBox">
+					</mx:VBox>
+					<mx:LinkButton id="addAnotherMotherLang"
+								   click="addAnotherMotherLang_clickHandler(event)"
+								   label="Add another"
+								   textDecoration="underline"
+								   paddingLeft="6"
+								   paddingRight="6"
+								   icon="@Embed(source='../../resources/images/add.png')"/>
+				</mx:HBox>
 			</mx:FormItem>
 			<mx:Spacer/>
 			<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
 			<mx:Spacer/>
-			<mx:FormItem id="knownLanguagesFormItem"
-						 label="Other Languages:"
+			<mx:FormItem label="Other Languages:"
 						 fontWeight="bold">
 				<mx:HBox>
-					<userManagement:LanguageKnowledgeBox id="firstKnownLang"/>
+					<mx:VBox id="knownLanguagesBox">
+					</mx:VBox>
 					<mx:LinkButton id="addAnotherKnownLang"
 								   click="addAnotherKnownLang_clickHandler(event)"
 								   label="Add another"
 								   textDecoration="underline"
+								   paddingLeft="6"
+								   paddingRight="6"
 								   icon="@Embed(source='../../resources/images/add.png')"/>
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:Spacer/>
 			<mx:Label text="Which languages would you like to practise?"/>
 			<mx:Spacer/>
-			<mx:FormItem id="languagesOfInterestFormItem"
-						 label="Languages you're interested in:"
+			<mx:FormItem label="Languages you're interested in:"
 						 fontWeight="bold">
 				<mx:HBox>
-					<userManagement:LanguageKnowledgeBox id="firstLanguageOfInterest"/>
-					<mx:LinkButton id="preferedLang"
-								   click="preferedLang_clickHandler(event)"
+					<mx:VBox id="interestLanguagesBox">
+					</mx:VBox>
+					<mx:LinkButton id="addAnotherInterestLang"
+								   click="addAnotherInterestLang_clickHandler(event)"
 								   label="Add another"
 								   textDecoration="underline"
+								   paddingLeft="6"
+								   paddingRight="6"
 								   icon="@Embed(source='../../resources/images/add.png')"/>
 				</mx:HBox>
 			</mx:FormItem>

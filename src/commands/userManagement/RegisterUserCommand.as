@@ -46,7 +46,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: "+faultEvent.message);
+			Alert.show("Error while registering: \n"+faultEvent.message);
 			trace(ObjectUtil.toString(info));
 		}
 		
