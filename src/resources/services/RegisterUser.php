@@ -65,7 +65,7 @@ class RegisterUser{
 
 
 		$sql = "INSERT INTO user_languages (fk_user_id, language, level) VALUES ";
-		foreach($languages as s$language) {
+		foreach($languages as $language) {
 			$sql .= " ('%d', '%s', '%d'),";
 			array_push($params, $language->userId, $language->language, $language->level);
 		}

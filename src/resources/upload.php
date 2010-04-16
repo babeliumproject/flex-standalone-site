@@ -40,7 +40,7 @@ function echo_errors($errors) {
 
 function check_duration($path, $maxDuration){
 	$total = 200;
-	$resultduration = (exec("ffmpeg -i $path 2>&1",$cmd));
+	$resultduration = (exec("ffmpeg -i '$path' 2>&1",$cmd));
 	if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)){
 		$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
 	}
@@ -89,6 +89,7 @@ switch ($_REQUEST ['action']) {
 				}
 				$data = array($file_path, $file_mime);
 				$success = "true";
+				@chmod($file_path . "/" . $file_name, 0644);
 			}
 		
 		} else {
@@ -104,8 +105,8 @@ switch ($_REQUEST ['action']) {
 
 }
 
-/*
 
+/*
 // We log the upload process so that we can check periodically if something went wrong.
 
 error_log("success = ".$success."\n", 3, "/tmp/error.log");

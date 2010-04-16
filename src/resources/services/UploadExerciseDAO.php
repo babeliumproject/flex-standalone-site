@@ -55,11 +55,12 @@ class UploadExerciseDAO{
 	public function processPendingVideos(){
 		set_time_limit(0);
 		$sql = "SELECT id, name, source, language, fk_user_id, title, thumbnail_uri, duration, status
-				FROM exercise WHERE (status='Processing') ";
+				FROM exercise WHERE (status='Unprocessed') ";
 		$transcodePendingVideos = $this->_listQuery($sql);
 		if(count($transcodePendingVideos) > 0){
 			echo "  * There are videos that need to be processed.\n";
 			foreach($transcodePendingVideos as $pendingVideo){
+				$this->setExerciseProcessing($pendingVideo->id);
 				$path = $this->filePath.'/'.$pendingVideo->name;
 				if(is_file($path) && filesize($path)>0){
 					$outputHash = $this->str_makerand(11,1,1);
@@ -184,6 +185,11 @@ class UploadExerciseDAO{
 
 	}
 	
+	private function setExerciseProcessing($exerciseId){
+		$sql = "UPDATE exercise SET status='Processing' WHERE (id=%d) ";
+		return $this->_databaseUpdate($sql, $exerciseId);
+	}
+	
 	private function setExerciseRejected($exerciseId){
 		$sql = "UPDATE exercise SET status='Rejected' WHERE (id=%d) ";
 		return $this->_databaseUpdate($sql, $exerciseId);
@@ -229,7 +235,7 @@ class UploadExerciseDAO{
 		$result = $this->conn->_execute(func_get_args());
 
 		while ($row = $this->conn->_nextRow ($result)){
-			array_push($row[0]);
+			array_push($searchResults, $row[0]);
 		}
 		return $searchResults;
 	}

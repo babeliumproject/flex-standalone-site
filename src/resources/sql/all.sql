@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `exercise` (
   `thumbnail_uri` varchar(200) NOT NULL DEFAULT 'nothumb.png',
   `adding_date` datetime NOT NULL,
   `duration` int(10) unsigned NOT NULL,
-  `status` enum('Processing','Available','Rejected','Error','Unavailable') NOT NULL DEFAULT 'Processing',
+  `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable') NOT NULL DEFAULT 'Unprocessed',
   `filehash` varchar(32) NOT NULL DEFAULT 'none',
   PRIMARY KEY  (`id`),
   KEY `FK_exercises_1` (`fk_user_id`)
