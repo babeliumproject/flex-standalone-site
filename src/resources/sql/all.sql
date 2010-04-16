@@ -431,10 +431,10 @@ INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_u
 (7, 'tdes_1179_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1179 Fragment', 'tdes_1179_qa.jpg', '2010-03-08 12:10:00', 29.73, 'Available', '4fe59e622c208b53dc4e61cfdcb7b2a8'),
 (8, 'tdes_1183_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1183 Fragment', 'tdes_1183_qa.jpg', '2010-03-08 12:10:00', 40.12, 'Available', '2f8d1bde45ae7a7d303d663bcdf2ae8c'),
 (9, 'tdes_1187_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'English', 1, 'daily, english, show', 'The Daily English Show #1187 Fragment', 'tdes_1187_qa.jpg', '2010-03-08 12:10:00', 57.15, 'Available', 'a0cd07a3ac94d2dbf77ca1c02c6278cc'),
-(12, '4BU3y3nkB7c', 'Presentation', 'Red5', 'French', 1, 'french, talk', 'Presentation', '4BU3y3nkB7c.jpg', '2010-04-15 13:17:08', 31, 'Available', 'e52964a1d207b5014b778ceb1016da8b', NULL),
-(13, '08s08c4o3El', 'Goenkale telesaileko zati bat', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia I', '08s08c4o3El.jpg', '2010-04-15 13:18:14', 38, 'Available', 'f03a80496520e2d275cef027b69aa379', NULL),
-(14, 'iQ8pI4bFwQh', 'Goenkale telesaileko zatia', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia II', 'iQ8pI4bFwQh.jpg', '2010-04-15 13:19:33', 110, 'Available', '632fbbf33993892b9794f1cc324cd8d1', NULL),
-(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'Spanish', 1, 'frases, cotidianas', 'EspaÃ±ol Latino Para NiÃ±os', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f', NULL);
+(12, '4BU3y3nkB7c', 'Presentation', 'Red5', 'French', 1, 'french, talk', 'Presentation', '4BU3y3nkB7c.jpg', '2010-04-15 13:17:08', 31, 'Available', 'e52964a1d207b5014b778ceb1016da8b'),
+(13, '08s08c4o3El', 'Goenkale telesaileko zati bat', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia I', '08s08c4o3El.jpg', '2010-04-15 13:18:14', 38, 'Available', 'f03a80496520e2d275cef027b69aa379'),
+(14, 'iQ8pI4bFwQh', 'Goenkale telesaileko zatia', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia II', 'iQ8pI4bFwQh.jpg', '2010-04-15 13:19:33', 110, 'Available', '632fbbf33993892b9794f1cc324cd8d1'),
+(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'Spanish', 1, 'frases, cotidianas', 'EspaÃ±ol Latino Para NiÃ±os', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f');
 
 
 
