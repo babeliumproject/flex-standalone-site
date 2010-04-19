@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `credithistory` (
   KEY `FK_credithistory_1` (`fk_user_id`),
   KEY `FK_credithistory_3` (`fk_response_id`),
   KEY `FK_credithistory_2` (`fk_exercise_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `evaluation` (
   PRIMARY KEY  (`id`),
   KEY `FK_evaluation_1` (`fk_response_id`),
   KEY `FK_evaluation_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_video` (
   `duration` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK_evaluation_video_1` (`fk_evaluation_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `exercise` (
   `filehash` varchar(32) NOT NULL DEFAULT 'none',
   PRIMARY KEY  (`id`),
   KEY `FK_exercises_1` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `exercise_comment` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_comments_1` (`fk_exercise_id`),
   KEY `FK_exercise_comments_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `exercise_level` (
   PRIMARY KEY  USING BTREE (`id`),
   KEY `FK_exercise_level_1` (`fk_exercise_id`),
   KEY `FK_exercise_level_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `exercise_role` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_characters_1` (`fk_exercise_id`),
   KEY `FK_exercise_characters_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `exercise_score` (
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_score_1` (`fk_exercise_id`),
   KEY `FK_exercise_score_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   `prefName` varchar(45) NOT NULL,
   `prefValue` varchar(200) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `response` (
   PRIMARY KEY  (`id`),
   KEY `FK_response_1` (`fk_user_id`),
   KEY `FK_response_2` (`fk_exercise_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -214,12 +214,12 @@ CREATE TABLE IF NOT EXISTS `subtitle` (
   `fk_exercise_id` int(10) unsigned NOT NULL,
   `fk_user_id` int(10) unsigned NOT NULL,
   `language` varchar(45) NOT NULL,
-  `translation` tinyint(1) NOT NULL,
-  `adding_date` datetime NOT NULL,
+  `translation` tinyint(1) NOT NULL DEFAULT '0',
+  `adding_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
   KEY `FK_exercise_subtitle_2` (`fk_user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `subtitle_line` (
   PRIMARY KEY  (`id`),
   KEY `FK_subtitle_line_1` (`fk_subtitle_id`),
   KEY `FK_subtitle_line_2` (`fk_exercise_role_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `subtitle_score` (
   PRIMARY KEY  (`id`),
   KEY `FK_subtitle_score_1` (`fk_subtitle_id`),
   KEY `FK_subtitle_score_2` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `creditCount` int(10) unsigned NOT NULL default '0',
   `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `user_languages` (
   `level` int(10) unsigned NOT NULL COMMENT 'Level goes from 1 to 6. 7 used for mother tongue',
   `positives_to_next_level` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -434,7 +434,7 @@ INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_u
 (12, '4BU3y3nkB7c', 'Presentation', 'Red5', 'French', 1, 'french, talk', 'Presentation', '4BU3y3nkB7c.jpg', '2010-04-15 13:17:08', 31, 'Available', 'e52964a1d207b5014b778ceb1016da8b'),
 (13, '08s08c4o3El', 'Goenkale telesaileko zati bat', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia I', '08s08c4o3El.jpg', '2010-04-15 13:18:14', 38, 'Available', 'f03a80496520e2d275cef027b69aa379'),
 (14, 'iQ8pI4bFwQh', 'Goenkale telesaileko zatia', 'Red5', 'Basque', 1, 'euskara, goenkale', 'Goenkale Zatia II', 'iQ8pI4bFwQh.jpg', '2010-04-15 13:19:33', 110, 'Available', '632fbbf33993892b9794f1cc324cd8d1'),
-(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'Spanish', 1, 'frases, cotidianas', 'EspaÃ±ol Latino Para NiÃ±os', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f');
+(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'Spanish', 1, 'frases, cotidianas', 'Español Latino Para Niños', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f');
 
 
 
@@ -692,7 +692,7 @@ CREATE TABLE `transcription` (
   `transcription_date` datetime DEFAULT NULL,
   `system` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- 
@@ -706,7 +706,7 @@ CREATE TABLE `spinvox_request` (
   `fk_transcription_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_spinvox_requests_transcription1` (`fk_transcription_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Filtros para la tabla `spinvox_request`

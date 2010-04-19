@@ -7,7 +7,8 @@ class Datasource
    function Datasource($dbHost, $dbName, $dbuser, $dbpasswd)
    {
       $this->dbLink = mysql_connect ($dbHost, $dbuser, $dbpasswd);
-      mysql_select_db ($dbName, $this->dbLink);	
+      mysql_select_db ($dbName, $this->dbLink);
+      mysql_set_charset('utf8',$this->dbLink);	
    }
 
    function _execute()
