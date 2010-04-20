@@ -33,8 +33,8 @@ class SearchDAO {
 		
 		//Opens the index
 		$this->initialize();	
-		
- 		$query = Zend_Search_Lucene_Search_QueryParser::parse($search);  
+			
+ 		$query = Zend_Search_Lucene_Search_QueryParser::parse($search);
  		
  		//We do the search and send it	
   		try {
@@ -126,16 +126,28 @@ class SearchDAO {
 		$this->index->commit();
 		$this->index->optimize();			
 	}
-	public function addDocumentIndex($result){
+	public function addDocumentIndex($idDB){
 						
+		//Query for the index
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+       					e.adding_date, e.fk_user_id, u.name, avg(suggested_score) as avgScore, 
+       					avg (suggested_level) as avgLevel
+				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			 
+       			 WHERE (e.status = 'Available' and e.id=$idDB)
+				 GROUP BY e.id";
+ 		$result = $this->conn->_execute ( $sql );
+	
 		//Opens the index
 		$this->initialize();
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);	
+			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
 		}
 		$this->index->commit();
-		$this->index->optimize();	
+		$this->index->optimize();		
 	}
 	
 	public function deleteDocumentIndex($idDB){
@@ -145,8 +157,9 @@ class SearchDAO {
 		$term = new Zend_Search_Lucene_Index_Term($idDB, 'idEx');
 		$docIds  = $this->index->termDocs($term);
 		foreach ($docIds as $id) {
-  			$doc = $this->index->getDocument($id);
-			$this->index->delete($doc->id);
+  			//$doc = $this->index->getDocument($id);
+			//$this->index->delete($doc->id);
+			$this->index->delete($id);
 	    }
     	$this->index->commit();
 		$this->index->optimize();	
