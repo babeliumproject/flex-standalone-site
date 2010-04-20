@@ -142,10 +142,10 @@
 					languagesCollection.addItem(new UserLanguageVO(0,0,mLang.languageComboBox.selectedItem.code,7,0));	
 				}
 				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray){
-					languagesCollection.addItem(new UserLanguageVO(0,0,kLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.dificultyLevelComboBox.selectedIndex +1,0));	
+					languagesCollection.addItem(new UserLanguageVO(0,0,kLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.difficultyLevelComboBox.selectedIndex +1,0));	
 				}
 				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray){
-					languagesCollection.addItem(new UserLanguageVO(0,0,iLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.dificultyLevelComboBox.selectedIndex +1,0));	
+					languagesCollection.addItem(new UserLanguageVO(0,0,iLang.languageCombo.languageComboBox.selectedItem.code,kLang.levelCombo.difficultyLevelComboBox.selectedIndex +1,0));	
 				}
 				
 				var languages:Array = languagesCollection.toArray();

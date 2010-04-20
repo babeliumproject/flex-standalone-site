@@ -1,18 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
-	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			
 			[Bindable]
-			private var difficultyLevels:Array=new Array("A1 Beginner", "A2 Elementary", "B1.1 Intermediate", "B1.2 Average", "B2.1 Advanced", "B2.2 Native");
+			private var difficultyLevels:Array=new Array('LEVEL_A1', 'LEVEL_A2', 'LEVEL_B11', 'LEVEL_B12', 'LEVEL_B21', 'LEVEL_B22', 'LEVEL_C1');
+			
+			// Localization combobox functions
+			public function difficultyComboBoxLabelFunction(item:Object):String
+			{
+				var locale:String=String(item);
+				return resourceManager.getString('myResources', locale);
+			}
+			
+			public function difficultyComboBoxChangeHandler(event:Event):void
+			{
+				updateDifficultyLevelComboBox();
+			}
+			
+			private function updateDifficultyLevelComboBox():void
+			{
+				var oldSelectedItem:Object=difficultyLevelComboBox.selectedItem;
+				// Repopulate the combobox with locales,
+
+				difficultyLevelComboBox.dataProvider=difficultyLevels;
+				difficultyLevelComboBox.selectedItem=oldSelectedItem;
+			}
 
 			
 		]]>
 	</mx:Script>
 	
-	<mx:ComboBox id="dificultyLevelComboBox"
+	<mx:ComboBox id="difficultyLevelComboBox"
 				 dataProvider="{difficultyLevels}"
-				 fontWeight="normal"/>
+				 fontWeight="normal"
+				 labelFunction="difficultyComboBoxLabelFunction"
+				 change="difficultyComboBoxChangeHandler(event)"/>
 	
 </mx:HBox>
