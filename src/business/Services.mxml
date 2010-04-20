@@ -67,6 +67,12 @@
 		destination="empService"
 		showBusyCursor="true"
 		source="TranscriptionsDAO"/>
+	
+	<mx:RemoteObject
+		id="evaluationRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="EvaluationDAO"/>
 		
 	<mx:RemoteObject
 		id="responseRO"

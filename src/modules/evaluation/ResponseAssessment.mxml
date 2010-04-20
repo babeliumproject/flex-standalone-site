@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  xmlns:rating="com.asfusion.controls.*"
+		  layout="vertical"
+		  title="Response Assessment">
+
+	<mx:Label text="Rate the user's recording:"/>
+	<rating:Rating id="reviewerRating" liveRollOver="true" value="0"/>
+	<mx:Label text="Leave a comment to the user with your thoughts about his/her response."/>
+	<mx:LinkBar color="0x0050AA" horizontalAlign="center" width="100%" fontWeight="bold" dataProvider="{commentViewStack}" borderColor="0xACACAC" borderStyle="solid"/>
+	<mx:ViewStack id="commentViewStack">
+		<mx:HBox label="Write a comment">
+			<mx:TextArea id="writeComment" />
+		</mx:HBox>
+		<mx:HBox label="Record a videocomment">
+			<videoPlayer:VideoPlayerBabelia id="videoComment" autoPlay="false" skin="white"
+											seek="true" subtitles="false" autoScale="false" arrows="false"
+											subtitlingControls="false" width="300" 
+											height="{Math.floor(VP.width * 800 / 1280)}"
+											streamSource="{_streamSource}"
+											controlsEnabled="{_exerciseSelected}" />
+		</mx:HBox>
+		
+	</mx:ViewStack>
+	
+	
+	<mx:HBox>
+		<mx:Button id="saveButton" label="Save" />
+		<mx:Button id="cancelButton" label="Cancel" />
+	</mx:HBox>
+	
+</mx:Panel>

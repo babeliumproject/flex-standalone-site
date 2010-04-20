@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<!-- Video Player -->
+	<mx:VBox>
+		<mx:Label id="exerciseTitle"
+				  text="{_exerciseTitle}"
+				  width="100%"
+				  fontSize="16"
+				  fontWeight="bold"/>
+		<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
+										seek="true" subtitles="true" autoScale="false" arrows="false"
+										subtitlingControls="false" width="500" 
+										height="{Math.floor(VP.width * 800 / 1280)}"
+										streamSource="{_streamSource}"
+										controlsEnabled="{_exerciseSelected}" />
+	</mx:VBox>
+	<mx:Spacer width="20" />
+	
+</mx:HBox>
