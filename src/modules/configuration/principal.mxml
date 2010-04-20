@@ -5,7 +5,7 @@
 	xmlns:mod3="modules.configuration.bandwidth.*"
 	creationComplete="init()">
 	
-	<mx:Script> 
+	<mx:Script>
 		<![CDATA[
 		
 		import model.DataModel;		

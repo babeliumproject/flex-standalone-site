@@ -2,16 +2,17 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 	xmlns:ns1="modules.configuration.webcam.*" creationComplete="init()">
 	
-	<mx:Script>
+	<mx:Script> 
 		<![CDATA[
 			
-			import modules.configuration.ConfigurationResultEvent;
-			import mx.controls.Alert;
 			import model.DataModel;
-			import flash.ui.Mouse;
+			
+			import modules.configuration.ConfigurationResultEvent;
+			
+			import mx.controls.Alert;
 						
 			public var cam:Camera;
-			public var mic:Microphone=Microphone.getMicrophone();
+			public var mic:Microphone;
 			private var video:Video;
 			private var nc:NetConnection;
 			public var rec_ns:NetStream;
@@ -44,31 +45,35 @@
 			}
 			
 			private function recStart():void{
-				try{	
+				try{
 					//Las siguientes 2 lineas de codigo permiten al usuario la grabacion de varios videos
 					rec_ns.close();
 					play_ns.close();
+					
 					cam=Camera.getCamera();
-					cam.addEventListener(StatusEvent.STATUS,camera_status);
-					rec_ns.attachCamera(cam);
-					model.DataModel.getInstance().videoRec=true;
-			
+					mic=Microphone.getMicrophone();
+					mic.setLoopBack(true);
+					mic.setUseEchoSuppression(true);
+					mic.gain=40;
+						
+					if(!DataModel.getInstance().micCamAllowed){						
+						cam.addEventListener(StatusEvent.STATUS,camera_status);
+					}else{
 					/*Se comprueba si se ha grabado un fichero de audio en la pestaña microphone
 					o si previamente el usuario ha grabado otro fichero de video.
 					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
 					de un video no seria posible sin las siguientes lineas de codigo*/
-					if (rec || model.DataModel.getInstance().audioRec){
-						DataModel.getInstance().recording=true;
+						rec_ns.attachCamera(cam);
+						model.DataModel.getInstance().videoRec=true;
 						statusTextFunc("recording");
-                    	video = new Video();
-                    	video.attachCamera(cam);
-                    	videoHolder.addChild(video);
-                    	timerRec.start();
-                    	mic.rate = 44;
-        				rec_ns.attachAudio(mic);
-   						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo",
-   						 'record');
-   						inicializarContador();	
+						video = new Video();
+						video.attachCamera(cam);
+						videoHolder.addChild(video);
+						timerRec.start();
+						mic.rate = 44;
+						rec_ns.attachAudio(mic);
+						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
+						inicializarContador(); 
 					}  					
 				}catch(err:Error){
 					Alert.show( err.toString() );
@@ -97,7 +102,10 @@
 						dispatchEvent(ev);                  	
                         break;
                     case "Camera.Unmuted": //User allowed access to camera
+                    	rec_ns.attachCamera(cam);
+						model.DataModel.getInstance().videoRec=true;
                    	 	DataModel.getInstance().recording=true;
+						DataModel.getInstance().micCamAllowed = true;
                     	statusTextFunc("recording");
                     	video = new Video();
                     	video.attachCamera(cam);

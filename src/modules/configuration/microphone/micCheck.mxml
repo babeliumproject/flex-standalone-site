@@ -4,9 +4,10 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import model.DataModel;
 			
 			import modules.configuration.ConfigurationResultEvent;
-			import model.DataModel;
+			
 			import mx.controls.Alert;		
 			
 			public var mic:Microphone;
@@ -16,11 +17,12 @@
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
+			public var timerSound:Timer;
 			public var onMic:Boolean=false;
             
-			private function init():void{								
+			private function init():void{						
 				nc = new NetConnection();
-  				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+  				nc.connect("rtmp://" + DataModel.getInstance().server +  ":" + DataModel.getInstance().red5Port + "/oflaDemo");
     			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
     			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler); 
     			inicializarTimers(); 	
@@ -48,31 +50,42 @@
 					play_ns.close();
 					
 					mic=Microphone.getMicrophone();
+					if (!DataModel.getInstance().micCamAllowed){
+						/*Esta instruccion provoca mucho ruido en la grabacion. Sin embargo, si accedemos a esta
+						pestaña antes grabar cualquier otro archivo, es imprescindible su uso. A partir de la primera
+						grabacion podemos evitar tener que usarla (motivo del if micCamAllowed)*/
+						mic.setLoopBack(true);}
+					mic.setUseEchoSuppression(true);
+					mic.gain=40; 
+					barraSonido.visible=true;
+					barraSonido.giveMicrophone(mic);
 					
 					//Gestion de la deteccion de sonidos
 					onMic=false;
 					mic.setSilenceLevel(20,1000);
     				mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
     				
-					mic.addEventListener(StatusEvent.STATUS,mic_status);
-					rec_ns.attachAudio(mic);
-					model.DataModel.getInstance().audioRec=true;
-					
-					/*Se comprueba si se ha grabado un fichero de video en la pestaña web-cam
-					o si previamente el usuario ha grabado otro fichero de audio.
+					if(!DataModel.getInstance().micCamAllowed){
+						mic.addEventListener(StatusEvent.STATUS,mic_status);
+					}else{
+					/*Se comprueba si se ha grabado un fichero de video en la pestaña web-cam,
+					si previamente el usuario ha grabado otro fichero de audio o un ejercicio.
 					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
-					de un video no seria posible sin las siguientes lineas de codigo*/
-					if (rec || model.DataModel.getInstance().videoRec){
+					de un archivo no seria posible sin las siguientes lineas de codigo*/
+						rec_ns.attachAudio(mic);
+						model.DataModel.getInstance().audioRec=true;
 						noSoundText.visible=true;
-						DataModel.getInstance().recording=true;
-						timerRec.start();
+						DataModel.getInstance().micCamAllowed = true;
+                    	DataModel.getInstance().recording=true;
+                    	timerRec.start();
                     	mic.rate = 44;
-   						inicializarContador();
-   					}					
+   						inicializarContador();     
+					}
+					
 				}catch(err:Error){
 					Alert.show( err.toString() );
 				}
-			}
+			}//recStart()
 			
 			private function playStart():void{
 				if (rec && onMic){//Rec file exists
@@ -96,7 +109,10 @@
 						dispatchEvent(ev);                   	
                         break;
                     case "Microphone.Unmuted": //User allowed access to micro
+                    	rec_ns.attachAudio(mic);
+						model.DataModel.getInstance().audioRec=true;
                     	noSoundText.visible=true;
+						DataModel.getInstance().micCamAllowed = true;
                     	DataModel.getInstance().recording=true;
                     	timerRec.start();
                     	mic.rate = 44;
@@ -163,6 +179,7 @@
 				noSoundText.visible=false;
 				statusText.visible=false;
 				contador.visible=false;
+				barraSonido.visible=false;
 			}
 			
 			private function statusTextFunc(s:String):void{
@@ -171,17 +188,25 @@
 			}
 			
 			private function onMicActivity(e:ActivityEvent):void{
-				/*Solo creamos el fichero flv de sonidos si se lanza el evento: ActivityEvent.ACTIVITY.
+					timerSound=new Timer(20,0);
+					timerSound.addEventListener(TimerEvent.TIMER, soundDetect);
+					timerSound.start();
+			}
+			
+			private function soundDetect(e:TimerEvent):void{
+				/*Solo creamos el fichero flv de sonidos si se lanza el evento: ActivityEvent.ACTIVITY
+				y la señal de sonido es lo suficientemente buena como para distinguirla del ruido.
 				Hay que controlar que solo se crea una vez dicho fichero, y que solo iniciamos una vez
 				el texto statusText. Esta funcion se realiza con la variable booleana onMic (Importante
 				reiniciar su valor si queremos el correcto funcionamiento de grabaciones posteriores).*/
-				if(!onMic){
+				if(!onMic && mic.activityLevel>25){
 					rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationAudio", 'record'); 
 					noSoundText.visible=false;
 					statusTextFunc("Recording");
 					onMic=true;
 				}
 			}
+			
 		]]>
 	</mx:Script>
 			
@@ -206,6 +231,7 @@
 					<mx:Text id="noSoundText" text="     No hay señal" 
 						color="red" fontSize="30" visible="false"/>
 					<mx:UIComponent id="videoHolder" width="100%" height="100%"/>
+					<ns1:barraSonido id="barraSonido" visible="false"/>
 				</mx:VBox>
 				<mx:HBox horizontalAlign="center">
 					<mx:Button id="recButton" label="REC" click="recStart()" horizontalCenter="true"
