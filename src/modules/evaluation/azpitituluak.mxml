@@ -227,10 +227,6 @@
 	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#414141">
 		<mx:Label id="testua" color="#FFFFFF" fontFamily="Arial" fontWeight="bold" fontSize="11" alpha="0.0" textAlign="center"/>
 	</mx:HBox>
-	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
-		<mx:Label text="{resourceManager.getString('myResources', 'AZPITITULUENHIZKUNTZA')}" fontSize="11" color="#414141" fontWeight="bold"/>
-	   	<mx:ComboBox width="100" id="subkonboa" change="aukHizk()"></mx:ComboBox>
-	</mx:HBox>
 </mx:VBox>
 	
 </mx:Canvas>

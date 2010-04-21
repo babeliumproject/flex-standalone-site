@@ -33,9 +33,9 @@ class EvaluationVO{
 	public $responseDuration;
 	public $responseCharacterName;
 	public $responseRatingAmount;
+	public $responseAddingDate;
 	
 	public $userName;
-	public $userId;
       
     public $_explicitType = "EvaluationVO";
 	

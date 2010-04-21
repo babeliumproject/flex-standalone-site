@@ -35,9 +35,9 @@ package vo
 	   public var responseDuration:int;
 	   public var responseCharacterName:String;
 	   public var responseRatingAmount:int;
+	   public var responseAddingDate:String;
 	   
 	   public var userName:String;
-	   public var userId:int;
 
    }
 }

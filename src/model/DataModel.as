@@ -31,6 +31,7 @@ package model
 		[Bindable] public var viewContentViewStackIndex:int;
 		[Bindable] public var viewExerciseViewStackIndex:int;
 		[Bindable] public var viewUploadViewStackIndex:int;
+		[Bindable] public var viewEvaluationViewStackIndex:int;
 		
 		//ViewSize management properties
 		[Bindable] public var viewSizeChanged:Boolean;

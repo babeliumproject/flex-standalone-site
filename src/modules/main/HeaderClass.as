@@ -238,7 +238,7 @@ package modules.main
 
 		private function wrongLogin(upd:Boolean):void
 		{
-			if (loginPop)
+			if (DataModel.getInstance().loginErrorMessage != '')
 			{
 				loginPop.errorInfo.text=DataModel.getInstance().loginErrorMessage;
 				DataModel.getInstance().loginErrorMessage="";

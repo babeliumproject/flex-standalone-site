@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:ns1="modules.evaluation.*"
-		   width="500"
-		   height="300">
+		   height="100%">
 
 	<mx:Metadata>
 	//bideoaren egoera aldaketa bat suertatzen denean altxatzen da
@@ -30,6 +29,8 @@
 			import mx.events.SliderEvent;
 			
 			import org.gif.player.GIFPlayer;
+			
+			import view.TimeFormatter;
 
 			public var vid:Video;
 			private var nc:NetConnection;
@@ -41,8 +42,9 @@
 
 			public var bideoIzena:String=new String;
 			public var bideoId:int=new int;
-			
-			[Bindable] public var myGIFPlayer:GIFPlayer;
+
+			[Bindable]
+			public var myGIFPlayer:GIFPlayer;
 
 
 
@@ -57,19 +59,22 @@
 
 			[Bindable]
 			public var rolTaula:ArrayCollection;
-			
+
 			[Bindable]
 			public var cuetaula:ArrayCollection;
 			public var cuetimetaula:ArrayCollection;
-			
+
 			public var spr:HBox;
+			
+			private var timeFormatter:TimeFormatter = new TimeFormatter();
 
 			public function setup():void
 			{
-				myGIFPlayer = new GIFPlayer();
-				bufferingImage.source = myGIFPlayer;
-				myGIFPlayer.load ( new URLRequest (DataModel.getInstance().uploadDomain+"resources/images/buffering.gif") );
-				
+				timeFormatter.outputMilliseconds = false;
+				myGIFPlayer=new GIFPlayer();
+				bufferingImage.source=myGIFPlayer;
+				myGIFPlayer.load(new URLRequest(DataModel.getInstance().uploadDomain + "resources/images/buffering.gif"));
+
 				nsClient.onMetaData=this.onMetaData;
 				nsClient.onCuePoint=this.onCuePoint;
 
@@ -148,7 +153,7 @@
 					cuetaula.addItem(o);
 					cuetimetaula.addItem(o.time);
 				}
-	 	
+
 				rolTaula=new ArrayCollection();
 
 				for (var i:int=0; i < cuetaula.length; i++)
@@ -219,22 +224,24 @@
 
 					//Data is not being received quickly enough to fill the buffer.
 					case "NetStream.Buffer.Empty":
-						
-						
+
+
 						if (playbackFinished)
 						{
-							egoera.text = "finished";
+							egoera.text="finished";
 							playbackFinished=false;
 							bideoBukaeraTratatu();
-						} else {
+						}
+						else
+						{
 							egoera.text="buffering";
-							bufferingScreen.visible = true;
+							bufferingScreen.visible=true;
 						}
 						break;
 
 					//The buffer is full and the stream will begin playing.
 					case "NetStream.Buffer.Full":
-						bufferingScreen.visible = false;
+						bufferingScreen.visible=false;
 						egoera.text="playing";
 						break;
 
@@ -285,7 +292,7 @@
 				bideobarra.setProgress(ns.time, iraupena);
 				ehunekoa=(100 * ns.time) / iraupena;
 				seek_barra.value=ns.time
-				bideobarra.label=resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + ns.time + " s / " + iraupena.toString() + " s   ( % " + ehunekoa + ")";
+				bideobarra.label=resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + timeFormatter.format(ns.time) + "/" + timeFormatter.format(iraupena);
 
 				//azpitituluen moduluak ns-a zein segundutan doan jakin behar du, azpitituluak kargatzeko algoritmoak funtzionatzeko.
 				//timerrak gertaera jaurtitzen duen bakoitzean (25ms?) azpitituluen moduluari ns.time eguneratuko zaio
@@ -296,11 +303,11 @@
 			private function elementuakHasieratu():void
 			{
 
-				vid.width=this.width / 1.9239
-				vid.height=this.height / 2.820
+				vid.width= 320 * 0.8;
+				vid.height= 240 * 0.8;
 
-				panel.x=(this.width / 4) - (vid.width / 2)
-				panel.y=(this.height / 3) - (vid.height / 2) - (this.height / 12)
+				//panel.x=(this.width / 4) - (vid.width / 2)
+				//panel.y=(this.height / 3) - (vid.height / 2) - (this.height / 12)
 
 				// Resize UIComponent to same size as Video object.
 				uic.width=vid.width;
@@ -361,13 +368,9 @@
 
 						irudia.source="resources/images/fletxa_gorri.png";
 					}
-					else
-					{
-						irudia.source="resources/images/fletxa_beltza.png";
-					}
 
 					irudia.x=panel.x + 10 + ((34 + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
-					irudia.y=panel.y + 390 - 6
+					irudia.y=panel.y + 310 - 6;
 
 					trace("x bideobarra: " + bideobarra.x);
 					trace("y bideobarra: " + bideobarra.y);
@@ -400,7 +403,14 @@
 	<mx:Panel id="panel"
 			  visible="true"
 			  horizontalAlign="center"
-			  verticalAlign="middle">
+			  verticalAlign="middle"
+			  paddingLeft="0"
+			  paddingRight="0"
+			  paddingTop="0"
+			  paddingBottom="0"
+			  headerHeight="0"
+			  borderStyle="solid"
+			  dropShadowEnabled="true">
 		<mx:Label id="egoera"
 				  text="Stopped"/>
 		<mx:HBox x="24"
@@ -437,11 +447,25 @@
 			</mx:HBox>
 
 		</mx:HBox>
-		<mx:Canvas horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<mx:UIComponent id="uic" width="100%" height="100%"/>
-			<mx:HBox backgroundColor="#000000" width="100%" height="100%" backgroundAlpha="0.9" id="bufferingScreen" verticalAlign="middle" horizontalAlign="center" visible="false">
-				<mx:Image id="bufferingImage" width="31" height="31"/>
-				<mx:Text text="Buffering..." color="#FFFFFF" fontWeight="bold"/>
+		<mx:Canvas horizontalScrollPolicy="off"
+				   verticalScrollPolicy="off">
+			<mx:UIComponent id="uic"
+							width="100%"
+							height="100%"/>
+			<mx:HBox backgroundColor="#000000"
+					 width="100%"
+					 height="100%"
+					 backgroundAlpha="0.9"
+					 id="bufferingScreen"
+					 verticalAlign="middle"
+					 horizontalAlign="center"
+					 visible="false">
+				<mx:Image id="bufferingImage"
+						  width="31"
+						  height="31"/>
+				<mx:Text text="Buffering..."
+						 color="#FFFFFF"
+						 fontWeight="bold"/>
 			</mx:HBox>
 		</mx:Canvas>
 		<ns1:azpitituluak2 x="51"

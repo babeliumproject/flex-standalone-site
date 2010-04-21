@@ -34,6 +34,10 @@ package events
 		public static const VIEW_UPLOAD_UNSIGNED:String="viewUploadUnsigned";
 		public static const VIEW_UPLOAD_SIGNED_IN:String="viewUploadSignedIn";
 		
+		//Evaluation related views
+		public static const VIEW_EVALUATION_UNSIGNED:String="viewEvaluationUnsigned";
+		public static const VIEW_EVALUATION_SIGNED_IN:String="viewEvaluationSignedIn";
+		
 		//Index of application's content ViewStack
 		public static const VIEWSTACK_HOME_MODULE_INDEX:int = 0;
 		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:int = 1;

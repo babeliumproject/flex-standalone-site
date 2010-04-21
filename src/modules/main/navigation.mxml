@@ -31,7 +31,8 @@
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
 					   fontFamily="Arial"
 					   fontSize="14"
-					   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
+					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
+					   		!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_EVALUATION_MODULE)"/>

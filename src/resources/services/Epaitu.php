@@ -2,6 +2,7 @@
 
 require_once ('Sub.php');
 require_once ('Epai.php');
+require_once ('EvaluationVO.php');
 require_once ('Datasource.php');
 require_once ('Config.php');
 
@@ -36,6 +37,28 @@ class Epaitu {
 		return $searchResults;
 	}
 	
+	private function _listAssessedToCurrentUserQuery() {
+		$searchResults = array ();
+		$result = $this->conn->_execute ( func_get_args() );
+		
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$temp = new EvaluationVO();
+			$temp->exerciseName = $row[0];
+			$temp->responseFileIdentifier = $row[1];
+			$temp->responseId = $row[2];
+			$temp->exerciseDuration = $row[3];
+			$temp->responseRatingAmount = $row[4];
+			$temp->responseCharacterName = $row[5];
+			$temp->responseAddingDate = $row[6];
+			$temp->exerciseId = $row[7];
+			$temp->evaluationAverage = $row[8];
+			$temp->exerciseThumbnailUri = $row[9];
+			array_push( $searchResults, $temp);
+		}
+		
+		return $searchResults;
+	}
+	
 	private function _listQuery2() {
 
 		$searchResults = array ();
@@ -57,7 +80,7 @@ class Epaitu {
 	
 	private function _epaiketaEmaitzak($sql) {
 		$searchResults = array ();
-		$result = $this->conn->_execute ( $sql );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$temp = new Epai ();
@@ -74,7 +97,7 @@ class Epaitu {
 	
 	public function _grafikoEmaitzak() {
 		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_params() );
+		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$temp = new Epai ();
@@ -168,20 +191,21 @@ class Epaitu {
 	
 	public function norberariEpaitutakoak($key) {
 		
-		$sql = "Select A.name,B.file_identifier,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,B.adding_date, A.id, avg(C.score) AS Batazbestekoa  
+		$sql = "Select A.name,B.file_identifier,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date, A.id, avg(C.score) AS Batazbestekoa, A.thumbnail_uri  
 		 From (exercise As A Inner Join response As B on A.id = B.fk_exercise_id) Inner Join evaluation As C on C.fk_response_id = B.id
 		 Where B.fk_user_id = '%d' Group By A.id";
 
-		$searchResults = $this->_listQuery ( $sql, $key );
+		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $key );
 		
 		return $searchResults;
 	}
 	
 	public function epaitutakoGrabaketa($key) {
 		
-		$sql = "Select C.name,A.score,A.adding_date,A.comment,B.video_identifier
-			From (evaluation AS A Inner Join users AS C ON A.fk_user_id = C.id)Left Outer Join evaluation_video AS B on A.id = B.fk_evaluation_id
-			Where A.fk_response_id = '%d'";
+		$sql = "SELECT C.name, A.score, A.adding_date, A.comment, B.video_identifier 
+			    FROM (evaluation AS A INNER JOIN users AS C ON A.fk_user_id = C.id) 
+			    LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
+				WHERE (A.fk_response_id = '%d') ";
 		
 		$searchResults = $this->_epaiketaEmaitzak ( $sql, $key );
 		

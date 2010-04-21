@@ -4,19 +4,17 @@ package control {
 	import commands.AddCreditEntryExAdvisingCommand;
 	import commands.AddCreditsForExerciseAdvisingCommand;
 	import commands.VideoStopCommand;
-	
 	import commands.autoevaluation.AutoEvaluateCommand;
 	import commands.autoevaluation.CheckAutoevaluationSupportExerciseCommand;
 	import commands.autoevaluation.CheckAutoevaluationSupportResponseCommand;
 	import commands.autoevaluation.EnableAutoevaluationExerciseCommand;
 	import commands.autoevaluation.EnableAutoevaluationResponseCommand;
-	
 	import commands.configuration.ViewConfigurationModuleCommand;
-	
 	import commands.evaluation.AddCreditEntryEvaluatingCommand;
 	import commands.evaluation.AddCreditsForEvaluatingCommand;
 	import commands.evaluation.ViewEvaluationModuleCommand;
-	
+	import commands.evaluation.ViewEvaluationSignedInCommand;
+	import commands.evaluation.ViewEvaluationUnsignedCommand;
 	import commands.exercises.AddCreditEntryEvalRequestCommand;
 	import commands.exercises.ExerciseSelectedCommand;
 	import commands.exercises.GetExerciseLocalesCommand;
@@ -27,7 +25,6 @@ package control {
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
-	
 	import commands.main.GetAppPreferencesCommand;
 	import commands.main.GetExercisesCommand;
 	import commands.main.GetTopTenCreditedCommand;
@@ -36,15 +33,12 @@ package control {
 	import commands.main.ViewPlayerModuleCommand;
 	import commands.main.ViewRankingModuleCommand;
 	import commands.main.WatchExerciseCommand;
-	
 	import commands.search.LaunchSearchCommand;
 	import commands.search.ViewSearchModuleCommand;
-	
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
 	import commands.subtitles.GetExerciseSubtitleLinesCommand;
 	import commands.subtitles.SaveSubtitlesCommand;
-
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
 	import commands.userManagement.GetCurrentDayCreditHistoryCommand;
 	import commands.userManagement.GetLastMonthCreditHistoryCommand;
@@ -56,7 +50,6 @@ package control {
 	import commands.userManagement.SignOutCommand;
 	import commands.userManagement.ViewAccountModuleCommand;
 	import commands.userManagement.ViewRegisterModuleCommand;
-	
 	import commands.videoUpload.AddCreditEntryUploadingCommand;
 	import commands.videoUpload.AddCreditsForUploadingCommand;
 	import commands.videoUpload.AddExerciseCommand;
@@ -80,7 +73,6 @@ package control {
 	import events.ResponseEvent;
 	import events.SearchEvent;
 	import events.SubtitleEvent;
-	import events.SubtitlesEvent;
 	import events.UploadEvent;
 	import events.UserEvent;
 	import events.VideoStopEvent;
@@ -110,6 +102,10 @@ package control {
 			//Upload ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED, ViewUploadUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN, ViewUploadSignedInCommand);
+			
+			//Evaluation ViewStack related commands
+			addCommand(ViewChangeEvent.VIEW_EVALUATION_UNSIGNED, ViewEvaluationUnsignedCommand);
+			addCommand(ViewChangeEvent.VIEW_EVALUATION_SIGNED_IN, ViewEvaluationSignedInCommand);
 
 			//Credit management commands
 			addCommand(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, SubCreditsForEvalRequestCommand);

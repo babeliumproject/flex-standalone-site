@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
-		   xmlns:ns1="modules.evaluation.*"
-		   creationComplete="init()"
-		   xmlns:ns2="modules.autoevaluation.*">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="modules.evaluation.*"
+		 creationComplete="init()"
+		 xmlns:ns2="modules.autoevaluation.*"
+		 paddingBottom="8">
 
-	<mx:Binding source="{DataModel.getInstance().isLoggedIn == true}"
-				destination="onUserAuthenticated"/>
-	<mx:Binding source="{DataModel.getInstance().isLoggedIn == false}"
-				destination="onUserDeauthenticated"/>
-	
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
-				destination="onTabChange"/>
+
 
 	<mx:Script>
 		<![CDATA[
@@ -20,16 +15,21 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.IndexChangedEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ArrayUtil;
 			
+			import view.TimeFormatter;
+			
 			import vo.CreditHistoryVO;
 			import vo.Epai;
+			import vo.EvaluationVO;
 
 
 			private var ep:Epai=new Epai;
+			private var ev:EvaluationVO;
 
 
 			//bideoen izenak
@@ -40,12 +40,12 @@
 			private var selectedExerciseId:int;
 
 			//grabaketaren id-a
-			private static var response_id:String;
+			private static var response_id:int;
 			//private static var erabiltzailea : String;
-			private static var erabiltzaile_id:String;
+			private static var erabiltzaile_id:int;
 
 			//Erabiltzaileak, bere grabaketa egitean aukeratutako pertsonaia
-			private static var aukeratutakoPertsonaia:String="tipo_gaztea";
+			private static var aukeratutakoPertsonaia:String="";
 
 			//jakiteko ea bi bideoak batera erreproduzitzen hari diren edo ez
 			private static var biakBatera:Boolean=false;
@@ -78,12 +78,17 @@
 
 			private var kont:int=new int;
 
+			private var timeFormatter:TimeFormatter=new TimeFormatter();
+
+			private var userLoggedIn:Boolean=false;
+
 
 			private function set onUserAuthenticated(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == true)
 				{
-					erabiltzaile_id=DataModel.getInstance().loggedUser.id.toString();
+					userLoggedIn=true;
+					erabiltzaile_id=DataModel.getInstance().loggedUser.id;
 					epaiketaDat.baloratuGabekoak.send(erabiltzaile_id);
 					epaiketaDat.norberariEpaitutakoak.send(erabiltzaile_id);
 					epaiketaDat.nikEpaitutakoak.send(erabiltzaile_id);
@@ -94,7 +99,7 @@
 			{
 				if (DataModel.getInstance().isLoggedIn == false)
 				{
-
+					userLoggedIn=false;
 					balo.visible=false;
 					epaitutakoDetail.visible=false;
 
@@ -116,33 +121,34 @@
 
 				}
 			}
-			
-			private function set onTabChange(value:Boolean):void{
-				
+
+			private function set onTabChange(value:Boolean):void
+			{
+
 				balo.visible=false;
 				epaitutakoDetail.visible=false;
-				
+
 				grabaketa.seek_denb.visible=false;
 				grabaketa.botoiak.enabled=false;
-				
+
 				bideoa.visible=false;
 				grabaketa.visible=false;
 				hasierakoText.visible=true;
 				botoiak.visible=false;
-				
+
 				oraingoTab="hasiera";
-				
-				baloratuGabekoak.selectedItem = null;
-				bakoitzakEpaitutakoak.selectedItem = null;
-				norberariEpaitutakoak.selectedItem= null;
-				
+
+				baloratuGabekoak.selectedItem=null;
+				bakoitzakEpaitutakoak.selectedItem=null;
+				norberariEpaitutakoak.selectedItem=null;
+
 			}
 
 
 			//Orria kargatzean egin beharrekoa
 			public function init():void
 			{
-
+				timeFormatter.outputMilliseconds=false;
 				//bukatu arte ez dira visible eta enabled jarriko
 				grabaketa.seek_denb.visible=false;
 				grabaketa.botoiak.enabled=false;
@@ -152,7 +158,7 @@
 
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					erabiltzaile_id=DataModel.getInstance().loggedUser.id.toString();
+					erabiltzaile_id=DataModel.getInstance().loggedUser.id;
 					epaiketaDat.baloratuGabekoak.send(erabiltzaile_id);
 					epaiketaDat.norberariEpaitutakoak.send(erabiltzaile_id);
 					epaiketaDat.nikEpaitutakoak.send(erabiltzaile_id);
@@ -217,16 +223,16 @@
 
 			private function evaluationAddedHandler(event:ResultEvent):void
 			{
-				var creditHistory:CreditHistoryVO = new CreditHistoryVO();
-				creditHistory.videoExerciseId = selectedExerciseId;
-				creditHistory.videoResponseId = int(response_id);
-				DataModel.getInstance().historicData = creditHistory;
+				var creditHistory:CreditHistoryVO=new CreditHistoryVO();
+				creditHistory.videoExerciseId=selectedExerciseId;
+				creditHistory.videoResponseId=int(response_id);
+				DataModel.getInstance().historicData=creditHistory;
 				new CreditEvent(CreditEvent.ADD_CREDITS_FOR_EVALUATING, DataModel.getInstance().loggedUser.id).dispatch();
-				
+
 				//Data inserted on evaluation successfully.
 				epaiketaDat.updateGrabaketa.send(response_id);
-				
-				
+
+
 				balo.setVisible(false);
 			}
 
@@ -338,7 +344,10 @@
 
 			private function resultHandlerNiriEpaituta(event:ResultEvent):void
 			{
-				dpDetail=new ArrayCollection(ArrayUtil.toArray(event.result));
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (epaitutakoDetailDat)
+					epaitutakoDetailDat.rowCount=result.length;
+				dpDetail=result;
 			}
 
 			private function resultHandler(event:ResultEvent):void
@@ -348,22 +357,34 @@
 
 			private function baloratuGabekoakLortu(event:ResultEvent):void
 			{
-				dp=new ArrayCollection(ArrayUtil.toArray(event.result));
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (baloratuGabekoak)
+					baloratuGabekoak.rowCount=result.length;
+				dp=result;
 			}
 
 			private function baloratuGabekoakLortuLoginGabe(event:ResultEvent):void
 			{
-				dp=new ArrayCollection(ArrayUtil.toArray(event.result));
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (baloratuGabekoak)
+					baloratuGabekoak.rowCount=result.length;
+				dp=result;
 			}
 
 			private function norberariEpaitutakoakLortu(event:ResultEvent):void
 			{
-				dp2=new ArrayCollection(ArrayUtil.toArray(event.result));
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (norberariEpaitutakoak)
+					norberariEpaitutakoak.rowCount=result.length;
+				dp2=result;
 			}
 
 			private function nikEpaitutakoakLortu(event:ResultEvent):void
 			{
-				dp4=new ArrayCollection(ArrayUtil.toArray(event.result));
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (bakoitzakEpaitutakoak)
+					bakoitzakEpaitutakoak.rowCount=result.length;
+				dp4=result;
 			}
 
 			//Datagrid-aren balioak aldatzean egin beharrekoa
@@ -373,7 +394,8 @@
 				if (oraingoTab != "epaituGabe")
 				{
 					frogatu("epaituGabe");
-					tn2.visible=false;
+					if (tn2)
+						tn2.visible=false;
 					grabaketa.botoiak.enabled=false;
 					if (niriEp)
 						norberariEpaitutakoak.selectedItem=null;
@@ -387,7 +409,7 @@
 					balo.visible=true;
 				}
 				ep=Epai(DataGrid(event.target).selectedItem);
-				selectedExerciseId = ep.exerciseId;
+				selectedExerciseId=ep.exerciseId;
 				bideoa.setBideoIzena(ep.Kodea, ep.exerciseId);
 				//bideoa.stopVid();
 				bideoa.ezabatuFletxak();
@@ -412,7 +434,7 @@
 
 				jatorrizkoBideoa=ep.Kodea;
 				grabaketaBideoa=ep.Id;
-				response_id=ep.response_id;
+				response_id=parseInt(ep.response_id);
 
 			}
 
@@ -440,37 +462,38 @@
 				}
 
 				//trace("Justo antes de cascar, supongo");
-				ep=Epai(DataGrid(event.target).selectedItem);
-				trace("change handler - ep.Id --> " + ep.Id.toString());
-				trace("change handler - ep.Kodea --> " + ep.Kodea.toString());
+				//ep=Epai(DataGrid(event.target).selectedItem);
+				ev=EvaluationVO(DataGrid(event.target).selectedItem);
+				//trace("change handler - ep.Id --> " + ep.Id.toString());
+				//trace("change handler - ep.Kodea --> " + ep.Kodea.toString());
 
-				bideoa.setBideoIzena(ep.Kodea, 1);
+				bideoa.setBideoIzena(ev.exerciseName, 1);
 				//bideoa.stopVid();
 				bideoa.ezabatuFletxak();
-				bideoa.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				bideoa.setRolAukeratua(ev.responseCharacterName);
 
-				grabaketa.setBideoIzena(ep.Id, 1);
+				grabaketa.setBideoIzena(ev.responseFileIdentifier, 1);
 				//grabaketa.stopVid();
 				grabaketa.ezabatuFletxak();
-				grabaketa.setRolAukeratua(ep.AukeratutakoPertsonaia);
-				batazb.text=resourceManager.getString('myResources', 'AVG') + ": " + ep.Batazbestekoa;
+				grabaketa.setRolAukeratua(ev.responseCharacterName);
+				batazb.text=resourceManager.getString('myResources', 'AVG') + ": " + ev.evaluationAverage;
 
-				aukeratutakoPertsonaia=ep.AukeratutakoPertsonaia;
+				aukeratutakoPertsonaia=ev.responseCharacterName;
 
 				bideoaGehituBot.visible=true;
 				izenb.visible=false;
 				txek.visible=false;
 
 
-				jatorrizkoBideoa=ep.Kodea;
-				grabaketaBideoa=ep.Id;
+				jatorrizkoBideoa=ev.exerciseName;
+				grabaketaBideoa=ev.responseFileIdentifier;
 
-				response_id=ep.response_id;
+				response_id=ev.responseId;
 
 				epaiketaDat.epaitutakoGrabaketa.send(response_id);
 
 				//Get the autoevaluation info if available
-				autoevalPanel.setResponseID(parseInt(response_id));
+				autoevalPanel.setResponseID(response_id);
 			}
 
 			//ea hasierako egoeran dagoen kontrolatzen du
@@ -579,11 +602,38 @@
 				else
 					DataModel.getInstance().autoevaluationAvailable=true;
 			}
+
+			private function durationLabelFunction(item:Object):String
+			{
+				return timeFormatter.format(item.Iraupena);
+			}
+
+			private function refreshTab(event:IndexChangedEvent):void
+			{
+				switch (event.newIndex)
+				{
+					case 0:
+						baloratuGabekoak.rowCount=dp.length;
+						break;
+					case 1:
+						norberariEpaitutakoak.rowCount=dp2.length;
+						break;
+					case 2:
+						bakoitzakEpaitutakoak.rowCount=dp4.length;
+						break;
+				}
+			}
 		]]>
 	</mx:Script>
 
 	<mx:Binding source="{DataModel.getInstance().autoevaluationAvailable}"
 				destination="this.showAutoevalTab"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == true}"
+				destination="onUserAuthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == false}"
+				destination="onUserDeauthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
 
 
 	<!-- AMFPhp -->
@@ -612,143 +662,78 @@
 				   result="resultHandler(event)"/>
 	</mx:RemoteObject>
 
-	<!-- Bideo objektuak -->
-	<ns1:nireBideoa id="bideoa"
-					myCustomEvent="onMyCustomEvent(event);"
-					botoiaSakatuta="botoiaSakatuDu(event)"
-					cuePoint="onAddCuepoint( event );"
-					x="0"
-					y="0"
-					height="600"
-					visible="false">
-	</ns1:nireBideoa>
-	<ns1:nireBideoa id="grabaketa"
-					bukatuDa="grabaketaAmaituta(event)"
-					x="300"
-					y="0"
-					height="600"
-					visible="false">
-	</ns1:nireBideoa>
 
+	<mx:VBox id="videoPlayersBox"
+			 horizontalAlign="center"
+			 height="100%"
+			 width="100%">
+		<mx:Label id="hasierakoText"
+				  text="{resourceManager.getString('myResources', 'AUKERATUBIDEOA')}"/>
 
-	<mx:Label id="hasierakoText"
-			  text="{resourceManager.getString('myResources', 'AUKERATUBIDEOA')}"
-			  y="100"
-			  x="200"/>
+		<!-- Bi bideoak batera erreproduzitzeko beharrezko botoiak -->
+		<mx:HBox id="botoiak"
+				 dropShadowEnabled="true"
+				 borderStyle="solid"
+				 cornerRadius="5"
+				 visible="false">
+			<mx:Label text="{resourceManager.getString('myResources', 'BIAKBATERAIKUSI')}"/>
+			<mx:LinkButton label="Play"
+						   click="playBatera();"/>
+			<mx:LinkButton label="Pause"
+						   click="pauseBatera();"/>
+			<mx:LinkButton label="Stop"
+						   click="stopBatera()"/>
+		</mx:HBox>
+		<mx:HBox height="100%">
+			<!-- Bideo objektuak -->
+			<ns1:nireBideoa id="bideoa"
+							height="100%"
+							width="100%"
+							myCustomEvent="onMyCustomEvent(event);"
+							botoiaSakatuta="botoiaSakatuDu(event)"
+							cuePoint="onAddCuepoint( event );"
+							visible="false">
+			</ns1:nireBideoa>
+			<ns1:nireBideoa id="grabaketa"
+							height="100%"
+							width="100%"
+							bukatuDa="grabaketaAmaituta(event)"
+							visible="false">
+			</ns1:nireBideoa>
+		</mx:HBox>
+	</mx:VBox>
 
-
-	<!-- Epaitu gabeko bideoak baloratzeko kaxa -->
-	<mx:Canvas id="balo"
-			   backgroundColor="#000000"
-			   backgroundAlpha="0.13"
-			   x="600"
-			   y="258"
-			   width="301"
-			   height="263"
-			   visible="false">
-		<mx:RadioButtonGroup id="balorazioa"/>
-		<mx:Form>
-			<mx:HBox>
-				<mx:FormItem>
-					<mx:RadioButton id="bat"
-									group="{balorazioa}"
-									label="1"/>
-				</mx:FormItem>
-				<mx:FormItem>
-					<mx:RadioButton id="bi"
-									group="{balorazioa}"
-									label="2"/>
-				</mx:FormItem>
-				<mx:FormItem>
-					<mx:RadioButton id="hiru"
-									group="{balorazioa}"
-									label="3"/>
-				</mx:FormItem>
-				<mx:FormItem>
-					<mx:RadioButton id="lau"
-									group="{balorazioa}"
-									label="4"/>
-				</mx:FormItem>
-				<mx:FormItem>
-					<mx:RadioButton id="bost"
-									group="{balorazioa}"
-									label="5"/>
-				</mx:FormItem>
-			</mx:HBox>
-			<mx:FormItem>
-				<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
-						   click="bideoaGehitu()"
-						   id="bideoaGehituBot"/>
-				<mx:Label id="izenb"
-						  text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}"
-						  visible="false"/>
-				<mx:CheckBox id="txek"
-							 visible="false"/>
-			</mx:FormItem>
-			<mx:FormItem>
-				<mx:TextArea x="99"
-							 y="20"
-							 width="192"
-							 height="82"
-							 id="iruzkinak"/>
-			</mx:FormItem>
-
-			<mx:FormItem direction="horizontal">
-				<mx:Button label="{resourceManager.getString('myResources', 'BIDALI')}"
-						   click="check()"
-						   id="bidali"
-						   enabled="false"/>
-				<mx:Button label="{resourceManager.getString('myResources', 'RESET')}"
-						   click="reset()"/>
-			</mx:FormItem>
-		</mx:Form>
-	</mx:Canvas>
-
-
-	<!-- Bi bideoak batera erreproduzitzeko beharrezko botoiak -->
-	<mx:HBox id="botoiak"
-			 dropShadowEnabled="true"
-			 borderStyle="solid"
-			 cornerRadius="5"
-			 x="180"
-			 y="0"
-			 visible="false">
-		<mx:Label text="{resourceManager.getString('myResources', 'BIAKBATERAIKUSI')}"/>
-		<mx:LinkButton label="Play"
-					   click="playBatera();"/>
-		<mx:LinkButton label="Pause"
-					   click="pauseBatera();"/>
-		<mx:LinkButton label="Stop"
-					   click="stopBatera()"/>
-	</mx:HBox>
 
 
 	<!-- Bideoa aukeratzeko panela, hiru "Tab" ezberdinetan banatuta -->
 	<mx:TabNavigator id="tn"
-					 x="600"
-					 y="0"
-					 width="450"
-					 height="250">
+					 width="100%"
+					 height="100%"
+					 paddingLeft="4"
+					 paddingRight="4"
+					 paddingBottom="4"
+					 change="refreshTab(event)">
 
 		<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
 		<mx:VBox label="{resourceManager.getString('myResources', 'EPAITUGABEDAUDENAK')}"
-				 id="epaituGabe">
-			<mx:DataGrid width="420"
-						 height="200"
-						 id="baloratuGabekoak"
+				 id="epaituGabe"
+				 horizontalAlign="center">
+			<mx:DataGrid id="baloratuGabekoak"
 						 dataProvider="{dp}"
+						 width="100%"
+						 horizontalScrollPolicy="off"
+						 verticalAlign="middle"
 						 change="changeHandler(event)">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
 									   dataField="Kodea"
-									   width="160">
+									   width="{120*0.8}">
 						<mx:itemRenderer>
 							<mx:Component>
 								<mx:VBox>
 									<mx:Image id="albumImage"
-											  toolTip="{data.Kodea}.jpg"
-											  height="100"
-											  width="100"
+											  height="{90*0.8}"
+											  width="{120*0.8}"
 											  source="resources/images/thumbs/{data.Kodea}.jpg"/>
 								</mx:VBox>
 							</mx:Component>
@@ -773,6 +758,68 @@
 									   dataField="Data"/>
 				</mx:columns>
 			</mx:DataGrid>
+
+			<!-- Epaitu gabeko bideoak baloratzeko kaxa -->
+			<mx:HBox paddingLeft="10"
+					 paddingRight="10"
+					 paddingBottom="10"
+					 paddingTop="10"
+					 width="100%">
+				<mx:VBox id="balo"
+						 width="100%"
+						 backgroundColor="#000000"
+						 backgroundAlpha="0.13"
+						 horizontalAlign="center"
+						 verticalAlign="middle"
+						 paddingRight="4"
+						 paddingLeft="4"
+						 paddingTop="4"
+						 paddingBottom="4"
+						 visible="false"
+						 borderStyle="solid">
+					<mx:RadioButtonGroup id="balorazioa"/>
+					<mx:Label text="Rate the user's response" fontWeight="bold"/>
+					<mx:HRule width="100%"/>	
+					<mx:HBox>
+						<mx:RadioButton id="bat"
+										group="{balorazioa}"
+										label="1"/>
+						<mx:RadioButton id="bi"
+										group="{balorazioa}"
+										label="2"/>
+						<mx:RadioButton id="hiru"
+										group="{balorazioa}"
+										label="3"/>
+						<mx:RadioButton id="lau"
+										group="{balorazioa}"
+										label="4"/>
+						<mx:RadioButton id="bost"
+										group="{balorazioa}"
+										label="5"/>
+					</mx:HBox>
+
+					<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
+							   click="bideoaGehitu()"
+							   id="bideoaGehituBot"/>
+					<mx:Label id="izenb"
+							  text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}"
+							  visible="false"/>
+					<mx:CheckBox id="txek"
+								 visible="false"/>
+
+					<mx:TextArea width="100%"
+								 height="82"
+								 id="iruzkinak"/>
+					<mx:HBox>
+						<mx:Button label="{resourceManager.getString('myResources', 'BIDALI')}"
+								   click="check()"
+								   id="bidali"
+								   enabled="false"/>
+						<mx:Button label="{resourceManager.getString('myResources', 'RESET')}"
+								   click="reset()"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
 		</mx:VBox>
 
 
@@ -780,63 +827,115 @@
 
 		<!-- Niri epaitutako bideoen zerrenda erakusten du -->
 		<mx:VBox label="{resourceManager.getString('myResources', 'NIRIPAITUTAKOAK')}">
-			<mx:DataGrid width="420"
-						 height="200"
+			<mx:DataGrid width="100%"
 						 id="norberariEpaitutakoak"
 						 dataProvider="{dp2}"
 						 change="changeHandlerNiriEpaituak(event)">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-									   dataField="Kodea"
-									   width="160">
+									   dataField="exerciseThumbnailUri"
+									   width="{120*0.8}">
 						<mx:itemRenderer>
 							<mx:Component>
 								<mx:VBox>
 									<mx:Image id="albumImageNorb"
-											  height="100"
-											  width="100"
-											  source="resources/images/thumbs/{data.Kodea}.jpg"/>
+											  height="{90*0.8}"
+											  width="{120*0.8}"
+											  source="resources/images/thumbs/{data.exerciseThumbnailUri}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
-									   dataField="Id"/>
-					<mx:DataGridColumn headerText="Response id"
-									   dataField="response_id"
-									   visible="false"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-									   dataField="Iraupena"/>
+									   dataField="exerciseDuration"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-									   dataField="Baloraturik"/>
+									   dataField="responseRatingAmount"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'AVG')}"
-									   dataField="Batazbestekoa"/>
+									   dataField="evaluationAverage"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-									   dataField="AukeratutakoPertsonaia"
-									   visible="true"/>
+									   dataField="responseCharacterName"/>
 				</mx:columns>
 			</mx:DataGrid>
+
+			<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
+			<mx:TabNavigator id="tn2"
+							 visible="false"
+							 creationPolicy="all"
+							 width="100%"
+							 height="100%"
+							 paddingLeft="4"
+							 paddingRight="4"
+							 paddingTop="4"
+							 paddingBottom="4">
+				<mx:VBox cornerRadius="5"
+						 borderStyle="solid"
+						 id="epaitutakoDetail"
+						 dropShadowEnabled="true"
+						 label="Human Evaluation">
+					<mx:HBox>
+						<mx:Label id="batazb"/>
+						<mx:Button id="grafikoakIkusi"
+								   label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
+								   click="grafikoaIkusi()"/>
+						<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
+					</mx:HBox>
+
+					<mx:DataGrid id="epaitutakoDetailDat"
+								 dataProvider="{dpDetail}"
+								 change="bideoIruzkina(event)">
+						<mx:columns>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
+											   dataField="Epailea"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
+											   dataField="Balorazioa"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+											   dataField="Data"/>
+							<!-- <mx:DataGridColumn headerText="Iruzkinak" dataField="Iruzkinak"/> -->
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
+											   dataField="Iruzkinak"
+											   width="160">
+								<mx:itemRenderer>
+									<mx:Component>
+										<mx:VBox>
+											<mx:TextArea id="textua"
+														 backgroundColor="#ffffff"
+														 height="100"
+														 text="{data.Iruzkinak}"
+														 editable="false"
+														 width="160"/>
+										</mx:VBox>
+									</mx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+											   dataField="BideoIruzkina"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+				<ns2:AutoevaluationPanel id="autoevalPanel">
+				</ns2:AutoevaluationPanel>
+			</mx:TabNavigator>
+
 		</mx:VBox>
 
 
 		<!-- Nik epaitu ditudan bideoen zerrenda erakusten du -->
 		<mx:VBox label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}"
 				 id="nikEpaitutakoak">
-			<mx:DataGrid width="420"
-						 height="200"
+			<mx:DataGrid width="100%"
 						 id="bakoitzakEpaitutakoak"
 						 dataProvider="{dp4}"
 						 change="changeHandlerNikEpaituak(event)">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
 									   dataField="Kodea"
-									   width="160">
+									   width="{120*0.8}">
 						<mx:itemRenderer>
 							<mx:Component>
 								<mx:VBox>
 									<mx:Image id="albumImageNorb"
-											  height="100"
-											  width="100"
+											  height="{90*0.8}"
+											  width="{120*0.8}"
 											  source="resources/images/thumbs/{data.Kodea}.jpg"/>
 								</mx:VBox>
 							</mx:Component>
@@ -860,67 +959,4 @@
 	</mx:TabNavigator>
 
 
-
-	<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
-	<mx:TabNavigator id="tn2"
-					 x="600"
-					 y="250"
-					 width="450"
-					 height="250"
-					 visible="false"
-					 creationPolicy="all">
-		<mx:VBox cornerRadius="5"
-				 borderStyle="solid"
-				 id="epaitutakoDetail"
-				 dropShadowEnabled="true"
-				 label="Human Evaluation">
-			<mx:HBox>
-				<mx:Label id="batazb"
-						  x="870"
-						  y="400"/>
-				<mx:Button id="grafikoakIkusi"
-						   label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
-						   click="grafikoaIkusi()"/>
-				<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
-			</mx:HBox>
-
-			<mx:DataGrid width="440"
-						 height="200"
-						 x="770"
-						 y="420"
-						 id="epaitutakoDetailDat"
-						 dataProvider="{dpDetail}"
-						 change="bideoIruzkina(event)">
-				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
-									   dataField="Epailea"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-									   dataField="Balorazioa"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-									   dataField="Data"/>
-					<!-- <mx:DataGridColumn headerText="Iruzkinak" dataField="Iruzkinak"/> -->
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
-									   dataField="Iruzkinak"
-									   width="160">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox>
-									<mx:TextArea id="textua"
-												 backgroundColor="#ffffff"
-												 height="100"
-												 text="{data.Iruzkinak}"
-												 editable="false"
-												 width="160"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
-									   dataField="BideoIruzkina"/>
-				</mx:columns>
-			</mx:DataGrid>
-		</mx:VBox>
-		<ns2:AutoevaluationPanel id="autoevalPanel">
-		</ns2:AutoevaluationPanel>
-	</mx:TabNavigator>
-</mx:Canvas>
+</mx:HBox>

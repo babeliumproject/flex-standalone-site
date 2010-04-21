@@ -476,6 +476,9 @@
 				
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+				
+				exerciseList.exerciseListDatagrid.selectedItem = null;
+				
 			}
 			
 			
@@ -673,7 +676,7 @@
 			<!-- Video List -->
 			<mx:Panel width="100%"
 					  verticalAlign="top">
-				<ns1:VideoList width="100%" />
+				<ns1:VideoList width="100%" id="exerciseList"/>
 			</mx:Panel>
 		</mx:Panel>
 	

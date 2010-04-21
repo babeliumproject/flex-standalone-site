@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:main="modules.main.*"
+		 xmlns:evaluation="modules.evaluation.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			private function set onUserAuthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_SIGNED_IN).dispatch();
+			}
+			
+			private function set onUserDeauthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == false)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_UNSIGNED).dispatch();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="evaluationViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().viewEvaluationViewStackIndex }">
+		
+		<main:UnauthorizedNotice id="unauthorizedUser" />
+		
+		<evaluation:Epaiketa id="evaluationMain" />
+		
+	</mx:ViewStack>
+	
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == true}"
+				destination="onUserAuthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == false}"
+				destination="onUserDeauthenticated"/>
+	
+</mx:HBox>
