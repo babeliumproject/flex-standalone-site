@@ -55,18 +55,8 @@
 					mic=Microphone.getMicrophone();
 					if (!DataModel.getInstance().micCamAllowed){
 						/*Esta instruccion provoca mucho ruido en la grabacion. Sin embargo, si accedemos a esta
-						pestaña antes grabar cualquier otro archivo, es imprescindible su uso. A partir de la primera
-						grabacion podemos evitar tener que usarla (motivo del if micCamAllowed)*/
+						pestaña antes grabar cualquier otro archivo, es imprescindible su uso*/
 						mic.setLoopBack(true);}
-					mic.setUseEchoSuppression(true);
-					mic.gain=40; 
-					barraSonido.visible=true;
-					barraSonido.giveMicrophone(mic);
-					
-					//Gestion de la deteccion de sonidos
-					onMic=false;
-					mic.setSilenceLevel(20,1000);
-    				mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
     				
 					if(!DataModel.getInstance().micCamAllowed){
 						mic.addEventListener(StatusEvent.STATUS,mic_status);
@@ -76,6 +66,14 @@
 					si previamente el usuario ha grabado otro fichero de audio o un ejercicio.
 					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
 					de un archivo no seria posible sin las siguientes lineas de codigo*/
+						//Gestion de la deteccion de sonidos
+						onMic=false;
+						mic.setUseEchoSuppression(true);
+						mic.gain=40; 
+						barraSonido.visible=true;
+						barraSonido.giveMicrophone(mic);
+						mic.setSilenceLevel(20,1000);
+						mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
 						rec_ns.attachAudio(mic);
 						model.DataModel.getInstance().audioRec=true;
 						noSoundText.visible=true;
@@ -128,6 +126,14 @@
 						barraSonido.visible=false;
                         break;
                     case "Microphone.Unmuted": //User allowed access to micro
+						//Gestion de la deteccion de sonidos
+						onMic=false;
+						mic.setUseEchoSuppression(true);
+						mic.gain=40; 
+						barraSonido.visible=true;
+						barraSonido.giveMicrophone(mic);
+						mic.setSilenceLevel(20,1000);
+						mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
                     	rec_ns.attachAudio(mic);
 						model.DataModel.getInstance().audioRec=true;
                     	noSoundText.visible=true;
