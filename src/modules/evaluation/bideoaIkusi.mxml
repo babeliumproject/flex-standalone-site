@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
-    title="View Comment" width="400" height="580" layout="absolute" 
-    xmlns:ns1="modules.evaluation.*" creationComplete="init()">
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				title="View Comment"
+				width="400"
+				height="580"
+				layout="horizontal"
+				xmlns:ns1="modules.evaluation.*"
+				horizontalAlign="center"
+				creationComplete="init()">
 	
 		<mx:Script>
         <![CDATA[
@@ -28,7 +33,7 @@
 
 		]]>
 	</mx:Script>
-	<mx:VBox>
+	<mx:VBox horizontalAlign="center" verticalAlign="middle">
 		<ns1:nireBideoa id="bideoBat" height="500" width="300">
 		</ns1:nireBideoa>
 		 <mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}" click="PopUpManager.removePopUp(this);"/>

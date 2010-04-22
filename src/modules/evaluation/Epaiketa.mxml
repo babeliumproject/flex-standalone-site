@@ -10,9 +10,9 @@
 	<mx:Script>
 		<![CDATA[
 			import events.*;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.IndexChangedEvent;
@@ -20,9 +20,9 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ArrayUtil;
-			
+
 			import view.TimeFormatter;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.Epai;
 			import vo.EvaluationVO;
@@ -66,13 +66,13 @@
 
 
 			[Bindable]
-			private var dpDetail:ArrayCollection;
+			private var assessedToCurrentUserDetail:ArrayCollection;
 			[Bindable]
-			private var dp:ArrayCollection;
+			private var waitingForAssessmentList:ArrayCollection;
 			[Bindable]
-			private var dp2:ArrayCollection;
+			private var assessedToCurrentUserList:ArrayCollection;
 			[Bindable]
-			private var dp4:ArrayCollection;
+			private var assessedByCurrentUserList:ArrayCollection;
 
 
 
@@ -113,11 +113,15 @@
 
 					oraingoTab="hasiera";
 
-					epaiketaDat.baloratuGabekoakLoginGabe();
+					//epaiketaDat.baloratuGabekoakLoginGabe();
 
 					//erabiltzaile bat badakiguna ez dela existituko
-					epaiketaDat.norberariEpaitutakoak.send("zz");
-					epaiketaDat.nikEpaitutakoak.send("zz");
+					//epaiketaDat.norberariEpaitutakoak.send("zz");
+					//epaiketaDat.nikEpaitutakoak.send("zz");
+
+					assessedToCurrentUserDetail=new ArrayCollection();
+					tn2.visible=false;
+					tn.selectedIndex=0;
 
 				}
 			}
@@ -165,7 +169,7 @@
 				}
 				else
 				{
-					epaiketaDat.baloratuGabekoakLoginGabe.send();
+					//epaiketaDat.baloratuGabekoakLoginGabe.send();
 				}
 
 				bideoa.setup();
@@ -347,7 +351,7 @@
 				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
 				if (epaitutakoDetailDat)
 					epaitutakoDetailDat.rowCount=result.length;
-				dpDetail=result;
+				assessedToCurrentUserDetail=result;
 			}
 
 			private function resultHandler(event:ResultEvent):void
@@ -360,7 +364,7 @@
 				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
 				if (baloratuGabekoak)
 					baloratuGabekoak.rowCount=result.length;
-				dp=result;
+				waitingForAssessmentList=result;
 			}
 
 			private function baloratuGabekoakLortuLoginGabe(event:ResultEvent):void
@@ -368,7 +372,7 @@
 				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
 				if (baloratuGabekoak)
 					baloratuGabekoak.rowCount=result.length;
-				dp=result;
+				waitingForAssessmentList=result;
 			}
 
 			private function norberariEpaitutakoakLortu(event:ResultEvent):void
@@ -376,7 +380,7 @@
 				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
 				if (norberariEpaitutakoak)
 					norberariEpaitutakoak.rowCount=result.length;
-				dp2=result;
+				assessedToCurrentUserList=result;
 			}
 
 			private function nikEpaitutakoakLortu(event:ResultEvent):void
@@ -384,7 +388,7 @@
 				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
 				if (bakoitzakEpaitutakoak)
 					bakoitzakEpaitutakoak.rowCount=result.length;
-				dp4=result;
+				assessedByCurrentUserList=result;
 			}
 
 			//Datagrid-aren balioak aldatzean egin beharrekoa
@@ -577,15 +581,19 @@
 
 			private function bideoIruzkina(event:Event):void
 			{
-				ep=Epai(DataGrid(event.target).selectedItem);
-				if (ep.BideoIruzkina.toString() != "")
+				if (ep.BideoIruzkina)
 				{
-					//Alert.show(ep.BideoIruzkina.toString());
-					var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
-					PopUpManager.centerPopUp(bideoIruzkin);
-					epaitutakoDetailDat.selectedItem=null;
+					ep=Epai(DataGrid(event.target).selectedItem);
 
-					bideoIruzkin.setBideoIzena(ep.BideoIruzkina.toString());
+					if (ep.BideoIruzkina.toString() != "")
+					{
+						//Alert.show(ep.BideoIruzkina.toString());
+						var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
+						PopUpManager.centerPopUp(bideoIruzkin);
+						epaitutakoDetailDat.selectedItem=null;
+
+						bideoIruzkin.setBideoIzena(ep.BideoIruzkina.toString());
+					}
 				}
 			}
 
@@ -613,13 +621,13 @@
 				switch (event.newIndex)
 				{
 					case 0:
-						baloratuGabekoak.rowCount=dp.length;
+						baloratuGabekoak.rowCount=waitingForAssessmentList.length;
 						break;
 					case 1:
-						norberariEpaitutakoak.rowCount=dp2.length;
+						norberariEpaitutakoak.rowCount=assessedToCurrentUserList.length;
 						break;
 					case 2:
-						bakoitzakEpaitutakoak.rowCount=dp4.length;
+						bakoitzakEpaitutakoak.rowCount=assessedByCurrentUserList.length;
 						break;
 				}
 			}
@@ -719,7 +727,7 @@
 				 id="epaituGabe"
 				 horizontalAlign="center">
 			<mx:DataGrid id="baloratuGabekoak"
-						 dataProvider="{dp}"
+						 dataProvider="{waitingForAssessmentList}"
 						 width="100%"
 						 horizontalScrollPolicy="off"
 						 verticalAlign="middle"
@@ -778,8 +786,9 @@
 						 visible="false"
 						 borderStyle="solid">
 					<mx:RadioButtonGroup id="balorazioa"/>
-					<mx:Label text="Rate the user's response" fontWeight="bold"/>
-					<mx:HRule width="100%"/>	
+					<mx:Label text="Rate the user's response"
+							  fontWeight="bold"/>
+					<mx:HRule width="100%"/>
 					<mx:HBox>
 						<mx:RadioButton id="bat"
 										group="{balorazioa}"
@@ -829,7 +838,7 @@
 		<mx:VBox label="{resourceManager.getString('myResources', 'NIRIPAITUTAKOAK')}">
 			<mx:DataGrid width="100%"
 						 id="norberariEpaitutakoak"
-						 dataProvider="{dp2}"
+						 dataProvider="{assessedToCurrentUserList}"
 						 change="changeHandlerNiriEpaituak(event)">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
@@ -856,21 +865,18 @@
 									   dataField="responseCharacterName"/>
 				</mx:columns>
 			</mx:DataGrid>
-
+			<mx:Spacer height="30"/>
 			<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
 			<mx:TabNavigator id="tn2"
 							 visible="false"
 							 creationPolicy="all"
 							 width="100%"
 							 height="100%"
-							 paddingLeft="4"
-							 paddingRight="4"
-							 paddingTop="4"
-							 paddingBottom="4">
-				<mx:VBox cornerRadius="5"
-						 borderStyle="solid"
-						 id="epaitutakoDetail"
-						 dropShadowEnabled="true"
+							 paddingLeft="8"
+							 paddingRight="8"
+							 paddingTop="8"
+							 paddingBottom="8">
+				<mx:VBox id="epaitutakoDetail"
 						 label="Human Evaluation">
 					<mx:HBox>
 						<mx:Label id="batazb"/>
@@ -881,8 +887,9 @@
 					</mx:HBox>
 
 					<mx:DataGrid id="epaitutakoDetailDat"
-								 dataProvider="{dpDetail}"
-								 change="bideoIruzkina(event)">
+								 dataProvider="{assessedToCurrentUserDetail}"
+								 change="bideoIruzkina(event)"
+								 width="100%">
 						<mx:columns>
 							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
 											   dataField="Epailea"/>
@@ -924,7 +931,7 @@
 				 id="nikEpaitutakoak">
 			<mx:DataGrid width="100%"
 						 id="bakoitzakEpaitutakoak"
-						 dataProvider="{dp4}"
+						 dataProvider="{assessedByCurrentUserList}"
 						 change="changeHandlerNikEpaituak(event)">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
