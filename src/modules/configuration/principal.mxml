@@ -8,20 +8,34 @@
 	<mx:Script>
 		<![CDATA[
 		
-		import model.DataModel;		
-		import mx.events.IndexChangedEvent;		
-		import modules.configuration.ConfigurationResultEvent;
 		import flash.utils.Timer;
+		
+		import model.DataModel;
+		
+		import modules.configuration.ConfigurationResultEvent;
+		import modules.configuration.ShowStatusMessage;
+		
+		import mx.events.IndexChangedEvent;
 			
-			public var timer:Timer;
-			public var timerIndex:Number;
+			//Result panel´s Timers
+			public var timerMic:Timer;
+			public var timerCam:Timer;
+			public var timerBW:Timer;
+			
+			private var permissionStatus:Boolean=false;
 			
 			private function init():void{ 
 				configurationMenu.addEventListener(IndexChangedEvent.CHANGE,childChange);
-				timer = new Timer(500,0);
-				timer.addEventListener(TimerEvent.TIMER, onTimer);
+				timerMic = new Timer(500,0);
+				timerCam = new Timer(500,0);
+				timerBW = new Timer(500,0);
+				timerMic.addEventListener(TimerEvent.TIMER, onTimerMic);
+				timerCam.addEventListener(TimerEvent.TIMER, onTimerCam);
+				timerBW.addEventListener(TimerEvent.TIMER, onTimerBW);
 				if (Camera.names.length>0){//El usuario dispone de webcam
 					webCamCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT,webcamResult);
+					webCamCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT,microphoneResult);
+					webCamCheck.addEventListener(ShowStatusMessage.MIC_MESSAGE,micStatusMessage);
 					webCamCheck.allMenu.visible=true;
 					webCamCheck.notConect.visible=false;
 				}else{//El usuario no dispone de webcam
@@ -36,8 +50,14 @@
 			private function childChange(e:IndexChangedEvent):void{
 				var indice:Number = e.newIndex;		
 				if (indice==1){ //Microphone module
+					if (permissionStatus){
+						micCheck.statusText.text="Es necesario que aceptes los permisos";
+						micCheck.statusText.visible=true;
+					}
 					if (Microphone.names.length>0){//El usuario dispone de microfono
 					micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT,microphoneResult);
+					micCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT,webcamResult);
+					micCheck.addEventListener(ShowStatusMessage.CAM_MESSAGE,webCamStatusMessage);
 					micCheck.allMenu.visible=true;
 					micCheck.notConect.visible=false;
 					}else{//El usuario no dispone de microfono
@@ -55,8 +75,7 @@
 			
 			/*Funciones para el control de los resultados*/
 			public function webcamResult(e:ConfigurationResultEvent):void{				
-				timer.start();
-				timerIndex=0;	
+				timerCam.start();	
 				if(e.status)
 					webCamStatus.text="Webcam: OK";
 				else
@@ -64,8 +83,7 @@
 			}
 			
 			public function microphoneResult(e:ConfigurationResultEvent):void{
-				timer.start();
-				timerIndex=1;
+				timerMic.start();
 				if(e.status)
 					microphoneStatus.text="Microphone: OK";
 				else
@@ -73,27 +91,37 @@
 			}
 			
 			public function bandwidthResult(e:ConfigurationResultEvent):void{
-				timer.start();
-				timerIndex=2;
+				timerBW.start();
 				if (e.status)
 					bandwidthStatus.text="Bandwidth: OK";
 				else
 					bandwidthStatus.text="Bandwidth: X";					
 			}
-			/*Fin funciones para el control de los resultados*/
 			
-			public function onTimer(e:TimerEvent):void{
-				if (timer.currentCount<8){//4 parpadeos
-					if(timerIndex==0)
-						webCamStatus.visible=!webCamStatus.visible;
-					else if(timerIndex==1)
-						microphoneStatus.visible=!microphoneStatus.visible;
-					else
-						bandwidthStatus.visible=!bandwidthStatus.visible;
+			/*Funciones timers para el control de los resultados*/
+			public function onTimerMic(e:TimerEvent):void{
+				if (timerMic.currentCount<8){//4 parpadeos
+					microphoneStatus.visible=!microphoneStatus.visible;
 				}else{//Configurar el estado inicial
-					timer.reset();
-					webCamStatus.visible=true;
+					timerMic.reset();
 					microphoneStatus.visible=true;
+				}				
+			}
+			
+			public function onTimerCam(e:TimerEvent):void{
+				if (timerCam.currentCount<8){//4 parpadeos
+					webCamStatus.visible=!webCamStatus.visible;
+				}else{//Configurar el estado inicial
+					timerCam.reset();
+					webCamStatus.visible=true;
+				}				
+			}
+			
+			public function onTimerBW(e:TimerEvent):void{
+				if (timerBW.currentCount<8){//4 parpadeos
+					bandwidthStatus.visible=!bandwidthStatus.visible;
+				}else{//Configurar el estado inicial
+					timerBW.reset();
 					bandwidthStatus.visible=true;
 				}				
 			}
@@ -115,6 +143,16 @@
 					webCamCheck.notConect.visible=false;
 					refreshCamButton.visible=false;
 				}
+			}
+			
+			//Funciones para el control de los mensajes de falta de permisos
+			private function webCamStatusMessage(ev:ShowStatusMessage):void{
+				webCamCheck.statusText.text="Es necesario que aceptes los permisos";
+				webCamCheck.statusText.visible=true;
+			}
+			
+			private function micStatusMessage(ev:ShowStatusMessage):void{
+				permissionStatus=true;
 			}
 			
 		]]>

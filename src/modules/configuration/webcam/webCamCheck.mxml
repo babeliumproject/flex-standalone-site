@@ -8,6 +8,7 @@
 			import model.DataModel;
 			
 			import modules.configuration.ConfigurationResultEvent;
+			import modules.configuration.ShowStatusMessage;
 			
 			import mx.controls.Alert;
 						
@@ -58,6 +59,7 @@
 						
 					if(!DataModel.getInstance().micCamAllowed){						
 						cam.addEventListener(StatusEvent.STATUS,camera_status);
+						DataModel.getInstance().micCamAllowed=true;//Need for Flexmonkey´s test.
 					}else{
 					/*Se comprueba si se ha grabado un fichero de audio en la pestaña microphone
 					o si previamente el usuario ha grabado otro fichero de video.
@@ -96,10 +98,24 @@
 			
 			private function camera_status(e:StatusEvent):void{
             	switch (e.code) {
-                    case "Camera.Muted": //User denied access to camera 
+                    case "Camera.Muted": //User denied access to camera
+						//Draw X symbol in WebCam´s result panel
                     	var ev:ConfigurationResultEvent = new ConfigurationResultEvent
 							(ConfigurationResultEvent.WEBCAM_RESULT,false);
-						dispatchEvent(ev);                  	
+						dispatchEvent(ev);  
+						//Draw X symbol in Microphone´s result panel
+						var ev2:ConfigurationResultEvent = new ConfigurationResultEvent
+						(ConfigurationResultEvent.MICROPHONE_RESULT,false);
+						dispatchEvent(ev2);
+						//Show status message in cam rec panel
+						statusText.text="Es necesario que aceptes los permisos";
+						statusText.visible=true;
+						//Show status message in mic rec panel
+						var ev3:ShowStatusMessage = new ShowStatusMessage
+						(ShowStatusMessage.MIC_MESSAGE);
+						dispatchEvent(ev3);
+						
+						DataModel.getInstance().permissions=false;						
                         break;
                     case "Camera.Unmuted": //User allowed access to camera
                     	rec_ns.attachCamera(cam);
@@ -200,10 +216,12 @@
 				<mx:HBox horizontalAlign="center">
 					<mx:Button label="REC" click="recStart()" horizontalCenter="true"
 						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording}"/>
+							!DataModel.getInstance().recording &amp;&amp;
+							DataModel.getInstance().permissions}"/>
 					<mx:Button label="PLAY" click="playStart()" horizontalCenter="true"
 						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording}"/>
+							!DataModel.getInstance().recording &amp;&amp;
+						DataModel.getInstance().permissions}"/>
 				</mx:HBox>
 				<mx:VBox horizontalAlign="center" fontSize="15">
 					<mx:Text id="contador" text="10" visible="false" fontWeight="bold"/>

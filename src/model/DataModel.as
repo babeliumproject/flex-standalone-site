@@ -156,6 +156,7 @@ package model
 		[Bindable] public var audioRec:Boolean = false;
 		[Bindable] public var recording:Boolean = false;
 		[Bindable] public var playing:Boolean = false;
+		[Bindable] public var permissions:Boolean = true;
 
 		// l10n
 		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
