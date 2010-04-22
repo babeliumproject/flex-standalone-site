@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml">
+
+<mx:Script>
+
+	<![CDATA[
+		
+		private function showPrivacySettings():void{
+			Security.showSettings(SecurityPanel.PRIVACY);
+		}
+		
+		//Should use data binding to listen to the value changes of mic.muted or cam.muted
+		//when any of those are unlocked the popup should close by itself.
+		
+		//In case the user changes his/her mind and doesn't want to record anything
+		//close the popup and tell that he/she cant' record a thing without this rights.
+		//And of course close the popup
+		
+	]]>
+</mx:Script>
+
+<mx:VBox>
+	<mx:HBox>
+		<mx:Text text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
+		<mx:Image source="/resources/images/PrivacySettings.png"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Button id="okButton" click=""/>
+		<mx:Button id="cancelButton"/>
+	</mx:HBox>
+</mx:VBox>
+
 	
 </mx:TitleWindow>
