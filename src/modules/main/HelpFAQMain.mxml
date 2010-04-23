@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 fontFamily="Arial"
+		 fontSize="12">
+
+	<mx:Script>
+		<![CDATA[
+			private function externalLinkClickHandler(url:String):void
+			{
+				navigateToURL(new URLRequest(url));
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:Label text="Babelium Project Help/FAQ"
+			  fontSize="18"
+			  fontWeight="bold"/>
+	<mx:HRule width="100%"/>
+	<mx:Spacer/>
+	<mx:Label text="Video tutorials"
+			  fontWeight="bold"
+			  fontSize="14"
+			  textDecoration="underline"/>
+	<mx:Label text="The following videos explain how to use some of the features of Babelium Project (in English)."/>
+	<mx:HBox>
+		<mx:Spacer/>
+		<mx:LinkButton label="How to add subtitles and roles"
+					   textDecoration="underline"
+					   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Spacer/>
+		<mx:LinkButton label="How to record a response following an exercise"
+					   textDecoration="underline"
+					   click="externalLinkClickHandler('http://www.youtube.com/watch?v=VstggUIIMlY')"/>
+	</mx:HBox>
+
+</mx:VBox>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 height="100%"
+		 xmlns:userManagement="modules.userManagement.*"
+		 xmlns:exercises="modules.exercises.*"
+		 xmlns:main="modules.main.*"
+		 xmlns:subtitles="modules.subtitles.*"
+		 xmlns:videoUpload="modules.videoUpload.*"
+		 xmlns:evaluation="modules.evaluation.*"
+		 xmlns:configuration="modules.configuration.*"
+		 xmlns:ns8="modules.rankings.*"
+		 xmlns:ns9="modules.videoPlayer.*"
+		 xmlns:ns10="modules.search.*"
+		 paddingTop="10"
+		 horizontalGap="0"
+		 creationComplete="init();"
+		 backgroundAlpha="0.0"
+		 borderStyle="none"
+		 horizontalAlign="right">
+
+	<mx:ViewStack id="contentViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().viewContentViewStackIndex }">
+		<main:ExerciseList id="homeModule"
+						   width="100%"
+						   height="100%">
+		</main:ExerciseList>
+
+		<exercises:Exercises id="exerciseModule">
+		</exercises:Exercises>
+
+		<evaluation:EpaiketaContainer width="100%"
+									  height="100%"
+									  id="evaluationModule">
+		</evaluation:EpaiketaContainer>
+		<userManagement:SignUpForm label=""
+								   width="100%"
+								   height="100%"
+								   id="registerModule">
+		</userManagement:SignUpForm>
+		<userManagement:AccountMain label=""
+									width="100%"
+									height="100%"
+									id="accountModule">
+		</userManagement:AccountMain>
+		<videoUpload:UploadContainer label=""
+									 width="100%"
+									 height="100%"
+									 id="uploadModule">
+		</videoUpload:UploadContainer>
+		<!-- viewstack ID = 6 -->
+		<subtitles:SubtitleEditor id="subtitlingModule"
+								  width="100%"
+								  height="100%">
+		</subtitles:SubtitleEditor>
+		<configuration:principal width="100%"
+								 height="100%">
+		</configuration:principal>
+		<!--
+			 <ns8:Rankings width="100%" height="100%">
+			 </ns8:Rankings>
+			 <ns9:FlexVideoPlayer width="100%"
+			 height="100%"
+			 label="Videoplayer">
+			 </ns9:FlexVideoPlayer>
+		-->
+
+		<main:About width="100%"
+					height="100%">
+		</main:About>
+		<ns10:Search id="searchModule"
+					 width="100%"
+					 height="100%">
+
+		</ns10:Search>
+		<main:HelpFAQMain width="100%"
+						  height="100%"
+						  id="helpModule"/>
+		<userManagement:Activation id="accountActivation"
+										  width="100%"
+										  height="100%"/>
+	</mx:ViewStack>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.controls.Alert;
+			import mx.events.IndexChangedEvent;
+			import events.UserEvent;
+			import model.DataModel;
+
+			public function init():void
+			{
+				contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
+				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
+			}
+
+			public function handleIndexChange(evt:IndexChangedEvent):void
+			{
+
+				//First, we retrieve the the previous tab and the current tab components
+				var previousTab:Object=contentViewStack.getChildAt(evt.oldIndex);
+				var currentTab:Object=contentViewStack.getChildAt(evt.newIndex);
+
+				//We stop all the components from the now hidden tab
+				//previousTab.onTabHide();
+
+				//We refresh the components of tab now showing
+				//currentTab.onTabShow();
+
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

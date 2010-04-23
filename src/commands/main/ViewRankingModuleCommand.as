@@ -12,8 +12,8 @@ package commands.main
 
 		public function execute(event:CairngormEvent):void
 		{
-			DataModel.getInstance().viewContentViewStackIndex =
-					ViewChangeEvent.VIEWSTACK_RANKING_MODULE_INDEX;
+			//DataModel.getInstance().viewContentViewStackIndex =
+			//		ViewChangeEvent.VIEWSTACK_RANKING_MODULE_INDEX;
 		}
 		
 	}

@@ -1,4 +1,4 @@
-package modules.main
+package view.common
 {
 	import modules.videoUpload.IconComboBox;
 	

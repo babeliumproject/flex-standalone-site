@@ -2,15 +2,13 @@ package control
 {
 	import events.ViewChangeEvent;
 	
-	import flash.events.Event;
-	
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
+	import mx.utils.URLUtil;
 	
 	
 	/**
@@ -31,6 +29,9 @@ package control
 		 **/
 		private var _modulesFragments:ArrayCollection;
 		
+		[Bindable]
+		public var actionFragment:Object;
+		
 		/**
 		 * Constructor
 		 **/
@@ -49,7 +50,7 @@ package control
 			_modulesFragments = new ArrayCollection();
 			
 			// fill array
-			for ( var i:int = 0; i < 11; i++ )
+			for ( var i:int = 0; i < 20; i++ )
 				_modulesFragments.addItem(null);
 			
 			_modulesFragments.setItemAt("about", ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX);
@@ -61,6 +62,8 @@ package control
 			_modulesFragments.setItemAt("register", ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX);
 			_modulesFragments.setItemAt("search", ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX);
 			_modulesFragments.setItemAt("upload", ViewChangeEvent.VIEWSTACK_UPLOAD_MODULE_INDEX);
+			_modulesFragments.setItemAt("help", ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX);
+			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
 		}
 		
 		// Get instance
@@ -72,7 +75,7 @@ package control
 		/**
 		 * Parse function
 		 **/
-		public function parseURL(e:Event = null) : void
+		public function parseURL(e:BrowserChangeEvent = null) : void
 		{
 			_isParsing = true;
 			
@@ -89,7 +92,7 @@ package control
 			
 			if ( length > 2 ) // action
 			{
-				
+				actionFragment = URLUtil.stringToObject(params[2], '&');
 			}
 			
 			if ( length > 3 ) // target
@@ -109,11 +112,11 @@ package control
 			// default url format: /module/action/target
 			
 			if ( action == null )
-				_browserManager.setFragment(DELIMITER+module+DELIMITER);
+				_browserManager.setFragment(DELIMITER+module);
 			else if ( target == null )
-				_browserManager.setFragment(DELIMITER+module+DELIMITER+action+DELIMITER);
+				_browserManager.setFragment(DELIMITER+module+DELIMITER+action);
 			else
-				_browserManager.setFragment(DELIMITER+module+DELIMITER+action+DELIMITER+target+DELIMITER);
+				_browserManager.setFragment(DELIMITER+module+DELIMITER+action+DELIMITER+target);
 		}
 
 		

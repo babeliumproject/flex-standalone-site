@@ -21,7 +21,7 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ArrayUtil;
 
-			import view.TimeFormatter;
+			import view.common.TimeFormatter;
 
 			import vo.CreditHistoryVO;
 			import vo.Epai;

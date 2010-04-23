@@ -2,6 +2,8 @@ package model
 {
 	import com.adobe.cairngorm.model.IModelLocator;
 	
+	import flash.media.Camera;
+	import flash.media.Microphone;
 	import flash.net.FileReference;
 	import flash.utils.Dictionary;
 	
@@ -162,6 +164,8 @@ package model
 		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
 		
 		// Shows if users denied access to cam or mic to video player
+		[Bindable] public var microphone:Microphone;
+		[Bindable] public var camera:Camera;
 		[Bindable] public var micCamAllowed:Boolean = false;
 	
 		public function DataModel(){

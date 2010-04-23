@@ -287,7 +287,7 @@ package modules.main
 		}
 		
 		public function helpFAQ_clickHandler(event:MouseEvent):void{
-			//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();	
+			new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();	
 		}
 
 	}

@@ -11,6 +11,8 @@ package modules.videoPlayer
 	import flash.net.*;
 	import flash.utils.*;
 	
+	import model.DataModel;
+	
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
 	import modules.videoPlayer.controls.babelia.MicActivityBar;
@@ -852,9 +854,10 @@ package modules.videoPlayer
 			if (webcamAvailable())
 			{
 				_camera=Camera.getCamera();
-				if(_camera.muted)
 				// Important: Access Control
 				_camera.addEventListener(StatusEvent.STATUS, camera_status);
+				DataModel.getInstance().camera = _camera;
+
 			}
 		}
 
@@ -868,6 +871,10 @@ package modules.videoPlayer
 				_mic.setSilenceLevel(0, 60000);
 				// Important: Access Control
 				_mic.addEventListener(StatusEvent.STATUS, mic_status);
+				DataModel.getInstance().microphone = _mic;
+				if(_mic.muted){
+					showPrivacyPopUp();
+				}
 			}
 		}
 
@@ -1080,6 +1087,10 @@ package modules.videoPlayer
 			{
 				trace("Second stream connection Fail Code: " + e.info.code);
 			}
+		}
+		
+		private function showPrivacyPopUp():void{
+			
 		}
 
 	}

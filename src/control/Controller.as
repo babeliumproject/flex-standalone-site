@@ -29,6 +29,7 @@ package control {
 	import commands.main.GetExercisesCommand;
 	import commands.main.GetTopTenCreditedCommand;
 	import commands.main.ViewAboutModuleCommand;
+	import commands.main.ViewHelpModuleCommand;
 	import commands.main.ViewHomeModuleCommand;
 	import commands.main.ViewPlayerModuleCommand;
 	import commands.main.ViewRankingModuleCommand;
@@ -39,6 +40,7 @@ package control {
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
 	import commands.subtitles.GetExerciseSubtitleLinesCommand;
 	import commands.subtitles.SaveSubtitlesCommand;
+	import commands.userManagement.ActivateUserCommand;
 	import commands.userManagement.GetAllTimeCreditHistoryCommand;
 	import commands.userManagement.GetCurrentDayCreditHistoryCommand;
 	import commands.userManagement.GetLastMonthCreditHistoryCommand;
@@ -49,6 +51,7 @@ package control {
 	import commands.userManagement.RestorePassCommand;
 	import commands.userManagement.SignOutCommand;
 	import commands.userManagement.ViewAccountModuleCommand;
+	import commands.userManagement.ViewActivationModuleCommand;
 	import commands.userManagement.ViewRegisterModuleCommand;
 	import commands.videoUpload.AddCreditEntryUploadingCommand;
 	import commands.videoUpload.AddCreditsForUploadingCommand;
@@ -93,6 +96,8 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_RANKING_MODULE, ViewRankingModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_ACTIVATION_MODULE, ViewActivationModuleCommand);
 
 
 			//Exercise ViewStack related commands
@@ -141,6 +146,7 @@ package control {
 
 			// User Registration management
 			addCommand(RegisterUserEvent.REGISTER_USER, RegisterUserCommand);
+			addCommand(RegisterUserEvent.ACTIVATE_USER, ActivateUserCommand);
 
 			//Upload management commands
 			addCommand(UploadEvent.UPLOAD_BROWSE, UploadBrowseCommand);

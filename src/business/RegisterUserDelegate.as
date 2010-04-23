@@ -22,6 +22,12 @@ package business
 			var pendingCall:AsyncToken = service.register(user);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function activateUser(user:NewUserVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("registerRO");
+			var pendingCall:AsyncToken = service.activate(user);
+			pendingCall.addResponder(responder);
+		}
 
 	}
 }

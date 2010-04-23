@@ -68,12 +68,12 @@
 	<ns1:Header id="header"
 				width="100%">
 	</ns1:Header>
-	<ns1:navigation id="navigation"
+	<ns1:Navigation id="navigation"
 					width="100%">
-	</ns1:navigation>
-	<ns1:body id="content"
+	</ns1:Navigation>
+	<ns1:Body id="content"
 			  height="100%"
 			  width="100%">
-	</ns1:body>
+	</ns1:Body>
 
 </mx:Application>

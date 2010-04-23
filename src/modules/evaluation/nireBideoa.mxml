@@ -30,7 +30,7 @@
 			
 			import org.gif.player.GIFPlayer;
 			
-			import view.TimeFormatter;
+			import view.common.TimeFormatter;
 
 			public var vid:Video;
 			private var nc:NetConnection;

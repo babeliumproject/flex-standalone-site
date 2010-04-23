@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:main="modules.main.*">
+		 xmlns:main="modules.main.*" xmlns:common="view.common.*">
 	
-		<main:LanguageComboBox id="languageCombo"/>
+		<common:LanguageComboBox id="languageCombo"/>
 		<mx:Label text="Knowledge:" fontWeight="normal"/>
-		<main:DifficultyLevelComboBox id="levelCombo"/>
+		<common:DifficultyLevelComboBox id="levelCombo"/>
 	
 </mx:HBox>

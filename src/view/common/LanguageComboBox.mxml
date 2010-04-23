@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<main:LanguageComboBoxClass xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:LanguageComboBoxClass xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:main="modules.main.*"
-		   xmlns:upload="modules.videoUpload.*">
+		   xmlns:upload="modules.videoUpload.*" xmlns:common="view.common.*">
 	
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -14,4 +14,4 @@
 						 labelFunction="languageComboBoxLabelFunction"
 						 change="languageComboBox_changeHandler(event)"/>
 	
-</main:LanguageComboBoxClass>
+</common:LanguageComboBoxClass>

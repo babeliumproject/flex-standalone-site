@@ -17,9 +17,11 @@ package events
 		public static const VIEW_SEARCH_MODULE:String="viewSearchModule";
 		public static const VIEW_HELP_MODULE:String="viewHelpModule";
 
+
 		//User related views
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";
 		public static const VIEW_ACCOUNT_MODULE:String="viewAccountModule";
+		public static const VIEW_ACTIVATION_MODULE:String="viewActivationModule";
 
 		//This views belong to the application's exercise module's ViewStack
 		public static const VIEW_EXERCISE_HOME:String="viewExerciseHome";
@@ -47,9 +49,11 @@ package events
 		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:int = 5;
 		public static const VIEWSTACK_PLAYER_MODULE_INDEX:int = 6;
 		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:int = 7;
-		public static const VIEWSTACK_RANKING_MODULE_INDEX:int = 8;
-		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 9;
-		public static const VIEWSTACK_SEARCH_MODULE_INDEX:int = 10;
+		//public static const VIEWSTACK_RANKING_MODULE_INDEX:int = 8;
+		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 8;
+		public static const VIEWSTACK_SEARCH_MODULE_INDEX:int = 9;
+		public static const VIEWSTACK_HELP_MODULE_INDEX:int = 10;
+		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:int = 11;
 
 		public function ViewChangeEvent(type:String)
 		{

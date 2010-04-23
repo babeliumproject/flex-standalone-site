@@ -43,15 +43,15 @@ class RegisterUser{
 			//$languages = $user->languages;
 			//if (count($languages) > 0)
 			//	$this->addUserLanguages($languages);
-			
-			
+
+
 			// Submit activatión email
 			include_once ('Mailer.php');
-				
+
 			$mail = new Mailer($user->name);
-			$mail->send("http://".$_SERVER['HTTP_HOST']."/activation.php?hash=".$hash."&user=".$user->name, "Activate account",
-				"<a href='http://".$_SERVER['HTTP_HOST']."/activation.php?hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/activation.php?hash=".$hash."&user=".$user->name."</a>");
-				
+			$mail->send("http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name, "Activate account",
+				"<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name."</a>");
+
 			return $result;
 		}
 
@@ -79,6 +79,31 @@ class RegisterUser{
 
 	}
 
+	public function activate($user){
+
+
+		$sql = "SELECT id FROM users WHERE (name = '%s' AND activation_hash = '%s') ";
+		$result = $this->_getUserSingleQuery($sql, $user->name, $user->activationHash);
+
+		if ( $result )
+		{
+			$sql = "UPDATE users SET active = 1, activation_hash = '' 
+			        WHERE (name = '%s' AND activation_hash = '%s')";
+			$update = $this->_databaseUpdate($sql, $user->name, $user->activationHash);
+		}
+		
+		return ($result && $update);
+	}
+
+	private function _getUserSingleQuery(){
+		$result = $this->conn->_execute(func_get_args());
+		$row = $this->conn->_nextRow ($result);
+		if ($row)
+			return true;
+		else
+			return false;
+	}
+
 
 	public function _create() {
 		$data = func_get_args();
@@ -89,7 +114,7 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql, $user->name, $user->email);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-		return false;
+			return false;
 
 		$this->conn->_execute( $data );
 
@@ -99,7 +124,7 @@ class RegisterUser{
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
 			$sql = "SELECT ID, name, email, creditCount FROM users WHERE (ID= '%d' ) ";
-				
+
 			$valueObject = new UserVO();
 			$result = $this->conn->_execute($sql, $row[0]);
 
@@ -146,7 +171,7 @@ class RegisterUser{
 
 		// Generate Hash
 		for ( $i = 0; $i < $length; $i++ )
-		$hash .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
+			$hash .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $hash;
 	}
@@ -157,9 +182,9 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-		return $row[0];
+			return $row[0];
 		else
-		return 20; // Default: avoiding crashes
+			return 20; // Default: avoiding crashes
 	}
 
 	private function _getHashChars()
@@ -168,9 +193,9 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-		return $row[0];
+			return $row[0];
 		else
-		return "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
+			return "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
 	}
 
 	private function _getInitialCreditsQuery($sql){
@@ -178,9 +203,15 @@ class RegisterUser{
 
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-		return $row[0];
+			return $row[0];
 		else
-		throw new Exception("An unexpected error occurred while trying to save your registration data.");
+			throw new Exception("An unexpected error occurred while trying to save your registration data.");
+	}
+
+	public function _databaseUpdate() {
+		$result = $this->conn->_execute ( func_get_args() );
+
+		return $result;
 	}
 }
 ?>
