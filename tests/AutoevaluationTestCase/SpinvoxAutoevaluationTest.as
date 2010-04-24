@@ -39,10 +39,47 @@ package AutoevaluationTestCase {
 			evaluationTS.addTest(new SpinvoxAutoevaluationTest("testSamePartOfWordMiddleExerciseStr"));			
 			evaluationTS.addTest(new SpinvoxAutoevaluationTest("testSamePartOfWordMiddleExerciseAndWordStr"));
 			
+			evaluationTS.addTest(new SpinvoxAutoevaluationTest("testPhrase1"));
+			evaluationTS.addTest(new SpinvoxAutoevaluationTest("testPhrase2"));
+			
 			return evaluationTS;
 		}
 
-		public function testSameStrings():void {
+	public function testSameStrings():void {
+			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
+			var str1:String = "Can’t you just use your sleeve";
+			var str2:String = "Can’t you just use your sleeve";
+			var result:Evaluation = eval.evaluate(str1, str2);
+
+			assertEquals("1st rating", "right", result.words.getItemAt(0).rating);
+			assertEquals("1st word", "can’t", result.words.getItemAt(0).word);
+			assertEquals("1st startIndex", 0, result.words.getItemAt(0).startIndex);
+
+			assertEquals("2th rating", "right", result.words.getItemAt(1).rating);
+			assertEquals("2th word", "you", result.words.getItemAt(1).word);
+			assertEquals("2th startIndex", 6, result.words.getItemAt(1).startIndex);
+
+			assertEquals("3th rating", "right", result.words.getItemAt(2).rating);
+			assertEquals("3th word", "just", result.words.getItemAt(2).word);
+			assertEquals("3th startIndex", 10, result.words.getItemAt(2).startIndex);
+			
+			assertEquals("4th rating", "right", result.words.getItemAt(3).rating);
+			assertEquals("4th word", "use", result.words.getItemAt(3).word);
+			assertEquals("4th startIndex", 15, result.words.getItemAt(3).startIndex);
+			
+			assertEquals("5th rating", "right", result.words.getItemAt(4).rating);
+			assertEquals("5th word", "your", result.words.getItemAt(4).word);
+			assertEquals("5th startIndex", 19, result.words.getItemAt(4).startIndex);
+			
+			assertEquals("6th rating", "right", result.words.getItemAt(5).rating);
+			assertEquals("6th word", "sleeve", result.words.getItemAt(5).word);
+			assertEquals("6th startIndex", 24, result.words.getItemAt(5).startIndex);
+			
+			assertEquals("Max score", 100, result.maxScore);
+			assertEquals("Min score", 100, result.minScore);
+		}
+
+		/*public function testSameStrings():void {
 			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
 			var str1:String = "Hello world, how are you?";
 			var str2:String = "Hello world, how are you?";
@@ -70,7 +107,7 @@ package AutoevaluationTestCase {
 			
 			assertEquals("Max score", 100, result.maxScore);
 			assertEquals("Min score", 100, result.minScore);
-		}
+		}*/
 
 		public function testSameStringsWithMediumRespInMiddle():void {
 			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
@@ -755,6 +792,107 @@ package AutoevaluationTestCase {
 			assertEquals("Max score", 12, result.maxScore);
 			assertEquals("Min score", 12, result.minScore);
 		}
+		
+		public function testPhrase1():void {
+			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
+			var str1:String = "Can’t you just use your sleeve";
+			var str2:String = "Can’t you just use you sleeve";
+			var result:Evaluation = eval.evaluate(str1, str2);
 
+			assertEquals("1st rating", "right", result.words.getItemAt(0).rating);
+			assertEquals("1st word", "can’t", result.words.getItemAt(0).word);
+			assertEquals("1st startIndex", 0, result.words.getItemAt(0).startIndex);
+
+			assertEquals("2th rating", "right", result.words.getItemAt(1).rating);
+			assertEquals("2th word", "you", result.words.getItemAt(1).word);
+			assertEquals("2th startIndex", 6, result.words.getItemAt(1).startIndex);
+
+			assertEquals("3th rating", "right", result.words.getItemAt(2).rating);
+			assertEquals("3th word", "just", result.words.getItemAt(2).word);
+			assertEquals("3th startIndex", 10, result.words.getItemAt(2).startIndex);
+			
+			assertEquals("4th rating", "right", result.words.getItemAt(3).rating);
+			assertEquals("4th word", "use", result.words.getItemAt(3).word);
+			assertEquals("4th startIndex", 15, result.words.getItemAt(3).startIndex);
+			
+			assertEquals("5th rating", "wrong", result.words.getItemAt(4).rating);
+			assertEquals("5th word", "your", result.words.getItemAt(4).word);
+			assertEquals("5th startIndex", 19, result.words.getItemAt(4).startIndex);
+			
+			assertEquals("6th rating", "right", result.words.getItemAt(5).rating);
+			assertEquals("6th word", "sleeve", result.words.getItemAt(5).word);
+			assertEquals("6th startIndex", 23, result.words.getItemAt(5).startIndex);
+			
+			assertEquals("Max score", 83, result.maxScore);
+			assertEquals("Min score", 83, result.minScore);
+		}
+
+		/*public function testPhrase2():void {
+			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
+			var str1:String = "Can’t you just use your sleeve";
+			var str2:String = "You just can’t use your sleeve";
+			var result:Evaluation = eval.evaluate(str1, str2);
+
+			assertEquals("1st rating", "right", result.words.getItemAt(0).rating);
+			assertEquals("1st word", "can’t", result.words.getItemAt(0).word);
+			assertEquals("1st startIndex", 9, result.words.getItemAt(0).startIndex);
+
+			assertEquals("2th rating", "wrong", result.words.getItemAt(1).rating);
+			assertEquals("2th word", "you", result.words.getItemAt(1).word);
+			assertEquals("2th startIndex", 15, result.words.getItemAt(1).startIndex);
+
+			assertEquals("3th rating", "wrong", result.words.getItemAt(2).rating);
+			assertEquals("3th word", "just", result.words.getItemAt(2).word);
+			assertEquals("3th startIndex", 15, result.words.getItemAt(2).startIndex);
+			
+			assertEquals("4th rating", "right", result.words.getItemAt(3).rating);
+			assertEquals("4th word", "use", result.words.getItemAt(3).word);
+			assertEquals("4th startIndex", 15, result.words.getItemAt(3).startIndex);
+			
+			assertEquals("5th rating", "right", result.words.getItemAt(4).rating);
+			assertEquals("5th word", "your", result.words.getItemAt(4).word);
+			assertEquals("5th startIndex", 19, result.words.getItemAt(4).startIndex);
+			
+			assertEquals("6th rating", "right", result.words.getItemAt(5).rating);
+			assertEquals("6th word", "sleeve", result.words.getItemAt(5).word);
+			assertEquals("6th startIndex", 24, result.words.getItemAt(5).startIndex);
+			
+			assertEquals("Max score", 58, result.maxScore);
+			assertEquals("Min score", 58, result.minScore);
+		}*/
+		
+		public function testPhrase2():void {
+			var eval:Autoevaluator = AutoevaluatorManager.getInstance().getAutoevaluator(system);
+			var str1:String = "Can’t you just use your sleeve";
+			var str2:String = "Can’t you just don’t use your sleeve";
+			var result:Evaluation = eval.evaluate(str1, str2);
+
+			assertEquals("1st rating", "right", result.words.getItemAt(0).rating);
+			assertEquals("1st word", "can’t", result.words.getItemAt(0).word);
+			assertEquals("1st startIndex", 0, result.words.getItemAt(0).startIndex);
+
+			assertEquals("2th rating", "right", result.words.getItemAt(1).rating);
+			assertEquals("2th word", "you", result.words.getItemAt(1).word);
+			assertEquals("2th startIndex", 6, result.words.getItemAt(1).startIndex);
+
+			assertEquals("3th rating", "right", result.words.getItemAt(2).rating);
+			assertEquals("3th word", "just", result.words.getItemAt(2).word);
+			assertEquals("3th startIndex", 10, result.words.getItemAt(2).startIndex);
+			
+			assertEquals("4th rating", "right", result.words.getItemAt(3).rating);
+			assertEquals("4th word", "use", result.words.getItemAt(3).word);
+			assertEquals("4th startIndex", 21, result.words.getItemAt(3).startIndex);
+			
+			assertEquals("5th rating", "right", result.words.getItemAt(4).rating);
+			assertEquals("5th word", "your", result.words.getItemAt(4).word);
+			assertEquals("5th startIndex", 25, result.words.getItemAt(4).startIndex);
+			
+			assertEquals("6th rating", "right", result.words.getItemAt(5).rating);
+			assertEquals("6th word", "sleeve", result.words.getItemAt(5).word);
+			assertEquals("6th startIndex", 30, result.words.getItemAt(5).startIndex);
+			
+			assertEquals("Max score", 91, result.maxScore);
+			assertEquals("Min score", 91, result.minScore);
+		}
 	}
 }
