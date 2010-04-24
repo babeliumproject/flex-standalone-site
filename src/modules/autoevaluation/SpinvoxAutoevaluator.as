@@ -20,7 +20,7 @@ package modules.autoevaluation {
 				var resTranscWords:Array = responseStr.split(" ");
 
 				//alphanumeric character, (?) after word and _
-				var pattern:RegExp = /[a-zA-Z0-9_]+(\(\?\))?/;
+				var pattern:RegExp = /[a-zA-Z0-9_’']+(\(\?\))?/;
 
 				//remake the response string without the unwanted characters
 				var resStr:String = "";
@@ -87,6 +87,7 @@ package modules.autoevaluation {
 								searchIndex = lastIndex;
 								findStr = word + " ";								
 								i = resStr.indexOf(StringUtil.trim(findStr), searchIndex);
+								
 								var found:Boolean = false;
 								while(i > -1 && !found){
 									found = true;
@@ -99,9 +100,9 @@ package modules.autoevaluation {
 									if(!found)
 										i = resStr.indexOf(StringUtil.trim(findStr), i + StringUtil.trim(findStr).length);
 								}
+								
 								if(!found)
 									i = -1;
-								//Alert.show("Not found; i" + i);
 
 								if(i != -1) {
 									if(resStr.indexOf(StringUtil.trim(findStr) + "(?)") == -1) {
