@@ -1,6 +1,6 @@
 <?php
 
-require_once ('Sub.php');
+//require_once ('Sub.php');
 require_once ('Epai.php');
 require_once ('EvaluationVO.php');
 require_once ('Datasource.php');
@@ -65,7 +65,7 @@ class Epaitu {
 		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new Sub ();
+			//$temp = new Sub ();
 			$temp->ID_SUB = $row [0];
 			$temp->ID_VID = $row [1];
 			$temp->idioma = $row [2];
