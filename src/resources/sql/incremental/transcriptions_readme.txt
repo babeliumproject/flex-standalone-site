@@ -54,7 +54,7 @@ spinvox.password:			SpinVoxeko pasahitza
 spinvox.protocol:			Eskaerak egiteko protokoloa (https adibidez)
 spinvox.username:			SpinVoxeko erabiltzailea
 spinvox.port:				Eskaera egiteko portua (protokoloa https bada portua 443 izango da)
-spinvox.dev_url:			SpinVoxen garapenerako URLa (live.api.spinvox.com)
+spinvox.dev_url:			SpinVoxen garapenerako URLa (dev.api.spinvox.com)
 spinvox.live_url:			SpinVoxen transkipzioak eskatzeko URLa (live.api.spinvox.com)
 spinvox.max_transcriptions:	Zenbat transkripzio berreskuratuko diren GetTranscriptions.php scriptaren dei bakoitzeko
 spinvox.max_requests:		Zenbat eskaera egingo diren SendRequests.php scriptaren dei bakoitzeko
