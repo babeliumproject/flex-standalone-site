@@ -19,6 +19,7 @@
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
+			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
 			
 			import events.CueManagerEvent;
@@ -26,6 +27,7 @@
 			import events.ExerciseRoleEvent;
 			import events.RecordingEndOptionEvent;
 			import events.ResponseEvent;
+			import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			
@@ -311,6 +313,12 @@
 				panelSelectedExercise.height = 200;
 				panelSelectedExercise.visible = true;
 				
+				// Update URL
+				BabeliaBrowserManager.getInstance().updateURL(
+					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX),
+					BabeliaBrowserManager.VIEW,
+					_exerciseName);
+				
 				_exerciseSelected = true;
 			}
 			
@@ -478,7 +486,6 @@
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 				
 				exerciseList.exerciseListDatagrid.selectedItem = null;
-				
 			}
 			
 			
@@ -583,6 +590,52 @@
 				PopUpManager.removePopUp(_evaluationRequest);
 			}
 			
+			
+			// On URL change
+			public function set onURLChange(value:Object) : void
+			{
+				var browser:BabeliaBrowserManager = BabeliaBrowserManager.getInstance(); 
+				
+				if ( browser.moduleIndex != ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX )
+					return;
+				
+				if ( value == null )
+					return;
+				
+				if ( browser.actionFragment == BabeliaBrowserManager.VIEW )
+				{
+					if ( browser.targetFragment != '' )
+					{
+						var tempEx:ExerciseVO = null;
+						var exercises:ArrayCollection = DataModel.getInstance().availableExercises;
+						
+						for ( var i:int = 0; i < exercises.length; i++ )
+						{
+							var tmp:ExerciseVO = exercises.getItemAt(i) as ExerciseVO;
+							if ( tmp.name == browser.targetFragment )
+							{
+								tempEx = tmp;
+								break;
+							}
+						}
+						
+						if ( tempEx == null )
+						{
+							new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+							return;
+						}
+						
+						DataModel.getInstance().currentExercise.setItemAt(tempEx, DataModel.RECORDING_MODULE);
+						DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
+					}	
+					else
+					{
+						new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+						return;
+					}
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -594,6 +647,8 @@
 				destination="this.onLocalesRetrieved" />
 	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onRolesRetrieved" />
+	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+				destination="onURLChange" />
 	
 	<mx:HBox width="100%" verticalAlign="top" horizontalAlign="center">
 		<!-- Video Player -->
@@ -603,10 +658,11 @@
 					  width="100%"
 					  fontSize="16"
 					  fontWeight="bold"/>
+			<!-- w/h = 16:10 -->
 			<videoPlayer:VideoPlayerBabelia id="VP" autoPlay="true" skin="white"
 						seek="true" subtitles="true" autoScale="false" arrows="false"
 						subtitlingControls="false" width="500" 
-						height="{Math.floor(VP.width * 800 / 1280)}"
+						height="{Math.floor(VP.width * 10 / 16)}"
 						streamSource="{_streamSource}"
 						controlsEnabled="{_exerciseSelected}" />
 		</mx:VBox>

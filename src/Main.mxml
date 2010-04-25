@@ -52,11 +52,18 @@
 			private function onComplete(e:Event = null) : void
 			{
 				browserManager = BabeliaBrowserManager.getInstance();
+			}
+			
+			private function set onExercisesRetrieved(value:Object) : void
+			{
 				browserManager.parseURL();
 			}
 		]]>
 	</mx:Script>
 
+	<mx:Binding source="{DataModel.getInstance().availableExercises}"
+				destination="this.onExercisesRetrieved"/>
+	
 	<!--Instantiate controller and services singleton -->
 
 	<!--This defines the reachable remote services -->

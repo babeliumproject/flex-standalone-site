@@ -49,8 +49,8 @@ class RegisterUser{
 			include_once ('Mailer.php');
 
 			$mail = new Mailer($user->name);
-			$mail->send("http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name, "Activate account",
-				"<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/hash=".$hash."&user=".$user->name."</a>");
+			$mail->send("http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name, "Activate account",
+				"<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."</a>");
 
 			return $result;
 		}

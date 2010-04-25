@@ -6,6 +6,7 @@ package commands.userManagement
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import events.RegisterUserEvent;
+	import events.ViewChangeEvent;
 	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
@@ -27,6 +28,8 @@ package commands.userManagement
 			} else{
 				Alert.show("Your account has been successfully activated");
 			}
+			
+			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 		}
 		
 		public function fault(info:Object):void

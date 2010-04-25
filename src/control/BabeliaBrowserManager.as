@@ -1,5 +1,6 @@
 package control
 {
+	import events.VideoStopEvent;
 	import events.ViewChangeEvent;
 	
 	import model.DataModel;
@@ -8,7 +9,6 @@ package control
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
-	import mx.utils.URLUtil;
 	
 	
 	/**
@@ -18,6 +18,7 @@ package control
 	{
 		/** Constants **/
 		public static const DELIMITER:String="/";
+		public static const TARGET_DELIMITER:String="&";
 		
 		/** Variables **/
 		public static var instance:BabeliaBrowserManager = new BabeliaBrowserManager();
@@ -29,8 +30,17 @@ package control
 		 **/
 		private var _modulesFragments:ArrayCollection;
 		
-		[Bindable]
-		public var actionFragment:Object;
+		[Bindable] public var moduleIndex:int;
+		[Bindable] public var actionFragment:String;
+		[Bindable] public var targetFragment:String;
+		
+		/**
+		 * ACTION CONSTANTS
+		 **/
+		public static const ACTIVATE:String="activate";
+		public static const SUBTITLE:String="sub";
+		public static const VIEW:String="view";
+		public static const RECORD:String="rec";
 		
 		/**
 		 * Constructor
@@ -64,6 +74,7 @@ package control
 			_modulesFragments.setItemAt("upload", ViewChangeEvent.VIEWSTACK_UPLOAD_MODULE_INDEX);
 			_modulesFragments.setItemAt("help", ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX);
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
+			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX);
 		}
 		
 		// Get instance
@@ -79,6 +90,8 @@ package control
 		{
 			_isParsing = true;
 			
+			clearFragments();
+			
 			var params:Array = _browserManager.fragment.split(DELIMITER);
 			var length:Number = params.length;
 			
@@ -86,19 +99,13 @@ package control
 				updateURL(index2fragment(ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX));
 			
 			if ( length > 1 ) // module
-			{
-				changeModule(params[1]);
-			}
+				if ( !changeModule(params[1]) ) return;
 			
 			if ( length > 2 ) // action
-			{
-				actionFragment = URLUtil.stringToObject(params[2], '&');
-			}
+				actionFragment = params[2];
 			
 			if ( length > 3 ) // target
-			{
-				
-			}
+				targetFragment = params[3];
 			
 			_isParsing = false;
 		}
@@ -110,6 +117,8 @@ package control
 		public function updateURL(module:String, action:String = null, target:String = null) : void
 		{
 			// default url format: /module/action/target
+			
+			clearFragments();
 			
 			if ( action == null )
 				_browserManager.setFragment(DELIMITER+module);
@@ -132,13 +141,29 @@ package control
 		/**
 		 * Change module
 		 **/
-		private function changeModule(module:String) : void
+		private function changeModule(module:String) : Boolean
 		{
-			var index:int = _modulesFragments.getItemIndex(module);
+			moduleIndex = _modulesFragments.getItemIndex(module);
 			
-			if ( index >= 0 )
-				DataModel.getInstance().viewContentViewStackIndex = index;
+			if ( moduleIndex >= 0 )
+			{
+				new VideoStopEvent().dispatch();
+				DataModel.getInstance().viewContentViewStackIndex = moduleIndex;
+				return true;
+			}
+			
+			return false;
 		}
 		
+		
+		/**
+		 * Clear Fragments
+		 **/
+		private function clearFragments() : void
+		{
+			moduleIndex = -1;
+			actionFragment = null;
+			targetFragment = null;
+		}
 	}
 }

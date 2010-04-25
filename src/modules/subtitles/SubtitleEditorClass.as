@@ -3,10 +3,13 @@ package modules.subtitles
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;
 	
+	import control.BabeliaBrowserManager;
 	import control.CuePointManager;
 	
+	import events.ExerciseEvent;
 	import events.ExerciseRoleEvent;
 	import events.SubtitleEvent;
+	import events.ViewChangeEvent;
 	
 	import flash.events.MouseEvent;
 	
@@ -106,6 +109,8 @@ package modules.subtitles
 		public var subtitleList:DataGrid=new DataGrid();
 		public var languageComboBox:IconComboBox;
 
+		private var browser:BabeliaBrowserManager;
+		
 		public function SubtitleEditorClass()
 		{
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
@@ -114,6 +119,7 @@ package modules.subtitles
 		private function onCreationComplete(event:FlexEvent):void
 		{
 			var model:DataModel=DataModel.getInstance();
+			browser=BabeliaBrowserManager.getInstance();
 			setupVideoPlayer();
 
 			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
@@ -123,6 +129,8 @@ package modules.subtitles
 			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
 
+			BindingUtils.bindSetter(onURLChange, browser, "targetFragment");
+			
 			BindingUtils.bindProperty(subtitleEditor, "visible", model, "isLoggedIn");
 			BindingUtils.bindProperty(subtitleExerciseButton, "enabled", model, "isLoggedIn");
 
@@ -482,6 +490,60 @@ package modules.subtitles
 			if (DataModel.getInstance().isLoggedIn == false)
 			{
 				onTabChange(false);
+			}
+		}
+		
+		public function onURLChange(value:Object) : void
+		{
+			if ( browser.moduleIndex != ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX )
+				return;
+			
+			if ( value == null )
+				return;
+			
+			if ( browser.actionFragment == BabeliaBrowserManager.VIEW
+					|| browser.actionFragment == BabeliaBrowserManager.SUBTITLE )
+			{
+				if ( browser.targetFragment != '' )
+				{
+					var tempEx:ExerciseVO = null;
+					var exercises:ArrayCollection = DataModel.getInstance().availableExercises;
+					
+					for ( var i:int = 0; i < exercises.length; i++ )
+					{
+						var tmp:ExerciseVO = exercises.getItemAt(i) as ExerciseVO;
+						if ( tmp.name == browser.targetFragment )
+						{
+							tempEx = tmp;
+							break;
+						}
+					}
+					
+					if ( tempEx == null )
+					{
+						new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+						return;
+					}
+					
+					var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tmp.language);
+					var roles:ExerciseRoleVO=new ExerciseRoleVO();
+					roles.exerciseId=tempEx.id;
+					
+					//If it doesn't work this way, we can chain the events
+					new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
+					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+					new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();				}
+				else
+				{
+					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+					return;
+				}
+			}
+			
+			if ( browser.actionFragment == BabeliaBrowserManager.SUBTITLE &&
+					DataModel.getInstance().isLoggedIn )
+			{
+				viewSubtitlingControls(null);
 			}
 		}
 
