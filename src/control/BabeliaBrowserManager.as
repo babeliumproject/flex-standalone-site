@@ -38,7 +38,7 @@ package control
 		 * ACTION CONSTANTS
 		 **/
 		public static const ACTIVATE:String="activate";
-		public static const SUBTITLE:String="sub";
+		public static const SUBTITLE:String="edit";
 		public static const VIEW:String="view";
 		public static const RECORD:String="rec";
 		

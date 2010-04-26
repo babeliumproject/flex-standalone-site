@@ -6,7 +6,6 @@ package modules.subtitles
 	import control.BabeliaBrowserManager;
 	import control.CuePointManager;
 	
-	import events.ExerciseEvent;
 	import events.ExerciseRoleEvent;
 	import events.SubtitleEvent;
 	import events.ViewChangeEvent;
@@ -461,10 +460,23 @@ package modules.subtitles
 				videoPlayerControlsViewStack=0;
 				VP.subtitlingControls = true;
 				subtitleEditorVisible=!subtitleEditorVisible;
+				
+				// Update URL
+				BabeliaBrowserManager.getInstance().updateURL(
+					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
+					BabeliaBrowserManager.SUBTITLE,
+					exerciseFileName);
+				
 			} else {
 				videoPlayerControlsViewStack=1;
 				VP.subtitlingControls = false;
 				subtitleEditorVisible=!subtitleEditorVisible;
+				
+				// Update URL
+				BabeliaBrowserManager.getInstance().updateURL(
+					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
+					BabeliaBrowserManager.VIEW,
+					exerciseFileName);
 			}
 		}
 
@@ -501,8 +513,10 @@ package modules.subtitles
 			if ( value == null )
 				return;
 			
-			if ( browser.actionFragment == BabeliaBrowserManager.VIEW
-					|| browser.actionFragment == BabeliaBrowserManager.SUBTITLE )
+			var actionFragment:String = browser.actionFragment;
+			
+			if ( actionFragment == BabeliaBrowserManager.VIEW
+					|| actionFragment == BabeliaBrowserManager.SUBTITLE )
 			{
 				if ( browser.targetFragment != '' )
 				{
@@ -524,6 +538,8 @@ package modules.subtitles
 						new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 						return;
 					}
+					else
+						exerciseFileName = tempEx.name;
 					
 					var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tmp.language);
 					var roles:ExerciseRoleVO=new ExerciseRoleVO();
@@ -532,7 +548,9 @@ package modules.subtitles
 					//If it doesn't work this way, we can chain the events
 					new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
 					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
-					new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();				}
+					DataModel.getInstance().currentExercise.setItemAt(tempEx, DataModel.SUBTITLE_MODULE);
+					DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, DataModel.SUBTITLE_MODULE);
+				}
 				else
 				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
@@ -540,9 +558,15 @@ package modules.subtitles
 				}
 			}
 			
-			if ( browser.actionFragment == BabeliaBrowserManager.SUBTITLE &&
+			if ( actionFragment == BabeliaBrowserManager.SUBTITLE &&
 					DataModel.getInstance().isLoggedIn )
 			{
+				subtitleEditorVisible = false;
+				viewSubtitlingControls(null);
+			}
+			else if ( actionFragment == BabeliaBrowserManager.VIEW )
+			{
+				subtitleEditorVisible = true;
 				viewSubtitlingControls(null);
 			}
 		}
