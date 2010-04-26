@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
-	xmlns:ns1="modules.configuration.microphone.*" creationComplete="init()">
+		   xmlns:ns1="modules.configuration.microphone.*" creationComplete="init()">
 	
 	<mx:Script>
 		<![CDATA[
@@ -22,24 +22,24 @@
 			public var timerPlay:Timer;
 			public var timerSound:Timer;
 			public var onMic:Boolean=false;
-            
+			
 			private function init():void{						
 				nc = new NetConnection();
-  				nc.connect("rtmp://" + DataModel.getInstance().server +  ":" + DataModel.getInstance().red5Port + "/oflaDemo");
-    			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-    			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler); 
-    			inicializarTimers(); 	
+				nc.connect("rtmp://" + DataModel.getInstance().server +  ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler); 
+				inicializarTimers(); 	
 			}
 			
 			private function netStatusHandler(e:NetStatusEvent):void{   
 				if(e.info.code == "NetConnection.Connect.Success"){
-        			rec_ns = new NetStream(nc);
-        			play_ns = new NetStream(nc); 
-        			rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-    				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+					rec_ns = new NetStream(nc);
+					play_ns = new NetStream(nc); 
+					rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+					play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
 				}else   
 					//Problemas en la conexion
-   					trace(e.info.code); 
+					trace(e.info.code); 
 			}
 			
 			private function asyncErrrorHandler(e:AsyncErrorEvent):void{
@@ -57,15 +57,15 @@
 						/*Esta instruccion provoca mucho ruido en la grabacion. Sin embargo, si accedemos a esta
 						pestaña antes grabar cualquier otro archivo, es imprescindible su uso*/
 						mic.setLoopBack(true);}
-    				
+					
 					if(!DataModel.getInstance().micCamAllowed){
 						mic.addEventListener(StatusEvent.STATUS,mic_status);
 						DataModel.getInstance().micCamAllowed=true;//Need for Flexmonkey´s test.
 					}else{
-					/*Se comprueba si se ha grabado un fichero de video en la pestaña web-cam,
-					si previamente el usuario ha grabado otro fichero de audio o un ejercicio.
-					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
-					de un archivo no seria posible sin las siguientes lineas de codigo*/
+						/*Se comprueba si se ha grabado un fichero de video en la pestaña web-cam,
+						si previamente el usuario ha grabado otro fichero de audio o un ejercicio.
+						En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
+						de un archivo no seria posible sin las siguientes lineas de codigo*/
 						//Gestion de la deteccion de sonidos
 						onMic=false;
 						mic.setUseEchoSuppression(true);
@@ -78,10 +78,10 @@
 						model.DataModel.getInstance().audioRec=true;
 						noSoundText.visible=true;
 						DataModel.getInstance().micCamAllowed = true;
-                    	DataModel.getInstance().recording=true;
-                    	timerRec.start();
-                    	mic.rate = 44;
-   						inicializarContador();     
+						DataModel.getInstance().recording=true;
+						timerRec.start();
+						mic.rate = 44;
+						inicializarContador();     
 					}
 					
 				}catch(err:Error){
@@ -99,33 +99,33 @@
 				}else if (rec){//Grabación sin señal
 					Alert.show("No se ha detectado señal durante la grabación!");
 				}else{//No existe el fichero de grabación
-					Alert.show("No has grabado ningun archivo de sonido!");
+					Alert.show(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
 				}
 			}
 			
 			private function mic_status(e:StatusEvent):void{
-            	switch (e.code) {
-                    case "Microphone.Muted": //User denied access to micro
+				switch (e.code) {
+					case "Microphone.Muted": //User denied access to micro
 						//Draw X symbol in Microphone´s result panel
-                    	var ev:ConfigurationResultEvent = new ConfigurationResultEvent
-							(ConfigurationResultEvent.MICROPHONE_RESULT,false);
+						var ev:ConfigurationResultEvent = new ConfigurationResultEvent
+						(ConfigurationResultEvent.MICROPHONE_RESULT,false);
 						dispatchEvent(ev);
 						//Draw X symbol in WebCam´s result panel
 						var ev2:ConfigurationResultEvent = new ConfigurationResultEvent
-							(ConfigurationResultEvent.WEBCAM_RESULT,false);
+						(ConfigurationResultEvent.WEBCAM_RESULT,false);
 						dispatchEvent(ev2);
 						//Show status message in mic rec panel
-						statusText.text="Es necesario que aceptes los permisos";
+						statusText.text=resourceManager.getString('myResources', 'CONFIGURATION_NO_PERMISSIONS');
 						statusText.visible=true;
 						//Show status message in cam rec panel
 						var ev3:ShowStatusMessage = new ShowStatusMessage
-							(ShowStatusMessage.CAM_MESSAGE);
+						(ShowStatusMessage.CAM_MESSAGE);
 						dispatchEvent(ev3);
-		
+						
 						DataModel.getInstance().permissions=false;
 						barraSonido.visible=false;
-                        break;
-                    case "Microphone.Unmuted": //User allowed access to micro
+						break;
+					case "Microphone.Unmuted": //User allowed access to micro
 						//Gestion de la deteccion de sonidos
 						onMic=false;
 						mic.setUseEchoSuppression(true);
@@ -134,17 +134,17 @@
 						barraSonido.giveMicrophone(mic);
 						mic.setSilenceLevel(20,1000);
 						mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
-                    	rec_ns.attachAudio(mic);
+						rec_ns.attachAudio(mic);
 						model.DataModel.getInstance().audioRec=true;
-                    	noSoundText.visible=true;
+						noSoundText.visible=true;
 						DataModel.getInstance().micCamAllowed = true;
-                    	DataModel.getInstance().recording=true;
-                    	timerRec.start();
-                    	mic.rate = 44;
-   						inicializarContador();                   
-                        break;
-                }//switch
-            }
+						DataModel.getInstance().recording=true;
+						timerRec.start();
+						mic.rate = 44;
+						inicializarContador();                   
+						break;
+				}//switch
+			}
 			
 			private function timerRecFunc(event:TimerEvent):void{				
 				var denb:int
@@ -213,9 +213,9 @@
 			}
 			
 			private function onMicActivity(e:ActivityEvent):void{
-					timerSound=new Timer(20,0);
-					timerSound.addEventListener(TimerEvent.TIMER, soundDetect);
-					timerSound.start();
+				timerSound=new Timer(20,0);
+				timerSound.addEventListener(TimerEvent.TIMER, soundDetect);
+				timerSound.start();
 			}
 			
 			private function soundDetect(e:TimerEvent):void{
@@ -234,19 +234,20 @@
 			
 		]]>
 	</mx:Script>
-			
-					
+	
+	
 	<mx:HBox x="10" y="10" width="100%" height="90%" id="allMenu" visible="true">
 		
 		<mx:VBox id="explicacion" height="90%" width="347">
 			<mx:Text/>
-			<mx:Text text="COMPROBACION DE MICROFONO" fontSize="17" fontWeight="bold" textDecoration="underline" fontStyle="italic"/>			
+			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MICRO_TITTLE')}" 
+					 fontSize="17" fontWeight="bold" textDecoration="underline" fontStyle="italic"/>			
 			<ns1:explicacionMic height="100%" width="100%" id="texto"/>
 		</mx:VBox>
 		
 		<mx:VBox id="videoPanel" width="400" height="322" horizontalAlign="center" verticalAlign="top">
 			<mx:VBox borderStyle="solid" cornerRadius="3" backgroundColor="#e9edee" width="350" height="320"
-				horizontalAlign="center" verticalAlign="middle">
+					 horizontalAlign="center" verticalAlign="middle">
 				<mx:VBox borderStyle="solid" width="320" height="240" backgroundColor="black">
 					<mx:Text fontWeight="bold" id="statusText" text="Recording" color="red" fontSize="13" visible="false"/>
 					<mx:Text/>
@@ -254,19 +255,19 @@
 					<mx:Text/>
 					<mx:Text/>
 					<mx:Text id="noSoundText" text="     No hay señal" 
-						color="red" fontSize="30" visible="false"/>
+							 color="red" fontSize="30" visible="false"/>
 					<mx:UIComponent id="videoHolder" width="100%" height="100%"/>
 					<ns1:barraSonido id="barraSonido" visible="false"/>
 				</mx:VBox>
 				<mx:HBox horizontalAlign="center">
 					<mx:Button id="recButton" label="REC" click="recStart()" horizontalCenter="true"
-						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording &amp;&amp;
-						DataModel.getInstance().permissions}"/>
+							   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
 					<mx:Button id="playButton" label="PLAY" click="playStart()" horizontalCenter="true"
-						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording &amp;&amp;
-						DataModel.getInstance().permissions}"/>
+							   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
 				</mx:HBox>
 				<mx:VBox horizontalAlign="center" fontSize="15">
 					<mx:Text id="contador" text="10" visible="false" fontWeight="bold"/>
@@ -275,9 +276,9 @@
 		</mx:VBox>
 		
 	</mx:HBox>
-
+	
 	<mx:HBox id="notConect" horizontalAlign="center" verticalAlign="middle" 
-		width="100%" height="100%" visible="false">
+			 width="100%" height="100%" visible="false">
 		<ns1:notMicText/>
 	</mx:HBox>
 </mx:Canvas>

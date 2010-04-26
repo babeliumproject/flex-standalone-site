@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
-	xmlns:ns1="modules.configuration.webcam.*" creationComplete="init()">
+		   xmlns:ns1="modules.configuration.webcam.*" creationComplete="init()">
 	
 	<mx:Script> 
 		<![CDATA[
@@ -11,7 +11,7 @@
 			import modules.configuration.ShowStatusMessage;
 			
 			import mx.controls.Alert;
-						
+			
 			public var cam:Camera;
 			public var mic:Microphone;
 			private var video:Video;
@@ -21,24 +21,24 @@
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
-            
+			
 			private function init():void{															
 				nc = new NetConnection();
-  				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
-    			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-    			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
-    			inicializarTimers();		
+				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
+				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
+				inicializarTimers();		
 			}
 			
 			private function netStatusHandler(e:NetStatusEvent):void{   
 				if(e.info.code == "NetConnection.Connect.Success"){
-        			rec_ns = new NetStream(nc);
-        			play_ns = new NetStream(nc); 
-        			rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-    				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+					rec_ns = new NetStream(nc);
+					play_ns = new NetStream(nc); 
+					rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+					play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
 				}else   
 					//Problemas en la conexion
-   					trace(e.info.code); 
+					trace(e.info.code); 
 			}
 			
 			private function asyncErrrorHandler(e:AsyncErrorEvent):void{
@@ -56,15 +56,15 @@
 					mic.setLoopBack(true);
 					mic.setUseEchoSuppression(true);
 					mic.gain=40;
-						
+					
 					if(!DataModel.getInstance().micCamAllowed){						
 						cam.addEventListener(StatusEvent.STATUS,camera_status);
 						DataModel.getInstance().micCamAllowed=true;//Need for Flexmonkey´s test.
 					}else{
-					/*Se comprueba si se ha grabado un fichero de audio en la pestaña microphone
-					o si previamente el usuario ha grabado otro fichero de video.
-					En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
-					de un video no seria posible sin las siguientes lineas de codigo*/
+						/*Se comprueba si se ha grabado un fichero de audio en la pestaña microphone
+						o si previamente el usuario ha grabado otro fichero de video.
+						En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
+						de un video no seria posible sin las siguientes lineas de codigo*/
 						rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
 						statusTextFunc("recording");
@@ -91,24 +91,23 @@
 					video.attachNetStream(play_ns);
 					videoHolder.addChild(video);
 					timerPlay.start();
-				}else{//Rec file not exists
-					Alert.show("No has grabado ningun video!");
-				}
+				}else//Rec file not exists
+					Alert.show(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
 			}
 			
 			private function camera_status(e:StatusEvent):void{
-            	switch (e.code) {
-                    case "Camera.Muted": //User denied access to camera
+				switch (e.code) {
+					case "Camera.Muted": //User denied access to camera
 						//Draw X symbol in WebCam´s result panel
-                    	var ev:ConfigurationResultEvent = new ConfigurationResultEvent
-							(ConfigurationResultEvent.WEBCAM_RESULT,false);
+						var ev:ConfigurationResultEvent = new ConfigurationResultEvent
+						(ConfigurationResultEvent.WEBCAM_RESULT,false);
 						dispatchEvent(ev);  
 						//Draw X symbol in Microphone´s result panel
 						var ev2:ConfigurationResultEvent = new ConfigurationResultEvent
 						(ConfigurationResultEvent.MICROPHONE_RESULT,false);
 						dispatchEvent(ev2);
 						//Show status message in cam rec panel
-						statusText.text="Es necesario que aceptes los permisos";
+						statusText.text=resourceManager.getString('myResources', 'CONFIGURATION_NO_PERMISSIONS');
 						statusText.visible=true;
 						//Show status message in mic rec panel
 						var ev3:ShowStatusMessage = new ShowStatusMessage
@@ -116,24 +115,24 @@
 						dispatchEvent(ev3);
 						
 						DataModel.getInstance().permissions=false;						
-                        break;
-                    case "Camera.Unmuted": //User allowed access to camera
-                    	rec_ns.attachCamera(cam);
+						break;
+					case "Camera.Unmuted": //User allowed access to camera
+						rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
-                   	 	DataModel.getInstance().recording=true;
+						DataModel.getInstance().recording=true;
 						DataModel.getInstance().micCamAllowed = true;
-                    	statusTextFunc("recording");
-                    	video = new Video();
-                    	video.attachCamera(cam);
-                    	videoHolder.addChild(video);
-                    	timerRec.start();
-                    	mic.rate = 44;
-        				rec_ns.attachAudio(mic);
-   						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
-   						inicializarContador();                    
-                        break;
-                }//switch
-            }
+						statusTextFunc("recording");
+						video = new Video();
+						video.attachCamera(cam);
+						videoHolder.addChild(video);
+						timerRec.start();
+						mic.rate = 44;
+						rec_ns.attachAudio(mic);
+						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
+						inicializarContador();                    
+						break;
+				}//switch
+			}
 			
 			private function timerRecFunc(event:TimerEvent):void{				
 				var denb:int
@@ -202,38 +201,39 @@
 		
 		<mx:VBox id="explicacion" height="90%" width="347">
 			<mx:Text/>
-			<mx:Text text="COMPROBACION DE WEB-CAM" fontSize="17" fontWeight="bold" textDecoration="underline" fontStyle="italic"/>			
+			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}" 
+					 fontSize="17" fontWeight="bold" textDecoration="underline" fontStyle="italic"/>			
 			<ns1:explicacionCam height="100%" width="100%" id="texto"/>
 		</mx:VBox>
 		
 		<mx:VBox id="videoPanel" width="400" height="322" horizontalAlign="center" verticalAlign="top">
 			<mx:VBox borderStyle="solid" cornerRadius="3" backgroundColor="#e9edee" width="350" height="320"
-				horizontalAlign="center" verticalAlign="middle">
+					 horizontalAlign="center" verticalAlign="middle">
 				<mx:VBox borderStyle="solid" width="320" height="240" backgroundColor="black">
 					<mx:UIComponent id="videoHolder" width="100%" height="100%"/>
 					<mx:Text id="statusText" visible="false" color="red" fontSize="13" fontWeight="bold"/>
 				</mx:VBox>
 				<mx:HBox horizontalAlign="center">
 					<mx:Button label="REC" click="recStart()" horizontalCenter="true"
-						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording &amp;&amp;
-							DataModel.getInstance().permissions}"/>
+							   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
 					<mx:Button label="PLAY" click="playStart()" horizontalCenter="true"
-						enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							!DataModel.getInstance().recording &amp;&amp;
-						DataModel.getInstance().permissions}"/>
+							   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
 				</mx:HBox>
 				<mx:VBox horizontalAlign="center" fontSize="15">
 					<mx:Text id="contador" text="10" visible="false" fontWeight="bold"/>
 				</mx:VBox>				
 			</mx:VBox>			
 		</mx:VBox>
-				
+		
 	</mx:HBox>
-		
-		
+	
+	
 	<mx:HBox id="notConect" horizontalAlign="center" verticalAlign="middle" visible="false"
-		width="100%" height="100%">
+			 width="100%" height="100%">
 		<ns1:notCamText/>
 	</mx:HBox>
 </mx:Canvas>

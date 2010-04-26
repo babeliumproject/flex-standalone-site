@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-	xmlns:ns1="modules.configuration.bandwidth.*" creationComplete="init()">
+		   xmlns:ns1="modules.configuration.bandwidth.*" creationComplete="init()">
 	
 	<mx:Script>
 		<![CDATA[
 			import modules.configuration.ConfigurationResultEvent;
-    		import flash.net.NetConnection;
-    		import flash.events.NetStatusEvent;
-    		import mx.collections.ArrayCollection;
-        	import mx.charts.series.ColumnSeries;
-        	import model.DataModel;
-   		
+			import flash.net.NetConnection;
+			import flash.events.NetStatusEvent;
+			import mx.collections.ArrayCollection;
+			import mx.charts.series.ColumnSeries;
+			import model.DataModel;
+			
 			private var nc:NetConnection;
 			public var ns:NetStream;
-            private var serverClient:ServerClientBandwidth;
+			private var serverClient:ServerClientBandwidth;
 			private var chart:ColumnSeries;
-            
-            [Bindable]
-        	private var chartData:ArrayCollection;
-           
+			
+			[Bindable]
+			private var chartData:ArrayCollection;
+			
 			private function init():void{							
 				nc = new NetConnection();
 				nc.objectEncoding= flash.net.ObjectEncoding.AMF0;
 				nc.client=this;
-    			nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
-    			nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/bwcheck");
+				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/bwcheck");
 			}
 			
 			public function onStatus(event:NetStatusEvent):void{
-    			switch (event.info.code){
-        			case "NetConnection.Connect.Success":
-        				serverClient=new ServerClientBandwidth();
-        				serverClient.connection=nc;
-        				serverClient.service="bwCheckService.onServerClientBWCheck";
-        				serverClient.addEventListener(BandwidthDetectEvent.DETECT_COMPLETE,onServerClientComplete);
-       			}//switch	
+				switch (event.info.code){
+					case "NetConnection.Connect.Success":
+						serverClient=new ServerClientBandwidth();
+						serverClient.connection=nc;
+						serverClient.service="bwCheckService.onServerClientBWCheck";
+						serverClient.addEventListener(BandwidthDetectEvent.DETECT_COMPLETE,onServerClientComplete);
+				}//switch	
 			}
 			
 			public function onServerClientComplete(event:BandwidthDetectEvent):void{			
 				chartData = new ArrayCollection ([ {Connection: "Needed", BWDown: 10000},
-				{Connection: "Real", BWDown: event.info.kbitDown} ]);
+					{Connection: "Real", BWDown: event.info.kbitDown} ]);
 				mostrarBwInfo(event);
 				dispatchResultEvent(event);
 			}
@@ -59,40 +59,40 @@
 			private function startCheck():void{
 				serverClient.start();
 			}
-								
-			]]>
+			
+		]]>
 	</mx:Script>
 	
 	
 	<mx:HBox x="10" y="10" width="100%" height="90%" id="allMenu" visible="true">
-	
-	<mx:VBox id="explicacion" height="90%" width="347">
-		<mx:Text/>
-		<mx:Button id="comprobacionButton" label="COMPROBACION DE ANCHO DE BANDA" click="startCheck()"
-			enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}"/>
-		<ns1:explicacionBandwidth height="100%" width="100%" id="texto"/>
-		<mx:VBox id="bwInfo" visible="false">
-			<mx:Text id="Needed" color="#425fd9" fontSize="25" fontWeight="bold"/>
-			<mx:Text id="Real" color="#425fd9" fontSize="25" fontWeight="bold"/>
-		</mx:VBox>			
-	</mx:VBox>
-	
-	<mx:Panel title="BandWidth Chart" id="bwChart" width="400" height="400">
-        <mx:ColumnChart id="myChart" dataProvider="{chartData}" showDataTips="true" width="340" height="320">
-            <mx:horizontalAxis>
-                <mx:CategoryAxis categoryField="Connection"/>
-            </mx:horizontalAxis>
-            <mx:series>
-                <mx:ColumnSeries dataProvider="{chartData}"
-                    yField="BWDown"
-                    xField="Connection"
-                    displayName="Kbit Down"
-                />
-            </mx:series>
-        </mx:ColumnChart>
-        <mx:Legend dataProvider="{myChart}"/>       
-    </mx:Panel>
-    
-	</mx:HBox>
 		
+		<mx:VBox id="explicacion" height="90%" width="347">
+			<mx:Text/>
+			<mx:Button id="comprobacionButton" label="{resourceManager.getString('myResources', 'CONFIGURATION_BW_TITTLE')}" 
+					   enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}" click="startCheck()"/>
+			<ns1:explicacionBandwidth height="100%" width="100%" id="texto"/>
+			<mx:VBox id="bwInfo" visible="false">
+				<mx:Text id="Needed" color="#425fd9" fontSize="25" fontWeight="bold"/>
+				<mx:Text id="Real" color="#425fd9" fontSize="25" fontWeight="bold"/>
+			</mx:VBox>			
+		</mx:VBox>
+		
+		<mx:Panel title="BandWidth Chart" id="bwChart" width="400" height="400">
+			<mx:ColumnChart id="myChart" dataProvider="{chartData}" showDataTips="true" width="340" height="320">
+				<mx:horizontalAxis>
+					<mx:CategoryAxis categoryField="Connection"/>
+				</mx:horizontalAxis>
+				<mx:series>
+					<mx:ColumnSeries dataProvider="{chartData}"
+									 yField="BWDown"
+									 xField="Connection"
+									 displayName="Kbit Down"
+									 />
+				</mx:series>
+			</mx:ColumnChart>
+			<mx:Legend dataProvider="{myChart}"/>       
+		</mx:Panel>
+		
+	</mx:HBox>
+	
 </mx:Canvas>
