@@ -4,12 +4,15 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import modules.configuration.ConfigurationResultEvent;
-			import flash.net.NetConnection;
 			import flash.events.NetStatusEvent;
-			import mx.collections.ArrayCollection;
-			import mx.charts.series.ColumnSeries;
+			import flash.net.NetConnection;
+			
 			import model.DataModel;
+			
+			import modules.configuration.ConfigurationResultEvent;
+			
+			import mx.charts.series.ColumnSeries;
+			import mx.collections.ArrayCollection;
 			
 			private var nc:NetConnection;
 			public var ns:NetStream;
@@ -38,21 +41,21 @@
 			}
 			
 			public function onServerClientComplete(event:BandwidthDetectEvent):void{			
-				chartData = new ArrayCollection ([ {Connection: "Needed", BWDown: 10000},
+				chartData = new ArrayCollection ([ {Connection: "Needed", BWDown: DataModel.getInstance().bwMin},
 					{Connection: "Real", BWDown: event.info.kbitDown} ]);
 				mostrarBwInfo(event);
 				dispatchResultEvent(event);
 			}
 			
 			private function mostrarBwInfo(event:BandwidthDetectEvent):void{
-				Needed.text="Needed: 10000 Kb/s";
+				Needed.text="Needed: " + DataModel.getInstance().bwMin + " Kb/s";
 				Real.text="Real: " + event.info.kbitDown + " Kb/s";
 				bwInfo.visible=true;
 			}
 			
 			private function dispatchResultEvent(event:BandwidthDetectEvent):void{
 				var ev:ConfigurationResultEvent = new ConfigurationResultEvent
-					(ConfigurationResultEvent.BANDWIDTH_RESULT,event.info.kbitDown>=10000);
+					(ConfigurationResultEvent.BANDWIDTH_RESULT,event.info.kbitDown>=DataModel.getInstance().bwMin);
 				dispatchEvent(ev);
 			}
 			
