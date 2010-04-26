@@ -455,7 +455,7 @@ package modules.subtitles
 
 
 		public function viewSubtitlingControls(event:MouseEvent):void
-		{
+		{	
 			if(!subtitleEditorVisible){
 				videoPlayerControlsViewStack=0;
 				VP.subtitlingControls = true;
@@ -564,8 +564,16 @@ package modules.subtitles
 				subtitleEditorVisible = false;
 				viewSubtitlingControls(null);
 			}
-			else if ( actionFragment == BabeliaBrowserManager.VIEW )
+			else if ( (actionFragment == BabeliaBrowserManager.SUBTITLE &&
+					!DataModel.getInstance().isLoggedIn) 
+					|| actionFragment == BabeliaBrowserManager.VIEW)
 			{
+				// Update URL
+				BabeliaBrowserManager.getInstance().updateURL(
+					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
+					BabeliaBrowserManager.VIEW,
+					exerciseFileName);
+
 				subtitleEditorVisible = true;
 				viewSubtitlingControls(null);
 			}
