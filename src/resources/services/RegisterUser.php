@@ -10,6 +10,24 @@ class RegisterUser{
 	private $conn;
 	private $settings;
 
+	private $message_es_ES = "Welcome to %s.\n\r
+							  Please keep this e-mail for your records. Your account information is as follows:\n\n
+							  ----------------------------\n\r
+							  Username: %s\n\r
+			
+							  Password: %s\n
+							  ----------------------------\n\r
+
+Please visit the following link in order to activate your account:\n\r
+
+%s
+
+Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.\n\n
+
+Thank you for registering.\n\r
+
+%s";
+
 	public function RegisterUser(){
 		try{
 			$this->settings = new Config();
@@ -37,21 +55,30 @@ class RegisterUser{
 		$realName, $realSurname, $initialCredits, $hash );
 
 
+		//If not null $result is an instance of UserVO
 		if ( $result != false )
 		{
 			//Add the languages selected by the user
-			//$languages = $user->languages;
-			//if (count($languages) > 0)
-			//	$this->addUserLanguages($languages);
+			$languages = $user->languages;
+			if (count($languages) > 0)
+			$this->addUserLanguages($languages, $result->id);
 
 
 			// Submit activatión email
 			include_once ('Mailer.php');
 
 			$mail = new Mailer($user->name);
+				
+			$subject = 'Babelium Project: Account Activation';
+			$plainBody = sprintf($this->message_es_ES, 'Babelium Project', $user->name, $user->password, "<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."</a>",'The Babelium Project Team');
+			$htmlBody = $plainBody;
+
+			$mail->send($plainBody, $subject, $htmlBody);
+				
+			/**
 			$mail->send("http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name, "Activate account",
 				"<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."</a>");
-
+**/
 			return $result;
 		}
 
@@ -59,15 +86,19 @@ class RegisterUser{
 	}
 
 	//The parameter should be an array of UserLanguageVO
-	public function addUserLanguages($languages) {
+	public function addUserLanguages($languages, $userId) {
+
+
+		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='positives_to_next_level' )";
+		$positivesToNextLevel = $this->_getPositivesToNextLevel($sql);
 
 		$params = array();
 
 
-		$sql = "INSERT INTO user_languages (fk_user_id, language, level) VALUES ";
+		$sql = "INSERT INTO user_languages (fk_user_id, language, level, positives_to_next_level) VALUES ";
 		foreach($languages as $language) {
-			$sql .= " ('%d', '%s', '%d'),";
-			array_push($params, $language->userId, $language->language, $language->level);
+			$sql .= " ('%d', '%s', '%d', '%d'),";
+			array_push($params, $userId, $language->language, $language->level, $positivesToNextLevel);
 		}
 		unset($language);
 		$sql = substr($sql,'',-1);
@@ -87,11 +118,11 @@ class RegisterUser{
 
 		if ( $result )
 		{
-			$sql = "UPDATE users SET active = 1, activation_hash = '' 
+			$sql = "UPDATE users SET active = 1, activation_hash = ''
 			        WHERE (name = '%s' AND activation_hash = '%s')";
 			$update = $this->_databaseUpdate($sql, $user->name, $user->activationHash);
 		}
-		
+
 		return ($result && $update);
 	}
 
@@ -99,9 +130,9 @@ class RegisterUser{
 		$result = $this->conn->_execute(func_get_args());
 		$row = $this->conn->_nextRow ($result);
 		if ($row)
-			return true;
+		return true;
 		else
-			return false;
+		return false;
 	}
 
 
@@ -114,7 +145,7 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql, $user->name, $user->email);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-			return false;
+		return false;
 
 		$this->conn->_execute( $data );
 
@@ -171,7 +202,7 @@ class RegisterUser{
 
 		// Generate Hash
 		for ( $i = 0; $i < $length; $i++ )
-			$hash .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
+		$hash .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $hash;
 	}
@@ -182,9 +213,9 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-			return $row[0];
+		return $row[0];
 		else
-			return 20; // Default: avoiding crashes
+		return 20; // Default: avoiding crashes
 	}
 
 	private function _getHashChars()
@@ -193,9 +224,9 @@ class RegisterUser{
 		$result = $this->conn->_execute($sql);
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-			return $row[0];
+		return $row[0];
 		else
-			return "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
+		return "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
 	}
 
 	private function _getInitialCreditsQuery($sql){
@@ -203,9 +234,19 @@ class RegisterUser{
 
 		$row = $this->conn->_nextRow($result);
 		if ($row)
-			return $row[0];
+		return $row[0];
 		else
-			throw new Exception("An unexpected error occurred while trying to save your registration data.");
+		throw new Exception("An unexpected error occurred while trying to save your registration data.");
+	}
+
+	private function _getPositivesToNextLevel($sql){
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		if($row)
+		return $row[0];
+		else
+		throw new Exception("Unexpected error while trying to retrieve preference data");
 	}
 
 	public function _databaseUpdate() {
