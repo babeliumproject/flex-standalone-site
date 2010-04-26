@@ -54,11 +54,11 @@ class RegisterUser{
 			$subject = 'Babelium Project: Account Activation';
 
 			$args = array(
-						"PROJECT_NAME%Babelium Project",
-						"USERNAME%".$user->name,
-						"PASSWORD%".$user->password,
-						"ACTIVATION_LINK%http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name,
-						"SIGNATURE%The Babelium Project Team");
+						'PROJECT_NAME' => 'Babelium Project',
+						'USERNAME' => $user->name,
+						'PASSWORD' => $user->password,
+						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name,
+						'SIGNATURE' => 'The Babelium Project Team');
 
 			if ( !$mail->makeTemplate("mail_activation", $args, "en_US") ) return null;
 

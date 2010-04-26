@@ -99,9 +99,8 @@ class Mailer
 		$this->_keys = array();
 		$this->_values = array();
 		
-		foreach ( $templateArgs as $object )
+		while ( list($tmp1,$tmp2) = each($templateArgs) )
 		{
-			list($tmp1, $tmp2) = split("%", $object);
 			array_push($this->_keys, "/{" . $tmp1 . "}/");
 			array_push($this->_values, $tmp2);
 		}
