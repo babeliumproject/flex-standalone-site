@@ -10,24 +10,6 @@ class RegisterUser{
 	private $conn;
 	private $settings;
 
-	private $message_es_ES = "Welcome to %s.\n\r
-							  Please keep this e-mail for your records. Your account information is as follows:\n\n
-							  ----------------------------\n\r
-							  Username: %s\n\r
-			
-							  Password: %s\n
-							  ----------------------------\n\r
-
-Please visit the following link in order to activate your account:\n\r
-
-%s
-
-Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.\n\n
-
-Thank you for registering.\n\r
-
-%s";
-
 	public function RegisterUser(){
 		try{
 			$this->settings = new Config();
@@ -70,15 +52,18 @@ Thank you for registering.\n\r
 			$mail = new Mailer($user->name);
 				
 			$subject = 'Babelium Project: Account Activation';
-			$plainBody = sprintf($this->message_es_ES, 'Babelium Project', $user->name, $user->password, "<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."</a>",'The Babelium Project Team');
-			$htmlBody = $plainBody;
 
-			$mail->send($plainBody, $subject, $htmlBody);
-				
-			/**
-			$mail->send("http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name, "Activate account",
-				"<a href='http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."'>http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name."</a>");
-**/
+			$args = array(
+						"PROJECT_NAME%Babelium Project",
+						"USERNAME%".$user->name,
+						"PASSWORD%".$user->password,
+						"ACTIVATION_LINK%http://".$_SERVER['HTTP_HOST']."/Main.html#/activation/activate/hash=".$hash."&user=".$user->name,
+						"SIGNATURE%The Babelium Project Team");
+
+			if ( !$mail->makeTemplate("mail_activation", $args, "en_US") ) return null;
+
+			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
+
 			return $result;
 		}
 

@@ -13,10 +13,23 @@ class Mailer
 	private $_userRealName;
 	private $_validUser;
 
+	// Template related vars
+	private $_tplDir;
+	private $_template;
+	private $_tplFile;
+	private $_keys;
+	private $_values;
+
+	public $txtContent;
+	public $htmlContent;
+
 	public function Mailer($username)
 	{
 		$this->_settings = new Config();
 		$this->_conn = new DataSource($this->_settings->host, $this->_settings->db_name, $this->_settings->db_username, $this->_settings->db_password);
+
+		$this->_tplDir = $this->_settings->templatePath . "/";
+
 
 		$this->_validUser = $this->_getUserInfo($username);
 	}
@@ -77,6 +90,39 @@ class Mailer
 	{
 		$reg = "/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/";
 		return preg_match($reg, $email);
+	}
+	
+	public function makeTemplate($templateFile, $templateArgs, $language)
+	{
+		$this->_tplFile = $this->_tplDir . $language . "/" . $templateFile;
+
+		$this->_keys = array();
+		$this->_values = array();
+		
+		foreach ( $templateArgs as $object )
+		{
+			list($tmp1, $tmp2) = split("%", $object);
+			array_push($this->_keys, "/{" . $tmp1 . "}/");
+			array_push($this->_values, $tmp2);
+		}
+
+		$txtFile = $this->_tplFile.".txt";
+		$htmlFile = $this->_tplFile.".html";
+
+		// txt content
+		if ( !$fd = fopen($txtFile, "r") ) return false;
+		$this->_template = fread($fd, filesize($txtFile));
+		fclose($fd);
+		$this->txtContent = preg_replace($this->_keys, $this->_values, $this->_template);
+		
+
+		// html content
+		if ( !$fd = fopen($htmlFile, "r") ) return false;
+		$this->_template = fread($fd, filesize($htmlFile));
+		fclose($fd);
+		$this->htmlContent = preg_replace($this->_keys, $this->_values, $this->_template);
+
+		return true;
 	}
 
 }

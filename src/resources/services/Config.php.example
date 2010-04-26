@@ -10,6 +10,7 @@
 		//Server path to store uploaded files
 		public $filePath = '';
 		public $imagePath = '';
+		public $templatePath = '';
 		public $red5Path = 'C:/Archivos de programa/Red5/webapps/oflaDemo/streams';
 		//public $red5Path = '/opt/red5_0_8/webapps/oflaDemo/streams';
 		
@@ -47,9 +48,11 @@
 			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
 				$this->imagePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/thumbs";
+				$this->templatePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/templates";
 			} else {
 				$this->filePath = $this->webRootPath . "/resources/uploads";
 				$this->imagePath = $this->webRootPath . "/resources/images/thumbs";
+				$this->templatePath = $this->webRootPath . "/resources/templates";
 			}	
 		}
 	}

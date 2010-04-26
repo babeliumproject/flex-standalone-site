@@ -457,26 +457,12 @@ package modules.subtitles
 		public function viewSubtitlingControls(event:MouseEvent):void
 		{	
 			if(!subtitleEditorVisible){
-				videoPlayerControlsViewStack=0;
-				VP.subtitlingControls = true;
-				subtitleEditorVisible=!subtitleEditorVisible;
-				
-				// Update URL
-				BabeliaBrowserManager.getInstance().updateURL(
-					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
-					BabeliaBrowserManager.SUBTITLE,
-					exerciseFileName);
+				showSubtitleEditor();
+				updateURL(BabeliaBrowserManager.SUBTITLE, exerciseFileName);
 				
 			} else {
-				videoPlayerControlsViewStack=1;
-				VP.subtitlingControls = false;
-				subtitleEditorVisible=!subtitleEditorVisible;
-				
-				// Update URL
-				BabeliaBrowserManager.getInstance().updateURL(
-					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
-					BabeliaBrowserManager.VIEW,
-					exerciseFileName);
+				hideSubtitleEditor();
+				updateURL(BabeliaBrowserManager.VIEW, exerciseFileName);
 			}
 		}
 
@@ -562,21 +548,44 @@ package modules.subtitles
 					DataModel.getInstance().isLoggedIn )
 			{
 				subtitleEditorVisible = false;
-				viewSubtitlingControls(null);
+				showSubtitleEditor();
 			}
-			else if ( (actionFragment == BabeliaBrowserManager.SUBTITLE &&
-					!DataModel.getInstance().isLoggedIn) 
-					|| actionFragment == BabeliaBrowserManager.VIEW)
+			else if ( actionFragment == BabeliaBrowserManager.SUBTITLE &&
+					!DataModel.getInstance().isLoggedIn )
 			{
-				// Update URL
-				BabeliaBrowserManager.getInstance().updateURL(
-					BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
-					BabeliaBrowserManager.VIEW,
-					exerciseFileName);
-
-				subtitleEditorVisible = true;
-				viewSubtitlingControls(null);
+				updateURL(BabeliaBrowserManager.VIEW, exerciseFileName);
 			}
+			
+			if ( (actionFragment == BabeliaBrowserManager.SUBTITLE &&
+					!DataModel.getInstance().isLoggedIn) 
+					|| actionFragment == BabeliaBrowserManager.VIEW) 
+			{
+				subtitleEditorVisible = true;
+				hideSubtitleEditor();
+			}
+		}
+		
+		public function showSubtitleEditor() : void
+		{
+			videoPlayerControlsViewStack=0;
+			VP.subtitlingControls = true;
+			subtitleEditorVisible=!subtitleEditorVisible;
+		}
+		
+		public function hideSubtitleEditor() : void
+		{
+			videoPlayerControlsViewStack=1;
+			VP.subtitlingControls = false;
+			subtitleEditorVisible=!subtitleEditorVisible;
+		}
+		
+		public function updateURL(action:String, target:String) : void
+		{
+			// Update URL
+			BabeliaBrowserManager.getInstance().updateURL(
+				BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
+				action,
+				target);
 		}
 
 	}
