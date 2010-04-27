@@ -1,17 +1,12 @@
-Welcome to {PROJECT_NAME}.\n\r
-Please keep this e-mail for your records. Your account information is as follows:\n\n
- ----------------------------\n\r
-Username: {USERNAME}\n\r
-			
-Password: {PASSWORD}\n
-----------------------------\n\r
+Bienvenue sur {PROJECT_NAME}.
 
-Please visit the following link in order to activate your account:\n\r
+Visitez le lien suivant afin d'activer votre compte:
 
 {ACTIVATION_LINK}
 
-Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.\n\n
+Votre mot de passe a été stocké de manière sécurisée dans notre base de données et ne pourra pas être retrouvé. Dans le cas où vous l'auriez oublié, vous pourrez le réinitialiser en utilisant l'adresse e-mail associée à votre compte.
 
-Thank you for registering.\n\r
+
+Merci de vous être enregistré,
 
 {SIGNATURE}

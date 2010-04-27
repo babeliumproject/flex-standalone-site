@@ -6,6 +6,8 @@ package business
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
 	
+	import vo.ExerciseReportVO;
+	import vo.ExerciseScoreVO;
 	import vo.ExerciseVO;
 
 
@@ -47,6 +49,18 @@ package business
 		public function getExerciseRoles(exercise:ExerciseVO) : void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
 			var pendingCall:AsyncToken=service.getExerciseRoles(exercise.id);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function reportInnapropriateExercise(report:ExerciseReportVO):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.reportInnapropriateExercise(report);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function rateExercise(score:ExerciseScoreVO):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.rateExercise(score);
 			pendingCall.addResponder(responder);
 		}
 		

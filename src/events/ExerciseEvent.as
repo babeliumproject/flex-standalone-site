@@ -4,6 +4,8 @@ package events
 	
 	import flash.events.Event;
 	
+	import vo.ExerciseReportVO;
+	import vo.ExerciseScoreVO;
 	import vo.ExerciseVO;
 
 	public class ExerciseEvent extends CairngormEvent
@@ -15,17 +17,23 @@ package events
 		public static const WATCH_EXERCISE:String="watchExercise";
 		public static const EXERCISE_SELECTED:String="exerciseSelected";
 		public static const GET_EXERCISE_LOCALES:String="exerciseLocales";
+		public static const RATE_EXERCISE:String="rateExercise";
+		public static const REPORT_EXERCISE:String="reportExercise";
 
 		public var exercise:ExerciseVO;
+		public var report:ExerciseReportVO;
+		public var score:ExerciseScoreVO;
 
-		public function ExerciseEvent(type:String, exercise:ExerciseVO = null)
+		public function ExerciseEvent(type:String, exercise:ExerciseVO = null, report:ExerciseReportVO = null, score:ExerciseScoreVO = null)
 		{
 			super(type);
 			this.exercise=exercise;
+			this.report=report;
+			this.score=score;
 		}
 		
 		override public function clone():Event{
-			return new ExerciseEvent(type,exercise);
+			return new ExerciseEvent(type,exercise,report,score);
 		}
 
 	}

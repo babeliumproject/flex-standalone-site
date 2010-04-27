@@ -12,6 +12,7 @@
 			import model.DataModel;
 			
 			import mx.collections.ArrayCollection;
+			import mx.core.Application;
 			
 			import vo.ExerciseVO;
 
@@ -39,11 +40,17 @@
 			{
 				var obj:ExerciseVO = DataGrid(event.target).selectedItem as ExerciseVO;
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+				callLater(updateVerticalScroll);
 			}
 			
 			public function thumbSet(data:Object):String{
 				return (thumbURL+"/"+data.thumbnailUri);
 			}
+			
+			public function updateVerticalScroll():void{
+				Application.application.content.exerciseModule.verticalScrollPosition = 0;
+			}
+			
 		]]>
 	</mx:Script>
 	

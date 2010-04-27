@@ -1,17 +1,20 @@
-Welcome to {PROJECT_NAME}.\n\r
-Please keep this e-mail for your records. Your account information is as follows:\n\n
- ----------------------------\n\r
-Username: {USERNAME}\n\r
-			
-Password: {PASSWORD}\n
-----------------------------\n\r
+Welcome to {PROJECT_NAME}.
 
-Please visit the following link in order to activate your account:\n\r
+Please keep this e-mail for your records. Your account information is as follows:
+
+----------------------------
+Username: {USERNAME}
+			
+Website: {PROJECT_SITE}
+----------------------------
+
+Please visit the following link in order to activate your account:
 
 {ACTIVATION_LINK}
 
-Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.\n\n
+Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.
 
-Thank you for registering.\n\r
+
+Thank you for registering,
 
 {SIGNATURE}

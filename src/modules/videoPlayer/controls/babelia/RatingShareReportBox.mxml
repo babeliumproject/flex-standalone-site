@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:rating="com.asfusion.controls.*"
+		 horizontalAlign="center"
+		 verticalAlign="middle"
+		 borderStyle="solid"
+		 cornerRadius="4">
+
+	<mx:Script>
+		<![CDATA[
+			import model.DataModel;
+
+			protected function ratingClickHandler(event:MouseEvent):void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					rating.value
+				}
+			}
+
+			protected function reportVideoClickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</mx:Script>
+
+
+	<rating:Rating id="rating"
+				   value="0"
+				   liveRollOver="{DataModel.getInstance().isLoggedIn}"
+				   click="ratingClickHandler(event)"/>
+	<mx:VRule/>
+	<mx:LinkButton id="reportVideo"
+				   label="Report"
+				   toolTip="Report unnapropiate video."
+				   icon=""
+				   enabled="{DataModel.getInstance().isLoggedIn}"
+				   click="reportVideoClickHandler(event)"/>
+
+</mx:HBox>

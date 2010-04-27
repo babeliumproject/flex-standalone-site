@@ -8,7 +8,6 @@ require_once 'Zend/Amf/Server.php';
 
 // Import here your DAO classes
 require_once './amfphp/services/babelia/Epaitu.php';
-//require_once './amfphp/services/babelia/ShowSubLang.php';
 
 require_once './amfphp/services/babelia/CreditDAO.php';
 require_once './amfphp/services/babelia/ExerciseDAO.php';
@@ -17,7 +16,6 @@ require_once './amfphp/services/babelia/PreferenceDAO.php';
 require_once './amfphp/services/babelia/RegisterUser.php';
 require_once './amfphp/services/babelia/ResponseDAO.php';
 require_once './amfphp/services/babelia/SubtitleDAO.php';
-//require_once './amfphp/services/babelia/SubtitlesAndRolesDAO.php';
 require_once './amfphp/services/babelia/TranscriptionsDAO.php';
 require_once './amfphp/services/babelia/UserDAO.php';
 require_once './amfphp/services/babelia/UploadExerciseDAO.php';

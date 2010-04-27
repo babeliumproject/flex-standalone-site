@@ -74,8 +74,8 @@ class Mailer
 		$transport = new Zend_Mail_Transport_Smtp($this->_settings->smtp_server_host, $config);
 
 
-		$mail = new Zend_Mail();
-		$mail->setBodyText($body);
+		$mail = new Zend_Mail('UTF-8');
+		$mail->setBodyText(utf8_decode($body));
 		if ( $htmlBody != null )
 			$mail->setBodyHtml($htmlBody);
 		$mail->setFrom($this->smtp_mail_setFromMail, $this->smtp_mail_setFromName);

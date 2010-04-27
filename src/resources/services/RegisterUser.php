@@ -43,7 +43,10 @@ class RegisterUser{
 			//Add the languages selected by the user
 			$languages = $user->languages;
 			if (count($languages) > 0)
-			$this->addUserLanguages($languages, $result->id);
+				$this->addUserLanguages($languages, $result->id);
+				
+			//We get the first mother tongue as message locale
+			$motherTongueLocale = $languages[0]->language;
 
 
 			// Submit activatión email
@@ -56,11 +59,11 @@ class RegisterUser{
 			$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->name,
-						'PASSWORD' => $user->password,
+						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#',
 						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name,
 						'SIGNATURE' => 'The Babelium Project Team');
 
-			if ( !$mail->makeTemplate("mail_activation", $args, "en_US") ) return null;
+			if ( !$mail->makeTemplate("mail_activation", $args, $motherTongueLocale) ) return null;
 
 			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
 
@@ -139,7 +142,7 @@ class RegisterUser{
 
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
-			$sql = "SELECT ID, name, email, creditCount FROM users WHERE (ID= '%d' ) ";
+			$sql = "SELECT ID, name, email, password, creditCount FROM users WHERE (ID= '%d' ) ";
 
 			$valueObject = new UserVO();
 			$result = $this->conn->_execute($sql, $row[0]);
@@ -150,7 +153,8 @@ class RegisterUser{
 				$valueObject->id = $row[0];
 				$valueObject->name = $row[1];
 				$valueObject->email = $row[2];
-				$valueObject->creditCount = $row[3];
+				$valueObject->password = $row[3];
+				$valueObject->creditCount = $row[4];
 			}
 			else
 			{
