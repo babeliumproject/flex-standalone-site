@@ -33,6 +33,9 @@ class SearchDAO {
 		
 		//Opens the index
 		$this->initialize();	
+
+		//To recognize numerics
+		//Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 			
  		$query = Zend_Search_Lucene_Search_QueryParser::parse($search);
  		
@@ -168,19 +171,19 @@ class SearchDAO {
 	private function addDoc($idEx,$title,$description,$language,$tags,$source,$name,$thumbnailUri,$addingDate,$userId,$userName,$avgRating,$avgDifficulty){
 		$doc = new Zend_Search_Lucene_Document();
 			
-		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx));
-		$doc->addField(Zend_Search_Lucene_Field::Text('title', $title));
-		$doc->addField(Zend_Search_Lucene_Field::Text('description', $description));
-		$doc->addField(Zend_Search_Lucene_Field::Text('language', $language));
-		$doc->addField(Zend_Search_Lucene_Field::Text('tags', $tags));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('source', $source));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('name', $name));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('thumbnailUri', $thumbnailUri));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('addingDate', $addingDate));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('userId', $userId));
-		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgRating', $avgRating));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgDifficulty', $avgDifficulty));
+		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('title', $title, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('description', $description, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('language', $language, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('tags', $tags, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('source', $source, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('name', $name, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('thumbnailUri', $thumbnailUri, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('addingDate', $addingDate, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('userId', $userId, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgRating', $avgRating, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgDifficulty', $avgDifficulty, 'utf-8'));
 		$this->index->addDocument($doc);
 	}
 }
