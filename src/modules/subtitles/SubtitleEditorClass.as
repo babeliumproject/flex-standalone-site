@@ -491,6 +491,20 @@ package modules.subtitles
 			}
 		}
 		
+		public function showSubtitleEditor() : void
+		{
+			videoPlayerControlsViewStack=0;
+			VP.subtitlingControls = true;
+			subtitleEditorVisible=!subtitleEditorVisible;
+		}
+		
+		public function hideSubtitleEditor() : void
+		{
+			videoPlayerControlsViewStack=1;
+			VP.subtitlingControls = false;
+			subtitleEditorVisible=!subtitleEditorVisible;
+		}
+		
 		public function onURLChange(value:Object) : void
 		{
 			if ( browser.moduleIndex != ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX )
@@ -563,20 +577,6 @@ package modules.subtitles
 				subtitleEditorVisible = true;
 				hideSubtitleEditor();
 			}
-		}
-		
-		public function showSubtitleEditor() : void
-		{
-			videoPlayerControlsViewStack=0;
-			VP.subtitlingControls = true;
-			subtitleEditorVisible=!subtitleEditorVisible;
-		}
-		
-		public function hideSubtitleEditor() : void
-		{
-			videoPlayerControlsViewStack=1;
-			VP.subtitlingControls = false;
-			subtitleEditorVisible=!subtitleEditorVisible;
 		}
 		
 		public function updateURL(action:String, target:String) : void

@@ -20,6 +20,8 @@ package control {
 	import commands.exercises.GetExerciseLocalesCommand;
 	import commands.exercises.GetExerciseRolesCommand;
 	import commands.exercises.MakeResponsePublicCommand;
+	import commands.exercises.RateExerciseCommand;
+	import commands.exercises.ReportInnapropriateExerciseCommand;
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
@@ -162,6 +164,8 @@ package control {
 			addCommand(ExerciseEvent.GET_EXERCISE_LOCALES, GetExerciseLocalesCommand);
 			addCommand(ExerciseEvent.WATCH_EXERCISE, WatchExerciseCommand);
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
+			addCommand(ExerciseEvent.RATE_EXERCISE, RateExerciseCommand);
+			addCommand(ExerciseEvent.REPORT_EXERCISE, ReportInnapropriateExerciseCommand);
 			
 			//Response management commands
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);

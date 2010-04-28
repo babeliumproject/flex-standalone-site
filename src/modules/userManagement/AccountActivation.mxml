@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 creationComplete="creationCompleteHandler(event)"
-		 verticalGap="14">
+		 verticalGap="14"
+		 fontFamily="Arial"
+		 fontSize="12">
 
 	<mx:Script>
 		<![CDATA[
@@ -10,13 +12,23 @@
 			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
 			
+			import model.DataModel;
+			
 			import mx.events.FlexEvent;
 			import mx.utils.URLUtil;
 			
 			import vo.NewUserVO;
+			
+			
+			private var noActionMessage:String = 'No action was requested.';
+			private var activatingMessage:String="Activating account. Please wait...";
+			private var successfulActivationMessage:String="Your account has been successfully activated. Redirecting to home...";
+			private var wrongActivationMessage:String="A problem occurred while activating your account. Please try again later.";
 
-			private var _browserManager:BabeliaBrowserManager;
-
+			[Bindable] private var message:String = noActionMessage;
+			
+			private var redirectTimer:Timer;
+			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 
@@ -24,35 +36,67 @@
 
 			public function set checkUrlParameters(value:String):void
 			{
-				if ( BabeliaBrowserManager.getInstance().moduleIndex != 
-						ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX )
+				if (BabeliaBrowserManager.getInstance().moduleIndex != ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX)
 					return;
-				
-				if ( BabeliaBrowserManager.getInstance().actionFragment != BabeliaBrowserManager.ACTIVATE )
+
+				if (BabeliaBrowserManager.getInstance().actionFragment != BabeliaBrowserManager.ACTIVATE)
 					return;
-				
-				var parameters:Object = URLUtil.stringToObject(value, "&");
-				
-				if ( parameters != null )
+
+				var parameters:Object=URLUtil.stringToObject(value, "&");
+
+				if (parameters != null)
 				{
 					if (parameters.hash != '' && parameters.user != '')
 					{
 						//It looks like this is an activation url sent by email
+						message = activatingMessage;
 						var user:NewUserVO=new NewUserVO(parameters.user, '', '', '', '', parameters.hash, null);
 						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user).dispatch();
 					}
 				}
 			}
+
+			public function set greetAndRedirect(value:Boolean):void
+			{
+				if (DataModel.getInstance().accountActivationRetrieved == true)
+				{
+					if(DataModel.getInstance().accountActivationStatus){
+						message = successfulActivationMessage;
+						redirectTimer = new Timer(3000,1);
+						redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage);
+						redirectTimer.start();
+					}else{
+						message = wrongActivationMessage;
+					}
+					DataModel.getInstance().accountActivationRetrieved = false;
+				}
+			}
+			
+			public function set onTabChange(value:Boolean):void{
+				message = noActionMessage;
+			}
+			
+			public function redirectToHomePage(event:TimerEvent):void{
+				redirectTimer.stop();
+				message = noActionMessage;
+				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+			}
+			
 		]]>
 	</mx:Script>
 
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="checkUrlParameters"/>
+	<mx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
+				destination="greetAndRedirect"/>
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
 
 	<mx:Label text="Account Activation"
 			  fontFamily="Arial"
 			  fontSize="18"
 			  fontWeight="bold"/>
 	<mx:HRule width="100%"/>
-	<mx:Label text="Your account has been successfully activated" visible="false"/>
+	<mx:Label id="activating"
+			  text="{message}"/>
 </mx:VBox>

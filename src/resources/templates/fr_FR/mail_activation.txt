@@ -1,5 +1,13 @@
 Bienvenue sur {PROJECT_NAME}.
 
+Vous êtes prié de conserver cet e-mail dans vos archives. Voici les informations concernant votre compte:
+
+----------------------------
+Nom d'utilisateur: {USERNAME}
+
+Adresse du forum: {PROJECT_SITE}
+----------------------------
+
 Visitez le lien suivant afin d'activer votre compte:
 
 {ACTIVATION_LINK}

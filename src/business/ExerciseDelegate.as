@@ -52,15 +52,15 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function reportInnapropriateExercise(report:ExerciseReportVO):void{
+		public function addInnapropriateExerciseReport(report:ExerciseReportVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.reportInnapropriateExercise(report);
+			var pendingCall:AsyncToken=service.addInnapropriateExerciseReport(report);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function rateExercise(score:ExerciseScoreVO):void{
+		public function addExerciseScore(score:ExerciseScoreVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.rateExercise(score);
+			var pendingCall:AsyncToken=service.addExerciseScore(score);
 			pendingCall.addResponder(responder);
 		}
 		

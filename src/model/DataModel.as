@@ -59,9 +59,11 @@ package model
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;
 		
-		//Register error message
+		//Register related messages
 		[Bindable] public var registrationErrorMessage:String = "";
 		[Bindable] public var restorePassErrorMessage:String = "";
+		[Bindable] public var accountActivationRetrieved:Boolean = false;
+		[Bindable] public var accountActivationStatus:int;
 		
 		//Credit History data and service state
 		[Bindable] public var creditHistory:ArrayCollection = new ArrayCollection();

@@ -84,6 +84,61 @@ class ExerciseDAO {
 		return $searchResults; // return languages
 	}
 	
+	public function addInnapropriateExerciseReport($report){
+		//Check if the user has already reported about this exercise
+		$sql = "SELECT *
+				FROM exercise_report
+				WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' )";
+		$result = $this->conn->_execute ($sql, $report->exerciseId, $report->userId);
+		$row = $this->conn->_nextRow ($result);
+		if (!$row){
+			// The user is reporting an innapropriate exercise
+			$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date) 
+			        VALUES ( '%d', '%d', '%d', '%s', NOW() )";
+			return $this->_create($sql, $report->exerciseId, $report->userId, $report->reason);
+		} else {
+			return 0;
+		}
+	}
+	
+	public function addExerciseScore($score){
+		
+		//Check if the user has already given a score to this exercise in the current day
+		$sql = "SELECT * 
+		        FROM exercise_score 
+		        WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
+		$result = $this->conn->_execute ( $sql, $score->exerciseId, $score->userId);
+		$row = $this->conn->_nextRow ($result);
+		if (!$row){
+			//The user can add a score
+			
+			$sql = "INSERT INTO exercise_score (fk_exercise_id, fk_user_id, suggested_score, suggestion_date) 
+			        VALUES ( '%d', '%d', '%d', NOW() )";
+			
+			return $this->_create($sql, $score->exerciseId, $score->userId, $score->suggestedScore);
+			
+		} else {
+			//The user has already given a score ignore the input.
+			return 0;
+		}	
+	}
+	
+	public function deactivateReportedVideos(){
+		
+		$sql = "SELECT prefValue FROM preferences WHERE (prefName='reports_to_delete')";
+		$result = $this->conn->_execute($sql);
+		$row = $this->conn->_nextRow ($result);
+		if ($row){
+			
+			$reportsToDeletion = $row[0];
+			
+			$sql = "UPDATE exercise AS E SET status='Unavailable' 
+		       	    WHERE '%d' <= (SELECT count(*) 
+		        		          FROM exercise_report WHERE fk_exercise_id=E.id ) ";
+			return $this->_databaseUpdate($sql, $reportsToDeletion);
+		}
+	}
+	
 	private function deleteLocalVideoCopy($fileName) {
 		$path = $this->filePath . "/" . $fileName;
 		$success = @unlink ( $path );

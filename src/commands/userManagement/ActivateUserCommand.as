@@ -8,6 +8,8 @@ package commands.userManagement
 	import events.RegisterUserEvent;
 	import events.ViewChangeEvent;
 	
+	import model.DataModel;
+	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
@@ -23,13 +25,11 @@ package commands.userManagement
 		public function result(data:Object):void
 		{
 			var successfulUpdate:Boolean = data.result as Boolean;
-			if(!successfulUpdate){
-				Alert.show("A problem occurred while trying to activate your account");
-			} else{
-				Alert.show("Your account has been successfully activated");
-			}
-			
-			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+			if(!successfulUpdate)
+				DataModel.getInstance().accountActivationStatus = 0;
+			else
+				DataModel.getInstance().accountActivationStatus = 1;
+			DataModel.getInstance().accountActivationRetrieved = true;
 		}
 		
 		public function fault(info:Object):void

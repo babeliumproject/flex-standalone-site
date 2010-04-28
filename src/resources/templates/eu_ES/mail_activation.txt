@@ -1,5 +1,13 @@
 Ongietorri {PROJECT_NAME}era.
 
+Mesedez gorde mezu hau etorkizunean erreferentzia gisa erabiltzeko. Zure kontuaren informazioa:
+
+----------------------------
+Erabiltzaile Izena: {USERNAME}
+			
+Webgunea: {PROJECT_SITE}
+----------------------------
+
 Mesedez, hurrengo esteka bisita ezazu zure kontua aktibatzeko:
 
 {ACTIVATION_LINK}

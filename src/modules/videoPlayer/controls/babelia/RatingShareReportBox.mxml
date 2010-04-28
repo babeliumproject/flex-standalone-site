@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:rating="com.asfusion.controls.*"
-		 horizontalAlign="center"
-		 verticalAlign="middle"
+		 horizontalAlign="left"
+		 paddingTop="2"
+		 paddingBottom="2"
+		 paddingLeft="2"
+		 paddingRight="2"
+		 height="30"
 		 borderStyle="solid"
-		 cornerRadius="4">
+		 cornerRadius="6">
 
 	<mx:Script>
 		<![CDATA[
+			import events.ExerciseEvent;
+			
 			import model.DataModel;
+			
+			import mx.controls.Alert;
+			
+			import vo.ExerciseScoreVO;
+			import vo.ExerciseVO;
+
+			private var _exercise:ExerciseVO;
+			private var _dataAvailable:Boolean = false;
+
+			public function set exerciseData(exercise:ExerciseVO):void
+			{
+				if(exercise){
+					_exercise=exercise;
+					_dataAvailable = true;
+					updateComponents();
+				} else {
+					_dataAvailable = false;
+					disableComponents();
+				}
+			}
+
+			public function get exerciseData():ExerciseVO
+			{
+				return _exercise;
+			}
+
+			private function updateComponents():void
+			{
+				rating.value=_exercise.avgRating;
+			}
+			
+			private function disableComponents():void{
+				rating.value = 0;
+			}
 
 			protected function ratingClickHandler(event:MouseEvent):void
 			{
-				if (DataModel.getInstance().isLoggedIn)
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
 				{
-					rating.value
+					var score:ExerciseScoreVO=new ExerciseScoreVO();
+					score.userId=DataModel.getInstance().loggedUser.id;
+					score.suggestedScore=rating.selectedValue;
+					score.exerciseId=_exercise.id;
+					//new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
 				}
 			}
 
@@ -22,21 +66,28 @@
 			{
 				// TODO Auto-generated method stub
 			}
-
 		]]>
 	</mx:Script>
 
-
-	<rating:Rating id="rating"
-				   value="0"
-				   liveRollOver="{DataModel.getInstance().isLoggedIn}"
-				   click="ratingClickHandler(event)"/>
-	<mx:VRule/>
-	<mx:LinkButton id="reportVideo"
-				   label="Report"
-				   toolTip="Report unnapropiate video."
-				   icon=""
-				   enabled="{DataModel.getInstance().isLoggedIn}"
-				   click="reportVideoClickHandler(event)"/>
+	<mx:HBox paddingTop="4" paddingLeft="4">
+		<rating:Rating id="rating"
+					   value="0"
+					   liveRollOver="{DataModel.getInstance().isLoggedIn}"
+					   click="ratingClickHandler(event)"/>
+	</mx:HBox>
+	<mx:VRule height="24"/>
+	<mx:HBox horizontalAlign="right"
+			 paddingBottom="0"
+			 paddingTop="0"
+			 paddingLeft="0"
+			 paddingRight="0"
+			 width="100%">
+		<mx:LinkButton id="reportVideo"
+					   label="Report"
+					   toolTip="Report innapropriate video."
+					   icon="@Embed(source='../../../../resources/images/shield.png')"
+					   enabled="{DataModel.getInstance().isLoggedIn}"
+					   click="reportVideoClickHandler(event)"/>
+	</mx:HBox>
 
 </mx:HBox>
