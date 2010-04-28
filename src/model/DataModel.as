@@ -159,7 +159,6 @@ package model
 		[Bindable] public var recording:Boolean = false;
 		[Bindable] public var playing:Boolean = false;
 		[Bindable] public var permissions:Boolean = true;
-		[Bindable] public var bwMin:Number = 10000;
 
 		// l10n
 		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];

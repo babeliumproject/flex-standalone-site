@@ -51,7 +51,7 @@
 				var indice:Number = e.newIndex;		
 				if (indice==1){ //Microphone module
 					if (permissionStatus){
-						micCheck.statusText.text="Es necesario que aceptes los permisos";
+						micCheck.statusText.text=resourceManager.getString('myResources', 'CONFIGURATION_NO_PERMISSIONS');
 						micCheck.statusText.visible=true;
 					}
 					if (Microphone.names.length>0){//El usuario dispone de microfono
@@ -147,7 +147,7 @@
 			
 			//Funciones para el control de los mensajes de falta de permisos
 			private function webCamStatusMessage(ev:ShowStatusMessage):void{
-				webCamCheck.statusText.text="Es necesario que aceptes los permisos";
+				webCamCheck.statusText.text=resourceManager.getString('myResources', 'CONFIGURATION_NO_PERMISSIONS');;
 				webCamCheck.statusText.visible=true;
 			}
 			

@@ -97,7 +97,7 @@
 					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationAudio.flv");
 					timerPlay.start();
 				}else if (rec){//Grabación sin señal
-					Alert.show("No se ha detectado señal durante la grabación!");
+					Alert.show(resourceManager.getString('myResources', 'CONFIGURATION_NO_MIC_SIGNAL'));
 				}else{//No existe el fichero de grabación
 					Alert.show(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
 				}

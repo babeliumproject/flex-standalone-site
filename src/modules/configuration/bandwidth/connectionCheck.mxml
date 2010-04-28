@@ -22,7 +22,11 @@
 			[Bindable]
 			private var chartData:ArrayCollection;
 			
-			private function init():void{							
+			[Bindable]
+			private var bwMin:Number;
+			
+			private function init():void{		
+				bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
 				nc = new NetConnection();
 				nc.objectEncoding= flash.net.ObjectEncoding.AMF0;
 				nc.client=this;
@@ -41,21 +45,21 @@
 			}
 			
 			public function onServerClientComplete(event:BandwidthDetectEvent):void{			
-				chartData = new ArrayCollection ([ {Connection: "Needed", BWDown: DataModel.getInstance().bwMin},
+				chartData = new ArrayCollection ([ {Connection: "Needed", BWDown: bwMin},
 					{Connection: "Real", BWDown: event.info.kbitDown} ]);
 				mostrarBwInfo(event);
 				dispatchResultEvent(event);
 			}
 			
 			private function mostrarBwInfo(event:BandwidthDetectEvent):void{
-				Needed.text="Needed: " + DataModel.getInstance().bwMin + " Kb/s";
+				Needed.text="Needed: " + bwMin + " Kb/s";
 				Real.text="Real: " + event.info.kbitDown + " Kb/s";
 				bwInfo.visible=true;
 			}
 			
 			private function dispatchResultEvent(event:BandwidthDetectEvent):void{
 				var ev:ConfigurationResultEvent = new ConfigurationResultEvent
-					(ConfigurationResultEvent.BANDWIDTH_RESULT,event.info.kbitDown>=DataModel.getInstance().bwMin);
+					(ConfigurationResultEvent.BANDWIDTH_RESULT,event.info.kbitDown>=bwMin);
 				dispatchEvent(ev);
 			}
 			
