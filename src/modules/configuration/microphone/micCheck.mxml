@@ -260,7 +260,7 @@
 					<ns1:barraSonido id="barraSonido" visible="false"/>
 				</mx:VBox>
 				<mx:HBox horizontalAlign="center">
-					<mx:Button id="recButton" label="REC" click="recStart()" horizontalCenter="true"
+					<mx:Button label="REC" click="recStart()" horizontalCenter="true"
 							   enabled="{!DataModel.getInstance().playing &amp;&amp; 
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>

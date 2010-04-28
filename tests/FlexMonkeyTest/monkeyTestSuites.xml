@@ -1,0 +1,44 @@
+<TopNode>
+  <TestSuite name="Configuration Module Test" description="Configuration module´s test.">
+    <TestCase name="TestCase" description="">
+      <Test name="WebCam &amp; BandWidth" description="This test checks user´s webcam and bandwidth." defaultThinkTime="500">
+        <UIEvent command="Click" value="Login" prop="automationName"/>
+        <UIEvent command="SelectText" value="username" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="username" prop="automationName">
+          <arg value="erab1"/>
+        </UIEvent>
+        <UIEvent command="ChangeFocus" value="username" prop="automationName"/>
+        <UIEvent command="Input" value="password" prop="automationName">
+          <arg value="erab1"/>
+        </UIEvent>
+        <UIEvent command="Type" value="password" prop="automationName">
+          <arg value="ENTER"/>
+        </UIEvent>
+        <Pause duration="1000"/>
+        <Verify description="New Verify" isRetryable="false" delay="0" attempts="1" snapshotURL="A9D2EC87-4999-03C8-8D47-4463E239F7DA.snp" value="Configuration" prop="automationName" verifyBitmap="false" verifyBitmapFuzziness="0">
+          <Attribute name="enabled" expectedValue="true" actualValue="true" type="property"/>
+        </Verify>
+        <UIEvent command="Click" value="Configuration" prop="automationName"/>
+        <UIEvent command="Click" value="REC" prop="automationName"/>
+        <UIEvent command="Click" value="REC" prop="automationName"/>
+        <Pause duration="11500"/>
+        <UIEvent command="Click" value="PLAY" prop="automationName"/>
+        <Pause duration="11500"/>
+        <Verify description="New Verify" isRetryable="false" delay="0" attempts="1" snapshotURL="821070F2-3F2A-2043-56EB-44611A20A2A7.snp" value="Webcam: OK" prop="automationName" verifyBitmap="false" verifyBitmapFuzziness="0">
+          <Attribute name="text" expectedValue="Webcam: OK" actualValue="Webcam: OK" type="property"/>
+        </Verify>
+        <UIEvent command="Change" value="configurationMenu" prop="automationName">
+          <arg value="BandWidth Configuration"/>
+        </UIEvent>
+        <UIEvent command="Click" value="BANDWIDTH TEST" prop="automationName"/>
+        <Pause duration="1000"/>
+        <Verify description="New Verify" isRetryable="false" delay="0" attempts="1" snapshotURL="C5641A60-C56F-2A3C-BB5A-4461A885A3B1.snp" value="Bandwidth: OK" prop="automationName" verifyBitmap="false" verifyBitmapFuzziness="0">
+          <Attribute name="text" expectedValue="Bandwidth: OK" actualValue="Bandwidth: OK" type="property"/>
+        </Verify>
+      </Test>
+    </TestCase>
+  </TestSuite>
+</TopNode>
