@@ -9,9 +9,9 @@
 				autoLayout="true"
 				paddingLeft="8"
 				paddingRight="8"
-				borderColor="#CCCCCC"
+				borderColor="#E5E8EA"
 				borderAlpha="1"
-				cornerRadius="4">
+				>
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -31,14 +31,19 @@
 
 			private var _exercise:ExerciseVO;
 			
+			[Bindable]
+			private var _isPrompt:Boolean;
+
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int=13;
 
-			public function creationCompleteHandler():void{
+			public function creationCompleteHandler():void
+			{
 				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
 				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+				//_isPrompt =  reportComboBox.reportInappropriateComboBox.selectedIndex > -1;
 			}
-			
+
 			private function checkPressedKey(e:KeyboardEvent):void
 			{
 				if (e.keyCode == ENTER_KEY)
@@ -46,7 +51,7 @@
 					reportButtonClickHandler(null);
 				}
 			}
-			
+
 			public function set exerciseData(exercise:ExerciseVO):void
 			{
 				if (exercise)
@@ -60,7 +65,7 @@
 
 			public function reportButtonClickHandler(event:Event):void
 			{
-				if (_exercise)
+				if (_exercise && reportComboBox.reportInappropriateComboBox.selectedIndex > -1)
 				{
 					var report:ExerciseReportVO=new ExerciseReportVO();
 					report.exerciseId=_exercise.id;
@@ -79,12 +84,19 @@
 	</mx:Script>
 
 	<mx:VBox>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"/>
-		<mx:HBox>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"
+				  fontSize="16"
+				  fontWeight="bold"/>
+
+		<mx:HBox width="100%">
 			<mx:Spacer/>
-			<common:ReportInappropriateComboBox id="reportComboBox"/>
+			<mx:Spacer/>
+			<mx:VBox>
+				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"/>
+				<common:ReportInappropriateComboBox id="reportComboBox"/>
+			</mx:VBox>
 		</mx:HBox>
+
 		<mx:Spacer/>
 		<mx:Spacer/>
 	</mx:VBox>
@@ -94,7 +106,8 @@
 			 verticalAlign="middle">
 		<mx:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
 				   id="reportButton"
-				   click="reportButtonClickHandler(event)"/>
+				   click="reportButtonClickHandler(event)"
+				   enabled="true"/>
 		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				   id="cancelButton"
 				   click="cancelButtonClickHandler(event)"/>

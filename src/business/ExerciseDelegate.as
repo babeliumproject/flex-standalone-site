@@ -52,9 +52,9 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function addInnapropriateExerciseReport(report:ExerciseReportVO):void{
+		public function addInappropriateExerciseReport(report:ExerciseReportVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.addInnapropriateExerciseReport(report);
+			var pendingCall:AsyncToken=service.addInappropriateExerciseReport(report);
 			pendingCall.addResponder(responder);
 		}
 		

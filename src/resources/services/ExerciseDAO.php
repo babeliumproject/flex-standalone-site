@@ -3,6 +3,7 @@
 require_once ('Datasource.php');
 require_once ('Config.php');
 require_once ('ExerciseVO.php');
+require_once ('ExerciseReportVO.php');
 
 class ExerciseDAO {
 	
@@ -84,17 +85,12 @@ class ExerciseDAO {
 		return $searchResults; // return languages
 	}
 	
-	public function addInnapropriateExerciseReport($report){
-		//Check if the user has already reported about this exercise
-		$sql = "SELECT *
-				FROM exercise_report
-				WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' )";
-		$result = $this->conn->_execute ($sql, $report->exerciseId, $report->userId);
-		$row = $this->conn->_nextRow ($result);
-		if (!$row){
+	public function addInappropriateExerciseReport(ExerciseReportVO $report){
+		$result = $this->userReportedExercise($report);
+		if (!$result){
 			// The user is reporting an innapropriate exercise
-			$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date) 
-			        VALUES ( '%d', '%d', '%d', '%s', NOW() )";
+			$insert = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date) ";
+			$insert.= "VALUES ('%d', '%d', '%s', NOW() )";
 			return $this->_create($sql, $report->exerciseId, $report->userId, $report->reason);
 		} else {
 			return 0;
@@ -103,13 +99,8 @@ class ExerciseDAO {
 	
 	public function addExerciseScore($score){
 		
-		//Check if the user has already given a score to this exercise in the current day
-		$sql = "SELECT * 
-		        FROM exercise_score 
-		        WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
-		$result = $this->conn->_execute ( $sql, $score->exerciseId, $score->userId);
-		$row = $this->conn->_nextRow ($result);
-		if (!$row){
+		$result = $this->userRatedExercise($score);
+		if (!$result){
 			//The user can add a score
 			
 			$sql = "INSERT INTO exercise_score (fk_exercise_id, fk_user_id, suggested_score, suggestion_date) 
@@ -121,6 +112,33 @@ class ExerciseDAO {
 			//The user has already given a score ignore the input.
 			return 0;
 		}	
+	}
+	
+	public function userRatedExercise($score){
+		$sql = "SELECT * 
+		        FROM exercise_score 
+		        WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
+		$result = $this->conn->_execute ( $sql, $score->exerciseId, $score->userId);
+		$row = $this->conn->_nextRow ($result);
+		if ($row){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public function userReportedExercise($report){
+		//Check if the user has already reported about this exercise
+		$sql = "SELECT * 
+				FROM exercise_report 
+				WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' )";
+		$result = $this->conn->_execute ($sql, $report->exerciseId, $report->userId);
+		$row = $this->conn->_nextRow ($result);
+		if ($row){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public function deactivateReportedVideos(){

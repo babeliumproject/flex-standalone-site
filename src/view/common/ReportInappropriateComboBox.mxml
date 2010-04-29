@@ -38,6 +38,7 @@
 				 fontWeight="normal"
 				 prompt="{resourceManager.getString('myResources', 'PROMPT_CHOOSE_ISSUE')}"
 				 labelFunction="reportInappropriateComboBoxLabelFunction"
-				 change="reportInappropriateComboBoxChangeHandler(event)"/>
+				 change="reportInappropriateComboBoxChangeHandler(event)"
+				 selectedIndex="-1"/>
 
 </mx:HBox>
