@@ -1,1 +1,0 @@
-INSERT INTO `preferences` (`id`, `prefName`, `prefValue`) VALUES (38, 'bwCheckMin', 3000);
