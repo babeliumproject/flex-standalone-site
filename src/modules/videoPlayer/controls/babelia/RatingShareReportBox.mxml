@@ -16,13 +16,20 @@
 			
 			import model.DataModel;
 			
-			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			
+			import view.common.ReportInappropriatePopUp;
 			
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
 
 			private var _exercise:ExerciseVO;
+			
+			[Bindable]
 			private var _dataAvailable:Boolean = false;
+			
+			private var reportPopUp:ReportInappropriatePopUp;
 
 			public function set exerciseData(exercise:ExerciseVO):void
 			{
@@ -47,7 +54,9 @@
 			}
 			
 			private function disableComponents():void{
-				rating.value = 0;
+				if(!DataModel.getInstance().isLoggedIn || !_dataAvailable){
+					rating.value = 0;
+				}
 			}
 
 			protected function ratingClickHandler(event:MouseEvent):void
@@ -58,13 +67,18 @@
 					score.userId=DataModel.getInstance().loggedUser.id;
 					score.suggestedScore=rating.selectedValue;
 					score.exerciseId=_exercise.id;
-					//new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
+					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
 				}
 			}
 
 			protected function reportVideoClickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
+				{
+					reportPopUp = ReportInappropriatePopUp(PopUpManager.createPopUp(Application.application.parent, ReportInappropriatePopUp, true));
+					PopUpManager.centerPopUp(reportPopUp);
+					reportPopUp.exerciseData = _exercise;
+				}
 			}
 		]]>
 	</mx:Script>
@@ -72,7 +86,7 @@
 	<mx:HBox paddingTop="4" paddingLeft="4">
 		<rating:Rating id="rating"
 					   value="0"
-					   liveRollOver="{DataModel.getInstance().isLoggedIn}"
+					   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; _dataAvailable}"
 					   click="ratingClickHandler(event)"/>
 	</mx:HBox>
 	<mx:VRule height="24"/>
@@ -86,7 +100,7 @@
 					   label="Report"
 					   toolTip="Report innapropriate video."
 					   icon="@Embed(source='../../../../resources/images/shield.png')"
-					   enabled="{DataModel.getInstance().isLoggedIn}"
+					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; _dataAvailable}"
 					   click="reportVideoClickHandler(event)"/>
 	</mx:HBox>
 

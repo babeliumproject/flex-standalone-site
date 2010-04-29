@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
+				xmlns:common="view.common.*"
+				creationComplete="creationCompleteHandler()"
+				showCloseButton="true"
+				fontFamily="Arial"
+				fontSize="11"
+				autoLayout="true"
+				paddingLeft="8"
+				paddingRight="8"
+				borderColor="#CCCCCC"
+				borderAlpha="1"
+				cornerRadius="4">
+
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import events.ExerciseEvent;
+			
+			import model.DataModel;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import vo.ExerciseReportVO;
+			import vo.ExerciseVO;
+
+			private var _exercise:ExerciseVO;
+			
+			//The keyCode for ENTER key
+			public static const ENTER_KEY:int=13;
+
+			public function creationCompleteHandler():void{
+				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+			}
+			
+			private function checkPressedKey(e:KeyboardEvent):void
+			{
+				if (e.keyCode == ENTER_KEY)
+				{
+					reportButtonClickHandler(null);
+				}
+			}
+			
+			public function set exerciseData(exercise:ExerciseVO):void
+			{
+				if (exercise)
+					_exercise=exercise;
+			}
+
+			public function get exerciseData():ExerciseVO
+			{
+				return _exercise;
+			}
+
+			public function reportButtonClickHandler(event:Event):void
+			{
+				if (_exercise)
+				{
+					var report:ExerciseReportVO=new ExerciseReportVO();
+					report.exerciseId=_exercise.id;
+					report.userId=DataModel.getInstance().loggedUser.id;
+					report.reason=reportComboBox.reportInappropriateComboBox.selectedItem.toString();
+
+					new ExerciseEvent(ExerciseEvent.REPORT_EXERCISE, null, report, null).dispatch();
+				}
+			}
+
+			public function cancelButtonClickHandler(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"/>
+		<mx:HBox>
+			<mx:Spacer/>
+			<common:ReportInappropriateComboBox id="reportComboBox"/>
+		</mx:HBox>
+		<mx:Spacer/>
+		<mx:Spacer/>
+	</mx:VBox>
+	<mx:HRule width="100%"/>
+	<mx:HBox width="100%"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
+				   id="reportButton"
+				   click="reportButtonClickHandler(event)"/>
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+				   id="cancelButton"
+				   click="cancelButtonClickHandler(event)"/>
+	</mx:HBox>
+
+</mx:TitleWindow>

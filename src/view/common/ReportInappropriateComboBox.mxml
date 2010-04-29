@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			private var reportReasons:Array=new Array('REPORT_OBSCENE', 'REPORT_COPYRIGHTED', 'REPORT_18_PLUS', 'REPORT_OFFENSIVE', 'REPORT_VIOLENCE', 'REPORT_TECHNICAL', 'REPORT_DUPLICATED', 'REPORT_TERMS');
+
+			public function reportInappropriateComboBoxLabelFunction(item:Object):String
+			{
+				var locale:String=String(item);
+				return resourceManager.getString('myResources', locale);
+			}
+
+			public function reportInappropriateComboBoxChangeHandler(event:Event):void
+			{
+				updateReportInappropriateComboBox();
+			}
+
+			private function updateReportInappropriateComboBox():void
+			{
+				var oldSelectedItem:Object=reportInappropriateComboBox.selectedItem;
+				// Repopulate the combobox with locales,
+
+				reportInappropriateComboBox.dataProvider=reportReasons;
+				reportInappropriateComboBox.selectedItem=oldSelectedItem;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ComboBox id="reportInappropriateComboBox"
+				 dataProvider="{reportReasons}"
+				 fontWeight="normal"
+				 prompt="{resourceManager.getString('myResources', 'PROMPT_CHOOSE_ISSUE')}"
+				 labelFunction="reportInappropriateComboBoxLabelFunction"
+				 change="reportInappropriateComboBoxChangeHandler(event)"/>
+
+</mx:HBox>

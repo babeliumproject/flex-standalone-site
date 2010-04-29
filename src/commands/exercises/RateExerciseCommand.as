@@ -25,11 +25,12 @@ package commands.exercises
 			//Should be the id of the added rate
 			if (!data.result is int){
 				Alert.show("Your score couldn't be saved.");
-			} else {
+			} else if (data.result > 0){
 				Alert.show("Your score has been successfully saved. Thank you.");
 				//Update the exercise with the new information.
 				//Maybe leave it as it is, so that the user doesn't know the weight of his rating.
-				
+			} else {
+				Alert.show("You already rated this exercise. You won't be able to rate it again for 24 hours.");
 			}
 		}
 		
