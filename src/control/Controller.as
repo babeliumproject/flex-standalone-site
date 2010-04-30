@@ -24,6 +24,8 @@ package control {
 	import commands.exercises.ReportInappropriateExerciseCommand;
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
+	import commands.exercises.UserRatedExerciseCommand;
+	import commands.exercises.UserReportedExerciseCommand;
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
@@ -166,6 +168,8 @@ package control {
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
 			addCommand(ExerciseEvent.RATE_EXERCISE, RateExerciseCommand);
 			addCommand(ExerciseEvent.REPORT_EXERCISE, ReportInappropriateExerciseCommand);
+			addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
+			addCommand(ExerciseEvent.USER_REPORTED_EXERCISE, UserReportedExerciseCommand);
 			
 			//Response management commands
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);

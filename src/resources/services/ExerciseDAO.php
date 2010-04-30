@@ -4,6 +4,7 @@ require_once ('Datasource.php');
 require_once ('Config.php');
 require_once ('ExerciseVO.php');
 require_once ('ExerciseReportVO.php');
+require_once ('ExerciseScoreVO.php');
 
 class ExerciseDAO {
 	
@@ -87,17 +88,20 @@ class ExerciseDAO {
 	
 	public function addInappropriateExerciseReport(ExerciseReportVO $report){
 		$result = $this->userReportedExercise($report);
+		
 		if (!$result){
 			// The user is reporting an innapropriate exercise
-			$insert = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date) ";
-			$insert.= "VALUES ('%d', '%d', '%s', NOW() )";
+			$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date) 
+				    VALUES ('%d', '%d', '%s', NOW() )";
+			
 			return $this->_create($sql, $report->exerciseId, $report->userId, $report->reason);
+			
 		} else {
 			return 0;
 		}
 	}
 	
-	public function addExerciseScore($score){
+	public function addExerciseScore(ExerciseScoreVO $score){
 		
 		$result = $this->userRatedExercise($score);
 		if (!$result){
@@ -114,7 +118,7 @@ class ExerciseDAO {
 		}	
 	}
 	
-	public function userRatedExercise($score){
+	public function userRatedExercise(ExerciseScoreVO $score){
 		$sql = "SELECT * 
 		        FROM exercise_score 
 		        WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
@@ -127,7 +131,7 @@ class ExerciseDAO {
 		}
 	}
 	
-	public function userReportedExercise($report){
+	public function userReportedExercise(ExerciseReportVO $report){
 		//Check if the user has already reported about this exercise
 		$sql = "SELECT * 
 				FROM exercise_report 
@@ -176,7 +180,7 @@ class ExerciseDAO {
 		
 	}
 	
-	function _singleQuery() {
+	private function _singleQuery() {
 		$valueObject = new ExerciseVO ( );
 		$result = $this->conn->_execute ( func_get_args() );
 		
@@ -192,7 +196,7 @@ class ExerciseDAO {
 		return $valueObject;
 	}
 	
-	function _listQuery() {
+	private function _listQuery() {
 		$searchResults = array ();
 		$result = $this->conn->_execute ( func_get_args() );
 		
@@ -221,7 +225,7 @@ class ExerciseDAO {
 		return $searchResults;
 	}
 	
-	public function _create() {
+	private function _create() {
 		$this->conn->_execute ( func_get_args() );
 		
 		$sql = "SELECT last_insert_id()";
@@ -236,7 +240,7 @@ class ExerciseDAO {
 		}
 	}
 	
-	public function _databaseUpdate() {
+	private function _databaseUpdate() {
 		$result = $this->conn->_execute ( func_get_args() );
 		
 		return $result;

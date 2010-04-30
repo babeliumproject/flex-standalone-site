@@ -58,9 +58,21 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		public function userReportedExercise(report:ExerciseReportVO):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.userReportedExercise(report);
+			pendingCall.addResponder(responder);
+		}
+		
 		public function addExerciseScore(score:ExerciseScoreVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
 			var pendingCall:AsyncToken=service.addExerciseScore(score);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function userRatedExercise(score:ExerciseScoreVO):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.userRatedExercise(score);
 			pendingCall.addResponder(responder);
 		}
 		

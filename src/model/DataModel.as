@@ -155,7 +155,7 @@ package model
 		[Bindable] public var recordingExercise:Boolean = false;
 
 		
-		//Used to configuration module
+		//Used by configuration module
 		[Bindable] public var videoRec:Boolean = false;
 		[Bindable] public var audioRec:Boolean = false;
 		[Bindable] public var recording:Boolean = false;
@@ -169,6 +169,12 @@ package model
 		[Bindable] public var microphone:Microphone;
 		[Bindable] public var camera:Camera;
 		[Bindable] public var micCamAllowed:Boolean = false;
+		
+		// Checks for exercise rating and reporting
+		[Bindable] public var userRatedExercise:Boolean = false;
+		[Bindable] public var userRatedExerciseFlag:Boolean = false;
+		[Bindable] public var userReportedExercise:Boolean = false;
+		[Bindable] public var userReportedExerciseFlag:Boolean = false;
 	
 		public function DataModel(){
 			if (instance)

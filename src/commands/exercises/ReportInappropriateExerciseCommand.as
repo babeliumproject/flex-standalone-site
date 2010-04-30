@@ -7,6 +7,8 @@ package commands.exercises
 	
 	import events.ExerciseEvent;
 	
+	import model.DataModel;
+	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -28,7 +30,7 @@ package commands.exercises
 			} else if (data.result > 0){
 				Alert.show("Your report has been successfully saved. Thank you.");
 				//Update the exercise with the new information.
-				//Maybe leave it as it is, so that the user doesn't know the weight of his rating.
+				DataModel.getInstance().userReportedExercise = true;
 			} else {
 				Alert.show("You already reported about this exercise.");
 			}

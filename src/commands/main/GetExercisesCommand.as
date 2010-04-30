@@ -57,7 +57,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving app's exercises:\n\n"+faultEvent.message);
+			Alert.show("Error while retrieving app's exercises:");
 			trace(ObjectUtil.toString(info));
 		}
 		

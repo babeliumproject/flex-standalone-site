@@ -21,6 +21,7 @@
 			
 			import view.common.ReportInappropriatePopUp;
 			
+			import vo.ExerciseReportVO;
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
 
@@ -51,6 +52,17 @@
 			private function updateComponents():void
 			{
 				rating.value=_exercise.avgRating;
+				var userId:int = DataModel.getInstance().loggedUser.id;
+				
+				var score:ExerciseScoreVO = new ExerciseScoreVO();
+				var report:ExerciseReportVO = new ExerciseReportVO();
+				score.exerciseId = _exercise.id;
+				score.userId = userId;
+				report.exerciseId = _exercise.id;
+				report.userId = userId;
+				
+				new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE,null,null,score).dispatch();
+				new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE,null,report,null).dispatch();
 			}
 			
 			private function disableComponents():void{
@@ -86,7 +98,7 @@
 	<mx:HBox paddingTop="4" paddingLeft="4">
 		<rating:Rating id="rating"
 					   value="0"
-					   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; _dataAvailable}"
+					   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
 					   click="ratingClickHandler(event)"/>
 	</mx:HBox>
 	<mx:VRule height="24"/>
@@ -100,7 +112,7 @@
 					   label="Report"
 					   toolTip="Report innapropriate video."
 					   icon="@Embed(source='../../../../resources/images/shield.png')"
-					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; _dataAvailable}"
+					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
 					   click="reportVideoClickHandler(event)"/>
 	</mx:HBox>
 
