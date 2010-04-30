@@ -81,7 +81,10 @@ class Mailer
 		$mail->setFrom($this->smtp_mail_setFromMail, $this->smtp_mail_setFromName);
 		$mail->addTo($this->_userMail, $this->_userRealName);
 		$mail->setSubject($subject);
-		$mail->send($transport);
+		
+		try {
+			$mail->send($transport);
+		} catch (Exception $e) {return false;}
 
 		return true;
 	}
