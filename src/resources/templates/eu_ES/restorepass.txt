@@ -1,0 +1,15 @@
+Hello {REAL_NAME}!
+
+Your password has been reseted. Your new account information is as follows:
+
+	------------
+	Username: {USERNAME}
+	Password: {PASSWORD}
+	------------
+
+You can change the password on your account panel.
+
+Thank you for choosing Babelia,
+------------
+
+{SIGNATURE}

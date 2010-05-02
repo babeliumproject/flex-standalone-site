@@ -94,6 +94,7 @@ class UserDAO {
 		$id = -1;
 		$email = "";
 		$user = "";
+		$realName = "";
 
 		require_once('Mailer.php');
 
@@ -102,7 +103,7 @@ class UserDAO {
 			$aux = "email";
 
 		// Username or email checking
-		$sql = "SELECT id, name, email FROM users WHERE $aux = '%s'";
+		$sql = "SELECT id, name, email, realName FROM users WHERE $aux = '%s'";
 		$result = $this->conn->_execute($sql, $username);
 		$row = $this->conn->_nextRow($result);
 
@@ -111,7 +112,10 @@ class UserDAO {
 			$id = $row[0];
 			$user = $row[1];
 			$email = $row[2];
+			$realName = $row[3];
 		}
+
+		if ( $realName == '' || $realName == 'unknown' ) $realName = $user;
 		
 		// User dont exists
 		if ( $id == -1 ) return "Unregistered user";
@@ -121,12 +125,20 @@ class UserDAO {
 		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
 		$result = $this->conn->_execute($sql, sha1($newPassword), $id);
 
-		$text = "user: $user\npass: $newPassword\n";
-		$htmlText = "<b>user:</b> $user<br/><b>pass:</b> $newPassword<br/>";
-		$subject = "Your password has been reseted";
+		
+		$args = array(
+						'REAL_NAME' => $realName,
+						'USERNAME' => $user,
+						'PASSWORD' => $newPassword,
+						'SIGNATURE' => 'The Babelium Project Team');
 
 		$mail = new Mailer($email);
-		$mail->send($text, $subject, $htmlText);
+
+		if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) return null;
+
+		$subject = "Your password has been reseted";
+
+		$mail->send($mail->txtContent, $subject, $mail->htmlContent);
 		
 		return "Done";
 	}
