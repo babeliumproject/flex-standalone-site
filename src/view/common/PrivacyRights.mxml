@@ -1,34 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				showCloseButton="true"
+				width="355"
+				fontFamily="Arial"
+				fontSize="11"
+				autoLayout="true"
+				paddingLeft="8"
+				paddingRight="8"
+				borderColor="#E5E8EA"
+				borderAlpha="1"
+				borderStyle="solid"
+				creationComplete="creationCompleteHandler()"
+				title="Privacy Settings">
 
-<mx:Script>
+	<mx:Script>
 
-	<![CDATA[
-		
-		private function showPrivacySettings():void{
-			Security.showSettings(SecurityPanel.PRIVACY);
-		}
-		
-		//Should use data binding to listen to the value changes of mic.muted or cam.muted
-		//when any of those are unlocked the popup should close by itself.
-		
-		//In case the user changes his/her mind and doesn't want to record anything
-		//close the popup and tell that he/she cant' record a thing without this rights.
-		//And of course close the popup
-		
-	]]>
-</mx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
 
-<mx:VBox>
-	<mx:HBox>
-		<mx:Text text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
-		<mx:Image source="/resources/images/PrivacySettings.png"/>
-	</mx:HBox>
-	<mx:HBox>
-		<mx:Button id="okButton" click=""/>
-		<mx:Button id="cancelButton"/>
-	</mx:HBox>
-</mx:VBox>
+			private var _microphoneAvailable:Boolean;
+			private var _cameraAvailable:Boolean;
 
-	
+			private function creationCompleteHandler():void
+			{
+				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+
+				if (devicesAdministrativelyProhibited())
+				{
+					//Show a message warning the user that he/she must ask his/her system administrator to
+					//give permissions for using the microphone and the camera
+				}
+				else if ((DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted) || (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted))
+				{
+					//The user already gave privacy rights, close the popup
+					recordButtonClickHandler(null);
+				}
+				else
+				{
+					initMicrophone();
+					initCamera();
+				}
+			}
+
+			private function initMicrophone():void
+			{
+				if (microphoneAvailable())
+				{
+					DataModel.getInstance().microphone=Microphone.getMicrophone();
+					DataModel.getInstance().microphone.addEventListener(StatusEvent.STATUS, microphonePrivacyStatus);
+				}
+			}
+
+			private function initCamera():void
+			{
+				if (cameraAvailable())
+				{
+					DataModel.getInstance().camera=Camera.getCamera();
+					DataModel.getInstance().camera.addEventListener(StatusEvent.STATUS, cameraPrivacyStatus);
+				}
+			}
+
+			private function devicesAdministrativelyProhibited():Boolean
+			{
+				return (Capabilities.avHardwareDisable);
+			}
+
+			private function showPrivacySettings():void
+			{
+				Security.showSettings(SecurityPanel.PRIVACY);
+			}
+
+			private function cameraAvailable():Boolean
+			{
+				return (Camera.names.length > 0);
+			}
+
+			// Will always return true since Flash identifies the system's dummy audio input as a microphone
+			private function microphoneAvailable():Boolean
+			{
+				return (Microphone.names.length > 0);
+			}
+
+			private function microphonePrivacyStatus(event:StatusEvent):void
+			{
+				if (event.code == "Microphone.Muted")
+				{
+					okButton.label="Ok";
+					okButton.removeEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+					okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
+				}
+				if (event.code == "Microphone.Unmuted")
+				{
+					okButton.label="Record";
+					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
+					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+
+				}
+			}
+
+			private function cameraPrivacyStatus(event:StatusEvent):void
+			{
+				if (event.code == "Camera.Muted")
+				{
+					okButton.label="Ok";
+					okButton.removeEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+					okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
+				}
+				if (event.code == "Camera.Unmuted")
+				{
+					okButton.label="Record";
+					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
+					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+				}
+			}
+
+			private function cancelButtonClickHandler(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function okButtonClickHandler(event:Event):void
+			{
+				showPrivacySettings();
+			}
+
+			private function recordButtonClickHandler(event:Event):void
+			{
+				DataModel.getInstance().micCamAllowed=true;
+				cancelButtonClickHandler(null);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%">
+		<mx:HBox width="100%"
+				 verticalAlign="middle">
+			<mx:Text width="100%"
+					 text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
+			<mx:Image source="resources/images/privacy_settings.png"/>
+		</mx:HBox>
+		<mx:HBox width="100%"
+				 horizontalAlign="left">
+			<mx:Button id="okButton"
+					   click="okButtonClickHandler(event)"
+					   label="Ok"/>
+		</mx:HBox>
+	</mx:VBox>
+
+
 </mx:TitleWindow>
