@@ -110,7 +110,9 @@ class ExerciseDAO {
 			$sql = "INSERT INTO exercise_score (fk_exercise_id, fk_user_id, suggested_score, suggestion_date) 
 			        VALUES ( '%d', '%d', '%d', NOW() )";
 			
-			return $this->_create($sql, $score->exerciseId, $score->userId, $score->suggestedScore);
+			$insert_result = $this->_create($sql, $score->exerciseId, $score->userId, $score->suggestedScore);
+			
+			return $this->getExerciseAvgScore($score->exerciseId);
 			
 		} else {
 			//The user has already given a score ignore the input.
@@ -145,6 +147,15 @@ class ExerciseDAO {
 		}
 	}
 	
+	public function getExerciseAvgScore($exerciseId){
+		
+		$sql = "SELECT e.id, avg (suggested_score) as avgScore
+				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
+				WHERE (e.id = '%d' )";
+		
+		return $this->_singleScoreQuery($sql, $exerciseId);
+	}
+	
 	public function deactivateReportedVideos(){
 		
 		$sql = "SELECT prefValue FROM preferences WHERE (prefName='reports_to_delete')";
@@ -168,32 +179,17 @@ class ExerciseDAO {
 	}
 	
 	private function _singleScoreQuery(){
-		
+		$exercise = new ExerciseVO ( );
 		$result = $this->conn->_execute(func_get_args());
 		$row = $this->conn->_nextRow ($result);
 		if ($row){
-			$avgRating = $row[0];
-			return $avgRating;
+			$exercise->id = $row[0];
+			$exercise->avgRating = $row[1];
 		} else {
 			return false;
 		}
+		return $exercise;
 		
-	}
-	
-	private function _singleQuery() {
-		$valueObject = new ExerciseVO ( );
-		$result = $this->conn->_execute ( func_get_args() );
-		
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			$valueObject->ID = $row [0];
-			$valueObject->nombre = $row [1];
-			$valueObject->duracion = $row [2];
-			$valueObject->autor = $row [3];
-		} else {
-			return false;
-		}
-		return $valueObject;
 	}
 	
 	private function _listQuery() {

@@ -25,7 +25,11 @@
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
 
+			[Bindable]
 			private var _exercise:ExerciseVO;
+			
+			[Bindable]
+			private var _exerciseRating:int;
 			
 			[Bindable]
 			private var _dataAvailable:Boolean = false;
@@ -36,6 +40,7 @@
 			{
 				if(exercise){
 					_exercise=exercise;
+					_exerciseRating = exercise.avgRating;
 					_dataAvailable = true;
 					updateComponents();
 				} else {
@@ -51,7 +56,7 @@
 
 			private function updateComponents():void
 			{
-				rating.value=_exercise.avgRating;
+				rating.value=_exerciseRating;
 				var userId:int = DataModel.getInstance().loggedUser.id;
 				
 				var score:ExerciseScoreVO = new ExerciseScoreVO();
@@ -97,7 +102,7 @@
 
 	<mx:HBox paddingTop="4" paddingLeft="4">
 		<rating:Rating id="rating"
-					   value="0"
+					   value="{_exerciseRating}"
 					   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
 					   click="ratingClickHandler(event)"/>
 	</mx:HBox>
