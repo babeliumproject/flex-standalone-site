@@ -22,7 +22,7 @@ package commands.autoevaluation {
 	public class AutoEvaluateCommand implements ICommand, IResponder {
 
 		public function execute(event:CairngormEvent):void {
-			new AutoEvaluationDelegate(this).getResponseTranscriptions((event as EvaluationEvent).responseID);
+			new AutoEvaluationDelegate(this).getResponseTranscriptions((event as EvaluationEvent).requestData);
 		}
 
 		public function result(data:Object):void {

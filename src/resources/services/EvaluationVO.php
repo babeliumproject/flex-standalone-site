@@ -36,6 +36,8 @@ class EvaluationVO{
 	public $responseAddingDate;
 	
 	public $userName;
+	
+	public $transcriptionSystem;
       
     public $_explicitType = "EvaluationVO";
 	

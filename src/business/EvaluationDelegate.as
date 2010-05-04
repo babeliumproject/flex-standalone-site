@@ -18,8 +18,9 @@ package business
 			this.responder = responder;
 		}
 		
-		public function getResponsesWaitingAssessment(userId:int):void
+		public function getResponsesWaitingAssessment(requestData:EvaluationVO):void
 		{
+			var userId:int = requestData.userId;
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
 			var pendingCall:AsyncToken=service.baloratuGabekoak(userId);
 			pendingCall.addResponder(responder);

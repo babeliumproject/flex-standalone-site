@@ -8,11 +8,11 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
 			import events.EvaluationEvent;
-			import vo.TranscriptionsVO;
-			import mx.collections.ArrayCollection;
+			
 			import model.DataModel;
+			
+			import vo.EvaluationVO;
 
 			public function init():void {
 				//setVisible(false);
@@ -28,8 +28,9 @@
 				exerciseTranscriptionLabel.text = "";
 				responseTranscriptionLabel.text = "";
 				scoreLabel.text = "";
-				
-				new EvaluationEvent(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, responseID).dispatch();
+				var requestData:EvaluationVO = new EvaluationVO();
+				requestData.responseId = responseID;
+				new EvaluationEvent(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, requestData).dispatch();
 			}
 
 			private function set onResultReceived(val:Boolean):void {

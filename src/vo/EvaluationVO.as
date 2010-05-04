@@ -38,6 +38,8 @@ package vo
 	   public var responseAddingDate:String;
 	   
 	   public var userName:String;
+	   
+	   public var transcriptionSystem:String;
 
    }
 }

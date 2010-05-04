@@ -83,6 +83,7 @@
 			
 			import mx.controls.Alert;
 			
+			import vo.EvaluationVO;
 			import vo.ResponseVO;
 			import vo.UserVO;
 
@@ -108,7 +109,10 @@
 
 					if(DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected) {
 						var aeResponseId:int = DataModel.getInstance().historicData.videoResponseId;
-						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, aeResponseId, 0, "spinvox").dispatch();
+						var requestData:EvaluationVO = new EvaluationVO();
+						requestData.responseId = aeResponseId;
+						requestData.transcriptionSystem = "spinvox";
+						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, requestData).dispatch();
 					}
 
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
@@ -130,8 +134,10 @@
 
 			private function set checkAutoevaluationSupport(val:Boolean):void {
 				var responseId:int = DataModel.getInstance().historicData.videoResponseId;
-
-				new EvaluationEvent(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, responseId, 0, "spinvox").dispatch();
+				var requestData:EvaluationVO = new EvaluationVO();
+				requestData.responseId = responseId;
+				requestData.transcriptionSystem = "spinvox";
+				new EvaluationEvent(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, requestData).dispatch();
 			}
 		]]>
 	</mx:Script>

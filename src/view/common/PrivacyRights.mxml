@@ -26,14 +26,15 @@
 
 			private function creationCompleteHandler():void
 			{
-				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+				//this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+				okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
 
 				if (devicesAdministrativelyProhibited())
 				{
 					//Show a message warning the user that he/she must ask his/her system administrator to
 					//give permissions for using the microphone and the camera
 				}
-				else if ((DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted) || (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted))
+				else if (microphoneReady() || cameraReady())
 				{
 					//The user already gave privacy rights, close the popup
 					recordButtonClickHandler(null);
@@ -73,15 +74,23 @@
 				Security.showSettings(SecurityPanel.PRIVACY);
 			}
 
-			private function cameraAvailable():Boolean
+			public function cameraAvailable():Boolean
 			{
 				return (Camera.names.length > 0);
 			}
 
 			// Will always return true since Flash identifies the system's dummy audio input as a microphone
-			private function microphoneAvailable():Boolean
+			public function microphoneAvailable():Boolean
 			{
 				return (Microphone.names.length > 0);
+			}
+			
+			public function cameraReady():Boolean{
+				return (DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted);
+			}
+			
+			public function microphoneReady():Boolean{
+				return (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted);
 			}
 
 			private function microphonePrivacyStatus(event:StatusEvent):void
@@ -97,7 +106,6 @@
 					okButton.label="Record";
 					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
 					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
-
 				}
 			}
 
@@ -105,12 +113,14 @@
 			{
 				if (event.code == "Camera.Muted")
 				{
+					DataModel.getInstance().micCamAllowed=false;
 					okButton.label="Ok";
 					okButton.removeEventListener(MouseEvent.CLICK, recordButtonClickHandler);
 					okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
 				}
 				if (event.code == "Camera.Unmuted")
 				{
+					DataModel.getInstance().micCamAllowed=true;
 					okButton.label="Record";
 					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
 					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
@@ -119,7 +129,8 @@
 
 			private function cancelButtonClickHandler(event:Event):void
 			{
-				PopUpManager.removePopUp(this);
+				//PopUpManager.removePopUp(this);
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 
 			private function okButtonClickHandler(event:Event):void
@@ -129,7 +140,6 @@
 
 			private function recordButtonClickHandler(event:Event):void
 			{
-				DataModel.getInstance().micCamAllowed=true;
 				cancelButtonClickHandler(null);
 			}
 		]]>
@@ -145,7 +155,6 @@
 		<mx:HBox width="100%"
 				 horizontalAlign="left">
 			<mx:Button id="okButton"
-					   click="okButtonClickHandler(event)"
 					   label="Ok"/>
 		</mx:HBox>
 	</mx:VBox>

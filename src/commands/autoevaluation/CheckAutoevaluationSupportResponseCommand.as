@@ -15,7 +15,7 @@ package commands.autoevaluation {
 
 	public class CheckAutoevaluationSupportResponseCommand implements ICommand, IResponder {
 		public function execute(event:CairngormEvent):void {
-			new AutoEvaluationDelegate(this).checkAutoevaluationSupportResponse((event as EvaluationEvent).responseID, (event as EvaluationEvent).transcriptionSystem);
+			new AutoEvaluationDelegate(this).checkAutoevaluationSupportResponse((event as EvaluationEvent).requestData);
 		}
 
 		public function result(data:Object):void {

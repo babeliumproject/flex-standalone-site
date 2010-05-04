@@ -29,9 +29,14 @@ package modules.videoPlayer
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Text;
+	import mx.core.Application;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
+	import mx.events.CloseEvent;
 	import mx.events.EffectEvent;
+	import mx.managers.PopUpManager;
+	
+	import view.common.PrivacyRights;
 
 	public class VideoPlayerBabelia extends VideoPlayer
 	{
@@ -100,6 +105,8 @@ package modules.videoPlayer
 		//The privacy box asks only once for permission per application session and
 		//gives all the permissions. There's no distinction between cam or mic permissions.
 		private var _micCamEnabled:Boolean=false;
+		
+		private var privacyRights:PrivacyRights;
 
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -678,19 +685,13 @@ package modules.videoPlayer
 			switch (_state)
 			{
 				case RECORD_BOTH_STATE:
-
-					prepareWebcam();
-					prepareMicrophone();
-					startAccessTimeout();
-
+					prepareDevices();
 					break;
 
 				case RECORD_MIC_STATE:
 
 					recoverVideoPanel(); // original size
-					prepareWebcam(); // needed
-					prepareMicrophone();
-					startAccessTimeout();
+					prepareDevices();
 
 					break;
 
@@ -704,6 +705,7 @@ package modules.videoPlayer
 
 					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
+					_camVideo.visible = false;
 
 					this.updateDisplayList(0, 0);
 
@@ -713,88 +715,6 @@ package modules.videoPlayer
 					break;
 			}
 		}
-
-
-		/**
-		 * Recording related commands
-		 */
-
-		// Mic state - check for a mic
-		private function mic_status(evt:StatusEvent):void
-		{
-			switch (evt.code)
-			{
-				case "Microphone.Muted": // User denied access to mic, or hasn't got it
-					clearPrivacyVariables();
-					dispatchEvent(new RecordingEvent(RecordingEvent.MIC_DENIED));
-					trace("Mic access denied");
-					break;
-				case "Microphone.Unmuted": // User allowed access to mic
-					if (!_micCamEnabled)
-					{
-						_micCamEnabled=true;
-						trace("Mic enabled");
-					}
-					break;
-			}
-		}
-
-		// Camera state - check for a cam
-		private function camera_status(evt:StatusEvent):void
-		{
-			switch (evt.code)
-			{
-				case "Camera.Muted": // User denied access to camera, or hasn't got it
-					clearPrivacyVariables();
-					dispatchEvent(new RecordingEvent(RecordingEvent.CAM_DENIED));
-					trace("Cam access denied");
-					break;
-				case "Camera.Unmuted": // User allowed access to camera
-					if (!_micCamEnabled)
-					{
-						_micCamEnabled=true;
-						trace("Cam enabled");
-					}
-					break;
-			}
-		}
-
-
-		/**
-		 * Access Control
-		 */
-
-		// Prepare access timeout
-		private function startAccessTimeout():void
-		{
-			// Default: 5 sec to accept access to mic or cam
-			_accessTimeout=new Timer(1000, ACCESS_TIMEOUT_SECS);
-			_accessTimeout.addEventListener(TimerEvent.TIMER, onAccessTick);
-			_accessTimeout.start();
-		}
-
-		// Access timer as a timeout
-		private function onAccessTick(tick:TimerEvent):void
-		{
-			if ((state == RECORD_BOTH_STATE || state == RECORD_MIC_STATE) && _micCamEnabled)
-			{
-				_accessTimeout.stop();
-				_accessTimeout.reset();
-
-				_video.visible=false;
-				_countdownTxt.visible=true;
-
-				prepareRecording();
-				startCountdown();
-			}
-			else if (_accessTimeout.currentCount == _accessTimeout.repeatCount)
-			{
-				clearPrivacyVariables();
-				dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-				_accessTimeout.reset();
-			}
-		}
-
 
 		/**
 		 * Countdown before recording
@@ -832,49 +752,39 @@ package modules.videoPlayer
 
 
 		/**
-		 * Methods for prepare the recording
-		 */
-
-		// Checks whether any webcam is attached to the system or not
-		public function webcamAvailable():Boolean
-		{
-			return (Camera.names.length > 0);
-		}
-
-		// Checks whether any microphone is attached to the system or not
-		// NOTE: Linux always has a 'dummy' microphone called Linux Microphone
-		public function microphoneAvailable():Boolean
-		{
-			return (Microphone.names.length > 0);
-		}
-
-		// prepare webcam
-		private function prepareWebcam():void
-		{
-			if (webcamAvailable())
-			{
-				_camera=Camera.getCamera();
-				// Important: Access Control
-				_camera.addEventListener(StatusEvent.STATUS, camera_status);
-				DataModel.getInstance().camera = _camera;
-
+		 * Methods to prepare the recording
+		 */	
+		private function prepareDevices():void{
+			if(DataModel.getInstance().micCamAllowed){
+				configureDevices();
+			} else{
+				privacyRights = PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+				privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
+				PopUpManager.centerPopUp(privacyRights);
 			}
 		}
-
-		// prepare microphone
-		private function prepareMicrophone():void
-		{
-			if(microphoneAvailable()){
-				_mic=Microphone.getMicrophone();
-				_mic.setUseEchoSuppression(true);
-				_mic.setLoopBack(true);
-				_mic.setSilenceLevel(0, 60000);
-				// Important: Access Control
-				_mic.addEventListener(StatusEvent.STATUS, mic_status);
-				DataModel.getInstance().microphone = _mic;
-				if(_mic.muted){
-					showPrivacyPopUp();
-				}
+		
+		private function configureDevices():void{
+			_camera = DataModel.getInstance().camera;
+			_mic = DataModel.getInstance().microphone;
+			_mic.setUseEchoSuppression(true);
+			_mic.setLoopBack(true);
+			_mic.setSilenceLevel(0,60000);
+			
+			_video.visible=false;
+			_countdownTxt.visible=true;
+			
+			prepareRecording();
+			startCountdown();
+		}
+		
+		private function privacyBoxClosed(event:Event):void{
+			PopUpManager.removePopUp(privacyRights);
+			_micCamEnabled = DataModel.getInstance().micCamAllowed;
+			if(_micCamEnabled){
+				configureDevices();
+			} else {
+				dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 			}
 		}
 
@@ -908,11 +818,6 @@ package modules.videoPlayer
 
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
-		}
-		
-		private function clearPrivacyVariables():void{
-			//Security.showSettings(SecurityPanel.DEFAULT);
-			_camVideo = new Video();
 		}
 
 		/**
@@ -1087,10 +992,6 @@ package modules.videoPlayer
 			{
 				trace("Second stream connection Fail Code: " + e.info.code);
 			}
-		}
-		
-		private function showPrivacyPopUp():void{
-			
 		}
 
 	}
