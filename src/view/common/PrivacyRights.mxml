@@ -2,9 +2,9 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				showCloseButton="true"
 				width="355"
+				height="180"
 				fontFamily="Arial"
 				fontSize="11"
-				autoLayout="true"
 				paddingLeft="8"
 				paddingRight="8"
 				borderColor="#E5E8EA"
@@ -19,30 +19,111 @@
 			import model.DataModel;
 			
 			import mx.events.CloseEvent;
-			import mx.managers.PopUpManager;
 
-			private var _microphoneAvailable:Boolean;
-			private var _cameraAvailable:Boolean;
+			private var _microphoneChanged:Boolean=false;
+			private var _microphoneSoundTestPassed:Boolean=false;
+
+			private var _cameraChanged:Boolean=false;
+			
+			private var _devicesAllowed:Boolean=false;
+
+			private var _micCameraRequested:Boolean=false;
 
 			private function creationCompleteHandler():void
 			{
 				//this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
-				okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
 
+				/*
+				   if (devicesAdministrativelyProhibited())
+				   {
+				   //Show a message warning the user that he/she must ask his/her system administrator to
+				   //give permissions for using the microphone and the camera
+				   }
+				   else
+				   {
+				   initMicrophone();
+				   initCamera();
+				   if (microphoneReady() || cameraReady())
+				   {
+				   //The user already gave privacy rights, close the popup
+				   recordButtonClickHandler(null);
+				   }
+				   }
+				 */
+				initDevices();
+			}
+
+			public function set useMicAndCamera(value:Boolean):void
+			{
+				_micCameraRequested=value;
+				initDevices();
+			}
+
+			private function initDevices():void
+			{
 				if (devicesAdministrativelyProhibited())
 				{
-					//Show a message warning the user that he/she must ask his/her system administrator to
-					//give permissions for using the microphone and the camera
-				}
-				else if (microphoneReady() || cameraReady())
-				{
-					//The user already gave privacy rights, close the popup
-					recordButtonClickHandler(null);
+					micCamViewStack.selectedChild=adminError;
+					trace("Error: User has no rigths to access devices.");
 				}
 				else
 				{
-					initMicrophone();
-					initCamera();
+					if (microphoneAvailable())
+					{
+						var microphone:Microphone=Microphone.getMicrophone();
+						if (!DataModel.getInstance().microphone)
+						{
+							_microphoneChanged=true;
+							DataModel.getInstance().microphone=microphone;
+						}
+						else if (DataModel.getInstance().microphone != microphone)
+						{
+							_microphoneChanged=true;
+							DataModel.getInstance().microphone=microphone;
+							trace("Mic device changed.");
+						}
+						if (DataModel.getInstance().microphone.muted)
+						{
+							micCamViewStack.selectedChild=privacyNotice;
+							_devicesAllowed=false;
+							DataModel.getInstance().microphone.addEventListener(StatusEvent.STATUS, microphonePrivacyStatus);
+						}
+
+						if (_micCameraRequested)
+						{
+							if (cameraAvailable())
+							{
+								var camera:Camera=Camera.getCamera();
+								if (!DataModel.getInstance().camera)
+								{
+									_cameraChanged=true;
+									DataModel.getInstance().camera=camera;
+								}
+								else if (DataModel.getInstance().camera != camera)
+								{
+									_cameraChanged=true;
+									DataModel.getInstance().camera=camera;
+									trace("Camera device changed.");
+								}
+								if (DataModel.getInstance().camera.muted)
+								{
+									micCamViewStack.selectedChild=privacyNotice;
+									_devicesAllowed=false;
+									DataModel.getInstance().camera.addEventListener(StatusEvent.STATUS, cameraPrivacyStatus);
+								}
+							}
+							else
+							{
+								micCamViewStack.selectedChild=cameraNotFoundError;
+								trace("Error: No camera was detected.");
+							}
+						}
+					}
+					else
+					{
+						micCamViewStack.selectedChild=micNotFoundError;
+						trace("Error: No mic was detected.");
+					}
 				}
 			}
 
@@ -84,12 +165,14 @@
 			{
 				return (Microphone.names.length > 0);
 			}
-			
-			public function cameraReady():Boolean{
+
+			public function cameraReady():Boolean
+			{
 				return (DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted);
 			}
-			
-			public function microphoneReady():Boolean{
+
+			public function microphoneReady():Boolean
+			{
 				return (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted);
 			}
 
@@ -97,15 +180,13 @@
 			{
 				if (event.code == "Microphone.Muted")
 				{
-					okButton.label="Ok";
-					okButton.removeEventListener(MouseEvent.CLICK, recordButtonClickHandler);
-					okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
+					_devicesAllowed = false;
+					privacyRecButton.label="Ok";
 				}
 				if (event.code == "Microphone.Unmuted")
 				{
-					okButton.label="Record";
-					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
-					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+					_devicesAllowed = true;
+					privacyRecButton.label="Record";
 				}
 			}
 
@@ -113,17 +194,13 @@
 			{
 				if (event.code == "Camera.Muted")
 				{
-					DataModel.getInstance().micCamAllowed=false;
-					okButton.label="Ok";
-					okButton.removeEventListener(MouseEvent.CLICK, recordButtonClickHandler);
-					okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
+					_devicesAllowed = false;
+					privacyRecButton.label="Ok";
 				}
 				if (event.code == "Camera.Unmuted")
 				{
-					DataModel.getInstance().micCamAllowed=true;
-					okButton.label="Record";
-					okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
-					okButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
+					_devicesAllowed = true;
+					privacyRecButton.label="Record";
 				}
 			}
 
@@ -135,29 +212,90 @@
 
 			private function okButtonClickHandler(event:Event):void
 			{
-				showPrivacySettings();
-			}
-
-			private function recordButtonClickHandler(event:Event):void
-			{
-				cancelButtonClickHandler(null);
+				if(!_devicesAllowed)
+					showPrivacySettings();
+				else{
+					DataModel.getInstance().micCamAllowed = _devicesAllowed;
+					cancelButtonClickHandler(null);
+				}
 			}
 		]]>
 	</mx:Script>
 
-	<mx:VBox width="100%">
-		<mx:HBox width="100%"
-				 verticalAlign="middle">
+	<mx:ViewStack id="micCamViewStack"
+				  width="100%"
+				  height="100%">
+
+		<mx:VBox id="micNotFoundError"
+				 width="100%">
+			<mx:HBox>
+				<mx:Text width="100%"
+						 text="Your microphone device couldn't be detected. Please make sure the device is correctly plugged and then click 'Retry' or click 'Cancel' to abort the recording."/>
+				<mx:Image source="resources/images/microphone_error.png"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Button id="micNotFoundErrorRetryButton"
+						   label="Retry"
+						   click="initDevices()"/>
+
+				<mx:Button id="micNotFoundErrorCancelButton"
+						   label="Cancel"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox id="cameraNotFoundError"
+				 width="100%">
+			<mx:HBox width="100%"
+					 verticalAlign="middle">
+				<mx:Text width="100%"
+						 text="Your camera device couldn't be detected. Please make sure the device is correctly plugged and then click 'Retry' or click 'Cancel' to abort the recording."/>
+				<mx:Image source="resources/images/webcam_error.png"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Button id="camNotFoundErrorRetryButton"
+						   label="Retry"
+						   click="initDevices()"/>
+				<mx:Button id="camNotFoundErrorCancelButton"
+						   label="Cancel"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:VBox id="adminError"
+				 width="100%">
 			<mx:Text width="100%"
-					 text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
-			<mx:Image source="resources/images/privacy_settings.png"/>
-		</mx:HBox>
-		<mx:HBox width="100%"
-				 horizontalAlign="left">
-			<mx:Button id="okButton"
-					   label="Ok"/>
-		</mx:HBox>
-	</mx:VBox>
+					 text="An administrative rule forbids the access to camera and microphone. Please contact your system administrator."/>
+			<mx:Button id="adminErrorButton"
+					   label="Ok"
+					   click="cancelButtonClickHandler(event)"/>
+		</mx:VBox>
+
+		<mx:VBox id="privacyNotice"
+				 width="100%">
+			<mx:HBox width="100%"
+					 verticalAlign="middle">
+				<mx:Text width="100%"
+						 text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
+				<mx:Image source="resources/images/privacy_settings.png"/>
+			</mx:HBox>
+			<mx:HBox width="100%"
+					 horizontalAlign="left">
+				<mx:Button id="privacyRecButton"
+						   label="Ok"
+						   click="okButtonClickHandler(event)"/>
+				<mx:Button id="privacyCancelButton"
+						   label="Cancel"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox id="micSoundTest"
+				 width="100%">
+			<mx:Text text="This test will ensure that your microphone works as excepted and has the minimum required volume to record an exercise"/>
+		</mx:VBox>
+
+	</mx:ViewStack>
 
 
 </mx:TitleWindow>

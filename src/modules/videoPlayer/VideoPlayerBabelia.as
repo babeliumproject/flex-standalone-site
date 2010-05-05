@@ -35,6 +35,7 @@ package modules.videoPlayer
 	import mx.events.CloseEvent;
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
+	import mx.skins.halo.ColorPickerSkin;
 	
 	import view.common.PrivacyRights;
 
@@ -760,6 +761,8 @@ package modules.videoPlayer
 			} else{
 				privacyRights = PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
 				privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
+				if(state == RECORD_BOTH_STATE)
+					privacyRights.useMicAndCamera = true;
 				PopUpManager.centerPopUp(privacyRights);
 			}
 		}

@@ -170,6 +170,8 @@ package model
 		[Bindable] public var microphone:Microphone;
 		[Bindable] public var camera:Camera;
 		[Bindable] public var micCamAllowed:Boolean = false;
+		[Bindable] public var microphoneReady:Boolean = false;
+		[Bindable] public var cameraReady:Boolean = false;
 		
 		// Checks for exercise rating and reporting
 		[Bindable] public var userRatedExercise:Boolean = false;
