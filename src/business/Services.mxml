@@ -57,6 +57,12 @@
 		source="SearchDAO"/>
 		
 	<mx:RemoteObject
+		id="tagCloudRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="TagCloudDAO"/>
+		
+	<mx:RemoteObject
 		id="youtubeRO"
 		destination="empService"
 		showBusyCursor="false"

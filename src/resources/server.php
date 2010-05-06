@@ -21,6 +21,7 @@ require_once './amfphp/services/babelia/UserDAO.php';
 require_once './amfphp/services/babelia/UploadExerciseDAO.php';
 require_once './amfphp/services/babelia/YouTubeDAO.php';
 require_once './amfphp/services/babelia/SearchDAO.php';
+require_once './amfphp/services/babelia/TagCloudDAO.php';
 
 /** Bootstrap */
 
@@ -46,6 +47,7 @@ $server->setClass('UploadExerciseDAO');
 $server->setClass('YouTubeDAO');
 $server->setClass('TranscriptionsDAO');
 $server->setClass('SearchDAO');
+$server->setClass('TagCloudDAO');
 
 
 // Establish associations between PHP classes and their AS3 counterparts
@@ -68,6 +70,7 @@ $server->setClassMap('SubtitleLineVO',"SubtitleLineVO");
 $server->setClassMap('UserVO',"UserVO");
 $server->setClassMap('NewUserVO',"NewUserVO");
 $server->setClassMap('TranscriptionsVO',"TranscriptionsVO");
+$server->setClassMap('TagVO',"TagVO");
 
 
 //Add directories reachable for Zend AMF

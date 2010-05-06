@@ -13,7 +13,9 @@ class SearchDAO {
 	public function SearchDAO() {
 			$settings = new Config ( );
 			$this->indexPath = $settings->indexPath;
-			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
+			$this->conn = new Datasource ($settings->host, 
+										  $settings->db_name, $settings->db_username, 
+										  $settings->db_password );
 	}
 	public function initialize(){
 		try{
@@ -71,6 +73,26 @@ class SearchDAO {
 		
 		return $searchResults;
 	}
+	public function setTagToDB($search){
+		if ($search!=''){   
+			$sql = "SELECT amount FROM tagcloud WHERE tag='%s'";
+			$result = $this->conn->_execute ($sql, $search);
+			$tagExists= FALSE;
+			if ($row = $this->conn->_nextRow ($result)){
+				//The tag already exists, so updating the quantity
+				$tagExists= TRUE;
+				$newAmount= 1 + $row[0];
+				$sql = "UPDATE tagcloud SET amount = ". $newAmount . " WHERE tag='%s'";
+				$result = $this->conn->_execute ($sql, $search);
+			}else{
+				//Insert the tag
+				$sql = "INSERT INTO tagcloud (tag, amount) VALUES ('%s', 0)";
+				$result = $this->conn->_execute ($sql, $search);
+			}
+		}
+		return $result;
+	}
+	
 	public function reCreateIndex(){
 		$this->deleteIndexRecursive($this->indexPath);
 		//rmdir($this->indexPath);
@@ -114,7 +136,7 @@ class SearchDAO {
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			 WHERE (e.status = 'Available')
-				 GROUP BY e.id";
+				 GROUP BY e.id;";
  		$result = $this->conn->_execute ( $sql );
 				
 		//Create the index
@@ -124,7 +146,8 @@ class SearchDAO {
 		Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
+			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
+						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
 		}
 		$this->index->commit();
 		$this->index->optimize();			
@@ -147,7 +170,8 @@ class SearchDAO {
 		$this->initialize();
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
+			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
+						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
 		}
 		$this->index->commit();
 		$this->index->optimize();		
@@ -168,7 +192,8 @@ class SearchDAO {
 		$this->index->optimize();	
 	}
 	
-	private function addDoc($idEx,$title,$description,$language,$tags,$source,$name,$thumbnailUri,$addingDate,$userId,$userName,$avgRating,$avgDifficulty){
+	private function addDoc($idEx,$title,$description,$language,$tags,$source,$name,
+					$thumbnailUri,$addingDate,$userId,$userName,$avgRating,$avgDifficulty){
 		$doc = new Zend_Search_Lucene_Document();
 			
 		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx, 'utf-8'));

@@ -18,6 +18,7 @@ package business{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("searchRO");
 			var pendingCall:AsyncToken=service.launchSearch(search);
 			pendingCall.addResponder(responder);
+			service.setTagToDB(search);
 		}
 	}
 }

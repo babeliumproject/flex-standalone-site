@@ -37,6 +37,10 @@
 
 		//Server path to store the search index. Must be a folder with write permissions set for www-data
 		public $indexPath = 'docIndex';
+
+		//Number of tags for the cloud of tags
+		public $numTags = 25;
+
 		
 		/*
 		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and 

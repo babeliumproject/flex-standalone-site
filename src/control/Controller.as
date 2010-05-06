@@ -21,7 +21,7 @@ package control {
 	import commands.exercises.GetExerciseRolesCommand;
 	import commands.exercises.MakeResponsePublicCommand;
 	import commands.exercises.RateExerciseCommand;
-	import commands.exercises.ReportInappropriateExerciseCommand;
+	import commands.exercises.ReportInappropriateExerciseCommand;	
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.UserRatedExerciseCommand;
@@ -39,6 +39,7 @@ package control {
 	import commands.main.ViewRankingModuleCommand;
 	import commands.main.WatchExerciseCommand;
 	import commands.search.LaunchSearchCommand;
+	import commands.search.GetTagCloudCommand;
 	import commands.search.ViewSearchModuleCommand;
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
@@ -141,7 +142,8 @@ package control {
 			addCommand(UserEvent.GET_USER_INFO, GetUserInfoCommand);
 
 			//Search management commands
-			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand)
+			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
+			addCommand(SearchEvent.GET_TAG_CLOUD, GetTagCloudCommand);
 
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);

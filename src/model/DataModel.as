@@ -76,6 +76,8 @@ package model
 		[Bindable] public var subHistoricData:CreditHistoryVO = null;	
 		
 		//The info of the video searches
+		[Bindable] public var tagCloud: ArrayCollection;
+		[Bindable] public var tagCloudRetrieved: Boolean = false;
 		[Bindable] public var videoSearches: ArrayCollection;
 		[Bindable] public var videoSearchesRetrieved:Boolean = false;
 		[Bindable] public var searchField:String = "";
@@ -179,7 +181,7 @@ package model
 		[Bindable] public var userRatedExerciseFlag:Boolean = false;
 		[Bindable] public var userReportedExercise:Boolean = false;
 		[Bindable] public var userReportedExerciseFlag:Boolean = false;
-	
+		
 		public function DataModel(){
 			if (instance)
 				throw new Error("DataModel can only be accessed through DataModel.getInstance()");
