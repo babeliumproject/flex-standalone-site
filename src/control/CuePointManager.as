@@ -33,7 +33,7 @@ package control
 		 * Used variables
 		 **/ 
 		[Bindable] 
-		public var cuelist:ArrayCollection;
+		public var cuelist:ArrayCollection = new ArrayCollection();
 		
 		private var cache:Dictionary; // as HashMap
 		private var watchingVideo:int;
@@ -201,21 +201,25 @@ package control
 			
 			for each (var cueobj:CueObject in cuelist)
 			{
-				if ((curTime - 0.08) < cueobj.getStartTime() 
-						&& cueobj.getStartTime() < (curTime + 0.08))
+				if (!displayed && ((curTime - 0.08) < cueobj.getStartTime() 
+						&& cueobj.getStartTime() < (curTime + 0.08)))
 				{
+					displayed = true;
 					cueobj.executeStartCommand();
 					break;
 				}
 				
-				if ((curTime - 0.08) < cueobj.getEndTime() 
-						&& cueobj.getEndTime() < (curTime + 0.08))
+				if (displayed && ((curTime - 0.08) < cueobj.getEndTime() 
+						&& cueobj.getEndTime() < (curTime + 0.08)))
 				{
+					displayed = false;
 					cueobj.executeEndCommand();
 					break;
 				}
 			}
 		 }
+		
+		private var displayed:Boolean = false;
 
 
 		/**
@@ -281,7 +285,7 @@ package control
 					}
 				}
 			}
-			
+			//sortByStartTime();
 			dispatchEvent(new CueManagerEvent(CueManagerEvent.SUBTITLES_RETRIEVED));
 		}
 		

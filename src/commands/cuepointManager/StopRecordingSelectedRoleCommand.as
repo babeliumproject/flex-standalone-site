@@ -26,7 +26,6 @@ package commands.cuepointManager
 			VP.muteRecording(true);
 			if(!DataModel.getInstance().soundDetected &&
 				DataModel.getInstance().gapsWithNoSound > DataModel.GAPS_TO_ABORT_RECORDING){
-				Alert.show(DataModel.getInstance().gapsWithNoSound.toString());
 				DataModel.getInstance().gapsWithNoSound = 0;
 				VP.dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 			}
