@@ -3,9 +3,9 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.videoPlayer.VideoPlayerBabelia;
+	import model.DataModel;
 	
-	import mx.controls.Alert;
+	import modules.videoPlayer.VideoPlayerBabelia;
 
 	public class StartRecordingSelectedRoleCommand implements ICommand
 	{
@@ -28,6 +28,8 @@ package commands.cuepointManager
 			VP.muteVideo(true);
 			VP.muteRecording(false);
 			VP.startTalking(role, time);
+			if(!DataModel.getInstance().soundDetected)
+				DataModel.getInstance().gapsWithNoSound++;
 		}		
 	}
 }

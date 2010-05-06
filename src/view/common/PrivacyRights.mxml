@@ -31,25 +31,6 @@
 
 			private function creationCompleteHandler():void
 			{
-				//this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
-
-				/*
-				   if (devicesAdministrativelyProhibited())
-				   {
-				   //Show a message warning the user that he/she must ask his/her system administrator to
-				   //give permissions for using the microphone and the camera
-				   }
-				   else
-				   {
-				   initMicrophone();
-				   initCamera();
-				   if (microphoneReady() || cameraReady())
-				   {
-				   //The user already gave privacy rights, close the popup
-				   recordButtonClickHandler(null);
-				   }
-				   }
-				 */
 				initDevices();
 			}
 

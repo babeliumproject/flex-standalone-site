@@ -26,6 +26,7 @@ package model
 		
 		[Bindable] public static var SUBTITLE_MODULE:int = 0;
 		[Bindable] public static var RECORDING_MODULE:int = 1;
+		[Bindable] public static var GAPS_TO_ABORT_RECORDING:int = 3;
 		
 		public var media:Media;
 		
@@ -170,8 +171,8 @@ package model
 		[Bindable] public var microphone:Microphone;
 		[Bindable] public var camera:Camera;
 		[Bindable] public var micCamAllowed:Boolean = false;
-		[Bindable] public var microphoneReady:Boolean = false;
-		[Bindable] public var cameraReady:Boolean = false;
+		[Bindable] public var gapsWithNoSound:int = 0;
+		[Bindable] public var soundDetected:Boolean = false;
 		
 		// Checks for exercise rating and reporting
 		[Bindable] public var userRatedExercise:Boolean = false;

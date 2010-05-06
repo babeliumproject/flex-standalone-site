@@ -28,6 +28,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.controls.Text;
 	import mx.core.Application;
 	import mx.core.UIComponent;
@@ -35,7 +36,6 @@ package modules.videoPlayer
 	import mx.events.CloseEvent;
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
-	import mx.skins.halo.ColorPickerSkin;
 	
 	import view.common.PrivacyRights;
 
@@ -772,13 +772,24 @@ package modules.videoPlayer
 			_mic = DataModel.getInstance().microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setLoopBack(true);
-			_mic.setSilenceLevel(0,60000);
+			_mic.setSilenceLevel(1,60000);
+			
+			DataModel.getInstance().microphone.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 			
 			_video.visible=false;
 			_countdownTxt.visible=true;
 			
 			prepareRecording();
 			startCountdown();
+		}
+		
+		public function micActivityHandler(event:ActivityEvent):void{
+			//The mic has received an input louder than the 0% volume, so there's a mic working correctly.
+			if(event.activating){
+				DataModel.getInstance().gapsWithNoSound = 0;
+				DataModel.getInstance().soundDetected = true;
+				DataModel.getInstance().microphone.removeEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
+			}
 		}
 		
 		private function privacyBoxClosed(event:Event):void{
