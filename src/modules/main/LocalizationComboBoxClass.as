@@ -2,7 +2,7 @@ package modules.main
 {
 	import flash.events.IEventDispatcher;
 	
-	import modules.videoUpload.IconComboBox;
+	import view.common.IconComboBox;
 	
 	import mx.containers.HBox;
 	import mx.events.FlexEvent;

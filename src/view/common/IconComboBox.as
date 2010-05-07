@@ -1,4 +1,4 @@
-package modules.videoUpload
+package view.common
 {
 	import flash.display.DisplayObject;
 	

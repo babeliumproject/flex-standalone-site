@@ -1,6 +1,5 @@
 package view.common
 {
-	import modules.videoUpload.IconComboBox;
 	
 	import mx.containers.HBox;
 	import mx.events.FlexEvent;

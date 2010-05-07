@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 borderStyle="solid"
+		 borderThickness="2"
+		 creationComplete="init()">
+
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:Script>
+
+		<![CDATA[
+			import events.AddVideoEvent;
+			
+			import model.DataModel;
+			
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import view.common.PrivacyRights;
+
+			private var netConnection:NetConnection;
+			
+			private var publishNetStream:NetStream;
+			private var playbackNetStream:NetStream;
+			
+			public var recordingFileName:String;
+
+			private var audio_pause:Boolean;
+
+			private var video:Video;
+
+			private var _camera:Camera;
+			private var _mic:Microphone;
+			private var _micCamEnabled:Boolean=false;
+
+			private var privacyRights:PrivacyRights;
+
+			private var anyContent:Boolean;
+
+			[Embed(source='../../resources/images/playerPlayIcon.png')]
+			[Bindable]
+			private var playImageEmbed:Class;
+			[Embed(source='../../resources/images/playerPauseIcon.png')]
+			[Bindable]
+			private var pauseImageEmbed:Class;
+			[Embed(source='../../resources/images/playerRecIcon.png')]
+			[Bindable]
+			private var recImageEmbed:Class;
+			[Embed(source='../../resources/images/playerStopIcon.png')]
+			[Bindable]
+			private var stopImageEmbed:Class;
+			
+
+
+			public function init():void
+			{
+				//Button icon initialization
+				recStopButton.setStyle('icon',recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+				
+				anyContent=false;
+				netConnection=new NetConnection();
+				netConnection.connect(DataModel.getInstance().streamingResourcesPath);
+				netConnection.addEventListener(NetStatusEvent.NET_STATUS, connectionNetStatusHandler);
+				netConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
+				netConnection.client=this;
+				audio_pause=false;
+			}
+
+			private function connectionNetStatusHandler(event:NetStatusEvent):void
+			{
+				var info:Object=event.info;
+				switch (info.code)
+				{
+					case "NetConnection.Connect.Success":
+						// Close and recreate streams
+						if (playbackNetStream)
+							playbackNetStream.close();
+						if (publishNetStream)
+							publishNetStream.close();
+
+						playbackNetStream=new NetStream(netConnection);
+						publishNetStream=new NetStream(netConnection);
+
+						playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
+
+						playbackNetStream.client=this; // onPlayStatus
+						playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+						break;
+
+					case "NetConnection.Connect.Closed":
+						if (playbackNetStream)
+							playbackNetStream.close();
+						if (publishNetStream)
+							publishNetStream.close();
+						break;
+				}
+			}
+
+			private function playbackStreamNetStatusHandler(event:NetStatusEvent):void
+			{
+				var info:Object=event.info;
+
+				if (info.code == "NetStream.Play.Stop")
+				{
+					recStopButton.enabled=true;
+					recStopButton.label="Rec";
+
+					playPauseButton.enabled=true;
+					playPauseButton.label="Play";
+
+					audio_pause=false;
+				}
+			}
+
+			private function netSecurityError(event:SecurityErrorEvent):void
+			{
+				trace("netSecurityError: " + event);
+			}
+
+			private function playAudio():void
+			{
+				if (audio_pause)
+				{
+					playbackNetStream.resume();
+					estat.text="*Playing...";
+					audio_pause=false;
+				}
+				else
+				{
+					// Play the recording
+					estat.text="Playing...";
+					if (playbackNetStream)
+						playbackNetStream.close();
+					playbackNetStream=new NetStream(netConnection);
+					playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
+					playbackNetStream.client=this; // onPlayStatus
+					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+
+					playbackNetStream.play(videoEvaluationDir + "/" + recordingFileName);
+					video.attachNetStream(playbackNetStream); // JUANAN
+					estat.text="Playing...";
+				}
+
+				// It's not possible recording or save while audio is playing
+				playPauseButton.enabled=true;
+				playPauseButton.label="Pause";
+
+				recStopButton.enabled=true;
+				recStopButton.label="Stop";
+			}
+
+			private function pauseAudio():void
+			{
+				//in_ns.togglePause();
+				playbackNetStream.pause();
+				estat.text="Paused";
+				audio_pause=true;
+
+				// It's possible recording or save while audio is paused
+				recStopButton.enabled=true;
+				recStopButton.label="Rec";
+
+				playPauseButton.enabled=true;
+				playPauseButton.label="Play";
+			}
+
+			private function stopAudio():void
+			{
+				estat.text="Stopped ";
+
+				// Close output stream
+				publishNetStream.close();
+
+				// It's not possible playing audio while recording
+				recStopButton.enabled=true;
+				recStopButton.label="Rec";
+
+				playPauseButton.enabled=true;
+				playPauseButton.label="Play";
+			}
+
+			private function recStopAudio():void
+			{
+				if (recStopButton.label == "Rec")
+				{
+					prepareDevices();
+				}
+				else
+				{
+					stopCamera();
+					stopAudio();
+					bideoaGorde.enabled=true;
+				}
+			}
+
+			private function stopCamera():void
+			{
+				// clear the videoContainer
+				video.attachCamera(null);
+				video.clear();
+			}
+
+
+			private function playPauseAudio():void
+			{
+				estat.text='playPauseAudio' + playPauseButton.label;
+				switch (playPauseButton.label)
+				{
+					case "Play":
+						playAudio();
+						break;
+					case "Pause":
+						pauseAudio();
+						break;
+				}
+			}
+
+			public function onBWDone():void
+			{
+				trace("BWworked");
+			}
+
+			public function onPlayStatus(o:Object):void
+			{
+				if (o.code == "NetStream.Play.Complete")
+				{
+					estat.text="";
+
+				}
+			}
+
+			public function asyncErrorHandler(event:AsyncErrorEvent):void
+			{
+				// ignore for now
+			}
+
+			private function prepareRecording():void
+			{
+				if (_micCamEnabled)
+				{
+					if (_camera)
+					{
+						videoHolder.setActualSize(_camera.width, _camera.height);
+						video=new Video(_camera.width, _camera.height);
+						publishNetStream.attachCamera(_camera);
+						video.attachCamera(_camera);
+
+						videoHolder.addChild(video);
+						trace("All added you should see video");
+					}
+					if (_mic)
+					{
+						estat.text="Recording..."
+						anyContent=true;
+
+						_mic.setLoopBack(false);
+						_mic.gain=40;
+
+						// Start publishing the audio output as a recorded stream
+						publishNetStream.attachAudio(_mic);
+
+						// It's not possible playing audio while recording
+						recStopButton.enabled=true;
+						recStopButton.label="Stop";
+
+						playPauseButton.enabled=false;
+						playPauseButton.label="Play";
+
+						startRecording();
+					}
+				}
+			}
+
+			private function startRecording():void
+			{
+				var d:Date=new Date();
+				recordingFileName="upd-" + d.getTime().toString();
+
+				// Publish the stream
+				publishNetStream.publish(recordingFileName, "record");
+			}
+
+			private function prepareDevices():void
+			{
+				if (DataModel.getInstance().micCamAllowed)
+				{
+					configureDevices();
+				}
+				else
+				{
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+					privacyRights.useMicAndCamera = true;
+					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
+					PopUpManager.centerPopUp(privacyRights);
+				}
+			}
+
+			private function configureDevices():void
+			{
+				_camera=DataModel.getInstance().camera;
+				_mic=DataModel.getInstance().microphone;
+				_mic.setUseEchoSuppression(true);
+				_mic.setLoopBack(true);
+				_mic.setSilenceLevel(0, 60000);
+
+				prepareRecording();
+			}
+
+			private function privacyBoxClosed(event:Event):void
+			{
+				PopUpManager.removePopUp(privacyRights);
+				_micCamEnabled=DataModel.getInstance().micCamAllowed;
+				if (_micCamEnabled)
+				{
+					configureDevices();
+				}
+				else
+				{
+					Alert.show("You must 'Allow' the access to your devices.");
+				}
+			}
+
+			private function bideoHauGorde():void
+			{
+				dispatchEvent(new AddVideoEvent(recordingFileName));
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 horizontalAlign="center">
+		<mx:UIComponent id="videoHolder"
+						width="320"
+						height="240"/>
+		<mx:HBox>
+			<mx:Button label="Rec"
+					   click="recStopAudio();"
+					   id="recStopButton"
+					   width="65"
+					   fillColors="[#ca0000, #ffffff]"/>
+			<mx:Button label="Play"
+					   click="playPauseAudio();"
+					   id="playPauseButton"
+					   enabled="false"
+					   width="65"
+					   fillColors="[#008080, #ffffff]"/>
+			<mx:Label text="Status:"
+					  fontWeight="bold"
+					  fontStyle="italic"/>
+			<mx:Label id="estat"
+					  width="100%"/>
+		</mx:HBox>
+	</mx:VBox>
+
+
+</mx:HBox>

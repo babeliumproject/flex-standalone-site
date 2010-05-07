@@ -90,6 +90,7 @@ package model
 		[Bindable] public var currentExerciseRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		[Bindable] public var availableExercises:ArrayCollection;
+		[Bindable] public var availableRecordableExercises:ArrayCollection;
 		[Bindable] public var availableExercisesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		[Bindable] public var availableExerciseLocales:Array;

@@ -23,4 +23,4 @@ ALTER TABLE `response` ADD COLUMN `fk_subtitle_id` INT UNSIGNED AFTER `fk_transc
 INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('positives_to_next_level', 15);
 INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('reports_to_delete',10);
 
-INSERT INTO `preferences` (`id`, `prefName`, `prefValue`) VALUES (38, 'bwCheckMin', 3000);
+INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('bwCheckMin', 3000);

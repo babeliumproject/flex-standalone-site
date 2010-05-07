@@ -25,14 +25,14 @@
 			public function init():void
 			{
 				thumbURL = DataModel.getInstance().thumbURL;
-				new ExerciseEvent(ExerciseEvent.GET_EXERCISES).dispatch();
+				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 			
 			public function set handleExercisesRetrieve(value:Boolean):void{
-				if(DataModel.getInstance().availableExercisesRetrieved.getItemAt(1)){
-					exerciseListDatagrid.rowCount = DataModel.getInstance().availableExercises.length;
-					dp=DataModel.getInstance().availableExercises;
-					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false,1);
+				if(DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)){
+					exerciseListDatagrid.rowCount = DataModel.getInstance().availableRecordableExercises.length;
+					dp=DataModel.getInstance().availableRecordableExercises;
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false,DataModel.RECORDING_MODULE);
 				}
 			}
 
@@ -54,7 +54,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(1)}" 
+	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}" 
 				destination="handleExercisesRetrieve" />
 
 	<mx:HBox width="100%" horizontalAlign="center">

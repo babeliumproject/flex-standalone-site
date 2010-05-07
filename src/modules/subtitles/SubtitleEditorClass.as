@@ -19,7 +19,7 @@ package modules.subtitles
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
-	import modules.videoUpload.IconComboBox;
+	import view.common.IconComboBox;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;

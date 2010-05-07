@@ -19,9 +19,10 @@ package control {
 	import commands.exercises.ExerciseSelectedCommand;
 	import commands.exercises.GetExerciseLocalesCommand;
 	import commands.exercises.GetExerciseRolesCommand;
+	import commands.exercises.GetRecordableExercisesCommand;
 	import commands.exercises.MakeResponsePublicCommand;
 	import commands.exercises.RateExerciseCommand;
-	import commands.exercises.ReportInappropriateExerciseCommand;	
+	import commands.exercises.ReportInappropriateExerciseCommand;
 	import commands.exercises.SaveResponseCommand;
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.UserRatedExerciseCommand;
@@ -38,8 +39,8 @@ package control {
 	import commands.main.ViewPlayerModuleCommand;
 	import commands.main.ViewRankingModuleCommand;
 	import commands.main.WatchExerciseCommand;
-	import commands.search.LaunchSearchCommand;
 	import commands.search.GetTagCloudCommand;
+	import commands.search.LaunchSearchCommand;
 	import commands.search.ViewSearchModuleCommand;
 	import commands.subtitles.AddCreditEntrySubtitlingCommand;
 	import commands.subtitles.AddCreditsForSubtitlingCommand;
@@ -165,6 +166,7 @@ package control {
 			//Exercise management commands
 			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
+			addCommand(ExerciseEvent.GET_RECORDABLE_EXERCISES, GetRecordableExercisesCommand);
 			addCommand(ExerciseEvent.GET_EXERCISE_LOCALES, GetExerciseLocalesCommand);
 			addCommand(ExerciseEvent.WATCH_EXERCISE, WatchExerciseCommand);
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);

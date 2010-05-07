@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  xmlns:com="*"
-		  xmlns:ns1="modules.videoUpload.*"
-		  layout="vertical"
-		  width="100%"
-		  minWidth="400"
-		  height="100%"
-		  minHeight="200"
-		  title="Upload New Exercise"
-		  creationComplete="initCom()"
-		  fontFamily="Arial"
-		  fontSize="12"
-		  paddingLeft="8"
-		  paddingRight="8"
-		  paddingTop="8"
-		  paddingBottom="8">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="modules.videoUpload.*"
+		 creationComplete="initCom()"
+		 fontFamily="Arial"
+		 fontSize="12"
+		 paddingLeft="8"
+		 paddingRight="8"
+		 paddingTop="8"
+		 paddingBottom="8"
+		 xmlns:common="view.common.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -47,30 +41,7 @@
 			private var red5VideoLevel:ExerciseLevelVO;
 
 			[Bindable]
-			[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
-			public var FlagEnglish:Class;
-
-			[Bindable]
-			[Embed(source="../../resources/images/flags/flag_spain.png")]
-			public var FlagSpanish:Class;
-
-			[Bindable]
-			[Embed(source="../../resources/images/flags/flag_france.png")]
-			public var FlagFrench:Class;
-
-			[Bindable]
-			[Embed(source="../../resources/images/flags/flag_basque_country.png")]
-			public var FlagBasque:Class;
-
-
-			[Bindable]
 			private var categories:Array=new Array("Autos", "Music", "Animals", "Sports", "Travel", "Games", "Comedy", "People", "News", "Entertainment", "Education", "Howto", "Nonprofit", "Tech");
-
-			[Bindable]
-			private var dificultyLevels:Array=new Array("A1 Beginner", "A2 Elementary", "B1.1 Intermediate", "B1.2 Average", "B2.1 Advanced", "B2.2 Native");
-
-			[Bindable]
-			private var flaggedLanguageData:Array=new Array({label: 'English', icon: 'FlagEnglish'}, {label: 'Spanish', icon: 'FlagSpanish'}, {label: 'Basque', icon: 'FlagBasque'}, {label: 'French', icon: 'FlagFrench'});
 
 			private var checkStatusTimer:Timer;
 
@@ -93,7 +64,6 @@
 				_arrUploadFiles=new Array();
 				enableUI();
 				uploadCheck();
-				languageComboBox.dropdown.iconField="icon";
 			}
 
 			private function addFiles():void
@@ -267,12 +237,12 @@
 						red5VideoData.title=videoTitle.text;
 						red5VideoData.description=videoDescription.text;
 						red5VideoData.tags=parseTags(videoTags.text);
-						red5VideoData.language=languageComboBox.selectedLabel;
+						red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
 						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
 						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
 						red5VideoLevel=new ExerciseLevelVO();
-						red5VideoLevel.suggestedLevel=dificultyComboBox.selectedIndex + 1;
+						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
 
 						DataModel.getInstance().uploadFinishedData=false;
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
@@ -418,7 +388,7 @@
 			  fontWeight="bold"
 			  fontFamily="Arial"
 			  fontSize="18"/>
-	<mx:Form width="100%">
+	<mx:Form width="100%" borderStyle="solid" borderThickness="2" labelWidth="130">
 		<mx:FormItem label="Title:"
 					 width="100%"
 					 fontWeight="bold"
@@ -448,16 +418,14 @@
 						 change="validateForm(event);"/>
 		</mx:FormItem>
 		<mx:FormItem label="Dificulty Level:"
-					 fontWeight="bold">
-			<mx:ComboBox id="dificultyComboBox"
-						 dataProvider="{dificultyLevels}"
-						 fontWeight="normal"/>
+					 fontWeight="bold"
+					 required="true">
+			<common:DifficultyLevelComboBox id="difficultySelector"/>
 		</mx:FormItem>
 		<mx:FormItem label="Language:"
-					 fontWeight="bold">
-			<ns1:IconComboBox id="languageComboBox"
-							  dataProvider="{flaggedLanguageData}"
-							  fontWeight="normal"/>
+					 fontWeight="bold"
+					 required="true">
+			<common:LanguageComboBox id="languageSelector"/>
 		</mx:FormItem>
 	</mx:Form>
 	<mx:HBox width="100%"
@@ -538,4 +506,4 @@
 						maxLength="255"/>
 
 
-</mx:Panel>
+</mx:VBox>

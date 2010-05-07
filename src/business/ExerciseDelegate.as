@@ -39,6 +39,12 @@ package business
 			var pendingCall:AsyncToken=service.getExercises();
 			pendingCall.addResponder(responder);
 		}
+		
+		public function getRecordableExercises():void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.getRecordableExercises();
+			pendingCall.addResponder(responder);
+		}
 
 		public function getExerciseLocales(exercise:ExerciseVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");

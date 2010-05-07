@@ -14,6 +14,7 @@ package events
 		public static const ADD_EXERCISE:String="addExercise";
 		public static const ADD_UNPROCESSED_EXERCISE:String="addUnprocessedExercise";
 		public static const GET_EXERCISES:String="getExercises";
+		public static const GET_RECORDABLE_EXERCISES:String="getRecordableExercises";
 		public static const WATCH_EXERCISE:String="watchExercise";
 		public static const EXERCISE_SELECTED:String="exerciseSelected";
 		public static const GET_EXERCISE_LOCALES:String="exerciseLocales";

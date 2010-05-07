@@ -58,6 +58,25 @@ class ExerciseDAO {
 		return $searchResults;
 	}
 	
+	public function getRecordableExercises(){
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
+       					avg (suggested_level) as avgLevel
+				 FROM   exercise e 
+				 		INNER JOIN users u ON e.fk_user_id= u.ID
+				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
+       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			 WHERE (e.status = 'Available')
+				 GROUP BY e.id
+				 ORDER BY e.adding_date DESC";
+		
+		
+		$searchResults = $this->_listQuery($sql);
+		
+		return $searchResults;
+	}
+	
 	public function getUsersExercises($userId){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
        					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 

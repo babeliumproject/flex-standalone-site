@@ -192,8 +192,10 @@
 						availableRoles.enabled=true;
 						_rolesReady=true;
 
-						for each (var role:ExerciseRoleVO in _roles)
-							_characterNames.addItem(role.characterName);
+						for each (var role:ExerciseRoleVO in _roles){
+							if(role.characterName != "NPC")
+								_characterNames.addItem(role.characterName);
+						}
 					}
 
 					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);

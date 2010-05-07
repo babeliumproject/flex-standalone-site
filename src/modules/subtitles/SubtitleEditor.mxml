@@ -2,7 +2,7 @@
 <subtitles:SubtitleEditorClass xmlns:mx="http://www.adobe.com/2006/mxml"
 							   xmlns:subtitles="modules.subtitles.*"
 							   xmlns:videoPlayer="modules.videoPlayer.*"
-							   xmlns:videoUpload="modules.videoUpload.*">
+							   xmlns:videoUpload="modules.videoUpload.*" xmlns:common="view.common.*">
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -60,7 +60,7 @@
 					 verticalAlign="middle"
 					 width="100%">
 				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_SUBTITLE_LANGUAGE')}"/>
-				<videoUpload:IconComboBox id="languageComboBox"
+				<common:IconComboBox id="languageComboBox"
 										  dataProvider="{flaggedLanguageData}"
 										  fontWeight="normal"/>
 			</mx:HBox>
