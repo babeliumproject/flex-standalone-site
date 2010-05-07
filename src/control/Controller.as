@@ -63,6 +63,7 @@ package control {
 	import commands.videoUpload.AddCreditsForUploadingCommand;
 	import commands.videoUpload.AddExerciseCommand;
 	import commands.videoUpload.AddUnprocessedExerciseCommand;
+	import commands.videoUpload.AddWebcamExerciseCommand;
 	import commands.videoUpload.UploadBrowseCommand;
 	import commands.videoUpload.UploadCancelCommand;
 	import commands.videoUpload.UploadStartCommand;
@@ -162,6 +163,7 @@ package control {
 			addCommand(UploadEvent.YOUTUBE_UPLOAD, YoutubeUploadCommand);
 			addCommand(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, YoutubeCheckStatusCommand);
 			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
+			addCommand(ExerciseEvent.ADD_WEBCAM_EXERCISE, AddWebcamExerciseCommand);
 
 			//Exercise management commands
 			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);

@@ -37,6 +37,14 @@ class ExerciseDAO {
 								$exercise->language, $exercise->userId, $exercise->duration );
 	}
 	
+	public function addWebcamExercise(ExerciseVO $exercise) {
+		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, status) ";
+		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available' ) ";
+		
+		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+								$exercise->language, $exercise->userId );
+	}
+	
 
 	public function getExercises(){
 		//$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date, e.fk_user_id, u.name 

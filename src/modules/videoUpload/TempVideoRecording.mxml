@@ -2,7 +2,8 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 borderStyle="solid"
 		 borderThickness="2"
-		 creationComplete="init()">
+		 creationComplete="init()"
+		 cornerRadius="4">
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -23,13 +24,18 @@
 			import view.common.PrivacyRights;
 
 			private var netConnection:NetConnection;
-			
+
 			private var publishNetStream:NetStream;
 			private var playbackNetStream:NetStream;
-			
+
+			[Bindable]
 			public var recordingFileName:String;
+			
+			[Bindable]
+			public var isRecording:Boolean;
 
 			private var audio_pause:Boolean;
+
 
 			private var video:Video;
 
@@ -53,15 +59,15 @@
 			[Embed(source='../../resources/images/playerStopIcon.png')]
 			[Bindable]
 			private var stopImageEmbed:Class;
-			
+
 
 
 			public function init():void
 			{
 				//Button icon initialization
-				recStopButton.setStyle('icon',recImageEmbed);
+				recStopButton.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
-				
+
 				anyContent=false;
 				netConnection=new NetConnection();
 				netConnection.connect(DataModel.getInstance().streamingResourcesPath);
@@ -69,6 +75,7 @@
 				netConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
 				netConnection.client=this;
 				audio_pause=false;
+				isRecording=false;
 			}
 
 			private function connectionNetStatusHandler(event:NetStatusEvent):void
@@ -108,10 +115,10 @@
 				if (info.code == "NetStream.Play.Stop")
 				{
 					recStopButton.enabled=true;
-					recStopButton.label="Rec";
-
 					playPauseButton.enabled=true;
-					playPauseButton.label="Play";
+
+					recStopButton.setStyle('icon', recImageEmbed);
+					playPauseButton.setStyle('icon', playImageEmbed);
 
 					audio_pause=false;
 				}
@@ -141,17 +148,17 @@
 					playbackNetStream.client=this; // onPlayStatus
 					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
 
-					playbackNetStream.play(videoEvaluationDir + "/" + recordingFileName);
+					playbackNetStream.play(recordingFileName);
 					video.attachNetStream(playbackNetStream); // JUANAN
 					estat.text="Playing...";
 				}
 
 				// It's not possible recording or save while audio is playing
 				playPauseButton.enabled=true;
-				playPauseButton.label="Pause";
-
 				recStopButton.enabled=true;
-				recStopButton.label="Stop";
+
+				recStopButton.setStyle('icon', stopImageEmbed);
+				playPauseButton.setStyle('icon', pauseImageEmbed);
 			}
 
 			private function pauseAudio():void
@@ -163,10 +170,11 @@
 
 				// It's possible recording or save while audio is paused
 				recStopButton.enabled=true;
-				recStopButton.label="Rec";
-
 				playPauseButton.enabled=true;
-				playPauseButton.label="Play";
+
+
+				recStopButton.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
 			}
 
 			private function stopAudio():void
@@ -175,18 +183,19 @@
 
 				// Close output stream
 				publishNetStream.close();
+				isRecording = false;
 
 				// It's not possible playing audio while recording
 				recStopButton.enabled=true;
-				recStopButton.label="Rec";
-
 				playPauseButton.enabled=true;
-				playPauseButton.label="Play";
+
+				recStopButton.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
 			}
 
 			private function recStopAudio():void
 			{
-				if (recStopButton.label == "Rec")
+				if (recStopButton.getStyle('icon') == recImageEmbed)
 				{
 					prepareDevices();
 				}
@@ -194,7 +203,7 @@
 				{
 					stopCamera();
 					stopAudio();
-					bideoaGorde.enabled=true;
+						//bideoaGorde.enabled=true;
 				}
 			}
 
@@ -209,12 +218,12 @@
 			private function playPauseAudio():void
 			{
 				estat.text='playPauseAudio' + playPauseButton.label;
-				switch (playPauseButton.label)
+				switch (playPauseButton.getStyle('icon'))
 				{
-					case "Play":
+					case playImageEmbed:
 						playAudio();
 						break;
-					case "Pause":
+					case pauseImageEmbed:
 						pauseAudio();
 						break;
 				}
@@ -266,10 +275,12 @@
 
 						// It's not possible playing audio while recording
 						recStopButton.enabled=true;
-						recStopButton.label="Stop";
+						recStopButton.setStyle('icon', stopImageEmbed);
 
 						playPauseButton.enabled=false;
-						playPauseButton.label="Play";
+						playPauseButton.setStyle('icon', playImageEmbed);
+
+
 
 						startRecording();
 					}
@@ -283,6 +294,7 @@
 
 				// Publish the stream
 				publishNetStream.publish(recordingFileName, "record");
+				isRecording = true;
 			}
 
 			private function prepareDevices():void
@@ -294,7 +306,7 @@
 				else
 				{
 					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
-					privacyRights.useMicAndCamera = true;
+					privacyRights.useMicAndCamera=true;
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
 				}
@@ -324,33 +336,44 @@
 					Alert.show("You must 'Allow' the access to your devices.");
 				}
 			}
-
-			private function bideoHauGorde():void
-			{
-				dispatchEvent(new AddVideoEvent(recordingFileName));
-				PopUpManager.removePopUp(this);
-			}
 		]]>
 	</mx:Script>
 
 	<mx:VBox width="100%"
 			 height="100%"
 			 horizontalAlign="center">
-		<mx:UIComponent id="videoHolder"
-						width="320"
-						height="240"/>
-		<mx:HBox>
-			<mx:Button label="Rec"
-					   click="recStopAudio();"
+		<mx:HBox paddingBottom="4"
+				 paddingTop="4"
+				 paddingLeft="4"
+				 paddingRight="4">
+			<mx:HBox backgroundColor="0x000000"
+					 width="100%">
+				<mx:UIComponent id="videoHolder"
+								width="320"
+								height="240"/>
+			</mx:HBox>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 horizontalAlign="left"
+				 verticalAlign="center"
+				 horizontalGap="4"
+				 backgroundColor="0xCCCCCC"
+				 paddingBottom="2"
+				 paddingTop="2"
+				 paddingLeft="4"
+				 paddingRight="4">
+			<mx:Button click="recStopAudio();"
 					   id="recStopButton"
-					   width="65"
-					   fillColors="[#ca0000, #ffffff]"/>
-			<mx:Button label="Play"
-					   click="playPauseAudio();"
+					   width="20"
+					   height="20"
+					   cornerRadius="4"/>
+			<mx:Button click="playPauseAudio();"
 					   id="playPauseButton"
 					   enabled="false"
-					   width="65"
-					   fillColors="[#008080, #ffffff]"/>
+					   width="20"
+					   height="20"
+					   cornerRadius="4"/>
 			<mx:Label text="Status:"
 					  fontWeight="bold"
 					  fontStyle="italic"/>

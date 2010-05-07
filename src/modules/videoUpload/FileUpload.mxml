@@ -12,19 +12,19 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.validators.Validator;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
-
+			import mx.validators.Validator;
+			
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
 
@@ -316,6 +316,44 @@
 				//uploadInformationLabel.text="Successful Upload. You can check your exercises' status on Account:My Exercises";
 			}
 
+			private function changeUploadMethod(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "updChoice")
+				{
+					uploadMethodViewStack.selectedChild=uploadFileBox;
+					uploadMethodViewStack.visible=true;
+					recFromWebcamBox.visible=false;
+
+				}
+				else if (event.currentTarget.selectedValue == "recChoice")
+				{
+					recFromWebcamBox.visible=true;
+					uploadMethodViewStack.selectedChild=recUploadBox;
+					uploadMethodViewStack.visible=true;
+				}
+			}
+			
+			private function saveRecordedExercise():void{
+				if(videoTitle.text != '' && videoDescription.text != '' && videoTags.text != ''){
+					red5VideoData=new ExerciseVO();
+					red5VideoData.title=videoTitle.text;
+					red5VideoData.description=videoDescription.text;
+					red5VideoData.tags=parseTags(videoTags.text);
+					red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
+					red5VideoData.name=recFromWebcamBox.recordingFileName;
+					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+					
+					red5VideoLevel=new ExerciseLevelVO();
+					red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+					
+					DataModel.getInstance().historicData.videoExerciseName;
+					
+					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
+				} else {
+					Alert.show("You must fill all the required field to save the exercise");
+				}
+			}
+
 			// Validate the form
 			private function validateForm(event:Event):void
 			{
@@ -384,110 +422,166 @@
 				destination="this.onYoutubeProcessUpdate"/>
 	<mx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
 				destination="this.onUnprocessedExerciseComplete"/>
-	<mx:Label text="Exercise Information"
+	<mx:Label text="Upload New Exercise"
 			  fontWeight="bold"
 			  fontFamily="Arial"
 			  fontSize="18"/>
-	<mx:Form width="100%" borderStyle="solid" borderThickness="2" labelWidth="130">
-		<mx:FormItem label="Title:"
-					 width="100%"
-					 fontWeight="bold"
-					 required="true">
-			<mx:TextInput width="100%"
-						  id="videoTitle"
-						  fontWeight="normal"
-						  change="validateForm(event);"/>
-		</mx:FormItem>
-		<mx:FormItem label="Description:"
-					 width="100%"
-					 fontWeight="bold"
-					 required="true">
-			<mx:TextArea width="100%"
-						 id="videoDescription"
-						 fontWeight="normal"
-						 change="validateForm(event);"/>
-		</mx:FormItem>
-		<mx:FormItem label="Tags:"
-					 width="100%"
-					 fontWeight="bold"
-					 toolTip="Comma separated words"
-					 required="true">
-			<mx:TextArea width="100%"
-						 id="videoTags"
-						 fontWeight="normal"
-						 change="validateForm(event);"/>
-		</mx:FormItem>
-		<mx:FormItem label="Dificulty Level:"
-					 fontWeight="bold"
-					 required="true">
-			<common:DifficultyLevelComboBox id="difficultySelector"/>
-		</mx:FormItem>
-		<mx:FormItem label="Language:"
-					 fontWeight="bold"
-					 required="true">
-			<common:LanguageComboBox id="languageSelector"/>
-		</mx:FormItem>
-	</mx:Form>
-	<mx:HBox width="100%"
-			 height="60"
-			 verticalAlign="middle"
-			 horizontalAlign="center">
-		<mx:DataGrid id="listFiles"
-					 allowMultipleSelection="false"
-					 rowCount="1"
-					 verticalScrollPolicy="off"
-					 draggableColumns="false"
-					 resizableColumns="false"
-					 sortableColumns="false"
-					 change="validateForm(event)">
-			<mx:columns>
-				<mx:DataGridColumn headerText="File"
-								   dataField="name"
-								   width="400"
-								   wordWrap="true"/>
-				<mx:DataGridColumn headerText="Size"
-								   dataField="size"
-								   width="75"
-								   textAlign="right"/>
-			</mx:columns>
-		</mx:DataGrid>
-		<mx:HBox width="100%"
-				 height="100%"
-				 horizontalAlign="right"
-				 verticalAlign="middle"
-				 paddingRight="12">
-			<mx:Button id="btnAdd"
-					   toolTip="Add file(s)"
-					   click="addFiles()"
-					   icon="@Embed(source='../../resources/images/add.png')"
-					   label="Browse..."/>
-		</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:VBox width="100%">
+			<mx:Form width="100%"
+					 borderStyle="solid"
+					 borderThickness="2">
+				<mx:FormItem label="Title:"
+							 width="100%"
+							 fontWeight="bold"
+							 required="true">
+					<mx:TextInput width="100%"
+								  id="videoTitle"
+								  fontWeight="normal"
+								  change="validateForm(event);"/>
+				</mx:FormItem>
+				<mx:FormItem label="Description:"
+							 width="100%"
+							 fontWeight="bold"
+							 required="true">
+					<mx:TextArea width="100%"
+								 id="videoDescription"
+								 fontWeight="normal"
+								 change="validateForm(event);"/>
+				</mx:FormItem>
+				<mx:FormItem label="Tags:"
+							 width="100%"
+							 fontWeight="bold"
+							 toolTip="Comma separated words"
+							 required="true">
+					<mx:TextArea width="100%"
+								 id="videoTags"
+								 fontWeight="normal"
+								 change="validateForm(event);"/>
+				</mx:FormItem>
+				<mx:FormItem label="Dificulty Level:"
+							 fontWeight="bold"
+							 required="true">
+					<common:DifficultyLevelComboBox id="difficultySelector"/>
+				</mx:FormItem>
+				<mx:FormItem label="Language:"
+							 fontWeight="bold"
+							 required="true">
+					<common:LanguageComboBox id="languageSelector"/>
+				</mx:FormItem>
+				<mx:FormItem label="Choose an uploading method:"
+							 fontWeight="bold">
+					<mx:RadioButtonGroup id="uploadOptionsGroup"
+										 itemClick="changeUploadMethod(event)"/>
+					<mx:RadioButton id="uploadChoice"
+									value="updChoice"
+									label="Upload a video file from your computer"
+									group="{uploadOptionsGroup}"/>
+					<mx:RadioButton id="recordChoice"
+									value="recChoice"
+									label="Record an exercise with the webcam and save it"
+									group="{uploadOptionsGroup}"/>
+				</mx:FormItem>
+			</mx:Form>
+
+			<mx:ViewStack id="uploadMethodViewStack"
+						  width="100%"
+						  visible="false">
+
+				<mx:VBox id="uploadFileBox"
+						 borderStyle="solid"
+						 borderThickness="2"
+						 width="100%"
+						 paddingBottom="4"
+						 paddingTop="4"
+						 paddingLeft="4"
+						 paddingRight="4">
+					<mx:HBox width="100%"
+							 height="60"
+							 verticalAlign="middle"
+							 horizontalAlign="center">
+						<mx:DataGrid id="listFiles"
+									 allowMultipleSelection="false"
+									 rowCount="1"
+									 verticalScrollPolicy="off"
+									 draggableColumns="false"
+									 resizableColumns="false"
+									 sortableColumns="false"
+									 change="validateForm(event)">
+							<mx:columns>
+								<mx:DataGridColumn headerText="File"
+												   dataField="name"
+												   width="400"
+												   wordWrap="true"/>
+								<mx:DataGridColumn headerText="Size"
+												   dataField="size"
+												   width="75"
+												   textAlign="right"/>
+							</mx:columns>
+						</mx:DataGrid>
+						<mx:HBox width="100%"
+								 height="100%"
+								 horizontalAlign="right"
+								 verticalAlign="middle"
+								 paddingRight="12">
+							<mx:Button id="btnAdd"
+									   toolTip="Add file(s)"
+									   click="addFiles()"
+									   icon="@Embed(source='../../resources/images/add.png')"
+									   label="Browse..."/>
+						</mx:HBox>
+					</mx:HBox>
+					<mx:Label paddingLeft="12"
+							  paddingRight="12"
+							  text="No activity."
+							  width="100%"
+							  id="uploadInformationLabel"
+							  fontWeight="bold"/>
+					<mx:ControlBar horizontalAlign="center"
+								   verticalAlign="middle"
+								   width="100%">
+						<mx:ProgressBar id="progBar"
+										mode="manual"
+										label=""
+										labelPlacement="center"
+										width="100%"/>
+						<mx:Button id="btnCancel"
+								   toolTip="Cancel upload"
+								   icon="@Embed(source='../../resources/images/cancel.png')"
+								   width="26"
+								   click="onUploadCanceled()"/>
+						<mx:Button label="Upload"
+								   toolTip="Upload file(s)"
+								   id="btnUpload"
+								   click="startUpload()"
+								   enabled="{formIsValid}"
+								   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+					</mx:ControlBar>
+				</mx:VBox>
+
+				<mx:VBox id="recUploadBox"
+						 borderStyle="solid"
+						 borderThickness="2"
+						 width="100%"
+						 paddingBottom="8"
+						 paddingTop="8"
+						 paddingLeft="8"
+						 paddingRight="8">
+					<mx:Text width="100%"
+							 text="Use the controls in the right to record an exercise using your webcam. You can record as many times as you want and preview the videos before actually saving them in the system."/>
+					<mx:Spacer/>
+					<mx:Button id="saveWebcamRecord"
+							   label="Save Recorded Exercise"
+							   enabled="{recFromWebcamBox.recordingFileName != null  &amp;&amp; !recFromWebcamBox.isRecording}"
+							   click="saveRecordedExercise()"/>
+				</mx:VBox>
+
+			</mx:ViewStack>
+		</mx:VBox>
+		<ns1:TempVideoRecording id="recFromWebcamBox"
+								visible="false"/>
 	</mx:HBox>
-	<mx:Label paddingLeft="12"
-			  paddingRight="12"
-			  text="No activity."
-			  width="100%"
-			  id="uploadInformationLabel"
-			  fontWeight="bold"/>
-	<mx:ControlBar horizontalAlign="center"
-				   verticalAlign="middle">
-		<mx:ProgressBar id="progBar"
-						mode="manual"
-						label=""
-						labelPlacement="center"
-						width="100%"/>
-		<mx:Button id="btnCancel"
-				   toolTip="Cancel upload"
-				   icon="@Embed(source='../../resources/images/cancel.png')"
-				   width="26"
-				   click="onUploadCanceled()"/>
-		<mx:Button label="Upload"
-				   toolTip="Upload file(s)"
-				   id="btnUpload"
-				   click="startUpload()"
-				   enabled="{formIsValid}"
-				   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
-	</mx:ControlBar>
+
 
 	<mx:StringValidator id="titleValidator"
 						source="{videoTitle}"
