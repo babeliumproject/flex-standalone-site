@@ -25,6 +25,7 @@
 			import mx.managers.*;
 			import mx.validators.Validator;
 			
+			import vo.CreditHistoryVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
 
@@ -346,7 +347,9 @@
 					red5VideoLevel=new ExerciseLevelVO();
 					red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
 					
-					DataModel.getInstance().historicData.videoExerciseName;
+					var historic:CreditHistoryVO = new CreditHistoryVO();
+					historic.videoExerciseName = recFromWebcamBox.recordingFileName;
+					DataModel.getInstance().historicData = historic;
 					
 					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
 				} else {
