@@ -439,7 +439,7 @@ INSERT INTO `preferences` (`id`, `prefName`, `prefValue`) VALUES
 (34, 'positives_to_next_level', '15'),
 (35, 'reports_to_delete', '10'),
 (36, 'positives_to_next_level', '15'),
-(37, 'reports_to_delete', '10')
+(37, 'reports_to_delete', '10'),
 (38, 'bwCheckMin', 3000);
 
 --
@@ -465,7 +465,7 @@ INSERT INTO `subtitle_line` (`id`, `fk_subtitle_id`, `show_time`, `hide_time`, `
 (1, 1, 1.6, 3.76, '¿Por qué quiere un boxeador trabajar en la construcción?', 1),
 (2, 1, 4.96, 6.76, 'Está arruinado, y no tiene trabajo y...', 2),
 (3, 1, 6.92, 8, 'y quiere que le contrate...', 1),
-(4, 1, 8.1, 9.4, 'Yo podr�a enseñarle a manejar la excavadora.', 2),
+(4, 1, 8.1, 9.4, 'Yo podr�a enseñarle a manejar la excavadora.', 2),
 
 (5, 2, 1.6, 3.76, 'Zergatik nahi du boxeolari batek eraikuntzan lan egin?', 3),
 (6, 2, 4.96, 6.76, 'Dirurik ez du, eta ez lanik ere...', 4),
@@ -712,6 +712,7 @@ ALTER TABLE `subtitle_score`
 ALTER TABLE `user_languages`
   ADD CONSTRAINT `FK_user_languages_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
-
-
+--
+-- Filtros para la tabla `users`
+--
+ALTER TABLE `users` ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `activation_hash`;
