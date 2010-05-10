@@ -1,11 +1,13 @@
 package commands.autoevaluation {
 	import business.AutoEvaluationDelegate;
-
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-
+	
 	import events.EvaluationEvent;
-
+	
+	import model.DataModel;
+	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -18,7 +20,9 @@ package commands.autoevaluation {
 		}
 
 		public function result(data:Object):void {
-
+			var result:Object = data.result;
+			if(int(result) <= 0)
+				DataModel.instance.enableAutoevalToExerciseError = result as String;
 		}
 
 		public function fault(info:Object):void {

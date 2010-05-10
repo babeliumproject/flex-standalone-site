@@ -82,9 +82,8 @@ class SpinvoxManager {
 			return;
 		
 		//Pending Responses
-		$sql = "SELECT T.id, R.file_identifier, E.language FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id INNER JOIN exercise AS E ON R.fk_exercise_id=E.id INNER JOIN preferences AS P ON E.language = P.prefValue WHERE T.status = '" . SpinvoxManager::STATUS_PENDING . "' AND P.prefName = 'spinvox.language' ORDER BY T.adding_date ASC LIMIT %d";
+		$sql = "SELECT T.id, R.file_identifier, SUBSTRING_INDEX(E.language, '_', 1) FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id INNER JOIN exercise AS E ON R.fk_exercise_id=E.id INNER JOIN preferences AS P ON SUBSTRING_INDEX(E.language, '_', 1) = P.prefValue WHERE T.status = '" . SpinvoxManager::STATUS_PENDING . "' AND P.prefName = 'spinvox.language' ORDER BY T.adding_date ASC LIMIT %d";
 		$pendingResponses = $this->sendRequests($sql, $slots);
-		//$this->sendRequestsToSpinvox($pendingResponses);
 		
 
 		echo "Pending Responses:" . $pendingResponses . " ; Remaining slots: " . $slots . "<br>";
@@ -94,9 +93,8 @@ class SpinvoxManager {
 			return;
 			
 		//Pending Exercises
-		$sql = "SELECT T.id, E.name, E.language FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id INNER JOIN preferences AS P ON E.language = P.prefValue WHERE T.status = '" . SpinvoxManager::STATUS_PENDING . "' AND P.prefName = 'spinvox.language' ORDER BY T.adding_date ASC LIMIT %d";
+		$sql = "SELECT T.id, E.name, SUBSTRING_INDEX(E.language, '_', 1) FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id INNER JOIN preferences AS P ON SUBSTRING_INDEX(E.language, '_', 1) = P.prefValue WHERE T.status = '" . SpinvoxManager::STATUS_PENDING . "' AND P.prefName = 'spinvox.language' ORDER BY T.adding_date ASC LIMIT %d";
 		$pendingExercises = $this->sendRequests($sql, $slots);
-		//$this->sendRequestsToSpinvox($pendingExercises);
 		
 
 		echo "Pending Exercises:" . $pendingExercises . " ; Remaining slots: " . $slots . "<br>";
@@ -106,9 +104,8 @@ class SpinvoxManager {
 			return;
 			
 		//Repeat Responses
-		$sql = "SELECT S.fk_transcription_id AS id, R.file_identifier, E.language FROM spinvox_request AS S NATURAL JOIN response AS R INNER JOIN exercise AS E ON R.fk_exercise_id=E.id WHERE S.x_error >= 500 AND S.x_error < 600 AND S.date <= DATE_SUB(NOW(),INTERVAL 30 MINUTE) ORDER BY date ASC LIMIT %d";
+		$sql = "SELECT S.fk_transcription_id AS id, R.file_identifier, SUBSTRING_INDEX(E.language, '_', 1) FROM spinvox_request AS S NATURAL JOIN response AS R INNER JOIN exercise AS E ON R.fk_exercise_id=E.id WHERE S.x_error >= 500 AND S.x_error < 600 AND S.date <= DATE_SUB(NOW(),INTERVAL 30 MINUTE) ORDER BY date ASC LIMIT %d";
 		$repeatResponses = $this->sendRequests($sql, $slots);
-		//$this->sendRequestsToSpinvox($repeatResponses);
 		
 
 		echo "Repeat Responses:" . $repeatResponses . " ; Remaining slots: " . $slots . "<br>";
@@ -118,9 +115,8 @@ class SpinvoxManager {
 			return;
 			
 		//Repeat Exercises
-		$sql = "SELECT S.fk_transcription_id AS id, R.file_identifier, E.language FROM spinvox_request AS S NATURAL JOIN response AS R INNER JOIN exercise AS E ON R.fk_exercise_id=E.id WHERE S.x_error >= 500 AND S.x_error < 600 AND S.date <= DATE_SUB(NOW(),INTERVAL 30 MINUTE) ORDER BY date ASC LIMIT %d";
+		$sql = "SELECT S.fk_transcription_id AS id, R.file_identifier, SUBSTRING_INDEX(E.language, '_', 1) FROM spinvox_request AS S NATURAL JOIN response AS R INNER JOIN exercise AS E ON R.fk_exercise_id=E.id WHERE S.x_error >= 500 AND S.x_error < 600 AND S.date <= DATE_SUB(NOW(),INTERVAL 30 MINUTE) ORDER BY date ASC LIMIT %d";
 		$repeatExercises = $this->sendRequests($sql, $slots);
-		//$this->sendRequestsToSpinvox($repeatExercises);
 		
 
 		echo "Repeat Exercises:" . $repeatExercises . " ; Remaining slots: " . $slots . "<br>";

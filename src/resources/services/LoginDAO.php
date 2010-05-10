@@ -33,7 +33,7 @@ class LoginDAO{
 			$result = $this->_singleQuery($sql, $user->name);
 			if ( $result )
 				return "User inactive";
-			$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate FROM users WHERE (name='%s' AND password='%s') ";
+			$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
 			$result = $this->_singleQuery($sql, $user->name, $user->pass);
 			if($result){
 				return $result;
@@ -59,6 +59,7 @@ class LoginDAO{
 			$valueObject->realSurname = $row[5];
 			$valueObject->active = $row[6];
 			$valueObject->joiningDate = $row[7];
+			$valueObject->isAdmin = $row[8]==1;
 		}
 		else
 		{

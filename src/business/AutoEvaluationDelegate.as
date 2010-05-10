@@ -1,6 +1,7 @@
 package business {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
+	import mx.controls.Alert;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
@@ -24,8 +25,9 @@ package business {
 		public function enableTranscriptionToExercise(requestData:EvaluationVO):void {
 			var exerciseId:int = requestData.exerciseId;
 			var transcriptionSystem:String = requestData.transcriptionSystem;
+			var userId:int = requestData.userId;
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("autoevaluationRO");
-			var pendingCall:AsyncToken = service.enableTranscriptionToExercise(exerciseId, transcriptionSystem.toLowerCase());
+			var pendingCall:AsyncToken = service.enableTranscriptionToExercise(exerciseId, transcriptionSystem.toLowerCase(), userId);
 			pendingCall.addResponder(responder);
 		}
 		

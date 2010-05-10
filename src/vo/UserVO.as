@@ -12,5 +12,6 @@ package vo
 		public var realSurname:String;
 		public var active:Boolean;
 		public var joiningDate:String;
+		public var isAdmin:Boolean;
 	}
 }

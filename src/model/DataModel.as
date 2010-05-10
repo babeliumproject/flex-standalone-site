@@ -153,6 +153,8 @@ package model
 		
 		[Bindable] public var isAutoevaluable:Boolean = false;
 		
+		[Bindable] public var enableAutoevalToExerciseError:String = "";
+		
 		
 		// Flag for stoping video after tab change
 		[Bindable] public var stopVideoFlag:Boolean = false;

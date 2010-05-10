@@ -50,3 +50,8 @@ ALTER TABLE `response` ADD COLUMN `fk_transcription_id` INTEGER(10) UNSIGNED DEF
     REFERENCES `transcription` (`id`)
     ON DELETE SET NULL
     ON UPDATE RESTRICT;
+
+--
+-- Filtros para la tabla `users`
+--
+ALTER TABLE `users` ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `activation_hash`;

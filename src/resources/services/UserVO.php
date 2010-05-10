@@ -18,6 +18,7 @@ class UserVO {
 	public $realSurname;
 	public $active;
 	public $joiningDate;
+	public $isAdmin;
 
 	//This string specifies the path to a same kind ValueObject AS3 class in our Flex application
 	public $_explicitType = "UserVO";

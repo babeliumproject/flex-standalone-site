@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			private var transcriptionSystems:Array = new Array({label: 'SpinVox', data: 'spinvox'});
+		]]>
+	</mx:Script>
+
+	<mx:ComboBox id="transcriptionSystemComboBox"
+				 dataProvider="{transcriptionSystems}"
+				 fontWeight="normal"/>
+</mx:HBox>

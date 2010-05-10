@@ -37,7 +37,7 @@ class UserDAO {
 			return false;
 		}
 
-		$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate FROM users WHERE (id = %d) ";
+		$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate, isAdmin FROM users WHERE (id = %d) ";
 
 		return $this->_singleQuery($sql, $userId);
 	}
@@ -58,6 +58,7 @@ class UserDAO {
 			$valueObject->realSurname = $row[5];
 			$valueObject->active = $row[6];
 			$valueObject->joiningDate = $row[7];
+			$valueObject->isAdmin = $row[8]==1;
 		}
 		else
 		{
@@ -83,6 +84,7 @@ class UserDAO {
 			$temp->realSurname = $row[5];
 			$temp->active = $row[6];
 			$temp->joiningDate = $row[7];
+			$temp->isAdmin = $row[8]==1;
 			array_push($searchResults, $temp);
 		}
 

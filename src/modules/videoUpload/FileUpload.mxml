@@ -12,215 +12,194 @@
 
 	<mx:Script>
 		<![CDATA[
+			import events.EvaluationEvent;
+			import vo.EvaluationVO;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-			
+
 			import flash.events.*;
 			import flash.net.*;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
 
 			private var _strUploadUrl:String;
+
 			private var addFileReference:FileReference;
+
 			//private var _refUploadFile:FileReference;
 			private var _arrUploadFiles:Array;
+
 			//private var _numCurrentUpload:Number=0;
 
 			private var youtubeVideoData:ExerciseVO;
+
 			private var youtubeVideoLevel:ExerciseLevelVO;
 
 			private var red5VideoData:ExerciseVO;
+
 			private var red5VideoLevel:ExerciseLevelVO;
 
 			[Bindable]
-			private var categories:Array=new Array("Autos", "Music", "Animals", "Sports", "Travel", "Games", "Comedy", "People", "News", "Entertainment", "Education", "Howto", "Nonprofit", "Tech");
+			private var categories:Array = new Array("Autos", "Music", "Animals", "Sports", "Travel", "Games", "Comedy", "People", "News", "Entertainment", "Education", "Howto", "Nonprofit", "Tech");
 
 			private var checkStatusTimer:Timer;
 
 			[Bindable]
-			public var formIsValid:Boolean=false;
+			public var formIsValid:Boolean = false;
 
 			// Holds a reference to the currently focussed 
 			// control on the form.
 			private var focussedFormControl:DisplayObject;
 
 			// Set uploadUrl
-			public function set uploadUrl(strUploadUrl:String):void
-			{
-				_strUploadUrl=strUploadUrl;
+			public function set uploadUrl(strUploadUrl:String):void {
+				_strUploadUrl = strUploadUrl;
 			}
 
 			// Initalize
-			private function initCom():void
-			{
-				_arrUploadFiles=new Array();
+			private function initCom():void {
+				_arrUploadFiles = new Array();
 				enableUI();
 				uploadCheck();
 			}
 
-			private function addFiles():void
-			{
+			private function addFiles():void {
 				clearUpload();
 				new UploadEvent(UploadEvent.UPLOAD_BROWSE).dispatch();
 			}
 
 			// Called when a file is selected
-			public function set fileSelected(selected:Boolean):void
-			{
-				addFileReference=DataModel.getInstance().uploadFileReference;
+			public function set fileSelected(selected:Boolean):void {
+				addFileReference = DataModel.getInstance().uploadFileReference;
 				_arrUploadFiles.pop();
 				_arrUploadFiles.push({name: addFileReference.name, size: formatFileSize(addFileReference.size), file: addFileReference});
-				listFiles.dataProvider=_arrUploadFiles;
-				listFiles.selectedIndex=_arrUploadFiles.length - 1;
+				listFiles.dataProvider = _arrUploadFiles;
+				listFiles.selectedIndex = _arrUploadFiles.length - 1;
 
 				updateProgBar();
 				uploadCheck();
-				DataModel.getInstance().uploadFileSelected=false;
+				DataModel.getInstance().uploadFileSelected = false;
 			}
 
 			// Called to format number to file size
-			private function formatFileSize(numSize:Number):String
-			{
+			private function formatFileSize(numSize:Number):String {
 				var strReturn:String;
-				numSize=Number(numSize / 1024);
-				strReturn=String(numSize.toFixed(1) + " KB");
-				if (numSize > 1024)
-				{
-					numSize=numSize / 1024;
-					strReturn=String(numSize.toFixed(2) + " MB");
-					if (numSize > 1024)
-					{
-						numSize=numSize / 1024;
-						strReturn=String(numSize.toFixed(2) + " GB");
+				numSize = Number(numSize / 1024);
+				strReturn = String(numSize.toFixed(1) + " KB");
+				if(numSize > 1024) {
+					numSize = numSize / 1024;
+					strReturn = String(numSize.toFixed(2) + " MB");
+					if(numSize > 1024) {
+						numSize = numSize / 1024;
+						strReturn = String(numSize.toFixed(2) + " GB");
 					}
 				}
 				return strReturn;
 			}
 
 			// Called to check if there is at least one file to upload
-			private function uploadCheck():void
-			{
-				if (_arrUploadFiles.length == 0)
-				{
-					btnUpload.enabled=false;
-					listFiles.verticalScrollPolicy="off";
-				}
-				else
-				{
-					btnUpload.enabled=true;
-					listFiles.verticalScrollPolicy="off";
+			private function uploadCheck():void {
+				if(_arrUploadFiles.length == 0) {
+					btnUpload.enabled = false;
+					listFiles.verticalScrollPolicy = "off";
+				} else {
+					btnUpload.enabled = true;
+					listFiles.verticalScrollPolicy = "off";
 				}
 			}
 
 			// Disable UI control
-			private function disableUI():void
-			{
-				btnAdd.enabled=false;
-				btnUpload.enabled=false;
-				btnCancel.enabled=true;
-				listFiles.enabled=false;
-				listFiles.verticalScrollPolicy="off";
+			private function disableUI():void {
+				btnAdd.enabled = false;
+				btnUpload.enabled = false;
+				btnCancel.enabled = true;
+				listFiles.enabled = false;
+				listFiles.verticalScrollPolicy = "off";
 			}
 
 			// Enable UI control
-			private function enableUI():void
-			{
-				btnAdd.enabled=true;
-				btnUpload.enabled=true;
-				btnCancel.enabled=false;
-				listFiles.enabled=true;
-				listFiles.verticalScrollPolicy="off";
+			private function enableUI():void {
+				btnAdd.enabled = true;
+				btnUpload.enabled = true;
+				btnCancel.enabled = false;
+				listFiles.enabled = true;
+				listFiles.verticalScrollPolicy = "off";
 			}
 
-			private function startUpload():void
-			{
-				if (_arrUploadFiles.length > 0)
-				{
+			private function startUpload():void {
+				if(_arrUploadFiles.length > 0) {
 					disableUI();
-					uploadInformationLabel.text="Uploading file...";
+					uploadInformationLabel.text = "Uploading file...";
 					new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
 				}
 			}
 
 
 
-			private function parseTags(tags:String):String
-			{
+			private function parseTags(tags:String):String {
 				return tags;
 			}
 
-			private function clearUpload():void
-			{
+			private function clearUpload():void {
 				updateProgBar();
 				enableUI();
 				new UploadEvent(UploadEvent.UPLOAD_CANCEL).dispatch();
 			}
 
-			private function onUploadCanceled():void
-			{
+			private function onUploadCanceled():void {
 				clearUpload();
 			}
 
-			private function set onUploadProgress(update:Boolean):void
-			{
-				var bytesLoaded:int=DataModel.getInstance().uploadBytesLoaded;
-				var bytesTotal:int=DataModel.getInstance().uploadBytesTotal;
-				var numPerc:Number=Math.round((bytesLoaded / bytesTotal) * 100);
+			private function set onUploadProgress(update:Boolean):void {
+				var bytesLoaded:int = DataModel.getInstance().uploadBytesLoaded;
+				var bytesTotal:int = DataModel.getInstance().uploadBytesTotal;
+				var numPerc:Number = Math.round((bytesLoaded / bytesTotal) * 100);
 				updateProgBar(bytesLoaded, bytesTotal, numPerc);
-				DataModel.getInstance().uploadProgressUpdated=false;
+				DataModel.getInstance().uploadProgressUpdated = false;
 
 			}
 
 			// Update progBar
-			private function updateProgBar(bytesLoaded:Number=0, bytesTotal:Number=0, numPerc:Number=0):void
-			{
-				if (addFileReference != null)
-				{
-					var strLabel:String="Uploaded " + formatFileSize(0) + " of " + formatFileSize(addFileReference.size);
-					strLabel=(numPerc > 0 && numPerc < 100) ? "Uploaded " + formatFileSize(bytesLoaded) + " of " + formatFileSize(bytesTotal) : strLabel;
-					strLabel=(numPerc == 100) ? "Upload Complete - Transfer commencing..." : strLabel;
-					strLabel=(_arrUploadFiles.length == 0) ? "" : strLabel;
+			private function updateProgBar(bytesLoaded:Number = 0, bytesTotal:Number = 0, numPerc:Number = 0):void {
+				if(addFileReference != null) {
+					var strLabel:String = "Uploaded " + formatFileSize(0) + " of " + formatFileSize(addFileReference.size);
+					strLabel = (numPerc > 0 && numPerc < 100) ? "Uploaded " + formatFileSize(bytesLoaded) + " of " + formatFileSize(bytesTotal) : strLabel;
+					strLabel = (numPerc == 100) ? "Upload Complete - Transfer commencing..." : strLabel;
+					strLabel = (_arrUploadFiles.length == 0) ? "" : strLabel;
+				} else {
+					numPerc = 0;
+					strLabel = "";
 				}
-				else
-				{
-					numPerc=0;
-					strLabel="";
-				}
-				progBar.label=strLabel;
+				progBar.label = strLabel;
 
 				progBar.setProgress(numPerc, 100);
 				progBar.validateNow();
 			}
 
 			// Called on upload complete
-			private function set onUploadComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().uploadFinished)
-				{
+			private function set onUploadComplete(value:Boolean):void {
+				if(DataModel.getInstance().uploadFinished) {
 					enableUI();
 					clearUpload();
 					//uploadInformationLabel.text="Upload successful. Now Processing file...";
 					//uploadInformationLabel.text="Successful Upload.";
-					DataModel.getInstance().uploadFinished=false;
+					DataModel.getInstance().uploadFinished = false;
 				}
 			}
 
-			private function set onUploadCompleteData(value:Boolean):void
-			{
-				if (DataModel.getInstance().uploadFinishedData)
-				{
-					if (DataModel.getInstance().uploadErrors == '')
-					{
-						uploadInformationLabel.text="Successful upload";
+			private function set onUploadCompleteData(value:Boolean):void {
+				if(DataModel.getInstance().uploadFinishedData) {
+					if(DataModel.getInstance().uploadErrors == '') {
+						uploadInformationLabel.text = "Successful upload";
 
 						/*
 						   youtubeVideoData=new ExerciseVO();
@@ -234,123 +213,115 @@
 						   youtubeVideoLevel.suggestedLevel = dificultyComboBox.selectedIndex+1;
 						 */
 
-						red5VideoData=new ExerciseVO();
-						red5VideoData.title=videoTitle.text;
-						red5VideoData.description=videoDescription.text;
-						red5VideoData.tags=parseTags(videoTags.text);
-						red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
-						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
-						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+						red5VideoData = new ExerciseVO();
+						red5VideoData.title = videoTitle.text;
+						red5VideoData.description = videoDescription.text;
+						red5VideoData.tags = parseTags(videoTags.text);
+						red5VideoData.language = languageSelector.languageComboBox.selectedLabel;
+						red5VideoData.name = DataModel.getInstance().uploadFileReference.name;
+						red5VideoData.userId = DataModel.getInstance().loggedUser.id;
 
-						red5VideoLevel=new ExerciseLevelVO();
-						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+						red5VideoLevel = new ExerciseLevelVO();
+						red5VideoLevel.suggestedLevel = difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
 
-						DataModel.getInstance().uploadFinishedData=false;
+						DataModel.getInstance().uploadFinishedData = false;
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
 						/*
 						   new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
 						 */
-					}
-					else
-					{
-						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
-						DataModel.getInstance().uploadFinishedData=false;
+					} else {
+						uploadInformationLabel.text = DataModel.getInstance().uploadErrors;
+						DataModel.getInstance().uploadFinishedData = false;
 					}
 				}
 			}
 
-			private function set onYoutubeTransferComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().youtubeTransferComplete == true)
-				{
-					checkStatusTimer=new Timer(30000, 0);
+			private function set onYoutubeTransferComplete(value:Boolean):void {
+				if(DataModel.getInstance().youtubeTransferComplete == true) {
+					checkStatusTimer = new Timer(30000, 0);
 					checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
 					checkStatusTimer.start();
-					DataModel.getInstance().youtubeTransferComplete=false;
+					DataModel.getInstance().youtubeTransferComplete = false;
 				}
 			}
 
-			private function onTimer(event:TimerEvent):void
-			{
-				var checkExercise:ExerciseVO=DataModel.getInstance().newYoutubeData;
+			private function onTimer(event:TimerEvent):void {
+				var checkExercise:ExerciseVO = DataModel.getInstance().newYoutubeData;
 				new UploadEvent(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, checkExercise).dispatch();
 			}
 
-			private function set onYoutubeProcessingComplete(value:Boolean):void
-			{
-				uploadInformationLabel.text="Upload finished!";
+			private function set onYoutubeProcessingComplete(value:Boolean):void {
+				uploadInformationLabel.text = "Upload finished!";
 				checkStatusTimer.stop();
-				DataModel.getInstance().youtubeProcessingComplete=false;
-				youtubeVideoData.userId=DataModel.getInstance().loggedUser.id;
-				youtubeVideoData.source="Youtube";
+				DataModel.getInstance().youtubeProcessingComplete = false;
+				youtubeVideoData.userId = DataModel.getInstance().loggedUser.id;
+				youtubeVideoData.source = "Youtube";
 
 				_arrUploadFiles.pop();
-				listFiles.dataProvider=_arrUploadFiles;
+				listFiles.dataProvider = _arrUploadFiles;
 				clearUpload();
-				addFileReference=null;
-				videoTitle.text="";
-				videoDescription.text="";
-				videoTags.text="";
+				addFileReference = null;
+				videoTitle.text = "";
+				videoDescription.text = "";
+				videoTags.text = "";
 
 				new ExerciseEvent(ExerciseEvent.ADD_EXERCISE, youtubeVideoData).dispatch();
 			}
 
-			private function set onYoutubeProcessUpdate(value:Boolean):void
-			{
-				uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
-				DataModel.getInstance().youtubeProcessUpdate=false;
+			private function set onYoutubeProcessUpdate(value:Boolean):void {
+				uploadInformationLabel.text = DataModel.getInstance().youtubeProcessMessage;
+				DataModel.getInstance().youtubeProcessUpdate = false;
 			}
 
-			private function set onUnprocessedExerciseComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().unprocessedExerciseSaved)
-				{
+			private function set onUnprocessedExerciseComplete(value:Boolean):void {
+				if(DataModel.getInstance().unprocessedExerciseSaved) {
 					_arrUploadFiles.pop();
-					listFiles.dataProvider=_arrUploadFiles;
+					listFiles.dataProvider = _arrUploadFiles;
 					clearUpload();
-					addFileReference=null;
-					videoTitle.text="";
-					videoDescription.text="";
-					videoTags.text="";
-					DataModel.getInstance().unprocessedExerciseSaved=false;
+					addFileReference = null;
+					videoTitle.text = "";
+					videoDescription.text = "";
+					videoTags.text = "";
+					
+					//Enable automatic evaluation if the option was selected
+					if(DataModel.getInstance().loggedUser.isAdmin && autoevaluateCheckbox.selected)
+						enableAutoevaluation(DataModel.getInstance().historicData.videoExerciseId);
+					
+					DataModel.getInstance().unprocessedExerciseSaved = false;
 				}
 				//uploadInformationLabel.text="Successful Upload. You can check your exercises' status on Account:My Exercises";
 			}
 
-			private function changeUploadMethod(event:ItemClickEvent):void
-			{
-				if (event.currentTarget.selectedValue == "updChoice")
-				{
-					uploadMethodViewStack.selectedChild=uploadFileBox;
-					uploadMethodViewStack.visible=true;
-					recFromWebcamBox.visible=false;
+			private function changeUploadMethod(event:ItemClickEvent):void {
+				if(event.currentTarget.selectedValue == "updChoice") {
+					uploadMethodViewStack.selectedChild = uploadFileBox;
+					uploadMethodViewStack.visible = true;
+					recFromWebcamBox.visible = false;
 
-				}
-				else if (event.currentTarget.selectedValue == "recChoice")
-				{
-					recFromWebcamBox.visible=true;
-					uploadMethodViewStack.selectedChild=recUploadBox;
-					uploadMethodViewStack.visible=true;
+				} else if(event.currentTarget.selectedValue == "recChoice") {
+					recFromWebcamBox.visible = true;
+					uploadMethodViewStack.selectedChild = recUploadBox;
+					uploadMethodViewStack.visible = true;
 				}
 			}
-			
-			private function saveRecordedExercise():void{
-				if(videoTitle.text != '' && videoDescription.text != '' && videoTags.text != ''){
-					red5VideoData=new ExerciseVO();
-					red5VideoData.title=videoTitle.text;
-					red5VideoData.description=videoDescription.text;
-					red5VideoData.tags=parseTags(videoTags.text);
-					red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
-					red5VideoData.name=recFromWebcamBox.recordingFileName;
-					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
-					
-					red5VideoLevel=new ExerciseLevelVO();
-					red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
-					
+
+			private function saveRecordedExercise():void {
+				if(videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '') {
+					red5VideoData = new ExerciseVO();
+					red5VideoData.title = videoTitle.text;
+					red5VideoData.description = videoDescription.text;
+					red5VideoData.tags = parseTags(videoTags.text);
+					red5VideoData.language = languageSelector.languageComboBox.selectedLabel;
+					red5VideoData.name = recFromWebcamBox.recordingFileName;
+					red5VideoData.userId = DataModel.getInstance().loggedUser.id;
+
+					red5VideoLevel = new ExerciseLevelVO();
+					red5VideoLevel.suggestedLevel = difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+
 					var historic:CreditHistoryVO = new CreditHistoryVO();
 					historic.videoExerciseName = recFromWebcamBox.recordingFileName;
 					DataModel.getInstance().historicData = historic;
-					
+
 					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
 				} else {
 					Alert.show("You must fill all the required field to save the exercise");
@@ -358,16 +329,15 @@
 			}
 
 			// Validate the form
-			private function validateForm(event:Event):void
-			{
+			private function validateForm(event:Event):void {
 				// Save a reference to the currently focussed form control
 				// so that the isValid() helper method can notify only
 				// the currently focussed form control and not affect
 				// any of the other form controls.
-				focussedFormControl=event.target as DisplayObject;
+				focussedFormControl = event.target as DisplayObject;
 
 				// Mark the form as valid to start with                
-				formIsValid=true;
+				formIsValid = true;
 
 				// Run each validator in turn, using the isValid() 
 				// helper method and update the value of formIsValid
@@ -381,30 +351,44 @@
 			// Helper method. Performs validation on a passed Validator instance.
 			// Validator is the base class of all Flex validation classes so 
 			// you can pass any validation class to this method.  
-			private function validate(validator:Validator):Boolean
-			{
+			private function validate(validator:Validator):Boolean {
 				// Get a reference to the component that is the
 				// source of the validator.
-				var validatorSource:DisplayObject=validator.source as DisplayObject;
+				var validatorSource:DisplayObject = validator.source as DisplayObject;
 
 				// Suppress events if the current control being validated is not
 				// the currently focussed control on the form. This stops the user
 				// from receiving visual validation cues on other form controls.
-				var suppressEvents:Boolean=(validatorSource != focussedFormControl);
+				var suppressEvents:Boolean = (validatorSource != focussedFormControl);
 
 				// Carry out validation. Returns a ValidationResultEvent.
 				// Passing null for the first parameter makes the validator 
 				// use the property defined in the property tag of the
 				// <mx:Validator> tag.
-				var event:ValidationResultEvent=validator.validate(null, suppressEvents);
+				var event:ValidationResultEvent = validator.validate(null, suppressEvents);
 
 				// Check if validation passed and return a boolean value accordingly.
-				var currentControlIsValid:Boolean=(event.type == ValidationResultEvent.VALID);
+				var currentControlIsValid:Boolean = (event.type == ValidationResultEvent.VALID);
 
 				// Update the formIsValid flag
-				formIsValid=formIsValid && currentControlIsValid;
+				formIsValid = formIsValid && currentControlIsValid;
 
 				return currentControlIsValid;
+			}
+			
+			private function enableAutoevaluation(exerciseId:int):void {
+				var requestData:EvaluationVO = new EvaluationVO();
+				requestData.exerciseId = exerciseId;
+				requestData.transcriptionSystem = transcSystemSelector.transcriptionSystemComboBox.selectedItem.data;
+				requestData.userId = DataModel.getInstance().loggedUser.id;
+				new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_EXERCISE, requestData).dispatch();
+			}
+			
+			private function set onAutoevaluationEnableError(value:Boolean):void {
+				if (DataModel.getInstance().enableAutoevalToExerciseError != ""){
+					Alert.show("This video doesn't support automatic evaluations.","Automatic evaluation not enabled");
+					DataModel.getInstance().enableAutoevalToExerciseError = "";
+				}
 			}
 		]]>
 	</mx:Script>
@@ -425,6 +409,8 @@
 				destination="this.onYoutubeProcessUpdate"/>
 	<mx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
 				destination="this.onUnprocessedExerciseComplete"/>
+	<mx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
+				destination="this.onAutoevaluationEnableError"/>
 	<mx:Label text="Upload New Exercise"
 			  fontWeight="bold"
 			  fontFamily="Arial"
@@ -484,6 +470,17 @@
 									value="recChoice"
 									label="Record an exercise with the webcam and save it"
 									group="{uploadOptionsGroup}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Automatic evaluation:"
+							 fontWeight="bold"
+							 visible="{DataModel.getInstance().loggedUser.isAdmin}"
+							 height="67">
+					<mx:CheckBox label="Add automatic evaluation support if possible"
+								 id="autoevaluateCheckbox"/>
+					<mx:FormItem label="Choose system:"
+								 fontWeight="bold">
+						<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
+					</mx:FormItem>
 				</mx:FormItem>
 			</mx:Form>
 

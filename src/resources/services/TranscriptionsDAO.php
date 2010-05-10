@@ -51,8 +51,19 @@ class TranscriptionsDAO {
 		return $valueObject;
 	}
 	
-	public function enableTranscriptionToExercise($exerciseId, $transcriptionSystem) {
-		if ($exerciseId > 0 && $transcriptionSystem != null) {
+	public function enableTranscriptionToExercise($exerciseId, $transcriptionSystem, $userId) {
+		if ($exerciseId > 0 && $transcriptionSystem != null && $userId > 0) {
+		
+			if(!$this->checkAutoevaluationSupportExercise($exerciseId, $transcriptionSystem))
+				return "transcription not supported for this video";
+			
+			//Check if user is admin
+			$sql = "SELECT isAdmin FROM users WHERE id = %d";
+			$result = $this->conn->_execute($sql, $userId);
+			$row = $this->conn->_nextRow($result);
+			if ($row[0] <= 0)
+				return "only admin users can enable transcriptions to exercises";
+			
 			$sql = "SELECT * FROM transcription AS T INNER JOIN exercise AS E ON T.id=E.fk_transcription_id WHERE E.id = %d";
 			$result = $this->conn->_execute($sql, $exerciseId);
 			$row = $this->conn->_nextRow($result);
@@ -75,6 +86,10 @@ class TranscriptionsDAO {
 	
 	public function enableTranscriptionToResponse($responseId, $transcriptionSystem) {
 		if ($responseId > 0 && $transcriptionSystem != null) {
+		
+			if(!$this->checkAutoevaluationSupportResponse($responseId, $transcriptionSystem))
+				return "transcription not supported for this video";
+				
 			$sql = "SELECT * FROM transcription AS T INNER JOIN response AS R ON T.id=R.fk_transcription_id WHERE R.id = %d";
 			$result = $this->conn->_execute($sql, $responseId);
 			$row = $this->conn->_nextRow($result);
@@ -105,11 +120,11 @@ class TranscriptionsDAO {
 				$maxDuration = $row[0];
 			else
 				$maxDuration = 0;
-			
+				
 			// if
-			// original video have a transcription
+			// original video has a transcription
 			// and video's response hasn't
-			// and transcriptionSystem supports actual language (original video's language)
+			// and transcriptionSystem supports actual language (original video's language. The video's language code may be something like en_EN so the first part (en) must be extracted)
 			// and response's duration <= transcription System's allowed duration
 			//  return true
 			// else return false; 
@@ -117,7 +132,7 @@ class TranscriptionsDAO {
 			           FROM 
 			                  response AS R 
 			                     INNER JOIN exercise AS E ON R.fk_exercise_id=E.id  
-			                     INNER JOIN preferences AS P ON E.language=P.prefValue 
+			                     INNER JOIN preferences AS P ON SUBSTRING_INDEX(E.language, '_', 1)=P.prefValue 
 			        WHERE 
 			           R.id=%d 
 			             AND 
@@ -126,8 +141,7 @@ class TranscriptionsDAO {
 			           E.fk_transcription_id IS NOT NULL 
 			             AND 
 			             R.fk_transcription_id IS NULL";
-			             
-			             
+			
 			if ($maxDuration > 0)
 				$sql = $sql . " AND R.duration<=%s";
 			
@@ -150,8 +164,21 @@ class TranscriptionsDAO {
 				$maxDuration = $row[0];
 			else
 				$maxDuration = 0;
+				
+			// if
+			// original video doesn't have a transcription
+			// and transcriptionSystem supports video's language (The video's language code may be something like en_EN so the first part (en) must be extracted)
+			// and video's duration <= transcription System's allowed duration
+			//  return true
+			// else return false; 
+			$sql = "SELECT E.id 
+					FROM exercise AS E 
+						INNER JOIN preferences AS P ON SUBSTRING_INDEX(E.language, '_', 1)=P.prefValue 
+					WHERE 
+						E.id=%d AND P.prefName = '%s.language' 
+						AND 
+						E.fk_transcription_id IS NULL";
 			
-			$sql = "SELECT E.id FROM exercise AS E  INNER JOIN preferences AS P ON E.language=P.prefValue WHERE E.id=%d AND P.prefName = '%s.language' AND E.fk_transcription_id IS NULL";
 			if ($maxDuration > 0)
 				$sql = $sql . " AND E.duration<=%d";
 			
