@@ -24,6 +24,7 @@
 			import model.DataModel;
 			
 			import mx.collections.*;
+			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.events.SliderEvent;
@@ -177,36 +178,83 @@
 
 			private function netStatusHandler(event:NetStatusEvent):void
 			{
-
-				ns=new NetStream(nc);
-				ns.play(bideoIzena);
-				ns.client=nsClient;
-				ns.addEventListener(NetStatusEvent.NET_STATUS, bideoEgoeraAztertu);
-
-				vid=new Video();
-				vid.attachNetStream(ns);
-				uic.addChild(vid);
-
-				//Bolumena kontrolatzeko objetuen balioak haseratu
-				volumeTransform=new SoundTransform();
-				volumeSlider.value=volumeTransform.volume;
-				volumeSlider.minimum=0;
-				volumeSlider.maximum=1;
-				volumeSlider.snapInterval=0.1;
-				volumeSlider.tickInterval=volumeSlider.snapInterval;
-				volumeSlider.liveDragging=true;
-				volumeSlider.addEventListener(SliderEvent.CHANGE, volumeChangeHandler);
-
-				//Bolumena ixildu haseran, seek egiterakoan ez hotsik entzuteko
-				volumeTransform.volume=0
-				ns.soundTransform=volumeTransform;
-
-				//segundu laurden bateko maiztasuna erlojua sortu eta hasieratu, segunduro progressbarrak eguneratzeko
-
-				timer=new Timer(10, 0);
-				timer.addEventListener(TimerEvent.TIMER, onTimer);
-				timer.start();
-
+				var info:Object = event.info;
+				
+				switch(info.code){
+					case "NetConnection.Call.BadVersion":
+						trace("NetConnection Error: Packet encoded in an unidentified format.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
+						break;
+					
+					case "NetConnection.Call.Failed":
+						trace("NetConnection Error: The NetConnection.call method was not able to invoke the server-side method or command.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
+						break;
+					
+					case "NetConnection.Call.Prohibited":
+						trace("NetConnection Error: An Action Message Format (AMF) operation is prevented for security reasons. Either the AMF URL is not in the same domain as the file containing the code calling the NetConnection.call() method, or the AMF server does not have a policy file that trusts the domain of the the file containing the code calling the NetConnection.call() method.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
+						break;
+					
+					case "NetConnection.Connect.Closed":
+						trace("NetConnection Status: The connection was closed successfully.");
+						break;
+					
+					case "NetConnection.Connect.Failed":
+						trace("NetConnection Error: The connection attempt failed.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
+						break;
+					
+					case "NetConnection.Connect.Success":
+						trace ("NetConnection Status: The connection attempt succeeded.","Error");
+						
+						ns=new NetStream(nc);
+						ns.play(bideoIzena);
+						ns.client=nsClient;
+						ns.addEventListener(NetStatusEvent.NET_STATUS, bideoEgoeraAztertu);
+						
+						vid=new Video();
+						vid.attachNetStream(ns);
+						uic.addChild(vid);
+						
+						//Bolumena kontrolatzeko objetuen balioak haseratu
+						volumeTransform=new SoundTransform();
+						volumeSlider.value=volumeTransform.volume;
+						volumeSlider.minimum=0;
+						volumeSlider.maximum=1;
+						volumeSlider.snapInterval=0.1;
+						volumeSlider.tickInterval=volumeSlider.snapInterval;
+						volumeSlider.liveDragging=true;
+						volumeSlider.addEventListener(SliderEvent.CHANGE, volumeChangeHandler);
+						
+						//Bolumena ixildu haseran, seek egiterakoan ez hotsik entzuteko
+						volumeTransform.volume=0
+						ns.soundTransform=volumeTransform;
+						
+						//segundu laurden bateko maiztasuna erlojua sortu eta hasieratu, segunduro progressbarrak eguneratzeko
+						
+						timer=new Timer(10, 0);
+						timer.addEventListener(TimerEvent.TIMER, onTimer);
+						timer.start();
+						
+						break;
+					
+					case "NetConnection.Connect.Rejected":
+						trace("NetConnection Error: The connection attempt did not have permission to access the application.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.");
+						break;
+					
+					case "NetConnection.Connect.AppShutdown":
+						trace("NetConnection Error: The specified application is shutting down.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.");
+						break;
+					
+					case "NetConnection.Connect.InvalidApp":
+						trace("NetConnection Error: The application name specified during connect is invalid.");
+						Alert.show("Error while connecting to the streaming server. Please try again later.");
+						break;
+					
+				}
 			}
 
 			private function bideoEgoeraAztertu(event:NetStatusEvent):void
@@ -228,13 +276,13 @@
 
 						if (playbackFinished)
 						{
-							egoera.text="finished";
+							egoera.text=resourceManager.getString('myResources','MESSAGE_STATUS_FINISHED');
 							playbackFinished=false;
 							bideoBukaeraTratatu();
 						}
 						else
 						{
-							egoera.text="buffering";
+							egoera.text=resourceManager.getString('myResources','MESSAGE_STATUS_BUFFERING');
 							bufferingScreen.visible=true;
 						}
 						break;
@@ -242,7 +290,7 @@
 					//The buffer is full and the stream will begin playing.
 					case "NetStream.Buffer.Full":
 						bufferingScreen.visible=false;
-						egoera.text="playing";
+						egoera.text=resourceManager.getString('myResources','MESSAGE_STATUS_PLAYING');
 						break;
 
 					case "NetStream.Play.Stop":
@@ -412,7 +460,7 @@
 			  borderStyle="solid"
 			  dropShadowEnabled="true">
 		<mx:Label id="egoera"
-				  text="Stopped"/>
+				  text="{resourceManager.getString('myResources','MESSAGE_STATUS_STOPPED')}"/>
 		<mx:HBox x="24"
 				 y="541"
 				 height="42"
@@ -463,7 +511,7 @@
 				<mx:Image id="bufferingImage"
 						  width="31"
 						  height="31"/>
-				<mx:Text text="Buffering..."
+				<mx:Text text="{resourceManager.getString('myResources', 'MESSAGE_STATUS_BUFFERING')}"
 						 color="#FFFFFF"
 						 fontWeight="bold"/>
 			</mx:HBox>

@@ -766,14 +766,11 @@
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
 										   dataField="Id"
 										   visible="false"/>
-						<mx:DataGridColumn headerText="Response id"
-										   dataField="response_id"
-										   visible="false"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
 										   dataField="Iraupena"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 										   dataField="Baloraturik"/>
-						<mx:DataGridColumn headerText="Aukeratutako Pertsonaia"
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
 										   dataField="AukeratutakoPertsonaia"
 										   visible="false"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
@@ -800,7 +797,7 @@
 							 visible="false"
 							 borderStyle="solid">
 						<mx:RadioButtonGroup id="balorazioa"/>
-						<mx:Label text="Rate the user's response"
+						<mx:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
 								  fontWeight="bold"/>
 						<mx:HRule width="100%"/>
 						<mx:HBox>
@@ -964,9 +961,6 @@
 						</mx:DataGridColumn>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
 										   dataField="Id"/>
-						<mx:DataGridColumn headerText="Response id"
-										   dataField="response_id"
-										   visible="false"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
 										   dataField="Iraupena"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"

@@ -129,13 +129,13 @@
 				if (audio_pause)
 				{
 					in_ns.resume();
-					estat.text="*Playing...";
+					estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_PLAYING');
 					audio_pause=false;
 				}
 				else
 				{
 					// Play the recording
-					estat.text="Playing...";
+					estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_PLAYING');
 					if (in_ns)
 						in_ns.close();
 					in_ns=new NetStream(client_nc);
@@ -145,7 +145,7 @@
 
 					in_ns.play(videoEvaluationDir + "/" + audioFilename);
 					video.attachNetStream(in_ns); // JUANAN
-					estat.text="Playing...";
+					estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_PLAYING');
 				}
 
 				// It's not possible recording or save while audio is playing
@@ -160,7 +160,7 @@
 			{
 				//in_ns.togglePause();
 				in_ns.pause();
-				estat.text="Paused";
+				estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_PAUSED');
 				audio_pause=true;
 
 				// It's possible recording or save while audio is paused
@@ -173,7 +173,7 @@
 
 			private function stopAudio():void
 			{
-				estat.text="Stopped ";
+				estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_STOPPED');
 
 				// Close output stream
 				out_ns.close();
@@ -257,7 +257,7 @@
 					}
 					if (_mic)
 					{
-						estat.text="Recording..."
+						estat.text=resourceManager.getString('myResources', 'MESSAGE_STATUS_RECORDING');
 						anyContent=true;
 
 						_mic.setLoopBack(false);
@@ -291,12 +291,14 @@
 			{
 				if (DataModel.getInstance().micCamAllowed)
 				{
+					_micCamEnabled=DataModel.getInstance().micCamAllowed;
 					configureDevices();
 				}
 				else
 				{
 					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
+					privacyRights.useMicAndCamera=true;
 					PopUpManager.centerPopUp(privacyRights);
 				}
 			}
@@ -326,15 +328,26 @@
 				}
 			}
 
-			private function bideoHauGorde():void
+			private function saveVideoComment():void
 			{
 				dispatchEvent(new AddVideoEvent(audioFilename));
+				PopUpManager.removePopUp(this);
+			}
+
+			private function cancelButtonClickHandler():void
+			{
+				if (out_ns)
+					stopAudio();
+				if(video)
+					stopCamera();
 				PopUpManager.removePopUp(this);
 			}
 		]]>
 	</mx:Script>
 
-	<mx:VBox width="100%" height="100%" horizontalAlign="center">
+	<mx:VBox width="100%"
+			 height="100%"
+			 horizontalAlign="center">
 		<mx:UIComponent id="videoHolder"
 						width="320"
 						height="240"/>
@@ -350,7 +363,7 @@
 					   enabled="false"
 					   width="65"
 					   fillColors="[#008080, #ffffff]"/>
-			<mx:Label text="Status:"
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_STATUS')}"
 					  fontWeight="bold"
 					  fontStyle="italic"/>
 			<mx:Label id="estat"
@@ -361,12 +374,12 @@
 		<mx:HBox horizontalAlign="center">
 			<mx:Button id="bideoaGorde"
 					   label="{resourceManager.getString('myResources', 'SAVEVIDEO')}"
-					   click="bideoHauGorde();"
+					   click="saveVideoComment();"
 					   enabled="false"/>
 			<mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}"
-					   click="PopUpManager.removePopUp(this);"/>
+					   click="cancelButtonClickHandler()"/>
 		</mx:HBox>
-		
+
 	</mx:VBox>
 
 </mx:TitleWindow>
