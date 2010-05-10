@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `activation_hash`;
