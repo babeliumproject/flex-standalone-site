@@ -159,26 +159,6 @@ class Epaitu {
 	
 	}
 	
-	public function baloratuGabekoakLoginGabe() {
-		
-		$sql = "SELECT prefValue FROM preferences WHERE prefName='trial.threshold'";
-		$result = $this->conn->_execute ( $sql );
-		$row = $this->conn->_nextRow ( $result );
-		$MAXBAL = $row [0]; // maximum number of assements before considering one video as evaluated  
-		
-
-		//Bideo bat inork ez duenean baloratu, c.fk_user_id null izango da, eta true itzultzen du konparaketak
-		$sql = "Select DISTINCT B.file_identifier,A.name,B.id,A.duration,B.rating_amount,B.character_name,B.adding_date,D.name,A.id
-		From (exercise As A Inner Join response As B on (A.id = B.fk_exercise_id)) Inner Join users AS D on B.fk_user_id = D.ID Left Outer Join evaluation As C on C.fk_response_id = B.id
-		Where A.status = 'Available' AND B.rating_amount < %d
-		AND B.is_private = 0;";
-		
-		$searchResults = $this->_listQuery ( $sql, $MAXBAL );
-		
-		return $searchResults;
-	
-	}
-	
 	public function nikEpaitutakoak($key) {
 		
 		$sql = "Select DISTINCT A.name,B.file_identifier,C.fk_response_id,A.duration,B.rating_amount,B.character_name,A.id

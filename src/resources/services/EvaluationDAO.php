@@ -15,13 +15,11 @@ class EvaluationDAO {
 		$result = $this->conn->_execute ( $sql );
 		$row = $this->conn->_nextRow ( $result );
 		if($row)
-			$evaluationThreshold = $row [0]; // maximum number of assements before considering one video as evaluated  
+			$evaluationThreshold = $row [0];
 		
-
-		//Bideo bat inork ez duenean baloratu, c.fk_user_id null izango da, eta true itzultzen du konparaketak
 		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, 
-		                        A.adding_date, A.source, F.name, F.ID, B.id, B.name, B.duration,
-		                        B.language, B.thumbnail_uri, B.title, B.source
+		                        A.adding_date, A.source, A.thumbnail_uri, A.duration, F.name, F.ID, 
+		                        B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source
 				FROM (response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id) 
 				     INNER JOIN users AS F on A.fk_user_id = F.ID 
 		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
@@ -35,44 +33,96 @@ class EvaluationDAO {
 		return $searchResults;
 	}
 	
-	public function getResponsesAssessedToCurrentUser($userId){
-		$sql = "SELECT DISTINCT A.name, B.file_identifier, C.fk_response_id, 
-							    A.duration, B.rating_amount, B.character_name, A.id 
-				FROM exercise As A INNER JOIN response As B on A.id = B.fk_exercise_id
-					 INNER JOIN evaluation As C on C.fk_response_id = B.id 
-				WHERE ( C.fk_user_id = '%d' ) ";
-		
-		$searchResults = $this->_listQuery ( $sql, $userId );
-		
-		return $searchResults;
-	}
-	
 	private function _listWaitingAssessmentQuery($query){
 		$searchResults = array();
 		$result = $this->conn->_execute ( func_get_args() );
 		
 		while ( $row = $this->conn->_nextRow($result)){
 			$temp = new EvaluationVO();
+			
 			$temp->responseFileIdentifier = $row[0];
 			$temp->responseId = $row[1];
 			$temp->responseRatingAmount = $row[2];
 			$temp->responseCharacterName = $row[3];
 			$temp->responseAddingDate = $row[4];
 			$temp->responseSource = $row[5];
+			$temp->responseThumbnailUri = $row[6];
+			$temp->responseDuration = $row[7];
 			
-			$temp->userName = $row[6];
-			$temp->userId = $row[7];
+			$temp->userName = $row[8];
+			$temp->userId = $row[9];
 			
-			$temp->exerciseId = $row[8];
-			$temp->exerciseName = $row[9];
-			$temp->exerciseDuration = $row[10];
-			$temp->exerciseLanguage = $row[11];
-			$temp->exerciseThumbnailUri = $row[12];
-			$temp->exerciseTitle = $row[13];
-			$temp->exerciseSource = $row[14];
+			$temp->exerciseId = $row[10];
+			$temp->exerciseName = $row[11];
+			$temp->exerciseDuration = $row[12];
+			$temp->exerciseLanguage = $row[13];
+			$temp->exerciseThumbnailUri = $row[14];
+			$temp->exerciseTitle = $row[15];
+			$temp->exerciseSource = $row[16];
 		}
 
 		return $searchResults;
+	}
+	
+	public function getResponsesAssessedToCurrentUser($userId){
+		
+		$sql = "SELECT A.file_identifier, A.id, A.rating_amount, A.character_name, 
+		               A.adding_date, A.source, A.thumbnail_uri, A.duration, C.fk_user_id, 
+		               B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source,
+		               AVG(C.score) AS avg_rating
+		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
+					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
+				WHERE ( C.fk_user_id = '%d' ) 
+				GROUP BY B.id";
+		
+		$searchResults = $this->_listQuery ( $sql, $userId );
+		
+		return $searchResults;
+	}
+	
+	private function _listAssessedToCurrentUserQuery() {
+		$searchResults = array ();
+		$result = $this->conn->_execute ( func_get_args() );
+		
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$temp = new EvaluationVO();		
+			
+			$temp->responseFileIdentifier = $row[0];
+			$temp->responseId = $row[1];
+			$temp->responseRatingAmount = $row[2];
+			$temp->responseCharacterName = $row[3];
+			$temp->responseAddingDate = $row[4];
+			$temp->responseSource = $row[5];
+			$temp->responseThumbnailUri = $row[6];
+			$temp->responseDuration = $row[7];
+			
+			$temp->userId = $row[8];
+			
+			$temp->exerciseId = $row[9];
+			$temp->exerciseName = $row[10];
+			$temp->exerciseDuration = $row[11];
+			$temp->exerciseLanguage = $row[12];
+			$temp->exerciseThumbnailUri = $row[13];
+			$temp->exerciseTitle = $row[14];
+			$temp->exerciseSource = $row[15];
+			
+			$temp->evaluationAverage = $row[16];
+		}
+		
+		return $searchResults;
+	}
+	
+	public function getResponsesAssessedByCurrentUser($userId){
+		
+	}
+	
+	private function _listAssessedByCurrentUser(){
+		$searchResults = array();
+		$result = $this->conn->_execute(func_get_args());
+		
+		while ($row = $this->conn->_nextRow($result)){
+			
+		}
 	}
 	
 }
