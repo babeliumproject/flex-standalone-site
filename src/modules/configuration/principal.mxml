@@ -85,17 +85,17 @@
 			public function microphoneResult(e:ConfigurationResultEvent):void{
 				timerMic.start();
 				if(e.status)
-					microphoneStatus.text="Microphone: OK";
+					microphoneStatus.text= resourceManager.getString('myResources', 'MICROPHONE') +  ": OK";
 				else
-					microphoneStatus.text="Microphone: X";				
+					microphoneStatus.text= resourceManager.getString('myResources', 'MICROPHONE') +   ": X";				
 			}
 			
 			public function bandwidthResult(e:ConfigurationResultEvent):void{
 				timerBW.start();
 				if (e.status)
-					bandwidthStatus.text="Bandwidth: OK";
+					bandwidthStatus.text= resourceManager.getString('myResources', 'BANDWIDTH') + ": OK";
 				else
-					bandwidthStatus.text="Bandwidth: X";					
+					bandwidthStatus.text= resourceManager.getString('myResources', 'BADNWIDTH')  +  ": X";					
 			}
 			
 			/*Funciones timers para el control de los resultados*/
@@ -163,13 +163,13 @@
 			<mx:VBox label="WebCam Configuration">
 				<mod1:webCamCheck id="webCamCheck"/>
 				<mx:LinkButton id="refreshCamButton" visible="false" color="red" textDecoration="underline"
-					label="Conectala y pulsa aqui para recargar la pagina" click="refreshWebCam()"/>
+					label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}" click="refreshWebCam()"/>
 			</mx:VBox>
 			
 			<mx:VBox label="Mic Configuration">
 				<mod2:micCheck id="micCheck"/>
 				<mx:LinkButton id="refreshMicButton" visible="false" color="red" textDecoration="underline"
-					label="Conectalo y pulsa aqui para recargar la pagina" click="refreshMic()"/>
+					label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}" click="refreshMic()"/>
 			</mx:VBox>
 			
 			<mx:VBox label="BandWidth Configuration">
@@ -179,8 +179,8 @@
 		<mx:VBox>
 			<mx:Text text="RESULTS" fontSize="30" fontWeight="bold" textDecoration="underline"/>
 			<mx:Text text="Webcam: " id="webCamStatus" fontSize="20" visible="true"/>
-			<mx:Text text="Microphone: " id="microphoneStatus" fontSize="20"/>
-			<mx:Text text="Bandwidth: " id="bandwidthStatus" fontSize="20"/>
+			<mx:Text text= "{resourceManager.getString('myResources', 'MICROPHONE')} : " id="microphoneStatus" fontSize="20"/>
+			<mx:Text text= "{resourceManager.getString('myResources', 'BANDWIDTH')} : " id="bandwidthStatus" fontSize="20"/>
 		</mx:VBox>
 	</mx:HBox>
 
