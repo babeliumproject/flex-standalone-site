@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="modules.evaluation.*"
+		 xmlns:videoPlayer="modules.videoPlayer.*"
+		 creationComplete="onCreationComplete()"
+		 xmlns:ns2="modules.autoevaluation.*"
+		 paddingBottom="8"
+		 fontFamily="Arial"
+		 fontSize="12">
+	
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import commands.cuepointManager.ReplayResponseCommand;
+			
+			import control.CuePointManager;
+			
+			import events.*;
+			
+			import model.DataModel;
+			
+			import modules.videoPlayer.events.VideoPlayerEvent;
+			import modules.videoPlayer.events.babelia.StreamEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ArrayUtil;
+			
+			import view.common.TimeFormatter;
+			
+			import vo.CreditHistoryVO;
+			import vo.CueObject;
+			import vo.Epai;
+			import vo.EvaluationVO;
+			import vo.ExerciseVO;
+			
+			
+			private var ep:Epai=new Epai;
+			private var ev:EvaluationVO;
+			
+			[Bindable] private var _exerciseName:String;
+			[Bindable] private var _exerciseTitle:String;
+			[Bindable] private var _exerciseLanguage:String;
+			[Bindable] private var _exerciseId:int;
+			[Bindable] private var _currentExercise:ExerciseVO;
+			
+			[Bindable] private var _responseName:String;
+			[Bindable] private var _responseId:int;
+			
+			private var _currentUserId:int;
+			private var userLoggedIn:Boolean=false;
+			
+			private var _selectedRole:String;
+			private var biakBatera:Boolean=false;
+			
+			private var activeTab:String="hasiera";
+			private var bideoIruzkinIzena:String;
+			
+			private var niriEp:Boolean=false;
+			private var nikEp:Boolean=false;
+			
+			
+			private var jugdesMark:String;
+			
+			
+			private var _cueManager:CuePointManager = CuePointManager.getInstance();
+			
+			[Bindable]
+			private var assessedToCurrentUserDetail:ArrayCollection;
+			[Bindable]
+			private var waitingForAssessmentList:ArrayCollection;
+			[Bindable]
+			private var assessedToCurrentUserList:ArrayCollection;
+			[Bindable]
+			private var assessedByCurrentUserList:ArrayCollection;
+			
+			
+			
+			private var kont:int;
+			
+			private var timeFormatter:TimeFormatter=new TimeFormatter();
+			
+			
+			
+			
+			[Bindable] private var _exerciseSelected:Boolean = false;
+			[Bindable] private var _streamSource:String = DataModel.getInstance().streamingResourcesPath;
+			
+			private var _videoPlayerReady:Boolean = false;
+			
+			[Bindable] private var _rolesReady:Boolean;
+			[Bindable] private var _localesReady:Boolean;
+			[Bindable] private var _cueManagerReady:Boolean;
+			
+			
+			public function onCreationComplete():void
+			{
+				
+				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
+				_exerciseSelected=false;
+				setupVideoPlayer();
+				
+				timeFormatter.outputMilliseconds=false;
+				
+				//Disable the controls of the response player until the playback is finished
+				/*
+				responsePlayer.seek_denb.visible=false;
+				responsePlayer.botoiak.enabled=false;
+				
+				exercisePlayer.setup();*/
+				
+				//Grab all the evaluation data
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					_currentUserId=DataModel.getInstance().loggedUser.id;
+					epaiketaDat.baloratuGabekoak.send(_currentUserId);
+					epaiketaDat.norberariEpaitutakoak.send(_currentUserId);
+					epaiketaDat.nikEpaitutakoak.send(_currentUserId);
+				}
+			}
+			
+			private function setupVideoPlayer():void
+			{
+				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+			}
+			
+			private function onVideoPlayerReady(e:VideoPlayerEvent):void
+			{
+				_videoPlayerReady=true;
+				VP.stopVideo();
+			}
+			
+			//bideoaren egoera aldaketak
+			private function onMyCustomEvent(event:Event):void
+			{
+				//mx.controls.Alert.show("aa");
+				kont++;
+				trace("event: " + kont.toString());
+				
+			}
+			
+			
+			private function grabaketaAmaituta(event:Event):void
+			{
+				if (activeTab == "epaituGabe")
+				{
+					//responsePlayer.seek_denb.visible=true;
+					//responsePlayer.botoiak.enabled=true;
+					bidali.enabled=true;
+					//exercisePlayer.bolumenaAktibatu();
+					//responsePlayer.bolumenaAktibatu();
+				}
+			}
+			
+			private function botoiaSakatuDu(event:Event):void
+			{
+				//mx.controls.Alert.show("botoia!");
+				biakBatera=false;
+			}
+			
+			
+			private function faultHandler(fault:FaultEvent):void
+			{
+				Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
+			}
+			
+			private function resultHandlerNiriEpaituta(event:ResultEvent):void
+			{
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (epaitutakoDetailDat)
+					epaitutakoDetailDat.rowCount=result.length;
+				assessedToCurrentUserDetail=result;
+			}
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				trace(event.result);
+			}
+			
+			private function baloratuGabekoakLortu(event:ResultEvent):void
+			{
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (baloratuGabekoak)
+					baloratuGabekoak.rowCount=result.length;
+				waitingForAssessmentList=result;
+			}
+			
+			private function baloratuGabekoakLortuLoginGabe(event:ResultEvent):void
+			{
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (baloratuGabekoak)
+					baloratuGabekoak.rowCount=result.length;
+				waitingForAssessmentList=result;
+			}
+			
+			private function norberariEpaitutakoakLortu(event:ResultEvent):void
+			{
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (norberariEpaitutakoak)
+					norberariEpaitutakoak.rowCount=result.length;
+				assessedToCurrentUserList=result;
+			}
+			
+			private function nikEpaitutakoakLortu(event:ResultEvent):void
+			{
+				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
+				if (bakoitzakEpaitutakoak)
+					bakoitzakEpaitutakoak.rowCount=result.length;
+				assessedByCurrentUserList=result;
+			}
+			
+			//Datagrid-aren balioak aldatzean egin beharrekoa
+			
+			private function waitingAssessmentSelectedHandler(event:Event):void
+			{
+				if (activeTab != "epaituGabe")
+				{
+					frogatu("epaituGabe");
+					if (tn2)
+						tn2.visible=false;
+					//responsePlayer.botoiak.enabled=false;
+					if (niriEp)
+						norberariEpaitutakoak.selectedItem=null;
+					if (nikEp)
+						bakoitzakEpaitutakoak.selectedItem=null;
+					activeTab="epaituGabe";
+				}
+				
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					jugdmentBox.visible=true;
+				}
+				ep=Epai(DataGrid(event.target).selectedItem);
+				_exerciseId=ep.exerciseId;
+				_exerciseName=ep.Kodea;
+				_responseName=ep.Id;
+				_responseId=parseInt(ep.response_id);
+				/*
+				exercisePlayer.setBideoIzena(ep.Kodea, ep.exerciseId);
+				exercisePlayer.ezabatuFletxak();
+				exercisePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				
+				
+				responsePlayer.setBideoIzena(ep.Id, 1);
+				responsePlayer.ezabatuFletxak();
+				responsePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				*/
+				
+				_selectedRole=ep.AukeratutakoPertsonaia;
+				
+				//responsePlayer.seek_denb.visible=false;
+				bidali.enabled=false;
+				
+				bideoaGehituBot.visible=true;
+				izenb.visible=false;
+				useVideoComment.visible=false;
+				
+				prepareEvaluation();
+				resetCueManager();
+				prepareCueManager();
+				
+				
+			}
+			
+			private function prepareEvaluation():void
+			{
+				// Prepare new video in VideoPlayer
+				VP.stopVideo();
+				VP.videoSource=_exerciseName;
+				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.secondSource=_responseName;
+				
+			}
+			
+			private function resetCueManager():void
+			{
+				_cueManager.reset();
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+				
+			}
+			
+			private function prepareCueManager():void
+			{
+				var cached:Boolean=_cueManager.setVideo(_exerciseId);
+				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
+				_cueManager.setCuesFromSubtitle(_exerciseLanguage);
+				
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			}
+			
+			/**
+			 * On subtitles retrieved
+			 **/
+			private function onSubtitlesRetrieved(e:CueManagerEvent):void
+			{
+				setupReplayCommands();
+				showArrows();
+			}
+			
+			private function setupReplayCommands():void
+			{
+				var auxList:ArrayCollection=_cueManager.getCuelist();
+				
+				if (auxList.length <= 0)
+					return;
+				
+				for each (var cueobj:CueObject in auxList)
+				{
+					cueobj.setStartCommand(new ReplayResponseCommand(cueobj, VP));
+					cueobj.setEndCommand(new ReplayResponseCommand(null, VP));
+				}
+				
+				_cueManagerReady=true;
+			}
+			
+			private function showArrows():void
+			{
+				VP.arrows=true;
+				VP.setArrows(_cueManager.cues2rolearray(), _selectedRole);
+			}
+			
+			private function changeHandlerNiriEpaituak(event:Event):void
+			{
+				if (!niriEp)
+					niriEp=true;
+				//trace("change handler niri epaituak");
+				if (activeTab != "niriEpaituak")
+				{
+					frogatu("niriEpaituak");
+					activeTab="niriEpaituak";
+					jugdmentBox.visible=false;
+					tn2.visible=true;
+					baloratuGabekoak.selectedItem=null;
+					baloratuGabekoak.nullItemRenderer;
+					if (nikEp)
+						bakoitzakEpaitutakoak.selectedItem=null;
+					
+					/*
+					//Bideoa bilatzekoa bistaratu
+					responsePlayer.seek_denb.visible=true;
+					
+					//Grabaketaren botoiak aktibatu
+					responsePlayer.botoiak.enabled=true;
+					*/
+				}
+				
+				ev=EvaluationVO(DataGrid(event.target).selectedItem);
+				
+				/*
+				exercisePlayer.setBideoIzena(ev.exerciseName, 1);
+				exercisePlayer.ezabatuFletxak();
+				exercisePlayer.setRolAukeratua(ev.responseCharacterName);
+				
+				responsePlayer.setBideoIzena(ev.responseFileIdentifier, 1);
+				responsePlayer.ezabatuFletxak();
+				responsePlayer.setRolAukeratua(ev.responseCharacterName);
+				*/
+				
+				batazb.text=resourceManager.getString('myResources', 'AVG') + ": " + ev.evaluationAverage;
+				
+				_selectedRole=ev.responseCharacterName;
+				
+				bideoaGehituBot.visible=true;
+				izenb.visible=false;
+				useVideoComment.visible=false;
+				
+				
+				_exerciseName=ev.exerciseName;
+				_responseName=ev.responseFileIdentifier;
+				
+				_responseId=ev.responseId;
+				
+				epaiketaDat.epaitutakoGrabaketa.send(_responseId);
+				
+				//Get the autoevaluation info if available
+				autoevalPanel.setResponseID(_responseId);
+			}
+			
+			//ea hasierako egoeran dagoen kontrolatzen du
+			private function frogatu(egoeraBerria:String):void
+			{
+				if (activeTab == "hasiera")
+				{
+					/*
+					exercisePlayer.visible=true;
+					responsePlayer.visible=true;
+					botoiak.visible=true;
+					hasierakoText.visible=false;
+					*/
+					activeTab=egoeraBerria;
+				}
+			}
+			
+			private function changeHandlerNikEpaituak(event:Event):void
+			{
+				if (!nikEp)
+					nikEp=true;
+				
+				if (activeTab != "nikEpaituak")
+				{
+					frogatu("nikEpaituak");
+					jugdmentBox.visible=false;
+					tn2.visible=false;
+					baloratuGabekoak.selectedItem=null;
+					if (niriEp)
+						norberariEpaitutakoak.selectedItem=null;
+					
+					activeTab="nikEpaituak";
+					
+					//Bideoa bilatzekoa bistaratu
+					//responsePlayer.seek_denb.visible=true;
+					
+					//Grabaketaren botoiak aktibatu
+					//responsePlayer.botoiak.enabled=true;
+				}
+				
+				ep=Epai(DataGrid(event.target).selectedItem);
+				/*
+				exercisePlayer.setBideoIzena(ep.Kodea, 1);
+				exercisePlayer.ezabatuFletxak();
+				exercisePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				
+				responsePlayer.setBideoIzena(ep.Id, 1);
+				responsePlayer.ezabatuFletxak();
+				responsePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				*/
+				
+				_selectedRole=ep.AukeratutakoPertsonaia;
+				
+				bideoaGehituBot.visible=true;
+				izenb.visible=false;
+				useVideoComment.visible=false;
+				
+				
+				_exerciseName=ep.Kodea;
+				_responseName=ep.Id;
+			}
+			
+			
+			
+			private function onAddCuepoint(event:AddCuepointEvent):void
+			{
+				if (biakBatera)
+				{
+					if (_selectedRole == event.izena)
+					{
+						/*
+						responsePlayer.bolumenaAktibatu();
+						exercisePlayer.muteatu();
+						*/
+					}
+					else
+					{/*
+						exercisePlayer.bolumenaAktibatu();
+						responsePlayer.muteatu();*/
+					}
+				}
+			}
+			
+			private function bideoIruzkina(event:Event):void
+			{
+				if (ep.BideoIruzkina)
+				{
+					ep=Epai(DataGrid(event.target).selectedItem);
+					
+					if (ep.BideoIruzkina.toString() != "")
+					{
+						var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
+						PopUpManager.centerPopUp(bideoIruzkin);
+						epaitutakoDetailDat.selectedItem=null;
+						
+						bideoIruzkin.setBideoIzena(ep.BideoIruzkina.toString());
+					}
+				}
+			}
+			
+			private function set showAutoevalTab(val:Boolean):void
+			{
+				if (tn2 != null)
+				{
+					//Show the autoevaluation tab if autoevaluation is available, else hide it
+					tn2.getTabAt(1).visible=DataModel.getInstance().autoevaluationAvailable;
+					tn2.getTabAt(1).enabled=DataModel.getInstance().autoevaluationAvailable;
+					tn2.getTabAt(1).includeInLayout=DataModel.getInstance().autoevaluationAvailable;
+					tn2.selectedIndex=0;
+				}
+				else
+					DataModel.getInstance().autoevaluationAvailable=true;
+			}
+			
+			//Epaiketari dagokion "bidali" botoia sakatzean exekutatuko den funtzioa
+			private function sendRatingHandler():void
+			{
+				if ((ratingGroup.selectedValue) && (assessmentComment.text != ""))
+				{
+					
+					jugdesMark=ratingGroup.selectedValue.toString();
+					
+					if (ratingGroup.selectedValue.toString() == "bat")
+					{
+						jugdesMark="1";
+					}
+					else if (ratingGroup.selectedValue.toString() == "bi")
+					{
+						jugdesMark="2";
+					}
+					else if (ratingGroup.selectedValue.toString() == "hiru")
+					{
+						jugdesMark="3";
+					}
+					else if (ratingGroup.selectedValue.toString() == "lau")
+					{
+						jugdesMark="4";
+					}
+					else if (ratingGroup.selectedValue.toString() == "bost")
+					{
+						jugdesMark="5";
+					}
+					
+					
+					//bideo iruzkina gehituz
+					if (useVideoComment.selected)
+					{
+						epaiketaDat.insertVideoEpaiketa.send(_responseId, _currentUserId, jugdesMark, assessmentComment.text.toString(), bideoIruzkinIzena);
+					}
+						//bideo iruzkinik gabe
+					else
+					{
+						epaiketaDat.insertEpaiketa.send(_responseId, _currentUserId, jugdesMark, assessmentComment.text.toString());
+					}
+					reset();
+					Alert.show("Your assessment has been successfully saved");
+				}
+				else
+				{
+					Alert.show("You must specify a score and write a comment with your opinion of the response");
+				}
+			}
+			
+			private function evaluationAddedHandler(event:ResultEvent):void
+			{
+				var creditHistory:CreditHistoryVO=new CreditHistoryVO();
+				creditHistory.videoExerciseId=_exerciseId;
+				creditHistory.videoResponseId=int(_responseId);
+				DataModel.getInstance().historicData=creditHistory;
+				new CreditEvent(CreditEvent.ADD_CREDITS_FOR_EVALUATING, DataModel.getInstance().loggedUser.id).dispatch();
+				
+				//Data inserted on evaluation successfully.
+				epaiketaDat.updateGrabaketa.send(_responseId);
+				
+				
+				jugdmentBox.setVisible(false);
+			}
+			
+			private function ratingAmountUpdatedHandler(event:ResultEvent):void
+			{
+				//We updated the rating amount from this response now we want to update the datagrid
+				epaiketaDat.baloratuGabekoak.send(_currentUserId);
+				//We want to see our recent evaluation on the tab Responses I assessed
+				epaiketaDat.nikEpaitutakoak.send(_currentUserId);
+			}
+			
+			//Epaiketari dagokion "reset" botoia sakatzean exekutatuko den funtzioa
+			private function reset():void
+			{
+				ratingGroup.selection=null;
+				assessmentComment.text="";
+			}
+			
+			private function grafikoaIkusi():void
+			{
+				var grafikoa:Grafikoak=Grafikoak(PopUpManager.createPopUp(this, Grafikoak, true));
+				grafikoa.datuakBidali(_responseId);
+				PopUpManager.centerPopUp(grafikoa);
+			}
+			
+			private function bideoaGehitu():void
+			{
+				var bideo:BideoGrabaketa=BideoGrabaketa(PopUpManager.createPopUp(this, BideoGrabaketa, true));
+				
+				bideo.addEventListener(AddVideoEvent.CHANGE_OPTION, bideoaGehituta);
+				PopUpManager.centerPopUp(bideo);
+				
+			}
+			
+			private function bideoaGehituta(event:AddVideoEvent):void
+			{
+				bideoaGehituBot.visible=false;
+				izenb.visible=true;
+				useVideoComment.visible=true;
+				useVideoComment.label=event.bideoIzena.toString();
+				bideoIruzkinIzena=event.bideoIzena.toString();
+			}
+			
+			private function durationLabelFunction(item:Object):String
+			{
+				return timeFormatter.format(item.Iraupena);
+			}
+			
+			private function refreshTab(event:IndexChangedEvent):void
+			{
+				switch (event.newIndex)
+				{
+					case 0:
+						baloratuGabekoak.rowCount=waitingForAssessmentList.length;
+						break;
+					case 1:
+						norberariEpaitutakoak.rowCount=assessedToCurrentUserList.length;
+						break;
+					case 2:
+						bakoitzakEpaitutakoak.rowCount=assessedByCurrentUserList.length;
+						break;
+				}
+			}
+			
+			private function set onUserAuthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+				{
+					userLoggedIn=true;
+					_currentUserId=DataModel.getInstance().loggedUser.id;
+					epaiketaDat.baloratuGabekoak.send(_currentUserId);
+					epaiketaDat.norberariEpaitutakoak.send(_currentUserId);
+					epaiketaDat.nikEpaitutakoak.send(_currentUserId);
+				}
+			}
+			
+			private function set onUserDeauthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == false)
+				{
+					userLoggedIn=false;
+					jugdmentBox.visible=false;
+					epaitutakoDetail.visible=false;
+					
+					/*
+					responsePlayer.seek_denb.visible=false;
+					responsePlayer.botoiak.enabled=false;
+					
+					exercisePlayer.visible=false;
+					responsePlayer.visible=false;
+					hasierakoText.visible=true;
+					botoiak.visible=false;
+					
+					*/
+					
+					activeTab="hasiera";
+					
+					assessedToCurrentUserDetail=new ArrayCollection();
+					tn2.visible=false;
+					evaluationOptionsViewStack.selectedIndex=0;
+					
+				}
+			}
+			
+			private function set onTabChange(value:Boolean):void
+			{
+				
+				jugdmentBox.visible=false;
+				epaitutakoDetail.visible=false;
+				
+				/*
+				responsePlayer.seek_denb.visible=false;
+				responsePlayer.botoiak.enabled=false;
+				
+				exercisePlayer.visible=false;
+				responsePlayer.visible=false;
+				hasierakoText.visible=true;
+				botoiak.visible=false;
+				*/
+				
+				activeTab="hasiera";
+				
+				baloratuGabekoak.selectedItem=null;
+				bakoitzakEpaitutakoak.selectedItem=null;
+				norberariEpaitutakoak.selectedItem=null;
+				
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Binding source="{DataModel.getInstance().autoevaluationAvailable}"
+				destination="this.showAutoevalTab"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == true}"
+				destination="onUserAuthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn == false}"
+				destination="onUserDeauthenticated"/>
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
+	
+	
+	<!-- AMFPhp -->
+	<mx:RemoteObject id="epaiketaDat"
+					 destination="empService"
+					 source="Epaitu"
+					 fault="faultHandler(event)"
+					 showBusyCursor="true">
+		<mx:method name="epaitutakoGrabaketa"
+				   result="resultHandlerNiriEpaituta(event)"/>
+		<mx:method name="baloratuGabekoak"
+				   result="baloratuGabekoakLortu(event)"/>
+		<mx:method name="updateGrabaketa"
+				   result="ratingAmountUpdatedHandler(event)"/>
+		<mx:method name="norberariEpaitutakoak"
+				   result="norberariEpaitutakoakLortu(event)"/>
+		<mx:method name="nikEpaitutakoak"
+				   result="nikEpaitutakoakLortu(event)"/>
+		<mx:method name="insertEpaiketa"
+				   result="evaluationAddedHandler(event)"/>
+		<mx:method name="insertVideoEpaiketa"
+				   result="evaluationAddedHandler(event)"/>
+	</mx:RemoteObject>
+	
+	
+	<mx:VBox>
+		<mx:Label id="exerciseTitle"
+				  text="{_exerciseTitle}"
+				  width="100%"
+				  fontSize="16"
+				  fontWeight="bold"/>
+		<!-- w/h = 16:10 -->
+		<videoPlayer:VideoPlayerBabelia id="VP"
+										autoPlay="true"
+										skin="white"
+										seek="true"
+										subtitles="true"
+										autoScale="false"
+										arrows="false"
+										subtitlingControls="false"
+										width="500"
+										height="{Math.floor(VP.width * 10 / 16)}"
+										streamSource="{_streamSource}"
+										controlsEnabled="{_exerciseSelected}"/>
+	</mx:VBox>
+	<mx:Spacer width="20"/>
+	
+	<!--
+	<mx:VBox id="videoPlayersBox"
+	horizontalAlign="center"
+	height="100%"
+	width="100%">
+	<mx:Label id="hasierakoText"
+	text="{resourceManager.getString('myResources', 'AUKERATUBIDEOA')}"/>
+	
+	<mx:HBox id="botoiak"
+	dropShadowEnabled="true"
+	borderStyle="solid"
+	cornerRadius="5"
+	visible="false">
+	<mx:Label text="{resourceManager.getString('myResources', 'BIAKBATERAIKUSI')}"/>
+	<mx:LinkButton label="Play"
+	click="playBatera();"/>
+	<mx:LinkButton label="Pause"
+	click="pauseBatera();"/>
+	<mx:LinkButton label="Stop"
+	click="stopBatera()"/>
+	</mx:HBox>
+	<mx:HBox height="100%">
+	<ns1:nireBideoa id="exercisePlayer"
+	height="100%"
+	width="100%"
+	myCustomEvent="onMyCustomEvent(event);"
+	botoiaSakatuta="botoiaSakatuDu(event)"
+	cuePoint="onAddCuepoint( event );"
+	visible="false">
+	</ns1:nireBideoa>
+	<ns1:nireBideoa id="responsePlayer"
+	height="100%"
+	width="100%"
+	bukatuDa="grabaketaAmaituta(event)"
+	visible="false">
+	</ns1:nireBideoa>
+	</mx:HBox>
+	</mx:VBox>
+	-->
+	
+	<mx:VBox width="100%"
+			 height="100%"
+			 paddingLeft="4"
+			 paddingRight="4"
+			 paddingBottom="4">
+		<mx:HBox width="100%"
+				 height="35"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 cornerRadius="8"
+				 backgroundColor="#DDDDDD"
+				 borderStyle="solid"
+				 horizontalGap="16">
+			<mx:Button label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}"
+					   cornerRadius="8"
+					   click="evaluationOptionsViewStack.selectedChild=epaituGabe"/>
+			<mx:Button label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}"
+					   cornerRadius="8"
+					   click="evaluationOptionsViewStack.selectedChild=assessedToCurrentUser"/>
+			<mx:Button label="{resourceManager.getString('myResources','NIKEPAITUTAKOAK')}"
+					   cornerRadius="8"
+					   click="evaluationOptionsViewStack.selectedChild=nikEpaitutakoak"/>
+		</mx:HBox>
+		
+		<mx:ViewStack id="evaluationOptionsViewStack"
+					  width="100%"
+					  height="100%">
+			
+			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
+			<mx:VBox id="epaituGabe"
+					 horizontalAlign="center">
+				<mx:DataGrid id="baloratuGabekoak"
+							 dataProvider="{waitingForAssessmentList}"
+							 width="100%"
+							 horizontalScrollPolicy="off"
+							 verticalAlign="middle"
+							 change="waitingAssessmentSelectedHandler(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
+										   dataField="Kodea"
+										   width="{120*0.8}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox>
+										<mx:Image id="albumImage"
+												  height="{90*0.8}"
+												  width="{120*0.8}"
+												  source="resources/images/thumbs/{data.Kodea}.jpg"/>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
+										   dataField="Jabea"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
+										   dataField="Id"
+										   visible="false"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
+										   dataField="Iraupena"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
+										   dataField="Baloraturik"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
+										   dataField="AukeratutakoPertsonaia"
+										   visible="false"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+										   dataField="Data"/>
+					</mx:columns>
+				</mx:DataGrid>
+				
+				<!-- Epaitu gabeko bideoak baloratzeko kaxa -->
+				<mx:HBox paddingLeft="10"
+						 paddingRight="10"
+						 paddingBottom="10"
+						 paddingTop="10"
+						 width="100%">
+					<mx:VBox id="jugdmentBox"
+							 width="100%"
+							 backgroundColor="#000000"
+							 backgroundAlpha="0.13"
+							 horizontalAlign="center"
+							 verticalAlign="middle"
+							 paddingRight="4"
+							 paddingLeft="4"
+							 paddingTop="4"
+							 paddingBottom="4"
+							 visible="false"
+							 borderStyle="solid">
+						<mx:RadioButtonGroup id="ratingGroup"/>
+						<mx:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
+								  fontWeight="bold"/>
+						<mx:HRule width="100%"/>
+						<mx:HBox>
+							<mx:RadioButton id="bat"
+											group="{ratingGroup}"
+											label="1"/>
+							<mx:RadioButton id="bi"
+											group="{ratingGroup}"
+											label="2"/>
+							<mx:RadioButton id="hiru"
+											group="{ratingGroup}"
+											label="3"/>
+							<mx:RadioButton id="lau"
+											group="{ratingGroup}"
+											label="4"/>
+							<mx:RadioButton id="bost"
+											group="{ratingGroup}"
+											label="5"/>
+						</mx:HBox>
+						
+						<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
+								   click="bideoaGehitu()"
+								   id="bideoaGehituBot"/>
+						<mx:Label id="izenb"
+								  text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}"
+								  visible="false"/>
+						<mx:CheckBox id="useVideoComment"
+									 visible="false"/>
+						
+						<mx:TextArea width="100%"
+									 height="82"
+									 id="assessmentComment"/>
+						<mx:HBox>
+							<mx:Button label="{resourceManager.getString('myResources', 'BIDALI')}"
+									   click="sendRatingHandler()"
+									   id="bidali"
+									   enabled="false"/>
+							<mx:Button label="{resourceManager.getString('myResources', 'RESET')}"
+									   click="reset()"/>
+						</mx:HBox>
+					</mx:VBox>
+				</mx:HBox>
+			</mx:VBox>
+			
+			
+			
+			
+			<!-- Niri epaitutako bideoen zerrenda erakusten du -->
+			<mx:VBox id="assessedToCurrentUser">
+				<mx:DataGrid width="100%"
+							 id="norberariEpaitutakoak"
+							 dataProvider="{assessedToCurrentUserList}"
+							 change="changeHandlerNiriEpaituak(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
+										   dataField="exerciseThumbnailUri"
+										   width="{120*0.8}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox>
+										<mx:Image id="albumImageNorb"
+												  height="{90*0.8}"
+												  width="{120*0.8}"
+												  source="resources/images/thumbs/{data.exerciseThumbnailUri}"/>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
+										   dataField="exerciseDuration"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
+										   dataField="responseRatingAmount"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'AVG')}"
+										   dataField="evaluationAverage"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
+										   dataField="responseCharacterName"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:Spacer height="30"/>
+				<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
+				<mx:TabNavigator id="tn2"
+								 visible="false"
+								 creationPolicy="all"
+								 width="100%"
+								 height="100%"
+								 paddingLeft="8"
+								 paddingRight="8"
+								 paddingTop="8"
+								 paddingBottom="8">
+					<mx:VBox id="epaitutakoDetail"
+							 label="Human Evaluation">
+						<mx:HBox>
+							<mx:Label id="batazb"/>
+							<mx:Button id="grafikoakIkusi"
+									   label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
+									   click="grafikoaIkusi()"/>
+							<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
+						</mx:HBox>
+						
+						<mx:DataGrid id="epaitutakoDetailDat"
+									 dataProvider="{assessedToCurrentUserDetail}"
+									 change="bideoIruzkina(event)"
+									 width="100%">
+							<mx:columns>
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
+												   dataField="Epailea"/>
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
+												   dataField="Balorazioa"/>
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+												   dataField="Data"/>
+								<!-- <mx:DataGridColumn headerText="Iruzkinak" dataField="Iruzkinak"/> -->
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
+												   dataField="Iruzkinak"
+												   width="160">
+									<mx:itemRenderer>
+										<mx:Component>
+											<mx:VBox>
+												<mx:TextArea id="textua"
+															 backgroundColor="#ffffff"
+															 height="100"
+															 text="{data.Iruzkinak}"
+															 editable="false"
+															 width="160"/>
+											</mx:VBox>
+										</mx:Component>
+									</mx:itemRenderer>
+								</mx:DataGridColumn>
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+												   dataField="BideoIruzkina"/>
+							</mx:columns>
+						</mx:DataGrid>
+					</mx:VBox>
+					<ns2:AutoevaluationPanel id="autoevalPanel">
+					</ns2:AutoevaluationPanel>
+				</mx:TabNavigator>
+				
+			</mx:VBox>
+			
+			
+			<!-- Nik epaitu ditudan bideoen zerrenda erakusten du -->
+			<mx:VBox label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}"
+					 id="nikEpaitutakoak">
+				<mx:DataGrid width="100%"
+							 id="bakoitzakEpaitutakoak"
+							 dataProvider="{assessedByCurrentUserList}"
+							 change="changeHandlerNikEpaituak(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
+										   dataField="Kodea"
+										   width="{120*0.8}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox>
+										<mx:Image id="albumImageNorb"
+												  height="{90*0.8}"
+												  width="{120*0.8}"
+												  source="resources/images/thumbs/{data.Kodea}.jpg"/>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
+										   dataField="Id"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
+										   dataField="Iraupena"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
+										   dataField="Baloraturik"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
+										   dataField="AukeratutakoPertsonaia"
+										   visible="true"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:ViewStack>
+	</mx:VBox>
+	
+	
+</mx:HBox>
+

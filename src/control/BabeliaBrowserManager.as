@@ -41,6 +41,8 @@ package control
 		public static const SUBTITLE:String="edit";
 		public static const VIEW:String="view";
 		public static const RECORD:String="rec";
+		public static const REVISE:String="revise";
+		public static const EVALUATE:String="evaluate";
 		
 		/**
 		 * Constructor
