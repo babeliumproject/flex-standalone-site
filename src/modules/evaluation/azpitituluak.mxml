@@ -148,8 +148,8 @@
          		public function setBideoIzena(izena:String){
             	
 	            	bideoIzena =  izena;
-	            	trace ("bideoIzena: " + bideoIzena);
-            	}
+	        
+	}
             
 				private function faultHandler(fault:FaultEvent):void
 			    {
@@ -188,8 +188,7 @@
 			    {
 			    	timeTaula = new ArrayCollection();
             		testuTaula = new ArrayCollection();
-            		
-			    	trace(" subkonboa.selectedItem.toString() : " + subkonboa.selectedItem.toString());
+
 			    	
 			    	for (var i:int = 0; i < dp.length; i++) {
 			    		if (dp[i].idioma == subkonboa.selectedItem.toString())
