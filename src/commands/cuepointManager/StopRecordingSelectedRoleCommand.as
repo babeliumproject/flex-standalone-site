@@ -24,11 +24,12 @@ package commands.cuepointManager
 			VP.setSubtitle("");
 			VP.muteVideo(false);
 			VP.muteRecording(true);
+			/*
 			if(!DataModel.getInstance().soundDetected &&
 				DataModel.getInstance().gapsWithNoSound > DataModel.GAPS_TO_ABORT_RECORDING){
 				DataModel.getInstance().gapsWithNoSound = 0;
 				VP.dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-			}
+			}*/
 		}	
 	}
 }

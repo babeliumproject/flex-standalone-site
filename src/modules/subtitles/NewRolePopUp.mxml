@@ -2,6 +2,11 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				autoLayout="true"
 				borderColor="#000000">
+	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+	
 	<mx:Label id="errorInfo"
 			  fontFamily="Arial"
 			  fontSize="12"
@@ -10,7 +15,7 @@
 			  textAlign="center"
 			  width="100%"/>
 	<mx:Form width="100%">
-		<mx:FormItem label="New Role">
+		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_NEW_ROLE')}">
 			<mx:TextInput id="newrole"
 						  width="100%"/>
 		</mx:FormItem>
@@ -18,9 +23,9 @@
 		<mx:HBox width="100%"
 				 horizontalAlign="center"
 				 verticalAlign="middle">
-			<mx:Button label="OK"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
 					   id="okButton"/>
-			<mx:Button label="Cancel"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 					   id="cancelButton"/>
 		</mx:HBox>
 	

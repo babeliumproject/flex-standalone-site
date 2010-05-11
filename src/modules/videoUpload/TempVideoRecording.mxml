@@ -12,15 +12,13 @@
 	<mx:Script>
 
 		<![CDATA[
-			import events.AddVideoEvent;
-			
 			import model.DataModel;
 			
-			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			
+			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
 			private var netConnection:NetConnection;
@@ -42,6 +40,8 @@
 			private var _camera:Camera;
 			private var _mic:Microphone;
 			private var _micCamEnabled:Boolean=false;
+			
+			private var _streamingServerConnection:Boolean = false;
 
 			private var privacyRights:PrivacyRights;
 
@@ -69,13 +69,16 @@
 				playPauseButton.setStyle('icon', playImageEmbed);
 
 				anyContent=false;
+				audio_pause=false;
+				isRecording=false;
+			}
+			
+			private function connectToStreamingServer():void{
 				netConnection=new NetConnection();
 				netConnection.connect(DataModel.getInstance().streamingResourcesPath);
 				netConnection.addEventListener(NetStatusEvent.NET_STATUS, connectionNetStatusHandler);
 				netConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
 				netConnection.client=this;
-				audio_pause=false;
-				isRecording=false;
 			}
 
 			private function connectionNetStatusHandler(event:NetStatusEvent):void
@@ -97,6 +100,11 @@
 
 						playbackNetStream.client=this; // onPlayStatus
 						playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+						
+						_streamingServerConnection = true;
+						
+						prepareDevices();
+						
 						break;
 
 					case "NetConnection.Connect.Closed":
@@ -104,6 +112,15 @@
 							playbackNetStream.close();
 						if (publishNetStream)
 							publishNetStream.close();
+						
+						_streamingServerConnection = false;
+						
+						break;
+					default:
+						trace("NetConnection Error: "+info.code);
+						CustomAlert.error("Error while connecting to the streaming server. Please try again later.");
+						_streamingServerConnection = false;
+						
 						break;
 				}
 			}
@@ -114,11 +131,11 @@
 
 				if (info.code == "NetStream.Play.Stop")
 				{
-					recStopButton.enabled=true;
-					playPauseButton.enabled=true;
-
 					recStopButton.setStyle('icon', recImageEmbed);
 					playPauseButton.setStyle('icon', playImageEmbed);
+					
+					recStopButton.enabled=true;
+					playPauseButton.enabled=true;
 
 					audio_pause=false;
 				}
@@ -195,7 +212,11 @@
 
 			private function recStopAudio():void
 			{
-				if (recStopButton.getStyle('icon') == recImageEmbed)
+				if(_streamingServerConnection == false)
+				{
+					connectToStreamingServer();
+				}
+				else if (recStopButton.getStyle('icon') == recImageEmbed)
 				{
 					prepareDevices();
 				}
@@ -203,7 +224,6 @@
 				{
 					stopCamera();
 					stopAudio();
-						//bideoaGorde.enabled=true;
 				}
 			}
 
@@ -252,17 +272,18 @@
 			{
 				if (_micCamEnabled)
 				{
-					if (_camera)
+					if (_camera != null)
 					{
 						videoHolder.setActualSize(_camera.width, _camera.height);
 						video=new Video(_camera.width, _camera.height);
-						publishNetStream.attachCamera(_camera);
+						if (publishNetStream != null)
+							publishNetStream.attachCamera(_camera);
 						video.attachCamera(_camera);
 
 						videoHolder.addChild(video);
 						trace("All added you should see video");
 					}
-					if (_mic)
+					if (_mic != null)
 					{
 						estat.text="Recording..."
 						anyContent=true;
@@ -271,7 +292,8 @@
 						_mic.gain=40;
 
 						// Start publishing the audio output as a recorded stream
-						publishNetStream.attachAudio(_mic);
+						if(publishNetStream != null)
+							publishNetStream.attachAudio(_mic);
 
 						// It's not possible playing audio while recording
 						recStopButton.enabled=true;
@@ -301,6 +323,7 @@
 			{
 				if (DataModel.getInstance().micCamAllowed)
 				{
+					_micCamEnabled = DataModel.getInstance().micCamAllowed;
 					configureDevices();
 				}
 				else
@@ -333,7 +356,7 @@
 				}
 				else
 				{
-					Alert.show("You must 'Allow' the access to your devices.");
+					CustomAlert.error("In order to record something you must 'Allow' the access to your devices.");
 				}
 			}
 		]]>

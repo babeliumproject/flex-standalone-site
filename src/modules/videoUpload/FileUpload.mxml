@@ -13,21 +13,23 @@
 	<mx:Script>
 		<![CDATA[
 			import events.EvaluationEvent;
-			import vo.EvaluationVO;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
+			
+			import view.common.CustomAlert;
+			
 			import vo.CreditHistoryVO;
+			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
 
@@ -138,7 +140,7 @@
 			private function startUpload():void {
 				if(_arrUploadFiles.length > 0) {
 					disableUI();
-					uploadInformationLabel.text = "Uploading file...";
+					uploadInformationLabel.text = resourceManager.getString('myResources','LABEL_UPLOADSTATUS_UPLOADINPROGRESS');
 					new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
 				}
 			}
@@ -199,7 +201,7 @@
 			private function set onUploadCompleteData(value:Boolean):void {
 				if(DataModel.getInstance().uploadFinishedData) {
 					if(DataModel.getInstance().uploadErrors == '') {
-						uploadInformationLabel.text = "Successful upload";
+						uploadInformationLabel.text = resourceManager.getString('myResources','LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD');
 
 						/*
 						   youtubeVideoData=new ExerciseVO();
@@ -251,7 +253,7 @@
 			}
 
 			private function set onYoutubeProcessingComplete(value:Boolean):void {
-				uploadInformationLabel.text = "Upload finished!";
+				uploadInformationLabel.text = resourceManager.getString('myResources','LABEL_UPLOADSTATUS_UPLOADFINISHED');
 				checkStatusTimer.stop();
 				DataModel.getInstance().youtubeProcessingComplete = false;
 				youtubeVideoData.userId = DataModel.getInstance().loggedUser.id;
@@ -324,7 +326,7 @@
 
 					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
 				} else {
-					Alert.show("You must fill all the required field to save the exercise");
+					CustomAlert.error(resourceManager.getString('myResources','MESSAGE_FILL_THE_REQUIRED_FIELDS'));
 				}
 			}
 
@@ -386,7 +388,7 @@
 			
 			private function set onAutoevaluationEnableError(value:Boolean):void {
 				if (DataModel.getInstance().enableAutoevalToExerciseError != ""){
-					Alert.show("This video doesn't support automatic evaluations.","Automatic evaluation not enabled");
+					CustomAlert.error(resourceManager.getString('myResources','MESSAGE_AUTOMATIC_EVALUATION_NOT_SUPPORTED'));
 					DataModel.getInstance().enableAutoevalToExerciseError = "";
 				}
 			}
@@ -411,7 +413,7 @@
 				destination="this.onUnprocessedExerciseComplete"/>
 	<mx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
 				destination="this.onAutoevaluationEnableError"/>
-	<mx:Label text="Upload New Exercise"
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
 			  fontWeight="bold"
 			  fontFamily="Arial"
 			  fontSize="18"/>
@@ -420,7 +422,7 @@
 			<mx:Form width="100%"
 					 borderStyle="solid"
 					 borderThickness="2">
-				<mx:FormItem label="Title:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
 							 width="100%"
 							 fontWeight="bold"
 							 required="true">
@@ -429,7 +431,7 @@
 								  fontWeight="normal"
 								  change="validateForm(event);"/>
 				</mx:FormItem>
-				<mx:FormItem label="Description:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
 							 width="100%"
 							 fontWeight="bold"
 							 required="true">
@@ -438,7 +440,7 @@
 								 fontWeight="normal"
 								 change="validateForm(event);"/>
 				</mx:FormItem>
-				<mx:FormItem label="Tags:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 							 width="100%"
 							 fontWeight="bold"
 							 toolTip="Comma separated words"
@@ -448,36 +450,36 @@
 								 fontWeight="normal"
 								 change="validateForm(event);"/>
 				</mx:FormItem>
-				<mx:FormItem label="Dificulty Level:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
 							 fontWeight="bold"
 							 required="true">
 					<common:DifficultyLevelComboBox id="difficultySelector"/>
 				</mx:FormItem>
-				<mx:FormItem label="Language:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
 							 fontWeight="bold"
 							 required="true">
 					<common:LanguageComboBox id="languageSelector"/>
 				</mx:FormItem>
-				<mx:FormItem label="Choose an uploading method:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
 							 fontWeight="bold">
 					<mx:RadioButtonGroup id="uploadOptionsGroup"
 										 itemClick="changeUploadMethod(event)"/>
 					<mx:RadioButton id="uploadChoice"
 									value="updChoice"
-									label="Upload a video file from your computer"
+									label="{resourceManager.getString('myResources','LABEL_UPLOAD_FILE')}"
 									group="{uploadOptionsGroup}"/>
 					<mx:RadioButton id="recordChoice"
 									value="recChoice"
-									label="Record an exercise with the webcam and save it"
+									label="{resourceManager.getString('myResources','LABEL_UPLOAD_STREAMING')}"
 									group="{uploadOptionsGroup}"/>
 				</mx:FormItem>
-				<mx:FormItem label="Automatic evaluation:"
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 fontWeight="bold"
 							 visible="{DataModel.getInstance().loggedUser.isAdmin}"
 							 height="67">
-					<mx:CheckBox label="Add automatic evaluation support if possible"
+					<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
 								 id="autoevaluateCheckbox"/>
-					<mx:FormItem label="Choose system:"
+					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
 								 fontWeight="bold">
 						<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
 					</mx:FormItem>
@@ -509,11 +511,11 @@
 									 sortableColumns="false"
 									 change="validateForm(event)">
 							<mx:columns>
-								<mx:DataGridColumn headerText="File"
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNLABEL_FILE')}"
 												   dataField="name"
 												   width="400"
 												   wordWrap="true"/>
-								<mx:DataGridColumn headerText="Size"
+								<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNLABEL_SIZE')}"
 												   dataField="size"
 												   width="75"
 												   textAlign="right"/>
@@ -525,15 +527,15 @@
 								 verticalAlign="middle"
 								 paddingRight="12">
 							<mx:Button id="btnAdd"
-									   toolTip="Add file(s)"
+									   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
 									   click="addFiles()"
 									   icon="@Embed(source='../../resources/images/add.png')"
-									   label="Browse..."/>
+									   label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"/>
 						</mx:HBox>
 					</mx:HBox>
 					<mx:Label paddingLeft="12"
 							  paddingRight="12"
-							  text="No activity."
+							  text="{resourceManager.getString('myResources','LABEL_UPLOADSTATUS_NOACTIVITY')}"
 							  width="100%"
 							  id="uploadInformationLabel"
 							  fontWeight="bold"/>
@@ -546,12 +548,12 @@
 										labelPlacement="center"
 										width="100%"/>
 						<mx:Button id="btnCancel"
-								   toolTip="Cancel upload"
+								   toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
 								   icon="@Embed(source='../../resources/images/cancel.png')"
 								   width="26"
 								   click="onUploadCanceled()"/>
-						<mx:Button label="Upload"
-								   toolTip="Upload file(s)"
+						<mx:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
+								   toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
 								   id="btnUpload"
 								   click="startUpload()"
 								   enabled="{formIsValid}"
@@ -568,10 +570,10 @@
 						 paddingLeft="8"
 						 paddingRight="8">
 					<mx:Text width="100%"
-							 text="Use the controls in the right to record an exercise using your webcam. You can record as many times as you want and preview the videos before actually saving them in the system."/>
+							 text="{resourceManager.getString('myResources','TEXT_RECORD_VIDEO_UPLOAD')}"/>
 					<mx:Spacer/>
 					<mx:Button id="saveWebcamRecord"
-							   label="Save Recorded Exercise"
+							   label="{resourceManager.getString('myResources','BUTTON_SAVE_STREAMING_UPLOAD')}"
 							   enabled="{recFromWebcamBox.recordingFileName != null  &amp;&amp; !recFromWebcamBox.isRecording}"
 							   click="saveRecordedExercise()"/>
 				</mx:VBox>

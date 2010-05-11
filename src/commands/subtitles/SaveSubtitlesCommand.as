@@ -14,6 +14,8 @@ package commands.subtitles
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class SaveSubtitlesCommand implements ICommand, IResponder
 	{
@@ -27,7 +29,7 @@ package commands.subtitles
 		{
 			//We check if the insert went well by checking the last_insert_id value
 			if (!data.result is int){
-				Alert.show("Your subtitles couldn't be saved properly");
+				CustomAlert.error("Your subtitles couldn't be saved properly");
 			} else {
 				// Add some credits to the user to award the colaboration
 				var loggedUser:int = DataModel.getInstance().loggedUser.id;
@@ -40,7 +42,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			Alert.show("Error while saving your subtitles: \n"+faultEvent.message);
+			CustomAlert.error("Error while saving your subtitles. Try again later.");
 			trace(ObjectUtil.toString(info));
 		}
 		

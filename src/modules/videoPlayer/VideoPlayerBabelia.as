@@ -774,7 +774,7 @@ package modules.videoPlayer
 			_mic.setLoopBack(true);
 			_mic.setSilenceLevel(1,60000);
 			
-			DataModel.getInstance().microphone.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
+			//DataModel.getInstance().microphone.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 			
 			_video.visible=false;
 			_countdownTxt.visible=true;
@@ -817,16 +817,16 @@ package modules.videoPlayer
 				splitVideoPanel();
 				_camVideo.visible=false;
 			}
-
+			
 			if (state & RECORD_FLAG)
 			{
 				_outNs=new NetStream(_nc);
-				_outNs.attachAudio(_mic);
-				muteRecording(true); // mic starts muted
+				//_outNs.attachAudio(_mic);
+				//muteRecording(true); // mic starts muted
 			}
 
-			if (state == RECORD_BOTH_STATE)
-				_outNs.attachCamera(_camera);
+			//if (state == RECORD_BOTH_STATE)
+			//	_outNs.attachCamera(_camera);*/
 
 			disableControls();
 
@@ -850,6 +850,16 @@ package modules.videoPlayer
 				resumeVideo();
 			else
 				playVideo();
+			
+			if (state & RECORD_FLAG)
+			{
+				//_outNs=new NetStream(_nc);
+				_outNs.attachAudio(_mic);
+				muteRecording(true); // mic starts muted
+			}
+			
+			if (state == RECORD_BOTH_STATE)
+				_outNs.attachCamera(_camera);
 
 			_ppBtn.State=PlayButton.PAUSE_STATE;
 

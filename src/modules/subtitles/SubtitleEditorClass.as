@@ -19,7 +19,6 @@ package modules.subtitles
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
-	import view.common.IconComboBox;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
@@ -32,6 +31,9 @@ package modules.subtitles
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
+	
+	import view.common.CustomAlert;
+	import view.common.IconComboBox;
 	
 	import vo.CreditHistoryVO;
 	import vo.CueObject;
@@ -296,7 +298,7 @@ package modules.subtitles
 
 		public function subtitleClearHandler():void
 		{
-			Alert.show(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBTITLE_LINES'), resourceManager.getString('myResources', 'TITLE_CONFIRM_ACTION'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, null, Alert.NO);
+			CustomAlert.confirm(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBTITLE_LINES'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, Alert.NO);
 		}
 
 		private function subtitleClearConfirmation(event:CloseEvent):void
@@ -375,17 +377,17 @@ package modules.subtitles
 					}
 					else
 					{
-						Alert.show(errors, resourceManager.getString('myResources', 'WARNING_SUBTITLE_HAS_ERRORS'));
+						CustomAlert.info(errors);
 					}
 				}
 				else
 				{
-					Alert.show(resourceManager.getString('myResources','WARNING_NOT_MODIFIED_SUBTITLES'), resourceManager.getString('myResources', 'TITLE_INFORMATION_MESSAGE'));
+					CustomAlert.confirm((resourceManager.getString('myResources','WARNING_NOT_MODIFIED_SUBTITLES')),0x4,null,null,0x4);
 				}
 			}
 			else
 			{
-				Alert.show(resourceManager.getString('myResources', 'WARNING_EMPTY_SUBTITLE'), resourceManager.getString('myResources', 'TITLE_INFORMATION_MESSAGE'));
+				CustomAlert.confirm((resourceManager.getString('myResources', 'WARNING_EMPTY_SUBTITLE')),0x4,null,null,0x4);
 			}
 
 		}

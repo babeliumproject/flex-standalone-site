@@ -28,9 +28,11 @@
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.events.SliderEvent;
+			import mx.skins.halo.ButtonSkin;
 			
 			import org.gif.player.GIFPlayer;
 			
+			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
 
 			public var vid:Video;
@@ -46,7 +48,6 @@
 
 			[Bindable]
 			public var myGIFPlayer:GIFPlayer;
-
 
 
 			private var hasera_da:Boolean=new Boolean;
@@ -131,9 +132,6 @@
 				bideoId=bideo_id;
 
 				setup();
-
-				azpi1.setBideoIzena(izena);
-				azpi1.init();
 			}
 
 			public function asyncErrorHandler(event:AsyncErrorEvent):void
@@ -181,32 +179,12 @@
 				var info:Object = event.info;
 				
 				switch(info.code){
-					case "NetConnection.Call.BadVersion":
-						trace("NetConnection Error: Packet encoded in an unidentified format.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
-						break;
-					
-					case "NetConnection.Call.Failed":
-						trace("NetConnection Error: The NetConnection.call method was not able to invoke the server-side method or command.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
-						break;
-					
-					case "NetConnection.Call.Prohibited":
-						trace("NetConnection Error: An Action Message Format (AMF) operation is prevented for security reasons. Either the AMF URL is not in the same domain as the file containing the code calling the NetConnection.call() method, or the AMF server does not have a policy file that trusts the domain of the the file containing the code calling the NetConnection.call() method.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
-						break;
-					
 					case "NetConnection.Connect.Closed":
 						trace("NetConnection Status: The connection was closed successfully.");
 						break;
 					
-					case "NetConnection.Connect.Failed":
-						trace("NetConnection Error: The connection attempt failed.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.","Error");
-						break;
-					
 					case "NetConnection.Connect.Success":
-						trace ("NetConnection Status: The connection attempt succeeded.","Error");
+						trace ("NetConnection Status: The connection attempt succeeded.");
 						
 						ns=new NetStream(nc);
 						ns.play(bideoIzena);
@@ -238,22 +216,10 @@
 						timer.start();
 						
 						break;
-					
-					case "NetConnection.Connect.Rejected":
-						trace("NetConnection Error: The connection attempt did not have permission to access the application.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.");
+					default:
+						trace("NetConnection Error: "+ info.code);
+						CustomAlert.error("Error while connecting to the streaming server. Please try again later.");
 						break;
-					
-					case "NetConnection.Connect.AppShutdown":
-						trace("NetConnection Error: The specified application is shutting down.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.");
-						break;
-					
-					case "NetConnection.Connect.InvalidApp":
-						trace("NetConnection Error: The application name specified during connect is invalid.");
-						Alert.show("Error while connecting to the streaming server. Please try again later.");
-						break;
-					
 				}
 			}
 
@@ -342,9 +308,7 @@
 				seek_barra.value=ns.time
 				bideobarra.label=resourceManager.getString('myResources', 'CURRENTTIME') + ":   " + timeFormatter.format(ns.time) + "/" + timeFormatter.format(iraupena);
 
-				//azpitituluen moduluak ns-a zein segundutan doan jakin behar du, azpitituluak kargatzeko algoritmoak funtzionatzeko.
-				//timerrak gertaera jaurtitzen duen bakoitzean (25ms?) azpitituluen moduluari ns.time eguneratuko zaio
-				azpi1.ns_time=ns.time;
+
 			}
 
 
@@ -353,9 +317,6 @@
 
 				vid.width= 320 * 0.8;
 				vid.height= 240 * 0.8;
-
-				//panel.x=(this.width / 4) - (vid.width / 2)
-				//panel.y=(this.height / 3) - (vid.height / 2) - (this.height / 12)
 
 				// Resize UIComponent to same size as Video object.
 				uic.width=vid.width;
@@ -367,9 +328,6 @@
 				seek_barra.minimum=0;
 				seek_barra.maximum=iraupena;
 				//seek_barra.visible = true
-
-				//azpitituluen labelaren tamaina, bideoarenarekin berdindu.
-				azpi1.testua.width=vid.width;
 
 			}
 
@@ -516,10 +474,6 @@
 						 fontWeight="bold"/>
 			</mx:HBox>
 		</mx:Canvas>
-		<ns1:azpitituluak2 x="51"
-						   y="453"
-						   id="azpi1">
-		</ns1:azpitituluak2>
 		<mx:HBox id="fletxak"
 				 width="100%"
 				 height="35">

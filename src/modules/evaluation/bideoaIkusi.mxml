@@ -17,12 +17,7 @@
 			private static var contentFolder:String = "audio/videoComment";
 	
 			private function init():void
-			{
-				//bideoBat.setBideoIzena("audio/audio-1242656002917.flv",2);
-				bideoBat.azpi1.visible = false;
-				//bideoBat.bideobarra.visible = false;
-				//bideoBat.panel.height = 400;
-				bideoBat.azpi1.hitArea;				
+			{	
 				bideoBat.bideobarra.hitArea;
 				bideoBat.pertsonaiaGorriz.visible = false;
 			}

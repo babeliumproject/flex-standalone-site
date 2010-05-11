@@ -58,7 +58,8 @@
 				  verticalAlign="middle">
 			<mx:HBox horizontalAlign="center"
 					 verticalAlign="middle"
-					 width="100%">
+					 width="100%"
+					 visible="false">
 				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_SUBTITLE_LANGUAGE')}"/>
 				<common:IconComboBox id="languageComboBox"
 										  dataProvider="{flaggedLanguageData}"

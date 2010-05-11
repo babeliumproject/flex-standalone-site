@@ -11,7 +11,11 @@
 				borderAlpha="1"
 				borderStyle="solid"
 				creationComplete="creationCompleteHandler()"
-				title="Privacy Settings">
+				title="{resourceManager.getString('myResources','TITLE_PRIVACY_RIGHTS')}">
+	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 
 	<mx:Script>
 
@@ -162,12 +166,12 @@
 				if (event.code == "Microphone.Muted")
 				{
 					_devicesAllowed = false;
-					privacyRecButton.label="Ok";
+					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_OK');
 				}
 				if (event.code == "Microphone.Unmuted")
 				{
 					_devicesAllowed = true;
-					privacyRecButton.label="Record";
+					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_RECORD');
 				}
 			}
 
@@ -176,12 +180,12 @@
 				if (event.code == "Camera.Muted")
 				{
 					_devicesAllowed = false;
-					privacyRecButton.label="Ok";
+					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_OK');
 				}
 				if (event.code == "Camera.Unmuted")
 				{
 					_devicesAllowed = true;
-					privacyRecButton.label="Record";
+					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_RECORD');
 				}
 			}
 
@@ -211,16 +215,16 @@
 				 width="100%">
 			<mx:HBox>
 				<mx:Text width="100%"
-						 text="Your microphone device couldn't be detected. Please make sure the device is correctly plugged and then click 'Retry' or click 'Cancel' to abort the recording."/>
+						 text="{resourceManager.getString('myResources','TEXT_MIC_NOT_FOUND')}"/>
 				<mx:Image source="resources/images/microphone_error.png"/>
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Button id="micNotFoundErrorRetryButton"
-						   label="Retry"
+						   label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
 						   click="initDevices()"/>
 
 				<mx:Button id="micNotFoundErrorCancelButton"
-						   label="Cancel"
+						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 						   click="cancelButtonClickHandler(event)"/>
 			</mx:HBox>
 		</mx:VBox>
@@ -230,15 +234,15 @@
 			<mx:HBox width="100%"
 					 verticalAlign="middle">
 				<mx:Text width="100%"
-						 text="Your camera device couldn't be detected. Please make sure the device is correctly plugged and then click 'Retry' or click 'Cancel' to abort the recording."/>
+						 text="{resourceManager.getString('myResources','TEXT_CAMERA_NOT_FOUND')}"/>
 				<mx:Image source="resources/images/webcam_error.png"/>
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Button id="camNotFoundErrorRetryButton"
-						   label="Retry"
+						   label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
 						   click="initDevices()"/>
 				<mx:Button id="camNotFoundErrorCancelButton"
-						   label="Cancel"
+						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 						   click="cancelButtonClickHandler(event)"/>
 			</mx:HBox>
 		</mx:VBox>
@@ -246,9 +250,9 @@
 		<mx:VBox id="adminError"
 				 width="100%">
 			<mx:Text width="100%"
-					 text="An administrative rule forbids the access to camera and microphone. Please contact your system administrator."/>
+					 text="{resourceManager.getString('myResources','TEXT_ADMINISTRATIVELY_DISABLED')}"/>
 			<mx:Button id="adminErrorButton"
-					   label="Ok"
+					   label="{resourceManager.getString('myResources','BUTTON_OK')}"
 					   click="cancelButtonClickHandler(event)"/>
 		</mx:VBox>
 
@@ -257,16 +261,16 @@
 			<mx:HBox width="100%"
 					 verticalAlign="middle">
 				<mx:Text width="100%"
-						 text="Please click 'Allow' when you see this window. Also click on 'Remember' to skip this step the next time you want to record something."/>
+						 text="{resourceManager.getString('myResources','TEXT_PRIVACY_RIGHTS_EXPLAIN')}"/>
 				<mx:Image source="resources/images/privacy_settings.png"/>
 			</mx:HBox>
 			<mx:HBox width="100%"
 					 horizontalAlign="left">
 				<mx:Button id="privacyRecButton"
-						   label="Ok"
+						   label="{resourceManager.getString('myResources','BUTTON_OK')}"
 						   click="okButtonClickHandler(event)"/>
 				<mx:Button id="privacyCancelButton"
-						   label="Cancel"
+						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 						   click="cancelButtonClickHandler(event)"/>
 			</mx:HBox>
 		</mx:VBox>

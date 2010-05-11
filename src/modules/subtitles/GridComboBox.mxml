@@ -3,12 +3,18 @@
 			 dataChange="setSelected()"
 			 change="onSelectionChange(event)"
 			 itemRenderer="modules.subtitles.GridComboBoxItemRenderer">
+	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridListData;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
+			
+			import view.common.CustomAlert;
 			
 			import vo.RoleComboDataVO;
 
@@ -155,7 +161,7 @@
 					else if (selectedItem[_actionField] == _actionDoNothingItem)
 					{
 						//Do nothing
-						Alert.show("You must select a role to delete");
+						CustomAlert.info(resourceManager.getString('myResources','MESSAGE_SELECT_ROL_TO_DELETE'));
 					}
 				}
 			}
@@ -172,7 +178,7 @@
 			{
 
 				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(parent, NewRolePopUp, true));
-				newRolePopUp.title="Insert a new Role";
+				newRolePopUp.title=resourceManager.getString('myResources','TITLE_INSERT_NEW_ROL');
 				newRolePopUp.showCloseButton=true;
 				PopUpManager.centerPopUp(newRolePopUp);
 
@@ -194,7 +200,7 @@
 					if (dp[_valueField].toLowerCase() == newRoleName.toLowerCase())
 					{
 						roleExists=true;
-						newRolePopUp.errorInfo.text="That role already exists!";
+						newRolePopUp.errorInfo.text=resourceManager.getString('myResources','MESSAGE_ROLE_ALREADY_EXISTS');
 					}
 					if (dp[_lookupField] > maxRoleId)
 						maxRoleId=dp[_lookupField];
