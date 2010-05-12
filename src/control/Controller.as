@@ -10,8 +10,16 @@ package control {
 	import commands.autoevaluation.EnableAutoevaluationExerciseCommand;
 	import commands.autoevaluation.EnableAutoevaluationResponseCommand;
 	import commands.configuration.ViewConfigurationModuleCommand;
+	import commands.evaluation.AddAssessmentCommand;
 	import commands.evaluation.AddCreditEntryEvaluatingCommand;
 	import commands.evaluation.AddCreditsForEvaluatingCommand;
+	import commands.evaluation.AddVideoAssessmentCommand;
+	import commands.evaluation.DetailsOfAssessedResponseCommand;
+	import commands.evaluation.GetEvaluationChartDataCommand;
+	import commands.evaluation.GetResponsesAssessedByCurrentUserCommand;
+	import commands.evaluation.GetResponsesAssessedToCurrentUserCommand;
+	import commands.evaluation.GetResponsesWaitingAssessmentCommand;
+	import commands.evaluation.UpdateResponseRatingAmountCommand;
 	import commands.evaluation.ViewEvaluationModuleCommand;
 	import commands.evaluation.ViewEvaluationSignedInCommand;
 	import commands.evaluation.ViewEvaluationUnsignedCommand;
@@ -177,26 +185,34 @@ package control {
 			addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
 			addCommand(ExerciseEvent.USER_REPORTED_EXERCISE, UserReportedExerciseCommand);
 			
-			//Response management commands
-			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
-			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
-
-			
-			//Roles management commands
-			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
-
-
-			//Subtitle management commands
-			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
-			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
-
 			//Evaluation management commands
+			addCommand(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT, GetResponsesWaitingAssessmentCommand);
+			addCommand(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER, GetResponsesAssessedToCurrentUserCommand);
+			addCommand(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER, GetResponsesAssessedByCurrentUserCommand);
+			addCommand(EvaluationEvent.ADD_ASSESSMENT, AddAssessmentCommand);
+			addCommand(EvaluationEvent.ADD_VIDEO_ASSESSMENT, AddVideoAssessmentCommand);
+			addCommand(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, DetailsOfAssessedResponseCommand);
+			addCommand(EvaluationEvent.UPDATE_RESPONSE_RATING_AMOUNT, UpdateResponseRatingAmountCommand);
+			addCommand(EvaluationEvent.GET_EVALUATION_CHART_DATA, GetEvaluationChartDataCommand);
+			
+			//Autoevaluation management commands
 			addCommand(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, AutoEvaluateCommand);
 			addCommand(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_EXERCISE, EnableAutoevaluationExerciseCommand);
 			addCommand(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, EnableAutoevaluationResponseCommand);
 			addCommand(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_EXERCISE, CheckAutoevaluationSupportExerciseCommand);
 			addCommand(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, CheckAutoevaluationSupportResponseCommand);
-		
+			
+			//Response management commands
+			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
+			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
+			
+			//Roles management commands
+			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
+
+			//Subtitle management commands
+			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
+			
 			// Video stop after tab changing
 			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);
 			

@@ -7,7 +7,7 @@
 		 verticalAlign="middle"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 fontFamily="Arial"
-		 creationComplete="init()">
+		 creationComplete="completeHandler()">
 
 	<mx:Image id="thumbnail"
 			  scaleContent="true"
@@ -67,18 +67,9 @@
 			import vo.SubtitleAndSubtitleLinesVO;
 			private var _data:Object;
 
-			public function init():void
+			public function completeHandler():void
 			{
 				_data=data;
-				var temp:ExerciseVO=_data as ExerciseVO;
-				if (temp.language == "Basque")
-					exerciseLanguage.source="resources/images/flags/flag_basque_country.png";
-				else if (temp.language == "Spanish")
-					exerciseLanguage.source="resources/images/flags/flag_spain.png";
-				else if (temp.language == "English")
-					exerciseLanguage.source="resources/images/flags/flag_united_kingdom.png";
-				else if (temp.language == "France")
-					exerciseLanguage.source="resources/images/flags/flag_france.png";
 			}
 
 			private function imageClickHandler(event:MouseEvent):void

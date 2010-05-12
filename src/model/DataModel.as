@@ -144,6 +144,22 @@ package model
 		[Bindable] public var availableSubtitleLinesRetrieved: Boolean = false;
 		[Bindable] public var availableSubtitleLines:ArrayCollection = new ArrayCollection();
 		[Bindable] public var unmodifiedAvailableSubtitleLines:ArrayCollection = new ArrayCollection();
+		
+		//Evaluation module data
+		[Bindable] public var evaluationChartData:ArrayCollection;
+		[Bindable] public var evaluationChartDataRetrieved:Boolean = false;
+		
+		[Bindable] public var waitingForAssessmentData:ArrayCollection;
+		[Bindable] public var waitingForAssessmentDataRetrieved:Boolean = false;
+		
+		[Bindable] public var assessedToCurrentUserData:ArrayCollection;
+		[Bindable] public var assessedToCurrentUserDataRetrieved:Boolean = false;
+		
+		[Bindable] public var assessedByCurrentUserData:ArrayCollection;
+		[Bindable] public var assessedByCurrentUserDataRetrieved:Boolean = false;
+		
+		[Bindable] public var detailsOfAssessedResponseData:ArrayCollection;
+		[Bindable] public var detailsOfAssessedResponseDataRetrieved:Boolean = false;
 
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;

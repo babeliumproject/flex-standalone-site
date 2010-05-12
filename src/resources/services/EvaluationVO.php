@@ -34,6 +34,8 @@ class EvaluationVO{
 	public $responseCharacterName;
 	public $responseRatingAmount;
 	public $responseAddingDate;
+	public $responseUserId;
+	public $responseUserName;
 	
 	public $userName;
 	

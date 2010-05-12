@@ -16,13 +16,14 @@ package commands.evaluation
 	
 	import view.common.CustomAlert;
 	
-	public class GetResponsesAssessedByCurrentUserCommand implements ICommand, IResponder
+	public class GetEvaluationChartDataCommand implements ICommand, IResponder
 	{
+		
 		private var dataModel:DataModel = DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getResponsesAssessedByCurrentUser((event as EvaluationEvent).userId);
+			new EvaluationDelegate(this).getEvaluationChartData((event as EvaluationEvent).responseId);
 		}
 		
 		public function result(data:Object):void
@@ -34,17 +35,17 @@ package commands.evaluation
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.assessedByCurrentUserData = resultCollection;
+				dataModel.evaluationChartData = resultCollection;
 			} else {
-				dataModel.assessedByCurrentUserData.removeAll();
+				dataModel.evaluationChartData.removeAll();
 			}
-			dataModel.assessedByCurrentUserDataRetrieved = !dataModel.assessedByCurrentUserDataRetrieved;
+			dataModel.evaluationChartDataRetrieved = !dataModel.evaluationChartDataRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error("Error while retrieving the responses you assessed.");
+			CustomAlert.error("Error while trying to get the chart data. Please try again later.");
 		}
 	}
 }

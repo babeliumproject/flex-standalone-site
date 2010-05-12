@@ -18,47 +18,52 @@ package business
 			this.responder = responder;
 		}
 		
-		public function getResponsesWaitingAssessment(requestData:EvaluationVO):void
+		public function getResponsesWaitingAssessment(userId:int):void
 		{
-			var userId:int = requestData.userId;
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.baloratuGabekoak(userId);
+			var pendingCall:AsyncToken=service.getResponsesWaitingAssessment(userId);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function getResponsesAssessedToCurrentUser(userId:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.norberariEpaitutakoak(userId);
+			var pendingCall:AsyncToken=service.getResponsesAssessedToCurrentUser(userId);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function getResponsesAssessedByCurrentUser(userId:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.nikEpaitutakoak(userId);
+			var pendingCall:AsyncToken=service.getResponsesAssessedByCurrentUser(userId);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function addAssessment(assessment:EvaluationVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.insertEpaiketa(assessment);
+			var pendingCall:AsyncToken=service.addAssessment(assessment);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function addVideoAssessment(assessment:EvaluationVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.insertVideoEpaiketa(assessment);
+			var pendingCall:AsyncToken=service.addVideoAssessment(assessment);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function detailsOfAssessedResponse(responseId:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.epaitutakoGrabaketa(responseId);
+			var pendingCall:AsyncToken=service.detailsOfAssessedResponse(responseId);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function updateResponseRatingAmount():void{
+		public function updateResponseRatingAmount(responseId:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.updateGrabaketa();
+			var pendingCall:AsyncToken=service.updateResponseRatingAmount(responseId);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function getEvaluationChartData(responseId:int):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
+			var pendingCall:AsyncToken=service.getEvaluationChartData(responseId);
 			pendingCall.addResponder(responder);
 		}
 	}

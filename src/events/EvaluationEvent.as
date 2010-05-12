@@ -17,6 +17,8 @@ package events {
 		public static const DETAILS_OF_ASSESSED_RESPONSE:String="detailsOfAssessedResponse";
 		public static const UPDATE_RESPONSE_RATING_AMOUNT:String="updateResponseRatingAmount";
 		
+		public static const GET_EVALUATION_CHART_DATA:String = "getEvaluationChartData";
+		
 
 		public static const AUTOMATIC_EVAL_RESULTS:String = "automaticEvalResults";
 
@@ -26,15 +28,19 @@ package events {
 		public static const CHECK_AUTOEVALUATION_SUPPORT_EXERCISE:String = "checkAutoevaluationSupportExercise";
 		public static const CHECK_AUTOEVALUATION_SUPPORT_RESPONSE:String = "checkAutoevaluationSupportResponse";
 		
-		public var requestData:EvaluationVO;
+		public var evaluation:EvaluationVO;
+		public var userId:int;
+		public var responseId:int;
 
-		public function EvaluationEvent(type:String, requestData:EvaluationVO = null) {
+		public function EvaluationEvent(type:String, evaluation:EvaluationVO = null, userId:int = 0, responseId:int = 0) {
 			super(type);
-			this.requestData = requestData;
+			this.evaluation = evaluation;
+			this.userId = userId;
+			this.responseId = responseId;
 		}
 
 		override public function clone():Event {
-			return new EvaluationEvent(type, requestData);
+			return new EvaluationEvent(type, evaluation, userId, responseId);
 		}
 	}
 }

@@ -33,7 +33,7 @@
 			import vo.EvaluationVO;
 			
 			
-			private var ep:Epai=new Epai;
+			private var ep:Epai;
 			private var ev:EvaluationVO;
 			
 			private var _exerciseId:int;
@@ -43,12 +43,7 @@
 			private var _responseName:String;
 			private var _responseCharacterName:String="";
 			
-			private var _userId:int;
-			
-			
-			
-			
-			
+			private var _userId:int;		
 			
 			private var biakBatera:Boolean=false;
 			
@@ -82,77 +77,19 @@
 			
 			private var userLoggedIn:Boolean=false;
 			
-			
-			private function set onUserAuthenticated(value:Boolean):void
-			{
-				if (DataModel.getInstance().isLoggedIn == true)
-				{
-					userLoggedIn=true;
-					_userId=DataModel.getInstance().loggedUser.id;
-					epaiketaDat.baloratuGabekoak.send(_userId);
-					epaiketaDat.norberariEpaitutakoak.send(_userId);
-					epaiketaDat.nikEpaitutakoak.send(_userId);
-				}
-			}
-			
-			private function set onUserDeauthenticated(value:Boolean):void
-			{
-				if (DataModel.getInstance().isLoggedIn == false)
-				{
-					userLoggedIn=false;
-					ratingBox.visible=false;
-					epaitutakoDetail.visible=false;
-					
-					responsePlayer.seek_denb.visible=false;
-					responsePlayer.botoiak.enabled=false;
-					
-					exercisePlayer.visible=false;
-					responsePlayer.visible=false;
-					selectEvaluationMessage.visible=true;
-					watchSimultaneouslyBox.visible=false;
-					
-					oraingoTab="hasiera";
-					
-					assessmentDetailList=new ArrayCollection();
-					tn2.visible=false;
-					evaluationOptionsViewStack.selectedIndex=0;
-					
-				}
-			}
-			
-			private function set onTabChange(value:Boolean):void
-			{
-				
-				ratingBox.visible=false;
-				epaitutakoDetail.visible=false;
-				
-				responsePlayer.seek_denb.visible=false;
-				responsePlayer.botoiak.enabled=false;
-				
-				exercisePlayer.visible=false;
-				responsePlayer.visible=false;
-				selectEvaluationMessage.visible=true;
-				watchSimultaneouslyBox.visible=false;
-				
-				oraingoTab="hasiera";
-				
-				waitingAssessmentDataGrid.selectedItem=null;
-				assessedByCurrentUserDataGrid.selectedItem=null;
-				assessedToCurrentUserDataGrid.selectedItem=null;
-				
-			}
+			[Bindable]
+			private var dataModel:DataModel = DataModel.getInstance();
 			
 			public function completeHandler():void
 			{
 				timeFormatter.outputMilliseconds=false;
 				
-				//Grab tab data
-				if (DataModel.getInstance().isLoggedIn)
+				if (dataModel.isLoggedIn)
 				{
-					_userId=DataModel.getInstance().loggedUser.id;
-					epaiketaDat.baloratuGabekoak.send(_userId);
-					epaiketaDat.norberariEpaitutakoak.send(_userId);
-					epaiketaDat.nikEpaitutakoak.send(_userId);
+					_userId=dataModel.loggedUser.id;
+					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT,null,_userId).dispatch();
+					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER, null, _userId).dispatch();
+					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER, null, _userId).dispatch();
 				}
 				
 				exercisePlayer.setup();
@@ -160,7 +97,32 @@
 				responsePlayer.botoiak.enabled=false;
 			}
 			
-			//Epaiketari dagokion "bidali" botoia sakatzean exekutatuko den funtzioa
+			private function set waitingAssessmentRetrievedHandler(value:Boolean):void{
+				var waDataprovider:ArrayCollection = dataModel.waitingForAssessmentData;
+				waitingAssessmentDataGrid.rowCount = waDataprovider.length;
+				waitingAssessmentDataGrid.dataProvider = waDataprovider;
+			}
+			
+			private function set assessedByCurrentUserRetrievedHandler(value:Boolean):void{
+				var abcuDataprovider:ArrayCollection = dataModel.assessedByCurrentUserData;
+				assessedByCurrentUserDataGrid.rowCount = abcuDataprovider.length;
+				assessedByCurrentUserDataGrid.dataProvider = abcuDataprovider;
+			}
+			
+			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void{
+				var atcuDataprovider:ArrayCollection = dataModel.assessedToCurrentUserData;
+				assessedToCurrentUserDataGrid.rowCount = atcuDataprovider.length;
+				assessedToCurrentUserDataGrid.dataProvider = atcuDataprovider;
+			}
+			
+			private function set detailsOfAssessmentRetrievedHandler(value:Boolean):void{
+				var doaDataprovider:ArrayCollection = dataModel.detailsOfAssessedResponseData;
+				//detailsOfAssessmentDataGrid.rowCount = doaDataprovider.length;
+				//detailsOfAssessmentDataGrid.dataProvider = doaDataprovider;
+			}
+			
+			
+			
 			private function sendAssessmentClickHandler():void
 			{
 				if ((ratingRadioGroup.selectedValue) && (commentsTextArea.text != ""))
@@ -259,7 +221,7 @@
 			private function bideoaGehituta(event:AddVideoEvent):void
 			{
 				addVideoCommentButton.visible=false;
-				izenb.visible=true;
+				addVideoCommentLabel.visible=true;
 				videoCommentCheckBox.visible=true;
 				videoCommentCheckBox.label=event.bideoIzena.toString();
 				_videoCommentName=event.bideoIzena.toString();
@@ -396,34 +358,28 @@
 					oraingoTab="epaituGabe";
 				}
 				
-				if (DataModel.getInstance().isLoggedIn)
-				{
-					ratingBox.visible=true;
-				}
-				ep=Epai(DataGrid(event.target).selectedItem);
-				_exerciseId=ep.exerciseId;
-				exercisePlayer.setBideoIzena(ep.Kodea, ep.exerciseId);
+				var selectedItem:EvaluationVO = (DataGrid(event.target).selectedItem) as EvaluationVO;
+				_exerciseId = selectedItem.exerciseId;
+				_exerciseName = selectedItem.exerciseName;
+				_responseCharacterName = selectedItem.responseCharacterName;
+				_responseId = selectedItem.responseId;
+				_responseName = selectedItem.responseFileIdentifier;
+				
+				exercisePlayer.setBideoIzena(_exerciseName, _exerciseId);
 				exercisePlayer.ezabatuFletxak();
-				exercisePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				exercisePlayer.setRolAukeratua(_responseCharacterName);
 				
-				
-				responsePlayer.setBideoIzena(ep.Id, 1);
+				responsePlayer.setBideoIzena(_responseName, _responseId);
 				responsePlayer.ezabatuFletxak();
-				responsePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
-				
-				_responseCharacterName=ep.AukeratutakoPertsonaia;
+				responsePlayer.setRolAukeratua(_responseCharacterName);
 				
 				responsePlayer.seek_denb.visible=false;
-				sendAssessmentButton.enabled=false;
 				
+				ratingBox.visible=true;
 				addVideoCommentButton.visible=true;
-				izenb.visible=false;
+				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
-				
-				
-				_exerciseName=ep.Kodea;
-				_responseName=ep.Id;
-				_responseId=parseInt(ep.response_id);
+				sendAssessmentButton.enabled=false;
 				
 				var urlResponseName:String=_responseName.replace("audio/", "");
 				
@@ -449,31 +405,29 @@
 					responsePlayer.seek_denb.visible=true;
 					responsePlayer.botoiak.enabled=true;
 				}
-				;
-				ev=EvaluationVO(DataGrid(event.target).selectedItem);
 				
-				exercisePlayer.setBideoIzena(ev.exerciseName, 1);
+				var selectedItem:EvaluationVO = (DataGrid(event.target).selectedItem) as EvaluationVO;
+				_exerciseId = selectedItem.exerciseId;
+				_exerciseName = selectedItem.exerciseName;
+				_responseCharacterName = selectedItem.responseCharacterName;
+				_responseId = selectedItem.responseId;
+				_responseName = selectedItem.responseFileIdentifier;
+				
+				exercisePlayer.setBideoIzena(_exerciseName, _exerciseId);
 				exercisePlayer.ezabatuFletxak();
-				exercisePlayer.setRolAukeratua(ev.responseCharacterName);
+				exercisePlayer.setRolAukeratua(_responseCharacterName);
 				
-				responsePlayer.setBideoIzena(ev.responseFileIdentifier, 1);
+				responsePlayer.setBideoIzena(_responseName, _responseId);
 				responsePlayer.ezabatuFletxak();
-				responsePlayer.setRolAukeratua(ev.responseCharacterName);
-				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + ev.evaluationAverage;
+				responsePlayer.setRolAukeratua(_responseCharacterName);
+				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.evaluationAverage;
 				
-				_responseCharacterName=ev.responseCharacterName;
 				
 				addVideoCommentButton.visible=true;
-				izenb.visible=false;
+				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
 				
-				
-				_exerciseName=ev.exerciseName;
-				_responseName=ev.responseFileIdentifier;
-				
-				_responseId=ev.responseId;
-				
-				epaiketaDat.epaitutakoGrabaketa.send(_responseId);
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE,null,0,_responseId).dispatch();
 				
 				//Get the autoevaluation info if available
 				autoevalPanel.setResponseID(_responseId);
@@ -481,19 +435,6 @@
 				var urlResponseName:String=_responseName.replace("audio/", "");
 				
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
-			}
-			
-			//ea hasierako egoeran dagoen kontrolatzen du
-			private function frogatu(egoeraBerria:String):void
-			{
-				if (oraingoTab == "hasiera")
-				{
-					exercisePlayer.visible=true;
-					responsePlayer.visible=true;
-					watchSimultaneouslyBox.visible=true;
-					selectEvaluationMessage.visible=false;
-					oraingoTab=egoeraBerria;
-				}
 			}
 			
 			private function assessedByCurrentUserChangeHandler(event:Event):void
@@ -517,29 +458,54 @@
 					responsePlayer.botoiak.enabled=true;
 				}
 				
-				ep=Epai(DataGrid(event.target).selectedItem);
+				var selectedItem:EvaluationVO = (DataGrid(event.target).selectedItem) as EvaluationVO;
+				_exerciseId = selectedItem.exerciseId;
+				_exerciseName = selectedItem.exerciseName;
+				_responseCharacterName = selectedItem.responseCharacterName;
+				_responseId = selectedItem.responseId;
+				_responseName = selectedItem.responseFileIdentifier;
 				
-				exercisePlayer.setBideoIzena(ep.Kodea, 1);
+				exercisePlayer.setBideoIzena(_exerciseName, _exerciseId);
 				exercisePlayer.ezabatuFletxak();
-				exercisePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
+				exercisePlayer.setRolAukeratua(_responseCharacterName);
 				
-				responsePlayer.setBideoIzena(ep.Id, 1);
+				responsePlayer.setBideoIzena(_responseName, _responseId);
 				responsePlayer.ezabatuFletxak();
-				responsePlayer.setRolAukeratua(ep.AukeratutakoPertsonaia);
-				
-				_responseCharacterName=ep.AukeratutakoPertsonaia;
+				responsePlayer.setRolAukeratua(_responseCharacterName);
 				
 				addVideoCommentButton.visible=true;
-				izenb.visible=false;
+				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
-				
-				
-				_exerciseName=ep.Kodea;
-				_responseName=ep.Id;
 				
 				var urlResponseName:String=_responseName.replace("audio/", "");
 				
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
+			}
+			
+			private function assessmentDetailChangeHandler(event:Event):void
+			{
+				var selectedItem:EvaluationVO = (DataGrid(event.target).selectedItem) as EvaluationVO;
+				if (selectedItem.evaluationVideoFileIdentifier)
+				{
+					_videoCommentName = selectedItem.evaluationVideoFileIdentifier;
+					var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
+					PopUpManager.centerPopUp(bideoIruzkin);
+					assessmentDetailDataGrid.selectedItem=null;
+					bideoIruzkin.setBideoIzena(_videoCommentName);
+				}
+			}
+			
+			//ea hasierako egoeran dagoen kontrolatzen du
+			private function frogatu(egoeraBerria:String):void
+			{
+				if (oraingoTab == "hasiera")
+				{
+					exercisePlayer.visible=true;
+					responsePlayer.visible=true;
+					watchSimultaneouslyBox.visible=true;
+					selectEvaluationMessage.visible=false;
+					oraingoTab=egoeraBerria;
+				}
 			}
 			
 			private function onAddCuepoint(event:AddCuepointEvent):void
@@ -559,22 +525,7 @@
 				}
 			}
 			
-			private function assessmentDetailChangeHandler(event:Event):void
-			{
-				if (ep.BideoIruzkina)
-				{
-					ep=Epai(DataGrid(event.target).selectedItem);
-					
-					if (ep.BideoIruzkina.toString() != "")
-					{
-						var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
-						PopUpManager.centerPopUp(bideoIruzkin);
-						assessmentDetailDataGrid.selectedItem=null;
-						
-						bideoIruzkin.setBideoIzena(ep.BideoIruzkina.toString());
-					}
-				}
-			}
+
 			
 			private function set showAutoevalTab(val:Boolean):void
 			{
@@ -609,6 +560,65 @@
 						assessedByCurrentUserDataGrid.rowCount=assessedByCurrentUserList.length;
 						break;
 				}
+			}
+			
+			private function set onUserAuthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+				{
+					userLoggedIn=true;
+					_userId=DataModel.getInstance().loggedUser.id;
+					epaiketaDat.baloratuGabekoak.send(_userId);
+					epaiketaDat.norberariEpaitutakoak.send(_userId);
+					epaiketaDat.nikEpaitutakoak.send(_userId);
+				}
+			}
+			
+			private function set onUserDeauthenticated(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == false)
+				{
+					userLoggedIn=false;
+					ratingBox.visible=false;
+					epaitutakoDetail.visible=false;
+					
+					responsePlayer.seek_denb.visible=false;
+					responsePlayer.botoiak.enabled=false;
+					
+					exercisePlayer.visible=false;
+					responsePlayer.visible=false;
+					selectEvaluationMessage.visible=true;
+					watchSimultaneouslyBox.visible=false;
+					
+					oraingoTab="hasiera";
+					
+					assessmentDetailList=new ArrayCollection();
+					tn2.visible=false;
+					evaluationOptionsViewStack.selectedIndex=0;
+					
+				}
+			}
+			
+			private function set onTabChange(value:Boolean):void
+			{
+				
+				ratingBox.visible=false;
+				epaitutakoDetail.visible=false;
+				
+				responsePlayer.seek_denb.visible=false;
+				responsePlayer.botoiak.enabled=false;
+				
+				exercisePlayer.visible=false;
+				responsePlayer.visible=false;
+				selectEvaluationMessage.visible=true;
+				watchSimultaneouslyBox.visible=false;
+				
+				oraingoTab="hasiera";
+				
+				waitingAssessmentDataGrid.selectedItem=null;
+				assessedByCurrentUserDataGrid.selectedItem=null;
+				assessedToCurrentUserDataGrid.selectedItem=null;
+				
 			}
 			
 			private function set onURLChange(value:Object):void
@@ -730,6 +740,16 @@
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 	
+	<mx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
+				destination="waitingAssessmentRetrievedHandler"/>
+	<mx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
+				destination="assessedToCurrentUserRetrievedHandler"/>
+	<mx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
+				destination="assessedByCurrentUserRetrievedHandler"/>
+	<mx:Binding source="{dataModel.detailsOfAssessedResponseDataRetrieved}"
+				destination="detailsOfAssessmentRetrievedHandler"/>
+	
+	
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 	
@@ -837,7 +857,7 @@
 							 change="waitingAssessmentChangeHandler(event)">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-										   dataField="Kodea"
+										   dataField="exerciseThumbnailUri"
 										   width="{120*0.8}">
 							<mx:itemRenderer>
 								<mx:Component>
@@ -845,25 +865,22 @@
 										<mx:Image id="albumImage"
 												  height="{90*0.8}"
 												  width="{120*0.8}"
-												  source="resources/images/thumbs/{data.Kodea}.jpg"/>
+												  source="resources/images/thumbs/{data.exerciseThumbnailUri}.jpg"/>
 									</mx:VBox>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
-										   dataField="Jabea"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
-										   dataField="Id"
-										   visible="false"/>
+										   dataField="responseUserName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="Iraupena"/>
+										   dataField="responseDuration"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-										   dataField="Baloraturik"/>
+										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-										   dataField="AukeratutakoPertsonaia"
+										   dataField="responseCharacterName"
 										   visible="false"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-										   dataField="Data"/>
+										   dataField="responseAddingDate"/>
 					</mx:columns>
 				</mx:DataGrid>
 				
@@ -910,7 +927,7 @@
 						<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
 								   click="addVideoComment()"
 								   id="addVideoCommentButton"/>
-						<mx:Label id="izenb"
+						<mx:Label id="addVideoCommentLabel"
 								  text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}"
 								  visible="false"/>
 						<mx:CheckBox id="videoCommentCheckBox"
@@ -996,13 +1013,13 @@
 										 width="100%">
 								<mx:columns>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
-													   dataField="Epailea"/>
+													   dataField="userName"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-													   dataField="Balorazioa"/>
+													   dataField="score"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-													   dataField="Data"/>
+													   dataField="addingDate"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
-													   dataField="Iruzkinak"
+													   dataField="comment"
 													   width="160">
 										<mx:itemRenderer>
 											<mx:Component>
@@ -1010,7 +1027,7 @@
 													<mx:TextArea id="textua"
 																 backgroundColor="#ffffff"
 																 height="100"
-																 text="{data.Iruzkinak}"
+																 text="{data.comment}"
 																 editable="false"
 																 width="160"/>
 												</mx:VBox>
@@ -1018,7 +1035,7 @@
 										</mx:itemRenderer>
 									</mx:DataGridColumn>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
-													   dataField="BideoIruzkina"/>
+													   dataField="evaluationVideoFileIdentifier"/>
 								</mx:columns>
 							</mx:DataGrid>
 						</mx:VBox>
@@ -1040,7 +1057,7 @@
 							 verticalScrollPolicy="off">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-										   dataField="Kodea"
+										   dataField="exerciseThumbnailUri"
 										   width="{120*0.8}">
 							<mx:itemRenderer>
 								<mx:Component>
@@ -1048,20 +1065,19 @@
 										<mx:Image id="albumImageNorb"
 												  height="{90*0.8}"
 												  width="{120*0.8}"
-												  source="resources/images/thumbs/{data.Kodea}.jpg"/>
+												  source="resources/images/thumbs/{data.exerciseThumbnailUri}.jpg"/>
 									</mx:VBox>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
-										   dataField="Id"/>
+										   dataField="userName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="Iraupena"/>
+										   dataField="responseDuration"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-										   dataField="Baloraturik"/>
+										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-										   dataField="AukeratutakoPertsonaia"
-										   visible="true"/>
+										   dataField="responseCharacterName"/>
 					</mx:columns>
 				</mx:DataGrid>
 			</mx:VBox>
