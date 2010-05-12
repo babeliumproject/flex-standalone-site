@@ -37,7 +37,7 @@ package commands.evaluation
 				//Set the data in the application's model
 				dataModel.evaluationChartData = resultCollection;
 			} else {
-				dataModel.evaluationChartData.removeAll();
+				dataModel.evaluationChartData = new ArrayCollection();
 			}
 			dataModel.evaluationChartDataRetrieved = !dataModel.evaluationChartDataRetrieved;
 		}

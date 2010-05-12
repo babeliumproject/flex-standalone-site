@@ -277,7 +277,7 @@
 
 		<mx:VBox id="micSoundTest"
 				 width="100%">
-			<mx:Text text="This test will ensure that your microphone works as excepted and has the minimum required volume to record an exercise"/>
+			<mx:Text text="{resourceManager.getString('myResources','TEXT_MIC_TEST_EXPLAIN')}"/>
 		</mx:VBox>
 
 	</mx:ViewStack>

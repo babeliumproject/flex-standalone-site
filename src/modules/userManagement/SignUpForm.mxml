@@ -238,7 +238,7 @@
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 
-	<mx:Label text="Sign up on Babelium Project"
+	<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
 			  fontSize="18"
 			  fontWeight="bold"/>
 	<mx:Label id="errorInfo"
@@ -257,7 +257,7 @@
 				 width="100%"
 				 borderThickness="2"
 				 labelWidth="200">
-			<mx:FormItem label="User Name:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
 						 fontWeight="bold"
 						 required="true">
 				<mx:HBox>
@@ -269,7 +269,7 @@
 				</mx:HBox>
 
 			</mx:FormItem>
-			<mx:FormItem label="eMail:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_EMAIL')}"
 						 fontWeight="bold"
 						 required="true">
 				<mx:HBox>
@@ -280,7 +280,7 @@
 								  focusOut="validateTextInput(email,'EMAIL',mailPattern, false, false)"/>
 				</mx:HBox>
 			</mx:FormItem>
-			<mx:FormItem label="Password:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
 						 fontWeight="bold"
 						 required="true">
 				<mx:HBox>
@@ -293,7 +293,7 @@
 				</mx:HBox>
 
 			</mx:FormItem>
-			<mx:FormItem label="Re-enter password:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REPASSWORD')}"
 						 fontWeight="bold"
 						 required="true"
 						 borderStyle="none">
@@ -308,12 +308,12 @@
 
 			</mx:FormItem>
 			<mx:Spacer/>
-			<mx:FormItem label="Real Name:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
 						 fontWeight="bold">
 				<mx:TextInput id="realName"
 							  width="100%"/>
 			</mx:FormItem>
-			<mx:FormItem label="Real Surname:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
 						 fontWeight="bold">
 				<mx:TextInput id="surname"
 							  width="100%"/>
@@ -322,9 +322,9 @@
 		<mx:Form borderStyle="solid"
 				 width="100%"
 				 borderThickness="2">
-			<mx:Label text="Tell us which is your main language or mother tongue"/>
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_MAIN_LANGUAGE')}"/>
 			<mx:Spacer/>
-			<mx:FormItem label="First Language (Mother Tongue):"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
 						 fontWeight="bold"
 						 required="true">
 				<mx:HBox>
@@ -332,7 +332,7 @@
 					</mx:VBox>
 					<mx:LinkButton id="addAnotherMotherLang"
 								   click="addAnotherMotherLang_clickHandler(event)"
-								   label="Add another"
+								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 								   textDecoration="underline"
 								   paddingLeft="6"
 								   paddingRight="6"
@@ -340,16 +340,16 @@
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:Spacer/>
-			<mx:Label text="Do you know any other language with enough level to assess other peoples' pronouncing etc.?"/>
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_OTHER_LANGUAGE')}"/>
 			<mx:Spacer/>
-			<mx:FormItem label="Other Languages:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
 						 fontWeight="bold">
 				<mx:HBox>
 					<mx:VBox id="knownLanguagesBox">
 					</mx:VBox>
 					<mx:LinkButton id="addAnotherKnownLang"
 								   click="addAnotherKnownLang_clickHandler(event)"
-								   label="Add another"
+								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 								   textDecoration="underline"
 								   paddingLeft="6"
 								   paddingRight="6"
@@ -357,16 +357,16 @@
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:Spacer/>
-			<mx:Label text="Which languages would you like to practise?"/>
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_PRACTICE_LANGUAGE')}"/>
 			<mx:Spacer/>
-			<mx:FormItem label="Languages you're interested in:"
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
 						 fontWeight="bold">
 				<mx:HBox>
 					<mx:VBox id="interestLanguagesBox">
 					</mx:VBox>
 					<mx:LinkButton id="addAnotherInterestLang"
 								   click="addAnotherInterestLang_clickHandler(event)"
-								   label="Add another"
+								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 								   textDecoration="underline"
 								   paddingLeft="6"
 								   paddingRight="6"
@@ -380,11 +380,11 @@
 			 horizontalAlign="center"
 			 verticalAlign="middle">
 		<mx:Button id="saveButton"
-				   label="Register"
+				   label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
 				   click="processNewUser()"
 				   icon="@Embed(source='../../resources/images/save.png')"/>
 		<mx:Button id="cancelButton"
-				   label="Cancel"
+				   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				   click="cancelButton_clickHandler(event)"
 				   icon="@Embed(source='../../resources/images/cancel.png')"/>
 	</mx:HBox>

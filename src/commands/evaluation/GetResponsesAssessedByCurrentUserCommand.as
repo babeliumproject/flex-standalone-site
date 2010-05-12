@@ -36,7 +36,7 @@ package commands.evaluation
 				//Set the data in the application's model
 				dataModel.assessedByCurrentUserData = resultCollection;
 			} else {
-				dataModel.assessedByCurrentUserData.removeAll();
+				dataModel.assessedByCurrentUserData = new ArrayCollection();
 			}
 			dataModel.assessedByCurrentUserDataRetrieved = !dataModel.assessedByCurrentUserDataRetrieved;
 		}

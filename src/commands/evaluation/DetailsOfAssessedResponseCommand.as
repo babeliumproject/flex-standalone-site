@@ -36,7 +36,7 @@ package commands.evaluation
 				//Set the data in the application's model
 				dataModel.detailsOfAssessedResponseData = resultCollection;
 			} else {
-				dataModel.detailsOfAssessedResponseData.removeAll();
+				dataModel.detailsOfAssessedResponseData = new ArrayCollection();
 			}
 			dataModel.detailsOfAssessedResponseDataRetrieved = !dataModel.detailsOfAssessedResponseDataRetrieved;
 		}

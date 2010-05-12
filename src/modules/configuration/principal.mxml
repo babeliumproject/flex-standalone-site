@@ -42,7 +42,7 @@
 					refreshCamButton.visible=true;
 					webCamCheck.allMenu.visible=false;
 					webCamCheck.notConect.visible=true;
-					webCamStatus.text="Webcam: X";
+					webCamStatus.text=resourceManager.getString('myResources', 'WEBCAM') +   ": X";
 				}				
 			}
 			
@@ -64,7 +64,7 @@
 					refreshMicButton.visible=true;
 					micCheck.allMenu.visible=false;
 					micCheck.notConect.visible=true;
-					microphoneStatus.text="Microphone: X";
+					microphoneStatus.text=resourceManager.getString('myResources', 'MICROPHONE') +   ": X";
 					}
 				}
 				if (indice==2){ //Bandwidth module
@@ -77,9 +77,9 @@
 			public function webcamResult(e:ConfigurationResultEvent):void{				
 				timerCam.start();	
 				if(e.status)
-					webCamStatus.text="Webcam: OK";
+					webCamStatus.text=resourceManager.getString('myResources', 'WEBCAM') +   ": OK";
 				else
-					webCamStatus.text="Webcam: X";							
+					webCamStatus.text=resourceManager.getString('myResources', 'WEBCAM') +   ": X";							
 			}
 			
 			public function microphoneResult(e:ConfigurationResultEvent):void{
@@ -95,7 +95,7 @@
 				if (e.status)
 					bandwidthStatus.text= resourceManager.getString('myResources', 'BANDWIDTH') + ": OK";
 				else
-					bandwidthStatus.text= resourceManager.getString('myResources', 'BADNWIDTH')  +  ": X";					
+					bandwidthStatus.text= resourceManager.getString('myResources', 'BANDWIDTH')  +  ": X";					
 			}
 			
 			/*Funciones timers para el control de los resultados*/
@@ -177,10 +177,10 @@
 			</mx:VBox>								
 		</mx:TabNavigator>
 		<mx:VBox>
-			<mx:Text text="RESULTS" fontSize="30" fontWeight="bold" textDecoration="underline"/>
-			<mx:Text text="Webcam: " id="webCamStatus" fontSize="20" visible="true"/>
-			<mx:Text text= "{resourceManager.getString('myResources', 'MICROPHONE')} : " id="microphoneStatus" fontSize="20"/>
-			<mx:Text text= "{resourceManager.getString('myResources', 'BANDWIDTH')} : " id="bandwidthStatus" fontSize="20"/>
+			<mx:Text text="{resourceManager.getString('myResources', 'RESULTS')}" fontSize="30" fontWeight="bold" textDecoration="underline"/>
+			<mx:Text text="{resourceManager.getString('myResources', 'WEBCAM')+':'}" id="webCamStatus" fontSize="20" visible="true"/>
+			<mx:Text text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}" id="microphoneStatus" fontSize="20"/>
+			<mx:Text text="{resourceManager.getString('myResources', 'BANDWIDTH')+':'}" id="bandwidthStatus" fontSize="20"/>
 		</mx:VBox>
 	</mx:HBox>
 

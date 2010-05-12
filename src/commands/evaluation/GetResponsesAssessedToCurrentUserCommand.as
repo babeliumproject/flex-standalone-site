@@ -36,7 +36,7 @@ package commands.evaluation
 				//Set the data in the application's model
 				dataModel.assessedToCurrentUserData = resultCollection;
 			} else {
-				dataModel.assessedToCurrentUserData.removeAll();
+				dataModel.assessedToCurrentUserData = new ArrayCollection();
 			}
 			dataModel.assessedToCurrentUserDataRetrieved = !dataModel.assessedToCurrentUserDataRetrieved;
 		}
@@ -44,7 +44,7 @@ package commands.evaluation
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error("Error while retrieving your responses that have been assessed by other users");
+			CustomAlert.error("Error while retrieving your responses that have been assessed by other users.");
 		}
 	}
 }

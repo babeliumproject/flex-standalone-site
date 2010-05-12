@@ -249,12 +249,12 @@
 			<mx:VBox borderStyle="solid" cornerRadius="3" backgroundColor="#e9edee" width="350" height="320"
 					 horizontalAlign="center" verticalAlign="middle">
 				<mx:VBox borderStyle="solid" width="320" height="240" backgroundColor="black">
-					<mx:Text fontWeight="bold" id="statusText" text="Recording" color="red" fontSize="13" visible="false"/>
+					<mx:Text fontWeight="bold" id="statusText" text="{resourceManager.getString('myResources','MESSAGE_STATUS_RECORDING')}" color="red" fontSize="13" visible="false"/>
 					<mx:Text/>
 					<mx:Text/>
 					<mx:Text/>
 					<mx:Text/>
-					<mx:Text id="noSoundText" text="     No hay señal" 
+					<mx:Text id="noSoundText" text="{'     '+resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}" 
 							 color="red" fontSize="30" visible="false"/>
 					<mx:UIComponent id="videoHolder" width="100%" height="100%"/>
 					<ns1:barraSonido id="barraSonido" visible="false"/>

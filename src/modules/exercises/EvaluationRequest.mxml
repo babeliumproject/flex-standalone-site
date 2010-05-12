@@ -11,7 +11,12 @@
 		  borderThicknessLeft="0"
 		  borderThicknessRight="0"
 		  borderStyle="none">
-	<mx:Label text="You must be registered to see this area."
+	
+	<mx:Metadata>
+		[ResourceBundle('myResources')]
+	</mx:Metadata>
+	
+	<mx:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
 			  fontWeight="bold"
 			  color="#FF0000"
 			  fontSize="16"
@@ -34,39 +39,39 @@
 				 verticalAlign="middle"
 				 borderThickness="0"
 				 visible="{!DataModel.getInstance().isLoggedIn}">
-			<mx:Label text="Click"/>
-			<mx:LinkButton label="here"
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"
 						   cornerRadius="4"/>
-			<mx:Label text="to sign in. You can sign-up for free"/>
-			<mx:LinkButton label="here"/>
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
 		</mx:HBox>
-		<mx:Label text="Your exercise has been successfully saved!"
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"
 				  fontSize="16"
 				  fontFamily="Arial"
 				  fontWeight="bold"/>
-		<mx:Label text="Do you want to ask the users for an evaluation?"
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"
 				  fontFamily="Arial"
 				  fontSize="14"/>
-		<mx:Label text="If you ask for an evaluation, your video will be publicly available"/>
-		<mx:Label text="for the other users of Babelia. Otherways, you will be the"/>
-		<mx:Label text="only one who can see it."/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_1')}"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
 		<mx:HBox width="100%"
 				 horizontalAlign="center"
 				 verticalAlign="middle"
 				 visible="{DataModel.getInstance().isAutoevaluable}">
-			<mx:Label text="Do you want to be evaluated by a computer?"
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"
 					  fontSize="14"/>
-			<mx:CheckBox label="Yes please"
+			<mx:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
 						 id="autoevaluateCheckbox"/>
 		</mx:HBox>
 		<mx:HBox width="100%"
 				 horizontalAlign="center"
 				 verticalAlign="middle"
 				 height="34">
-			<mx:Button label="Someone evaluate me!"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
 					   fontSize="12"
 					   click="evaluationRequestedClickHandler()"/>
-			<mx:Button label="No, thanks!"
+			<mx:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
 					   fontSize="12"
 					   click="returnToMainClickHandler()"/>
 		</mx:HBox>
@@ -82,6 +87,8 @@
 			import model.DataModel;
 			
 			import mx.controls.Alert;
+			
+			import view.common.CustomAlert;
 			
 			import vo.EvaluationVO;
 			import vo.ResponseVO;
@@ -104,7 +111,7 @@
 						var response:ResponseVO = new ResponseVO(responseId,0,0,"",false,"","",0,"",0,"",0);
 						new ResponseEvent(ResponseEvent.MAKE_RESPONSE_PUBLIC, response).dispatch();
 					} else {
-						Alert.show("You don't have enough credits to perform this task.\n This video will remain privately available to you.", "Insuficcient Credits");
+						CustomAlert.error(resourceManager.getString('myResources','ERROR_INSUFICCIENT_CREDITS'));
 					}
 
 					if(DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected) {
@@ -121,7 +128,7 @@
 					//Do nothing but hide the evaluation options panel and remember the user
 					//he/she must login in order to get the evaluations.
 					evaluationOptions.visible = false;
-					Alert.show("You must Sign In to request an evaluation");
+					CustomAlert.info(resourceManager.getString('myResources','ERROR_SIGN_IN_TO_REQUEST'));
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
 					dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
 				}

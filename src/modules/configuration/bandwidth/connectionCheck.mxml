@@ -2,6 +2,10 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		   xmlns:ns1="modules.configuration.bandwidth.*" creationComplete="init()">
 	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import flash.events.NetStatusEvent;
@@ -52,8 +56,8 @@
 			}
 			
 			private function mostrarBwInfo(event:BandwidthDetectEvent):void{
-				Needed.text="Needed: " + bwMin + " Kb/s";
-				Real.text="Real: " + event.info.kbitDown + " Kb/s";
+				Needed.text=resourceManager.getString('myResources','LABEL_NEEDED_BW')+": " + bwMin + " Kb/s";
+				Real.text=resourceManager.getString('myResources','LABEL_NEEDED_BW')+": " + event.info.kbitDown + " Kb/s";
 				bwInfo.visible=true;
 			}
 			

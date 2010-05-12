@@ -36,7 +36,7 @@ package commands.evaluation
 				//Set the data in the application's model
 				dataModel.waitingForAssessmentData = resultCollection;
 			} else {
-				dataModel.waitingForAssessmentData.removeAll();
+				dataModel.waitingForAssessmentData = new ArrayCollection();
 			}
 			dataModel.waitingForAssessmentDataRetrieved = !dataModel.waitingForAssessmentDataRetrieved;
 		}

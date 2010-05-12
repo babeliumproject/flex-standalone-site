@@ -5,6 +5,10 @@
 			  height="100%"
 			  creationPolicy="all"
 			  creationComplete="init()">
+	
+	<mx:Metadata>
+		[ResourceBundle("myResources")]
+	</mx:Metadata>
 
 	<mx:Script>
 		<![CDATA[
@@ -156,9 +160,9 @@
 				 paddingRight="10"
 				 paddingTop="10"
 				 verticalAlign="middle">
-			<mx:Label text="Exercise transcription:"/>
-			<mx:Label text="Your transcription:"/>
-			<mx:Label text="Score:"/>
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
 		</mx:VBox>
 		<mx:VBox width="70%"
 				 height="100%"
@@ -184,6 +188,6 @@
 			 verticalAlign="middle">
 		<mx:Label id="errorLabel"
 				  textAlign="center"
-				  text="ERROR"/>
+				  text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
 	</mx:HBox>
 </mx:ViewStack>

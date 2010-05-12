@@ -28,7 +28,6 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.controls.Text;
 	import mx.core.Application;
 	import mx.core.UIComponent;
@@ -36,6 +35,7 @@ package modules.videoPlayer
 	import mx.events.CloseEvent;
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
+	import mx.resources.ResourceManager;
 	
 	import view.common.PrivacyRights;
 
@@ -161,7 +161,7 @@ package modules.videoPlayer
 			_subtitlingText=new Text();
 			_subtitlingText.setStyle("fontWeight", "bold");
 			_subtitlingText.selectable=false;
-			_subtitlingText.text="Subtitling Controls: ";
+			_subtitlingText.text=ResourceManager.getInstance().getString('myResources','MESSAGE_SUBTITLING_CONTROLS');
 			_subtitleStart=new SubtitleStartButton();
 			_subtitleEnd=new SubtitleEndButton();
 			_subtitlingControls.addChild(_subtitlingText);
