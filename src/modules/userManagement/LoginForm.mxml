@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				autoLayout="true" borderColor="#000000">
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="view.common.*"
+				autoLayout="true"
+				showCloseButton="true"
+				creationComplete="completeHandler()">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			
+			//The keyCode for ENTER key
+			public static const ENTER_KEY:int=13;
+			
+			public function completeHandler():void{
+				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+			}
+			
+			private function checkPressedKey(e:KeyboardEvent):void
+			{
+				if (e.keyCode == ENTER_KEY){
+					//processLogin(null);
+				}
+			}
+			
+			public function cancelButtonClickHandler():void{
+				//PopUpManager.removePopUp(this);
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+			
+		]]>
+	</mx:Script>
+	
 	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"/>
 	<mx:Form width="100%">
 		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
@@ -30,4 +60,4 @@
 	<mx:HBox width="100%" horizontalAlign="center" paddingTop="10">
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}" id="restorePassword"/>
 	</mx:HBox>
-</mx:TitleWindow>
+</common:CustomTitleWindow>

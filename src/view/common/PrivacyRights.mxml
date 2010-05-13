@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="view.common.*"
 				showCloseButton="true"
 				width="355"
 				height="180"
-				fontFamily="Arial"
-				fontSize="11"
-				paddingLeft="8"
-				paddingRight="8"
-				borderColor="#E5E8EA"
-				borderAlpha="1"
-				borderStyle="solid"
 				creationComplete="creationCompleteHandler()"
-				title="{resourceManager.getString('myResources','TITLE_PRIVACY_RIGHTS')}">
+				title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
 	
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -283,4 +277,4 @@
 	</mx:ViewStack>
 
 
-</mx:TitleWindow>
+</common:CustomTitleWindow>

@@ -9,10 +9,10 @@ package commands.evaluation
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
-	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.CreditHistoryVO;
 
@@ -33,7 +33,7 @@ package commands.evaluation
 		{
 			//We check if the insert went well by checking the last_insert_id value
 			if (!data.result is int){
-				Alert.show("Your credit historic record couldn't be properly updated");
+				CustomAlert.error("Your credit historic record couldn't be properly updated.");
 			} else {
 				new UserEvent(UserEvent.GET_USER_INFO).dispatch();
 			}
@@ -41,8 +41,7 @@ package commands.evaluation
 		
 		public function fault(info:Object):void
 		{
-			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while modifying credit history: "+faultEvent.message);
+			CustomAlert.error("Error while modifying credit history.");
 			trace(ObjectUtil.toString(info));
 		}
 		

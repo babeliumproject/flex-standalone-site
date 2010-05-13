@@ -77,7 +77,7 @@ class EvaluationDAO {
 		               AVG(C.score) AS avg_rating
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
-				WHERE ( C.fk_user_id = '%d' ) 
+				WHERE ( A.fk_user_id = '%d' ) 
 				GROUP BY B.id";
 		
 		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $userId );
@@ -242,7 +242,13 @@ class EvaluationDAO {
 		
 		$row = $this->conn->_nextRow ( $result );
 		if ($row) {
-			return $row[0];
+			$evaluationId = $row[0];
+			//The evaluation data was inserted successfully. Update the evaluation count on response table.
+			$update = $this->updateResponseRatingAmount($evalData->responseId);
+			if($update)
+				return $evaluationId;
+			else
+				return false;
 		} else {
 			return false;
 		}

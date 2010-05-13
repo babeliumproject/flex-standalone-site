@@ -31,8 +31,7 @@ package commands.evaluation
 				CustomAlert.error("Your assessment couldn't be properly saved");
 			} else {
 				CustomAlert.info("Your assessment has been saved. Thanks for your collaboration.");
-				var userId:int = dataModel.loggedUser.id;
-				//new CreditEvent(CreditEvent.ADD_CREDITS_FOR_EVALUATING, userId).dispatch();
+				dataModel.addAssessmentRetrieved = !dataModel.addAssessmentRetrieved;
 			}
 		}
 		

@@ -160,6 +160,8 @@ package model
 		
 		[Bindable] public var detailsOfAssessedResponseData:ArrayCollection;
 		[Bindable] public var detailsOfAssessedResponseDataRetrieved:Boolean = false;
+		
+		[Bindable] public var addAssessmentRetrieved:Boolean = false;
 
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;
