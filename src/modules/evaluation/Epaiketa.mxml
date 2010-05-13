@@ -381,9 +381,6 @@
 				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.evaluationAverage;
 
 				assessmentsOfSelectedResponse.visible=true;
-				addVideoCommentButton.visible=true;
-				addVideoCommentLabel.visible=false;
-				videoCommentCheckBox.visible=false;
 
 				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, 0, _responseId).dispatch();
 
@@ -873,6 +870,7 @@
 							 id="assessedToCurrentUserDataGrid"
 							 horizontalScrollPolicy="off"
 							 verticalScrollPolicy="off"
+							 verticalAlign="middle"
 							 dataProvider="{assessedToCurrentUserList}"
 							 change="assessedToCurrentUserChangeHandler(event)">
 					<mx:columns>
@@ -926,9 +924,10 @@
 							<mx:DataGrid id="assessmentDetailDataGrid"
 										 dataProvider="{assessmentDetailList}"
 										 change="assessmentDetailChangeHandler(event)"
+										 verticalAlign="middle"
 										 width="100%">
 								<mx:columns>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUZGE')}"
+									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
 													   dataField="userName"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
 													   dataField="score"/>
@@ -939,14 +938,7 @@
 													   width="160">
 										<mx:itemRenderer>
 											<mx:Component>
-												<mx:VBox>
-													<mx:TextArea id="textua"
-																 backgroundColor="#ffffff"
-																 height="100"
-																 text="{data.comment}"
-																 editable="false"
-																 width="160"/>
-												</mx:VBox>
+													<mx:Text text="{data.comment}" width="160"/>
 											</mx:Component>
 										</mx:itemRenderer>
 									</mx:DataGridColumn>
@@ -970,6 +962,7 @@
 							 id="assessedByCurrentUserDataGrid"
 							 dataProvider="{assessedByCurrentUserList}"
 							 change="assessedByCurrentUserChangeHandler(event)"
+							 verticalAlign="middle"
 							 verticalScrollPolicy="off">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
