@@ -254,7 +254,7 @@ class EvaluationDAO {
 		}
 	}
 	
-	public function addVideoAssessment(Evaluation $evalData){
+	public function addVideoAssessment(EvaluationVO $evalData){
 
 		$evaluationId = $this->addAssessment($evalData);
 		if ($evaluationId){

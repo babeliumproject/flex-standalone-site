@@ -289,27 +289,6 @@
 				biakBatera=false;
 			}
 
-
-			//AMFPhp
-
-			private function faultHandler(fault:FaultEvent):void
-			{
-				Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
-			}
-
-			private function resultHandlerNiriEpaituta(event:ResultEvent):void
-			{
-				var result:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(event.result));
-				if (assessmentDetailDataGrid)
-					assessmentDetailDataGrid.rowCount=result.length;
-				assessmentDetailList=result;
-			}
-
-			private function resultHandler(event:ResultEvent):void
-			{
-				trace(event.result);
-			}
-
 			private function allDataReceived():void
 			{
 				if (waitingForAssessmentList != null && assessedByCurrentUserList != null && assessedByCurrentUserList != null)
@@ -401,7 +380,7 @@
 				responsePlayer.setRolAukeratua(_responseCharacterName);
 				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.evaluationAverage;
 
-
+				assessmentsOfSelectedResponse.visible=true;
 				addVideoCommentButton.visible=true;
 				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
@@ -550,7 +529,7 @@
 			private function set onTabChange(value:Boolean):void
 			{
 				ratingBox.visible=false;
-				humanEvaluation.visible=false;
+				assessmentsOfSelectedResponse.visible=false;
 
 				responsePlayer.seek_denb.visible=false;
 				responsePlayer.botoiak.enabled=false;
@@ -577,9 +556,18 @@
 
 				if (value == null)
 					return;
-
-				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
+				
+				if(!dataModel.isLoggedIn){
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
+				}
+
+				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null){
+					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
+					return;
+				}
+				
+			
 
 				switch (browser.actionFragment)
 				{
@@ -700,18 +688,6 @@
 
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
-
-
-	<!-- AMFPhp -->
-	<mx:RemoteObject id="epaiketaDat"
-					 destination="empService"
-					 source="Epaitu"
-					 fault="faultHandler(event)"
-					 showBusyCursor="true">
-		<mx:method name="epaitutakoGrabaketa"
-				   result="resultHandlerNiriEpaituta(event)"/>
-	</mx:RemoteObject>
-
 
 	<mx:VBox id="videoPlayersBox"
 			 horizontalAlign="center"

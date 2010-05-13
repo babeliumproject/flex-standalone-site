@@ -376,7 +376,7 @@
 					}
 
 					irudia.x=panel.x + 10 + ((34 + ((bideobarra.width / iraupena) * (cuetaula[i].time / 1000))) - (17 / 2))
-					irudia.y=panel.y + 310 - 6;
+					irudia.y=panel.y + 280 - 6;
 
 					trace("x bideobarra: " + bideobarra.x);
 					trace("y bideobarra: " + bideobarra.y);
