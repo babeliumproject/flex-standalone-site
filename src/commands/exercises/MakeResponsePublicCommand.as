@@ -14,6 +14,8 @@ package commands.exercises
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class MakeResponsePublicCommand implements ICommand, IResponder
 	{
@@ -27,7 +29,7 @@ package commands.exercises
 			//Process the returned data and call the required events
 			var successfulUpdate:Boolean = data.result as Boolean;
 			if(!successfulUpdate){
-				Alert.show("A problem occurred while trying to update your response");
+				CustomAlert.error("A problem occurred while trying to update your response.");
 			} else{
 				var userId:int = DataModel.getInstance().loggedUser.id;
 				new CreditEvent(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, userId).dispatch();
@@ -36,7 +38,7 @@ package commands.exercises
 
 		public function fault(info:Object):void {
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while making your response publicly available: \n" + faultEvent.message);
+			CustomAlert.error("Error while making your response publicly available.");
 			trace(ObjectUtil.toString(info));
 		}
 		

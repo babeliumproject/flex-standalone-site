@@ -1,19 +1,21 @@
 package commands.main
 {
 	import business.UserDelegate;
-
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-
+	
 	import model.DataModel;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
-
+	
+	import view.common.CustomAlert;
+	
 	import vo.UserVO;
 
 	public class GetTopTenCreditedCommand implements ICommand, IResponder
@@ -37,7 +39,7 @@ package commands.main
 				//Check wheter the VO object is properly returned
 				if (!(resultCollection[0] is UserVO))
 				{
-					Alert.show("The Result has been processed to match the VO");
+					CustomAlert.error("Unexpected data recieved while trying to get the top users.");
 				}
 				else
 				{
@@ -53,7 +55,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error:" + faultEvent.message);
+			CustomAlert.error("Error while trying to retrieve the top users list.");
 			trace(ObjectUtil.toString(info));
 		}
 

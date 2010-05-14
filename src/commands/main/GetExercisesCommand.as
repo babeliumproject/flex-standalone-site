@@ -14,6 +14,8 @@ package commands.main
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
 	
+	import view.common.CustomAlert;
+	
 	import vo.ExerciseVO;
 
 	public class GetExercisesCommand implements ICommand, IResponder
@@ -35,7 +37,7 @@ package commands.main
 
 				if (!(resultCollection[0] is ExerciseVO))
 				{
-					Alert.show("The Result is not a well-formed object");
+					CustomAlert.error("The Result is not a well-formed object.");
 				}
 				else
 				{
@@ -57,7 +59,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving app's exercises:");
+			CustomAlert.error("Error while retrieving app's exercises.");
 			trace(ObjectUtil.toString(info));
 		}
 		

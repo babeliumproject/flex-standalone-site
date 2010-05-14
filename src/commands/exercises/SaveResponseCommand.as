@@ -14,6 +14,8 @@ package commands.exercises
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class SaveResponseCommand implements ICommand, IResponder
 	{
@@ -27,7 +29,7 @@ package commands.exercises
 		{
 			//Should be the id of the added response
 			if (!data.result is int){
-				Alert.show("Your response data could not be saved successfully");
+				CustomAlert.error("Your response data could not be saved successfully.");
 			} else {
 				
 				//The response has been successfully saved, so we must store it's id in the model
@@ -42,7 +44,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var faultEvent : FaultEvent = FaultEvent(info);
-			Alert.show("Error while saving your Response: \n"+faultEvent.message);
+			CustomAlert.error("Error while saving your Response.");
 			trace(ObjectUtil.toString(info));
 		}
 		

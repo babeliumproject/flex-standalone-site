@@ -37,6 +37,7 @@ package modules.videoPlayer
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 	
+	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
 
 	public class VideoPlayerBabelia extends VideoPlayer
@@ -759,10 +760,13 @@ package modules.videoPlayer
 			if(DataModel.getInstance().micCamAllowed){
 				configureDevices();
 			} else{
+				if(state == RECORD_BOTH_STATE)
+					PrivacyRights.useMicAndCamera = true;
+				if(state == RECORD_MIC_STATE)
+					PrivacyRights.useMicAndCamera = false;
 				privacyRights = PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
 				privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
-				if(state == RECORD_BOTH_STATE)
-					privacyRights.useMicAndCamera = true;
+
 				PopUpManager.centerPopUp(privacyRights);
 			}
 		}
@@ -795,10 +799,17 @@ package modules.videoPlayer
 		private function privacyBoxClosed(event:Event):void{
 			PopUpManager.removePopUp(privacyRights);
 			_micCamEnabled = DataModel.getInstance().micCamAllowed;
-			if(_micCamEnabled){
-				configureDevices();
-			} else {
-				dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
+			if(state == RECORD_MIC_STATE){
+				if(_micCamEnabled && PrivacyRights.microphoneFound)
+					configureDevices();
+				else
+					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
+			}
+			if(state == RECORD_BOTH_STATE){
+				if(_micCamEnabled && PrivacyRights.microphoneFound && PrivacyRights.cameraFound)
+					configureDevices();
+				else
+					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 			}
 		}
 
@@ -975,6 +986,7 @@ package modules.videoPlayer
 		private function playSecondStream():void
 		{
 			_inNs=new NetStream(_inNc);
+			_inNs.addEventListener(NetStatusEvent.NET_STATUS, onSecondStreamNetStream);
 			_inNs.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
 
 			// Not metadata nor cuepoint manage needed, so
@@ -998,7 +1010,8 @@ package modules.videoPlayer
 			muteRecording(false);
 			muteRecording(true);
 
-			_ns.resume();
+			if (_ns != null)
+				_ns.resume();
 			_ppBtn.State=PlayButton.PAUSE_STATE;
 		}
 
@@ -1016,6 +1029,83 @@ package modules.videoPlayer
 			{
 				trace("Second stream connection Fail Code: " + e.info.code);
 			}
+		}
+		
+		private function onSecondStreamNetStream(event:NetStatusEvent):void{
+			
+			var info:Object = event.info;
+			switch(info.code){
+				case "NetStream.Buffer.Empty":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Buffer.Full":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Buffer.Flush":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Publish.Start":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Publish.Idle":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Unpublish.Success":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Start":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Stop":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Reset":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.PublishNotify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Start":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Stop":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.Reset":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.PublishNotify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Play.UnpublishNotify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Pause.Notify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Unpause.Notify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Record.Start":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Record.Stop":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Seek.Notify":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Connect.Closed":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				case "NetStream.Connect.Success":
+					trace("Second NetStream Status: "+info.code);
+					break;
+				default:
+					trace("Second NetStream Error: "+info.code);
+					CustomAlert.error("Error while transferring data from the streaming server. Please try again later.");
+					break;
+			}			
 		}
 
 	}

@@ -17,6 +17,8 @@ package commands.userManagement
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
 	
+	import view.common.CustomAlert;
+	
 	import vo.CreditHistoryVO;
 
 	public class GetAllTimeCreditHistoryCommand implements ICommand, IResponder
@@ -43,7 +45,7 @@ package commands.userManagement
 
 				if (!(resultCollection[0] is CreditHistoryVO))
 				{
-					Alert.show("The Result is not a well-formed object");
+					CustomAlert.error("The Result is not a well-formed object.");
 				}
 				else
 				{
@@ -65,7 +67,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			Alert.show("Error: "+faultEvent.message);
+			CustomAlert.error("Error while retrieving your credit history.");
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				xmlns:common="view.common.*"
-				showCloseButton="true"
-				width="355"
-				height="180"
-				creationComplete="creationCompleteHandler()"
-				title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
-	
+						  xmlns:common="view.common.*"
+						  showCloseButton="true"
+						  width="355"
+						  height="180"
+						  creationComplete="creationCompleteHandler()"
+						  title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
+
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
@@ -15,26 +15,24 @@
 
 		<![CDATA[
 			import model.DataModel;
-			
+
+			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 
 			private var _microphoneChanged:Boolean=false;
 			private var _microphoneSoundTestPassed:Boolean=false;
 
 			private var _cameraChanged:Boolean=false;
-			
+
 			private var _devicesAllowed:Boolean=false;
 
-			private var _micCameraRequested:Boolean=false;
+			public static var microphoneFound:Boolean=false;
+			public static var cameraFound:Boolean=false;
+
+			public static var useMicAndCamera:Boolean=false;
 
 			private function creationCompleteHandler():void
 			{
-				initDevices();
-			}
-
-			public function set useMicAndCamera(value:Boolean):void
-			{
-				_micCameraRequested=value;
 				initDevices();
 			}
 
@@ -49,6 +47,7 @@
 				{
 					if (microphoneAvailable())
 					{
+						microphoneFound=true;
 						var microphone:Microphone=Microphone.getMicrophone();
 						if (!DataModel.getInstance().microphone)
 						{
@@ -67,11 +66,16 @@
 							_devicesAllowed=false;
 							DataModel.getInstance().microphone.addEventListener(StatusEvent.STATUS, microphonePrivacyStatus);
 						}
+						else
+						{
+							_devicesAllowed=true;
+						}
 
-						if (_micCameraRequested)
+						if (useMicAndCamera)
 						{
 							if (cameraAvailable())
 							{
+								cameraFound=true;
 								var camera:Camera=Camera.getCamera();
 								if (!DataModel.getInstance().camera)
 								{
@@ -90,9 +94,14 @@
 									_devicesAllowed=false;
 									DataModel.getInstance().camera.addEventListener(StatusEvent.STATUS, cameraPrivacyStatus);
 								}
+								else
+								{
+									_devicesAllowed=true;
+								}
 							}
 							else
 							{
+								cameraFound=false;
 								micCamViewStack.selectedChild=cameraNotFoundError;
 								trace("Error: No camera was detected.");
 							}
@@ -100,8 +109,22 @@
 					}
 					else
 					{
+						microphoneFound=false;
 						micCamViewStack.selectedChild=micNotFoundError;
 						trace("Error: No mic was detected.");
+					}
+				}
+				if (_devicesAllowed)
+				{
+					if (useMicAndCamera)
+					{
+						if (microphoneFound && cameraFound)
+							cancelButtonClickHandler(null);
+					}
+					else
+					{
+						if (microphoneFound)
+							cancelButtonClickHandler(null);
 					}
 				}
 			}
@@ -159,13 +182,13 @@
 			{
 				if (event.code == "Microphone.Muted")
 				{
-					_devicesAllowed = false;
-					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_OK');
+					_devicesAllowed=false;
+					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_OK');
 				}
 				if (event.code == "Microphone.Unmuted")
 				{
-					_devicesAllowed = true;
-					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_RECORD');
+					_devicesAllowed=true;
+					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_RECORD');
 				}
 			}
 
@@ -173,13 +196,13 @@
 			{
 				if (event.code == "Camera.Muted")
 				{
-					_devicesAllowed = false;
-					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_OK');
+					_devicesAllowed=false;
+					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_OK');
 				}
 				if (event.code == "Camera.Unmuted")
 				{
-					_devicesAllowed = true;
-					privacyRecButton.label=resourceManager.getString('myResources','BUTTON_RECORD');
+					_devicesAllowed=true;
+					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_RECORD');
 				}
 			}
 
@@ -191,10 +214,11 @@
 
 			private function okButtonClickHandler(event:Event):void
 			{
-				if(!_devicesAllowed)
+				if (!_devicesAllowed)
 					showPrivacySettings();
-				else{
-					DataModel.getInstance().micCamAllowed = _devicesAllowed;
+				else
+				{
+					DataModel.getInstance().micCamAllowed=_devicesAllowed;
 					cancelButtonClickHandler(null);
 				}
 			}
@@ -240,7 +264,7 @@
 						   click="cancelButtonClickHandler(event)"/>
 			</mx:HBox>
 		</mx:VBox>
-		
+
 		<mx:VBox id="adminError"
 				 width="100%">
 			<mx:Text width="100%"

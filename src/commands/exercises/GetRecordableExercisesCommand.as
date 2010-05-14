@@ -10,9 +10,10 @@ package commands.exercises
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
-	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.ExerciseVO;
 	
@@ -35,7 +36,7 @@ package commands.exercises
 				
 				if (!(resultCollection[0] is ExerciseVO))
 				{
-					Alert.show("The Result is not a well-formed object");
+					CustomAlert.error("The Result is not a well-formed object.");
 				}
 				else
 				{
@@ -52,7 +53,7 @@ package commands.exercises
 		
 		public function fault(info:Object):void
 		{
-			Alert.show("Error while retreiving the exercises");
+			CustomAlert.error("Error while retreiving the exercises.");
 			trace(ObjectUtil.toString(info));
 		}
 	}

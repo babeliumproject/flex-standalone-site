@@ -16,14 +16,14 @@
 
 		<![CDATA[
 			import events.AddVideoEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.PrivacyRights;
 
 			private var client_nc:NetConnection;
@@ -296,9 +296,10 @@
 				}
 				else
 				{
+					PrivacyRights.useMicAndCamera=true;
 					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
-					privacyRights.useMicAndCamera=true;
+
 					PopUpManager.centerPopUp(privacyRights);
 				}
 			}
@@ -318,7 +319,7 @@
 			{
 				PopUpManager.removePopUp(privacyRights);
 				_micCamEnabled=DataModel.getInstance().micCamAllowed;
-				if (_micCamEnabled)
+				if (_micCamEnabled && PrivacyRights.cameraFound && PrivacyRights.microphoneFound)
 				{
 					configureDevices();
 				}

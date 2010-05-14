@@ -1,19 +1,21 @@
 package commands.exercises
 {
 	import business.ExerciseDelegate;
-
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-
+	
 	import events.ExerciseEvent;
-
+	
 	import model.DataModel;
-
+	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
-
+	
+	import view.common.CustomAlert;
+	
 	import vo.ExerciseVO;
 
 	public class RateExerciseCommand implements ICommand, IResponder
@@ -29,11 +31,11 @@ package commands.exercises
 			//Should be the id of the added rate
 			if (!data.result is ExerciseVO)
 			{
-				Alert.show("Your score couldn't be saved.");
+				CustomAlert.error("Your score couldn't be saved.");
 			}
 			else
 			{
-				Alert.show("Your score has been successfully saved. Thank you.");
+				CustomAlert.info("Your score has been successfully saved. Thank you.");
 				//Update the exercise with the new information.
 				DataModel.getInstance().userRatedExercise=true;
 				//Retrieve the new avg score and push it in the exercise list
@@ -71,7 +73,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while rating the exercise.\n");
+			CustomAlert.error("Error while rating the exercise.");
 			trace(ObjectUtil.toString(faultEvent));
 		}
 	}

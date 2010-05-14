@@ -6,13 +6,13 @@ package commands.userManagement
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import events.RegisterUserEvent;
-	import events.ViewChangeEvent;
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	public class ActivateUserCommand implements ICommand, IResponder
 	{
@@ -34,7 +34,7 @@ package commands.userManagement
 		
 		public function fault(info:Object):void
 		{
-			Alert.show("Error while activating your account.");
+			CustomAlert.error("Error while activating your account.");
 			trace(ObjectUtil.toString(info));
 		}
 	}

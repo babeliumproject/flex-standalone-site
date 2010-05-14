@@ -9,10 +9,11 @@ package commands.exercises
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class UserReportedExerciseCommand implements ICommand, IResponder
 	{
@@ -33,7 +34,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var fault:FaultEvent=FaultEvent(info);
-			Alert.show("Error while checking if you've reported this exercise.");
+			CustomAlert.error("Error while checking if you've reported this exercise.");
 			trace(ObjectUtil.toString(fault));
 		}
 	}

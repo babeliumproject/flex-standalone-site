@@ -9,10 +9,11 @@ package commands.exercises
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class GetExerciseLocalesCommand implements ICommand, IResponder
 	{
@@ -43,7 +44,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving app's exercises:\n\n"+faultEvent.message);
+			CustomAlert.error("Error while retrieving exercise's available subtitle languages.");
 			trace(ObjectUtil.toString(info));
 		}
 		

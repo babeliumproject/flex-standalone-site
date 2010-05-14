@@ -72,7 +72,7 @@
 					  fontFamily="Arial"
 					  fontSize="12"
 					  enter="launchSearch()"/>
-		<mx:Button label="Search"
+		<mx:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
 				   fontFamily="Arial"
 				   fontSize="14"
 				   fillAlphas="[0.0, 1.0, 1.0, 0.0]"

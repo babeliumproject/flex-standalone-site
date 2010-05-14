@@ -9,10 +9,11 @@ package commands.exercises
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	public class ReportInappropriateExerciseCommand implements ICommand, IResponder
 	{
@@ -26,20 +27,20 @@ package commands.exercises
 		{
 			//Should be the id of the added rate
 			if (!data.result is int){
-				Alert.show("Error while reporting inappropriate exercise.");
+				CustomAlert.error("Error while reporting inappropriate exercise.");
 			} else if (data.result > 0){
-				Alert.show("Your report has been successfully saved. Thank you.");
+				CustomAlert.info("Your report has been successfully saved. Thank you.");
 				//Update the exercise with the new information.
 				DataModel.getInstance().userReportedExercise = true;
 			} else {
-				Alert.show("You already reported about this exercise.");
+				CustomAlert.error("You already reported about this exercise.");
 			}
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while reporting inappropriate exercise.");
+			CustomAlert.error("Error while reporting inappropriate exercise.");
 			trace(ObjectUtil.toString(faultEvent));
 		}
 	}

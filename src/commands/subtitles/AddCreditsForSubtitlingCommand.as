@@ -13,6 +13,8 @@ package commands.subtitles
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class AddCreditsForSubtitlingCommand implements ICommand, IResponder
 	{
@@ -28,7 +30,7 @@ package commands.subtitles
 		{
 			var successfulUpdate:Boolean = data.result as Boolean;
 			if(!successfulUpdate){
-				Alert.show("A problem occurred while trying to update your credits");
+				CustomAlert.error("A problem occurred while trying to update your credits.");
 			} else{
 				var userId:int = DataModel.getInstance().loggedUser.id;
 				new CreditEvent(CreditEvent.ADD_CREDIT_ENTRY_SUBTITLING, userId).dispatch();
@@ -39,7 +41,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			Alert.show("Error:"+faultEvent.message);
+			CustomAlert.error("Error occurred while trying to update your credit count.");
 			trace(ObjectUtil.toString(info));
 		}
 		

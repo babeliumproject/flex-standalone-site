@@ -10,11 +10,12 @@ package commands.main
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.PreferenceVO;
 
@@ -45,7 +46,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent : FaultEvent = FaultEvent(info);
-			Alert.show("Error:"+faultEvent.message);
+			CustomAlert.error("Error while retrieving application's preference data.");
 			trace(ObjectUtil.toString(info));
 		}
 		

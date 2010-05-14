@@ -12,11 +12,12 @@ package commands.subtitles
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.CueObject;
 	import vo.SubtitleLineVO;
@@ -62,7 +63,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while retrieving exercise's subtitle lines:\n" + faultEvent.message);
+			CustomAlert.error("Error while retrieving this exercise's subtitle lines.");
 			trace(ObjectUtil.toString(info));
 		}
 
