@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="view.common.*"
 				title="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
 				autoLayout="true"
 				creationComplete="init()">
@@ -384,4 +385,4 @@
 
 	</mx:VBox>
 
-</mx:TitleWindow>
+</common:CustomTitleWindow>

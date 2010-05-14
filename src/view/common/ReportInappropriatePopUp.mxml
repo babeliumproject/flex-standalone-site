@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
 				xmlns:common="view.common.*"
 				creationComplete="creationCompleteHandler()"
-				showCloseButton="true"
-				fontFamily="Arial"
-				fontSize="11"
-				autoLayout="true"
-				paddingLeft="8"
-				paddingRight="8"
-				borderColor="#E5E8EA"
-				borderAlpha="1"
-				>
+				showCloseButton="true">
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -113,4 +105,4 @@
 				   click="cancelButtonClickHandler(event)"/>
 	</mx:HBox>
 
-</mx:TitleWindow>
+</common:CustomTitleWindow>

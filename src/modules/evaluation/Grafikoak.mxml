@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- charts/BasicColumn.mxml -->
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				title="{resourceManager.getString('myResources', 'VALUATION')}"
-				layout="vertical"
-				horizontalAlign="center">
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+						  xmlns:common="view.common.*"
+						  title="{resourceManager.getString('myResources', 'VALUATION')}"
+						  layout="vertical"
+						  horizontalAlign="center">
 	<mx:Script>
 		<![CDATA[
 			import mx.rpc.events.FaultEvent;
@@ -42,20 +43,20 @@
 		<mx:method name="datuakLortu"
 				   result="epaiDatuakLortu(event)"/>
 	</mx:RemoteObject>
-		<mx:ColumnChart id="myChart"
-						dataProvider="{dp}"
-						showDataTips="true">
-			<mx:horizontalAxis>
-				<mx:CategoryAxis dataProvider="{dp}"
-								 categoryField="Epailea"/>
-			</mx:horizontalAxis>
-			<mx:series>
-				<mx:ColumnSeries xField="Epailea"
-								 yField="Balorazioa"
-								 displayName="{resourceManager.getString('myResources', 'GRAFTEXT')}"/>
-			</mx:series>
-		</mx:ColumnChart>
-		<mx:Legend dataProvider="{myChart}"/>
-		<mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}"
-				   click="PopUpManager.removePopUp(this);"/>
-</mx:TitleWindow>
+	<mx:ColumnChart id="myChart"
+					dataProvider="{dp}"
+					showDataTips="true">
+		<mx:horizontalAxis>
+			<mx:CategoryAxis dataProvider="{dp}"
+							 categoryField="Epailea"/>
+		</mx:horizontalAxis>
+		<mx:series>
+			<mx:ColumnSeries xField="Epailea"
+							 yField="Balorazioa"
+							 displayName="{resourceManager.getString('myResources', 'GRAFTEXT')}"/>
+		</mx:series>
+	</mx:ColumnChart>
+	<mx:Legend dataProvider="{myChart}"/>
+	<mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}"
+			   click="PopUpManager.removePopUp(this);"/>
+</common:CustomTitleWindow>

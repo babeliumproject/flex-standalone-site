@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				autoLayout="true"
-				borderColor="#000000">
-	
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+						  xmlns:common="view.common.*"
+						  autoLayout="true">
+
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
-	
+
 	<mx:Label id="errorInfo"
 			  fontFamily="Arial"
 			  fontSize="12"
@@ -20,13 +20,13 @@
 						  width="100%"/>
 		</mx:FormItem>
 	</mx:Form>
-		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle">
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
-					   id="okButton"/>
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-					   id="cancelButton"/>
-		</mx:HBox>
-	
-</mx:TitleWindow>
+	<mx:HBox width="100%"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+				   id="okButton"/>
+		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+				   id="cancelButton"/>
+	</mx:HBox>
+
+</common:CustomTitleWindow>
