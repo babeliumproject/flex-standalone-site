@@ -12,6 +12,8 @@ package commands
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
+	import view.common.CustomAlert;
+	
 	import vo.CreditHistoryVO;
 
 	public class AddCreditEntryExAdvisingCommand implements ICommand, IResponder
@@ -31,13 +33,13 @@ package commands
 		{
 			//We check if the insert went well by checking the last_insert_id value
 			if (!data.result > 0)
-				Alert.show("Your credit historic record couldn't be properly updated");
+				CustomAlert.error("Your credit historic record couldn't be properly updated.");
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while modifying credit history: "+faultEvent.message);
+			CustomAlert.error("Error while modifying credit history.");
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -14,6 +14,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import view.common.CustomAlert;
 			import commands.cuepointManager.RecordingOtherRoleCommand;
 			import commands.cuepointManager.ReplayResponseCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
@@ -414,7 +415,7 @@
 			 **/
 			private function onRecordingAborted(e:RecordingEvent):void
 			{
-				Alert.show("Aborted");
+				CustomAlert.error("Your devices are not working properly. The recording has been aborted.");
 				recordingError();
 			}
 
@@ -423,7 +424,7 @@
 			 **/
 			private function onCamAccessDenied(e:RecordingEvent):void
 			{
-				Alert.show("Cam denied");
+				CustomAlert.error("Cam denied.");
 				recordingError();
 			}
 
@@ -432,7 +433,7 @@
 			 **/
 			private function onMicAccessDenied(e:RecordingEvent):void
 			{
-				Alert.show("Mic denied");
+				CustomAlert.error("Mic denied.");
 				recordingError();
 			}
 

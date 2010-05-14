@@ -15,6 +15,8 @@ package commands.videoUpload
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
+	import view.common.CustomAlert;
+	
 	import vo.CreditHistoryVO;
 	import vo.ExerciseVO;
 
@@ -31,7 +33,7 @@ package commands.videoUpload
 		{
 			//Should be the id of the added exercise
 			if (!data.result is int){
-				Alert.show("Your exercise data could not be saved successfully");
+				CustomAlert.error("Your exercise data could not be saved successfully.");
 			} else {
 				//Add this to the DataModel or dispatch the addExerciseLevel from here
 				var exerciseId:int = int(data.result);
@@ -50,7 +52,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			Alert.show("Error while saving exercise data: "+faultEvent.message);
+			CustomAlert.error("Error while saving exercise data.");
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -14,6 +14,8 @@ package commands.videoUpload
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	
+	import view.common.CustomAlert;
+	
 	public class AddWebcamExerciseCommand implements ICommand, IResponder
 	{
 		
@@ -26,7 +28,7 @@ package commands.videoUpload
 		{
 			//Should be the id of the added exercise
 			if (!data.result is int){
-				Alert.show("Your exercise data could not be saved successfully");
+				CustomAlert.error("Your exercise data could not be saved successfully.");
 			} else {
 				var userId:int = DataModel.getInstance().loggedUser.id;
 				DataModel.getInstance().historicData.videoExerciseId = data.result;
@@ -38,7 +40,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while saving your exercise");
+			CustomAlert.error("Error while saving your exercise.");
 			trace(faultEvent.toString());
 		}
 	}

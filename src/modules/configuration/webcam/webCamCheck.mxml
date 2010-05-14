@@ -4,6 +4,7 @@
 	
 	<mx:Script> 
 		<![CDATA[
+			import view.common.CustomAlert;
 			
 			import model.DataModel;
 			
@@ -78,7 +79,7 @@
 						inicializarContador(); 
 					}  					
 				}catch(err:Error){
-					Alert.show( err.toString() );
+					CustomAlert.error( err.toString() );
 				}
 			}
 			
@@ -92,7 +93,7 @@
 					videoHolder.addChild(video);
 					timerPlay.start();
 				}else//Rec file not exists
-					Alert.show(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
+					CustomAlert.error(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
 			}
 			
 			private function camera_status(e:StatusEvent):void{

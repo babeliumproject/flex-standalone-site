@@ -9,10 +9,11 @@ package commands.videoUpload
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.ExerciseVO;
 
@@ -46,7 +47,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while transferring data to youtube:" + faultEvent.message);
+			CustomAlert.error("Error while transferring data to YouTube.");
 			trace(ObjectUtil.toString(info));
 		}
 		

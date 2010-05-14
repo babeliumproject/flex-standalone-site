@@ -16,6 +16,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import view.common.CustomAlert;
 			import mx.formatters.DateFormatter;
 			import vo.CreditHistoryVO;
 			import mx.controls.Alert;
@@ -116,7 +117,7 @@
 
 			public function exerciseNameClickHandler():void
 			{
-				Alert.show("It works");
+				CustomAlert.info("WIP: Watch the selected exercise.");
 			}
 		]]>
 	</mx:Script>

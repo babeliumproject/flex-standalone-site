@@ -34,9 +34,10 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
 	
-	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
+	
+	import view.common.CustomAlert;
 
 	public class VideoPlayer extends SkinableComponent
 	{
@@ -545,7 +546,7 @@ package modules.videoPlayer
 			
 			if( e.info.code == "NetStream.Play.StreamNotFound" )
 			{
-				Alert.show( "Stream Not Found", "Information" );
+				CustomAlert.info("Stream Not Found.");
 				trace( "Stream not found code: " + e.info.code + " for video " + _videoSource );
 			} else if( e.info.code == "NetStream.Play.Stop" )
 			{
@@ -579,7 +580,7 @@ package modules.videoPlayer
 			if( !_nc.connected ) 
 			{
 				_ppBtn.State = PlayButton.PLAY_STATE;
-				Alert.show( "Please wait for connection from server.", "ERROR" );
+				CustomAlert.error("Please wait for connection from server.");
 				return;
 			}
 									

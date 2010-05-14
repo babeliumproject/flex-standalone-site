@@ -15,10 +15,11 @@ package control
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.CueObject;
 	import vo.CueObjectCache;
@@ -292,7 +293,7 @@ package control
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = info as FaultEvent;
-			Alert.show("Error while getting your subtitle lines: "+faultEvent.message);
+			CustomAlert.error("Error while getting the subtitle lines.");
 		}
 	}
 }

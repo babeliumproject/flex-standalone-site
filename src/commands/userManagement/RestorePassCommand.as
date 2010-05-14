@@ -7,12 +7,14 @@ package commands.userManagement
 	
 	import events.*;
 	
+	import model.DataModel;
+	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
-	import model.DataModel;
+	import view.common.CustomAlert;
 
 	public class RestorePassCommand implements ICommand, IResponder
 	{
@@ -30,7 +32,7 @@ package commands.userManagement
 			{
 				DataModel.getInstance().passRecoveryDone = !DataModel.getInstance().passRecoveryDone;
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				Alert.show("New password has been sent to account's email");
+				CustomAlert.info("The new password has been sent to your email.");
 			}
 			else
 			{
@@ -41,7 +43,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: "+faultEvent.message);
+			CustomAlert.error("Error while trying to restore your password.");
 			trace(ObjectUtil.toString(info));
 		}
 		

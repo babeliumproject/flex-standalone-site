@@ -9,8 +9,11 @@ package commands.videoUpload
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
+	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.CreditHistoryVO;
 
@@ -26,7 +29,7 @@ package commands.videoUpload
 		{
 			//Should be the id of the added exercise
 			if (!data.result is int){
-				Alert.show("Your exercise data could not be saved successfully");
+				CustomAlert.error("Your exercise data could not be saved successfully.");
 			} else {
 				
 				//Add this to the DataModel
@@ -45,6 +48,9 @@ package commands.videoUpload
 		
 		public function fault(info:Object):void
 		{
+			var faultEvent: FaultEvent = FaultEvent(info);
+			CustomAlert.error("Error while saving exercise data.");
+			trace(ObjectUtil.toString(info));
 		}
 		
 	}

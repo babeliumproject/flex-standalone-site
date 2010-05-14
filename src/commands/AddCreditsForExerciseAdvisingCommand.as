@@ -7,12 +7,12 @@ package commands
 	
 	import events.CreditEvent;
 	
-	import flash.events.Event;
-	
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class AddCreditsForExerciseAdvisingCommand implements ICommand, IResponder
 	{
@@ -26,13 +26,13 @@ package commands
 		{
 			var successfulUpdate:Boolean = data.result as Boolean;
 			if(!successfulUpdate)
-				Alert.show("A problem occurred while trying to update your credits");
+				CustomAlert.error("A problem occurred while trying to update your credits.");
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: "+faultEvent.message);
+			CustomAlert.error("Error while modifying your credit history.");
 			trace(ObjectUtil.toString(info));
 		}
 		

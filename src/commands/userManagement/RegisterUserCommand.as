@@ -14,6 +14,8 @@ package commands.userManagement
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
+	import view.common.CustomAlert;
+	
 	import vo.UserVO;
 
 	public class RegisterUserCommand implements ICommand, IResponder
@@ -33,7 +35,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged = false;
 				DataModel.getInstance().isLoggedIn = false;
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				Alert.show("Se ha enviado un email de activación");
+				CustomAlert.info("An activation email has been sent to the email you specified.");
 			} else {
 				//Inform about the error
 				var error:String = result.toString();
@@ -46,7 +48,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while registering: \n"+faultEvent.message);
+			CustomAlert.error("Error while registering.");
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -15,6 +15,7 @@
 	<mx:Script>
 
 		<![CDATA[
+			import view.common.CustomAlert;
 			import events.AddVideoEvent;
 			
 			import model.DataModel;
@@ -325,7 +326,7 @@
 				}
 				else
 				{
-					Alert.show("You must 'Allow' the access to your devices.");
+					CustomAlert.error("You must 'Allow' the access to your devices.");
 				}
 			}
 

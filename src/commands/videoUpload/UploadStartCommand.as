@@ -15,6 +15,8 @@ package commands.videoUpload
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class UploadStartCommand implements ICommand, IResponder
 	{
@@ -51,9 +53,9 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			if (info is HTTPStatusEvent)
-				Alert.show("Error while uploading file:\n" + info.status);
+				CustomAlert.error("Error while uploading file.");
 			else
-				Alert.show("Error while uploading file:\n" + info.text);
+				CustomAlert.error("Error while uploading file.");
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -9,12 +9,11 @@ package commands.videoUpload
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
-	import vo.ExerciseVO;
+	import view.common.CustomAlert;
 
 	public class YoutubeCheckStatusCommand implements ICommand, IResponder
 	{
@@ -39,7 +38,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			Alert.show("Error while retrieving video status:" + faultEvent.message);
+			CustomAlert.error("Error while retrieving video status.");
 			trace(ObjectUtil.toString(info));
 		}
 		

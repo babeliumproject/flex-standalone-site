@@ -9,6 +9,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import view.common.CustomAlert;
 			import control.BabeliaBrowserManager;
 
 			import events.*;
@@ -195,7 +196,7 @@
 				}
 				else
 				{
-					Alert.show(resourceManager.getString('myResources', 'YOUMUSTSPECIFYASCORE'));
+					CustomAlert.error(resourceManager.getString('myResources', 'YOUMUSTSPECIFYASCORE'));
 				}
 			}
 

@@ -9,10 +9,11 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.UserVO;
 
@@ -53,7 +54,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: "+faultEvent.message);
+			CustomAlert.error("Error while authenticating you in the system.");
 			trace(ObjectUtil.toString(info));
 		}
 		
