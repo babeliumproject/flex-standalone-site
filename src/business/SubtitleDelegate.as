@@ -2,11 +2,9 @@ package business
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
-	import mx.controls.Alert;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
-	import mx.utils.ObjectUtil;
 	
 	import vo.SubtitleAndSubtitleLinesVO;
 	
@@ -30,6 +28,12 @@ package business
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getSubtitleLines(subtitle.exerciseId,subtitle.language);
 			pendingCall.addResponder(responder);	
+		}
+		
+		public function getSubtitleLinesUsingId(subtitleId:int):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
+			var pendingCall:AsyncToken = service.getSubtitleLinesUsingId(subtitleId);
+			pendingCall.addResponder(responder);
 		}
 		
 

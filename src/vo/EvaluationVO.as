@@ -38,6 +38,7 @@ package vo
 	   public var responseAddingDate:String;
 	   public var responseUserId:int;
 	   public var responseUserName:String;
+	   public var responseSubtitleId:int;
 	   
 	   public var userName:String;
 	   

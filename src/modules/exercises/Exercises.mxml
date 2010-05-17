@@ -14,33 +14,33 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import view.common.CustomAlert;
 			import commands.cuepointManager.RecordingOtherRoleCommand;
 			import commands.cuepointManager.ReplayResponseCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.RecordingEndOptionEvent;
 			import events.ResponseEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
-
+			
+			import view.common.CustomAlert;
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -226,7 +226,7 @@
 				// TODO: else // Need to get cuepoints for this video manually
 				//{ 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				_cueManager.setCuesFromSubtitle(availableLocales.selectedItem.toString());
+				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.toString());
 				//}	
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -566,8 +566,9 @@
 				var user:int=DataModel.getInstance().loggedUser.id;
 
 				//This must be changed by some function that takes a snapshot of the Response video
-				var responseThumbnail:String="noVideo";
-				var responseData:ResponseVO=new ResponseVO(0, user, _exerciseId, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0);
+				var responseThumbnail:String="nothumb.png";
+				var subtitleId:int = _cueManager.currentSubtitle;
+				var responseData:ResponseVO=new ResponseVO(0, user, _exerciseId, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0,subtitleId);
 
 				//Second, we create an historic data container to store the info we have so far.
 				var creditChange:CreditHistoryVO=new CreditHistoryVO();

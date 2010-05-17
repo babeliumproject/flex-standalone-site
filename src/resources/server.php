@@ -7,10 +7,9 @@ require_once 'Zend/Amf/Server.php';
 
 
 // Import here your DAO classes
-require_once './amfphp/services/babelia/Epaitu.php';
-
 require_once './amfphp/services/babelia/CreditDAO.php';
 require_once './amfphp/services/babelia/ExerciseDAO.php';
+require_once './amfphp/services/babelia/EvaluationDAO.php';
 require_once './amfphp/services/babelia/LoginDAO.php';
 require_once './amfphp/services/babelia/PreferenceDAO.php';
 require_once './amfphp/services/babelia/RegisterUser.php';
@@ -32,16 +31,14 @@ $server = new Zend_Amf_Server();
 $server->setProduction(false);
 
 // Add class to be reflected
-$server->setClass('Epaitu');
-//$server->setClass('ShowSubLang');
 $server->setClass('CreditDAO');
 $server->setClass('ExerciseDAO');
+$server->setClass('EvaluationDAO');
 $server->setClass('LoginDAO');
 $server->setClass('PreferenceDAO');
 $server->setClass('RegisterUser');
 $server->setClass('ResponseDAO');
 $server->setClass('SubtitleDAO');
-//$server->setClass('SubtitlesAndRolesDAO');
 $server->setClass('UserDAO');
 $server->setClass('UploadExerciseDAO');
 $server->setClass('YouTubeDAO');
@@ -54,18 +51,16 @@ $server->setClass('TagCloudDAO');
 $server->setClassMap('ContactVO',"Contact");
 $server->setClassMap('Bideoa',"Bideoa");
 $server->setClassMap('CreditHistoryVO',"CreditHistoryVO");
-$server->setClassMap('Epai',"Epai");
 $server->setClassMap('ExerciseCommentVO',"ExerciseCommentVO");
 $server->setClassMap('ExerciseLevelVO',"ExerciseLevelVO");
 $server->setClassMap('ExerciseRoleVO',"ExerciseRoleVO");
 $server->setClassMap('ExerciseScoreVO',"ExerciseScoreVO");
 $server->setClassMap('ExerciseVO',"ExerciseVO");
+$server->setClassMap('EvaluationVO',"EvaluationVO");
 $server->setClassMap('LoginVO',"LoginVO");
 $server->setClassMap('PreferenceVO',"PreferenceVO");
 $server->setClassMap('ResponseVO', "ResponseVO");
-$server->setClassMap('Sub',"Sub");
 $server->setClassMap('SubtitleAndSubtitleLinesVO',"SubtitleAndSubtitleLinesVO");
-//$server->setClassMap('SubtitlesAndRolesVO', "SubtitlesAndRolesVO");
 $server->setClassMap('SubtitleLineVO',"SubtitleLineVO");
 $server->setClassMap('UserVO',"UserVO");
 $server->setClassMap('NewUserVO',"NewUserVO");

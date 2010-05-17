@@ -16,8 +16,10 @@ package vo
 		public var ratingAmount:int;
 		public var characterName:String;
 		public var transcriptionId:int;
+		public var subtitleId:int;
 		
-		public function ResponseVO(id:int, userId:int, exerciseId:int, fileIdentifier:String, isPrivate:Boolean, thumbnailUri:String, source:String, duration:int, addingDate:String, ratingAmount:int, characterName:String, transcriptionId:int){
+		
+		public function ResponseVO(id:int, userId:int, exerciseId:int, fileIdentifier:String, isPrivate:Boolean, thumbnailUri:String, source:String, duration:int, addingDate:String, ratingAmount:int, characterName:String, transcriptionId:int, subtitleId:int){
 			this.id = id;
 			this.userId = userId;
 			this.exerciseId = exerciseId;
@@ -30,6 +32,7 @@ package vo
 			this.ratingAmount = ratingAmount;
 			this.characterName = characterName;
 			this.transcriptionId = transcriptionId;
+			this.subtitleId = subtitleId;
 		}
 		
 

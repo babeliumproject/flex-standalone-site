@@ -36,6 +36,7 @@ class EvaluationVO{
 	public $responseAddingDate;
 	public $responseUserId;
 	public $responseUserName;
+	public $responseSubtitleId;
 	
 	public $userName;
 	

@@ -37,8 +37,12 @@ package control
 		public var cuelist:ArrayCollection = new ArrayCollection();
 		
 		private var cache:Dictionary; // as HashMap
-		private var watchingVideo:int;
+		private var exerciseId:int;
+		private var subtitleId:int;
 		public var cached:Boolean = false;
+		
+		//Prevents multiple firing of the same subtitle event
+		//private var displayed:Boolean = false;
 
 		/**
 		 * Constructor - Singleton Pattern
@@ -50,7 +54,8 @@ package control
 			
 			cuelist = new ArrayCollection();
 			cache = new Dictionary();
-			watchingVideo = -1;
+			exerciseId = -1;
+			subtitleId = -1;
 			cached = false;
 		}
 		
@@ -64,7 +69,8 @@ package control
 		 **/
 		public function reset() : void
 		{
-		 	watchingVideo = -1;
+		 	exerciseId = -1;
+			subtitleId = -1;
 		 	cached = false;
 		 	cuelist.removeAll();
 		}
@@ -75,11 +81,11 @@ package control
 		 **/
 		 public function setVideo(videoId:int) : Boolean
 		 {
-		 	this.watchingVideo = videoId;
+		 	this.exerciseId = videoId;
 		 
-		 	if ( cache[this.watchingVideo] != null )
+		 	if ( cache[this.exerciseId] != null )
 		 	{
-		 		var cachedCuelist:CueObjectCache = cache[this.watchingVideo] as CueObjectCache;
+		 		var cachedCuelist:CueObjectCache = cache[this.exerciseId] as CueObjectCache;
 		 		
 		 		/**
 		 		 *  flash.utils.getTimer():int 
@@ -93,6 +99,10 @@ package control
 		 	}
 		 	
 			return false;
+		 }
+		 
+		 public function get currentSubtitle():int{
+			 return subtitleId;
 		 }
 
 		/**
@@ -177,15 +187,15 @@ package control
 		 **/
 		public function saveCache() : void
 		{
-			if ( cache[this.watchingVideo] != null )
+			if ( cache[this.exerciseId] != null )
 			{
-				var cachedVideo:CueObjectCache = cache[this.watchingVideo] as CueObjectCache;
+				var cachedVideo:CueObjectCache = cache[this.exerciseId] as CueObjectCache;
 				cachedVideo.setCachedTime(flash.utils.getTimer());
 				cachedVideo.setCueList(cuelist);
 			}
 			else
 			{
-				cache[this.watchingVideo] = new CueObjectCache(flash.utils.getTimer(), cuelist);
+				cache[this.exerciseId] = new CueObjectCache(flash.utils.getTimer(), cuelist);
 			}
 		}
 
@@ -202,38 +212,40 @@ package control
 			
 			for each (var cueobj:CueObject in cuelist)
 			{
-				if (!displayed && ((curTime - 0.08) < cueobj.getStartTime() 
+				if (/*!displayed &&*/ ((curTime - 0.08) < cueobj.getStartTime() 
 						&& cueobj.getStartTime() < (curTime + 0.08)))
 				{
-					displayed = true;
+					/*displayed = true;*/
 					cueobj.executeStartCommand();
 					break;
 				}
 				
-				if (displayed && ((curTime - 0.08) < cueobj.getEndTime() 
+				if (/*displayed &&*/ ((curTime - 0.08) < cueobj.getEndTime() 
 						&& cueobj.getEndTime() < (curTime + 0.08)))
 				{
-					displayed = false;
+					/*displayed = false;*/
 					cueobj.executeEndCommand();
 					break;
 				}
 			}
 		 }
-		
-		private var displayed:Boolean = false;
 
 
 		/**
 		 * Get cuepoints from subtitle
 		 **/ 
-		public function setCuesFromSubtitle(language:String) : void
+		public function setCuesFromSubtitleUsingLocale(language:String) : void
 		{
 			var subtitle:SubtitleAndSubtitleLinesVO = new SubtitleAndSubtitleLinesVO();
-			subtitle.exerciseId = this.watchingVideo;
+			subtitle.exerciseId = this.exerciseId;
 			subtitle.language = language;
 			
 			// add this manager as iresponder and get subtitle lines
 			new SubtitleDelegate(this).getSubtitleLines(subtitle);
+		}
+		
+		public function setCuesFromSubtitleUsingId(subtitleId:int):void{
+			new SubtitleDelegate(this).getSubtitleLinesUsingId(subtitleId);
 		}
 		
 		public function addCueFromSubtitleLine(subline:SubtitleLineVO) : void
@@ -284,9 +296,11 @@ package control
 					{
 						addCueFromSubtitleLine(resultCollection.getItemAt(i) as SubtitleLineVO);
 					}
+					subtitleId = (resultCollection.getItemAt(0) as SubtitleLineVO).subtitleId;
 				}
 			}
 			//sortByStartTime();
+			
 			dispatchEvent(new CueManagerEvent(CueManagerEvent.SUBTITLES_RETRIEVED));
 		}
 		

@@ -4,59 +4,62 @@
 						  xmlns:common="view.common.*"
 						  title="{resourceManager.getString('myResources', 'VALUATION')}"
 						  layout="vertical"
-						  horizontalAlign="center">
+						  horizontalAlign="center"
+						  showCloseButton="true"
+						  creationComplete="onComplete()">
 	<mx:Script>
 		<![CDATA[
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			import mx.controls.Alert;
+			import events.EvaluationEvent;
+			
+			import model.DataModel;
+			
 			import mx.collections.ArrayCollection;
-			import mx.utils.ArrayUtil;
+			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 
 			[Bindable]
-			private var dp:ArrayCollection;
-
-
-			public function datuakBidali(izena:int):void
-			{
-				grafikoa.datuakLortu.send(izena);
+			private var chartData:ArrayCollection;
+			
+			[Bindable]
+			private var _dataModel:DataModel = DataModel.getInstance();
+			
+			public static var responseId:int;
+			
+			public function onComplete():void{
+				if(responseId > 0)
+					new EvaluationEvent(EvaluationEvent.GET_EVALUATION_CHART_DATA,null,0,responseId).dispatch();
+				this.addEventListener(CloseEvent.CLOSE, closeClickHandler);
+			}
+			
+			public function set evaluationChartDataRetrieveHandler(value:Boolean):void{
+				var ecdDataprovider:ArrayCollection=_dataModel.evaluationChartData;
+				chartData=ecdDataprovider;
+			}
+			
+			private function closeClickHandler(event:MouseEvent):void{
+				PopUpManager.removePopUp(this);
 			}
 
-			private function faultHandler(fault:FaultEvent):void
-			{
-				Alert.show(fault.fault.faultString + "\n" + fault.fault.faultDetail, fault.fault.faultCode.toString());
-			}
-
-			private function epaiDatuakLortu(event:ResultEvent):void
-			{
-				dp=new ArrayCollection(ArrayUtil.toArray(event.result));
-			}
 		]]>
 	</mx:Script>
+	
+	<mx:Binding source="{_dataModel.evaluationChartDataRetrieved}"
+				destination="evaluationChartDataRetrieveHandler"/>
 
-	<mx:RemoteObject id="grafikoa"
-					 destination="empService"
-					 source="Epaitu"
-					 fault="faultHandler(event)"
-					 showBusyCursor="true">
-		<mx:method name="datuakLortu"
-				   result="epaiDatuakLortu(event)"/>
-	</mx:RemoteObject>
-	<mx:ColumnChart id="myChart"
-					dataProvider="{dp}"
+	<mx:ColumnChart id="evaluationDetailChart"
+					dataProvider="{chartData}"
 					showDataTips="true">
 		<mx:horizontalAxis>
-			<mx:CategoryAxis dataProvider="{dp}"
-							 categoryField="Epailea"/>
+			<mx:CategoryAxis dataProvider="{chartData}"
+							 categoryField="userName"/>
 		</mx:horizontalAxis>
 		<mx:series>
-			<mx:ColumnSeries xField="Epailea"
-							 yField="Balorazioa"
+			<mx:ColumnSeries xField="userName"
+							 yField="score"
 							 displayName="{resourceManager.getString('myResources', 'GRAFTEXT')}"/>
 		</mx:series>
 	</mx:ColumnChart>
-	<mx:Legend dataProvider="{myChart}"/>
-	<mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}"
-			   click="PopUpManager.removePopUp(this);"/>
+	<mx:Legend dataProvider="{evaluationDetailChart}"/>
+	<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_CLOSE')}"
+			   click="closeClickHandler(event)"/>
 </common:CustomTitleWindow>

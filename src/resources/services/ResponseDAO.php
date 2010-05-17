@@ -15,11 +15,11 @@ class ResponseDAO {
 	
 	public function saveResponse(ResponseVO $data){
 		
-		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name) ";
-		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s' ) ";
+		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
+		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
 		
 		return $this->_create($insert, $data->userId, $data->exerciseId, $data->fileIdentifier,
-								$data->thumbnailUri, $data->source, $data->duration, $data->characterName );
+								$data->thumbnailUri, $data->source, $data->duration, $data->characterName, $data->subtitleId );
 		
 	}
 	

@@ -108,7 +108,7 @@
 					var credsEvalRequest:int = DataModel.getInstance().prefDic['evaluationRequestCredits'];
 					if(userCredCount - credsEvalRequest >= 0) {
 						var responseId:int = DataModel.getInstance().historicData.videoResponseId;
-						var response:ResponseVO = new ResponseVO(responseId,0,0,"",false,"","",0,"",0,"",0);
+						var response:ResponseVO = new ResponseVO(responseId,0,0,"",false,"","",0,"",0,"",0,0);
 						new ResponseEvent(ResponseEvent.MAKE_RESPONSE_PUBLIC, response).dispatch();
 					} else {
 						CustomAlert.error(resourceManager.getString('myResources','ERROR_INSUFICCIENT_CREDITS'));

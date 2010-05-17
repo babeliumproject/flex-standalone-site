@@ -14,6 +14,7 @@ class ResponseVO {
 	public $ratingAmount;
 	public $characterName;
 	public $transcriptionId;
+	public $subtitleId;
 	
 	public $_explicitType = "ResponseVO";
 }

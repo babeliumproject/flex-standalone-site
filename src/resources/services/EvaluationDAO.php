@@ -21,7 +21,7 @@ class EvaluationDAO {
 		if($row)
 			$evaluationThreshold = $row [0];
 		
-		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, 
+		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id, 
 		                        A.adding_date, A.source, A.thumbnail_uri, A.duration, F.name, F.ID, 
 		                        B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source
 				FROM (response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id) 
@@ -48,21 +48,22 @@ class EvaluationDAO {
 			$temp->responseId = $row[1];
 			$temp->responseRatingAmount = $row[2];
 			$temp->responseCharacterName = $row[3];
-			$temp->responseAddingDate = $row[4];
-			$temp->responseSource = $row[5];
-			$temp->responseThumbnailUri = $row[6];
-			$temp->responseDuration = $row[7];
+			$temp->responseSubtitleId = $row[4];
+			$temp->responseAddingDate = $row[5];
+			$temp->responseSource = $row[6];
+			$temp->responseThumbnailUri = $row[7];
+			$temp->responseDuration = $row[8];
 			
-			$temp->responseUserName = $row[8];
-			$temp->responseUserId = $row[9];
+			$temp->responseUserName = $row[9];
+			$temp->responseUserId = $row[10];
 			
-			$temp->exerciseId = $row[10];
-			$temp->exerciseName = $row[11];
-			$temp->exerciseDuration = $row[12];
-			$temp->exerciseLanguage = $row[13];
-			$temp->exerciseThumbnailUri = $row[14];
-			$temp->exerciseTitle = $row[15];
-			$temp->exerciseSource = $row[16];
+			$temp->exerciseId = $row[11];
+			$temp->exerciseName = $row[12];
+			$temp->exerciseDuration = $row[13];
+			$temp->exerciseLanguage = $row[14];
+			$temp->exerciseThumbnailUri = $row[15];
+			$temp->exerciseTitle = $row[16];
+			$temp->exerciseSource = $row[17];
 			array_push ( $searchResults, $temp );
 		}
 
@@ -71,7 +72,7 @@ class EvaluationDAO {
 	
 	public function getResponsesAssessedToCurrentUser($userId){
 		
-		$sql = "SELECT A.file_identifier, A.id, A.rating_amount, A.character_name, 
+		$sql = "SELECT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id, 
 		               A.adding_date, A.source, A.thumbnail_uri, A.duration, C.fk_user_id, 
 		               B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source,
 		               AVG(C.score) AS avg_rating
@@ -96,22 +97,23 @@ class EvaluationDAO {
 			$temp->responseId = $row[1];
 			$temp->responseRatingAmount = $row[2];
 			$temp->responseCharacterName = $row[3];
-			$temp->responseAddingDate = $row[4];
-			$temp->responseSource = $row[5];
-			$temp->responseThumbnailUri = $row[6];
-			$temp->responseDuration = $row[7];
+			$temp->responseSubtitleId = $row[4];
+			$temp->responseAddingDate = $row[5];
+			$temp->responseSource = $row[6];
+			$temp->responseThumbnailUri = $row[7];
+			$temp->responseDuration = $row[8];
 			
-			$temp->userId = $row[8];
+			$temp->userId = $row[9];
 			
-			$temp->exerciseId = $row[9];
-			$temp->exerciseName = $row[10];
-			$temp->exerciseDuration = $row[11];
-			$temp->exerciseLanguage = $row[12];
-			$temp->exerciseThumbnailUri = $row[13];
-			$temp->exerciseTitle = $row[14];
-			$temp->exerciseSource = $row[15];
+			$temp->exerciseId = $row[10];
+			$temp->exerciseName = $row[11];
+			$temp->exerciseDuration = $row[12];
+			$temp->exerciseLanguage = $row[13];
+			$temp->exerciseThumbnailUri = $row[14];
+			$temp->exerciseTitle = $row[15];
+			$temp->exerciseSource = $row[16];
 			
-			$temp->evaluationAverage = $row[16];
+			$temp->evaluationAverage = $row[17];
 			
 			array_push ( $searchResults, $temp );
 		}
@@ -120,7 +122,7 @@ class EvaluationDAO {
 	}
 	
 	public function getResponsesAssessedByCurrentUser($userId){
-		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, 
+		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id, 
 		               			A.adding_date, A.source, A.thumbnail_uri, A.duration, A.fk_user_id,
 		               			U.name, C.fk_user_id, C.score, C.comment, C.adding_date,
 		               			B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source 
@@ -145,25 +147,26 @@ class EvaluationDAO {
 			$temp->responseId = $row[1];
 			$temp->responseRatingAmount = $row[2];
 			$temp->responseCharacterName = $row[3];
-			$temp->responseAddingDate = $row[4];
-			$temp->responseSource = $row[5];
-			$temp->responseThumbnailUri = $row[6];
-			$temp->responseDuration = $row[7];
-			$temp->responseUserId = $row[8];
-			$temp->responseUserName = $row[9];
+			$temp->responseSubtitleId = $row[4];
+			$temp->responseAddingDate = $row[5];
+			$temp->responseSource = $row[6];
+			$temp->responseThumbnailUri = $row[7];
+			$temp->responseDuration = $row[8];
+			$temp->responseUserId = $row[9];
+			$temp->responseUserName = $row[10];
 			
-			$temp->userId = $row[10];
-			$temp->score = $row[11];
-			$temp->comment = $row[12];
-			$temp->addingDate = $row[13];
+			$temp->userId = $row[11];
+			$temp->score = $row[12];
+			$temp->comment = $row[13];
+			$temp->addingDate = $row[14];
 			
-			$temp->exerciseId = $row[14];
-			$temp->exerciseName = $row[15];
-			$temp->exerciseDuration = $row[16];
-			$temp->exerciseLanguage = $row[17];
-			$temp->exerciseThumbnailUri = $row[18];
-			$temp->exerciseTitle = $row[19];
-			$temp->exerciseSource = $row[20];
+			$temp->exerciseId = $row[15];
+			$temp->exerciseName = $row[16];
+			$temp->exerciseDuration = $row[17];
+			$temp->exerciseLanguage = $row[18];
+			$temp->exerciseThumbnailUri = $row[19];
+			$temp->exerciseTitle = $row[20];
+			$temp->exerciseSource = $row[21];
 			
 			array_push ( $searchResults, $temp );
 		}

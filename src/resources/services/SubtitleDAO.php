@@ -73,6 +73,17 @@ class SubtitleDAO {
 		return $searchResults;
 
 	}
+	
+	public function getSubtitleLinesUsingId($subtitleId) {
+		$sql = "SELECT SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id 
+            	FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON SL.fk_subtitle_id = S.id) 
+            		 RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id 
+				WHERE ( S.id = %d )";
+
+		$searchResults = $this->_listSubtitleLinesQuery ( $sql, $subtitleId );
+		
+		return $searchResults;
+	}
 
 
 	public function getSubtitleScore($subtitleId) {

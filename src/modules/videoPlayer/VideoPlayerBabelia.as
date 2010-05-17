@@ -348,6 +348,7 @@ package modules.videoPlayer
 				_inNc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
 				_inNc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
 				_inNc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
+				_inNc.client = this;
 			}
 			else
 				playSecondStream();
@@ -776,7 +777,7 @@ package modules.videoPlayer
 			_mic = DataModel.getInstance().microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setLoopBack(true);
-			_mic.setSilenceLevel(1,60000);
+			_mic.setSilenceLevel(0,60000000);
 			
 			//DataModel.getInstance().microphone.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 			
@@ -964,7 +965,7 @@ package modules.videoPlayer
 
 		/**
 		 * Overriden on recording finished:
-		 * Gives the filename to de parent component
+		 * Gives the filename to the parent component
 		 **/
 		override protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
