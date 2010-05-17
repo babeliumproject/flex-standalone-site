@@ -1,15 +1,21 @@
 package commands.search
 {
 	import business.TagCloudDelegate;
+	
 	import com.adobe.cairngorm.commands.ICommand;
-	import mx.rpc.IResponder;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import model.DataModel;
+	
 	import mx.collections.ArrayCollection;
-	import com.adobe.cairngorm.control.CairngormEvent;	
-	import mx.rpc.events.FaultEvent;
 	import mx.controls.Alert;
-	import model.DataModel;	
-	import mx.utils.ObjectUtil;
+	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
+	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
+	
 	import vo.TagVO;
 
 	
@@ -25,7 +31,7 @@ package commands.search
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				try{
 					if (!(resultCollection[0] is TagVO)){
-						Alert.show("The Result is not a well-formed object");
+						CustomAlert.error("The Result is not a well-formed object.");
 					}else{
 						//Matches found
 						//Set the data to the application's model
@@ -44,7 +50,7 @@ package commands.search
 		}
 		public function fault(info:Object):void{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving the cloud of tags:\n\n"+faultEvent.message);
+			CustomAlert.error("Error while retrieving the cloud of tags.");
 			trace(ObjectUtil.toString(info));
 		}
 	}

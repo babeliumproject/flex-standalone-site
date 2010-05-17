@@ -12,10 +12,11 @@ package commands.autoevaluation {
 	import modules.autoevaluation.AutoevaluatorManager;
 	import modules.autoevaluation.Evaluation;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 	
 	import vo.TranscriptionsVO;
 
@@ -57,7 +58,7 @@ package commands.autoevaluation {
 		public function fault(info:Object):void {
 			DataModel.getInstance().autoevaluationAvailable = false;
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: " + faultEvent.message);
+			CustomAlert.error("Error while processing autoevaluation request.");
 			trace(ObjectUtil.toString(info));
 		}
 

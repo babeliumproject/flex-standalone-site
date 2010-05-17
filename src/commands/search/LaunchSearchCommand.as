@@ -1,15 +1,20 @@
 package commands.search{
 	
 	import business.SearchDelegate;
+	
 	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;	
-	import model.DataModel;	
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import model.DataModel;
+	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
-	import mx.rpc.IResponder;	
+	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
+	
 	import vo.ExerciseVO;
 	
 	public class LaunchSearchCommand implements IResponder, ICommand{
@@ -27,7 +32,7 @@ package commands.search{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				try{
 					if (!(resultCollection[0] is ExerciseVO)){
-						Alert.show("The Result is not a well-formed object");
+						CustomAlert.error("The Result is not a well-formed object.");
 					}else{
 						//Matches found
 						//Set the data to the application's model
@@ -47,7 +52,7 @@ package commands.search{
 		
 		public function fault(info:Object):void{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error while retrieving the search:\n\n"+faultEvent.message);
+			CustomAlert.error("Error while retrieving the search.");
 			trace(ObjectUtil.toString(info));
 		}
 		

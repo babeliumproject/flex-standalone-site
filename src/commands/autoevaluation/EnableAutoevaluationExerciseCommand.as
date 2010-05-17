@@ -8,10 +8,11 @@ package commands.autoevaluation {
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class EnableAutoevaluationExerciseCommand implements ICommand, IResponder {
 
@@ -27,7 +28,7 @@ package commands.autoevaluation {
 
 		public function fault(info:Object):void {
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: " + faultEvent.message);
+			CustomAlert.error("Error while enabling the autoevaluation on this video.");
 			trace(ObjectUtil.toString(info));
 		}
 

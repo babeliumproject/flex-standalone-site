@@ -1,15 +1,16 @@
 package commands.autoevaluation {
 	import business.AutoEvaluationDelegate;
-
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-
+	
 	import events.EvaluationEvent;
-
-	import mx.controls.Alert;
+	
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class EnableAutoevaluationResponseCommand implements ICommand, IResponder {
 
@@ -23,7 +24,7 @@ package commands.autoevaluation {
 
 		public function fault(info:Object):void {
 			var faultEvent:FaultEvent = FaultEvent(info);
-			Alert.show("Error: " + faultEvent.message);
+			CustomAlert.error("Error while enabling the autoevaluation on this video.");
 			trace(ObjectUtil.toString(info));
 		}
 	}
