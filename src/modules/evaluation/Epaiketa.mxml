@@ -7,7 +7,7 @@
 		 paddingBottom="8"
 		 fontFamily="Arial"
 		 fontSize="12">
-	
+
 	<mx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
@@ -24,12 +24,13 @@
 			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
+			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 			
 			import mx.collections.ArrayCollection;
-			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
 			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
@@ -37,38 +38,38 @@
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
-			
+
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
-			
-			private var _cueManager:CuePointManager = CuePointManager.getInstance();
-			private var _cueManagerReady:Boolean = false;
-			
+
+			private var _cueManager:CuePointManager=CuePointManager.getInstance();
+			private var _cueManagerReady:Boolean=false;
+
 			private var _timeFormatter:TimeFormatter=new TimeFormatter();
-			
-			[Bindable] 
-			private var _streamSource:String = DataModel.getInstance().streamingResourcesPath;
-			[Bindable] 
-			private var _exerciseTitle:String = ResourceManager.getInstance().getString('myResources','LABEL_EXERCISE_TITLE');
+
 			[Bindable]
-			private var _evaluationSelected:Boolean = false;
-			
-			private var _videoPlayerReady:Boolean = false;
-			
+			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			[Bindable]
+			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'LABEL_EXERCISE_TITLE');
+			[Bindable]
+			private var _evaluationSelected:Boolean=false;
+
+			private var _videoPlayerReady:Boolean=false;
+
 			private var _exerciseId:int;
 			private var _exerciseName:String;
-			
+
 			private var _responseId:int;
 			private var _responseName:String;
 			private var _responseCharacterName:String;
 			private var _responseSubtitleId:int;
-			
+
 			private var _userId:int;
-			
+
 			private var _videoCommentName:String;
 			private var _score:int;
 			private var _comment:String;
-			
+
 			[Bindable]
 			private var assessmentDetailList:ArrayCollection;
 			[Bindable]
@@ -77,88 +78,89 @@
 			private var assessedToCurrentUserList:ArrayCollection;
 			[Bindable]
 			private var assessedByCurrentUserList:ArrayCollection;
-			
-			
+
+
 			private var biakBatera:Boolean=false;
 			private var oraingoTab:String="hasiera";
 			private var kont:int=new int;
 			private var niriEp:Boolean=false;
 			private var nikEp:Boolean=false;
-			
+
 			/**
 			 *  Visual component declaration
 			 */
-			
+
 			//public var assessmentDetailDataGrid:DataGrid = new DataGrid();
 			//public var waitingAssessmentDataGrid:DataGrid = new DataGrid();
 			//public var assessedToCurrentUserDataGrid:DataGrid = new DataGrid();
 			//public var assessedByCurrentUserDataGrid:DataGrid = new DataGrid();
-			
+
 			/**
 			 * Constructor
 			 */
 			public function completeHandler():void
 			{
 				_timeFormatter.outputMilliseconds=false;
-				
+
 				refreshEvaluationData();
-				
+
 				setupVideoPlayer();
 			}
-			
+
 			private function setupVideoPlayer():void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onResponseFinished);
 			}
-			
+
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
 			{
 				_videoPlayerReady=true;
 				VP.stopVideo();
 			}
-			
+
 			private function set waitingAssessmentRetrievedHandler(value:Boolean):void
 			{
 				var waDataprovider:ArrayCollection=dataModel.waitingForAssessmentData;
 				waitingAssessmentDataGrid.rowCount=waDataprovider.length;
 				waitingAssessmentDataGrid.dataProvider=waDataprovider;
 			}
-			
+
 			private function set assessedByCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var abcuDataprovider:ArrayCollection=dataModel.assessedByCurrentUserData;
 				assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
 				assessedByCurrentUserList=abcuDataprovider;
 			}
-			
+
 			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var atcuDataprovider:ArrayCollection=dataModel.assessedToCurrentUserData;
 				assessedToCurrentUserDataGrid.rowCount=atcuDataprovider.length;
 				assessedToCurrentUserList=atcuDataprovider;
 			}
-			
+
 			private function set detailsOfAssessmentRetrievedHandler(value:Boolean):void
 			{
 				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
 				assessmentDetailDataGrid.rowCount=doaDataprovider.length;
 				assessmentDetailList=doaDataprovider;
 			}
-			
+
 			private function set assessmentSavedHandler(value:Boolean):void
 			{
-				
+
 				ratingBox.setVisible(false);
-				
+
 				var creditHistory:CreditHistoryVO=new CreditHistoryVO();
 				creditHistory.videoExerciseId=_exerciseId;
 				creditHistory.videoResponseId=int(_responseId);
 				DataModel.getInstance().historicData=creditHistory;
 				new CreditEvent(CreditEvent.ADD_CREDITS_FOR_EVALUATING, DataModel.getInstance().loggedUser.id).dispatch();
-				
+
 				refreshEvaluationData();
 			}
-			
+
 			private function refreshEvaluationData():void
 			{
 				if (dataModel.isLoggedIn)
@@ -179,110 +181,114 @@
 				assessmentsOfSelectedResponse.visible=false;
 				ratingBox.visible=false;
 			}
-			
+
 			private function prepareEvaluation():void
 			{
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
+				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.videoSource=_exerciseName;
-				VP.state = VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.secondSource = _responseName;
-				
+				VP.secondSource=_responseName;
+
+				hideArrows();
 				resetCueManager();
 				prepareCueManager();
 			}
-			
+
 			private function resetCueManager():void
 			{
 				_cueManager.reset();
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 			}
-			
+
 			private function prepareCueManager():void
 			{
-				
+
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 				_cueManager.setCuesFromSubtitleUsingId(_responseSubtitleId);
 				//set cues from subtitle id retrieved from the list
-				
+
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			}
-			
+
 			private function onSubtitlesRetrieved(e:CueManagerEvent):void
 			{
+				showArrows();
 				setupSimultaneousPlaybackCommands();
 			}
-			
-			private function setupExercisePlaybackCommands():void{
+
+			private function setupExercisePlaybackCommands():void
+			{
 				var auxList:ArrayCollection=_cueManager.getCuelist();
-				
+
 				if (auxList.length <= 0)
 					return;
-				
+
 				for each (var cueobj:CueObject in auxList)
 				{
 					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj, VP));
 					cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 				}
-				
+
 				_cueManagerReady=true;
 			}
-			
-			private function setupResponsePlaybackCommands():void{
+
+			private function setupResponsePlaybackCommands():void
+			{
 				var auxList:ArrayCollection=_cueManager.getCuelist();
-				
+
 				if (auxList.length <= 0)
 					return;
-				
+
 				for each (var cueobj:CueObject in auxList)
 				{
 					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj, VP));
 					cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 				}
-				
+
 				_cueManagerReady=true;
 			}
-			
-			private function setupSimultaneousPlaybackCommands():void{
+
+			private function setupSimultaneousPlaybackCommands():void
+			{
 				var auxList:ArrayCollection=_cueManager.getCuelist();
-				
+
 				if (auxList.length <= 0)
 					return;
-				
+
 				for each (var cueobj:CueObject in auxList)
 				{
 					if (cueobj.getRole() != _responseCharacterName)
 					{
 						cueobj.setStartCommand(new RecordingOtherRoleCommand(cueobj.getText(), cueobj.getRole(), cueobj.getEndTime() - cueobj.getStartTime(), VP));
-						
+
 						cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 					}
 					else
 					{
 						cueobj.setStartCommand(new StartRecordingSelectedRoleCommand(cueobj.getText(), _responseCharacterName, cueobj.getEndTime() - cueobj.getStartTime(), VP));
-						
+
 						cueobj.setEndCommand(new StopRecordingSelectedRoleCommand(VP));
 					}
 				}
-				
+
 				_cueManagerReady=true;
-				showArrows();
 			}
-			
+
 			private function showArrows():void
 			{
 				VP.arrows=true;
 				VP.setArrows(_cueManager.cues2rolearray(), _responseCharacterName);
 			}
-			
+
 			private function hideArrows():void
 			{
 				VP.arrows=false;
 				VP.removeArrows();
 			}
-			
+
 			private function sendAssessmentClickHandler():void
 			{
 				if ((ratingRadioGroup.selectedValue) && (commentsTextArea.text != ""))
@@ -295,7 +301,7 @@
 					evaluation.responseId=_responseId;
 					evaluation.userId=_userId;
 					evaluation.evaluationVideoFileIdentifier=_videoCommentName;
-					
+
 					//If the user added a video comment
 					if (videoCommentCheckBox.selected)
 						new EvaluationEvent(EvaluationEvent.ADD_VIDEO_ASSESSMENT, evaluation).dispatch();
@@ -308,30 +314,30 @@
 					CustomAlert.info(resourceManager.getString('myResources', 'YOUMUSTSPECIFYASCORE'));
 				}
 			}
-			
+
 			//Epaiketari dagokion "reset" botoia sakatzean exekutatuko den funtzioa
 			private function reset():void
 			{
 				ratingRadioGroup.selection=null;
 				commentsTextArea.text="";
 			}
-			
+
 			private function viewGraphicClickHandler():void
 			{
-				Grafikoak.responseId = _responseId;
+				Grafikoak.responseId=_responseId;
 				var grafikoa:Grafikoak=Grafikoak(PopUpManager.createPopUp(this, Grafikoak, true));
 				PopUpManager.centerPopUp(grafikoa);
 			}
-			
+
 			private function addVideoComment():void
 			{
 				var videoCommentPopUp:BideoGrabaketa=BideoGrabaketa(PopUpManager.createPopUp(this, BideoGrabaketa, true));
-				
+
 				videoCommentPopUp.addEventListener(AddVideoEvent.CHANGE_OPTION, bideoaGehituta);
 				PopUpManager.centerPopUp(videoCommentPopUp);
-				
+
 			}
-			
+
 			private function bideoaGehituta(event:AddVideoEvent):void
 			{
 				addVideoCommentButton.visible=false;
@@ -340,31 +346,13 @@
 				videoCommentCheckBox.label=event.bideoIzena.toString();
 				_videoCommentName=event.bideoIzena.toString();
 			}
-			
-			//bideoaren egoera aldaketak
-			private function onMyCustomEvent(event:Event):void
+
+			private function onResponseFinished(event:Event):void
 			{
-				//mx.controls.Alert.show("aa");
-				kont++;
-				trace("event: " + kont.toString());
-				
-			}
-			
-			
-			private function grabaketaAmaituta(event:Event):void
-			{
-				if (oraingoTab == "epaituGabe")
-				{
+				if (evaluationOptionsViewStack.selectedChild == waitingAssessmentBox)
 					sendAssessmentButton.enabled=true;
-				}
 			}
-			
-			private function botoiaSakatuDu(event:Event):void
-			{
-				//mx.controls.Alert.show("botoia!");
-				biakBatera=false;
-			}
-			
+
 			private function allDataReceived():void
 			{
 				if (waitingForAssessmentList != null && assessedByCurrentUserList != null && assessedByCurrentUserList != null)
@@ -372,9 +360,7 @@
 					onURLChange="Data";
 				}
 			}
-			
-			//Datagrid-aren balioak aldatzean egin beharrekoa
-			
+
 			private function waitingAssessmentChangeHandler(event:Event):void
 			{
 				if (oraingoTab != "epaituGabe")
@@ -388,7 +374,7 @@
 						assessedByCurrentUserDataGrid.selectedItem=null;
 					oraingoTab="epaituGabe";
 				}
-				
+
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -396,28 +382,28 @@
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-				
-				_exerciseTitle = selectedItem.exerciseTitle;
-				_evaluationSelected = true;
-				
+
+				_exerciseTitle=selectedItem.exerciseTitle;
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
-				
+				_evaluationSelected=true;
+
+
 				ratingBox.visible=true;
 				addVideoCommentButton.visible=true;
 				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
 				sendAssessmentButton.enabled=false;
-				
+
 				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, 0, _responseId).dispatch();
-				
+
 				var urlResponseName:String=_responseName.replace("audio/", "");
-				
+
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
-				
+
 			}
-			
+
 			private function assessedToCurrentUserChangeHandler(event:Event):void
 			{
 				if (!niriEp)
@@ -433,7 +419,7 @@
 					if (nikEp)
 						assessedByCurrentUserDataGrid.selectedItem=null;
 				}
-				
+
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -441,33 +427,33 @@
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-				
-				_exerciseTitle = selectedItem.exerciseTitle;
-				_evaluationSelected = true;
-				
+
+				_exerciseTitle=selectedItem.exerciseTitle;
+				_evaluationSelected=true;
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
-				
+
+
 				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.evaluationAverage;
-				
+
 				assessmentsOfSelectedResponse.visible=true;
-				
+
 				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, 0, _responseId).dispatch();
-				
+
 				//Get the autoevaluation info if available
 				computerEvaluation.setResponseID(_responseId);
-				
+
 				var urlResponseName:String=_responseName.replace("audio/", "");
-				
+
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
 			}
-			
+
 			private function assessedByCurrentUserChangeHandler(event:Event):void
 			{
 				if (!nikEp)
 					nikEp=true;
-				
+
 				if (oraingoTab != "nikEpaituak")
 				{
 					frogatu("nikEpaituak");
@@ -476,10 +462,10 @@
 					waitingAssessmentDataGrid.selectedItem=null;
 					if (niriEp)
 						assessedToCurrentUserDataGrid.selectedItem=null;
-					
+
 					oraingoTab="nikEpaituak";
 				}
-				
+
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -487,22 +473,22 @@
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-				
-				_exerciseTitle = selectedItem.exerciseTitle;
-				_evaluationSelected = true;
-				
+
+				_exerciseTitle=selectedItem.exerciseTitle;
+				_evaluationSelected=true;
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
+
 				addVideoCommentButton.visible=true;
 				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
-				
+
 				var urlResponseName:String=_responseName.replace("audio/", "");
-				
+
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
 			}
-			
+
 			private function assessmentDetailChangeHandler(event:Event):void
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
@@ -515,7 +501,7 @@
 					bideoIruzkin.setBideoIzena(_videoCommentName);
 				}
 			}
-			
+
 			//ea hasierako egoeran dagoen kontrolatzen du
 			private function frogatu(egoeraBerria:String):void
 			{
@@ -524,24 +510,7 @@
 					oraingoTab=egoeraBerria;
 				}
 			}
-			
-			private function onAddCuepoint(event:AddCuepointEvent):void
-			{
-				if (biakBatera)
-				{
-					if (_responseCharacterName == event.izena)
-					{
-						
-					}
-					else
-					{
-						
-					}
-				}
-			}
-			
-			
-			
+
 			private function set showAutoevalTab(val:Boolean):void
 			{
 				if (evaluationTypeNavigator != null)
@@ -555,69 +524,101 @@
 				else
 					DataModel.getInstance().autoevaluationAvailable=true;
 			}
-			
-			private function durationLabelFunction(item:Object):String
+
+			private function durationLabelFunction(item:Object, column:DataGridColumn):String
 			{
-				return _timeFormatter.format(item.Iraupena);
+				if (item)
+					return _timeFormatter.format(item.exerciseDuration);
+				else
+					return "";
 			}
-			
-			private function refreshTab(event:IndexChangedEvent):void
+
+			private function onEvaluationTabChange(event:MouseEvent):void
 			{
-				switch (event.newIndex)
-				{
-					case 0:
-						waitingAssessmentDataGrid.rowCount=waitingForAssessmentList.length;
+				var pressedButton:Object = event.currentTarget;
+				switch(pressedButton){
+					case waitingAssessmentButton:
+						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
+						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						assessedToCurrentUserDataGrid.selectedItem = null;
+						assessedByCurrentUserDataGrid.selectedItem = null;
+						assessmentsOfSelectedResponse.visible = false;
+						VP.stopVideo();
+						VP.videoSource="";
+						evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
 						break;
-					case 1:
-						assessedToCurrentUserDataGrid.rowCount=assessedToCurrentUserList.length;
+					case assessedToCurrentUserButton:
+						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
+						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						waitingAssessmentDataGrid.selectedItem = null;
+						assessedByCurrentUserDataGrid.selectedItem = null;
+						ratingBox.visible = false;
+						VP.stopVideo();
+						VP.videoSource="";
+						evaluationOptionsViewStack.selectedChild = assessedToCurrentUserBox;
 						break;
-					case 2:
-						assessedByCurrentUserDataGrid.rowCount=assessedByCurrentUserList.length;
+					case assessedByCurrentUserButton:
+						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
+						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
+						waitingAssessmentDataGrid.selectedItem = null;
+						assessedToCurrentUserDataGrid.selectedItem = null;
+						assessmentsOfSelectedResponse.visible = false;
+						ratingBox.visible = false;
+						VP.stopVideo();
+						VP.videoSource="";
+						evaluationOptionsViewStack.selectedChild = assessedByCurrentUserBox;
+						break;
+					default:
 						break;
 				}
 			}
-			
+
 			private function set userAuthenticationHandler(value:Boolean):void
 			{
 				refreshEvaluationData();
 				evaluationOptionsViewStack.selectedIndex=0;
 			}
-			
+
 			private function set onTabChange(value:Boolean):void
 			{
 				ratingBox.visible=false;
 				assessmentsOfSelectedResponse.visible=false;
-				
-				oraingoTab="hasiera";
-				
+
+				evaluationOptionsViewStack.selectedChild=waitingAssessmentBox;
+
 				waitingAssessmentDataGrid.selectedItem=null;
 				assessedByCurrentUserDataGrid.selectedItem=null;
 				assessedToCurrentUserDataGrid.selectedItem=null;
-				
+
 			}
-			
+
 			private function set onURLChange(value:Object):void
 			{
 				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
-				
+
 				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX)
 					return;
-				
+
 				if (value == null)
 					return;
-				
-				if(!dataModel.isLoggedIn){
+
+				if (!dataModel.isLoggedIn)
+				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
 				}
-				
-				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null){
+
+				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
+				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
 				}
-				
-				
-				
+
+
+
 				switch (browser.actionFragment)
 				{
 					case BabeliaBrowserManager.EVALUATE:
@@ -627,7 +628,7 @@
 							for each (var evEvaluate:EvaluationVO in waitingForAssessmentList)
 							{
 								var evaluateStripped:String=evEvaluate.responseFileIdentifier.replace("audio/", "");
-								
+
 								if (evaluateStripped == browser.targetFragment)
 								{
 									tmpEvaluate=evEvaluate;
@@ -643,12 +644,12 @@
 							}
 							else
 							{
-								
+
 								new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 							}
 						}
 						break;
-					
+
 					case BabeliaBrowserManager.REVISE:
 						if (browser.targetFragment != '')
 						{
@@ -657,7 +658,7 @@
 							for each (var evRevise:EvaluationVO in assessedToCurrentUserList)
 							{
 								var reviseStripped:String=evRevise.responseFileIdentifier.replace("audio/", "");
-								
+
 								if (reviseStripped == browser.targetFragment)
 								{
 									tmpRevise=evRevise;
@@ -679,9 +680,9 @@
 							}
 						}
 						break;
-					
+
 					case BabeliaBrowserManager.VIEW:
-						
+
 						if (browser.targetFragment != '')
 						{
 							var tmpView:EvaluationVO;
@@ -714,14 +715,14 @@
 			}
 		]]>
 	</mx:Script>
-	
+
 	<mx:Binding source="{DataModel.getInstance().autoevaluationAvailable}"
-				destination="this.showAutoevalTab"/>
+				destination="showAutoevalTab"/>
 	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="userAuthenticationHandler"/>
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
-	
+
 	<mx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
 				destination="waitingAssessmentRetrievedHandler"/>
 	<mx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
@@ -730,14 +731,14 @@
 				destination="assessedByCurrentUserRetrievedHandler"/>
 	<mx:Binding source="{dataModel.detailsOfAssessedResponseDataRetrieved}"
 				destination="detailsOfAssessmentRetrievedHandler"/>
-	
+
 	<mx:Binding source="{dataModel.addAssessmentRetrieved}"
 				destination="assessmentSavedHandler"/>
-	
-	
+
+
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
-	
+
 	<mx:VBox>
 		<mx:Label id="exerciseTitle"
 				  text="{_exerciseTitle}"
@@ -759,7 +760,7 @@
 										controlsEnabled="{_evaluationSelected}"/>
 	</mx:VBox>
 	<mx:Spacer width="20"/>
-	
+
 	<mx:VBox width="100%"
 			 height="100%"
 			 paddingLeft="4"
@@ -773,22 +774,25 @@
 				 backgroundColor="#DDDDDD"
 				 borderStyle="solid"
 				 horizontalGap="16">
-			<mx:Button label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}"
+			<mx:Button id="waitingAssessmentButton"
+					   label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}"
 					   cornerRadius="8"
-					   click="evaluationOptionsViewStack.selectedChild=waitingAssessmentBox"/>
-			<mx:Button label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}"
+					   click="onEvaluationTabChange(event)"/>
+			<mx:Button id="assessedToCurrentUserButton"
+					   label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}"
 					   cornerRadius="8"
-					   click="evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBox"/>
-			<mx:Button label="{resourceManager.getString('myResources','NIKEPAITUTAKOAK')}"
+					   click="onEvaluationTabChange(event)"/>
+			<mx:Button id="assessedByCurrentUserButton"
+					   label="{resourceManager.getString('myResources','NIKEPAITUTAKOAK')}"
 					   cornerRadius="8"
-					   click="evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBox"/>
+					   click="onEvaluationTabChange(event)"/>
 		</mx:HBox>
-		
+
 		<mx:ViewStack id="evaluationOptionsViewStack"
 					  width="100%"
 					  height="100%"
 					  creationPolicy="all">
-			
+
 			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
 			<mx:VBox id="waitingAssessmentBox"
 					 horizontalAlign="center">
@@ -817,7 +821,8 @@
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
 										   dataField="responseUserName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="responseDuration"/>
+										   dataField="responseDuration"
+										   labelFunction="{durationLabelFunction}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
@@ -827,7 +832,7 @@
 										   dataField="responseAddingDate"/>
 					</mx:columns>
 				</mx:DataGrid>
-				
+
 				<!-- Epaitu gabeko bideoak baloratzeko kaxa -->
 				<mx:HBox paddingLeft="10"
 						 paddingRight="10"
@@ -872,7 +877,7 @@
 											label="5"
 											value="5"/>
 						</mx:HBox>
-						
+
 						<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
 								   click="addVideoComment()"
 								   id="addVideoCommentButton"/>
@@ -881,7 +886,7 @@
 								  visible="false"/>
 						<mx:CheckBox id="videoCommentCheckBox"
 									 visible="false"/>
-						
+
 						<mx:TextArea width="100%"
 									 height="82"
 									 id="commentsTextArea"/>
@@ -896,7 +901,7 @@
 					</mx:VBox>
 				</mx:HBox>
 			</mx:VBox>
-			
+
 			<!-- Niri epaitutako bideoen zerrenda erakusten du -->
 			<mx:VBox id="assessedToCurrentUserBox">
 				<mx:DataGrid width="100%"
@@ -923,7 +928,8 @@
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="exerciseDuration"/>
+										   dataField="exerciseDuration"
+										   labelFunction="{durationLabelFunction}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'AVG')}"
@@ -954,7 +960,7 @@
 										   click="viewGraphicClickHandler()"/>
 								<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
 							</mx:HBox>
-							
+
 							<mx:DataGrid id="assessmentDetailDataGrid"
 										 dataProvider="{assessmentDetailList}"
 										 change="assessmentDetailChangeHandler(event)"
@@ -972,7 +978,8 @@
 													   width="160">
 										<mx:itemRenderer>
 											<mx:Component>
-												<mx:Text text="{data.comment}" width="160"/>
+												<mx:Text text="{data.comment}"
+														 width="160"/>
 											</mx:Component>
 										</mx:itemRenderer>
 									</mx:DataGridColumn>
@@ -985,10 +992,10 @@
 						</ns2:AutoevaluationPanel>
 					</mx:TabNavigator>
 				</mx:HBox>
-				
+
 			</mx:VBox>
-			
-			
+
+
 			<!-- Nik epaitu ditudan bideoen zerrenda erakusten du -->
 			<mx:VBox label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}"
 					 id="assessedByCurrentUserBox">
@@ -1016,7 +1023,8 @@
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
 										   dataField="responseUserName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="responseDuration"/>
+										   dataField="responseDuration"
+										   labelFunction="{durationLabelFunction}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
@@ -1026,6 +1034,6 @@
 			</mx:VBox>
 		</mx:ViewStack>
 	</mx:VBox>
-	
-	
+
+
 </mx:HBox>

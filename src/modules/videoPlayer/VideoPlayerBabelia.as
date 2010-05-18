@@ -26,6 +26,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
+	import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Text;
@@ -118,6 +119,15 @@ package modules.videoPlayer
 		private var _recordingMuted:Boolean=false;
 
 		private var _lastVideoHeight:Number=0;
+		
+		public static const SECONDSTREAM_READY_STATE:int = 0;
+		public static const SECONDSTREAM_STARTED_STATE:int = 1;
+		public static const SECONDSTREAM_STOPPED_STATE:int = 2;
+		public static const SECONDSTREAM_FINISHED_STATE:int = 3;
+		public static const SECONDSTREAM_PAUSED_STATE:int = 4;
+		public static const SECONDSTREAM_BUFFERING_STATE:int = 5;
+		
+		[Bindable] public var secondStreamState:int;
 
 		/**
 		 * CONSTRUCTOR
@@ -349,6 +359,9 @@ package modules.videoPlayer
 				_inNc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
 				_inNc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
 				_inNc.client = this;
+				if(_video != null){
+					_video.clear();
+				}
 			}
 			else
 				playSecondStream();
@@ -701,7 +714,6 @@ package modules.videoPlayer
 				case PLAY_BOTH_STATE:
 
 					//splitVideoPanel();
-
 					break;
 
 				default: // PLAY_STATE
@@ -1038,9 +1050,17 @@ package modules.videoPlayer
 			switch(info.code){
 				case "NetStream.Buffer.Empty":
 					trace("Second NetStream Status: "+info.code);
+					if (secondStreamState == SECONDSTREAM_STOPPED_STATE){
+						secondStreamState = SECONDSTREAM_FINISHED_STATE;
+						dispatchEvent( new VideoPlayerBabeliaEvent( VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING ) );
+					} 
+					else
+						secondStreamState = SECONDSTREAM_BUFFERING_STATE;
 					break;
 				case "NetStream.Buffer.Full":
 					trace("Second NetStream Status: "+info.code);
+					if(secondStreamState == SECONDSTREAM_READY_STATE)
+						playbackState = SECONDSTREAM_STARTED_STATE;
 					break;
 				case "NetStream.Buffer.Flush":
 					trace("Second NetStream Status: "+info.code);
@@ -1056,9 +1076,11 @@ package modules.videoPlayer
 					break;
 				case "NetStream.Play.Start":
 					trace("Second NetStream Status: "+info.code);
+					secondStreamState = SECONDSTREAM_READY_STATE;
 					break;
 				case "NetStream.Play.Stop":
 					trace("Second NetStream Status: "+info.code);
+					secondStreamState = SECONDSTREAM_STOPPED_STATE;
 					break;
 				case "NetStream.Play.Reset":
 					trace("Second NetStream Status: "+info.code);
