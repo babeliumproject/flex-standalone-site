@@ -140,7 +140,7 @@ class SubtitleDAO {
 			}
 		}
 		unset($line);
-		$er_sql = substr($er_sql,'',-1);
+		$er_sql = substr($er_sql,0,-1);
 		// put sql query and all params in one array
 		$merge = array_merge((array)$er_sql, $params);
 		$lastRoleId = $this->_vcreate($merge);
@@ -162,7 +162,7 @@ class SubtitleDAO {
 			unset($role);
 		}
 		unset($line);
-		$sl_sql = substr($sl_sql,'',-1);
+		$sl_sql = substr($sl_sql,0,-1);
 		// put sql query and all params in one array
 		$merge = array_merge((array)$sl_sql, $params);
 		$lastSubtitleLineId = $this->_vcreate($merge);
