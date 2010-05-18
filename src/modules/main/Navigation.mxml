@@ -69,6 +69,7 @@
 		<mx:TextInput id="searchField"
 					  width="80%"
 					  height="26"
+					  maxChars="100"
 					  fontFamily="Arial"
 					  fontSize="12"
 					  enter="launchSearch()"/>

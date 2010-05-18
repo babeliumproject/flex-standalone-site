@@ -19,7 +19,7 @@ class SearchDAO {
 	}
 	public function initialize(){
 		try{
-			$this->index = Zend_Search_Lucene::open($this->indexPath);	
+			$this->index = Zend_Search_Lucene::open($this->indexPath);
 		}catch (Zend_Search_Lucene_Exception $ex){
 			try{
 				$this->createIndex();
@@ -77,10 +77,8 @@ class SearchDAO {
 		if ($search!=''){   
 			$sql = "SELECT amount FROM tagcloud WHERE tag='%s'";
 			$result = $this->conn->_execute ($sql, $search);
-			$tagExists= FALSE;
 			if ($row = $this->conn->_nextRow ($result)){
 				//The tag already exists, so updating the quantity
-				$tagExists= TRUE;
 				$newAmount= 1 + $row[0];
 				$sql = "UPDATE tagcloud SET amount = ". $newAmount . " WHERE tag='%s'";
 				$result = $this->conn->_execute ($sql, $search);

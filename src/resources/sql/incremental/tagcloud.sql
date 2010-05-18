@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `tagcloud` (
-  `tag` varchar(45) NOT NULL,
+  `tag` varchar(100) NOT NULL,
   `amount` INT(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`tag`)
   )
