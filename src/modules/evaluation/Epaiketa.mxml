@@ -30,7 +30,6 @@
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-			import mx.utils.ObjectUtil;
 			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
@@ -123,7 +122,8 @@
 			{
 				var waDataprovider:ArrayCollection=dataModel.waitingForAssessmentData;
 				waitingAssessmentDataGrid.rowCount=waDataprovider.length;
-				waitingAssessmentDataGrid.dataProvider=waDataprovider;
+				waitingForAssessmentList=waDataprovider;
+				allDataReceived();
 			}
 
 			private function set assessedByCurrentUserRetrievedHandler(value:Boolean):void
@@ -131,6 +131,7 @@
 				var abcuDataprovider:ArrayCollection=dataModel.assessedByCurrentUserData;
 				assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
 				assessedByCurrentUserList=abcuDataprovider;
+				allDataReceived();
 			}
 
 			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
@@ -138,6 +139,7 @@
 				var atcuDataprovider:ArrayCollection=dataModel.assessedToCurrentUserData;
 				assessedToCurrentUserDataGrid.rowCount=atcuDataprovider.length;
 				assessedToCurrentUserList=atcuDataprovider;
+				allDataReceived();
 			}
 
 			private function set detailsOfAssessmentRetrievedHandler(value:Boolean):void
@@ -187,8 +189,10 @@
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.videoSource=_exerciseName;
 				VP.secondSource=_responseName;
+				VP.videoSource=_exerciseName;
+				VP.refresh();
+
 
 				hideArrows();
 				resetCueManager();
@@ -363,18 +367,6 @@
 
 			private function waitingAssessmentChangeHandler(event:Event):void
 			{
-				if (oraingoTab != "epaituGabe")
-				{
-					frogatu("epaituGabe");
-					if (evaluationTypeNavigator)
-						evaluationTypeNavigator.visible=false;
-					if (niriEp)
-						assessedToCurrentUserDataGrid.selectedItem=null;
-					if (nikEp)
-						assessedByCurrentUserDataGrid.selectedItem=null;
-					oraingoTab="epaituGabe";
-				}
-
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -406,20 +398,6 @@
 
 			private function assessedToCurrentUserChangeHandler(event:Event):void
 			{
-				if (!niriEp)
-					niriEp=true;
-				if (oraingoTab != "niriEpaituak")
-				{
-					frogatu("niriEpaituak");
-					oraingoTab="niriEpaituak";
-					ratingBox.visible=false;
-					evaluationTypeNavigator.visible=true;
-					waitingAssessmentDataGrid.selectedItem=null;
-					waitingAssessmentDataGrid.nullItemRenderer;
-					if (nikEp)
-						assessedByCurrentUserDataGrid.selectedItem=null;
-				}
-
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -451,21 +429,6 @@
 
 			private function assessedByCurrentUserChangeHandler(event:Event):void
 			{
-				if (!nikEp)
-					nikEp=true;
-
-				if (oraingoTab != "nikEpaituak")
-				{
-					frogatu("nikEpaituak");
-					ratingBox.visible=false;
-					evaluationTypeNavigator.visible=false;
-					waitingAssessmentDataGrid.selectedItem=null;
-					if (niriEp)
-						assessedToCurrentUserDataGrid.selectedItem=null;
-
-					oraingoTab="nikEpaituak";
-				}
-
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
@@ -499,15 +462,6 @@
 					PopUpManager.centerPopUp(bideoIruzkin);
 					assessmentDetailDataGrid.selectedItem=null;
 					bideoIruzkin.setBideoIzena(_videoCommentName);
-				}
-			}
-
-			//ea hasierako egoeran dagoen kontrolatzen du
-			private function frogatu(egoeraBerria:String):void
-			{
-				if (oraingoTab == "hasiera")
-				{
-					oraingoTab=egoeraBerria;
 				}
 			}
 
@@ -546,6 +500,8 @@
 						assessmentsOfSelectedResponse.visible = false;
 						VP.stopVideo();
 						VP.videoSource="";
+						hideArrows();
+						resetCueManager();
 						evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
 						break;
 					case assessedToCurrentUserButton:
@@ -557,6 +513,8 @@
 						ratingBox.visible = false;
 						VP.stopVideo();
 						VP.videoSource="";
+						hideArrows();
+						resetCueManager();
 						evaluationOptionsViewStack.selectedChild = assessedToCurrentUserBox;
 						break;
 					case assessedByCurrentUserButton:
@@ -569,6 +527,8 @@
 						ratingBox.visible = false;
 						VP.stopVideo();
 						VP.videoSource="";
+						hideArrows();
+						resetCueManager();
 						evaluationOptionsViewStack.selectedChild = assessedByCurrentUserBox;
 						break;
 					default:
@@ -607,13 +567,14 @@
 
 				if (!dataModel.isLoggedIn)
 				{
-					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
+					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
 				}
 
+				
 				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
 				{
-					new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
+					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
 				}
 
@@ -638,13 +599,12 @@
 							if (tmpEvaluate)
 							{
 								//Go to the speficied tab and dispatch a change event
-								evaluationOptionsViewStack.selectedChild=waitingAssessmentBox;
+								waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 								waitingAssessmentDataGrid.selectedItem=tmpEvaluate;
 								waitingAssessmentDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
 							else
 							{
-
 								new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 							}
 						}
@@ -665,14 +625,12 @@
 									break;
 								}
 							}
-							if (tmpRevise != null)
+							if (tmpRevise)
 							{
 								//Go to the speficied tab and dispatch a change event
-								if (assessedToCurrentUserDataGrid)
-								{
-									assessedToCurrentUserDataGrid.selectedItem=tmpRevise;
-									assessedToCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
-								}
+								assessedToCurrentUserButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+								assessedToCurrentUserDataGrid.selectedItem=tmpRevise;
+								assessedToCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
 							else
 							{
@@ -698,7 +656,7 @@
 							if (tmpView != null)
 							{
 								//Go to the speficied tab and dispatch a change event
-								evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBox;
+								assessedByCurrentUserButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 								assessedByCurrentUserDataGrid.selectedItem=tmpView;
 								assessedByCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
@@ -739,7 +697,7 @@
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 
-	<mx:VBox>
+	<mx:VBox id="videoPlayerBox">
 		<mx:Label id="exerciseTitle"
 				  text="{_exerciseTitle}"
 				  width="100%"
@@ -944,7 +902,6 @@
 						 width="100%"
 						 height="100%">
 					<mx:TabNavigator id="evaluationTypeNavigator"
-									 visible="false"
 									 creationPolicy="all"
 									 width="100%"
 									 paddingLeft="8"

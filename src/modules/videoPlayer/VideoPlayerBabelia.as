@@ -392,6 +392,7 @@ package modules.videoPlayer
 			_arrowContainer.width=_videoBarPanel.width;
 			_arrowContainer.height=50;
 			_arrowContainer.x=_defaultMargin;
+			
 			_bgArrow.graphics.clear();
 			_bgArrow.graphics.beginFill(getSkinColor(ROLEBORDER_COLOR));
 			_bgArrow.graphics.drawRect(0, 0, _arrowContainer.width, _arrowContainer.height);
