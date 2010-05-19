@@ -975,6 +975,44 @@ package modules.videoPlayer
 			_camVideo.x+=1;
 			_camVideo.width-=2;
 		}
+		
+		override protected function scaleVideo():void{
+			super.scaleVideo();
+			if (state & SPLIT_FLAG){
+				/*
+				* Resize video image
+				*/
+				var w:Number=_videoWidth / 2 - 2;
+				var h:int=w * _video.height / _video.width;
+				
+				if (_videoHeight != h) // cause we can call twice to this method
+					_lastVideoHeight=_videoHeight; // store last value
+				
+				_videoHeight=h;
+				
+				var scaleY:Number=h / _video.height;
+				var scaleX:Number=w / _video.width;
+				var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
+				
+				_video.y=Math.floor(h / 2 - (_video.height * scaleC) / 2);
+				_video.x=Math.floor(w / 2 - (_video.width * scaleC) / 2);
+				_video.y+=_defaultMargin;
+				_video.x+=_defaultMargin;
+				
+				_video.width*=scaleC;
+				_video.height*=scaleC;
+			}
+		}
+		
+		override protected function resetAppearance() : void{
+			super.resetAppearance();
+			
+			if (state & SPLIT_FLAG){
+				_camVideo.attachNetStream(null);
+				_camVideo.clear();
+				_camVideo.visible = false;
+			}
+		}
 
 		/**
 		 * Overriden on recording finished:

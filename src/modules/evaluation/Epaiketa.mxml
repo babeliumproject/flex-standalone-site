@@ -189,8 +189,8 @@
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.secondSource=_responseName;
 				VP.videoSource=_exerciseName;
+				VP.secondSource=_responseName;
 				VP.refresh();
 
 
@@ -539,7 +539,11 @@
 			private function set userAuthenticationHandler(value:Boolean):void
 			{
 				refreshEvaluationData();
-				evaluationOptionsViewStack.selectedIndex=0;
+				VP.stopVideo();
+				VP.videoSource="";
+				hideArrows();
+				resetCueManager();
+				waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
 
 			private function set onTabChange(value:Boolean):void
@@ -547,12 +551,11 @@
 				ratingBox.visible=false;
 				assessmentsOfSelectedResponse.visible=false;
 
-				evaluationOptionsViewStack.selectedChild=waitingAssessmentBox;
-
-				waitingAssessmentDataGrid.selectedItem=null;
-				assessedByCurrentUserDataGrid.selectedItem=null;
-				assessedToCurrentUserDataGrid.selectedItem=null;
-
+				VP.stopVideo();
+				VP.videoSource="";
+				hideArrows();
+				resetCueManager();
+				waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
 
 			private function set onURLChange(value:Object):void
