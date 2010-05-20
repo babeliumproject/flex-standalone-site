@@ -36,7 +36,7 @@
 				chartData=ecdDataprovider;
 			}
 			
-			private function closeClickHandler(event:MouseEvent):void{
+			private function closeClickHandler(event:Event):void{
 				PopUpManager.removePopUp(this);
 			}
 

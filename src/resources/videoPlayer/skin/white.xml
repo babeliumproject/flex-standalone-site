@@ -57,7 +57,12 @@
 		<Property name="overBgColor">0xCECECE</Property>
 		<Property name="iconColor">0x000000</Property>
 	</Component>
-		<Component name="MicActivityBar">
+	<Component name="SubtitleStartEndButton">
+		<Property name="bgColor">0xFFFFFF</Property>
+		<Property name="overBgColor">0xCECECE</Property>
+		<Property name="iconColor">0x000000</Property>
+	</Component>
+	<Component name="MicActivityBar">
 		<Property name="bgColor">0x000000</Property>
 		<Property name="barBgColor">0xCECECE</Property>
 		<Property name="barColor">0x008EAD</Property>

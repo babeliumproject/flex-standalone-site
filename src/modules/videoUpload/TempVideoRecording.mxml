@@ -2,7 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 borderStyle="solid"
 		 borderThickness="2"
-		 creationComplete="init()"
+		 creationComplete="onComplete()"
 		 cornerRadius="4">
 
 	<mx:Metadata>
@@ -14,14 +14,28 @@
 		<![CDATA[
 			import model.DataModel;
 			
-			import mx.controls.Alert;
+			import mx.controls.Text;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
+			import view.common.TimeFormatter;
+			
 
+			/**
+			 *  Constants
+			 */
+			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
+			private const MAXIMUM_VIDEO_DURATION:int = 120; //seconds
+			private const MINIMUM_VIDEO_DURATION:int = 15; //seconds
+			private const DEFAULT_VIDEO_WIDTH:int = 320; //pixels
+			private const DEFAULT_VIDEO_HEIGHT:int = 240; //pixels
+
+			/**
+			 *  Variable definition
+			 */
 			private var netConnection:NetConnection;
 
 			private var publishNetStream:NetStream;
@@ -37,16 +51,27 @@
 
 
 			private var video:Video;
+			[Bindable]
+			private var _videoHeight:int = DEFAULT_VIDEO_HEIGHT;
+			[Bindable]
+			private var _videoWidth:int = DEFAULT_VIDEO_WIDTH;
 
 			private var _camera:Camera;
 			private var _mic:Microphone;
 			private var _micCamEnabled:Boolean=false;
 			
 			private var _streamingServerConnection:Boolean = false;
+			
+			private var _countdown:Timer;
+			private var _countdownTxt:Text;
+			
+			private var _recordCountDown:Timer;
 
 			private var privacyRights:PrivacyRights;
 
 			private var anyContent:Boolean;
+			
+			private var _timeFormatter:TimeFormatter;
 
 			[Embed(source='../../resources/images/playerPlayIcon.png')]
 			[Bindable]
@@ -63,15 +88,58 @@
 
 
 
-			public function init():void
+			public function onComplete():void
 			{
 				//Button icon initialization
 				recStopButton.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
+				
+				_timeFormatter = new TimeFormatter();
+				_timeFormatter.outputMilliseconds = false;
+				
+				_countdownTxt=new Text();
+				_countdownTxt.text="5";
+				_countdownTxt.setStyle("fontWeight", "bold");
+				_countdownTxt.setStyle("fontSize", 30);
+				_countdownTxt.setStyle("color", 0xFFFFFF);
+				_countdownTxt.selectable=false;
+				_countdownTxt.visible=false;
+				
+				
+				_countdownTxt.x=_videoWidth / 2 - 10;
+				_countdownTxt.y=_videoHeight / 2 - 10;
+				_countdownTxt.width=_videoWidth;
+				_countdownTxt.height=_videoHeight;
 
 				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
+			}
+			
+			public function resetComponent():void{
+				recStopButton.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+				playPauseButton.enabled = false;
+				
+				anyContent=false;
+				audio_pause=false;
+				isRecording=false;
+
+				recordingFileName = null;
+				
+				if(publishNetStream)
+					publishNetStream.close();
+				if(playbackNetStream)
+					playbackNetStream.close();
+				if(netConnection)
+					netConnection.close();
+				if(video)
+				{
+					video.attachCamera(null);
+					video.clear();
+				}
+				
+				_streamingServerConnection = false;
 			}
 			
 			private function connectToStreamingServer():void{
@@ -223,6 +291,12 @@
 					}
 					else
 					{
+						if(_recordCountDown.running){
+							_recordCountDown.stop();
+							_recordCountDown.reset();
+							recordCountdown.text = _timeFormatter.format(0);
+							recordCountdown.visible = false;
+						}
 						stopCamera();
 						stopAudio();
 					}
@@ -283,6 +357,9 @@
 						video.attachCamera(_camera);
 
 						videoHolder.addChild(video);
+						videoHolder.addChild(_countdownTxt);
+						video.visible=false;
+						_countdownTxt.visible=true;
 						trace("All added you should see video");
 					}
 					if (_mic != null)
@@ -303,12 +380,58 @@
 
 						playPauseButton.enabled=false;
 						playPauseButton.setStyle('icon', playImageEmbed);
-
-
-
-						startRecording();
+						recStopButton.enabled = false;
 					}
 				}
+			}
+			
+			private function startRecordCountDown():void{
+				_recordCountDown=new Timer(1000, MAXIMUM_VIDEO_DURATION);
+				_recordCountDown.addEventListener(TimerEvent.TIMER, onRecordCountDownTick);
+				_recordCountDown.start();
+			}
+			
+			private function onRecordCountDownTick(tick:TimerEvent):void{
+				
+				recordCountdown.text = _timeFormatter.format( MAXIMUM_VIDEO_DURATION - _recordCountDown.currentCount);
+				if(_recordCountDown.currentCount >= MINIMUM_VIDEO_DURATION){
+					recStopButton.enabled = true;
+				}
+				if(_recordCountDown.currentCount == _recordCountDown.repeatCount){
+					//Maximum recording time elapsed stop recording at this point
+					_recordCountDown.stop();
+					_recordCountDown.reset();
+					recordCountdown.text = _timeFormatter.format(0);
+					recordCountdown.visible = false;
+					recStopAudio();
+				}
+			}
+			
+			// Prepare countdown timer
+			private function startCountdown():void
+			{
+				_countdown=new Timer(1000, COUNTDOWN_TIMER_SECS)
+				_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
+				_countdown.start();
+			}
+			
+			// On Countdown tick
+			private function onCountdownTick(tick:TimerEvent):void
+			{
+				if (_countdown.currentCount == _countdown.repeatCount)
+				{
+					_countdownTxt.visible=false;
+					video.visible=true;
+					
+					// Reset countdown timer
+					_countdownTxt.text="5";
+					_countdown.stop();
+					_countdown.reset();
+					
+					startRecording();
+				}
+				else
+					_countdownTxt.text=new String(5 - _countdown.currentCount);
 			}
 
 			private function startRecording():void
@@ -319,6 +442,10 @@
 				// Publish the stream
 				publishNetStream.publish(recordingFileName, "record");
 				isRecording = true;
+				
+				//Recording time elpased variables
+				recordCountdown.visible = true;
+				startRecordCountDown();
 			}
 
 			private function prepareDevices():void
@@ -346,6 +473,7 @@
 				_mic.setSilenceLevel(0, 60000);
 
 				prepareRecording();
+				startCountdown();
 			}
 
 			private function privacyBoxClosed(event:Event):void
@@ -374,8 +502,8 @@
 			<mx:HBox backgroundColor="0x000000"
 					 width="100%">
 				<mx:UIComponent id="videoHolder"
-								width="320"
-								height="240"/>
+								width="{_videoWidth}"
+								height="{_videoHeight}"/>
 			</mx:HBox>
 		</mx:HBox>
 
@@ -399,11 +527,14 @@
 					   width="20"
 					   height="20"
 					   cornerRadius="4"/>
-			<mx:Label text="Status:"
-					  fontWeight="bold"
-					  fontStyle="italic"/>
+			<mx:Label id="statusLabel"
+				text="Status:"
+					  fontWeight="bold"/>
 			<mx:Label id="estat"
 					  width="100%"/>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Label id="recordCountdown" visible="false" text=""/>
+			</mx:HBox>
 		</mx:HBox>
 	</mx:VBox>
 

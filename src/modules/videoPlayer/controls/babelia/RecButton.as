@@ -1,6 +1,7 @@
-package modules.videoPlayer.controls
+package modules.videoPlayer.controls.babelia
 {
 	import modules.videoPlayer.events.babelia.RecordingEvent;
+	import modules.videoPlayer.controls.SkinableButton;
 
 	public class RecButton extends SkinableButton
 	{

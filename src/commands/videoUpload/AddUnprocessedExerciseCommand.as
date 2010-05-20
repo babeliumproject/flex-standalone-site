@@ -9,6 +9,7 @@ package commands.videoUpload
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -31,7 +32,7 @@ package commands.videoUpload
 			if (!data.result is int){
 				CustomAlert.error("Your exercise data could not be saved successfully.");
 			} else {
-				
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ALERT_SUCCESSFUL_FILE_UPLOAD_RED5'));
 				//Add this to the DataModel
 				var exerciseId:int = int(data.result);
 				var userId:int = DataModel.getInstance().loggedUser.id;

@@ -5,7 +5,6 @@ require_once 'Datasource.php';
 require_once 'ExerciseVO.php';
 require_once 'CreditDAO.php';
 require_once 'CreditHistoryVO.php';
-require_once 'SearchDAO.php';
 
 class UploadExerciseDAO{
 
@@ -183,10 +182,6 @@ class UploadExerciseDAO{
 		$sql = "UPDATE exercise SET name='%s', thumbnail_uri='%s', duration='%s', filehash='%s', status='Available'
             WHERE (id=%d) ";
 		return $this->_databaseUpdate ( $sql, $newName, $newThumbnail, $newDuration, $fileHash, $exerciseId );
-		//Update index
-		$index = new SearchDAO();
-		$index->deleteDocumentIndex($exerciseId);
-		$index->addDocumentIndex($exerciseId);
 	}
 	
 	private function setExerciseProcessing($exerciseId){

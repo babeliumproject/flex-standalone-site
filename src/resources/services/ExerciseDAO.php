@@ -9,11 +9,15 @@ require_once ('ExerciseScoreVO.php');
 class ExerciseDAO {
 	
 	private $conn;
-	private $filePath = '';
+	private $filePath;
+	private $imagePath;
+	private $red5Path;
 	
 	public function ExerciseDAO() {
 			$settings = new Config ( );
 			$this->filePath = $settings->filePath;
+			$this->imagePath = $settings->imagePath;
+			$this->red5Path = $settings->red5Path;
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 	}
 	
@@ -38,11 +42,32 @@ class ExerciseDAO {
 	}
 	
 	public function addWebcamExercise(ExerciseVO $exercise) {
-		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status) ";
-		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available' ) ";
+		set_time_limit(0);
+		$videoFile = $exercise->name.'.flv';
+		$this->takeRandomSnapshot($videoFile, $exercise->name);
+		
+		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri) ";
+		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s') ";
 		
 		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId );
+								$exercise->language, $exercise->userId, $exercise->name.'.jpg' );
+	}
+	
+	private function takeRandomSnapshot($videoFileName,$outputImageName){
+		$videoPath  = $this->red5Path .'/'. $videoFileName;
+		// where you'll save the image
+		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
+		// default time to get the image
+		$second = 1;
+
+		// get the duration and a random place within that
+		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
+		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
+			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
+			$second = rand(1, ($total - 1));
+		}
+		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
+		return $resultsnap;
 	}
 	
 

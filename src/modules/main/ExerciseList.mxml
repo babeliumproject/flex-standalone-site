@@ -6,14 +6,26 @@
 	<mx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
+			
+			private var _refreshTimer:Timer;
 
 			public function init():void
 			{
+				retrieveExercises();
+				_refreshTimer = new Timer(300000,0);
+				_refreshTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+			}
+			
+			private function retrieveExercises():void{
 				new ExerciseEvent(ExerciseEvent.GET_EXERCISES).dispatch();
+			}
+			
+			private function onTimerTick(tick:TimerEvent):void{
+				retrieveExercises();
 			}
 
 			public function set onExercisesRetrieved(value:Boolean):void

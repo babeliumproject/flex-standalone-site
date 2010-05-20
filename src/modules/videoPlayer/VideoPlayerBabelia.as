@@ -18,8 +18,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.MicActivityBar;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
-	import modules.videoPlayer.controls.babelia.SubtitleEndButton;
-	import modules.videoPlayer.controls.babelia.SubtitleStartButton;
+	import modules.videoPlayer.controls.babelia.SubtitleStartEndButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.RecordingEvent;
@@ -62,8 +61,9 @@ package modules.videoPlayer
 		private var _micActivityBar:MicActivityBar;
 		private var _subtitlingControls:UIComponent;
 		private var _subtitlingText:Text;
-		private var _subtitleStart:SubtitleStartButton;
-		private var _subtitleEnd:SubtitleEndButton;
+		//private var _subtitleStart:SubtitleStartButton;
+		//private var _subtitleEnd:SubtitleEndButton;
+		private var _subtitleStartEnd:SubtitleStartEndButton;
 		private var _bgArrow:Sprite;
 
 		/**
@@ -173,11 +173,13 @@ package modules.videoPlayer
 			_subtitlingText.setStyle("fontWeight", "bold");
 			_subtitlingText.selectable=false;
 			_subtitlingText.text=ResourceManager.getInstance().getString('myResources','MESSAGE_SUBTITLING_CONTROLS');
-			_subtitleStart=new SubtitleStartButton();
-			_subtitleEnd=new SubtitleEndButton();
+			//_subtitleStart=new SubtitleStartButton();
+			//_subtitleEnd=new SubtitleEndButton();
+			_subtitleStartEnd=new SubtitleStartEndButton();
 			_subtitlingControls.addChild(_subtitlingText);
-			_subtitlingControls.addChild(_subtitleStart);
-			_subtitlingControls.addChild(_subtitleEnd);
+			//_subtitlingControls.addChild(_subtitleStart);
+			//_subtitlingControls.addChild(_subtitleEnd);
+			_subtitlingControls.addChild(_subtitleStartEnd);
 			_subtitlingControls.visible=false;
 
 			_micActivityBar=new MicActivityBar();
@@ -187,8 +189,10 @@ package modules.videoPlayer
 			 * Events listeners
 			 **/
 			_subtitleButton.addEventListener(SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
-			_subtitleStart.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
-			_subtitleEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
+			//_subtitleStart.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
+			//_subtitleEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
+			_subtitleStartEnd.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
+			_subtitleStartEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
 
 			/**
 			 * Adds components to player
@@ -210,8 +214,9 @@ package modules.videoPlayer
 			putSkinableComponent(_subtitleBox.COMPONENT_NAME, _subtitleBox);
 			putSkinableComponent(_arrowPanel.COMPONENT_NAME, _arrowPanel);
 			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
-			putSkinableComponent(_subtitleStart.COMPONENT_NAME, _subtitleStart);
-			putSkinableComponent(_subtitleEnd.COMPONENT_NAME, _subtitleEnd);
+			//putSkinableComponent(_subtitleStart.COMPONENT_NAME, _subtitleStart);
+			//putSkinableComponent(_subtitleEnd.COMPONENT_NAME, _subtitleEnd);
+			putSkinableComponent(_subtitleStartEnd.COMPONENT_NAME, _subtitleStartEnd);
 			putSkinableComponent(_micActivityBar.COMPONENT_NAME, _micActivityBar);
 
 			// Loads default skin
@@ -274,7 +279,7 @@ package modules.videoPlayer
 		public function set subtitlingControls(flag:Boolean):void
 		{
 			_subtitlingControls.visible=flag;
-			enableSubtitlingEndButton=false;
+			//enableSubtitlingEndButton=false;
 			drawBG(); // repaint bg
 		}
 
@@ -288,7 +293,7 @@ package modules.videoPlayer
 		 **/
 		public function set enableSubtitlingEndButton(flag:Boolean):void
 		{
-			_subtitleEnd.enabled=flag;
+			//_subtitleEnd.enabled=flag;
 		}
 
 		/**
@@ -458,10 +463,12 @@ package modules.videoPlayer
 			_subtitlingText.width=115;
 			_subtitlingText.height=20;
 
-			_subtitleStart.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin * 2;
-			_subtitleStart.refresh();
-			_subtitleEnd.x=_subtitleStart.x + _subtitleStart.width + _defaultMargin;
-			_subtitleEnd.refresh();
+			//_subtitleStart.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin * 2;
+			//_subtitleStart.refresh();
+			//_subtitleEnd.x=_subtitleStart.x + _subtitleStart.width + _defaultMargin;
+			//_subtitleEnd.refresh();
+			_subtitleStartEnd.x = _subtitlingText.x + _subtitlingText.width + _defaultMargin + 2;
+			_subtitleStartEnd.refresh();
 
 			// Mic gain bar
 			_micActivityBar.x=_defaultMargin;
