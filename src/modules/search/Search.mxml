@@ -4,29 +4,54 @@
 	width="100%"
 	creationComplete="init()" >
 
+	<mx:ArrayCollection id="sortFields1">
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_AUTOMATIC')}" data="score"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_USER')}" data="userName"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_LANGUAGE')}" data="language"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_RATING')}" data="avgRating"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DIFFICULTY')}" data="avgDifficulty"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DATE')}" data="addingDate"/>
+	</mx:ArrayCollection>
+	
+
 	<mx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
 			import mx.collections.ArrayCollection;
 			import mx.events.ItemClickEvent;
 			import model.DataModel;
+				
+				import view.common.CustomAlert;
+				import mx.events.ResourceEvent;
+				import mx.controls.Alert;
 			
 			[Bindable] private var dataProvider:ArrayCollection = new ArrayCollection();
 			[Bindable] private var dataTemp:ArrayCollection = new ArrayCollection();
 			[Bindable] private var nav:ArrayCollection =new ArrayCollection();
 			[Bindable] public var sortFields:ArrayCollection = new ArrayCollection(
-                [ {label:"Automatico", data:"score"}, 
-                  {label:"Usuario", data:"userName"}, 
-                  {label:"Idioma", data:"language"},
-                  {label:"Valorado", data:"avgRating"},
-                  {label:"Dificultad", data:"avgDifficulty"},
-                  {label:"Fecha", data:"addingDate"},]);
-			
+                [ {label:"Automatic", data:"score"}, 
+                  {label:"User", data:"userName"}, 
+                  {label:"Language", data:"language"},
+                  {label:"Rating", data:"avgRating"},
+                  {label:"Difficulty", data:"avgDifficulty"},
+                  {label:"Date", data:"addingDate"}]);
+					
 			public function init():void{
 				
+				//sortFields1.addEventListener(FlexEvent.CURSOR_UPDATE,compet);
+				//CustomAlert.error("init ejecutado");
 			}
+			public function compet(event:FlexEvent):void{
+				CustomAlert.error("compet ejecutado");
 
+				//var oldSelectedItem:Object=sort.selectedItem;
+				//sort.dataProvider=sortFields1;
+				//sort.selectedItem=oldSelectedItem;
+				sort.dataProvider=sortFields1;
+			}
+		
 			public function set onSearchRetrieved(value:Boolean):void{
 				if (DataModel.getInstance().videoSearchesRetrieved){
 					dataProvider=DataModel.getInstance().videoSearches;
@@ -43,7 +68,7 @@
 					}
 					createNavigatePage();
 					DataModel.getInstance().videoSearchesRetrieved = false;
-					numResul.text="Resultados encontrados: "+dataProvider.length;
+					//sort.dataProvider=sortFields2;
 				}
 			}
 			
@@ -54,6 +79,7 @@
         		searchListTable.rowCount=dataTemp.length;
 				searchListTable.dataProvider=dataTemp;
         	}
+		
         	public function closeHandler(event:Event):void {
         		var dataSortField:SortField=new SortField();
          		var dataSort:Sort=new Sort();
@@ -120,26 +146,37 @@
         		DataModel.getInstance().currentPage=pag;
         		createNavigatePage();  	      		
         	}
-
+			public function set onlanguage(value:Boolean):void{
+				if (DataModel.getInstance().languageChanged){
+					CustomAlert.error("compet ejecutado");
+					
+					DataModel.getInstance().tagCloudClicked=false;
+				}
+			}	
 
 		]]>
 	</mx:Script>
 	
 	<mx:Binding source="{DataModel.getInstance().videoSearchesRetrieved}"
 				destination="this.onSearchRetrieved"/>
+	<mx:Binding source="{DataModel.getInstance().languageChanged}"
+				destination="this.onlanguage"/>
 	<mx:ApplicationControlBar>
 		
 	<mx:HBox>
-		<mx:Label id="numResul"/>
+		<mx:Label id="numResul"
+				  text="{resourceManager.getString('myResources','SEARCH_RESULTSFOUND')} {dataProvider.length}"/>
 		<mx:Label id="labelSort"
-				text="Ordenar por"
+				text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
 				enabled="false"/>
 		<mx:ComboBox id="sort"
 				fontWeight="normal"
-				dataProvider="{sortFields}"
-				close="closeHandler(event)" 
+				close="closeHandler(event)"
 				editable="false"
-				enabled="false"/>
+				enabled="false"
+				dataProvider="{sortFields1}">
+				
+		</mx:ComboBox>				
 		<mx:LinkBar id="pageNav" 
               	itemClick="navigatePage(event)"
               	horizontalGap="1" 
@@ -166,11 +203,11 @@
 					<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 				</mx:columns>
 			</mx:DataGrid>
-			<tc:TagCloud id="tagCloud"
+			<tc:TagCloud id="tagCloud" 
+						 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
 						 width="300"
 						 height="300">
 			</tc:TagCloud>
 		</mx:HBox>
 	</mx:Canvas>
-	
 </mx:VBox>

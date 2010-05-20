@@ -78,6 +78,8 @@ package model
 		//The info of the video searches
 		[Bindable] public var tagCloud: ArrayCollection;
 		[Bindable] public var tagCloudRetrieved: Boolean = false;
+		[Bindable] public var tagCloudClicked: Boolean = false;
+		[Bindable] public var languageChanged: Boolean = false;
 		[Bindable] public var videoSearches: ArrayCollection;
 		[Bindable] public var videoSearchesRetrieved:Boolean = false;
 		[Bindable] public var searchField:String = "";

@@ -94,6 +94,8 @@
 				   enabled="{!DataModel.getInstance().recordingExercise}"
 				   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
 	</mx:HBox>
+	<mx:Binding source="{DataModel.getInstance().tagCloudClicked}"
+				destination="this.onTagCloudClicked"/>
 	<mx:Script>
 		<![CDATA[
 			import events.VideoStopEvent;
@@ -120,8 +122,13 @@
 					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
 				}
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
-
 			}
+			public function set onTagCloudClicked(value:Boolean):void{
+				if (DataModel.getInstance().tagCloudClicked){
+					searchField.text=DataModel.getInstance().searchField;
+					DataModel.getInstance().tagCloudClicked=false;
+				}
+			}	
 		]]>
 	</mx:Script>
 </mx:ApplicationControlBar>

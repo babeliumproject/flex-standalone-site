@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:tc="modules.search.*"
-	title="Tag Cloud"
 	preinitialize="init()">
 	<mx:Script>
 		<![CDATA[
@@ -157,6 +156,7 @@
 			}
 			public function tagClickHandler(evt:MouseEvent):void{
 			  	DataModel.getInstance().searchField=evt.target.label;
+			  	DataModel.getInstance().tagCloudClicked=true;
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 		]]>
