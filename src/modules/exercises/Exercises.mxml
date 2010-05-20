@@ -361,7 +361,7 @@
 					_localesReady=false;
 					_cueManagerReady=false;
 					
-					ratingShareReport.exerciseData = DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
+					ratingShareReport.exerciseData = tmp;
 
 					showSelectedExercise();
 					prepareExercise();

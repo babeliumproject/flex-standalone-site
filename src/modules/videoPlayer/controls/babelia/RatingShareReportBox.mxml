@@ -29,7 +29,7 @@
 			private var _exercise:ExerciseVO;
 			
 			[Bindable]
-			private var _exerciseRating:int;
+			private var _exerciseRating:int = 0;
 			
 			[Bindable]
 			private var _dataAvailable:Boolean = false;
@@ -71,8 +71,8 @@
 			}
 			
 			private function disableComponents():void{
-				if(!DataModel.getInstance().isLoggedIn || !_dataAvailable){
-					rating.value = 0;
+				if(DataModel.getInstance().isLoggedIn ==false || _dataAvailable == false){
+					_exerciseRating = 0;
 				}
 			}
 
