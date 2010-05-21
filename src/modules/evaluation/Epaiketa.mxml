@@ -328,8 +328,8 @@
 
 			private function viewGraphicClickHandler():void
 			{
-				Grafikoak.responseId=_responseId;
-				var grafikoa:Grafikoak=Grafikoak(PopUpManager.createPopUp(this, Grafikoak, true));
+				EvaluationChartPopUp.responseId=_responseId;
+				var grafikoa:EvaluationChartPopUp=EvaluationChartPopUp(PopUpManager.createPopUp(this, EvaluationChartPopUp, true));
 				PopUpManager.centerPopUp(grafikoa);
 			}
 
@@ -458,10 +458,10 @@
 				if (selectedItem.evaluationVideoFileIdentifier)
 				{
 					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
-					var bideoIruzkin:bideoaIkusi=bideoaIkusi(PopUpManager.createPopUp(this, bideoaIkusi, true));
+					EvaluationVideoCommentPopUp.videoSource = _videoCommentName;
+					var bideoIruzkin:EvaluationVideoCommentPopUp=EvaluationVideoCommentPopUp(PopUpManager.createPopUp(this, EvaluationVideoCommentPopUp, true));
 					PopUpManager.centerPopUp(bideoIruzkin);
 					assessmentDetailDataGrid.selectedItem=null;
-					bideoIruzkin.setBideoIzena(_videoCommentName);
 				}
 			}
 

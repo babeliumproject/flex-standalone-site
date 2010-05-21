@@ -22,6 +22,7 @@ package modules.main
 	import mx.containers.HBox;
 	import mx.controls.LinkButton;
 	import mx.core.Application;
+	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.managers.PopUpManager;
 	
@@ -77,7 +78,7 @@ package modules.main
 			rememberSO=SharedObject.getLocal("babeliaData");
 			if (rememberSO.data.username != undefined && rememberSO.data.hash != undefined)
 			{
-				processCachedLogin();
+				cachedAuthentication();
 			}
 			else
 			{
@@ -90,11 +91,8 @@ package modules.main
 		{
 			var model:DataModel=DataModel.getInstance();
 
-			BindingUtils.bindSetter(loggedSuccessfully, model, "isSuccessfullyLogged");
-			BindingUtils.bindSetter(wrongLogin, model, "loginErrorMessage");
+			BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
 			BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
-			BindingUtils.bindSetter(passRecoveryDone, model, "passRecoveryDone");
-
 			BindingUtils.bindSetter(exerciseRecording, model, "recordingExercise");
 
 		}
@@ -105,77 +103,13 @@ package modules.main
 			showLogin();
 		}
 
-		private function checkPressedKey(e:KeyboardEvent):void
-		{
-			if (e.keyCode == ENTER_KEY)
-			{
-				processLogin(null);
-			}
-		}
-
 		public function showLogin():void
 		{
 			loginPop=LoginForm(PopUpManager.createPopUp(Application.application.parent, LoginForm, true));
-			loginPop.title=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
-			loginPop.showCloseButton=true;
 			PopUpManager.centerPopUp(loginPop);
-
-			loginPop.addEventListener("close", hideLogin);
-			loginPop["cancelButton"].addEventListener("click", this.hideLogin);
-			loginPop["okButton"].addEventListener("click", this.processLogin);
-			loginPop["restorePassword"].addEventListener("click", showRestorePass);
-
-			//We add a key listener so that we can push enter to processLogin
-			loginPop.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
-
-			// Give the focus to username textfield
-			//focusManager.setFocus(loginPop.username);
 		}
 
-		private function hideLogin(event:Event):void
-		{
-			PopUpManager.removePopUp(loginPop);
-		}
-
-		private function showRestorePass(event:Event):void
-		{
-			hideLogin(null);
-			DataModel.getInstance().restorePassErrorMessage="";
-			restorePop=RestorePassForm(PopUpManager.createPopUp(parent, RestorePassForm, true));
-			restorePop.title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
-			restorePop.showCloseButton=true;
-			PopUpManager.centerPopUp(restorePop);
-
-			restorePop.addEventListener("close", hideRestorePass);
-			restorePop["cancelButton"].addEventListener("click", hideRestorePass);
-			restorePop["okButton"].addEventListener("click", processRestorePass);
-		}
-
-		private function hideRestorePass(event:Event):void
-		{
-			PopUpManager.removePopUp(restorePop);
-		}
-
-		private function passRecoveryDone(flag:Boolean):void
-		{
-			hideRestorePass(null);
-		}
-
-		private function processRestorePass(event:Event):void
-		{
-			var user:LoginVO=new LoginVO(restorePop.username.text, "");
-			new LoginEvent(LoginEvent.RESTORE_PASS, user).dispatch();
-		}
-
-		private function processLogin(event:Event):void
-		{
-			//Encrypt our password for security
-			var passHash:String=SHA1.hash(loginPop.password.text);
-			var user:LoginVO=new LoginVO(loginPop.username.text, passHash);
-			new LoginEvent(LoginEvent.PROCESS_LOGIN, user).dispatch();
-		}
-
-		private function processCachedLogin():void
+		private function cachedAuthentication():void
 		{
 			var cachedUser:LoginVO=new LoginVO(rememberSO.data.username, rememberSO.data.hash);
 			new LoginEvent(LoginEvent.PROCESS_LOGIN, cachedUser).dispatch();
@@ -210,38 +144,14 @@ package modules.main
 			rememberSO.clear();
 		}
 
-		private function loggedSuccessfully(upd:Boolean):void
+		private function onUserAuthenticated(upd:Boolean):void
 		{
-			if (DataModel.getInstance().isSuccessfullyLogged)
+			if (DataModel.getInstance().isLoggedIn)
 			{
-				if ((rememberSO.data.username == undefined || rememberSO.data.hash == undefined) && loginPop != null)
-				{
-					//The user wants the application to remember him/her
-					if (loginPop.rememberUser.selected)
-					{
-						var cacheHash:String=SHA1.hash(loginPop.password.text);
-						rememberSO.data.username=loginPop.username.text;
-						rememberSO.data.hash=cacheHash;
-						rememberSO.flush();
-					}
-					PopUpManager.removePopUp(loginPop);
-					loginPop.username.text="";
-					loginPop.password.text="";
-				}
 				anonymousCP.visible=false;
 				userCPName.label=DataModel.getInstance().loggedUser.name;
 				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
 				userCP.visible=true;
-				DataModel.getInstance().isSuccessfullyLogged=false;
-			}
-		}
-
-		private function wrongLogin(upd:Boolean):void
-		{
-			if (DataModel.getInstance().loginErrorMessage != '')
-			{
-				loginPop.errorInfo.text=DataModel.getInstance().loginErrorMessage;
-				DataModel.getInstance().loginErrorMessage="";
 			}
 		}
 

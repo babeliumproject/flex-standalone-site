@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+						  xmlns:videoPlayer="modules.videoPlayer.*"
+						  xmlns:common="view.common.*"
+						  title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
+						  showCloseButton="true"
+						  horizontalAlign="center"
+						  layout="vertical"
+						  creationComplete="onComplete()">
+
+	<mx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import modules.videoPlayer.events.VideoPlayerEvent;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			
+			[Bindable]
+			private static var _commentSource:String='';
+
+			[Bindable]
+			private var _videoPlayerReady:Boolean=false;
+			
+			public static function set videoSource(source:String):void{
+				_commentSource = DataModel.getInstance().evaluationStreamsFolder+'/'+source;
+			}
+
+			private function onComplete():void
+			{
+				this.addEventListener(CloseEvent.CLOSE, closeButtonClickHandler);
+				setupVideoPlayer();
+			}
+
+			private function setupVideoPlayer():void
+			{
+				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+			}
+
+			private function onVideoPlayerReady(e:VideoPlayerEvent):void
+			{
+				_videoPlayerReady=true;
+				VP.stopVideo();
+				VP.videoSource=_commentSource;
+			}
+
+			private function closeButtonClickHandler(event:Event):void
+			{
+				VP.stopVideo();
+				VP.endVideo();
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="videoPlayerBox">
+		<videoPlayer:VideoPlayerBabelia id="VP"
+										autoPlay="true"
+										skin="white"
+										seek="true"
+										subtitles="false"
+										autoScale="false"
+										arrows="false"
+										subtitlingControls="false"
+										width="400"
+										height="{Math.floor(VP.width * 10 / 16)}"
+										streamSource="{_streamSource}"
+										controlsEnabled="{_videoPlayerReady}"/>
+	</mx:VBox>
+	<mx:Spacer width="20"/>
+	<common:CloseButton click="closeButtonClickHandler(event)"/>
+</common:CustomTitleWindow>

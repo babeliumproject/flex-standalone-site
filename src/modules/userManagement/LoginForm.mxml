@@ -1,63 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
 <common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				xmlns:common="view.common.*"
-				autoLayout="true"
-				showCloseButton="true"
-				creationComplete="completeHandler()">
+						  xmlns:common="view.common.*"
+						  showCloseButton="true"
+						  title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
+						  creationComplete="completeHandler()">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
-	
+
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.crypto.SHA1;
+
+			import events.LoginEvent;
+
+			import model.DataModel;
+
 			import mx.events.CloseEvent;
-			
+			import mx.managers.PopUpManager;
+
+			import vo.LoginVO;
+
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int=13;
-			
-			public function completeHandler():void{
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			private var rememberSO:SharedObject;
+
+			public function completeHandler():void
+			{
+				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
 				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+				focusManager.setFocus(username);
+
+				rememberSO=SharedObject.getLocal("babeliaData");
+
+				//Cookies present, this window should not have to be opened
+				//if (rememberSO.data.username != undefined && rememberSO.data.hash != undefined)
+				//	this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
-			
+
 			private function checkPressedKey(e:KeyboardEvent):void
 			{
-				if (e.keyCode == ENTER_KEY){
-					//processLogin(null);
+				if (e.keyCode == ENTER_KEY)
+				{
+					processLogin(null);
 				}
 			}
-			
-			public function cancelButtonClickHandler():void{
-				//PopUpManager.removePopUp(this);
-				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+
+			private function processLogin(event:Event):void
+			{
+				//Encrypt password for security
+				var passHash:String=SHA1.hash(password.text);
+				var user:LoginVO=new LoginVO(username.text, passHash);
+				new LoginEvent(LoginEvent.PROCESS_LOGIN, user).dispatch();
 			}
-			
+
+			public function cancelButtonClickHandler(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function set wrongLogin(upd:Boolean):void
+			{
+				if (dataModel.loginErrorMessage != '')
+				{
+					errorInfo.text=dataModel.loginErrorMessage;
+					dataModel.loginErrorMessage="";
+				}
+			}
+
+			private function set loggedSuccessfully(upd:Boolean):void
+			{
+				if (dataModel.isSuccessfullyLogged)
+				{
+					if (rememberSO.data.username == undefined || rememberSO.data.hash == undefined)
+					{
+						//The user wants the application to remember him/her
+						if (rememberUser.selected)
+						{
+							var cacheHash:String=SHA1.hash(password.text);
+							rememberSO.data.username=username.text;
+							rememberSO.data.hash=cacheHash;
+							rememberSO.flush();
+						}
+						username.text="";
+						password.text="";
+					}
+					dataModel.isSuccessfullyLogged=false;
+					this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				}
+			}
+
+			private function showRestorePass(event:Event):void
+			{
+				errorInfo.text=dataModel.restorePassErrorMessage;
+				dataModel.restorePassErrorMessage="";
+				this.title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
+				loginViewStack.selectedChild=restorePassFormBox;
+			}
+
+
+			private function set passRecoveryDone(flag:Boolean):void
+			{
+				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+
+			private function processRestorePass(event:Event):void
+			{
+				var user:LoginVO=new LoginVO(userOrEmail.text, "");
+				new LoginEvent(LoginEvent.RESTORE_PASS, user).dispatch();
+			}
 		]]>
 	</mx:Script>
-	
-	<mx:Label id="errorInfo" fontFamily="Arial" fontSize="12" color="#FF0000" fontWeight="bold" textAlign="center" width="100%"/>
-	<mx:Form width="100%">
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
-			<mx:TextInput id="username"
-						  width="100%"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}">
-			<mx:TextInput id="password"
-						  displayAsPassword="true"
-						  width="100%"/>
-		</mx:FormItem>
-	</mx:Form>
-	<mx:HBox width="100%" verticalAlign="middle"
-		paddingLeft="12"
-		paddingRight="12">
-		<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_REMEMBER_ME')}" id="rememberUser"/>
-	</mx:HBox>
-	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
-				   id="okButton"/>
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-				   id="cancelButton"/>
-	</mx:HBox>
-	<mx:HBox width="100%" horizontalAlign="center" paddingTop="10">
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}" id="restorePassword"/>
-	</mx:HBox>
+
+	<mx:Binding source="{dataModel.loginErrorMessage}"
+				destination="wrongLogin"/>
+	<mx:Binding source="{dataModel.isSuccessfullyLogged}"
+				destination="loggedSuccessfully"/>
+	<mx:Binding source="{dataModel.passRecoveryDone}"
+				destination="passRecoveryDone"/>
+
+	<mx:Label id="errorInfo"
+			  fontFamily="Arial"
+			  fontSize="12"
+			  color="#FF0000"
+			  fontWeight="bold"
+			  textAlign="center"
+			  width="100%"/>
+	<mx:ViewStack id="loginViewStack"
+				  creationPolicy="all"
+				  width="100%">
+		<mx:VBox id="loginFormBox"
+				 width="100%">
+			<mx:Form width="100%">
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
+					<mx:TextInput id="username"
+								  width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}">
+					<mx:TextInput id="password"
+								  displayAsPassword="true"
+								  width="100%"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:HBox width="100%"
+					 verticalAlign="middle"
+					 paddingLeft="12"
+					 paddingRight="12">
+				<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_REMEMBER_ME')}"
+							 id="rememberUser"/>
+			</mx:HBox>
+			<mx:HBox width="100%"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+						   id="okButton"
+						   click="processLogin(event)"/>
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						   id="cancelButton"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+			<mx:HBox width="100%"
+					 horizontalAlign="center"
+					 paddingTop="10">
+				<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}"
+							   id="restorePassword"
+							   click="showRestorePass(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox id="restorePassFormBox"
+				 width="100%">
+			<mx:Form width="100%">
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_OR_EMAIL')}">
+					<mx:TextInput id="userOrEmail"
+								  width="100%"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:HBox width="100%"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:Button label="{resourceManager.getString('myResources','LABEL_RESTORE_PASSWORD')}"
+						   id="restoreButton"
+						   click="processRestorePass(event)"/>
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						   id="cancelRestoreButton"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:ViewStack>
 </common:CustomTitleWindow>

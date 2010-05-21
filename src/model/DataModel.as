@@ -106,6 +106,9 @@ package model
 		[Bindable] public var red5Port: String = "1935";
 		[Bindable] public var uploadDomain:String = "http://"+server+"/";
 		[Bindable] public var streamingResourcesPath:String = "rtmp://" + server + "/oflaDemo";
+		[Bindable] public var evaluationStreamsFolder:String="evaluations";
+		[Bindable] public var repsonseStreamsFolder:String="responses";
+		[Bindable] public var exerciseStreamsFolder:String="exercises";
 		
 		[Bindable] public var uploadURL:String = uploadDomain+"upload.php";
 		[Bindable] public var thumbURL:String = uploadDomain+"resources/images/thumbs";
