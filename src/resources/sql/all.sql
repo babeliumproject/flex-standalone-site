@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `credithistory` (
   `changeDate` datetime NOT NULL,
   `changeType` varchar(45) NOT NULL,
   `changeAmount` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`) USING BTREE,
+  PRIMARY KEY USING BTREE (`id`),
   KEY `FK_credithistory_1` (`fk_user_id`),
   KEY `FK_credithistory_3` (`fk_response_id`),
   KEY `FK_credithistory_2` (`fk_exercise_id`)
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `exercise_level` (
   `fk_user_id` int(10) unsigned NOT NULL,
   `suggested_level` int(10) unsigned NOT NULL COMMENT 'Level dificulty goes upwards from 1 to 6',
   `suggest_date` datetime NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
+  PRIMARY KEY USING BTREE (`id`),
   KEY `FK_exercise_level_1` (`fk_exercise_id`),
   KEY `FK_exercise_level_2` (`fk_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
