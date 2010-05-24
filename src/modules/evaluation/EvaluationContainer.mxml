@@ -31,7 +31,7 @@
 		
 		<main:UnauthorizedNotice id="unauthorizedUser" />
 		
-		<evaluation:Epaiketa id="evaluationMain" />
+		<evaluation:EvaluationMain id="evaluationMain" />
 		
 	</mx:ViewStack>
 	

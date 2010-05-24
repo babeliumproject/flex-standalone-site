@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="modules.videoUpload.*">
+		 xmlns:ns1="modules.videoUpload.*"
+		 xmlns:main="modules.main.*">
 
 	<mx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.main.HeaderClass;
 
 			private var signInComponent:HeaderClass=new HeaderClass();
@@ -23,19 +24,7 @@
 				if (DataModel.getInstance().isLoggedIn == false)
 					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED).dispatch();
 			}
-
-
-
-			protected function signInLink_clickHandler(event:MouseEvent):void
-			{
-				DataModel.getInstance().headerComponentInstance.showLogin();
-			}
-
-			protected function signUpLink_clickHandler(event:MouseEvent):void
-			{
-				new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-			}
-
+			
 		]]>
 	</mx:Script>
 
@@ -43,35 +32,13 @@
 				  width="100%"
 				  height="100%"
 				  selectedIndex="{ DataModel.getInstance().viewUploadViewStackIndex }">
-		<mx:VBox id="unsignedScreen"
-				 horizontalAlign="center"
-				 verticalAlign="top"
-				 paddingTop="20"
-				 verticalGap="10">
-			<mx:Text text="You must be registered to see this area."
-					 fontWeight="bold"
-					 color="#FF0000"
-					 fontSize="16"/>
-			<mx:HBox width="100%"
-					 horizontalAlign="center"
-					 verticalAlign="middle"
-					 borderThickness="0">
-				<mx:Label text="Click"/>
-				<mx:LinkButton id="signInLink"
-							   label="here"
-							   cornerRadius="4"
-							   click="signInLink_clickHandler(event)"/>
-				<mx:Label text="to sign in. You can sign-up for free"/>
-				<mx:LinkButton id="signUpLink"
-							   label="here"
-							   click="signUpLink_clickHandler(event)"/>
-			</mx:HBox>
-		</mx:VBox>
+		<main:UnauthorizedNotice id="unsignedScreen"
+								 width="100%"
+								 height="100%"/>
 		<ns1:FileUpload id="signedScreen"
 						width="100%"
 						height="100%"
-						uploadUrl="{DataModel.getInstance().uploadURL}">
-		</ns1:FileUpload>
+						uploadUrl="{DataModel.getInstance().uploadURL}"/>
 
 	</mx:ViewStack>
 

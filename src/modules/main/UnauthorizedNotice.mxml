@@ -7,18 +7,19 @@
 	
 	<mx:Script>
 		<![CDATA[
-			
 			import events.ViewChangeEvent;
 			
-			import model.DataModel;
+			import modules.userManagement.LoginForm;
 			
-			import modules.main.HeaderClass;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
 			
-			private var signInComponent:HeaderClass=new HeaderClass();
+			private var loginPop:LoginForm;
 			
 			protected function signInLink_clickHandler(event:MouseEvent):void
 			{
-				DataModel.getInstance().headerComponentInstance.showLogin();
+				loginPop=LoginForm(PopUpManager.createPopUp(Application.application.parent, LoginForm, true));
+				PopUpManager.centerPopUp(loginPop);
 			}
 			
 			protected function signUpLink_clickHandler(event:MouseEvent):void
@@ -28,7 +29,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Text text="You must be registered to see this area."
+	<mx:Text text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
 			 fontWeight="bold"
 			 color="#FF0000"
 			 fontSize="16"/>
@@ -36,14 +37,14 @@
 			 horizontalAlign="center"
 			 verticalAlign="middle"
 			 borderThickness="0">
-		<mx:Label text="Click"/>
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
 		<mx:LinkButton id="signInLink"
-					   label="here"
+					   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
 					   cornerRadius="4"
 					   click="signInLink_clickHandler(event)"/>
-		<mx:Label text="to sign in. You can sign-up for free"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
 		<mx:LinkButton id="signUpLink"
-					   label="here"
+					   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
 					   click="signUpLink_clickHandler(event)"/>
 	</mx:HBox>
 </mx:VBox>

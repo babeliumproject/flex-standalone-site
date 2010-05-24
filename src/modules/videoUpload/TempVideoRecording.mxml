@@ -61,6 +61,8 @@
 			private var _micCamEnabled:Boolean=false;
 			
 			private var _streamingServerConnection:Boolean = false;
+			private var _streamsFolder:String = '';
+			private var _streamFilePrefix:String = '';
 			
 			private var _countdown:Timer;
 			private var _countdownTxt:Text;
@@ -140,6 +142,22 @@
 				}
 				
 				_streamingServerConnection = false;
+			}
+			
+			public function set streamsFolder(folder:String):void{
+				_streamsFolder = folder;
+			}
+			
+			public function get streamsFolder():String{
+				return _streamsFolder;
+			}
+			
+			public function set filePrefix(prefix:String):void{
+				_streamFilePrefix = prefix;
+			}
+			
+			public function get filePrefix():String{
+				return _streamFilePrefix;
 			}
 			
 			private function connectToStreamingServer():void{
@@ -234,7 +252,7 @@
 					playbackNetStream.client=this; // onPlayStatus
 					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
 
-					playbackNetStream.play(recordingFileName);
+					playbackNetStream.play(_streamsFolder+"/"+recordingFileName);
 					video.attachNetStream(playbackNetStream); // JUANAN
 					estat.text="Playing...";
 				}
@@ -437,10 +455,10 @@
 			private function startRecording():void
 			{
 				var d:Date=new Date();
-				recordingFileName="upd-" + d.getTime().toString();
+				recordingFileName=_streamFilePrefix+"-"+d.getTime().toString();
 
 				// Publish the stream
-				publishNetStream.publish(recordingFileName, "record");
+				publishNetStream.publish(_streamsFolder+"/"+recordingFileName, "record");
 				isRecording = true;
 				
 				//Recording time elpased variables

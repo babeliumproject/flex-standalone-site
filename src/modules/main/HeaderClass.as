@@ -63,9 +63,6 @@ package modules.main
 			super();
 			this.height=60;
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
-			
-			//Add this component's reference to DataModel so that it can be used across the application
-			DataModel.getInstance().headerComponentInstance = this;
 		}
 
 		public function onCreationComplete(event:FlexEvent):void

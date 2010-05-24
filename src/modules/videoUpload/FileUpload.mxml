@@ -646,7 +646,8 @@
 			</mx:ViewStack>
 		</mx:VBox>
 		<ns1:TempVideoRecording id="recFromWebcamBox"
-								visible="false"/>
+								visible="false"
+								filePrefix="upld"/>
 	</mx:HBox>
 
 

@@ -1134,18 +1134,6 @@ package modules.videoPlayer
 				case "NetStream.Play.PublishNotify":
 					trace("Second NetStream Status: "+info.code);
 					break;
-				case "NetStream.Play.Start":
-					trace("Second NetStream Status: "+info.code);
-					break;
-				case "NetStream.Play.Stop":
-					trace("Second NetStream Status: "+info.code);
-					break;
-				case "NetStream.Play.Reset":
-					trace("Second NetStream Status: "+info.code);
-					break;
-				case "NetStream.Play.PublishNotify":
-					trace("Second NetStream Status: "+info.code);
-					break;
 				case "NetStream.Play.UnpublishNotify":
 					trace("Second NetStream Status: "+info.code);
 					break;

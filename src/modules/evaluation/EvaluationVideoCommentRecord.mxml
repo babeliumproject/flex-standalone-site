@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+						  xmlns:common="view.common.*"
+						  title="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+						  autoLayout="true"
+						  creationComplete="onComplete(event)"
+						  xmlns:videoUpload="modules.videoUpload.*">
+
+	<mx:Metadata>
+   		[Event( name="bideoaBatGehitu", type="events.AddVideoEvent") ]
+	</mx:Metadata>
+
+	<mx:Script>
+
+		<![CDATA[
+			import events.AddVideoEvent;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			private function onComplete(event:FlexEvent):void{
+				
+			}
+
+			private function saveVideoComment():void
+			{
+				dispatchEvent(new AddVideoEvent(videoRecorderPlayer.recordingFileName));
+				PopUpManager.removePopUp(this);
+			}
+
+			private function cancelButtonClickHandler():void
+			{
+				videoRecorderPlayer.resetComponent();
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 horizontalAlign="center">
+		<videoUpload:TempVideoRecording id="videoRecorderPlayer"
+										streamsFolder="evaluations"
+										filePrefix="comment"/>
+		<mx:Spacer/>
+		<mx:HRule width="100%"/>
+		<mx:HBox horizontalAlign="center">
+			<mx:Button id="bideoaGorde"
+					   label="{resourceManager.getString('myResources', 'SAVEVIDEO')}"
+					   enabled="{videoRecorderPlayer.recordingFileName != null  &amp;&amp; !videoRecorderPlayer.isRecording}"
+					   click="saveVideoComment()"/>
+			<mx:Button label="{resourceManager.getString('myResources', 'CANCEL')}"
+					   click="cancelButtonClickHandler()"/>
+		</mx:HBox>
+
+	</mx:VBox>
+
+</common:CustomTitleWindow>

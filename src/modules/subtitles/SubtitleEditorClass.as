@@ -53,7 +53,7 @@ package modules.subtitles
 		[Bindable] public var videoPlaybackStartedState:int = VideoPlayer.PLAYBACK_STARTED_STATE;
 		
 		[Bindable] 
-		public var streamSource:String = "rtmp://" + DataModel.getInstance().server + "/oflaDemo";
+		public var streamSource:String = DataModel.getInstance().streamingResourcesPath;
 
 		private var exerciseFileName:String;
 		private var exerciseId:int;
@@ -61,25 +61,6 @@ package modules.subtitles
 
 		[Bindable]
 		public var subtitleCollection:ArrayCollection;
-
-		[Bindable]
-		[Embed(source="../../resources/images/flags/flag_united_kingdom.png")]
-		public var FlagEnglish:Class;
-
-		[Bindable]
-		[Embed(source="../../resources/images/flags/flag_spain.png")]
-		public var FlagSpanish:Class;
-
-		[Bindable]
-		[Embed(source="../../resources/images/flags/flag_france.png")]
-		public var FlagFrench:Class;
-
-		[Bindable]
-		[Embed(source="../../resources/images/flags/flag_basque_country.png")]
-		public var FlagBasque:Class;
-
-		[Bindable]
-		public var flaggedLanguageData:Array=new Array({label: 'English', icon: 'FlagEnglish'}, {label: 'Spanish', icon: 'FlagSpanish'}, {label: 'Basque', icon: 'FlagBasque'}, {label: 'French', icon: 'FlagFrench'});
 
 		[Bindable]
 		private var subtitleStartTime:Number=0;
