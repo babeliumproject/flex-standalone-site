@@ -7,7 +7,6 @@
 		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import view.common.CustomAlert;
 			import com.adobe.crypto.SHA1;
 			
 			import events.RegisterUserEvent;
@@ -15,13 +14,13 @@
 			
 			import model.DataModel;
 			
-			import view.common.LanguageComboBox;
-			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
 			import mx.controls.ToolTip;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
+			
+			import view.common.CustomAlert;
+			import view.common.LanguageComboBox;
 			
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
@@ -39,10 +38,6 @@
 			
 
 			private var selectedLanguages:ArrayCollection=new ArrayCollection();
-			
-			private var mailPattern:RegExp=/^[a-zA-Z]\w+([.]\w+)*[@]\w+([.]\w+)*[.][a-zA-Z]{2,4}$/;
-			private var fieldPattern:RegExp=/^[a-zA-Z_]\w*$/;
-			private var anyPattern:RegExp=/.*/s;
 
 			[Bindable] private var errorMessageToolTips:Array=new Array;
 
@@ -75,65 +70,6 @@
 				//Pop the selected language from the rest of language comboboxes
 			}
 
-			private function validateTextInput(target:TextInput, fieldName:String, 
-											   matchPattern:RegExp, checkEmpty:Boolean = true, 
-											   checkLength:Boolean = true, checkPattern:Boolean = true, 
-											   checkString:Boolean = false, minLength:int = 1, 
-											   maxLength:int = 200, matchString:String=''):Boolean
-			{
-				// Has the error message ToolTip already been created?
-				// (A reference to created ToolTip instances is saved in a hash called errorMessageToolTips.)
-				var toolTipExists:Boolean=errorMessageToolTips.hasOwnProperty(target.name);
-				var errorMessage:String='';
-
-				if (toolTipExists)
-				{
-					trace("error corrected removing tooltip");
-					ToolTipManager.destroyToolTip(errorMessageToolTips[target.name] as ToolTip);
-					delete errorMessageToolTips[target.name];
-				}
-
-				if (checkEmpty && target.text == "")
-				{
-					errorMessage=resourceManager.getString("myResources", "EMPTY_"+fieldName.toUpperCase());
-				}
-				else if (checkLength && (target.text.length < minLength))
-				{
-					errorMessage=resourceManager.getString("myResources", "SHORT_"+fieldName.toUpperCase());
-				}
-				else if (checkLength && (target.text.length > maxLength))
-				{
-					errorMessage=resourceManager.getString("myResources", "LONG_"+fieldName.toUpperCase());
-				}
-				else if (checkPattern && (!matchPattern.test(target.text)))
-				{
-					errorMessage=resourceManager.getString("myResources", "INVALID_"+fieldName.toUpperCase());
-				}
-				else if (checkString && (target.text != matchString)){
-					errorMessage=resourceManager.getString("myResources", "INVALID_"+fieldName.toUpperCase());
-				}
-				
-				if (errorMessage != '')
-				{
-					// Create the ToolTip instance.
-					var pt:Point=new Point(target.x, target.y);
-					pt=target.contentToGlobal(pt);
-					var errorTip:ToolTip=ToolTipManager.createToolTip(errorMessage, pt.x + target.width + 5, pt.y) as ToolTip;
-					errorTip.setStyle("styleName", "errorTip");
-
-					// Save a reference to the error message ToolTip in a hash for later use.
-					errorMessageToolTips[target.name]=errorTip;
-					(errorMessageToolTips[target.name] as ToolTip).visible=true;
-					
-					return false; //The filed has errors, so we return false
-				} 
-				else 
-				{
-					return true; //The field has valid input, so we return true
-				}
-			}
-
-
 			private function processNewUser():void
 			{
 
@@ -152,10 +88,10 @@
 				var languages:Array = languagesCollection.toArray();
 				
 
-				if(validateTextInput(username,'USERNAME',fieldPattern,true,true,true,false,4,20) &&
-				   validateTextInput(email,'EMAIL',mailPattern,false,false) &&
-				   validateTextInput(password, 'PASSWORD', anyPattern, true, true, false, false, 6, 40) &&
-				   validateTextInput(repassword, 'REPASSWORD', anyPattern, false, false, false, true, 1, 200, password.text))
+				if(FieldValidator.validateTextInput(errorMessageToolTips, username,'USERNAME', FieldValidator.FIELD_PATTERN,true,true,true,false,4,20) &&
+					FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN,false,false) &&
+					FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) &&
+					FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
 				{
 					var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, '', languages);
 					new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
@@ -265,8 +201,8 @@
 					<mx:TextInput id="username"
 								  maxChars="20"
 								  fontWeight="normal"
-								  change="validateTextInput(username, 'USERNAME', fieldPattern, true, true, true, false, 4, 20)"
-								  focusOut="validateTextInput(username, 'USERNAME', fieldPattern, true, true, true, false, 4, 20)"/>
+								  change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
+								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
 				</mx:HBox>
 
 			</mx:FormItem>
@@ -277,8 +213,8 @@
 					<mx:TextInput id="email"
 								  maxChars="80"
 								  fontWeight="normal"
-								  change="validateTextInput(email, 'EMAIL',mailPattern, false, false)"
-								  focusOut="validateTextInput(email,'EMAIL',mailPattern, false, false)"/>
+								  change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN, false, false)"
+								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN, false, false)"/>
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
@@ -289,8 +225,8 @@
 								  displayAsPassword="true"
 								  maxChars="40"
 								  fontWeight="normal"
-								  change="validateTextInput(password, 'PASSWORD', anyPattern, true, true, false, false, 6, 40)"
-								  focusOut="validateTextInput(password, 'PASSWORD', anyPattern, true, true, false, false, 6, 40)"/>
+								  change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
+								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
 				</mx:HBox>
 
 			</mx:FormItem>
@@ -303,8 +239,8 @@
 								  displayAsPassword="true"
 								  maxChars="40"
 								  fontWeight="normal"
-								  change="validateTextInput(repassword, 'REPASSWORD', anyPattern, false, false, false, true, 1, 200, password.text)"
-								  focusOut="validateTextInput(repassword, 'REPASSWORD', anyPattern, false, false, false, true, 1, 200, password.text)"/>
+								  change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
+								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
 				</mx:HBox>
 
 			</mx:FormItem>

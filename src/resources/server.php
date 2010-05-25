@@ -66,6 +66,7 @@ $server->setClassMap('UserVO',"UserVO");
 $server->setClassMap('NewUserVO',"NewUserVO");
 $server->setClassMap('TranscriptionsVO',"TranscriptionsVO");
 $server->setClassMap('TagVO',"TagVO");
+$server->setClassMap('ChangePassVO',"ChangePassVO");
 
 
 //Add directories reachable for Zend AMF

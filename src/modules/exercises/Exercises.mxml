@@ -354,6 +354,7 @@
 					_exerciseTitle=tmp.title;
 					_exerciseId=tmp.id;
 					_currentExercise=tmp;
+					
 					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 
 					// Need to retrieve again exercise's information
@@ -362,7 +363,12 @@
 					_cueManagerReady=false;
 					
 					ratingShareReport.exerciseData = tmp;
-
+					
+					if ( DataModel.getInstance().isLoggedIn )
+						CustomAlert.info("b");
+					else
+						CustomAlert.info("a");
+					
 					showSelectedExercise();
 					prepareExercise();
 					resetCueManager();

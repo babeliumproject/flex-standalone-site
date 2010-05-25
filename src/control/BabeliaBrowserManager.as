@@ -1,6 +1,5 @@
 package control
 {
-	import events.VideoStopEvent;
 	import events.ViewChangeEvent;
 	
 	import model.DataModel;
@@ -147,9 +146,15 @@ package control
 		{
 			moduleIndex = _modulesFragments.getItemIndex(module);
 			
+			if ( moduleIndex == ViewChangeEvent.VIEWSTACK_ACCOUNT_MODULE_INDEX
+					&& !DataModel.getInstance().isLoggedIn )
+			{
+				DataModel.getInstance().viewContentViewStackIndex = 0;
+				updateURL("home");
+			}
+			
 			if ( moduleIndex >= 0 )
 			{
-				new VideoStopEvent().dispatch();
 				DataModel.getInstance().viewContentViewStackIndex = moduleIndex;
 				return true;
 			}

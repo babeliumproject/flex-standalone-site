@@ -17,7 +17,7 @@
 			
 			private function userAcountSelect():void{
 				accountOptionsViewStack.selectedIndex = availableOptionsList.selectedIndex;
-				availableOptionsList.selectedItem="null";
+				availableOptionsList.selectedItem=null;
 			}
 		]]>
 	</mx:Script>
@@ -50,9 +50,9 @@
 		<mx:VBox label="TODO" id="todo1" 
 					width="80%" horizontalAlign="center">
 		</mx:VBox>
-		<mx:VBox label="TODO" id="todo2" 
+		<ns1:ChangePassword label="Change Password" id="changePass" 
 					width="80%" horizontalAlign="center">
-		</mx:VBox>
+		</ns1:ChangePassword>
 		<mx:VBox label="Top Collaborators" id="topCollaborators" 
 					width="80%" horizontalAlign="center">
 				<ns1:TopCollaborators width="30%" horizontalAlign="center"

@@ -114,16 +114,12 @@ package modules.main
 
 		public function signUpClickHandler():void
 		{
-			// Stop videos if some one is playing
-			new VideoStopEvent().dispatch();
 			//Change contentViewStack to sign up page
 			new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
 		}
 
 		public function accountClickHandler():void
 		{
-			// Stop videos if some one is playing
-			new VideoStopEvent().dispatch();
 			//Change contentViewStack to account page
 			new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
 		}
@@ -132,8 +128,6 @@ package modules.main
 		{
 			//Since our user isn't signed in we hide the users cp
 			new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
-			// Stop videos if some one is playing
-			new VideoStopEvent().dispatch();
 			// Redirecting to home
 			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 			anonymousCP.visible=true;

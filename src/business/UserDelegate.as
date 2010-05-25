@@ -8,7 +8,7 @@ package business
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
 	
-	import vo.UserVO;
+	import vo.ChangePassVO;
 	import vo.LoginVO;
 	
 	public class UserDelegate
@@ -43,5 +43,10 @@ package business
 			pendingCall.addResponder(responder);
 		}
 
+		public function changePass(user:ChangePassVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.changePass(user.id, user.oldpass, user.newpass);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

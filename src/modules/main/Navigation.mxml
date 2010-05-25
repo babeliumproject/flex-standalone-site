@@ -110,7 +110,6 @@
 
 			private function changeView(event:String):void
 			{
-				new VideoStopEvent().dispatch();
 				new ViewChangeEvent(event).dispatch();
 			}
 
