@@ -16,6 +16,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Image;
 			import mx.events.FlexEvent;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
@@ -26,11 +27,21 @@
 				import view.common.CustomAlert;
 				import mx.events.ResourceEvent;
 				import mx.controls.Alert;
-			
+			[Bindable] [Embed(source="../../resources/images/first.png")]
+			public var firstI:Class;
+			[Bindable] [Embed(source="../../resources/images/previous.png")]
+			public var previousI:Class;
+			[Bindable] [Embed(source="../../resources/images/next.png")]
+			public var nextI:Class;
+			[Bindable] [Embed(source="../../resources/images/last.png")]
+			public var lastI:Class;
+						
 			[Bindable] private var dataProvider:ArrayCollection = new ArrayCollection();
 			[Bindable] private var dataTemp:ArrayCollection = new ArrayCollection();
 			[Bindable] private var nav:ArrayCollection =new ArrayCollection();
-			[Bindable] public var sortFields:ArrayCollection = new ArrayCollection(
+			[Bindable] private var currentCBIndex:int=0;
+			[Bindable] private var descendingCB:Boolean=true;
+			[Bindable] private var sortFields:ArrayCollection = new ArrayCollection(
                 [ {label:"Automatic", data:"score"}, 
                   {label:"User", data:"userName"}, 
                   {label:"Language", data:"language"},
@@ -68,7 +79,8 @@
 					}
 					createNavigatePage();
 					DataModel.getInstance().videoSearchesRetrieved = false;
-					//sort.dataProvider=sortFields2;
+					descendingCB=true;
+					currentCBIndex=0;
 				}
 			}
 			
@@ -82,19 +94,30 @@
 		
         	public function closeHandler(event:Event):void {
         		var dataSortField:SortField=new SortField();
+        		var dataSortField1:SortField=new SortField();
          		var dataSort:Sort=new Sort();
         		var name:String = event.target.selectedItem.data;
+        		var eSI:int= event.target.selectedIndex;
         		//Create the SortField object for the data
         		dataSortField.numeric=false;
         		dataSortField.name=name;
-        		dataSortField.descending=true;
+        		if (currentCBIndex==eSI){
+        			descendingCB=!descendingCB;
+        		}else{
+        			descendingCB=true;
+        		}
+        		dataSortField.descending=descendingCB;
+        		//Create the second SortField object for the data
+        		dataSortField1.numeric=false;
+        		dataSortField1.name="title";
+        		dataSortField1.descending=true;
         		//Create the Sort object and add the SortField object to the array of fields to sort
-        		dataSort.fields=[dataSortField];
+        		dataSort.fields=[dataSortField,dataSortField1];
         		//Set the ArrayCollection objects sort property to our custom sort, and refresh
         		dataProvider.sort=dataSort;
         		dataProvider.refresh();
         		dataProvider.source=dataProvider.toArray();
-        		
+        		currentCBIndex=eSI;
         		DataModel.getInstance().currentPage=1;
         		createNavigatePage();
         	}
@@ -111,11 +134,11 @@
         		var current:int =DataModel.getInstance().currentPage;
         		var limit:int=(DataModel.getInstance().numberOfPagesNav+1)/2;
         		nav.removeAll();
-        		nav.addItem({label:"|<",data:1});
+        		nav.addItem({label: "", data: 1, icon: firstI});
         		if (current>1){
-        			nav.addItem({label:"<",data:current-1});
+        			nav.addItem({label: "",data: current-1, icon: previousI});
         		}else{
-        			nav.addItem({label:"<",data:1});
+        			nav.addItem({label: "",data: 1, icon: previousI});
         		}
         		if (current<=limit){
         			for(upmt = 1; (upmt <= tpxpm && upmt <= upm); upmt++){
@@ -127,19 +150,24 @@
         			}
         		}else{
         			for(upmt = current-limit+1; upmt <= current+limit-1; upmt++){
-        				nav.addItem({label:upmt,data:upmt});
+        				nav.addItem({label: upmt,data: upmt});
         			}
         		}
         		//upm=upmt;
         		if (current<tpxpm){
-        			nav.addItem({label:">",data:current+1});
+        			nav.addItem({label: "",data: current+1, icon: nextI});
         		}else{
-        			nav.addItem({label:">",data:tpxpm});
+        			nav.addItem({label: "",data: tpxpm, icon: nextI});
         		}
-				nav.addItem({label:">|",data:tpxpm});
+				nav.addItem({label: "",data: tpxpm, icon: lastI});
 				//DataModel.getInstance().lastPageShow=upm;
 				refreshDataProvider();
-				pageNav.dataProvider=nav;
+				if (pageNav.enabled){
+					pageNav.dataProvider=nav;
+				}else{
+					pageNav.dataProvider=new ArrayCollection;
+				}
+				
         	}
         	public function navigatePage(event:ItemClickEvent):void{
         		var pag:int=event.item.data;
@@ -156,7 +184,10 @@
 
 		]]>
 	</mx:Script>
-	
+	<mx:Image id="image0" 
+            
+        />
+
 	<mx:Binding source="{DataModel.getInstance().videoSearchesRetrieved}"
 				destination="this.onSearchRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().languageChanged}"
@@ -179,7 +210,8 @@
 		</mx:ComboBox>				
 		<mx:LinkBar id="pageNav" 
               	itemClick="navigatePage(event)"
-              	horizontalGap="1" 
+              	horizontalGap="0" 
+              	horizontalAlign="center"
               	width="100%"
               	enabled="false"/>
 	</mx:HBox>

@@ -39,7 +39,8 @@ class SearchDAO {
 		//To recognize numerics
 		//Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 			
- 		$query = Zend_Search_Lucene_Search_QueryParser::parse($search);
+		$finalSearch=$this->fuzzySearch($search);	
+ 		$query = Zend_Search_Lucene_Search_QueryParser::parse($finalSearch);
  		
  		//We do the search and send it	
   		try {
@@ -70,9 +71,24 @@ class SearchDAO {
 			
 			array_push ( $searchResults, $temp );
     	}
-		
 		return $searchResults;
 	}
+	
+	public function fuzzySearch($search){
+		//Decide whether to make the fuzzy search
+		$auxSearch=$search;
+		$finalSearch=$search;
+		$count =0;
+		$array_substitution=array("+","-", "&","|","!", "(",")", "{","}", "[","]", "^","~", "*","?",":","\\","/","\"", "or","and","not");
+		
+		$auxSearch=str_replace($array_substitution, ',', $auxSearch, $count);
+		if ($count==0){
+			$finalSearch=str_replace(' ', '~ ', $search);
+			$finalSearch=$finalSearch . "~";
+		}
+		return $finalSearch; 
+	}
+	
 	public function setTagToDB($search){
 		if ($search!=''){   
 			$sql = "SELECT amount FROM tagcloud WHERE tag='%s'";
