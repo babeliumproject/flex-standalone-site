@@ -11,16 +11,24 @@
 	</mx:Metadata>	  
 	<mx:Script>	
 		<![CDATA[
-			import events.ViewChangeEvent;
 			import model.DataModel;
-			import mx.controls.Alert;
 			
 			private function userAcountSelect():void{
 				accountOptionsViewStack.selectedIndex = availableOptionsList.selectedIndex;
 				availableOptionsList.selectedItem=null;
+				changePass.resetToolTips();
+			}
+			
+			public function set onTabChange(flag:Boolean) : void
+			{
+				changePass.resetToolTips();
 			}
 		]]>
 	</mx:Script>
+	
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
+	
 	<mx:VBox height="100%"
 			 horizontalAlign="left"
 			 width="20%">
