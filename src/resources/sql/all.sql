@@ -293,6 +293,22 @@ CREATE TABLE IF NOT EXISTS `subtitle_score` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tagcloud`
+--
+
+CREATE TABLE IF NOT EXISTS `tagcloud` (
+  `tag` varchar(100) NOT NULL,
+  `amount` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`tag`)
+  )
+ENGINE = InnoDB
+DEFAULT CHARSET=utf8;
+
+CREATE INDEX `IDX_tagcloud_amount` ON `tagcloud` (`amount` DESC);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `transcription`
 --
 
@@ -577,6 +593,39 @@ INSERT INTO `subtitle_line` (`id`, `fk_subtitle_id`, `show_time`, `hide_time`, `
 (105, 9, 52.212, 53.8, 'Yeah. What day did you go?', 18),
 (106, 9, 54, 57.1, 'Am, Sunday I think it was. Yeah, yeah, Sunday night.', 17);
 
+--
+-- Volcar la base de datos para la tabla `tagcloud`
+--
+
+INSERT INTO `tagcloud` (`tag`, `amount`) VALUES
+('mafiosos', 7),
+('english', 7),
+('french', 5),
+('moto', 5),
+('motos', 5),
+('oficina', 3),
+('carrera', 3),
+('perros', 3),
+('carreta', 3),
+('esparragos', 3),
+('friends', 3),
+('tomates', 3),
+('guisantes', 3),
+('zanahorias', 3),
+('lechugas', 3),
+('puerros', 3),
+('ortalizas', 3),
+('frescas', 3),
+('tostadas', 3),
+('torta', 3),
+('tortilla', 3),
+('huevos', 3),
+('fritanga', 3),
+('mono', 3),
+('toro', 3),
+('caballo', 3),
+('cerdo', 3),
+('serie', 1);
 
 --
 -- Volcar la base de datos para la tabla `transcription`
