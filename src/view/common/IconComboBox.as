@@ -62,6 +62,13 @@ package view.common
 			
 			if (value!=-1){ 
 				showIcon();
+			} else {
+				//var displayIcon:Class = itemToIcon(dataProvider[selectedIndex]);
+				if (getChildByName("displayIconObject"))
+				{
+					removeChild(getChildByName("displayIconObject"));
+				}
+				textInput.x=0;
 			}
 			
 		}

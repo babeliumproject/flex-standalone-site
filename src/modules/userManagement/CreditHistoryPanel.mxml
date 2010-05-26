@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  backgroundAlpha="0.0"
-		  paddingTop="8"
-		  paddingBottom="8"
-		  paddingLeft="8"
-		  paddingRight="8"
-		  fontFamily="Arial"
-		  fontSize="12"
+<common:CustomPanel xmlns:mx="http://www.adobe.com/2006/mxml"
 		  title="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
 		  layout="vertical"
-		  creationComplete="init()"
-		  xmlns:ns1="modules.userManagement.*">
+		  fontFamily="Arial"
+		  paddingTop="8"
+		  xmlns:ns1="modules.userManagement.*"
+		  xmlns:common="view.common.*">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
@@ -29,10 +24,6 @@
 			private var historicDataProvider:ArrayCollection;
 			
 			private static const MILLISECONDS_DAY:int = 86400000;
-
-			public function init():void
-			{
-			}
 
 			public function set creditHistoryRetrieved(value:Boolean):void
 			{
@@ -169,4 +160,4 @@
 	</mx:DataGrid>
 	<ns1:CreditLineChart id="lineChartContainer" height="250" width="100%"/>
 
-</mx:Panel>
+</common:CustomPanel>
