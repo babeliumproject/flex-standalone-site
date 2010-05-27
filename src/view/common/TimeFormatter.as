@@ -5,7 +5,7 @@ package view.common
 	public class TimeFormatter extends Formatter
 	{
 
-		private var _milliseconds:Boolean = true;
+		private var _milliseconds:Boolean = false;
 
 		public function get outputMilliseconds():Boolean
 		{

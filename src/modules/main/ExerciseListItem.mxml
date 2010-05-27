@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 paddingTop="8"
-		 paddingBottom="8"
+		 paddingTop="4"
+		 paddingBottom="4"
 		 paddingLeft="8"
 		 paddingRight="8"
 		 verticalAlign="middle"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 fontFamily="Arial"
+		 height="98"
 		 creationComplete="completeHandler()">
 
-	<mx:Image id="thumbnail"
-			  scaleContent="true"
-			  source="{getImageSource(data as ExerciseVO)}"
-			  autoLoad="true"
-			  click="imageClickHandler(event)"
-			  width="120"
-			  height="90"
-			  toolTip="{data.title}"
-			  useHandCursor="true"
-			  buttonMode="true"/>
+	<mx:Canvas width="120"
+			   height="90">
+		<mx:Image id="thumbnail"
+				  scaleContent="true"
+				  source="{getImageSource(data as ExerciseVO)}"
+				  autoLoad="true"
+				  click="imageClickHandler(event)"
+				  width="120"
+				  height="90"
+				  toolTip="{data.title}"
+				  useHandCursor="true"
+				  buttonMode="true"/>
+		<mx:TextInput text="{_timeFormatter.format(data.duration)}"
+					  x="88"
+					  y="0"
+					  width="32"
+					  disabledColor="0xffffff"
+					  backgroundDisabledColor="0x000000"
+					  backgroundAlpha="0.75"
+					  editable="false"
+					  borderStyle="none"
+					  enabled="false"
+					  height="16"/>
+	</mx:Canvas>
+
 	<mx:VBox height="90"
 			 width="100%"
 			 verticalGap="2">
@@ -62,10 +78,18 @@
 
 			import model.DataModel;
 
+			import mx.controls.Text;
+
+			import view.common.TimeFormatter;
+
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
+
 			private var _data:Object;
+
+			[Bindable]
+			private var _timeFormatter:TimeFormatter=new TimeFormatter();
 
 			public function completeHandler():void
 			{

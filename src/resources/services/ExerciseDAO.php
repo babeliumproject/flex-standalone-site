@@ -44,13 +44,14 @@ class ExerciseDAO {
 	public function addWebcamExercise(ExerciseVO $exercise) {
 		set_time_limit(0);
 		$videoFile = $exercise->name.'.flv';
+		$duration = $this->calculateVideoDuration($videoFile);
 		$this->takeRandomSnapshot($videoFile, $exercise->name);
 		
-		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri) ";
-		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s') ";
+		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration) ";
+		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d') ";
 		
 		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId, $exercise->name.'.jpg' );
+								$exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration );
 	}
 	
 	private function takeRandomSnapshot($videoFileName,$outputImageName){
@@ -68,6 +69,17 @@ class ExerciseDAO {
 		}
 		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
 		return $resultsnap;
+	}
+	
+	private function calculateVideoDuration($videoFileName){
+		$videoPath  = $this->red5Path .'/'. $videoFileName;
+		$total = 0;
+		
+		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
+		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
+			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
+		}
+		return $total;
 	}
 	
 

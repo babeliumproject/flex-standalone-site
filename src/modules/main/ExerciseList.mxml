@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="com.asfusion.controls.*"
-		 creationComplete="init()">
+		 creationComplete="onComplete()"
+		 verticalScrollPolicy="off">
 
 	<mx:Script>
 		<![CDATA[
@@ -10,10 +11,13 @@
 			import model.DataModel;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			
 			private var _refreshTimer:Timer;
+			
+			[Bindable] private var _dataProvider:ArrayCollection;
 
-			public function init():void
+			public function onComplete():void
 			{
 				retrieveExercises();
 				_refreshTimer = new Timer(300000,0);
@@ -32,12 +36,19 @@
 			{
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(0))
 				{
-					var dataProvider:ArrayCollection=DataModel.getInstance().availableExercises;
-					exerciseListTable.rowCount=dataProvider.length;
-					exerciseListTable.dataProvider=dataProvider;
+					_dataProvider=DataModel.getInstance().availableExercises;
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
+					resizeDataGrid();
 				}
 			}
+			
+			private function resizeDataGrid():void{
+				exerciseListTable.rowCount = _dataProvider.length;
+				exerciseListTable.rowHeight = 102;
+				exerciseListTable.height = exerciseListTable.measureHeightOfItems(0, _dataProvider.length) + exerciseListTable.headerHeight;
+				
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(0)}"
