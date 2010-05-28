@@ -72,16 +72,18 @@
 
 	<mx:Script>
 		<![CDATA[
+			import control.CuePointManager;
+			
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.Text;
-
+			
 			import view.common.TimeFormatter;
-
+			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
@@ -111,16 +113,16 @@
 				var source:String='';
 				switch (temp.language)
 				{
-					case "Basque":
+					case "eu_ES":
 						source="resources/images/flags/flag_basque_country.png";
 						break;
-					case "Spanish":
+					case "es_ES":
 						source="resources/images/flags/flag_spain.png";
 						break;
-					case "English":
-						source="resources/images/flags/flag_united_kingdom.png";
+					case "en_US":
+						source="resources/images/flags/flag_united_states.png";
 						break;
-					case "French":
+					case "fr_FR":
 						source="resources/images/flags/flag_france.png";
 						break;
 				}

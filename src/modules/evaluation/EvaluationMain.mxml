@@ -48,6 +48,11 @@
 
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			
+			private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
+			private const RESPONSE_FOLDER:String = DataModel.getInstance().responseStreamsFolder;
+			private const EVALUATION_FOLDER:String = DataModel.getInstance().evaluationStreamsFolder;
+			
 			[Bindable]
 			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'LABEL_EXERCISE_TITLE');
 			[Bindable]
@@ -191,8 +196,8 @@
 				VP.videoSource="";
 
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.videoSource=_exerciseName;
-				VP.secondSource=_responseName;
+				VP.videoSource=EXERCISE_FOLDER+'/'+_exerciseName;
+				VP.secondSource=RESPONSE_FOLDER+'/'+_responseName;
 				VP.refresh();
 
 
@@ -460,7 +465,7 @@
 				if (selectedItem.evaluationVideoFileIdentifier)
 				{
 					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
-					EvaluationVideoCommentWatch.videoSource = _videoCommentName;
+					EvaluationVideoCommentWatch.videoSource = EVALUATION_FOLDER+'/'+_videoCommentName;
 					var bideoIruzkin:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
 					PopUpManager.centerPopUp(bideoIruzkin);
 					assessmentDetailDataGrid.selectedItem=null;

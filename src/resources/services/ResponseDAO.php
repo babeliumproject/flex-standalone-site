@@ -24,7 +24,7 @@ class ResponseDAO {
 		$thumbnail = $data->thumbnailUri;
 		$videoFile = $data->fileIdentifier.'.flv';
 		$duration = $this->calculateVideoDuration($videoFile);
-		if(!audioOnlyResponse($videoFile)){
+		if(!$this->audioOnlyResponse($videoFile)){
 			$this->takeRandomSnapshot($videoFile, $data->fileIdentifier);
 			$thumbnail = $data->fileIdentifier.'.jpg';
 		}
@@ -65,7 +65,7 @@ class ResponseDAO {
 		$videoPath = $this->red5Path .'/'. $videoFilename;
 		// Get videofile informationo
 		$videoInfo = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
-		if(preg_match('/Could not find codec parameters (Video:/s', implode($cmd))){
+		if(preg_match('/Could not find codec parameters/s', implode($cmd))){
 			//The video resource seems to be only audio
 			return true;
 		} else {

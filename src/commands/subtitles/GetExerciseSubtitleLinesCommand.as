@@ -32,7 +32,7 @@ package commands.subtitles
 		}
 
 		public function result(data:Object):void
-		{
+		{	
 			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
 			
@@ -46,7 +46,6 @@ package commands.subtitles
 				{
 					if (resultCollection[0] is SubtitleLineVO)
 					{
-						cueManager.removeAllCue();
 						for (var i:int=0; i < resultCollection.length; i++)
 						{
 							var item:SubtitleLineVO = resultCollection.getItemAt(i) as SubtitleLineVO;

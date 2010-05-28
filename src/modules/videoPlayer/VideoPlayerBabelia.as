@@ -10,9 +10,9 @@ package modules.videoPlayer
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
-
+	
 	import model.DataModel;
-
+	
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
 	import modules.videoPlayer.controls.babelia.MicActivityBar;
@@ -26,7 +26,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
 	import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Text;
 	import mx.core.Application;
@@ -36,7 +36,7 @@ package modules.videoPlayer
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
-
+	
 	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
 
@@ -87,7 +87,7 @@ package modules.videoPlayer
 		private var _state:int;
 
 		// Other constants
-		private const AUDIO_DIR:String="audio";
+		private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 		private const DEFAULT_VOLUME:Number=40;
 		private const ACCESS_TIMEOUT_SECS:int=5;
 		private const COUNTDOWN_TIMER_SECS:int=5;
@@ -890,8 +890,8 @@ package modules.videoPlayer
 				return; // security check
 
 			var d:Date=new Date();
-			var audioFilename:String="audio-" + d.getTime().toString();
-			_fileName=AUDIO_DIR + "/" + audioFilename;
+			_fileName = "resp-" + d.getTime().toString();
+			var responseFilename:String=RESPONSE_FOLDER + "/" + _fileName;
 
 			if (_started)
 				resumeVideo();
@@ -910,7 +910,7 @@ package modules.videoPlayer
 
 			_ppBtn.State=PlayButton.PAUSE_STATE;
 
-			_outNs.publish(_fileName, "record");
+			_outNs.publish(responseFilename, "record");
 
 			trace("Started recording of " + _fileName);
 

@@ -95,7 +95,10 @@
 			 **/
 			private var _cueManager:CuePointManager=CuePointManager.getInstance();
 			[Bindable]
-			private var _streamSource:String="rtmp://" + DataModel.getInstance().server + "/oflaDemo";
+			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;	
+			private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
+			private const RESPONSE_FOLDER:String = DataModel.getInstance().responseStreamsFolder;
+			
 			public var _videoPlayerReady:Boolean=false;
 
 			/**
@@ -133,7 +136,7 @@
 			{
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
-				VP.videoSource=_exerciseName;
+				VP.videoSource=EXERCISE_FOLDER+'/'+_exerciseName;
 
 				// Retrieving roles for selected exercise
 				var auxExRol:ExerciseRoleVO=new ExerciseRoleVO();
@@ -364,10 +367,8 @@
 					
 					ratingShareReport.exerciseData = tmp;
 					
-					if ( DataModel.getInstance().isLoggedIn )
-						CustomAlert.info("b");
-					else
-						CustomAlert.info("a");
+					if ( !DataModel.getInstance().isLoggedIn )
+						CustomAlert.info("You must login in order to watch the exercises.");
 					
 					showSelectedExercise();
 					prepareExercise();
@@ -522,9 +523,9 @@
 				showArrows();
 				setupRecordingCommands();
 
-				VP.videoSource=_exerciseName;
+				VP.videoSource=EXERCISE_FOLDER+'/'+_exerciseName;
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.secondSource=_recordedFilename;
+				VP.secondSource=RESPONSE_FOLDER+'/'+_recordedFilename
 				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;
@@ -536,7 +537,7 @@
 				showArrows();
 				setupReplayCommands();
 
-				VP.videoSource=_recordedFilename;
+				VP.videoSource=RESPONSE_FOLDER+'/'+_recordedFilename;
 				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;

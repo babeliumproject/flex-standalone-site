@@ -15,6 +15,8 @@
 		<![CDATA[
 			import events.AddVideoEvent;
 			
+			import model.DataModel;
+			
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 
@@ -40,7 +42,7 @@
 			 height="100%"
 			 horizontalAlign="center">
 		<videoUpload:TempVideoRecording id="videoRecorderPlayer"
-										streamsFolder="evaluations"
+										streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
 										filePrefix="comment"/>
 		<mx:Spacer/>
 		<mx:HRule width="100%"/>

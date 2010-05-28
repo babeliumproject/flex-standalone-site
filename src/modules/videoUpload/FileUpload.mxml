@@ -15,23 +15,23 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
-			import view.common.CustomAlert;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
+			
+			import view.common.*;
 
 			private var _strUploadUrl:String;
 
@@ -647,6 +647,7 @@
 		</mx:VBox>
 		<ns1:TempVideoRecording id="recFromWebcamBox"
 								visible="false"
+								streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
 								filePrefix="upld"/>
 	</mx:HBox>
 

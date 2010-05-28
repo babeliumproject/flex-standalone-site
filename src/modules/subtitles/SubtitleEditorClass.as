@@ -54,6 +54,8 @@ package modules.subtitles
 		
 		[Bindable] 
 		public var streamSource:String = DataModel.getInstance().streamingResourcesPath;
+		
+		private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
 
 		private var exerciseFileName:String;
 		private var exerciseId:int;
@@ -145,16 +147,15 @@ package modules.subtitles
 				exerciseTitle.text = watchExercise.title;
 
 				prepareVideoPlayer();
-
 			}
 		}
 		
 		public function prepareVideoPlayer():void{
 			VP.stopVideo();
-			VP.videoSource = exerciseFileName;
+			VP.videoSource = EXERCISE_FOLDER+'/'+exerciseFileName;
 			VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
 			VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-			VP.enableSubtitlingEndButton = false;	
+			VP.enableSubtitlingEndButton = false;
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -457,11 +458,12 @@ package modules.subtitles
 		public function onTabChange(value:Boolean):void
 		{
 			if (videoPlayerReady){
-				VP.endVideo();
+				VP.stopVideo();
 				VP.setSubtitle(""); // Clear subtitles if any
 				VP.videoSource = ""; // Reset video source
 				VP.subtitlingControls = false;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+				cueManager.reset();
 			}
 			hideSubtitlingControls(null);
 		}
