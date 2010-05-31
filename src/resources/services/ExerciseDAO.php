@@ -13,6 +13,10 @@ class ExerciseDAO {
 	private $imagePath;
 	private $red5Path;
 	
+	private $evaluationFolder = '';
+	private $exerciseFolder = '';
+	private $responseFolder = '';
+	
 	public function ExerciseDAO() {
 			$settings = new Config ( );
 			$this->filePath = $settings->filePath;
@@ -43,9 +47,10 @@ class ExerciseDAO {
 	
 	public function addWebcamExercise(ExerciseVO $exercise) {
 		set_time_limit(0);
-		$videoFile = $exercise->name.'.flv';
-		$duration = $this->calculateVideoDuration($videoFile);
-		$this->takeRandomSnapshot($videoFile, $exercise->name);
+		$this->_getResourceDirectories();
+		
+		$duration = $this->calculateVideoDuration($exercise->name);
+		$this->takeRandomSnapshot($exercise->name, $exercise->name);
 		
 		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration) ";
 		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d') ";
@@ -54,8 +59,9 @@ class ExerciseDAO {
 								$exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration );
 	}
 	
-	private function takeRandomSnapshot($videoFileName,$outputImageName){
-		$videoPath  = $this->red5Path .'/'. $videoFileName;
+	public function takeRandomSnapshot($videoFileName,$outputImageName){
+	
+		$videoPath  = $this->red5Path .'/'. $this->exerciseFolder .'/'. $videoFileName . '.flv';
 		// where you'll save the image
 		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
 		// default time to get the image
@@ -72,7 +78,7 @@ class ExerciseDAO {
 	}
 	
 	private function calculateVideoDuration($videoFileName){
-		$videoPath  = $this->red5Path .'/'. $videoFileName;
+		$videoPath  = $this->red5Path .'/'. $this->exerciseFolder .'/'. $videoFileName . '.flv';
 		$total = 0;
 		
 		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
@@ -80,6 +86,20 @@ class ExerciseDAO {
 			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
 		}
 		return $total;
+	}
+	
+	private function _getResourceDirectories(){
+		$sql = "SELECT prefValue FROM preferences
+				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
+				ORDER BY prefName";
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		$this->evaluationFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->exerciseFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->responseFolder = $row ? $row[0] : '';
 	}
 	
 

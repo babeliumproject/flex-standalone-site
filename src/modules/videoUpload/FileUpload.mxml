@@ -252,7 +252,7 @@
 						red5VideoData.title=videoTitle.text;
 						red5VideoData.description=videoDescription.text;
 						red5VideoData.tags=parseTags(videoTags.text);
-						red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
+						red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
 						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
@@ -355,7 +355,7 @@
 					red5VideoData.title=videoTitle.text;
 					red5VideoData.description=videoDescription.text;
 					red5VideoData.tags=parseTags(videoTags.text);
-					red5VideoData.language=languageSelector.languageComboBox.selectedLabel;
+					red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
 					red5VideoData.name=recFromWebcamBox.recordingFileName;
 					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 

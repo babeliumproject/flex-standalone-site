@@ -90,6 +90,7 @@ package modules.subtitles
 		public var subtitleExerciseButton:Button;
 
 		public var subtitleEditor:Panel;
+		[Bindable]
 		public var subtitleList:DataGrid=new DataGrid();
 		public var languageComboBox:IconComboBox;
 
@@ -179,8 +180,8 @@ package modules.subtitles
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
 				subtitleCollection=cueManager.cuelist;
 				for each (var cueObj:CueObject in subtitleCollection){
-					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP));
-					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
+					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP, subtitleList));
+					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP, subtitleList));
 				}
 			}
 		}

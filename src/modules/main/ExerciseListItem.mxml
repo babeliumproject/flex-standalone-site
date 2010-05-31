@@ -72,8 +72,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import control.CuePointManager;
-			
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
@@ -82,6 +80,7 @@
 			
 			import mx.controls.Text;
 			
+			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
 			
 			import vo.ExerciseRoleVO;
@@ -110,24 +109,7 @@
 
 			public function getFlagSource(temp:ExerciseVO):String
 			{
-				var source:String='';
-				switch (temp.language)
-				{
-					case "eu_ES":
-						source="resources/images/flags/flag_basque_country.png";
-						break;
-					case "es_ES":
-						source="resources/images/flags/flag_spain.png";
-						break;
-					case "en_US":
-						source="resources/images/flags/flag_united_states.png";
-						break;
-					case "fr_FR":
-						source="resources/images/flags/flag_france.png";
-						break;
-				}
-				return source;
-
+				return LocaleFlagResource.getFlagResource(temp.language);
 			}
 
 			public function getImageSource(temp:ExerciseVO):String

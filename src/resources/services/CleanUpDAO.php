@@ -30,17 +30,17 @@ class CleanUpDAO{
 	}
 
 	private function _getResourceDirectories(){
-		$sql = "SELECT * FROM preferences
+		$sql = "SELECT prefValue FROM preferences
 				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
 				ORDER BY prefName";
 		$result = $this->conn->_execute($sql);
 
 		$row = $this->conn->_nextRow($result);
-		$this->evaluationFolder = $row ? $row[1] : '';
+		$this->evaluationFolder = $row ? $row[0] : '';
 		$row = $this->conn->_nextRow($result);
-		$this->exerciseFolder = $row ? $row[1] : 'audio';
+		$this->exerciseFolder = $row ? $row[0] : '';
 		$row = $this->conn->_nextRow($result);
-		$this->responseFolder = $row ? $row[1] : 'evaluations';
+		$this->responseFolder = $row ? $row[0] : '';
 	}
 
 	private function _deleteUnreferencedExercises(){

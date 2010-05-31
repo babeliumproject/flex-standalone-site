@@ -24,6 +24,9 @@ $OFLADEMO = "demos/ofla_demo.html";
 $BANDWIDTHDEMO = "demos/bwcheck.html";
 $RTMP_PORT = "1935";
 $RED5_STREAMS = $RED5_HOME."/webapps/oflaDemo/streams";
+$RED5_EXERCISES = 'exercises';
+$RED5_EVALUATIONS = 'evaluations';
+$RED5_RESPONSES = 'responses';
 $SQL = "/src/resources/sql/all.sql";
 $INPUT_TEST_VIDEO = $HOME . $UPLOADS . "/test.flv";
 $OUTPUT_TEST_VIDEO = $HOME . $UPLOADS . "/output.flv";
@@ -150,11 +153,11 @@ function gimmeSocket ($strServer, $intPort, $strBind = NULL) {
 <h1>Configuration test</h1>
 
 
-Testing if there is a correct amfphp folder:
+Testing if there is a correct amfphp folder (<?php echo $HOME . $SERVICES ?>):
 <? test( file_exists($HOME . $SERVICES )) ?>
 <br>
 
-Testing if Config.php exists:
+Testing if Config.php exists where it should (<?php echo $HOME.$SERVICES .'/Config.php' ?>):
 <? test( file_exists($HOME . $SERVICES . "/Config.php")) ?>
 
 <br>
@@ -207,15 +210,14 @@ while (1) {
 	usleep(8000);
 }
 ?>
+
 <br>
 Searching for RTMP videos: tdes_1065_qa.flv, tdes_1170_qa.flv,
 tdes_1179_qa.flv:
 <?
-
-
 $array = array(0=>"tdes_1065_qa.flv", 1=>"tdes_1170_qa.flv", 2=>"tdes_1179_qa.flv");
 
-if ($handle = opendir($RED5_STREAMS)) {
+if ($handle = opendir($RED5_STREAMS .'/'.$RED5_EXERCISES)) {
 	while (false !== ($file = readdir($handle))) {
 		if ($file != "." && $file != "..") {
 			$key = array_search( $file, $array );
@@ -232,7 +234,14 @@ if ($handle = opendir($RED5_STREAMS)) {
 ?>
 
 <br>
-Trying to determine if Zend Framework is actually installed:
+Trying to determine if Zend Framework is correctly installed:
+<?php
+test((include 'Zend/Loader.php'));
+
+?>
+
+<br>
+Trying to determine if server.php is present and has no errors:
 <?
 
 $lines = @file_get_contents("http://" . $LOCALHOST. "/server.php");
@@ -261,11 +270,6 @@ echo "</font>";
 ?>
 
 <br>
-Trying to determine if activation script exists where it should(<?php echo $HOME ?>/activation.php):
-<?php test(file_exists($HOME."/activation.php")); ?>
-
-
-<br>
 Trying to determine if upload script exists where it should (<?php echo $HOME ?>/upload.php):
 <?php test(file_exists($HOME."/upload.php") ); ?>
 
@@ -290,8 +294,28 @@ Trying to determine if upload folder has the appropiate permissions (777):
 <?php test(check_perms($HOME. $UPLOADS, "777")); ?>
 
 <br>
-Trying to determine if red5's stream folder has the appropiate permissions (777):
-<?php test(check_perms($RED5_STREAMS, "777"))?>
+Trying to determine if Red5's exercises folder exists where it should (<?php echo $RED5_STREAMS .'/'. $RED5_EXERCISES ?>):
+<?php test(file_exists($RED5_STREAMS .'/'. $RED5_EXERCISES) ); ?>
+
+<br>
+Trying to determine if red5's exercises folder has the appropiate permissions (777):
+<?php test(check_perms($RED5_STREAMS.'/'.$RED5_EXERCISES, "777"))?>
+
+<br>
+Trying to determine if Red5's evaluations folder exists where it should (<?php echo $RED5_STREAMS .'/'. $RED5_EVALUATIONS ?>):
+<?php test(file_exists($RED5_STREAMS .'/'. $RED5_EVALUATIONS) ); ?>
+
+<br>
+Trying to determine if red5's evaluations folder has the appropiate permissions (777):
+<?php test(check_perms($RED5_STREAMS.'/'.$RED5_EVALUATIONS, "777"))?>
+
+<br>
+Trying to determine if Red5's evaluations folder exists where it should (<?php echo $RED5_STREAMS .'/'. $RED5_RESPONSES ?>):
+<?php test(file_exists($RED5_STREAMS .'/'. $RED5_RESPONSES) ); ?>
+
+<br>
+Trying to determine if red5's responses folder has the appropiate permissions (777):
+<?php test(check_perms($RED5_STREAMS.'/'.$RED5_RESPONSES, "777"))?>
 
 <br>
 Trying to determine if appropiate POST size is set in php.ini (post_max_size =200M):
@@ -300,6 +324,10 @@ Trying to determine if appropiate POST size is set in php.ini (post_max_size =20
 <br>
 Trying to determine if enough upload size is set in php.ini (upload_max_filesize =200M):
 <?php test(substr(ini_get("upload_max_filesize"),0,-1) >= 200); ?>
+
+<br>
+Trying to determine if crossdomain.xml file exists where it should (<?php echo $HOME ?>):
+<?php test(file_exists($HOME.'/crossdomain.xml'))?>
 
 <br>
 Trying to determine is ffmpeg is correctly installed:

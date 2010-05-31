@@ -11,6 +11,10 @@ class ResponseDAO {
 	private $imagePath;
 	private $red5Path;
 	
+	private $evaluationFolder = '';
+	private $exerciseFolder = '';
+	private $responseFolder = '';
+	
 	public function ResponseDAO() {
 		$settings = new Config ( );
 		$this->filePath = $settings->filePath;
@@ -21,11 +25,11 @@ class ResponseDAO {
 	
 	public function saveResponse(ResponseVO $data){
 		set_time_limit(0);
+		$this->_getResourceDirectories();
 		$thumbnail = $data->thumbnailUri;
-		$videoFile = $data->fileIdentifier.'.flv';
-		$duration = $this->calculateVideoDuration($videoFile);
-		if(!$this->audioOnlyResponse($videoFile)){
-			$this->takeRandomSnapshot($videoFile, $data->fileIdentifier);
+		$duration = $this->calculateVideoDuration($data->fileIdentifier);
+		if(!$this->audioOnlyResponse($data->fileIdentifier)){
+			$this->takeRandomSnapshot($data->fileIdentifier, $data->fileIdentifier);
 			$thumbnail = $data->fileIdentifier.'.jpg';
 		}
 		
@@ -44,8 +48,22 @@ class ResponseDAO {
 		return $this->_databaseUpdate ( $sql, $data->id );
 	}
 	
+	private function _getResourceDirectories(){
+		$sql = "SELECT prefValue FROM preferences
+				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
+				ORDER BY prefName";
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		$this->evaluationFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->exerciseFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->responseFolder = $row ? $row[0] : '';
+	}
+	
 	private function takeRandomSnapshot($videoFileName,$outputImageName){
-		$videoPath  = $this->red5Path .'/'. $videoFileName;
+		$videoPath  = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFileName . '.flv';
 		// where you'll save the image
 		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
 		// default time to get the image
@@ -62,7 +80,7 @@ class ResponseDAO {
 	}
 	
 	private function audioOnlyResponse($videoFilename){
-		$videoPath = $this->red5Path .'/'. $videoFilename;
+		$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFilename . '.flv';
 		// Get videofile informationo
 		$videoInfo = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
 		if(preg_match('/Could not find codec parameters/s', implode($cmd))){
@@ -74,7 +92,7 @@ class ResponseDAO {
 	}
 	
 	private function calculateVideoDuration($videoFileName){
-		$videoPath  = $this->red5Path .'/'. $videoFileName;
+		$videoPath  = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFileName . '.flv';
 		$total = 0;
 		
 		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));

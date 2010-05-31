@@ -8,8 +8,17 @@ class EvaluationDAO {
 	
 	private $conn;
 	
+	private $imagePath;
+	private $red5Path;
+	
+	private $evaluationFolder = '';
+	private $exerciseFolder = '';
+	private $responseFolder = '';
+	
 	public function EvaluationDAO(){
 		$settings = new Config ( );
+		$this->imagePath = $settings->imagePath;
+		$this->red5Path = $settings->red5Path;
 		$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 	}
 	
@@ -258,15 +267,19 @@ class EvaluationDAO {
 	}
 	
 	public function addVideoAssessment(EvaluationVO $evalData){
-
+		set_time_limit(0);
 		$evaluationId = $this->addAssessment($evalData);
 		if ($evaluationId){
+
+			$this->_getResourceDirectories();
+			$duration = $this->calculateVideoDuration($evalData->evaluationVideoFileIdentifier);
+			$this->takeRandomSnapshot($evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier);
 			
-			$sql = "INSERT INTO evaluation_video (fk_evaluation_id, video_identifier, source) VALUES (";
+			$sql = "INSERT INTO evaluation_video (fk_evaluation_id, video_identifier, source, thumbnail_uri) VALUES (";
 			$sql = $sql . "'%d', ";
 			$sql = $sql . "'%s', ";
 			$sql = $sql . "'Red5')";
-			$result = $this->_databaseUpdate ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier );
+			$result = $this->_databaseUpdate ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
 			
 			$sql = "SELECT last_insert_id()";
 			
@@ -280,6 +293,48 @@ class EvaluationDAO {
 		} else {
 			return false;
 		}
+	}
+	
+	private function takeRandomSnapshot($videoFileName,$outputImageName){
+		$videoPath  = $this->red5Path .'/'. $this->evaluationFolder .'/'. $videoFileName . '.flv';
+		// where you'll save the image
+		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
+		// default time to get the image
+		$second = 1;
+
+		// get the duration and a random place within that
+		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
+		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
+			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
+			$second = rand(1, ($total - 1));
+		}
+		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
+		return $resultsnap;
+	}
+	
+	private function calculateVideoDuration($videoFileName){
+		$videoPath  = $this->red5Path .'/'. $this->evaluationFolder .'/'. $videoFileName .'.flv';
+		$total = 0;
+		
+		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
+		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
+			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
+		}
+		return $total;
+	}
+	
+	private function _getResourceDirectories(){
+		$sql = "SELECT prefValue FROM preferences
+				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
+				ORDER BY prefName";
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		$this->evaluationFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->exerciseFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->responseFolder = $row ? $row[0] : '';
 	}
 	
 	public function updateResponseRatingAmount($responseId){
