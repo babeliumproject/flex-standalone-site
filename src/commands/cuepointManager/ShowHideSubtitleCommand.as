@@ -30,7 +30,7 @@ package commands.cuepointManager
 			{
 				VP.setSubtitle(cue.text);
 				var index:int = CuePointManager.getInstance().getCueIndex(cue);
-				if(dg.rowCount > index)
+				if(dg != null && dg.rowCount > index)
 					dg.selectedIndex = index;
 			}
 			else

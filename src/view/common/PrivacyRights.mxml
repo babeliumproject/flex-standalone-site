@@ -280,7 +280,7 @@
 					 verticalAlign="middle">
 				<mx:Text width="100%"
 						 text="{resourceManager.getString('myResources','TEXT_PRIVACY_RIGHTS_EXPLAIN')}"/>
-				<mx:Image source="resources/images/privacy_settings.png"/>
+				<mx:Image source="resources/images/privacy_settings.png" width="160" height="102"/>
 			</mx:HBox>
 			<mx:HBox width="100%"
 					 horizontalAlign="left">
