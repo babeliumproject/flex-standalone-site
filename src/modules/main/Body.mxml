@@ -55,9 +55,9 @@
 								  width="100%"
 								  height="100%">
 		</subtitles:SubtitleEditor>
-		<configuration:principal width="100%"
+		<configuration:Global width="100%"
 								 height="100%">
-		</configuration:principal>
+		</configuration:Global>
 		<!--
 			 <ns8:Rankings width="100%" height="100%">
 			 </ns8:Rankings>
