@@ -28,7 +28,7 @@
 				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
-				inicializarTimers();		
+				initTimers();		
 			}
 			
 			private function netStatusHandler(e:NetStatusEvent):void{   
@@ -76,7 +76,7 @@
 						mic.rate = 44;
 						rec_ns.attachAudio(mic);
 						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
-						inicializarContador(); 
+						initCont(); 
 					}  					
 				}catch(err:Error){
 					CustomAlert.error( err.toString() );
@@ -86,7 +86,7 @@
 			private function playStart():void{
 				if (rec){//Rec file exists
 					DataModel.getInstance().playing=true;
-					inicializarContador();
+					initCont();
 					statusTextFunc("playing");
 					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationVideo.flv");
 					video.attachNetStream(play_ns);
@@ -130,7 +130,7 @@
 						mic.rate = 44;
 						rec_ns.attachAudio(mic);
 						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
-						inicializarContador();                    
+						initCont();                    
 						break;
 				}//switch
 			}
@@ -141,8 +141,8 @@
 				if (timerRec.currentCount <= 10){					
 					contador.text = denb.toString();
 				}else if(timerRec.currentCount>10){
-					finGrabacion();
-					esconderInfo();
+					endRec();
+					hideInfo();
 					rec=true;
 					timerRec.reset();//Se prepara para la proxima grabacion
 				}
@@ -158,17 +158,17 @@
 					var ev:ConfigurationResultEvent = new ConfigurationResultEvent
 						(ConfigurationResultEvent.WEBCAM_RESULT,true);
 					dispatchEvent(ev);
-					esconderInfo();
+					hideInfo();
 					timerPlay.reset();//Se prepara para la proxima reproduccion
 				}
 			}
 			
-			private function inicializarContador():void{
+			private function initCont():void{
 				contador.text="0";
 				contador.visible=true;
 			}
 			
-			private function inicializarTimers():void{
+			private function initTimers():void{
 				//Timer utilizado en la grabacion del video
 				timerRec = new Timer(1000,0);
 				timerRec.addEventListener(TimerEvent.TIMER, timerRecFunc);
@@ -177,12 +177,12 @@
 				timerPlay.addEventListener(TimerEvent.TIMER, timerPlayFunc);	
 			}
 			
-			private function esconderInfo():void{
+			private function hideInfo():void{
 				contador.visible=false;
 				statusText.visible=false;
 			}
 			
-			private function finGrabacion():void{
+			private function endRec():void{
 				DataModel.getInstance().recording=false;
 				rec_ns.attachCamera(null);
 				rec_ns.attachAudio(null);

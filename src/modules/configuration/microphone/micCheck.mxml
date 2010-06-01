@@ -29,7 +29,7 @@
 				nc.connect("rtmp://" + DataModel.getInstance().server +  ":" + DataModel.getInstance().red5Port + "/oflaDemo");
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler); 
-				inicializarTimers(); 	
+				initTimers(); 	
 			}
 			
 			private function netStatusHandler(e:NetStatusEvent):void{   
@@ -82,7 +82,7 @@
 						DataModel.getInstance().recording=true;
 						timerRec.start();
 						mic.rate = 44;
-						inicializarContador();     
+						initCont();     
 					}
 					
 				}catch(err:Error){
@@ -93,7 +93,7 @@
 			private function playStart():void{
 				if (rec && onMic){//Rec file exists
 					DataModel.getInstance().playing=true;
-					inicializarContador();
+					initCont();
 					statusTextFunc("Playing");
 					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationAudio.flv");
 					timerPlay.start();
@@ -142,7 +142,7 @@
 						DataModel.getInstance().recording=true;
 						timerRec.start();
 						mic.rate = 44;
-						inicializarContador();                   
+						initCont();                   
 						break;
 				}//switch
 			}
@@ -156,7 +156,7 @@
 				}else if(timerRec.currentCount>10){
 					DataModel.getInstance().recording=false;
 					rec_ns.attachAudio(null);
-					esconderInfo();
+					hideInfo();
 					rec=true;
 					timerRec.reset();//Se prepara para la proxima grabacion
 					
@@ -182,12 +182,12 @@
 					var ev:ConfigurationResultEvent = new ConfigurationResultEvent
 						(ConfigurationResultEvent.MICROPHONE_RESULT,true);
 					dispatchEvent(ev);
-					esconderInfo();
+					hideInfo();
 					timerPlay.reset();//Se prepara para la proxima reproduccion
 				}
 			}
 			
-			private function inicializarTimers():void{
+			private function initTimers():void{
 				//Timer utilizado en la grabacion de audio
 				timerRec = new Timer(1000,0);
 				timerRec.addEventListener(TimerEvent.TIMER, timerRecFunc);
@@ -196,12 +196,12 @@
 				timerPlay.addEventListener(TimerEvent.TIMER, timerPlayFunc);	
 			}
 			
-			private function inicializarContador():void{
+			private function initCont():void{
 				contador.text="0";
 				contador.visible=true;
 			}
 			
-			private function esconderInfo():void{
+			private function hideInfo():void{
 				noSoundText.visible=false;
 				statusText.visible=false;
 				contador.visible=false;

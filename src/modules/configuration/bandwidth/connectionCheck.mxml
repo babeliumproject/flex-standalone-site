@@ -57,11 +57,11 @@
 			public function onServerClientComplete(event:BandwidthDetectEvent):void
 			{
 				chartData=new ArrayCollection([{Connection: resourceManager.getString('myResources', 'LABEL_NEEDED_BW'), BWDown: bwMin}, {Connection: resourceManager.getString('myResources', 'LABEL_REAL_BW'), BWDown: event.info.kbitDown}]);
-				mostrarBwInfo(event);
+				showBwInfo(event);
 				dispatchResultEvent(event);
 			}
 
-			private function mostrarBwInfo(event:BandwidthDetectEvent):void
+			private function showBwInfo(event:BandwidthDetectEvent):void
 			{
 				Needed.text=resourceManager.getString('myResources', 'LABEL_NEEDED_BW') + ": " + bwMin + " Kb/s";
 				Real.text=resourceManager.getString('myResources', 'LABEL_REAL_BW') + ": " + event.info.kbitDown + " Kb/s";
