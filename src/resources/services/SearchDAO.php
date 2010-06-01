@@ -38,6 +38,11 @@ class SearchDAO {
 
 		//To recognize numerics
 		//Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
+		
+		//Remove the limitations of fuzzy and wildcard searches
+		Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
+		Zend_Search_Lucene_Search_Query_Fuzzy::setDefaultPrefixLength(0);
+		
 			
 		$finalSearch=$this->fuzzySearch($search);	
  		$query = Zend_Search_Lucene_Search_QueryParser::parse($finalSearch);
@@ -63,6 +68,7 @@ class SearchDAO {
 			$temp->thumbnailUri = $hit->thumbnailUri;
 			$temp->addingDate = $hit->addingDate;
 			$temp->userId = $hit->userId;
+			$temp->duration = $hit->duration;
 			$temp->userName = $hit->userName;
 			$temp->avgRating = $hit->avgRating;
 			$temp->avgDifficulty = $hit->avgDifficulty;
@@ -144,7 +150,7 @@ class SearchDAO {
 	public function createIndex() {
 		//Query for the index
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
        					avg (suggested_level) as avgLevel
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -161,7 +167,7 @@ class SearchDAO {
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
-						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
+						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]);			
 		}
 		$this->index->commit();
 		$this->index->optimize();			
@@ -170,7 +176,7 @@ class SearchDAO {
 						
 		//Query for the index
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
        					avg (suggested_level) as avgLevel
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -185,7 +191,7 @@ class SearchDAO {
 		
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
-						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);			
+						  $row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]);			
 		}
 		$this->index->commit();
 		$this->index->optimize();		
@@ -207,7 +213,8 @@ class SearchDAO {
 	}
 	
 	private function addDoc($idEx,$title,$description,$language,$tags,$source,$name,
-					$thumbnailUri,$addingDate,$userId,$userName,$avgRating,$avgDifficulty){
+					$thumbnailUri,$addingDate,$userId,$duration,$userName,
+					$avgRating,$avgDifficulty){
 		$doc = new Zend_Search_Lucene_Document();
 			
 		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx, 'utf-8'));
@@ -220,6 +227,7 @@ class SearchDAO {
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('thumbnailUri', $thumbnailUri, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('addingDate', $addingDate, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('userId', $userId, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('duration', $duration, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgRating', $avgRating, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgDifficulty', $avgDifficulty, 'utf-8'));
