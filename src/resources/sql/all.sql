@@ -418,7 +418,7 @@ INSERT INTO `exercise_score` (`id`, `fk_exercise_id`, `fk_user_id`, `suggested_s
 -- Volcar la base de datos para la tabla `preferences`
 --
 
-INSERT INTO `preferences` (`id`, `prefName`, `prefValue`) VALUES
+INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES
 ('initialCredits', '15'),
 ('subtitleAdditionCredits', '2'),
 ('evaluationRequestCredits', '2'),
@@ -455,7 +455,7 @@ INSERT INTO `preferences` (`id`, `prefName`, `prefValue`) VALUES
 ('reports_to_delete', '10'),
 ('positives_to_next_level', '15'),
 ('reports_to_delete', '10'),
-('bwCheckMin', 3000)
+('bwCheckMin', '3000'),
 ('exerciseFolder', 'exercises'),
 ('evaluationFolder','evaluations'),
 ('responseFolder','responses');
