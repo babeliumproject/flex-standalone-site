@@ -17,6 +17,7 @@
 				width="100%"
 				pageTitle="Babelia: Collaborative Language e-Learning"
 				historyManagementEnabled="false"
+				horizontalScrollPolicy="off"
 				creationComplete="onComplete()">
 
 	<mx:Script>
