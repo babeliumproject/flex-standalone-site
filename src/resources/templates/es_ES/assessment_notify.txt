@@ -1,0 +1,11 @@
+¡Has sido evaluado!
+
+La respuesta que grabaste en {DATE} siguiendo el ejercicio {EXERCISE_TITLE} ha sido amablemente evaluada por {EVALUATOR_NAME}.
+
+Por favor visita el siguiente enlace para ver la evaluación:
+
+{ASSESSMENT_LINK}
+
+
+
+{SIGNATURE}

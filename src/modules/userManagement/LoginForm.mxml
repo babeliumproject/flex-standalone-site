@@ -37,10 +37,6 @@
 				focusManager.setFocus(username);
 
 				rememberSO=SharedObject.getLocal("babeliaData");
-
-				//Cookies present, this window should not have to be opened
-				//if (rememberSO.data.username != undefined && rememberSO.data.hash != undefined)
-				//	this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 
 			private function checkPressedKey(e:KeyboardEvent):void
@@ -78,7 +74,7 @@
 
 			private function set loggedSuccessfully(upd:Boolean):void
 			{
-				if (dataModel.isSuccessfullyLogged)
+				if (dataModel.isSuccessfullyLogged == true)
 				{
 					if (rememberSO.data.username == undefined || rememberSO.data.hash == undefined)
 					{
@@ -94,7 +90,7 @@
 						password.text="";
 					}
 					dataModel.isSuccessfullyLogged=false;
-					this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+					cancelButtonClickHandler(null);
 				}
 			}
 
@@ -120,7 +116,7 @@
 
 			private function set passRecoveryDone(flag:Boolean):void
 			{
-				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				cancelButtonClickHandler(null);
 			}
 
 			private function processRestorePass(event:Event):void

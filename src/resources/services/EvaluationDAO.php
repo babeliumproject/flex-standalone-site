@@ -3,6 +3,7 @@
 require_once ('Datasource.php');
 require_once ('Config.php');
 require_once ('EvaluationVO.php');
+require_once ('Mailer.php');
 
 class EvaluationDAO {
 	
@@ -257,10 +258,14 @@ class EvaluationDAO {
 			$evaluationId = $row[0];
 			//The evaluation data was inserted successfully. Update the evaluation count on response table.
 			$update = $this->updateResponseRatingAmount($evalData->responseId);
-			if($update)
+			if($update){
+				//Nevermind the result of the mail sending what's important is the DB data
+				$this->notifyUserAboutResponseBeingAssessed($evalData);
+				
 				return $evaluationId;
-			else
+			} else {
 				return false;
+			}
 		} else {
 			return false;
 		}
@@ -278,7 +283,8 @@ class EvaluationDAO {
 			$sql = "INSERT INTO evaluation_video (fk_evaluation_id, video_identifier, source, thumbnail_uri) VALUES (";
 			$sql = $sql . "'%d', ";
 			$sql = $sql . "'%s', ";
-			$sql = $sql . "'Red5')";
+			$sql = $sql . "'Red5', ";
+			$sql = $sql . "'%s')";
 			$result = $this->_databaseUpdate ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
 			
 			$sql = "SELECT last_insert_id()";
@@ -335,6 +341,37 @@ class EvaluationDAO {
 		$this->exerciseFolder = $row ? $row[0] : '';
 		$row = $this->conn->_nextRow($result);
 		$this->responseFolder = $row ? $row[0] : '';
+	}
+	
+	public function notifyUserAboutResponseBeingAssessed(EvaluationVO $evaluation){
+		
+		$sql = "SELECT language 
+				FROM user_languages 
+				WHERE ( fk_user_id='%d' AND level=7 ) LIMIT 1";
+		$result = $this->conn->_execute($sql, $evaluation->responseUserId);
+		$row = $this->conn->_nextRow($result);
+		if($row){
+			$locale = $row[0];
+			
+			$mail = new Mailer($evaluation->responseUserName);
+				
+			$subject = 'Babelium Project: You have been assessed';
+
+			$args = array(
+						'DATE' => $evaluation->responseAddingDate,
+						'EXERCISE_TITLE' => $evaluation->exerciseTitle,
+						'EVALUATOR_NAME' => $evaluation->userName,
+						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/evaluation/revise/'.$evaluation->responseFileIdentifier,
+						'SIGNATURE' => 'The Babelium Project Team');
+
+			if ( !$mail->makeTemplate("assessment_notify", $args, $locale) ) 
+				return null;
+
+			return ($mail->send($mail->txtContent, $subject, $mail->htmlContent));
+			
+		} else {
+			return false;
+		}
 	}
 	
 	public function updateResponseRatingAmount($responseId){

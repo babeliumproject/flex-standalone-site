@@ -37,6 +37,13 @@
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
+			
+			/**
+			 * Constants
+			 */
+			private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
+			private const RESPONSE_FOLDER:String = DataModel.getInstance().responseStreamsFolder;
+			private const EVALUATION_FOLDER:String = DataModel.getInstance().evaluationStreamsFolder;
 
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
@@ -49,9 +56,7 @@
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
 			
-			private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
-			private const RESPONSE_FOLDER:String = DataModel.getInstance().responseStreamsFolder;
-			private const EVALUATION_FOLDER:String = DataModel.getInstance().evaluationStreamsFolder;
+
 			
 			[Bindable]
 			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'LABEL_EXERCISE_TITLE');
@@ -67,13 +72,20 @@
 			private var _responseName:String;
 			private var _responseCharacterName:String;
 			private var _responseSubtitleId:int;
+			private var _responseAddingDate:String;
+			private var _responseUserId:int;
+			private var _responseUserName:String;
 
 			private var _userId:int;
+			private var _userName:String;
 
 			private var _videoCommentName:String;
 			private var _score:int;
 			private var _comment:String;
-
+			
+			/**
+			 *  Back-end data holders
+			 */
 			[Bindable]
 			private var assessmentDetailList:ArrayCollection;
 			[Bindable]
@@ -83,21 +95,11 @@
 			[Bindable]
 			private var assessedByCurrentUserList:ArrayCollection;
 
-
-			private var biakBatera:Boolean=false;
-			private var oraingoTab:String="hasiera";
-			private var kont:int=new int;
-			private var niriEp:Boolean=false;
-			private var nikEp:Boolean=false;
-
 			/**
 			 *  Visual component declaration
 			 */
 
-			//public var assessmentDetailDataGrid:DataGrid = new DataGrid();
-			//public var waitingAssessmentDataGrid:DataGrid = new DataGrid();
-			//public var assessedToCurrentUserDataGrid:DataGrid = new DataGrid();
-			//public var assessedByCurrentUserDataGrid:DataGrid = new DataGrid();
+			//Empty while we have mixed visuals and code
 
 			/**
 			 * Constructor
@@ -173,6 +175,7 @@
 				if (dataModel.isLoggedIn)
 				{
 					_userId=dataModel.loggedUser.id;
+					_userName=dataModel.loggedUser.name;
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT, null, _userId).dispatch();
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER, null, _userId).dispatch();
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER, null, _userId).dispatch();
@@ -180,6 +183,7 @@
 				else
 				{
 					_userId=0;
+					_userName='';
 					waitingForAssessmentList=new ArrayCollection();
 					assessedToCurrentUserList=new ArrayCollection();
 					assessedByCurrentUserList=new ArrayCollection();
@@ -309,8 +313,14 @@
 					var evaluation:EvaluationVO=new EvaluationVO();
 					evaluation.score=_score;
 					evaluation.comment=_comment;
-					evaluation.responseId=_responseId;
 					evaluation.userId=_userId;
+					evaluation.userName = _userName;
+					evaluation.responseId=_responseId;
+					evaluation.responseFileIdentifier = _responseName;
+					evaluation.responseAddingDate = _responseAddingDate;
+					evaluation.responseUserId = _responseUserId;
+					evaluation.responseUserName = _responseUserName;
+					evaluation.exerciseTitle = _exerciseTitle;
 					evaluation.evaluationVideoFileIdentifier=_videoCommentName;
 
 					//If the user added a video comment
@@ -326,7 +336,6 @@
 				}
 			}
 
-			//Epaiketari dagokion "reset" botoia sakatzean exekutatuko den funtzioa
 			private function reset():void
 			{
 				ratingRadioGroup.selection=null;
@@ -336,11 +345,11 @@
 			private function viewGraphicClickHandler():void
 			{
 				EvaluationChartPopUp.responseId=_responseId;
-				var grafikoa:EvaluationChartPopUp=EvaluationChartPopUp(PopUpManager.createPopUp(this, EvaluationChartPopUp, true));
-				PopUpManager.centerPopUp(grafikoa);
+				var evaluationChartPopUp:EvaluationChartPopUp=EvaluationChartPopUp(PopUpManager.createPopUp(this, EvaluationChartPopUp, true));
+				PopUpManager.centerPopUp(evaluationChartPopUp);
 			}
 
-			private function addVideoComment():void
+			private function addVideoCommentClickHandler():void
 			{
 				var videoCommentPopUp:EvaluationVideoCommentRecord=EvaluationVideoCommentRecord(PopUpManager.createPopUp(this, EvaluationVideoCommentRecord, true));
 
@@ -375,27 +384,30 @@
 			private function waitingAssessmentChangeHandler(event:Event):void
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+				
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
-				_responseCharacterName=selectedItem.responseCharacterName;
+				_exerciseTitle=selectedItem.exerciseTitle;
+				
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
+				_responseCharacterName=selectedItem.responseCharacterName;
+				_responseAddingDate=selectedItem.responseAddingDate;
+				_responseUserId=selectedItem.responseUserId
+				_responseUserName=selectedItem.responseUserName;
 
-				_exerciseTitle=selectedItem.exerciseTitle;
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 				_evaluationSelected=true;
 
-
+				//Prepare the component in which the user leaves the assessment
 				ratingBox.visible=true;
 				addVideoCommentButton.visible=true;
 				addVideoCommentLabel.visible=false;
 				videoCommentCheckBox.visible=false;
 				sendAssessmentButton.enabled=false;
-
-				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, 0, _responseId).dispatch();
 
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
@@ -466,8 +478,8 @@
 				{
 					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
 					EvaluationVideoCommentWatch.videoSource = EVALUATION_FOLDER+'/'+_videoCommentName;
-					var bideoIruzkin:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
-					PopUpManager.centerPopUp(bideoIruzkin);
+					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
+					PopUpManager.centerPopUp(watchEvaluationVideoComment);
 					assessmentDetailDataGrid.selectedItem=null;
 				}
 			}
@@ -587,8 +599,6 @@
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
 				}
-
-
 
 				switch (browser.actionFragment)
 				{
@@ -847,7 +857,7 @@
 						</mx:HBox>
 
 						<mx:Button label="{resourceManager.getString('myResources', 'ADDVIDEO')}"
-								   click="addVideoComment()"
+								   click="addVideoCommentClickHandler()"
 								   id="addVideoCommentButton"/>
 						<mx:Label id="addVideoCommentLabel"
 								  text="{resourceManager.getString('myResources','MESSAGE_ADD_VIDEO_EVALUATION')}"

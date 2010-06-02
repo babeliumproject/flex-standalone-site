@@ -1,0 +1,11 @@
+You have been assessed!
+
+The response you recorded on {DATE} following the exercise {EXERCISE_TITLE} has been kindly assessed by {EVALUATOR_NAME}.
+
+Please visit the following link in order to view the assessment:
+
+{ASSESSMENT_LINK}
+
+
+
+{SIGNATURE}

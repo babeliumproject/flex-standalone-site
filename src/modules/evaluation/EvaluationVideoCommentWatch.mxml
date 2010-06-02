@@ -27,7 +27,7 @@
 			private var _videoPlayerReady:Boolean=false;
 			
 			public static function set videoSource(source:String):void{
-				_commentSource = DataModel.getInstance().evaluationStreamsFolder+'/'+source;
+				_commentSource = source;
 			}
 
 			private function onComplete():void
@@ -45,6 +45,7 @@
 			{
 				_videoPlayerReady=true;
 				VP.stopVideo();
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				VP.videoSource=_commentSource;
 			}
 
