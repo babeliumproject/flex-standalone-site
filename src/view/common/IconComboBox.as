@@ -116,7 +116,10 @@ package view.common
 		**/		
 		override public function set measuredWidth(value:Number):void
 		{
-			super.measuredWidth = value + (DisplayObject(displayIconObject).width+getStyle("cornerRadius"));
+			if(DisplayObject(displayIconObject))
+				super.measuredWidth = value + (DisplayObject(displayIconObject).width+getStyle("cornerRadius"));
+			else
+				super.measuredWidth = value + getStyle("cornerRadius");
 		}
 		
 		

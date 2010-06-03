@@ -44,7 +44,7 @@
 			
 			private function resizeDataGrid():void{
 				exerciseListTable.rowCount = _dataProvider.length;
-				exerciseListTable.rowHeight = 102;
+				exerciseListTable.rowHeight = 117;
 				exerciseListTable.height = exerciseListTable.measureHeightOfItems(0, _dataProvider.length) + exerciseListTable.headerHeight;
 				
 			}

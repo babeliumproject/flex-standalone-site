@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS `exercise` (
   `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable') NOT NULL DEFAULT 'Unprocessed',
   `filehash` varchar(32) NOT NULL DEFAULT 'none',
   `fk_transcription_id` int(10) unsigned DEFAULT NULL,
+  `license` VARCHAR(60)  NOT NULL DEFAULT 'cc-by' COMMENT 'The kind of license this exercise is attached to',
+  `reference` TEXT  NOT NULL COMMENT 'The url or name of the entity that provided this resource (if any)',
   PRIMARY KEY (`id`),
   KEY `FK_exercises_1` (`fk_user_id`),
   KEY `fk_exercise_transcriptions1` (`fk_transcription_id`)
@@ -367,22 +369,22 @@ CREATE TABLE IF NOT EXISTS `user_languages` (
 -- Volcar la base de datos para la tabla `exercise`
 --
 
-INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_user_id`, `tags`, `title`, `thumbnail_uri`, `adding_date`, `duration`, `status`, `filehash`, `fk_transcription_id`) VALUES
-(1, 'kutsidazu_zatia', 'Kutsidazu bidea ixabel filmeko zatia', 'Red5', 'eu_ES', 1, 'euskaltegia, berri', 'Kutsidazu bidea ixabel', 'kutsidazu_zatia.jpg', '2009-09-01 00:24:04', 130, 'Unavailable', '6990471c4ac782c4329a662b061e17e2', NULL),
-(2, 'serie_cuatro', 'Escena de serie', 'Red5', 'es_ES', 1, 'cuatro, serie', 'Extracto serie', 'serie_cuatro.jpg', '2009-09-01 00:24:04', 10, 'Unavailable', '9d9bd82503637191e53ef955f9ea0ea4', NULL),
-(3, 'mafiosos_conv', 'Conversación entre mafiosos', 'Red5', 'es_ES', 1, 'serie, mafiosos', 'Conversación mafiosos', 'mafiosos_conv.jpg', '2010-02-02 00:23:33', 38, 'Unavailable', 'bc1f4ee5459657d761e70582d6c12bfc', NULL),
-(4, 'pokemon_zatia', 'Pokemon marrazki bizidunen zatia', 'Red5', 'eu_ES', 1, 'pokemon, zatia', 'Pokemon zatia', 'pokemon_zatia.jpg', '2010-02-02 01:23:34', 84, 'Unavailable', '00c843cdaccae236dc4e33f6bf9423c6', NULL),
-(5, 'tdes_1065_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1065 Fragment', 'tdes_1065_qa.jpg', '2010-03-08 12:10:00', 43, 'Available', '161abc5e831c545305f55f4139fd4799', NULL),
-(6, 'tdes_1170_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1170 Fragment', 'tdes_1170_qa.jpg', '2010-03-08 12:10:00', 52, 'Available', '38b99457f8cd8af5b56728c5e2f0485b', NULL),
-(7, 'tdes_1179_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1179 Fragment', 'tdes_1179_qa.jpg', '2010-03-08 12:10:00', 30, 'Available', '4fe59e622c208b53dc4e61cfdcb7b2a8', NULL),
-(8, 'tdes_1183_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1183 Fragment', 'tdes_1183_qa.jpg', '2010-03-08 12:10:00', 40, 'Available', '2f8d1bde45ae7a7d303d663bcdf2ae8c', NULL),
-(9, 'tdes_1187_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1187 Fragment', 'tdes_1187_qa.jpg', '2010-03-08 12:10:00', 57, 'Available', 'a0cd07a3ac94d2dbf77ca1c02c6278cc', NULL),
-(10, 'english_long', 'english lessons', 'Red5', 'en_US', 1, 'english', 'English lessons', 'english_long.jpg', '2009-10-22 18:00:00', 59, 'Unavailable', 'e1fdbb47ead995d5973a30d466e7533d', NULL),
-(11, 'english', 'english lessons', 'Red5', 'en_US', 1, 'english', 'English lessons short', 'english.jpg', '2009-10-22 18:00:00', 12, 'Unavailable', 'fc1b11475ce5233acf10bfb39925cacc', 1),
-(12, '4BU3y3nkB7c', 'Presentation', 'Red5', 'fr_FR', 1, 'french, talk', 'Presentation', '4BU3y3nkB7c.jpg', '2010-04-15 13:17:08', 31, 'Available', 'e52964a1d207b5014b778ceb1016da8b', NULL),
-(13, '08s08c4o3El', 'Goenkale telesaileko zati bat', 'Red5', 'eu_ES', 1, 'euskara, goenkale', 'Goenkale Zatia I', '08s08c4o3El.jpg', '2010-04-15 13:18:14', 38, 'Available', 'f03a80496520e2d275cef027b69aa379', NULL),
-(14, 'iQ8pI4bFwQh', 'Goenkale telesaileko zatia', 'Red5', 'eu_ES', 1, 'euskara, goenkale', 'Goenkale Zatia II', 'iQ8pI4bFwQh.jpg', '2010-04-15 13:19:33', 110, 'Available', '632fbbf33993892b9794f1cc324cd8d1', NULL),
-(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'es_ES', 1, 'frases, cotidianas', 'Español Latino Para Niños', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f', NULL);
+INSERT INTO `exercise` (`id`, `name`, `description`, `source`, `language`, `fk_user_id`, `tags`, `title`, `thumbnail_uri`, `adding_date`, `duration`, `status`, `filehash`, `fk_transcription_id`, `reference`) VALUES
+(1, 'kutsidazu_zatia', 'Kutsidazu bidea ixabel filmeko zatia', 'Red5', 'eu_ES', 1, 'euskaltegia, berri', 'Kutsidazu bidea ixabel', 'kutsidazu_zatia.jpg', '2009-09-01 00:24:04', 130, 'Unavailable', '6990471c4ac782c4329a662b061e17e2', NULL, ''),
+(2, 'serie_cuatro', 'Escena de serie', 'Red5', 'es_ES', 1, 'cuatro, serie', 'Extracto serie', 'serie_cuatro.jpg', '2009-09-01 00:24:04', 10, 'Unavailable', '9d9bd82503637191e53ef955f9ea0ea4', NULL, 'www.cuatro.com'),
+(3, 'mafiosos_conv', 'Conversación entre mafiosos', 'Red5', 'es_ES', 1, 'serie, mafiosos', 'Conversación mafiosos', 'mafiosos_conv.jpg', '2010-02-02 00:23:33', 38, 'Unavailable', 'bc1f4ee5459657d761e70582d6c12bfc', NULL, 'www.eitb.com'),
+(4, 'pokemon_zatia', 'Pokemon marrazki bizidunen zatia', 'Red5', 'eu_ES', 1, 'pokemon, zatia', 'Pokemon zatia', 'pokemon_zatia.jpg', '2010-02-02 01:23:34', 84, 'Unavailable', '00c843cdaccae236dc4e33f6bf9423c6', NULL, 'www.eitb.com'),
+(5, 'tdes_1065_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1065 Fragment', 'tdes_1065_qa.jpg', '2010-03-08 12:10:00', 43, 'Available', '161abc5e831c545305f55f4139fd4799', NULL, 'www.thedailyenglishshow.com'),
+(6, 'tdes_1170_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1170 Fragment', 'tdes_1170_qa.jpg', '2010-03-08 12:10:00', 52, 'Available', '38b99457f8cd8af5b56728c5e2f0485b', NULL, 'www.thedailyenglishshow.com'),
+(7, 'tdes_1179_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1179 Fragment', 'tdes_1179_qa.jpg', '2010-03-08 12:10:00', 30, 'Available', '4fe59e622c208b53dc4e61cfdcb7b2a8', NULL, 'www.thedailyenglishshow.com'),
+(8, 'tdes_1183_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1183 Fragment', 'tdes_1183_qa.jpg', '2010-03-08 12:10:00', 40, 'Available', '2f8d1bde45ae7a7d303d663bcdf2ae8c', NULL, 'www.thedailyenglishshow.com'),
+(9, 'tdes_1187_qa', 'Repeat phrases and then talk to Sarah', 'Red5', 'en_US', 1, 'daily, english, show', 'The Daily English Show #1187 Fragment', 'tdes_1187_qa.jpg', '2010-03-08 12:10:00', 57, 'Available', 'a0cd07a3ac94d2dbf77ca1c02c6278cc', NULL, 'www.thedailyenglishshow.com'),
+(10, 'english_long', 'english lessons', 'Red5', 'en_US', 1, 'english', 'English lessons', 'english_long.jpg', '2009-10-22 18:00:00', 59, 'Unavailable', 'e1fdbb47ead995d5973a30d466e7533d', NULL, ''),
+(11, 'english', 'english lessons', 'Red5', 'en_US', 1, 'english', 'English lessons short', 'english.jpg', '2009-10-22 18:00:00', 12, 'Unavailable', 'fc1b11475ce5233acf10bfb39925cacc', 1, ''),
+(12, '4BU3y3nkB7c', 'Presentation', 'Red5', 'fr_FR', 1, 'french, talk', 'Presentation', '4BU3y3nkB7c.jpg', '2010-04-15 13:17:08', 31, 'Available', 'e52964a1d207b5014b778ceb1016da8b', NULL, ''),
+(13, '08s08c4o3El', 'Goenkale telesaileko zati bat', 'Red5', 'eu_ES', 1, 'euskara, goenkale', 'Goenkale Zatia I', '08s08c4o3El.jpg', '2010-04-15 13:18:14', 38, 'Available', 'f03a80496520e2d275cef027b69aa379', NULL, 'www.eitb.com'),
+(14, 'iQ8pI4bFwQh', 'Goenkale telesaileko zatia', 'Red5', 'eu_ES', 1, 'euskara, goenkale', 'Goenkale Zatia II', 'iQ8pI4bFwQh.jpg', '2010-04-15 13:19:33', 110, 'Available', '632fbbf33993892b9794f1cc324cd8d1', NULL, 'www.eitb.com'),
+(15, 'COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'es_ES', 1, 'frases, cotidianas', 'Español Latino Para Niños', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f', NULL, '');
 
 INSERT INTO `exercise_role` (`id`, `fk_exercise_id`, `fk_user_id`, `character_name`) VALUES
 (1, 2, 1, 'Capataz'),

@@ -18,6 +18,8 @@ class ExerciseVO {
 	public $duration;
 	public $transcriptionId;
 	public $status;
+	public $license;
+	public $reference;
 	
 	public $avgRating;
 	public $avgDifficulty;

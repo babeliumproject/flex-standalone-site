@@ -38,8 +38,8 @@ class ExerciseDAO {
 	
 	public function addUnprocessedExercise(ExerciseVO $exercise) {
 		
-		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration) ";
-		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%s' ) ";
+		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference) ";
+		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s') ";
 		
 		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 								$exercise->language, $exercise->userId, $exercise->duration );
@@ -52,11 +52,11 @@ class ExerciseDAO {
 		$duration = $this->calculateVideoDuration($exercise->name);
 		$this->takeRandomSnapshot($exercise->name, $exercise->name);
 		
-		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration) ";
-		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d') ";
+		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
+		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
 		
 		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration );
+								$exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
 	}
 	
 	public function takeRandomSnapshot($videoFileName,$outputImageName){
@@ -108,14 +108,14 @@ class ExerciseDAO {
 		//        FROM exercise e INNER JOIN users u ON e.fk_user_id=u.ID ORDER BY e.adding_date DESC";
 		
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
-       					avg (suggested_level) as avgLevel
-				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
-       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE (e.status = 'Available')
-				 GROUP BY e.id
-				 ORDER BY e.adding_date DESC";
+       				   e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
+       				   avg (suggested_level) as avgLevel, e.status, license, reference
+				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			WHERE (e.status = 'Available')
+				GROUP BY e.id
+				ORDER BY e.adding_date DESC";
 		
 		
 		$searchResults = $this->_listQuery($sql);
@@ -126,7 +126,7 @@ class ExerciseDAO {
 	public function getRecordableExercises(){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
        					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
-       					avg (suggested_level) as avgLevel
+       					avg (suggested_level) as avgLevel, e.status, license, reference
 				 FROM   exercise e 
 				 		INNER JOIN users u ON e.fk_user_id= u.ID
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
@@ -145,7 +145,7 @@ class ExerciseDAO {
 	public function getUsersExercises($userId){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
        					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
-       					avg (suggested_level) as avgLevel, e.status
+       					avg (suggested_level) as avgLevel, e.status, license, reference
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
@@ -298,6 +298,8 @@ class ExerciseDAO {
 			$temp->avgRating = $row[12];
 			$temp->avgDifficulty = $row[13];
 			$temp->status = $row[14];
+			$temp->license = $row[15];
+			$temp->reference = $row[16];
 			
 			array_push ( $searchResults, $temp );
 		}

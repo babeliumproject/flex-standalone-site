@@ -5,12 +5,10 @@ package view.common
 	public class LicenseResource
 	{
 		
-		
-		
 		public static function getLicenseData(licenseCode:String):LicenseVO{
 			var license:LicenseVO = new LicenseVO();
 			license.imageResource = '';
-			license.tooltip = 'Attribution';
+			license.tooltip = 'Creative Commons Attribution';
 			license.licenseUrl = 'http://creativecommons.org/licenses/';
 			
 			switch(licenseCode){

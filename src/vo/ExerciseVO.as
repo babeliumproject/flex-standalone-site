@@ -21,6 +21,8 @@ package vo
 		public var duration:int;
 		public var transcriptionId:int;
 		public var status:String;
+		public var license:String;
+		public var reference:String;
 		
 		public var avgRating:Number;
 		public var avgDifficulty:Number;

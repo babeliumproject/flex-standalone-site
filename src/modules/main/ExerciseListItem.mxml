@@ -7,7 +7,7 @@
 		 verticalAlign="middle"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 fontFamily="Arial"
-		 height="98"
+		 height="113"
 		 creationComplete="completeHandler()">
 
 	<mx:Canvas width="120"
@@ -35,8 +35,7 @@
 					  height="16"/>
 	</mx:Canvas>
 
-	<mx:VBox height="90"
-			 width="100%"
+	<mx:VBox width="100%"
 			 verticalGap="2">
 		<mx:HBox horizontalAlign="left"
 				 verticalAlign="middle"
@@ -62,12 +61,33 @@
 		<mx:HBox verticalAlign="middle">
 			<ns1:Rating value="{data.avgRating}"
 						liveRollOver="false"/>
-			<mx:Label text="{data.addingDate}"
+			<mx:Label text="{dateFormatter.format(data.addingDate)}"
 					  fontWeight="bold"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</mx:HBox>
+		<mx:HBox verticalAlign="middle">
+			<mx:Image id="license"
+					  scaleContent="true"
+					  source="{getLicenseSource(data as ExerciseVO)}"
+					  autoLoad="true"
+					  click="licenseClickHandler(event)"
+					  toolTip="{_licenseData.tooltip}"
+					  width="80"
+					  height="15"
+					  useHandCursor="true"
+					  buttonMode="true"/>
+			<mx:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
+					  visible="{data.reference}"/>
+			<mx:LinkButton id="referenceUrl"
+						   label="{data.reference}"
+						   textDecoration="underline"
+						   click="referenceClickHandler(event)"/>
+		</mx:HBox>
 
 	</mx:VBox>
+
+	<mx:DateFormatter id="dateFormatter"
+					  formatString="{resourceManager.getString('myResources','DATE_FORMAT')}"/>
 
 
 	<mx:Script>
@@ -75,19 +95,24 @@
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Text;
-			
+
+			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-			
+
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
+			import vo.LicenseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
 
 			private var _data:Object;
+
+			[Bindable]
+			private var _licenseData:LicenseVO=new LicenseVO();
 
 			[Bindable]
 			private var _timeFormatter:TimeFormatter=new TimeFormatter();
@@ -107,6 +132,16 @@
 				viewExercise();
 			}
 
+			private function licenseClickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(_licenseData.licenseUrl));
+			}
+
+			private function referenceClickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(parseExternalUrl(data.reference)), '_blank');
+			}
+
 			public function getFlagSource(temp:ExerciseVO):String
 			{
 				return LocaleFlagResource.getFlagResource(temp.language);
@@ -122,6 +157,12 @@
 				return url;
 			}
 
+			public function getLicenseSource(temp:ExerciseVO):String
+			{
+				_licenseData=LicenseResource.getLicenseData(temp.license);
+				return _licenseData.imageResource;
+			}
+
 			private function viewExercise():void
 			{
 				var temp:Object=data;
@@ -134,6 +175,18 @@
 				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
 				new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();
+			}
+
+			//http://livedocs.adobe.com/flex/3/langref/flash/net/package.html#navigateToURL%28%29
+			private function parseExternalUrl(url:String):String
+			{
+				var urlparse:String=url;
+				var httpPattern:RegExp=new RegExp("^http[s]?\:\\/\\/");
+				if (httpPattern.exec(urlparse) == null)
+				{
+					urlparse="http://" + urlparse;
+				}
+				return urlparse;
 			}
 
 			private function trimTitle():void

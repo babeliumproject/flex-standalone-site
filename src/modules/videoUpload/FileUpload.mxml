@@ -15,22 +15,22 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-			
+
 			import flash.events.*;
 			import flash.net.*;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
-			
+
 			import view.common.*;
 
 			private var _strUploadUrl:String;
@@ -255,6 +255,9 @@
 						red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
 						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+						
+						red5VideoData.license = String(licenseSelector.selectedItem.code).toLowerCase();
+						red5VideoData.reference = referenceUrl.text;
 
 						red5VideoLevel=new ExerciseLevelVO();
 						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
@@ -349,7 +352,8 @@
 
 			private function saveRecordedExercise():void
 			{
-				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '')
+				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '' 
+					&& referenceUrl.text != '' && checkExternalUrl(referenceUrl.text))
 				{
 					red5VideoData=new ExerciseVO();
 					red5VideoData.title=videoTitle.text;
@@ -358,6 +362,9 @@
 					red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
 					red5VideoData.name=recFromWebcamBox.recordingFileName;
 					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+					
+					red5VideoData.license = String(licenseSelector.selectedItem.code).toLowerCase();
+					red5VideoData.reference = referenceUrl.text;
 
 					red5VideoLevel=new ExerciseLevelVO();
 					red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
@@ -386,21 +393,21 @@
 				videoTitle.removeEventListener(Event.CHANGE, validateForm);
 				videoDescription.removeEventListener(Event.CHANGE, validateForm);
 				videoTags.removeEventListener(Event.CHANGE, validateForm);
-				
-				titleValidator.enabled = false;
-				descriptionValidator.enabled = false;
-				tagValidator.enabled = false;
-				
+
+				titleValidator.enabled=false;
+				descriptionValidator.enabled=false;
+				tagValidator.enabled=false;
+
 				videoTitle.text="";
 				videoDescription.text="";
 				videoTags.text="";
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
-				
-				titleValidator.enabled = true;
-				descriptionValidator.enabled = true;
-				tagValidator.enabled = true;
+
+				titleValidator.enabled=true;
+				descriptionValidator.enabled=true;
+				tagValidator.enabled=true;
 			}
 
 
@@ -442,6 +449,16 @@
 
 				return currentControlIsValid;
 			}
+			
+			private function checkExternalUrl (url:String):Boolean {
+				var pattern:RegExp = new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
+				var result:Object = pattern.exec(url);
+				if (result == null || url.length >= 4096) {
+					return (false);
+				}
+				return (true);
+			}  
+
 
 			private function enableAutoevaluation(exerciseId:int):void
 			{
@@ -524,6 +541,19 @@
 							 fontWeight="bold"
 							 required="true">
 					<common:LanguageComboBox id="languageSelector"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
+							 fontWeight="bold"
+							 required="true">
+					<common:LicenseComboBox id="licenseSelector"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
+							 fontWeight="bold"
+							 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
+							 width="100%">
+					<mx:TextInput width="100%"
+								  id="referenceUrl"
+								  fontWeight="normal"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
 							 fontWeight="bold">
@@ -635,7 +665,9 @@
 						 paddingLeft="8"
 						 paddingRight="8">
 					<mx:Text width="100%"
-							 text="{resourceManager.getString('myResources','TEXT_RECORD_VIDEO_UPLOAD')}"/>
+							 height="100%"
+							 text="{resourceManager.getString('myResources','TEXT_RECORD_VIDEO_UPLOAD')}"
+							 selectable="false"/>
 					<mx:Spacer/>
 					<mx:Button id="saveWebcamRecord"
 							   label="{resourceManager.getString('myResources','BUTTON_SAVE_STREAMING_UPLOAD')}"
