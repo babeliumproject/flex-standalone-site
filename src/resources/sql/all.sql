@@ -306,8 +306,6 @@ CREATE TABLE IF NOT EXISTS `tagcloud` (
 ENGINE = InnoDB
 DEFAULT CHARSET=utf8;
 
-CREATE INDEX `IDX_tagcloud_amount` ON `tagcloud` (`amount` DESC);
-
 -- --------------------------------------------------------
 
 --

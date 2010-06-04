@@ -6,8 +6,6 @@ CREATE TABLE IF NOT EXISTS `tagcloud` (
 ENGINE = InnoDB
 DEFAULT CHARSET=utf8;
 
-CREATE INDEX `IDX_tagcloud_amount` ON `tagcloud` (`amount` DESC);
-
 INSERT INTO `tagcloud` (`tag`, `amount`) VALUES
 ('mafiosos', 7),
 ('english', 7),
@@ -25,7 +23,7 @@ INSERT INTO `tagcloud` (`tag`, `amount`) VALUES
 ('zanahorias', 3),
 ('lechugas', 3),
 ('puerros', 3),
-('ortalizas', 3),
+('hortalizas', 3),
 ('frescas', 3),
 ('tostadas', 3),
 ('torta', 3),
