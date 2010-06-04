@@ -136,6 +136,7 @@
 			{
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				VP.videoSource=EXERCISE_FOLDER+'/'+_exerciseName;
 
 				// Retrieving roles for selected exercise
@@ -492,19 +493,24 @@
 			 **/
 			private function set onTabChange(value:Boolean):void
 			{
+				resetComponent();
+			}
+			
+			private function resetComponent():void{
 				VP.endVideo(); // Stop video
 				VP.setSubtitle(""); // Clear subtitles if any
+				VP.state = VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
 				VP.videoSource=""; // Reset video source
 				VP.arrows=false; // Hide arrows
-
+				
 				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				_currentExercise=null; // Reset current exercise
-
+				
 				hideSelectedExercise(); // Information of selected exercise
-
+				
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-
+				
 				exerciseList.exerciseListDatagrid.selectedItem=null;
 			}
 
@@ -563,6 +569,7 @@
 			{
 				DataModel.getInstance().recordingExercise=false;
 				PopUpManager.removePopUp(_recordingEndOptions);
+				resetComponent();
 			}
 
 			// Save response
@@ -591,6 +598,7 @@
 
 				// End record mode
 				DataModel.getInstance().recordingExercise=false;
+				resetComponent();
 			}
 
 			// Evaluation request

@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  layout="vertical"
-		  width="732"
-		  height="348"
-		  horizontalAlign="center"
-		  verticalAlign="middle"
-		  headerHeight="0"
-		  borderThicknessBottom="0"
-		  borderThicknessTop="0"
-		  borderThicknessLeft="0"
-		  borderThicknessRight="0"
-		  borderStyle="none">
-	
+<common:CustomPanel xmlns:mx="http://www.adobe.com/2006/mxml"
+					xmlns:common="view.common.*"
+					layout="vertical"
+					autoLayout="true"
+					horizontalAlign="center"
+					verticalAlign="middle">
+
 	<mx:Metadata>
 		[ResourceBundle('myResources')]
 	</mx:Metadata>
-	
+
 	<mx:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
 			  fontWeight="bold"
 			  color="#FF0000"
@@ -83,67 +77,78 @@
 			import events.RecordingEndOptionEvent;
 			import events.ResponseEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Alert;
-			
+
 			import view.common.CustomAlert;
-			
+
 			import vo.EvaluationVO;
 			import vo.ResponseVO;
 			import vo.UserVO;
 
-			public function init():void {
+			public function init():void
+			{
 
 			}
 
-			private function evaluationRequestedClickHandler():void {
+			private function evaluationRequestedClickHandler():void
+			{
 				//Check if the user is online
-				if(DataModel.getInstance().isLoggedIn) {
+				if (DataModel.getInstance().isLoggedIn)
+				{
 					//Get user's credit count and evaluation credit cost
-					var userInfo:UserVO = DataModel.getInstance().loggedUser;
-					var userId:int = userInfo.id;
-					var userCredCount:int = userInfo.creditCount;
-					var credsEvalRequest:int = DataModel.getInstance().prefDic['evaluationRequestCredits'];
-					if(userCredCount - credsEvalRequest >= 0) {
-						var responseId:int = DataModel.getInstance().historicData.videoResponseId;
-						var response:ResponseVO = new ResponseVO(responseId,0,0,"",false,"","",0,"",0,"",0,0);
+					var userInfo:UserVO=DataModel.getInstance().loggedUser;
+					var userId:int=userInfo.id;
+					var userCredCount:int=userInfo.creditCount;
+					var credsEvalRequest:int=DataModel.getInstance().prefDic['evaluationRequestCredits'];
+					if (userCredCount - credsEvalRequest >= 0)
+					{
+						var responseId:int=DataModel.getInstance().historicData.videoResponseId;
+						var response:ResponseVO=new ResponseVO(responseId, 0, 0, "", false, "", "", 0, "", 0, "", 0, 0);
 						new ResponseEvent(ResponseEvent.MAKE_RESPONSE_PUBLIC, response).dispatch();
-					} else {
-						CustomAlert.error(resourceManager.getString('myResources','ERROR_INSUFICCIENT_CREDITS'));
+					}
+					else
+					{
+						CustomAlert.error(resourceManager.getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
 					}
 
-					if(DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected) {
-						var aeResponseId:int = DataModel.getInstance().historicData.videoResponseId;
-						var requestData:EvaluationVO = new EvaluationVO();
-						requestData.responseId = aeResponseId;
-						requestData.transcriptionSystem = "spinvox";
+					if (DataModel.getInstance().isAutoevaluable && autoevaluateCheckbox.selected)
+					{
+						var aeResponseId:int=DataModel.getInstance().historicData.videoResponseId;
+						var requestData:EvaluationVO=new EvaluationVO();
+						requestData.responseId=aeResponseId;
+						requestData.transcriptionSystem="spinvox";
 						new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_RESPONSE, requestData).dispatch();
 					}
 
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
 					dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
-				} else {
+				}
+				else
+				{
 					//Do nothing but hide the evaluation options panel and remember the user
 					//he/she must login in order to get the evaluations.
-					evaluationOptions.visible = false;
-					CustomAlert.info(resourceManager.getString('myResources','ERROR_SIGN_IN_TO_REQUEST'));
+					evaluationOptions.visible=false;
+					CustomAlert.info(resourceManager.getString('myResources', 'ERROR_SIGN_IN_TO_REQUEST'));
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
 					dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
 				}
 			}
 
-			private function returnToMainClickHandler():void {
+			private function returnToMainClickHandler():void
+			{
 				//Finish and return to exercises main page
-				new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_HOME).dispatch();
+				dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.CLOSE_REQUEST));
 			}
 
-			private function set checkAutoevaluationSupport(val:Boolean):void {
-				var responseId:int = DataModel.getInstance().historicData.videoResponseId;
-				var requestData:EvaluationVO = new EvaluationVO();
-				requestData.responseId = responseId;
-				requestData.transcriptionSystem = "spinvox";
+			private function set checkAutoevaluationSupport(val:Boolean):void
+			{
+				var responseId:int=DataModel.getInstance().historicData.videoResponseId;
+				var requestData:EvaluationVO=new EvaluationVO();
+				requestData.responseId=responseId;
+				requestData.transcriptionSystem="spinvox";
 				new EvaluationEvent(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, requestData).dispatch();
 			}
 		]]>
@@ -152,4 +157,4 @@
 	<mx:Binding source="{DataModel.getInstance().historicData.videoResponseId}"
 				destination="this.checkAutoevaluationSupport"/>
 
-</mx:Panel>
+</common:CustomPanel>
