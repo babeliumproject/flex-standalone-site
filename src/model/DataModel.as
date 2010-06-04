@@ -8,7 +8,6 @@ package model
 	import flash.utils.Dictionary;
 	
 	import modules.autoevaluation.Evaluation;
-	import modules.main.HeaderClass;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -27,13 +26,14 @@ package model
 		[Bindable] public static var GAPS_TO_ABORT_RECORDING:int = 3;
 		
 		//ViewStack management variables
-		[Bindable] public var viewContentViewStackIndex:int;
-		[Bindable] public var viewExerciseViewStackIndex:int;
-		[Bindable] public var viewUploadViewStackIndex:int;
-		[Bindable] public var viewEvaluationViewStackIndex:int;
+		[Bindable] public var currentContentViewStackIndex:int;
 		
-		//ViewSize management properties
-		[Bindable] public var viewSizeChanged:Boolean;
+		[Bindable] public var currentExerciseViewStackIndex:int;
+		[Bindable] public var currentUploadViewStackIndex:int;
+		[Bindable] public var currentEvaluationViewStackIndex:int;
+		
+		[Bindable] public var oldContentViewStackIndex:int;
+		[Bindable] public var newContentViewStackIndex:int;
 		
 		//Application preferences value pair
 		[Bindable] public var prefDic:Dictionary;
@@ -218,8 +218,12 @@ package model
 		}
 		
 		private function initialize():void{
-			viewContentViewStackIndex = 0;
-			viewExerciseViewStackIndex = 0;
+			currentContentViewStackIndex = 0;
+			currentExerciseViewStackIndex = 0;
+			
+			oldContentViewStackIndex = 0;
+			newContentViewStackIndex = 0;
+			
 		}
 
 	}

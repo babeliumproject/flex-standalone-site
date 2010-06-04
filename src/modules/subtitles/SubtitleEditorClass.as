@@ -46,7 +46,16 @@ package modules.subtitles
 
 	public class SubtitleEditorClass extends HBox
 	{
-		private var cueManager:CuePointManager = CuePointManager.getInstance();
+		/**
+		 * Singleton objects
+		 */
+		private var _dataModel:DataModel = DataModel.getInstance();
+		private var _cueManager:CuePointManager = CuePointManager.getInstance();
+		private var _browser:BabeliaBrowserManager = BabeliaBrowserManager.getInstance();
+		
+		/**
+		 * Variables
+		 */
 		[Bindable]
 		private var videoPlayerReady:Boolean = false;
 		
@@ -62,9 +71,6 @@ package modules.subtitles
 		private var exerciseLanguage:String;
 
 		[Bindable]
-		public var subtitleCollection:ArrayCollection;
-
-		[Bindable]
 		private var subtitleStartTime:Number=0;
 		[Bindable]
 		private var subtitleEndTime:Number=0;
@@ -78,12 +84,18 @@ package modules.subtitles
 		[Bindable]
 		public var videoPlayerControlsViewStack:int=1;
 		public var subtitleEditorVisible:Boolean=false;
-
-
+		
+		/**
+		 * Retrieved data holders
+		 */
+		[Bindable]
+		public var subtitleCollection:ArrayCollection;
 		[Bindable]
 		public var comboData:ArrayCollection = new ArrayCollection();
 
-		//Visual components declaration
+		/**
+		 *  Visual components declaration
+		 */
 		[Bindable]
 		public var VP:VideoPlayerBabelia = new VideoPlayerBabelia();
 		public var exerciseTitle:Label;
@@ -93,8 +105,7 @@ package modules.subtitles
 		[Bindable]
 		public var subtitleList:DataGrid=new DataGrid();
 		public var languageComboBox:IconComboBox;
-
-		private var browser:BabeliaBrowserManager;
+	
 		
 		public function SubtitleEditorClass()
 		{
@@ -103,21 +114,19 @@ package modules.subtitles
 
 		private function onCreationComplete(event:FlexEvent):void
 		{
-			var model:DataModel=DataModel.getInstance();
-			browser=BabeliaBrowserManager.getInstance();
 			setupVideoPlayer();
 
-			BindingUtils.bindSetter(onExerciseSelected, model, "currentExerciseRetrieved");
-			BindingUtils.bindSetter(onSubtitleLinesRetrieved, model, "availableSubtitleLinesRetrieved");
-			BindingUtils.bindSetter(onSubtitleSaved, model, "subtitleSaved");
-			BindingUtils.bindSetter(onRolesRetrieved, model, "availableExerciseRolesRetrieved");
-			BindingUtils.bindSetter(onTabChange, model, "stopVideoFlag");
-			BindingUtils.bindSetter(onLogout, model, "isLoggedIn");
+			BindingUtils.bindSetter(onExerciseSelected, _dataModel, "currentExerciseRetrieved");
+			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved");
+			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved");
+			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved");
+			BindingUtils.bindSetter(onTabChange, _dataModel, "stopVideoFlag");
+			BindingUtils.bindSetter(onLogout, _dataModel, "isLoggedIn");
 
-			BindingUtils.bindSetter(onURLChange, browser, "targetFragment");
+			BindingUtils.bindSetter(onURLChange, _browser, "targetFragment");
 			
-			BindingUtils.bindProperty(subtitleEditor, "visible", model, "isLoggedIn");
-			BindingUtils.bindProperty(subtitleExerciseButton, "enabled", model, "isLoggedIn");
+			BindingUtils.bindProperty(subtitleEditor, "visible", _dataModel, "isLoggedIn");
+			BindingUtils.bindProperty(subtitleExerciseButton, "enabled", _dataModel, "isLoggedIn");
 
 		}
 		
@@ -153,9 +162,10 @@ package modules.subtitles
 		
 		public function prepareVideoPlayer():void{
 			VP.stopVideo();
+			VP.state = VideoPlayerBabelia.PLAY_STATE;
 			VP.videoSource = EXERCISE_FOLDER+'/'+exerciseFileName;
-			VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-			VP.addEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
+			VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			VP.enableSubtitlingEndButton = false;
 		}
 
@@ -178,7 +188,7 @@ package modules.subtitles
 			if (DataModel.getInstance().availableSubtitleLinesRetrieved)
 			{
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
-				subtitleCollection=cueManager.cuelist;
+				subtitleCollection=_cueManager.cuelist;
 				for each (var cueObj:CueObject in subtitleCollection){
 					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP, subtitleList));
 					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP, subtitleList));
@@ -232,7 +242,7 @@ package modules.subtitles
 			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry,VP));
 			startEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
 
-			cueManager.addCue(startEntry);
+			_cueManager.addCue(startEntry);
 
 		}
 
@@ -245,7 +255,7 @@ package modules.subtitles
 				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'');
 				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry,VP));
 				endEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
-				cueManager.setCueAt(endEntry, cueManager.getCueIndex(startEntry));
+				_cueManager.setCueAt(endEntry, _cueManager.getCueIndex(startEntry));
 			}
 		}
 
@@ -273,7 +283,7 @@ package modules.subtitles
 				{
 					indexToBeSelected=previouslySelectedIndex;
 				}
-				cueManager.removeCueAt(subtitleList.selectedIndex);
+				_cueManager.removeCueAt(subtitleList.selectedIndex);
 				subtitleList.selectedIndex=indexToBeSelected;
 
 			}
@@ -287,7 +297,7 @@ package modules.subtitles
 		private function subtitleClearConfirmation(event:CloseEvent):void
 		{
 			if (event.detail == Alert.YES)
-				cueManager.removeAllCue();
+				_cueManager.removeAllCue();
 		}
 
 		public function subtitleNextHandler():void
@@ -312,7 +322,7 @@ package modules.subtitles
 		{
 			if (subtitleList.selectedIndex != -1)
 			{
-				var tempEntry:CueObject=cueManager.getCueAt(subtitleList.selectedIndex) as CueObject;
+				var tempEntry:CueObject=_cueManager.getCueAt(subtitleList.selectedIndex) as CueObject;
 				VP.seekTo(tempEntry.getStartTime());
 			}
 		}
@@ -419,7 +429,7 @@ package modules.subtitles
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 			if (DataModel.getInstance().subtitleSaved)
 			{
-				cueManager.removeAllCue();
+				_cueManager.removeAllCue();
 				DataModel.getInstance().subtitleSaved=false;
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, 0, '', currentExercise.language);
 				var roles:ExerciseRoleVO = new ExerciseRoleVO();
@@ -434,7 +444,7 @@ package modules.subtitles
 
 		public function lfRowNum(oItem:Object, iCol:int):String
 		{
-			var iIndex:int=cueManager.getCueIndex(oItem as CueObject) + 1;
+			var iIndex:int=_cueManager.getCueIndex(oItem as CueObject) + 1;
 			return String(iIndex);
 		}
 
@@ -458,13 +468,13 @@ package modules.subtitles
 
 		public function onTabChange(value:Boolean):void
 		{
-			if (videoPlayerReady){
-				VP.stopVideo();
+			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX){
+				VP.endVideo();
 				VP.setSubtitle(""); // Clear subtitles if any
 				VP.videoSource = ""; // Reset video source
 				VP.subtitlingControls = false;
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, cueManager.monitorCuePoints);
-				cueManager.reset();
+				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				_cueManager.reset();
 			}
 			hideSubtitlingControls(null);
 		}
@@ -493,18 +503,18 @@ package modules.subtitles
 		
 		public function onURLChange(value:Object) : void
 		{
-			if ( browser.moduleIndex != ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX )
+			if ( _browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX )
 				return;
 			
 			if ( value == null )
 				return;
 			
-			var actionFragment:String = browser.actionFragment;
+			var actionFragment:String = _browser.actionFragment;
 			
 			if ( actionFragment == BabeliaBrowserManager.VIEW
 					|| actionFragment == BabeliaBrowserManager.SUBTITLE )
 			{
-				if ( browser.targetFragment != '' )
+				if ( _browser.targetFragment != '' )
 				{
 					var tempEx:ExerciseVO = null;
 					var exercises:ArrayCollection = DataModel.getInstance().availableExercises;
@@ -512,7 +522,7 @@ package modules.subtitles
 					for ( var i:int = 0; i < exercises.length; i++ )
 					{
 						var tmp:ExerciseVO = exercises.getItemAt(i) as ExerciseVO;
-						if ( tmp.name == browser.targetFragment )
+						if ( tmp.name == _browser.targetFragment )
 						{
 							tempEx = tmp;
 							break;
@@ -569,7 +579,7 @@ package modules.subtitles
 		{
 			// Update URL
 			BabeliaBrowserManager.getInstance().updateURL(
-				BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX),
+				BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX),
 				action,
 				target);
 		}

@@ -31,7 +31,7 @@
 	<mx:ViewStack id="uploadModuleViewStack"
 				  width="100%"
 				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().viewUploadViewStackIndex }">
+				  selectedIndex="{ DataModel.getInstance().currentUploadViewStackIndex }">
 		<main:UnauthorizedNotice id="unsignedScreen"
 								 width="100%"
 								 height="100%"/>

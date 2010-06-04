@@ -22,7 +22,7 @@
 	<mx:ViewStack id="contentViewStack"
 				  width="100%"
 				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().viewContentViewStackIndex }"
+				  selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
 				  resizeToContent="true">
 		<main:ExerciseList id="homeModule"
 						   width="100%">
@@ -100,6 +100,8 @@
 
 			public function handleIndexChange(evt:IndexChangedEvent):void
 			{
+				DataModel.getInstance().oldContentViewStackIndex = evt.oldIndex;
+				DataModel.getInstance().newContentViewStackIndex = evt.newIndex;
 				// Video stop on tab change
 				new VideoStopEvent().dispatch();
 			}

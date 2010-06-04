@@ -75,7 +75,7 @@ package control
 			_modulesFragments.setItemAt("upload", ViewChangeEvent.VIEWSTACK_UPLOAD_MODULE_INDEX);
 			_modulesFragments.setItemAt("help", ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX);
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
-			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_PLAYER_MODULE_INDEX);
+			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX);
 		}
 		
 		// Get instance
@@ -149,13 +149,13 @@ package control
 			if ( moduleIndex == ViewChangeEvent.VIEWSTACK_ACCOUNT_MODULE_INDEX
 					&& !DataModel.getInstance().isLoggedIn )
 			{
-				DataModel.getInstance().viewContentViewStackIndex = 0;
+				DataModel.getInstance().currentContentViewStackIndex = 0;
 				updateURL("home");
 			}
 			
 			if ( moduleIndex >= 0 )
 			{
-				DataModel.getInstance().viewContentViewStackIndex = moduleIndex;
+				DataModel.getInstance().currentContentViewStackIndex = moduleIndex;
 				return true;
 			}
 			

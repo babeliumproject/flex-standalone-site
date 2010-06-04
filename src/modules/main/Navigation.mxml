@@ -116,7 +116,7 @@
 			private function launchSearch():void
 			{
 				DataModel.getInstance().searchField=searchField.text;
-				if (DataModel.getInstance().viewContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
 				{
 					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
 				}

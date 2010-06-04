@@ -10,7 +10,7 @@ package commands.exercises
 
 		public function execute(event:CairngormEvent):void
 		{
-			DataModel.getInstance().viewExerciseViewStackIndex = 1;
+			DataModel.getInstance().currentExerciseViewStackIndex = 1;
 		}
 		
 	}

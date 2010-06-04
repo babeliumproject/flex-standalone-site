@@ -37,7 +37,7 @@ package commands.userManagement
 				DataModel.getInstance().isLoggedIn = true;
 				
 				// If user is in register module, redirect to home
-				if ( DataModel.getInstance().viewContentViewStackIndex == 
+				if ( DataModel.getInstance().currentContentViewStackIndex == 
 						ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX )
 				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();

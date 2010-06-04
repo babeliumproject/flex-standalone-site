@@ -10,7 +10,7 @@ package commands.evaluation
 		
 		public function execute(event:CairngormEvent):void
 		{
-			DataModel.getInstance().viewEvaluationViewStackIndex = 0;
+			DataModel.getInstance().currentEvaluationViewStackIndex = 0;
 		}
 	}
 }

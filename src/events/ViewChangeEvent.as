@@ -47,7 +47,7 @@ package events
 		public static const VIEWSTACK_REGISTER_MODULE_INDEX:int = 3;
 		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:int = 4;
 		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:int = 5;
-		public static const VIEWSTACK_PLAYER_MODULE_INDEX:int = 6;
+		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:int = 6;
 		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:int = 7;
 		//public static const VIEWSTACK_RANKING_MODULE_INDEX:int = 8;
 		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 8;

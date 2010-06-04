@@ -10,7 +10,7 @@ package commands.videoUpload
 
 		public function execute(event:CairngormEvent):void
 		{
-			DataModel.getInstance().viewUploadViewStackIndex = 0;
+			DataModel.getInstance().currentUploadViewStackIndex = 0;
 		}
 		
 	}

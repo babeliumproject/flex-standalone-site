@@ -27,7 +27,7 @@
 	<mx:ViewStack id="evaluationViewStack"
 				  width="100%"
 				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().viewEvaluationViewStackIndex }">
+				  selectedIndex="{ DataModel.getInstance().currentEvaluationViewStackIndex }">
 		
 		<main:UnauthorizedNotice id="unauthorizedUser" />
 		

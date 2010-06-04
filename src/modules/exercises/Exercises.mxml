@@ -404,6 +404,7 @@
 			 **/
 			private function onRecordingEnd(e:RecordingEvent):void
 			{
+				
 				// Store response's filename
 				_recordedFilename=e.fileName;
 
@@ -499,9 +500,12 @@
 			private function resetComponent():void{
 				VP.endVideo(); // Stop video
 				VP.setSubtitle(""); // Clear subtitles if any
-				VP.state = VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
 				VP.videoSource=""; // Reset video source
+				VP.state = VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
+
 				VP.arrows=false; // Hide arrows
+				
+				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 				
 				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				_currentExercise=null; // Reset current exercise

@@ -13,7 +13,7 @@ package commands.configuration
 		public function execute(event:CairngormEvent):void
 		{
 			var index:int = ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX;
-			DataModel.getInstance().viewContentViewStackIndex = index;
+			DataModel.getInstance().currentContentViewStackIndex = index;
 					
 			
 			BabeliaBrowserManager.getInstance().updateURL(
