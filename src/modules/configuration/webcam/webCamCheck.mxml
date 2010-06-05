@@ -10,47 +10,28 @@
 			
 			import modules.configuration.ConfigurationResultEvent;
 			import modules.configuration.ShowStatusMessage;
+			import modules.configuration.OflaDemoRed5Connection;
 			
 			import mx.controls.Alert;
 			
 			public var cam:Camera;
 			public var mic:Microphone;
 			private var video:Video;
-			private var nc:NetConnection;
-			public var rec_ns:NetStream;
-			public var play_ns:NetStream;
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
+			public var red5Connection:OflaDemoRed5Connection;
 			
 			private function init():void{															
-				nc = new NetConnection();
-				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/oflaDemo");
-				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
+				red5Connection = new OflaDemoRed5Connection();
+				red5Connection.connect();  
 				initTimers();		
-			}
-			
-			private function netStatusHandler(e:NetStatusEvent):void{   
-				if(e.info.code == "NetConnection.Connect.Success"){
-					rec_ns = new NetStream(nc);
-					play_ns = new NetStream(nc); 
-					rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-					play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-				}else   
-					//Problemas en la conexion
-					trace(e.info.code); 
-			}
-			
-			private function asyncErrrorHandler(e:AsyncErrorEvent):void{
-				//No se usa, pero evita que aparezcan errores con flash player debugg version
 			}
 			
 			private function recStart():void{
 				try{
-					//Las siguientes 2 lineas de codigo permiten al usuario la grabacion de varios videos
-					rec_ns.close();
-					play_ns.close();
+					//Las siguientes linea de codigo permite al usuario la grabacion de varios videos
+					red5Connection.closeNetStreamObjects();
 					
 					cam=Camera.getCamera();
 					mic=Microphone.getMicrophone();
@@ -66,7 +47,7 @@
 						o si previamente el usuario ha grabado otro fichero de video.
 						En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
 						de un video no seria posible sin las siguientes lineas de codigo*/
-						rec_ns.attachCamera(cam);
+						red5Connection.rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
 						statusTextFunc("recording");
 						video = new Video();
@@ -74,8 +55,8 @@
 						videoHolder.addChild(video);
 						timerRec.start();
 						mic.rate = 44;
-						rec_ns.attachAudio(mic);
-						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
+						red5Connection.rec_ns.attachAudio(mic);
+						red5Connection.publish('video');
 						initCont(); 
 					}  					
 				}catch(err:Error){
@@ -88,8 +69,8 @@
 					DataModel.getInstance().playing=true;
 					initCont();
 					statusTextFunc("playing");
-					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationVideo.flv");
-					video.attachNetStream(play_ns);
+					red5Connection.play('video');
+					video.attachNetStream(red5Connection.play_ns);
 					videoHolder.addChild(video);
 					timerPlay.start();
 				}else//Rec file not exists
@@ -118,7 +99,7 @@
 						DataModel.getInstance().permissions=false;						
 						break;
 					case "Camera.Unmuted": //User allowed access to camera
-						rec_ns.attachCamera(cam);
+						red5Connection.rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
 						DataModel.getInstance().recording=true;
 						DataModel.getInstance().micCamAllowed = true;
@@ -128,8 +109,8 @@
 						videoHolder.addChild(video);
 						timerRec.start();
 						mic.rate = 44;
-						rec_ns.attachAudio(mic);
-						rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
+						red5Connection.rec_ns.attachAudio(mic);
+						red5Connection.publish('video');
 						initCont();                    
 						break;
 				}//switch
@@ -184,8 +165,8 @@
 			
 			private function endRec():void{
 				DataModel.getInstance().recording=false;
-				rec_ns.attachCamera(null);
-				rec_ns.attachAudio(null);
+				red5Connection.rec_ns.attachCamera(null);
+				red5Connection.rec_ns.attachAudio(null);
 				video.attachCamera(null);
 				video.clear();
 			}

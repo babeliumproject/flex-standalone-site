@@ -4,6 +4,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import modules.configuration.OflaDemoRed5Connection;
 			import view.common.CustomAlert;
 			import flash.sampler.getInvocationCount;
 			
@@ -23,28 +24,12 @@
 			public var timerPlay:Timer;
 			public var timerSound:Timer;
 			public var onMic:Boolean=false;
+			public var red5Connection:OflaDemoRed5Connection;
 			
 			private function init():void{						
-				nc = new NetConnection();
-				nc.connect("rtmp://" + DataModel.getInstance().server +  ":" + DataModel.getInstance().red5Port + "/oflaDemo");
-				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler); 
+				red5Connection = new OflaDemoRed5Connection();
+				red5Connection.connect();  
 				initTimers(); 	
-			}
-			
-			private function netStatusHandler(e:NetStatusEvent):void{   
-				if(e.info.code == "NetConnection.Connect.Success"){
-					rec_ns = new NetStream(nc);
-					play_ns = new NetStream(nc); 
-					rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-					play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-				}else   
-					//Problemas en la conexion
-					trace(e.info.code); 
-			}
-			
-			private function asyncErrrorHandler(e:AsyncErrorEvent):void{
-				//No se usa, pero evita que aparezcan errores con flash player debugg version
 			}
 			
 			private function recStart():void{
@@ -95,7 +80,7 @@
 					DataModel.getInstance().playing=true;
 					initCont();
 					statusTextFunc("Playing");
-					play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationAudio.flv");
+					red5Connection.play('audio');
 					timerPlay.start();
 				}else if (rec){//Grabación sin señal
 					CustomAlert.error(resourceManager.getString('myResources', 'CONFIGURATION_NO_MIC_SIGNAL'));
@@ -226,7 +211,7 @@
 				el texto statusText. Esta funcion se realiza con la variable booleana onMic (Importante
 				reiniciar su valor si queremos el correcto funcionamiento de grabaciones posteriores).*/
 				if(!onMic && mic.activityLevel>25){
-					rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationAudio", 'record'); 
+					red5Connection.publish('audio'); 
 					noSoundText.visible=false;
 					statusTextFunc("Recording");
 					onMic=true;
