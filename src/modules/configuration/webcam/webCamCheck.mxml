@@ -20,7 +20,7 @@
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
-			public var oflaDemoRed5Connection:OflaDemoRed5Sentences;
+			public var oflaDemoRed5Sentences:OflaDemoRed5Sentences;
 			
 			private function init():void{															
 				oflaDemoRed5Connection = new OflaDemoRed5Sentences();

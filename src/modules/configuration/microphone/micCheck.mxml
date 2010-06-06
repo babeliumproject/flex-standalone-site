@@ -21,7 +21,7 @@
 			public var timerPlay:Timer;
 			public var timerSound:Timer;
 			public var onMic:Boolean=false;
-			public var oflaDemoRed5Connection:OflaDemoRed5Sentences;
+			public var oflaDemoRed5Sentences:OflaDemoRed5Sentences;
 			
 			private function init():void{						
 				oflaDemoRed5Connection = new OflaDemoRed5Sentences();
