@@ -4,7 +4,7 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import modules.configuration.OflaDemoRed5Connection;
+			import modules.configuration.OflaDemoRed5Sentences;
 			import view.common.CustomAlert;
 			import flash.sampler.getInvocationCount;
 			
@@ -16,27 +16,24 @@
 			import mx.controls.Alert;		
 			
 			public var mic:Microphone;
-			private var nc:NetConnection;
-			public var rec_ns:NetStream;
-			public var play_ns:NetStream;
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
 			public var timerSound:Timer;
 			public var onMic:Boolean=false;
-			public var red5Connection:OflaDemoRed5Connection;
+			public var oflaDemoRed5Connection:OflaDemoRed5Sentences;
 			
 			private function init():void{						
-				red5Connection = new OflaDemoRed5Connection();
-				red5Connection.connect();  
+				oflaDemoRed5Connection = new OflaDemoRed5Sentences();
+				oflaDemoRed5Connection.connect();  
 				initTimers(); 	
 			}
 			
 			private function recStart():void{
 				try{
 					//Reiniciar conexiones anteriores para la grabacion de varios archivos
-					rec_ns.close();
-					play_ns.close();
+					oflaDemoRed5Connection.closeNetStreamObjects();
+					oflaDemoRed5Connection.closeNetStreamObjects();
 					
 					mic=Microphone.getMicrophone();
 					if (!DataModel.getInstance().micCamAllowed){
@@ -60,7 +57,7 @@
 						barraSonido.giveMicrophone(mic);
 						mic.setSilenceLevel(20,1000);
 						mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
-						rec_ns.attachAudio(mic);
+						oflaDemoRed5Connection.rec_ns.attachAudio(mic);
 						model.DataModel.getInstance().audioRec=true;
 						noSoundText.visible=true;
 						DataModel.getInstance().micCamAllowed = true;
@@ -80,7 +77,7 @@
 					DataModel.getInstance().playing=true;
 					initCont();
 					statusTextFunc("Playing");
-					red5Connection.play('audio');
+					oflaDemoRed5Connection.play('audio');
 					timerPlay.start();
 				}else if (rec){//Grabación sin señal
 					CustomAlert.error(resourceManager.getString('myResources', 'CONFIGURATION_NO_MIC_SIGNAL'));
@@ -120,7 +117,7 @@
 						barraSonido.giveMicrophone(mic);
 						mic.setSilenceLevel(20,1000);
 						mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
-						rec_ns.attachAudio(mic);
+						oflaDemoRed5Connection.rec_ns.attachAudio(mic);
 						model.DataModel.getInstance().audioRec=true;
 						noSoundText.visible=true;
 						DataModel.getInstance().micCamAllowed = true;
@@ -140,7 +137,7 @@
 					statusText.text=statusText.text+".";
 				}else if(timerRec.currentCount>10){
 					DataModel.getInstance().recording=false;
-					rec_ns.attachAudio(null);
+					oflaDemoRed5Connection.rec_ns.attachAudio(null);
 					hideInfo();
 					rec=true;
 					timerRec.reset();//Se prepara para la proxima grabacion
@@ -211,7 +208,7 @@
 				el texto statusText. Esta funcion se realiza con la variable booleana onMic (Importante
 				reiniciar su valor si queremos el correcto funcionamiento de grabaciones posteriores).*/
 				if(!onMic && mic.activityLevel>25){
-					red5Connection.publish('audio'); 
+					oflaDemoRed5Connection.publish('audio'); 
 					noSoundText.visible=false;
 					statusTextFunc("Recording");
 					onMic=true;

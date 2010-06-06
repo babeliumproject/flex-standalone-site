@@ -10,7 +10,7 @@
 			
 			import modules.configuration.ConfigurationResultEvent;
 			import modules.configuration.ShowStatusMessage;
-			import modules.configuration.OflaDemoRed5Connection;
+			import modules.configuration.OflaDemoRed5Sentences;
 			
 			import mx.controls.Alert;
 			
@@ -20,18 +20,18 @@
 			public var rec:Boolean=false;
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
-			public var red5Connection:OflaDemoRed5Connection;
+			public var oflaDemoRed5Connection:OflaDemoRed5Sentences;
 			
 			private function init():void{															
-				red5Connection = new OflaDemoRed5Connection();
-				red5Connection.connect();  
+				oflaDemoRed5Connection = new OflaDemoRed5Sentences();
+				oflaDemoRed5Connection.connect();  
 				initTimers();		
 			}
 			
 			private function recStart():void{
 				try{
 					//Las siguientes linea de codigo permite al usuario la grabacion de varios videos
-					red5Connection.closeNetStreamObjects();
+					oflaDemoRed5Connection.closeNetStreamObjects();
 					
 					cam=Camera.getCamera();
 					mic=Microphone.getMicrophone();
@@ -47,7 +47,7 @@
 						o si previamente el usuario ha grabado otro fichero de video.
 						En cualquier caso, el evento StatusEvent.STATUS no se dispara y la grabacion
 						de un video no seria posible sin las siguientes lineas de codigo*/
-						red5Connection.rec_ns.attachCamera(cam);
+						oflaDemoRed5Connection.rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
 						statusTextFunc("recording");
 						video = new Video();
@@ -55,8 +55,8 @@
 						videoHolder.addChild(video);
 						timerRec.start();
 						mic.rate = 44;
-						red5Connection.rec_ns.attachAudio(mic);
-						red5Connection.publish('video');
+						oflaDemoRed5Connection.rec_ns.attachAudio(mic);
+						oflaDemoRed5Connection.publish('video');
 						initCont(); 
 					}  					
 				}catch(err:Error){
@@ -69,8 +69,8 @@
 					DataModel.getInstance().playing=true;
 					initCont();
 					statusTextFunc("playing");
-					red5Connection.play('video');
-					video.attachNetStream(red5Connection.play_ns);
+					oflaDemoRed5Connection.play('video');
+					video.attachNetStream(oflaDemoRed5Connection.play_ns);
 					videoHolder.addChild(video);
 					timerPlay.start();
 				}else//Rec file not exists
@@ -99,7 +99,7 @@
 						DataModel.getInstance().permissions=false;						
 						break;
 					case "Camera.Unmuted": //User allowed access to camera
-						red5Connection.rec_ns.attachCamera(cam);
+						oflaDemoRed5Connection.rec_ns.attachCamera(cam);
 						model.DataModel.getInstance().videoRec=true;
 						DataModel.getInstance().recording=true;
 						DataModel.getInstance().micCamAllowed = true;
@@ -109,8 +109,8 @@
 						videoHolder.addChild(video);
 						timerRec.start();
 						mic.rate = 44;
-						red5Connection.rec_ns.attachAudio(mic);
-						red5Connection.publish('video');
+						oflaDemoRed5Connection.rec_ns.attachAudio(mic);
+						oflaDemoRed5Connection.publish('video');
 						initCont();                    
 						break;
 				}//switch
@@ -165,8 +165,8 @@
 			
 			private function endRec():void{
 				DataModel.getInstance().recording=false;
-				red5Connection.rec_ns.attachCamera(null);
-				red5Connection.rec_ns.attachAudio(null);
+				oflaDemoRed5Connection.rec_ns.attachCamera(null);
+				oflaDemoRed5Connection.rec_ns.attachAudio(null);
 				video.attachCamera(null);
 				video.clear();
 			}
