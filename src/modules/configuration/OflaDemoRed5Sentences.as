@@ -7,14 +7,13 @@ package modules.configuration
 	
 	import model.DataModel;
 	
-	import modules.configuration.Red5Connection;
-	
 	public class OflaDemoRed5Sentences
 	{
 		
 		private var red5Connection:Red5Connection;
 		public var rec_ns:NetStream;
 		public var play_ns:NetStream;
+		public var nc:NetConnection;
 		
 		public function OflaDemoRed5Sentences()
 		{
@@ -22,14 +21,15 @@ package modules.configuration
 		
 		public function connect():void{
 			red5Connection = new Red5Connection('oflaDemo');
-			red5Connection.nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-			red5Connection.nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
+			nc=red5Connection.getNetConnection();
+			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
 		}
 		
 		private function netStatusHandler(e:NetStatusEvent):void{   
 			if(e.info.code == "NetConnection.Connect.Success"){
-				rec_ns = new NetStream(red5Connection.nc);
-				play_ns = new NetStream(red5Connection.nc); 
+				rec_ns = new NetStream(nc);
+				play_ns = new NetStream(nc); 
 				rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
 				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
 			}else   

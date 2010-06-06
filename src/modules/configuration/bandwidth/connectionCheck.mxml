@@ -17,6 +17,7 @@
 			import model.DataModel;
 
 			import modules.configuration.ConfigurationResultEvent;
+			import modules.configuration.Red5Connection;
 
 			import mx.charts.series.ColumnSeries;
 			import mx.collections.ArrayCollection;
@@ -25,6 +26,7 @@
 			public var ns:NetStream;
 			private var serverClient:ServerClientBandwidth;
 			private var chart:ColumnSeries;
+			private var red5Connection:Red5Connection;
 
 			[Bindable]
 			private var chartData:ArrayCollection;
@@ -35,11 +37,9 @@
 			private function init():void
 			{
 				bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
-				nc=new NetConnection();
-				nc.objectEncoding=flash.net.ObjectEncoding.AMF0;
-				nc.client=this;
+				red5Connection = new Red5Connection('bwcheck');
+				nc = red5Connection.getNetConnection();
 				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
-				nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/bwcheck");
 			}
 
 			public function onStatus(event:NetStatusEvent):void

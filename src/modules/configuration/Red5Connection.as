@@ -6,11 +6,15 @@ package modules.configuration
 	{
 		import model.DataModel;
 		
-		public  var nc:NetConnection;
+		private  var nc:NetConnection;
 		
 		public function Red5Connection(app:String){
 			nc = new NetConnection();
 			nc.connect("rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/" + app);
+		}
+		
+		public function getNetConnection():NetConnection{
+			return nc;
 		}
 
 	}
