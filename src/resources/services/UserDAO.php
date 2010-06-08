@@ -41,6 +41,22 @@ class UserDAO {
 
 		return $this->_singleQuery($sql, $userId);
 	}
+	
+	public function keepAlive($userId){
+		
+		session_start();
+		$sessionId = session_id();
+		
+		//Check that there's not another active session for this user
+		$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";
+		$result = $this->conn->_execute ( $sql, $sessionId, $userId );
+		$row = $this->conn->_nextRow($result);
+		if($row){
+			$sql = "UPDATE user_session SET keep_alive = 1 WHERE fk_user_id = '%d' AND closed=0";
+		
+			return $this->_databaseUpdate($sql, $userId);
+		}
+	}
 
 	//Returns a single User object
 	private function _singleQuery($sql, $userId){
@@ -65,30 +81,6 @@ class UserDAO {
 			return false;
 		}
 		return $valueObject;
-	}
-	
-	// Returns an array of Users
-	private function _listQuery($sql)
-	{
-		$searchResults = array();
-		$result = $this->conn->_execute($sql);
-
-		while ($row = $this->conn->_nextRow($result))
-		{
-			$temp = new UserVO();
-			$temp->id = $row[0];
-			$temp->name = $row[1];
-			$temp->email = $row[2];
-			$temp->creditCount = $row[3];
-			$temp->realName = $row[4];
-			$temp->realSurname = $row[5];
-			$temp->active = $row[6];
-			$temp->joiningDate = $row[7];
-			$temp->isAdmin = $row[8]==1;
-			array_push($searchResults, $temp);
-		}
-
-		return $searchResults;
 	}
 	
 	public function restorePass($username)
@@ -144,6 +136,30 @@ class UserDAO {
 		
 		return "Done";
 	}
+	
+	// Returns an array of Users
+	private function _listQuery($sql)
+	{
+		$searchResults = array();
+		$result = $this->conn->_execute($sql);
+
+		while ($row = $this->conn->_nextRow($result))
+		{
+			$temp = new UserVO();
+			$temp->id = $row[0];
+			$temp->name = $row[1];
+			$temp->email = $row[2];
+			$temp->creditCount = $row[3];
+			$temp->realName = $row[4];
+			$temp->realSurname = $row[5];
+			$temp->active = $row[6];
+			$temp->joiningDate = $row[7];
+			$temp->isAdmin = $row[8]==1;
+			array_push($searchResults, $temp);
+		}
+
+		return $searchResults;
+	}
 
 	private function _createNewPassword()
 	{
@@ -156,6 +172,12 @@ class UserDAO {
 			$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $pass;
+	}
+	
+	private function _databaseUpdate() {
+		$result = $this->conn->_execute ( func_get_args() );
+		
+		return $result;
 	}
 
 }
