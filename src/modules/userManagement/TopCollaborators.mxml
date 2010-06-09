@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomPanel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  xmlns:common="view.common.*"
 		  layout="vertical"
-		  width="100%"
 		  title="Top Collaborators"
-		  cornerRadius="6"
-		  borderColor="#000000"
-		  creationComplete="init();">
+		  creationComplete="onComplete()">
 
 	<mx:Script>
 		<![CDATA[
@@ -16,17 +14,15 @@
 			import mx.utils.ArrayUtil;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-
-//			//The service used for data providing
-//			private var service:UserManagementService;
-//			
+		
 			//Object to store the data received from the server
 			[Bindable]
 			private var dataProvider:ArrayCollection;
 			private var tableRefreshTimer:Timer;
 
-			private function init():void
+			private function onComplete():void
 			{
+				refreshTableData(null);
 				tableRefreshTimer = new Timer(120000,0);
 				tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
 				tableRefreshTimer.start();
@@ -74,4 +70,4 @@
 							   dataField="creditCount"/>
 		</mx:columns>
 	</mx:DataGrid>
-</mx:Panel>
+</common:CustomPanel>

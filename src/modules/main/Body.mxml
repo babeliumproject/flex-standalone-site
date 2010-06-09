@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 height="100%"
 		 xmlns:userManagement="modules.userManagement.*"
 		 xmlns:exercises="modules.exercises.*"
 		 xmlns:main="modules.main.*"
@@ -11,11 +10,10 @@
 		 xmlns:ns8="modules.rankings.*"
 		 xmlns:ns9="modules.videoPlayer.*"
 		 xmlns:ns10="modules.search.*"
+		 height="100%"
 		 paddingTop="10"
 		 horizontalGap="0"
-		 creationComplete="init();"
-		 backgroundAlpha="0.0"
-		 borderStyle="none"
+		 creationComplete="onComplete()"
 		 horizontalAlign="right"
 		 verticalScrollPolicy="off">
 
@@ -92,10 +90,9 @@
 			
 			import mx.events.IndexChangedEvent;
 
-			public function init():void
+			public function onComplete():void
 			{
 				contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
-				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
 			}
 
 			public function handleIndexChange(evt:IndexChangedEvent):void

@@ -48,5 +48,11 @@ package business
 			var pendingCall:AsyncToken = service.changePass(user.id, user.oldpass, user.newpass);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function keepSessionAlive(userId:int):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.keepAlive(userId);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

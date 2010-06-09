@@ -45,7 +45,6 @@
 				cuePointManager = CuePointManager.getInstance();
 				
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
-				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
 				
 				Security.allowDomain(appModelLocator.uploadDomain);
 			}

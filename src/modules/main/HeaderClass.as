@@ -1,13 +1,8 @@
 package modules.main
 {
-	import com.adobe.crypto.SHA1;
-	
 	import events.LoginEvent;
-	import events.VideoStopEvent;
 	import events.ViewChangeEvent;
 	
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
@@ -15,14 +10,13 @@ package modules.main
 	
 	import model.DataModel;
 	
-	import modules.userManagement.LoginForm;
-	import modules.userManagement.RestorePassForm;
+	import modules.userManagement.KeepAliveTimer;
+	import modules.userManagement.LoginRestorePassForm;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.containers.HBox;
 	import mx.controls.LinkButton;
 	import mx.core.Application;
-	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.managers.PopUpManager;
 	
@@ -32,10 +26,7 @@ package modules.main
 	{
 
 		//Login related properties
-		public var loginPop:LoginForm;
-		public var restorePop:RestorePassForm;
-
-		private var closingEvent:Event;
+		public var loginPop:LoginRestorePassForm;
 
 		private var interval:uint;
 		private var intervalLoops:int;
@@ -102,7 +93,7 @@ package modules.main
 
 		public function showLogin():void
 		{
-			loginPop=LoginForm(PopUpManager.createPopUp(Application.application.parent, LoginForm, true));
+			loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
 			PopUpManager.centerPopUp(loginPop);
 		}
 

@@ -9,16 +9,16 @@
 		<![CDATA[
 			import events.ViewChangeEvent;
 			
-			import modules.userManagement.LoginForm;
+			import modules.userManagement.LoginRestorePassForm;
 			
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			
-			private var loginPop:LoginForm;
+			private var loginPop:LoginRestorePassForm;
 			
 			protected function signInLink_clickHandler(event:MouseEvent):void
 			{
-				loginPop=LoginForm(PopUpManager.createPopUp(Application.application.parent, LoginForm, true));
+				loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
 				PopUpManager.centerPopUp(loginPop);
 			}
 			

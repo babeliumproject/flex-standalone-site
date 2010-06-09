@@ -85,5 +85,10 @@
 		destination="empService"
 		showBusyCursor="true"
 		source="ResponseDAO"/>
+	<mx:RemoteObject
+		id="videoHistoryRO"
+		destination="empService"
+		showBusyCursor="false"
+		source="UserVideoHistoryDAO"/>
 	
 </ServiceLocator>

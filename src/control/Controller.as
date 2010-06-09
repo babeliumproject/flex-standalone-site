@@ -60,6 +60,7 @@ package control {
 	import commands.userManagement.GetLastMonthCreditHistoryCommand;
 	import commands.userManagement.GetLastWeekCreditHistoryCommand;
 	import commands.userManagement.GetUserInfoCommand;
+	import commands.userManagement.KeepSessionAliveCommand;
 	import commands.userManagement.ProcessLoginCommand;
 	import commands.userManagement.RegisterUserCommand;
 	import commands.userManagement.RestorePassCommand;
@@ -150,6 +151,7 @@ package control {
 			//User management commands
 			addCommand(UserEvent.GET_TOP_TEN_CREDITED, GetTopTenCreditedCommand);
 			addCommand(UserEvent.GET_USER_INFO, GetUserInfoCommand);
+			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
