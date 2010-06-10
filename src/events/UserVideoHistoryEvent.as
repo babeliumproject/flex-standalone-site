@@ -2,14 +2,16 @@ package events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import flash.events.Event;
+	
 	import vo.UserVideoHistoryVO;
 	
 	public class UserVideoHistoryEvent extends CairngormEvent
 	{
 		
-		public static const EXERCISE_WATCH:String = "exerciseWatch";
-		public static const ATTEMPT_RESPONSE:String = "attemptResponse";
-		public static const SAVE_RESPONSE:String = "saveResponse";
+		public static const STAT_EXERCISE_WATCH:String = "statExerciseWatch";
+		public static const STAT_ATTEMPT_RESPONSE:String = "statAttemptResponse";
+		public static const STAT_SAVE_RESPONSE:String = "statSaveResponse";
 		
 		public var videoHistoryData:UserVideoHistoryVO;
 		

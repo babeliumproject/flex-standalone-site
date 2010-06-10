@@ -10,14 +10,15 @@ package modules.main
 	
 	import model.DataModel;
 	
-	import modules.userManagement.KeepAliveTimer;
 	import modules.userManagement.LoginRestorePassForm;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.containers.HBox;
 	import mx.controls.LinkButton;
+	import mx.controls.PopUpMenuButton;
 	import mx.core.Application;
 	import mx.events.FlexEvent;
+	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
 	import vo.LoginVO;
@@ -35,16 +36,18 @@ package modules.main
 
 		//The keyCode for ENTER key
 		public static const ENTER_KEY:int=13;
+		
+		[Bindable]
+		public var userOptions:Array= new Array({code: 'LABEL_USER_ACCOUNT', action: ViewChangeEvent.VIEW_ACCOUNT_MODULE});
 
 		//Visual components declaration
 		public var userCP:HBox;
 		public var anonymousCP:HBox;
 
-		public var userCPName:LinkButton;
+		public var userCPName:PopUpMenuButton;
 		public var uCrds:LinkButton;
 		public var signInButton:LinkButton;
 		public var signUpButton:LinkButton;
-		public var userAccountButton:LinkButton;
 		public var signOutButton:LinkButton;
 		public var helpFAQButton:LinkButton;
 
@@ -108,11 +111,16 @@ package modules.main
 			//Change contentViewStack to sign up page
 			new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
 		}
+		
+		public function userOptionsLabelFunction(item:Object):String{
+			return resourceManager.getString('myResources', item.code.toString());
+		}
 
-		public function accountClickHandler():void
+		public function userOptionsItemClickHandler(event:MenuEvent):void
 		{
+			var whereToGo:String = event.item.action;
 			//Change contentViewStack to account page
-			new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
+			new ViewChangeEvent(whereToGo).dispatch();
 		}
 
 		public function signOutClickHandler():void
@@ -175,7 +183,6 @@ package modules.main
 			signInButton.enabled = status;
 			signUpButton.enabled = status;
 			signOutButton.enabled = status;
-			userAccountButton.enabled = status;
 		}
 		
 		public function helpFAQ_clickHandler(event:MouseEvent):void{

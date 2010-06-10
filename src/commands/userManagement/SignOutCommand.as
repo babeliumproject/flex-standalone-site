@@ -4,8 +4,6 @@ package commands.userManagement
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
-	
-	import modules.userManagement.KeepAliveTimer;
 
 	public class SignOutCommand implements ICommand
 	{
@@ -16,7 +14,7 @@ package commands.userManagement
 			DataModel.getInstance().isLoggedIn = false;
 			DataModel.getInstance().isSuccessfullyLogged = false;
 			
-			KeepAliveTimer.stopKeepAlive();
+			DataModel.getInstance().keepAliveTimerInstance.stopKeepAlive();
 		}
 		
 	}

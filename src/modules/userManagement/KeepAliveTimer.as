@@ -7,24 +7,27 @@ package modules.userManagement
 	
 	import model.DataModel;
 	
+	import view.common.CustomAlert;
+	
 	import vo.UserVO;
 
 	public class KeepAliveTimer
 	{
 		
-		private static var keepAlive:Timer;
+		private var keepAlive:Timer;
 		
-		public static function startKeepAlive():void{
+		public function startKeepAlive():void{
 			keepAlive = new Timer(DataModel.getInstance().keepAliveInterval,0); //Schedule to raise every 3minutes
+			keepAlive.start();
 			keepAlive.addEventListener(TimerEvent.TIMER, onTimerTick);
 		}
 		
-		public static function stopKeepAlive():void{
+		public function stopKeepAlive():void{
 			keepAlive.stop();
 			keepAlive.removeEventListener(TimerEvent.TIMER, onTimerTick);
 		}
 		
-		private static function onTimerTick(event:TimerEvent):void{
+		private function onTimerTick(event:TimerEvent):void{
 			var currentUser:UserVO = DataModel.getInstance().loggedUser;
 			new UserEvent(UserEvent.KEEP_SESSION_ALIVE, currentUser.id).dispatch();
 		}

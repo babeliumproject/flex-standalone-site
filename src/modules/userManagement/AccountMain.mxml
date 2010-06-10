@@ -1,34 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		  paddingLeft="8"
-		  paddingRight="8"
-		  paddingBottom="8"
-		  borderStyle="none"
-		  xmlns:ns1="modules.userManagement.*"
-		  backgroundAlpha="0.0">
+		 paddingLeft="8"
+		 paddingRight="8"
+		 paddingBottom="8"
+		 borderStyle="none"
+		 xmlns:userManagement="modules.userManagement.*"
+		 backgroundAlpha="0.0">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
-	</mx:Metadata>	  
-	<mx:Script>	
+	</mx:Metadata>
+	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
 			
-			private function userAcountSelect():void{
-				accountOptionsViewStack.selectedIndex = availableOptionsList.selectedIndex;
+			import mx.collections.ArrayCollection;
+			
+			public static const CREDIT_HISTORY_VIEWSTACK_INDEX:int = 0;
+			public static const CHANGE_PASSWORD_VIEWSTACK_INDEX:int = 1;
+			public static const TOP_COLLABORATORS_VIEWSTACK_INDEX:int = 2;
+
+			//Account options list
+			[Bindable]
+			public var accountOptions:ArrayCollection=new ArrayCollection(new Array("Credit History", "Password Change", "Top Collaborators"));
+
+			
+			
+			private function accountOptionListChangeHandler():void
+			{
+				accountOptionsViewStack.selectedIndex=availableOptionsList.selectedIndex;
 				availableOptionsList.selectedItem=null;
 				changePass.resetToolTips();
 			}
 			
-			public function set onTabChange(flag:Boolean) : void
+			public function changeViewStackIndex(newIndex:int):void{
+				accountOptionsViewStack.selectedIndex = newIndex;
+			}
+
+			public function set onTabChange(flag:Boolean):void
 			{
 				changePass.resetToolTips();
 			}
 		]]>
 	</mx:Script>
-	
+
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
-	
+
 	<mx:VBox height="100%"
 			 horizontalAlign="left"
 			 width="20%">
@@ -38,34 +55,37 @@
 				  fontWeight="bold"
 				  id="navigationLabel"/>
 		<mx:List id="availableOptionsList"
-				 dataProvider="{DataModel.getInstance().accountOptions}"
+				 dataProvider="{accountOptions}"
 				 width="100%"
 				 cornerRadius="4"
 				 fontFamily="Arial"
 				 fontSize="12"
 				 fontWeight="bold"
-				 change="userAcountSelect()">
+				 change="accountOptionListChangeHandler()">
 		</mx:List>
 	</mx:VBox>
-	
+
 	<mx:ViewStack id="accountOptionsViewStack"
+				  creationPolicy="all"
 				  height="100%"
 				  width="80%">
-		<ns1:CreditHistoryPanel width="100%"
-								height="100%"
-								backgroundAlpha="0.0">
-		</ns1:CreditHistoryPanel>
-		<mx:VBox label="TODO" id="todo1" 
-					width="80%" horizontalAlign="center">
-		</mx:VBox>
-		<ns1:ChangePassword label="Change Password" id="changePass" 
-					width="80%" horizontalAlign="center">
-		</ns1:ChangePassword>
-		<mx:VBox label="Top Collaborators" id="topCollaborators" 
-					width="80%" horizontalAlign="center">
-				<ns1:TopCollaborators width="30%" horizontalAlign="center"
-						id="topCollab">
-				</ns1:TopCollaborators>
+		<userManagement:CreditHistoryPanel id="creditHistoryContainer"
+										   label="Credit History"
+										   width="100%"
+										   height="100%">
+		</userManagement:CreditHistoryPanel>
+		<userManagement:ChangePassword id="changePass"
+									   label="Change Password"
+									   width="80%"
+									   horizontalAlign="center">
+		</userManagement:ChangePassword>
+		<mx:VBox id="topCollaborators"
+				 label="Top Collaborators"
+				 horizontalAlign="center">
+			<userManagement:TopCollaborators width="30%"
+											 horizontalAlign="center"
+											 id="topCollab">
+			</userManagement:TopCollaborators>
 		</mx:VBox>
 
 	</mx:ViewStack>

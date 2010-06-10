@@ -8,6 +8,7 @@ package commands.exercises
 	import events.UserVideoHistoryEvent;
 	
 	import mx.rpc.IResponder;
+	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
 	

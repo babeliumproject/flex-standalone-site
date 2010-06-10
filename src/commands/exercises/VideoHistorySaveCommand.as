@@ -8,6 +8,7 @@ package commands.exercises
 	import events.UserVideoHistoryEvent;
 	
 	import mx.rpc.IResponder;
+	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
 	
@@ -15,7 +16,7 @@ package commands.exercises
 	{	
 		public function execute(event:CairngormEvent):void
 		{
-			new VideoHistoryDelegate(this).exerciseSaveResponse((event as UserVideoHistoryEvent).videoHistoryData;
+			new VideoHistoryDelegate(this).exerciseSaveResponse((event as UserVideoHistoryEvent).videoHistoryData);
 		}
 		
 		public function result(data:Object):void

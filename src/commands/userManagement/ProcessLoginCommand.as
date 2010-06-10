@@ -9,8 +9,6 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
-	import modules.userManagement.KeepAliveTimer;
-	
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -38,7 +36,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged = true;
 				DataModel.getInstance().isLoggedIn = true;
 				
-				KeepAliveTimer.startKeepAlive();
+				DataModel.getInstance().keepAliveTimerInstance.startKeepAlive();
 				
 				// If user is in register module, redirect to home
 				if ( DataModel.getInstance().currentContentViewStackIndex == 

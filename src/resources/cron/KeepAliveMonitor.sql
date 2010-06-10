@@ -1,33 +1,16 @@
 -- NOTE: to use EVENT statements you need MySQL v5.1.6+
 
--- To check if your mysql server has the event feature enabled
--- enter the mysql command line and type:
- 
--- mysql> SHOW PROCESSLIST\G
-
--- If you have a process with the following information:
-
---*************************** X. row ***************************
---     Id: 98
---   User: event_scheduler
---   Host: localhost
---     db: NULL
---Command: Daemon
---   Time: 183
---  State: Waiting for next activation
---   Info: NULL
-
--- the feature is active. Else, you must activate it doing the following
+-- By default the feature is disabled. You must activate it doing the following
 -- on the mysql command line:
-
 -- mysql> SET GLOBAL event_scheduler = ON;
 
--- To delete this scheduled event: DROP EVENT keep_alive_monitor
+-- To view info about your event do the following query on mysql command line:
+-- mysql> SELECT * FROM INFORMATION_SCHEMA.EVENTS WHERE EVENT_NAME='event_name' \G
+
 -- To disable the scheduled event: ALTER EVENT keep_alive_monitor DISABLE
 -- To enable the scheduled event: ALTER EVENT keep_alive_monitor ENABLE
 
-
-
+-- For more information check out the application's readme.odt
 
 
 GRANT EVENT ON babeliumproject.* TO babelia@localhost;

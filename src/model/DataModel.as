@@ -8,6 +8,7 @@ package model
 	import flash.utils.Dictionary;
 	
 	import modules.autoevaluation.Evaluation;
+	import modules.userManagement.KeepAliveTimer;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -38,10 +39,6 @@ package model
 		//Application preferences value pair
 		[Bindable] public var prefDic:Dictionary;
 		
-		//Account options list
-		[Bindable] public var accountOptions:ArrayCollection = new ArrayCollection 
-		(new Array ("General Overview","Credit History","Password Change","Top Collaborators"));
-		
 		//Top ten collaborators data and service state
 		[Bindable] public var topTenUsers:ArrayCollection;
 		[Bindable] public var isTopTenRetrieved:Boolean = false;
@@ -53,6 +50,7 @@ package model
 		[Bindable] public var loginErrorMessage:String = "";
 		[Bindable] public var creditUpdateRetrieved:Boolean = false;
 		[Bindable] public var keepAliveInterval:int = 180000; //3 minutes
+		[Bindable] public var keepAliveTimerInstance:KeepAliveTimer = new KeepAliveTimer();
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;
@@ -97,6 +95,9 @@ package model
 		
 		[Bindable] public var evaluationPendingResponses:ArrayCollection;
 		[Bindable] public var evaluationPendingRetrieved:Boolean = false;
+		
+		[Bindable] public var savedResponseRetrieved:Boolean = false;
+		[Bindable] public var savedResponseId:int;
 		
 		//Exercise uploading related data
 		[Bindable] public var server: String = "babelia";

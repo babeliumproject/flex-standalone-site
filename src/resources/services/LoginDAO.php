@@ -57,7 +57,7 @@ class LoginDAO{
 		if(!$row){
 			//Generate a new session id and remove previous data (if any)
 			session_regenerate_id(true);
-
+			$sessionId = session_id();
 		
 			$sql = "INSERT INTO user_session (fk_user_id, session_id, session_date, duration, keep_alive) 
 					VALUES ('%d', '%s', now(), 0, 1)";

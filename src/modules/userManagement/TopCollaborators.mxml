@@ -58,9 +58,10 @@
 				 sortableColumns="false"
 				 editable="false"
 				 id="topCollaboratorsTable"
-				 dataProvider="{dataProvider}">
+				 dataProvider="{dataProvider}"
+				 resizableColumns="false">
 		<mx:columns>
-			<mx:DataGridColumn headerText=""
+			<mx:DataGridColumn headerText="#"
 							   width="30"
 							   labelFunction="setRowNumber"/>
 			<mx:DataGridColumn headerText="Name"

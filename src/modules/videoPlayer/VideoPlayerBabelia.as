@@ -240,6 +240,10 @@ package modules.videoPlayer
 			_subtitleButton.setEnabled(flag);
 			this.updateDisplayList(0, 0);
 		}
+		
+		public function get subtitlePanelVisible():Boolean{
+			return _subtitlePanel.visible;
+		}
 
 		/**
 		 * @param arrows: ArrayCollection[{time:Number,role:String}]

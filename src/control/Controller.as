@@ -35,6 +35,9 @@ package control {
 	import commands.exercises.SubCreditsForEvalRequestCommand;
 	import commands.exercises.UserRatedExerciseCommand;
 	import commands.exercises.UserReportedExerciseCommand;
+	import commands.exercises.VideoHistoryAttemptCommand;
+	import commands.exercises.VideoHistorySaveCommand;
+	import commands.exercises.VideoHistoryWatchCommand;
 	import commands.exercises.ViewExerciseEvaluationOptionsCommand;
 	import commands.exercises.ViewExerciseHomeCommand;
 	import commands.exercises.ViewExerciseModuleCommand;
@@ -94,6 +97,7 @@ package control {
 	import events.SubtitleEvent;
 	import events.UploadEvent;
 	import events.UserEvent;
+	import events.UserVideoHistoryEvent;
 	import events.VideoStopEvent;
 	import events.ViewChangeEvent;
 
@@ -144,6 +148,11 @@ package control {
 			addCommand(CreditEvent.ADD_CREDIT_ENTRY_EX_ADVISING, AddCreditEntryExAdvisingCommand);
 			addCommand(CreditEvent.ADD_CREDIT_ENTRY_SUBTITLING, AddCreditEntrySubtitlingCommand);
 			addCommand(CreditEvent.ADD_CREDIT_ENTRY_UPLOADING, AddCreditEntryUploadingCommand);
+			
+			//Video history management commands
+			addCommand(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, VideoHistoryWatchCommand);
+			addCommand(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, VideoHistoryAttemptCommand);
+			addCommand(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, VideoHistorySaveCommand);
 
 			//Preference management commands
 			addCommand(PreferenceEvent.GET_APP_PREFERENCES, GetAppPreferencesCommand);

@@ -69,15 +69,13 @@
 								   themeColor="#FFFFFF"/>
 				</mx:HBox>
 				<mx:VRule height="20"/>
-				<mx:LinkButton id="userCPName"
+				<mx:PopUpMenuButton id="userCPName"
 							   label="UserName"
-							   fontFamily="Arial"
-							   fontSize="12"/>
-				<mx:LinkButton id="userAccountButton"
-							   label="{resourceManager.getString('myResources','LABEL_USER_ACCOUNT')}"
+							   labelFunction="userOptionsLabelFunction"
+							   dataProvider="{userOptions}"
 							   fontFamily="Arial"
 							   fontSize="12"
-							   click="accountClickHandler()"/>
+							   itemClick="userOptionsItemClickHandler(event)"/>
 				<mx:LinkButton id="signOutButton"
 							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   fontFamily="Arial"

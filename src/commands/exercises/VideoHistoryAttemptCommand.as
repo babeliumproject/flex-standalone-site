@@ -8,12 +8,15 @@ package commands.exercises
 	import events.UserVideoHistoryEvent;
 	
 	import mx.rpc.IResponder;
+	import mx.utils.ObjectUtil;
+	
+	import view.common.CustomAlert;
 
 	public class VideoHistoryAttemptCommand implements ICommand, IResponder
 	{
 		public function execute(event:CairngormEvent):void
 		{
-			new VideoHistoryDelegate(this).exerciseAttemptResponse((event as UserVideoHistoryEvent).videoHistoryData;
+			new VideoHistoryDelegate(this).exerciseAttemptResponse((event as UserVideoHistoryEvent).videoHistoryData);
 		}
 		
 		public function result(data:Object):void

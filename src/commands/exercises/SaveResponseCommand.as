@@ -10,7 +10,6 @@ package commands.exercises
 	
 	import model.DataModel;
 	
-	import mx.controls.Alert;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -31,9 +30,11 @@ package commands.exercises
 			if (!data.result is int){
 				CustomAlert.error("Your response data could not be saved successfully.");
 			} else {
-				
+				var responseId:int = data.result.toString();
 				//The response has been successfully saved, so we must store it's id in the model
-				DataModel.getInstance().historicData.videoResponseId = data.result.toString();
+				DataModel.getInstance().historicData.videoResponseId = responseId;
+				DataModel.getInstance().savedResponseId = responseId;
+				DataModel.getInstance().savedResponseRetrieved = !DataModel.getInstance().savedResponseRetrieved;
 				
 				//Change the exercise viewstack to view the evaluation options
 				new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS).dispatch();

@@ -28,6 +28,7 @@
 			import events.ExerciseRoleEvent;
 			import events.RecordingEndOptionEvent;
 			import events.ResponseEvent;
+			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
 			
 			import model.DataModel;
@@ -46,6 +47,7 @@
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.ResponseVO;
+			import vo.UserVideoHistoryVO;
 
 			/**
 			 * CONSTANTS
@@ -397,6 +399,24 @@
 
 				// Disable events and tabs
 				DataModel.getInstance().recordingExercise=true;
+				
+				//Save statistical data
+				statisticRecAttempt();
+			}
+			
+			private function statisticRecAttempt():void{
+				var userId:int = DataModel.getInstance().loggedUser.id;
+				var subtitlesAreUsed:Boolean = VP.subtitlePanelVisible;
+				var subtitleId:int = _cueManager.currentSubtitle;
+				var roleId:int = 0;
+				for each (var role:ExerciseRoleVO in _roles){
+					if(role.characterName ==  _selectedRole){
+						roleId = role.id;
+						break;
+					}
+				}
+				var videoData:UserVideoHistoryVO = new UserVideoHistoryVO(0,userId,0,_exerciseId,true,0,'',subtitlesAreUsed, subtitleId, roleId);
+				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
 			/**
@@ -566,6 +586,9 @@
 					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
 
 				PopUpManager.removePopUp(_recordingEndOptions);
+				
+				//Save this new record attempt
+				statisticRecAttempt();
 			}
 
 			// On discard response
@@ -603,6 +626,22 @@
 				// End record mode
 				DataModel.getInstance().recordingExercise=false;
 				resetComponent();
+			}
+			
+			private function set statisticRecSave(value:Boolean):void{
+				var userId:int = DataModel.getInstance().loggedUser.id;
+				var subtitlesAreUsed:Boolean = VP.subtitlePanelVisible;
+				var subtitleId:int = _cueManager.currentSubtitle;
+				var roleId:int = 0;
+				var responseId:int = DataModel.getInstance().savedResponseId;
+				for each (var role:ExerciseRoleVO in _roles){
+					if(role.characterName ==  _selectedRole){
+						roleId = role.id;
+						break;
+					}
+				}
+				var videoData:UserVideoHistoryVO = new UserVideoHistoryVO(0,userId,0,_exerciseId,false,responseId,'',subtitlesAreUsed, subtitleId, roleId);
+				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
 			}
 
 			// Evaluation request
@@ -678,6 +717,8 @@
 				destination="this.onLocalesRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onRolesRetrieved"/>
+	<mx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
+				destination="statisticRecSave"/>
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 
