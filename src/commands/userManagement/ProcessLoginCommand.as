@@ -36,7 +36,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged = true;
 				DataModel.getInstance().isLoggedIn = true;
 				
-				DataModel.getInstance().keepAliveTimerInstance.startKeepAlive();
+				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();
 				
 				// If user is in register module, redirect to home
 				if ( DataModel.getInstance().currentContentViewStackIndex == 

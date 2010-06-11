@@ -274,7 +274,7 @@ Trying to determine if upload script exists where it should (<?php echo $HOME ?>
 <?php test(file_exists($HOME."/upload.php") ); ?>
 
 <br>
-Tyring to determine if uploads script has the appropiate permissions (755):
+Tyring to determine if uploads script has the appropriate permissions (755):
 <?php test(check_perms($HOME."/upload.php","755")); ?>
 
 <br>
@@ -282,7 +282,7 @@ Trying to determine if thumb folder exists where it should (<?php echo $HOME. $T
 <?php test(file_exists($HOME. $THUMBS) ); ?>
 
 <br>
-Tyring to determine if thumb folder has the appropiate permissions (777):
+Tyring to determine if thumb folder has the appropriate permissions (777):
 <?php test(check_perms($HOME. $THUMBS, "777")); ?>
 
 <br>
@@ -290,15 +290,23 @@ Trying to determine if upload folder exists where it should (<?php echo $HOME . 
 <?php test(file_exists($HOME . $UPLOADS) ); ?>
 
 <br>
-Trying to determine if upload folder has the appropiate permissions (777):
+Trying to determine if upload folder has the appropriate permissions (777):
 <?php test(check_perms($HOME. $UPLOADS, "777")); ?>
+
+<br>
+Trying to determine if searchIndexes folder exists where it should (<?php echo $HOME . $SEARCHINDEXES ?>):
+<?php test(file_exists($HOME . $SEARCHINDEXES) );?>
+
+<br>
+Trying to determine if searchIndexes folder has the appropriate permissions (777):
+<?php test(check_perms($HOME . $SEARCHINDEXES) );?>
 
 <br>
 Trying to determine if Red5's exercises folder exists where it should (<?php echo $RED5_STREAMS .'/'. $RED5_EXERCISES ?>):
 <?php test(file_exists($RED5_STREAMS .'/'. $RED5_EXERCISES) ); ?>
 
 <br>
-Trying to determine if red5's exercises folder has the appropiate permissions (777):
+Trying to determine if Red5's exercises folder has the appropiate permissions (777):
 <?php test(check_perms($RED5_STREAMS.'/'.$RED5_EXERCISES, "777"))?>
 
 <br>
@@ -306,7 +314,7 @@ Trying to determine if Red5's evaluations folder exists where it should (<?php e
 <?php test(file_exists($RED5_STREAMS .'/'. $RED5_EVALUATIONS) ); ?>
 
 <br>
-Trying to determine if red5's evaluations folder has the appropiate permissions (777):
+Trying to determine if Red5's evaluations folder has the appropiate permissions (777):
 <?php test(check_perms($RED5_STREAMS.'/'.$RED5_EVALUATIONS, "777"))?>
 
 <br>

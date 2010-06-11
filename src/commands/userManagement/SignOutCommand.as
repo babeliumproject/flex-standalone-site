@@ -14,7 +14,7 @@ package commands.userManagement
 			DataModel.getInstance().isLoggedIn = false;
 			DataModel.getInstance().isSuccessfullyLogged = false;
 			
-			DataModel.getInstance().keepAliveTimerInstance.stopKeepAlive();
+			DataModel.getInstance().eventSchedulerInstance.stopKeepAlive();
 		}
 		
 	}

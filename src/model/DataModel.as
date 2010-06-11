@@ -50,7 +50,7 @@ package model
 		[Bindable] public var loginErrorMessage:String = "";
 		[Bindable] public var creditUpdateRetrieved:Boolean = false;
 		[Bindable] public var keepAliveInterval:int = 180000; //3 minutes
-		[Bindable] public var keepAliveTimerInstance:KeepAliveTimer = new KeepAliveTimer();
+		[Bindable] public var eventSchedulerInstance:KeepAliveTimer = new KeepAliveTimer();
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

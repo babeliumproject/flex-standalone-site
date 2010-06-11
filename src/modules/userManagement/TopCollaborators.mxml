@@ -2,6 +2,7 @@
 <common:CustomPanel xmlns:mx="http://www.adobe.com/2006/mxml"
 		  xmlns:common="view.common.*"
 		  layout="vertical"
+		  fontFamily="Arial"
 		  title="Top Collaborators"
 		  creationComplete="onComplete()">
 

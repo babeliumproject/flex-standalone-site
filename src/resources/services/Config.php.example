@@ -10,7 +10,6 @@
 		//Server path to store uploaded files
 		public $filePath = '';
 		public $imagePath = '';
-		public $templatePath = '';
 		public $red5Path = 'C:/Archivos de programa/Red5/webapps/oflaDemo/streams';
 		//public $red5Path = '/opt/red5_0_8/webapps/oflaDemo/streams';
 		
@@ -34,9 +33,12 @@
 		public $frameWidth4_3 = 320;
 		public $maxDuration = 120; //seconds
 		public $maxSize = 180; //MByte
+		
+		//Path to store the notification templates
+		public $templatePath = '';
 
 		//Server path to store the search index. Must be a folder with write permissions set for www-data
-		public $indexPath = 'docIndex';
+		public $indexPath = '';
 
 		//Number of tags for the cloud of tags
 		public $numTags = 25;
@@ -53,10 +55,12 @@
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
 				$this->imagePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/thumbs";
 				$this->templatePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/templates";
+				$this->indexPath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/searchIndexes";
 			} else {
 				$this->filePath = $this->webRootPath . "/resources/uploads";
 				$this->imagePath = $this->webRootPath . "/resources/images/thumbs";
 				$this->templatePath = $this->webRootPath . "/resources/templates";
+				$this->indexPath = $this->webRootPath . "/resources/searchIndexes";
 			}	
 		}
 	}

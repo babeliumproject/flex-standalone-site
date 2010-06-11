@@ -3,9 +3,7 @@
 		 paddingLeft="8"
 		 paddingRight="8"
 		 paddingBottom="8"
-		 borderStyle="none"
-		 xmlns:userManagement="modules.userManagement.*"
-		 backgroundAlpha="0.0">
+		 xmlns:userManagement="modules.userManagement.*">
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
