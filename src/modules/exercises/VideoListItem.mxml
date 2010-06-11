@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 verticalAlign="middle"
+		 verticalAlign="top"
 		 verticalScrollPolicy="off"
-		 paddingTop="5"
-		 paddingLeft="5"
-		 height="90">
+		 paddingTop="4"
+		 paddingLeft="4"
+		 paddingRight="4"
+		 height="90"
+		 width="100%">
 
 	<mx:Image id="albumImage"
-			height="90"
-			width="90"
-			source="{getImageSource(data as ExerciseVO)}"/>
-	<mx:VBox verticalAlign="top">
-		<mx:Text text="{data.title}" selectable="false" y="0" />
-		<mx:HRule width="100%" height="1" />
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_UPLOADER') + ': ' + data.userName}" />
+			  height="90"
+			  width="90"
+			  source="{getImageSource(data as ExerciseVO)}"/>
+	<mx:VBox verticalAlign="top"
+			 width="100%">
+		<mx:Text text="{data.title}"
+				 selectable="false"/>
+		<mx:HRule width="100%"
+				  height="1"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_UPLOADER') + ': ' + data.userName}"/>
 			<mx:Label text="{data.duration + ' ' + resourceManager.getString('myResources', 'MESSAGE_SECONDS')}"/>
 		</mx:HBox>
 	</mx:VBox>
@@ -23,19 +28,19 @@
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import vo.ExerciseVO;
-			
+
 			public function getImageSource(temp:ExerciseVO):String
 			{
-				var url:String = '';
+				var url:String='';
 				if (temp.source == "Red5")
-					url = DataModel.getInstance().thumbURL + "/" + temp.thumbnailUri;
+					url=DataModel.getInstance().thumbURL + "/" + temp.thumbnailUri;
 				else
-					url = temp.thumbnailUri;
+					url=temp.thumbnailUri;
 				return url;
 			}
 		]]>
 	</mx:Script>
-	
+
 </mx:HBox>

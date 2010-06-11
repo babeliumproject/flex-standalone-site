@@ -15,23 +15,23 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
+			
+			import view.common.*;
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
-
-			import view.common.*;
 
 			private var _strUploadUrl:String;
 
@@ -255,9 +255,9 @@
 						red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
 						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
-						
-						red5VideoData.license = String(licenseSelector.selectedItem.code).toLowerCase();
-						red5VideoData.reference = referenceUrl.text;
+
+						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+						red5VideoData.reference=referenceUrl.text;
 
 						red5VideoLevel=new ExerciseLevelVO();
 						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
@@ -352,28 +352,37 @@
 
 			private function saveRecordedExercise():void
 			{
-				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '' 
-					&& referenceUrl.text != '' && checkExternalUrl(referenceUrl.text))
+
+				var validUrl:Boolean=true;
+				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '')
 				{
-					red5VideoData=new ExerciseVO();
-					red5VideoData.title=videoTitle.text;
-					red5VideoData.description=videoDescription.text;
-					red5VideoData.tags=parseTags(videoTags.text);
-					red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
-					red5VideoData.name=recFromWebcamBox.recordingFileName;
-					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
-					
-					red5VideoData.license = String(licenseSelector.selectedItem.code).toLowerCase();
-					red5VideoData.reference = referenceUrl.text;
+					if (referenceUrl.text != '')
+						validUrl=checkExternalUrl(referenceUrl.text);
+					if (validUrl)
+					{
+						red5VideoData=new ExerciseVO();
+						red5VideoData.title=videoTitle.text;
+						red5VideoData.description=videoDescription.text;
+						red5VideoData.tags=parseTags(videoTags.text);
+						red5VideoData.language=languageSelector.languageComboBox.selectedItem.code;
+						red5VideoData.name=recFromWebcamBox.recordingFileName;
+						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
-					red5VideoLevel=new ExerciseLevelVO();
-					red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+						red5VideoData.reference=referenceUrl.text;
 
-					var historic:CreditHistoryVO=new CreditHistoryVO();
-					historic.videoExerciseName=recFromWebcamBox.recordingFileName;
-					DataModel.getInstance().historicData=historic;
+						red5VideoLevel=new ExerciseLevelVO();
+						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
 
-					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
+						var historic:CreditHistoryVO=new CreditHistoryVO();
+						historic.videoExerciseName=recFromWebcamBox.recordingFileName;
+						DataModel.getInstance().historicData=historic;
+
+						new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
+					} else {
+						CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
+					}
+						
 				}
 				else
 				{
@@ -449,15 +458,17 @@
 
 				return currentControlIsValid;
 			}
-			
-			private function checkExternalUrl (url:String):Boolean {
-				var pattern:RegExp = new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
-				var result:Object = pattern.exec(url);
-				if (result == null || url.length >= 4096) {
+
+			private function checkExternalUrl(url:String):Boolean
+			{
+				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
+				var result:Object=pattern.exec(url);
+				if (result == null || url.length >= 4096)
+				{
 					return (false);
 				}
 				return (true);
-			}  
+			}
 
 
 			private function enableAutoevaluation(exerciseId:int):void

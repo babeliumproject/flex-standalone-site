@@ -32,7 +32,9 @@
 					  editable="false"
 					  borderStyle="none"
 					  enabled="false"
-					  height="16"/>
+					  height="16"
+					  fontFamily="Arial"
+					  fontSize="10"/>
 	</mx:Canvas>
 
 	<mx:VBox width="100%"
@@ -62,7 +64,9 @@
 			<ns1:Rating value="{data.avgRating}"
 						liveRollOver="false"/>
 			<mx:Label text="{dateFormatter.format(data.addingDate)}"
-					  fontWeight="bold"/>
+					  fontWeight="bold"
+					  fontFamily="Arial"
+					  fontSize="10"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</mx:HBox>
 		<mx:HBox verticalAlign="middle">
@@ -79,6 +83,8 @@
 			<mx:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					  visible="{data.reference}"/>
 			<mx:LinkButton id="referenceUrl"
+						   fontFamily="Arial"
+						   fontSize="10"
 						   label="{data.reference}"
 						   textDecoration="underline"
 						   click="referenceClickHandler(event)"/>

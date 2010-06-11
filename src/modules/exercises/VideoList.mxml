@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
-		   creationComplete="init()"
-		   backgroundColor="#678594">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 horizontalAlign="center"
+		 creationComplete="onComplete()">
 	<mx:Metadata>
         [ResourceBundle("myResources")]
     </mx:Metadata>
@@ -19,66 +20,64 @@
 
 			[Bindable]
 			private var dp:ArrayCollection;
-			
-			public var thumbURL:String = '';
 
-			public function init():void
+			public var thumbURL:String='';
+
+			public function onComplete():void
 			{
-				thumbURL = DataModel.getInstance().thumbURL;
+				thumbURL=DataModel.getInstance().thumbURL;
 				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
-			
-			public function set handleExercisesRetrieve(value:Boolean):void{
-				if(DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)){
-					exerciseListDatagrid.rowCount = DataModel.getInstance().availableRecordableExercises.length;
+
+			public function set handleExercisesRetrieve(value:Boolean):void
+			{
+				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
+				{
+					exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
 					dp=DataModel.getInstance().availableRecordableExercises;
-					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false,DataModel.RECORDING_MODULE);
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
 			}
 
 			private function changeHandler(event:Event):void
 			{
-				var obj:ExerciseVO = DataGrid(event.target).selectedItem as ExerciseVO;
+				var obj:ExerciseVO=DataGrid(event.target).selectedItem as ExerciseVO;
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
 				callLater(updateVerticalScroll);
 			}
-			
-			public function thumbSet(data:Object):String{
-				return (thumbURL+"/"+data.thumbnailUri);
+
+			public function thumbSet(data:Object):String
+			{
+				return (thumbURL + "/" + data.thumbnailUri);
 			}
-			
-			public function updateVerticalScroll():void{
-				Application.application.content.exerciseModule.verticalScrollPosition = 0;
+
+			public function updateVerticalScroll():void
+			{
+				Application.application.verticalScrollPosition = 0;
 			}
-			
 		]]>
 	</mx:Script>
-	
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}" 
-				destination="handleExercisesRetrieve" />
 
-	<mx:HBox width="100%" horizontalAlign="center">
-		<mx:DataGrid verticalAlign="middle"
-					 width="100%"
-					 height="100%"
-					 id="exerciseListDatagrid"
-					 dataProvider="{dp}"
-					 enabled="{!DataModel.getInstance().recordingExercise}"
-					 change="changeHandler(event)"
-					 fontFamily="Arial"
-					 fontSize="13"
-					 fontWeight="bold"
-					 textAlign="center"
-					 verticalScrollPolicy="off"
-					 sortableColumns="false"
-					 draggableColumns="false"
-					 useHandCursor="true"
-					 color="#3C390B">
-			<mx:columns>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
-								   itemRenderer="modules.exercises.VideoListItem"
-								   width="100" />
-			</mx:columns>
-		</mx:DataGrid>
-	</mx:HBox>
-</mx:Canvas>
+	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+				destination="handleExercisesRetrieve"/>
+
+
+	<mx:DataGrid verticalAlign="middle"
+				 width="100%"
+				 height="100%"
+				 id="exerciseListDatagrid"
+				 dataProvider="{dp}"
+				 enabled="{!DataModel.getInstance().recordingExercise}"
+				 change="changeHandler(event)"
+				 verticalScrollPolicy="off"
+				 sortableColumns="false"
+				 draggableColumns="false"
+				 useHandCursor="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
+							   itemRenderer="modules.exercises.VideoListItem"
+							   width="100"
+							   editable="false"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:HBox>

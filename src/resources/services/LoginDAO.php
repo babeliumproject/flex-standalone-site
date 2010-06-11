@@ -81,7 +81,7 @@ class LoginDAO{
 			$valueObject->realSurname = $row[5];
 			$valueObject->active = $row[6];
 			$valueObject->joiningDate = $row[7];
-			$valueObject->isAdmin = $row[8];
+			$valueObject->isAdmin = $row[8] == 1;
 		}
 		else
 		{
