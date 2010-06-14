@@ -22,6 +22,8 @@ package model
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel = new DataModel();
 		
+		public var localesAndFlags:LocalesAndFlags;
+		
 		[Bindable] public static var SUBTITLE_MODULE:int = 0;
 		[Bindable] public static var RECORDING_MODULE:int = 1;
 		[Bindable] public static var GAPS_TO_ABORT_RECORDING:int = 3;
@@ -226,6 +228,7 @@ package model
 			oldContentViewStackIndex = 0;
 			newContentViewStackIndex = 0;
 			
+			localesAndFlags = new LocalesAndFlags();
 		}
 
 	}

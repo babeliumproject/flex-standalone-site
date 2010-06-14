@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:exercises="modules.main.*"
 		 width="100%"
 		 horizontalAlign="center"
-		 creationComplete="onComplete()">
+		 creationComplete="onComplete()" xmlns:exercises1="commands.exercises.*">
 	<mx:Metadata>
         [ResourceBundle("myResources")]
     </mx:Metadata>
@@ -75,9 +76,14 @@
 				 useHandCursor="true">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
-							   itemRenderer="modules.exercises.VideoListItem"
 							   width="100"
-							   editable="false"/>
+							   editable="false">
+				<mx:itemRenderer>
+					<mx:Component>
+						<exercises:ExerciseListItem specificClickListeners="false"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>	
 		</mx:columns>
 	</mx:DataGrid>
 </mx:HBox>

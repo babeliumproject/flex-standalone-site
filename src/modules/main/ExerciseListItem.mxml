@@ -16,7 +16,6 @@
 				  scaleContent="true"
 				  source="{getImageSource(data as ExerciseVO)}"
 				  autoLoad="true"
-				  click="imageClickHandler(event)"
 				  width="120"
 				  height="90"
 				  toolTip="{data.title}"
@@ -48,11 +47,11 @@
 					  toolTip="{exerciseLanguage.source}"
 					  source="{getFlagSource(data as ExerciseVO)}"
 					  id="exerciseLanguage"/>
-			<mx:LinkButton label="{data.title}"
+			<mx:LinkButton id="title"
+						   label="{data.title}"
 						   fontSize="12"
 						   width="100%"
-						   textAlign="left"
-						   click="titleClickHandler(event)"/>
+						   textAlign="left"/>
 		</mx:HBox>
 
 		<mx:HRule height="1"
@@ -101,21 +100,25 @@
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.Text;
-
+			
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-
+			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
 
 			private var _data:Object;
+			
+			private var _creationComplete:Boolean = false;
+			
+			private var _useSpecificClickListeners:Boolean = true;
 
 			[Bindable]
 			private var _licenseData:LicenseVO=new LicenseVO();
@@ -126,6 +129,31 @@
 			public function completeHandler():void
 			{
 				_data=data;
+				_creationComplete = true;
+				
+				setupEventListeners();
+			}
+			
+			private function setupEventListeners():void{
+				if (!_useSpecificClickListeners)
+				{
+					thumbnail.removeEventListener(MouseEvent.CLICK, imageClickHandler);
+					title.removeEventListener(MouseEvent.CLICK, titleClickHandler);
+					thumbnail.buttonMode = false;
+				}
+				else
+				{
+					thumbnail.addEventListener(MouseEvent.CLICK, imageClickHandler);
+					title.addEventListener(MouseEvent.CLICK, titleClickHandler);
+					thumbnail.buttonMode = true;
+				}
+			}
+
+			public function set specificClickListeners(value:Boolean):void
+			{
+				_useSpecificClickListeners = value;
+				if(_creationComplete)
+					setupEventListeners();
 			}
 
 			private function imageClickHandler(event:MouseEvent):void

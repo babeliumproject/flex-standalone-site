@@ -234,7 +234,7 @@
 				// TODO: else // Need to get cuepoints for this video manually
 				//{ 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.toString());
+				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
 				//}	
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -766,12 +766,14 @@
 			 verticalAlign="top"
 			 horizontalScrollPolicy="off"
 			 verticalScrollPolicy="off">
+
 		<!-- Selected Exercise Panel -->
 		<common:CustomPanel id="panelSelectedExercise"
 							width="100%"
 							minHeight="0"
 							title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
-			<mx:HBox id="hboxSelectedExercise" width="100%">
+			<mx:HBox id="hboxSelectedExercise"
+					 width="100%">
 				<mx:VBox>
 					<mx:Image id="thumbnail"
 							  scaleContent="true"
@@ -805,10 +807,12 @@
 					</mx:HBox>
 					<mx:HBox>
 						<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
-						<mx:ComboBox id="availableLocales"
-									 dataProvider="{_locales}"
-									 change="this.onLocaleComboChanged(event)"
-									 enabled="{!DataModel.getInstance().recordingExercise}"/>
+						<common:LanguageComboBox id="availableLocales"
+												 useCustomDataProvider="true"
+												 customDataProvider="{_locales}"
+												 displayPrompt="false"
+												 change="this.onLocaleComboChanged(event)"
+												 enabled="{!DataModel.getInstance().recordingExercise}"/>
 					</mx:HBox>
 					<mx:Spacer height="5"/>
 					<mx:HBox>

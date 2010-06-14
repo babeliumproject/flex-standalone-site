@@ -8,26 +8,29 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
 			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			import model.LocalesAndFlags;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-
+			
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
 
 			public static const AVAILABLE_LANGUAGES:int=4;
+			
+			private var _localesAndFlags:LocalesAndFlags = DataModel.getInstance().localesAndFlags;
 
 			//These variables are used to store the several combobox's info the user might add
 			private var motherLanguagesArray:ArrayCollection=new ArrayCollection();
@@ -69,14 +72,16 @@
 
 			private function languageComboBoxCreated(event:FlexEvent):void
 			{
-				(event.currentTarget as LanguageComboBox).languageComboBox.selectedIndex=-1;
-				(event.currentTarget as LanguageComboBox).languageComboBox.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				(event.currentTarget as LanguageComboBox).dataProvider = _localesAndFlags.availableLanguages;
+				(event.currentTarget as LanguageComboBox).selectedIndex=-1;
+				(event.currentTarget as LanguageComboBox).addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
 
 			private function languageKnowledgeBoxCreated(event:FlexEvent):void
 			{
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.languageComboBox.selectedIndex=-1;
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.languageComboBox.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider = _localesAndFlags.availableLanguages;
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
 
 			public function languageComboBoxChangeHandler(event:ListEvent):void
@@ -86,23 +91,23 @@
 				{
 					for each (var mlcb:LanguageComboBox in motherLanguagesArray)
 					{
-						if (mlcb.languageComboBox.selectedIndex != -1 && mlcb.languageComboBox != dispatchingItem && mlcb.languageComboBox.selectedItem.code == dispatchingItem.selectedItem.code)
+						if (mlcb.selectedIndex != -1 && mlcb != dispatchingItem && mlcb.selectedItem.code == dispatchingItem.selectedItem.code)
 						{
-							mlcb.languageComboBox.selectedIndex=-1;
+							mlcb.selectedIndex=-1;
 						}
 					}
 					for each (var olcb:LanguageKnowledgeBox in knownLanguagesArray)
 					{
-						if (olcb.languageCombo.languageComboBox.selectedIndex != -1 && olcb.languageCombo.languageComboBox != dispatchingItem && olcb.languageCombo.languageComboBox.selectedItem.code == dispatchingItem.selectedItem.code)
+						if (olcb.languageCombo.selectedIndex != -1 && olcb.languageCombo != dispatchingItem && olcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 						{
-							olcb.languageCombo.languageComboBox.selectedIndex=-1;
+							olcb.languageCombo.selectedIndex=-1;
 						}
 					}
 					for each (var ilcb:LanguageKnowledgeBox in interestLanguagesArray)
 					{
-						if (ilcb.languageCombo.languageComboBox.selectedIndex != -1 && ilcb.languageCombo.languageComboBox != dispatchingItem && ilcb.languageCombo.languageComboBox.selectedItem.code == dispatchingItem.selectedItem.code)
+						if (ilcb.languageCombo.selectedIndex != -1 && ilcb.languageCombo != dispatchingItem && ilcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 						{
-							ilcb.languageCombo.languageComboBox.selectedIndex=-1;
+							ilcb.languageCombo.selectedIndex=-1;
 						}
 					}
 				}
@@ -117,18 +122,18 @@
 
 				for each (var mLang:LanguageComboBox in motherLanguagesArray)
 				{
-					if (mLang.languageComboBox.selectedIndex != -1)
-						mLangCollection.addItem(new UserLanguageVO(0, 0, mLang.languageComboBox.selectedItem.code, 7, 0));
+					if (mLang.selectedIndex != -1)
+						mLangCollection.addItem(new UserLanguageVO(0, 0, mLang.selectedItem.code, 7, 0));
 				}
 				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
 				{
-					if (kLang.languageCombo.languageComboBox.selectedIndex != -1)
-						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.languageComboBox.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
+					if (kLang.languageCombo.selectedIndex != -1)
+						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
 				}
 				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
 				{
-					if (iLang.languageCombo.languageComboBox.selectedIndex != -1)
-						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.languageComboBox.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
+					if (iLang.languageCombo.selectedIndex != -1)
+						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
 				}
 
 
