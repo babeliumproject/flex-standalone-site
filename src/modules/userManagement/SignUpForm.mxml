@@ -128,12 +128,12 @@
 				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
 				{
 					if (kLang.languageCombo.selectedIndex != -1)
-						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
+						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, 0));
 				}
 				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
 				{
 					if (iLang.languageCombo.selectedIndex != -1)
-						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.difficultyLevelComboBox.selectedIndex + 1, 0));
+						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, 0));
 				}
 
 

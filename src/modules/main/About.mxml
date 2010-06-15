@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 creationComplete="init()"
+		 creationComplete="onComplete()"
 		 backgroundAlpha="0.0"
 		 verticalGap="14">
-	<mx:Label text="About Babelium Project"
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
 			  fontFamily="Arial"
 			  fontSize="18"
 			  fontWeight="bold"/>
 	<mx:HRule width="100%"/>
-	<mx:Label text="Application Info"
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
 			  fontFamily="Arial"
 			  fontWeight="bold"
 			  fontSize="14"
@@ -16,25 +16,84 @@
 	<mx:VBox width="100%"
 			 fontSize="12">
 		<mx:HBox width="100%">
-			<mx:Label text="Application Version: "
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"
 					  fontSize="12"/>
 			<mx:Label id="appRevisionLabel"
 					  fontSize="12"
 					  fontWeight="bold"/>
 		</mx:HBox>
-		<mx:Label text="License: all contents, names, images and resources on this site are licensed under GPLv2."/>
-
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"
+					  fontSize="12"/>
+			<mx:Label id="flashVersionLabel"
+					  fontSize="12"
+					  fontWeight="bold"
+					  text="{userFlashVersion()}"/>
+		</mx:HBox>
+		<mx:Label text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"/>
 	</mx:VBox>
-	<mx:Label text="Who are we?"
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
+			  fontFamily="Arial"
+			  fontWeight="bold"
+			  fontSize="14"
+			  textDecoration="underline"/>
+
+	<mx:DataGrid borderStyle="solid"
+				 headerColors="[0xAAAAAA, 0xCCCCCC]"
+				 sortableColumns="false"
+				 selectable="false"
+				 editable="false"
+				 fontSize="12"
+				 width="80%"
+				 dataProvider="{productData}"
+				 rowCount="{productData.length}"
+				 verticalScrollPolicy="off">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Product"
+							   dataField="product"
+							   textAlign="center"/>
+			<mx:DataGridColumn headerText="License"
+							   editable="false"
+							   textAlign="center">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
+									   label="{data.licenseName}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="Website"
+							   editable="false"
+							   textAlign="center">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
+									   label="{data.productUrl}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 			  fontStyle="normal"
 			  fontSize="14"
 			  fontWeight="bold"
 			  textDecoration="underline"
 			  fontFamily="Arial"/>
-	<mx:VBox width="100%" fontSize="12">
-		<mx:TextArea text="We are a group of researchers and students from the Basque Country's Public University (UPV/EHU) hypermedia and multimedia research group (GHyM). This group is primarily focused on developing innovational long distance educational applications and services." width="100%" wordWrap="true" editable="false" backgroundAlpha="0.0" borderStyle="none"/>
-	</mx:VBox>
-	<mx:Label text="Contact Info"
+	<mx:HBox width="100%"
+			 fontSize="12"
+			 verticalAlign="middle">
+		<mx:Spacer width="10"/>
+		<mx:Image id="groupLogo"
+				  height="87"
+				  width="87"
+				  source="resources/images/ghym_logo_degr_87px.png"/>
+		<mx:Text text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
+				 width="100%"
+				 height="100%"/>
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
 			  fontFamily="Arial"
 			  fontWeight="bold"
 			  fontSize="14"
@@ -42,7 +101,7 @@
 	<mx:VBox width="100%"
 			 fontFamily="Verdana"
 			 fontSize="12">
-		<mx:Label text="Feel free to send us your comments, questions or suggestions to:"/>
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
 		<mx:LinkButton label="babeliumproject@gmail.com"
 					   textDecoration="underline"
 					   click="emailButtonClickHandler(event)"/>
@@ -50,17 +109,60 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			import flash.net.navigateToURL;
 			import model.DataModel;
-			
-			public function init():void{
-				appRevisionLabel.text= "r"+DataModel.getInstance().prefDic['appRevision'];
+
+			import mx.controls.LinkButton;
+
+			[Bindable]
+			public var productData:Array=new Array(
+				{product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, 
+				{product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, 
+				{product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, 
+				{product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'},
+				{product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'},
+				{product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'},
+				{product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl:'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'},
+				{product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/' }
+
+				);
+
+			public function onComplete():void
+			{
+				appRevisionLabel.text="r" + DataModel.getInstance().prefDic['appRevision'];
+			}
+
+			public function licenseUrlClickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest((event.target as LinkButton).data.licenseUrl));
+			}
+
+			public function productUrlClickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest((event.target as LinkButton).data.productUrl));
 			}
 
 			public function emailButtonClickHandler(event:MouseEvent):void
 			{
 				navigateToURL(new URLRequest('mailto:babeliumproject@gmail.com'));
+			}
+
+			private function userFlashVersion():String
+			{
+				var versionString:String=Capabilities.version;
+				var pattern:RegExp=/^(\w*) (\d*),(\d*),(\d*),(\d*)$/;
+				var result:Object=pattern.exec(versionString);
+				var text:String=resourceManager.getString('myResources', 'LABEL_UNKOWN_FLASH_VERSION');
+				if (result != null)
+				{
+					if (result[1] == "WIN")
+						text="Windows ";
+					if (result[1] == "LNX")
+						text="Linux ";
+					if (result[1] == "MAC")
+						text="MacOS ";
+					text+=result[2] + '.' + result[3] + '.' + result[4] + '.' + result[5];
+				}
+				return text;
 			}
 		]]>
 	</mx:Script>

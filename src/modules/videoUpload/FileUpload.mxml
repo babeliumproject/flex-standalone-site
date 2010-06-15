@@ -260,7 +260,7 @@
 						red5VideoData.reference=referenceUrl.text;
 
 						red5VideoLevel=new ExerciseLevelVO();
-						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+						red5VideoLevel.suggestedLevel=difficultySelector.selectedIndex + 1;
 
 						DataModel.getInstance().uploadFinishedData=false;
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
@@ -372,7 +372,7 @@
 						red5VideoData.reference=referenceUrl.text;
 
 						red5VideoLevel=new ExerciseLevelVO();
-						red5VideoLevel.suggestedLevel=difficultySelector.difficultyLevelComboBox.selectedIndex + 1;
+						red5VideoLevel.suggestedLevel=difficultySelector.selectedIndex + 1;
 
 						var historic:CreditHistoryVO=new CreditHistoryVO();
 						historic.videoExerciseName=recFromWebcamBox.recordingFileName;
@@ -395,7 +395,7 @@
 				addFileReference=null;
 
 				languageSelector.selectedIndex=0;
-				difficultySelector.difficultyLevelComboBox.selectedIndex=0;
+				difficultySelector.selectedIndex=0;
 
 				recFromWebcamBox.resetComponent();
 

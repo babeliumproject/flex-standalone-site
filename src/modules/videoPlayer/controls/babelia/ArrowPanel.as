@@ -88,8 +88,8 @@ package modules.videoPlayer.controls.babelia
 			var arrow:Image=new Image();
 			if (flag)
 				arrow.source="resources/images/fletxa_gorri.png";
-			else
-				arrow.source="resources/images/fletxa_beltza.png";
+			//else
+			//	arrow.source="resources/images/fletxa_beltza.png";
 
 			arrow.x=time * this.width / duration - 3; // TODO 3
 			arrow.y=4;

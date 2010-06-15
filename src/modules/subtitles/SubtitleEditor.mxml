@@ -53,6 +53,7 @@
 							height="100%"
 							layout="vertical"
 							fontFamily="Arial"
+							fontSize="12"
 							title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"
 							horizontalAlign="center"
 							verticalAlign="middle">
