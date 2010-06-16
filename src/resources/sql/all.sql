@@ -375,7 +375,7 @@ CREATE TABLE IF NOT EXISTS `user_session` (
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_user_session_1` (`fk_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -401,7 +401,7 @@ CREATE TABLE IF NOT EXISTS `user_videohistory` (
   KEY `FK_user_videohistory_4` (`fk_response_id`),
   KEY `FK_user_videohistory_5` (`fk_subtitle_id`),
   KEY `FK_user_videohistory_6` (`fk_exercise_role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 --

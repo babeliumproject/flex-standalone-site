@@ -70,6 +70,7 @@
 						 width="100%"
 						 height="100%"
 						 editable="true"
+						 fontSize="12"
 						 dataProvider="{this.subtitleCollection}">
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"

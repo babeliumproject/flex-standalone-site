@@ -130,6 +130,13 @@ package modules.videoPlayer
 		[Bindable]
 		public var secondStreamState:int;
 
+		[Embed(source="resources/sounds/speak_notice.mp3")]
+		private var speakNoticeClass:Class;
+		private var speakNoticeSound:Sound;
+
+		private var _cuePointTimer:Timer;
+
+
 		/**
 		 * CONSTRUCTOR
 		 */
@@ -222,6 +229,9 @@ package modules.videoPlayer
 
 			// Loads default skin
 			skin="default";
+
+			//Initialize sound asset
+			speakNoticeSound=new speakNoticeClass() as Sound;
 		}
 
 
@@ -240,8 +250,9 @@ package modules.videoPlayer
 			_subtitleButton.setEnabled(flag);
 			this.updateDisplayList(0, 0);
 		}
-		
-		public function get subtitlePanelVisible():Boolean{
+
+		public function get subtitlePanelVisible():Boolean
+		{
 			return _subtitlePanel.visible;
 		}
 
@@ -515,14 +526,20 @@ package modules.videoPlayer
 		{
 			super.playVideo();
 
-			_video.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			if (!_cuePointTimer){
+				_cuePointTimer=new Timer(20, 0); //Try to tick every 20ms
+				_cuePointTimer.addEventListener(TimerEvent.TIMER, onEnterFrame);
+				_cuePointTimer.start();
+			}
+
+			//_video.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
 
 		/**
 		 * Gives parent component an ENTER_FRAME event
 		 * with current stream time (CuePointManager should catch this)
 		 */
-		private function onEnterFrame(e:Event):void
+		private function onEnterFrame(e:TimerEvent):void
 		{
 			if (_ns != null)
 				this.dispatchEvent(new StreamEvent(StreamEvent.ENTER_FRAME, _ns.time));
@@ -894,7 +911,7 @@ package modules.videoPlayer
 				return; // security check
 
 			var d:Date=new Date();
-			_fileName = "resp-" + d.getTime().toString();
+			_fileName="resp-" + d.getTime().toString();
 			var responseFilename:String=RESPONSE_FOLDER + "/" + _fileName;
 
 			if (_started)
@@ -1000,6 +1017,11 @@ package modules.videoPlayer
 			_camVideo.height-=2;
 			_camVideo.x+=1;
 			_camVideo.width-=2;
+		}
+
+		public function playSpeakNotice():void
+		{
+			speakNoticeSound.play();
 		}
 
 		override protected function scaleVideo():void

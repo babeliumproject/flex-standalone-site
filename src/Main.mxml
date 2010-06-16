@@ -17,7 +17,7 @@
 				width="100%"
 				pageTitle="Babelium Project: Collaborative Language Speaking Practice"
 				historyManagementEnabled="false"
-				horizontalScrollPolicy="off"
+				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
 				creationComplete="onComplete()">
 
 	<mx:Script>
@@ -25,9 +25,13 @@
 			import control.*;
 			
 			import events.PreferenceEvent;
-			import events.UserEvent;
 			
 			import model.DataModel;
+			
+			import mx.events.ResizeEvent;
+			
+			private const WIDTH_THRESHOLD:int = 1280;
+			private const HEIGHT_THRESHOLD:int = 1024;
 			
 			private var mainSO:SharedObject;
 			
@@ -47,6 +51,14 @@
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				
 				Security.allowDomain(appModelLocator.uploadDomain);
+				
+			}
+			
+			private function isHorizontalScrollNeeded():String{
+				if(Capabilities.screenResolutionX < WIDTH_THRESHOLD)
+					return "auto";
+				else
+					return "off";
 			}
 			
 			private function onComplete(e:Event = null) : void

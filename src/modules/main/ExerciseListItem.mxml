@@ -4,10 +4,12 @@
 		 paddingBottom="4"
 		 paddingLeft="8"
 		 paddingRight="8"
+		 width="100%"
 		 verticalAlign="middle"
+		 verticalScrollPolicy="off"
+		 horizontalScrollPolicy="off"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 fontFamily="Arial"
-		 height="113"
 		 creationComplete="completeHandler()">
 
 	<mx:Canvas width="120"
@@ -37,7 +39,9 @@
 	</mx:Canvas>
 
 	<mx:VBox width="100%"
-			 verticalGap="2">
+			 verticalGap="2"
+			 verticalScrollPolicy="off"
+			 horizontalScrollPolicy="off">
 		<mx:HBox horizontalAlign="left"
 				 verticalAlign="middle"
 				 horizontalGap="2"
@@ -56,10 +60,14 @@
 
 		<mx:HRule height="1"
 				  width="100%"/>
-		<mx:Text text="{data.description}"
+		<mx:Text text="{truncateDescription(data.description)}"
 				 width="100%"
-				 fontSize="12"/>
-		<mx:HBox verticalAlign="middle">
+				 height="100%"
+				 selectable="false"
+				 fontSize="12"
+				 toolTip="{data.description}"/>
+		<mx:HBox verticalAlign="middle"
+				 width="100%">
 			<ns1:Rating value="{data.avgRating}"
 						liveRollOver="false"/>
 			<mx:Label text="{dateFormatter.format(data.addingDate)}"
@@ -68,7 +76,8 @@
 					  fontSize="10"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</mx:HBox>
-		<mx:HBox verticalAlign="middle">
+		<mx:HBox verticalAlign="middle"
+				 width="100%">
 			<mx:Image id="license"
 					  scaleContent="true"
 					  source="{getLicenseSource(data as ExerciseVO)}"
@@ -100,25 +109,27 @@
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Text;
-			
+
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-			
+
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
 
+			private const MAX_DESCRIPTION_CHARS:int=120;
+
 			private var _data:Object;
-			
-			private var _creationComplete:Boolean = false;
-			
-			private var _useSpecificClickListeners:Boolean = true;
+
+			private var _creationComplete:Boolean=false;
+
+			private var _useSpecificClickListeners:Boolean=true;
 
 			[Bindable]
 			private var _licenseData:LicenseVO=new LicenseVO();
@@ -129,30 +140,31 @@
 			public function completeHandler():void
 			{
 				_data=data;
-				_creationComplete = true;
-				
+				_creationComplete=true;
+
 				setupEventListeners();
 			}
-			
-			private function setupEventListeners():void{
+
+			private function setupEventListeners():void
+			{
 				if (!_useSpecificClickListeners)
 				{
 					thumbnail.removeEventListener(MouseEvent.CLICK, imageClickHandler);
 					title.removeEventListener(MouseEvent.CLICK, titleClickHandler);
-					thumbnail.buttonMode = false;
+					thumbnail.buttonMode=false;
 				}
 				else
 				{
 					thumbnail.addEventListener(MouseEvent.CLICK, imageClickHandler);
 					title.addEventListener(MouseEvent.CLICK, titleClickHandler);
-					thumbnail.buttonMode = true;
+					thumbnail.buttonMode=true;
 				}
 			}
 
 			public function set specificClickListeners(value:Boolean):void
 			{
-				_useSpecificClickListeners = value;
-				if(_creationComplete)
+				_useSpecificClickListeners=value;
+				if (_creationComplete)
 					setupEventListeners();
 			}
 
@@ -195,6 +207,17 @@
 			{
 				_licenseData=LicenseResource.getLicenseData(temp.license);
 				return _licenseData.imageResource;
+			}
+
+			private function truncateDescription(text:String):String
+			{
+				var truncatedText:String=text;
+				if (truncatedText.length > MAX_DESCRIPTION_CHARS)
+				{
+					truncatedText=truncatedText.substr(0, (MAX_DESCRIPTION_CHARS - 6));
+					truncatedText+=' (...)';
+				}
+				return truncatedText;
 			}
 
 			private function viewExercise():void

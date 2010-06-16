@@ -41,9 +41,6 @@ package control
 		private var subtitleId:int;
 		public var cached:Boolean=false;
 
-		//Prevents multiple firing of the same subtitle event
-		//private var displayed:Boolean = false;
-
 		/**
 		 * Constructor - Singleton Pattern
 		 **/
@@ -211,8 +208,6 @@ package control
 		/**
 		 * Callback function - OnEnterFrame
 		 *
-		 * Comandos de inicio y final por si el vídeo
-		 * tiene silencios.
 		 **/
 		public function monitorCuePoints(ev:StreamEvent):void
 		{
@@ -220,15 +215,17 @@ package control
 
 			for each (var cueobj:CueObject in cuelist)
 			{
-				if (((curTime - 0.08) < cueobj.getStartTime() && cueobj.getStartTime() < (curTime + 0.08)))
+				if (((curTime - 0.08) < cueobj.startTime && cueobj.startTime < (curTime + 0.08)))
 				{
 					cueobj.executeStartCommand();
+					ev.updateAfterEvent();
 					break;
 				}
 
-				if (((curTime - 0.08) < cueobj.getEndTime() && cueobj.getEndTime() < (curTime + 0.08)))
+				if (((curTime - 0.08) < cueobj.endTime && cueobj.endTime < (curTime + 0.08)))
 				{
 					cueobj.executeEndCommand();
+					ev.updateAfterEvent();
 					break;
 				}
 			}

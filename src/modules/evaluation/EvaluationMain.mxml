@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="modules.evaluation.*"
+		 xmlns:ns2="modules.autoevaluation.*"
 		 xmlns:videoPlayer="modules.videoPlayer.*"
 		 creationComplete="completeHandler()"
-		 xmlns:ns2="modules.autoevaluation.*"
 		 paddingBottom="8"
 		 fontFamily="Arial"
 		 fontSize="12">
@@ -14,36 +14,36 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.*;
-			
+
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
-			
+
 			/**
 			 * Constants
 			 */
-			private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
-			private const RESPONSE_FOLDER:String = DataModel.getInstance().responseStreamsFolder;
-			private const EVALUATION_FOLDER:String = DataModel.getInstance().evaluationStreamsFolder;
+			private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
+			private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
+			private const EVALUATION_FOLDER:String=DataModel.getInstance().evaluationStreamsFolder;
 
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
@@ -55,9 +55,9 @@
 
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
-			
 
-			
+
+
 			[Bindable]
 			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'LABEL_EXERCISE_TITLE');
 			[Bindable]
@@ -82,7 +82,7 @@
 			private var _videoCommentName:String;
 			private var _score:int;
 			private var _comment:String;
-			
+
 			/**
 			 *  Back-end data holders
 			 */
@@ -200,8 +200,8 @@
 				VP.videoSource="";
 
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.videoSource=EXERCISE_FOLDER+'/'+_exerciseName;
-				VP.secondSource=RESPONSE_FOLDER+'/'+_responseName;
+				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+				VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
 				VP.refresh();
 
 
@@ -314,13 +314,13 @@
 					evaluation.score=_score;
 					evaluation.comment=_comment;
 					evaluation.userId=_userId;
-					evaluation.userName = _userName;
+					evaluation.userName=_userName;
 					evaluation.responseId=_responseId;
-					evaluation.responseFileIdentifier = _responseName;
-					evaluation.responseAddingDate = _responseAddingDate;
-					evaluation.responseUserId = _responseUserId;
-					evaluation.responseUserName = _responseUserName;
-					evaluation.exerciseTitle = _exerciseTitle;
+					evaluation.responseFileIdentifier=_responseName;
+					evaluation.responseAddingDate=_responseAddingDate;
+					evaluation.responseUserId=_responseUserId;
+					evaluation.responseUserName=_responseUserName;
+					evaluation.exerciseTitle=_exerciseTitle;
 					evaluation.evaluationVideoFileIdentifier=_videoCommentName;
 
 					//If the user added a video comment
@@ -384,11 +384,11 @@
 			private function waitingAssessmentChangeHandler(event:Event):void
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				
+
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_exerciseTitle=selectedItem.exerciseTitle;
-				
+
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
@@ -477,7 +477,7 @@
 				if (selectedItem.evaluationVideoFileIdentifier)
 				{
 					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
-					EvaluationVideoCommentWatch.videoSource = EVALUATION_FOLDER+'/'+_videoCommentName;
+					EvaluationVideoCommentWatch.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
 					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
 					PopUpManager.centerPopUp(watchEvaluationVideoComment);
 					assessmentDetailDataGrid.selectedItem=null;
@@ -508,47 +508,48 @@
 
 			private function onEvaluationTabChange(event:MouseEvent):void
 			{
-				var pressedButton:Object = event.currentTarget;
-				switch(pressedButton){
+				var pressedButton:Object=event.currentTarget;
+				switch (pressedButton)
+				{
 					case waitingAssessmentButton:
-						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
-						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						assessedToCurrentUserDataGrid.selectedItem = null;
-						assessedByCurrentUserDataGrid.selectedItem = null;
-						assessmentsOfSelectedResponse.visible = false;
+						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
+						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						assessedToCurrentUserDataGrid.selectedItem=null;
+						assessedByCurrentUserDataGrid.selectedItem=null;
+						assessmentsOfSelectedResponse.visible=false;
 						VP.stopVideo();
 						VP.videoSource="";
 						hideArrows();
 						resetCueManager();
-						evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
+						evaluationOptionsViewStack.selectedChild=waitingAssessmentBox;
 						break;
 					case assessedToCurrentUserButton:
-						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
-						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						waitingAssessmentDataGrid.selectedItem = null;
-						assessedByCurrentUserDataGrid.selectedItem = null;
-						ratingBox.visible = false;
+						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
+						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						waitingAssessmentDataGrid.selectedItem=null;
+						assessedByCurrentUserDataGrid.selectedItem=null;
+						ratingBox.visible=false;
 						VP.stopVideo();
 						VP.videoSource="";
 						hideArrows();
 						resetCueManager();
-						evaluationOptionsViewStack.selectedChild = assessedToCurrentUserBox;
+						evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBox;
 						break;
 					case assessedByCurrentUserButton:
-						waitingAssessmentButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						assessedToCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0xCCCCCC]);
-						assessedByCurrentUserButton.setStyle('fillColors',[0xFFFFFF,0x6FA3D3]);
-						waitingAssessmentDataGrid.selectedItem = null;
-						assessedToCurrentUserDataGrid.selectedItem = null;
-						assessmentsOfSelectedResponse.visible = false;
-						ratingBox.visible = false;
+						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
+						waitingAssessmentDataGrid.selectedItem=null;
+						assessedToCurrentUserDataGrid.selectedItem=null;
+						assessmentsOfSelectedResponse.visible=false;
+						ratingBox.visible=false;
 						VP.stopVideo();
 						VP.videoSource="";
 						hideArrows();
 						resetCueManager();
-						evaluationOptionsViewStack.selectedChild = assessedByCurrentUserBox;
+						evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBox;
 						break;
 					default:
 						break;
@@ -593,7 +594,7 @@
 					return;
 				}
 
-				
+
 				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
 				{
 					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
@@ -743,7 +744,8 @@
 			 height="100%"
 			 paddingLeft="4"
 			 paddingRight="4"
-			 paddingBottom="4">
+			 paddingBottom="4"
+			 horizontalScrollPolicy="off">
 		<mx:HBox width="100%"
 				 height="35"
 				 horizontalAlign="center"
@@ -773,7 +775,10 @@
 
 			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
 			<mx:VBox id="waitingAssessmentBox"
-					 horizontalAlign="center">
+					 horizontalAlign="center"
+					 width="100%"
+					 height="100%"
+					 horizontalScrollPolicy="off">
 				<mx:DataGrid id="waitingAssessmentDataGrid"
 							 dataProvider="{waitingForAssessmentList}"
 							 width="100%"

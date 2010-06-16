@@ -1,7 +1,0 @@
-#Send pending SpinVox requests every hour and save the output into /tmp/spinvox_req_log
-0  * * * * /usr/bin/php /var/www/amfphp/services/babelia/SendRequests.php >> /tmp/spinvox_req_log
-#Get the transcriptions from spinvox server every hour at 30 past and save the output into /tmp/spinvox_trans_log
-30 * * * * /usr/bin/php /var/www/amfphp/services/babelia/GetTranscriptions.php >> /tmp/spinvox_trans_log
-
-#Transcode the videos that are on processing status every 10minutes save the output into /tmp/transcode_log
-0,10,20,30,40,50 * * * * /usr/bin/php /var/www/afmphp/services/babelia/ProcessVideosCron.php >> /tmp/babelium/transcode_log

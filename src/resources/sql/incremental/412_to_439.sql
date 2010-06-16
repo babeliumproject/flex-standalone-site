@@ -24,3 +24,5 @@ INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('positives_to_next_l
 INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('reports_to_delete',10);
 
 INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('bwCheckMin', 3000);
+
+UPDATE `preferences` SET `prefValue` =  '$Revision: 439 $'  WHERE `preferences`.`prefName` = 'dbrevision';

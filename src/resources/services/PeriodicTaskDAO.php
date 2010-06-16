@@ -28,6 +28,18 @@ class CleanUpDAO{
 		if($this->exerciseFolder != $this->evaluationFolder)
 			$this->_deleteUnreferencedEvaluations();
 	}
+	
+	public function monitorizeSessionKeepAlive(){
+		$sql = "UPDATE user_session SET duration = TIMESTAMPDIFF(SECOND,session_date,CURRENT_TIMESTAMP), closed=1 
+				WHERE (keep_alive = 0 AND closed=0 AND duration=0)";
+		
+		$result = $this->conn->_execute($sql);
+
+		$sql = "UPDATE user_session SET keep_alive = 0 
+				WHERE (keep_alive = 1 AND closed = 0)";
+		
+		$result = $this->conn->_execute($sql);
+	}
 
 	private function _getResourceDirectories(){
 		$sql = "SELECT prefValue FROM preferences

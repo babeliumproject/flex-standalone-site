@@ -583,6 +583,7 @@
 			private function onRecordAgain(e:Event):void
 			{
 				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
+				setupRecordingCommands();
 				showArrows();
 
 				// Recording mode

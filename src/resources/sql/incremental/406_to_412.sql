@@ -84,4 +84,4 @@ INSERT INTO `exercise` (`name`, `description`, `source`, `language`, `fk_user_id
 ('COSYB49sT1G', 'Frases sencillas de la vida cotidiana', 'Red5', 'Spanish', 1, 'frases, cotidianas', 'Español Latino Para Niños', 'COSYB49sT1G.jpg', '2010-04-15 13:21:45', 63, 'Available', '4878a56679f48167686adc80e267506f');
 
 
-UPDATE `preferences` SET `prefValue` =  '$Revision: 412 $'  WHERE `preferences`.`prefName` = 'dbrevision'
+UPDATE `preferences` SET `prefValue` =  '$Revision: 412 $'  WHERE `preferences`.`prefName` = 'dbrevision';

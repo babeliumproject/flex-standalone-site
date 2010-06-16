@@ -6,3 +6,4 @@ UPDATE exercise SET reference = 'www.thedailyenglishshow.com' WHERE title LIKE '
 UPDATE exercise SET reference = 'www.eitb.com' WHERE title LIKE '%Goenkale%';
 UPDATE exercise SET reference = 'www.eitb.com' WHERE title LIKE '%zatia%';
 
+UPDATE `preferences` SET `prefValue` =  '$Revision: 511 $'  WHERE `preferences`.`prefName` = 'dbrevision';

@@ -35,3 +35,5 @@ INSERT INTO `tagcloud` (`tag`, `amount`) VALUES
 ('caballo', 3),
 ('cerdo', 3),
 ('serie', 1);
+
+UPDATE `preferences` SET `prefValue` =  '$Revision: 483 $'  WHERE `preferences`.`prefName` = 'dbrevision';

@@ -532,7 +532,8 @@
 							 required="true">
 					<mx:TextArea width="100%"
 								 id="videoDescription"
-								 fontWeight="normal"/>
+								 fontWeight="normal"
+								 maxChars="500"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 							 width="100%"

@@ -28,3 +28,5 @@ INSERT INTO preferences (prefName, prefValue) VALUES
 ('responseFolder','responses');
 
 DELETE FROM preferences WHERE prefName = 'videoCommentPath';
+
+UPDATE `preferences` SET `prefValue` =  '$Revision: 499 $'  WHERE `preferences`.`prefName` = 'dbrevision';

@@ -76,7 +76,6 @@
 				 useHandCursor="true">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
-							   width="100"
 							   editable="false">
 				<mx:itemRenderer>
 					<mx:Component>
