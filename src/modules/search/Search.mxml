@@ -16,17 +16,14 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Image;
 			import mx.events.FlexEvent;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
 			import mx.collections.ArrayCollection;
 			import mx.events.ItemClickEvent;
 			import model.DataModel;
-				
-				import view.common.CustomAlert;
-				import mx.events.ResourceEvent;
-				import mx.controls.Alert;
+			import view.common.CustomAlert;
+			
 			[Bindable] [Embed(source="../../resources/images/first.png")]
 			public var firstI:Class;
 			[Bindable] [Embed(source="../../resources/images/previous.png")]
@@ -51,16 +48,6 @@
 					
 			public function init():void{
 				
-				//sortFields1.addEventListener(FlexEvent.CURSOR_UPDATE,compet);
-				//CustomAlert.error("init ejecutado");
-			}
-			public function compet(event:FlexEvent):void{
-				CustomAlert.error("compet ejecutado");
-
-				//var oldSelectedItem:Object=sort.selectedItem;
-				//sort.dataProvider=sortFields1;
-				//sort.selectedItem=oldSelectedItem;
-				sort.dataProvider=sortFields1;
 			}
 		
 			public function set onSearchRetrieved(value:Boolean):void{
@@ -174,24 +161,23 @@
         		DataModel.getInstance().currentPage=pag;
         		createNavigatePage();  	      		
         	}
-			public function set onlanguage(value:Boolean):void{
+			public function set onLanguage(value:Boolean):void{
 				if (DataModel.getInstance().languageChanged){
-					CustomAlert.error("compet ejecutado");
-					
-					DataModel.getInstance().tagCloudClicked=false;
+					var oldIndex:int = sort.selectedIndex;
+					sort.dataProvider=sortFields1;
+					sort.selectedIndex = oldIndex;
+					DataModel.getInstance().languageChanged=false;
 				}
-			}	
+			}
 
 		]]>
 	</mx:Script>
-	<mx:Image id="image0" 
-            
-        />
 
 	<mx:Binding source="{DataModel.getInstance().videoSearchesRetrieved}"
 				destination="this.onSearchRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().languageChanged}"
-				destination="this.onlanguage"/>
+				destination="this.onLanguage"/>
+	
 	<mx:ApplicationControlBar>
 		
 	<mx:HBox>
@@ -235,11 +221,16 @@
 					<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 				</mx:columns>
 			</mx:DataGrid>
-			<tc:TagCloud id="tagCloud" 
+			<mx:VBox>
+				<tc:TagCloud id="tagCloud" 
 						 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
 						 width="300"
 						 height="300">
-			</tc:TagCloud>
+				</tc:TagCloud>
+				<!--<mx:SWFLoader id="myLoader" width="300" height="300"
+						 source="../libs/tagcloud.swf"/>-->
+			</mx:VBox>
+			
 		</mx:HBox>
 	</mx:Canvas>
 </mx:VBox>

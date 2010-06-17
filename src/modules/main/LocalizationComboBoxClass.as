@@ -3,7 +3,7 @@ package modules.main
 	import flash.events.IEventDispatcher;
 	
 	import view.common.IconComboBox;
-	
+	import model.DataModel;
 	import mx.containers.HBox;
 	import mx.events.FlexEvent;
 	import mx.events.ResourceEvent;
@@ -79,6 +79,8 @@ package modules.main
 			var newLocale:String=String(languageComboBox.selectedItem.code);
 			resourceManager.localeChain=[newLocale];
 			updateLanguageComboBox();
+			//Updating changes in DataModel, used in Search.mxml 
+			DataModel.getInstance().languageChanged=true;
 		}
 		
 		private function localeCompareFunction(item1:Object, item2:Object):int
