@@ -14,26 +14,26 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.*;
-
+			
 			import model.DataModel;
-
+			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -204,7 +204,6 @@
 				VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
 				VP.refresh();
 
-
 				hideArrows();
 				resetCueManager();
 				prepareCueManager();
@@ -219,7 +218,6 @@
 
 			private function prepareCueManager():void
 			{
-
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 				_cueManager.setCuesFromSubtitleUsingId(_responseSubtitleId);
 				//set cues from subtitle id retrieved from the list
@@ -294,8 +292,8 @@
 
 			private function showArrows():void
 			{
-				VP.arrows=true;
 				VP.setArrows(_cueManager.cues2rolearray(), _responseCharacterName);
+				VP.arrows=true;
 			}
 
 			private function hideArrows():void
@@ -396,7 +394,6 @@
 				_responseAddingDate=selectedItem.responseAddingDate;
 				_responseUserId=selectedItem.responseUserId
 				_responseUserName=selectedItem.responseUserName;
-
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
@@ -570,6 +567,11 @@
 			{
 				ratingBox.visible=false;
 				assessmentsOfSelectedResponse.visible=false;
+				
+				// Remove selected items
+				waitingAssessmentDataGrid.selectedIndex = -1;
+				assessedByCurrentUserDataGrid.selectedIndex = -1;
+				assessedToCurrentUserDataGrid.selectedIndex = -1;
 
 				VP.stopVideo();
 				VP.videoSource="";
