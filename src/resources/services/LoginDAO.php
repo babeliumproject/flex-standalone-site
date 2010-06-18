@@ -3,6 +3,7 @@
 require_once ('Datasource.php');
 require_once ('Config.php');
 require_once ('UserVO.php');
+require_once ('UserLanguageVO.php');
 require_once ('LoginVO.php');
 
 class LoginDAO{
@@ -32,11 +33,13 @@ class LoginDAO{
 			$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
 			$result = $this->_singleQuery($sql, $user->name);
 			if ( $result )
-				return "User inactive";
+				return "inactive_user";
 			$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
 			$result = $this->_singleQuery($sql, $user->name, $user->pass);
 			if($result){
-				$this->_startUserSession($result->id);
+				$userId = $result->id;
+				$result->userLanguages = $this->_getUserLanguages($userId);
+				$this->_startUserSession($userId);
 				return $result;
 			} else {
 				return "wrong_password";
@@ -65,6 +68,12 @@ class LoginDAO{
 		}
 	}
 	
+	private function _getUserLanguages($userId){
+		$sql = "SELECT language, level, positives_to_next_level 
+				FROM user_languages WHERE (fk_user_id='%d')";
+		return $this->_listUserLanguagesQuery($sql, $userId);
+	}
+	
 	//Returns a single User object
 	private function _singleQuery(){
 		$valueObject = new UserVO();
@@ -88,6 +97,21 @@ class LoginDAO{
 			return false;
 		}
 		return $valueObject;
+	}
+	
+	private function _listUserLanguagesQuery(){
+		$searchResults = array();
+		
+		$result = $this->conn->_execute(func_get_args());
+		while($row = $this->conn->_nextRow($result)){
+			$temp = new UserLanguageVO();
+			$temp->language = $row[0];
+			$temp->level = $row[1];
+			$temp->positivesToNextLevel = $row[2];
+			
+			array_push($searchResults, $temp);
+		}
+		return $searchResults;
 	}
 	
 	private function _create() {

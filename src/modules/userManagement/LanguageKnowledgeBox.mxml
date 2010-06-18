@@ -5,7 +5,7 @@
 		 verticalAlign="middle">
 
 	<common:LanguageComboBox id="languageCombo"/>
-	<mx:Label text="Knowledge:"
+	<mx:Label text="{resourceManager.getString('myResources', 'LABEL_LANGUAGE_KNOWLEDGE')}"
 			  fontWeight="normal"/>
 	<common:DifficultyLevelComboBox id="levelCombo"/>
 

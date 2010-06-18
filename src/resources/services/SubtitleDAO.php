@@ -36,6 +36,7 @@ class SubtitleDAO {
 		return $searchResults;
 	}
 
+	/*
 	public function getExerciseSubtitles($exerciseId) {
 		$sql = "SELECT s.id, s.fk_exercise_id, s.fk_user_id, u.name, s.language, s.translation, s.adding_date
 				FROM subtitle AS s INNER JOIN users AS u ON s.fk_user_id = u.ID
@@ -48,6 +49,7 @@ class SubtitleDAO {
 
 		return $searchResults;
 	}
+	*/
 
 	public function getSubtitlesSubtitleLines($subtitleId) {
 		$sql = "SELECT SL.id, SL.show_time, SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id

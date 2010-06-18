@@ -370,12 +370,11 @@
 					_localesReady=false;
 					_cueManagerReady=false;
 
-					ratingShareReport.exerciseData=tmp;
-
-					if (!DataModel.getInstance().isLoggedIn)
-						CustomAlert.info("You must login in order to watch the exercises.");
-
-					showSelectedExercise();
+					if (DataModel.getInstance().isLoggedIn){
+						ratingShareReport.exerciseData=tmp;
+						showSelectedExercise();
+					}
+			
 					prepareExercise();
 					resetCueManager();
 				}

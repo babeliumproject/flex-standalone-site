@@ -299,7 +299,7 @@ Trying to determine if searchIndexes folder exists where it should (<?php echo $
 
 <br>
 Trying to determine if searchIndexes folder has the appropriate permissions (777):
-<?php test(check_perms($HOME . $SEARCHINDEXES) );?>
+<?php test(check_perms($HOME . $SEARCHINDEXES, "777") );?>
 
 <br>
 Trying to determine if Red5's exercises folder exists where it should (<?php echo $RED5_STREAMS .'/'. $RED5_EXERCISES ?>):

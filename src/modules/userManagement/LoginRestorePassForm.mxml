@@ -67,7 +67,7 @@
 			{
 				if (dataModel.loginErrorMessage != '')
 				{
-					errorInfo.text=dataModel.loginErrorMessage;
+					errorInfo.text=resourceManager.getString('myResources','LABEL_'+dataModel.loginErrorMessage);
 					dataModel.loginErrorMessage="";
 				}
 			}

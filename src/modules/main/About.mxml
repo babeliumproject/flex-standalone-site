@@ -122,6 +122,8 @@
 				{product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'},
 				{product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'},
 				{product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl:'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'},
+				{product: 'RTMP Video Player', licenseName:'Unknown: No response from Leland Cope (author)', licenseUrl:'', productUrl:'http://lelandcope.com/flex-video-player-red5-compatable/'},
+				{product: 'Flex Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.asfusion.com/examples/item/rating-component'},
 				{product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/' }
 
 				);

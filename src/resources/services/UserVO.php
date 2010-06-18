@@ -19,6 +19,8 @@ class UserVO {
 	public $active;
 	public $joiningDate;
 	public $isAdmin;
+	
+	public $userLanguages; //An array of UserLanguageVO objects
 
 	//This string specifies the path to a same kind ValueObject AS3 class in our Flex application
 	public $_explicitType = "UserVO";

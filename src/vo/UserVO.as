@@ -13,5 +13,7 @@ package vo
 		public var active:Boolean;
 		public var joiningDate:String;
 		public var isAdmin:Boolean;
+		
+		public var userLanguages:Array; //An array of UserLanguageVO objects
 	}
 }
