@@ -6,3 +6,5 @@ INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES
 ('spinvox.language', 'it'),
 ('spinvox.language', 'pt'),
 ('spinvox.language', 'es');
+
+UPDATE `preferences` SET `prefValue` =  '$Revision: 537 $'  WHERE `preferences`.`prefName` = 'dbrevision';

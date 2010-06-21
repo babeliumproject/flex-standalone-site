@@ -42,7 +42,7 @@ class ExerciseDAO {
 		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s') ";
 		
 		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId, $exercise->duration );
+								$exercise->language, $exercise->userId, $exercise->duration, $exercise->license, $exercise->reference );
 	}
 	
 	public function addWebcamExercise(ExerciseVO $exercise) {

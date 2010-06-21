@@ -37,7 +37,7 @@ package modules.videoPlayer.controls
 			height = _defaultHeight;
 			
 			_timeBox = new TextField();
-			_timeBox.text = "Loading...";
+			_timeBox.text = "0:00/0:00";
 			_timeBox.selectable = false;
 			_timeBox.y = 2;
 			

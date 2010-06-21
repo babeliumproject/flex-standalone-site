@@ -26,7 +26,7 @@
 			import vo.ExerciseVO;
 
 			[Bindable]
-			private var _exercise:ExerciseVO;
+			private var _exercise:ExerciseVO = null;
 			
 			[Bindable]
 			private var _exerciseRating:int = 0;

@@ -33,12 +33,19 @@ package view.common
 		public var LicenseCcByNcNd:Class;
 		
 		[Bindable]
-		public var licenses:Array=new Array({code: 'CC-BY', icon: LicenseCcBy},
+		[Embed(source="../../resources/images/licenses/copyrighted.png")]
+		public var LicenseCopyrighted:Class;
+		
+		[Bindable]
+		public var licenses:Array=new Array(
+										{code: 'CC-BY', icon: LicenseCcBy},
 										{code: 'CC-BY-SA', icon: LicenseCcBySa},
 										{code: 'CC-BY-ND', icon: LicenseCcByNd},
 										{code: 'CC-BY-NC', icon: LicenseCcByNc},
 										{code: 'CC-BY-NC-SA', icon: LicenseCcByNcSa},
-										{code: 'CC-BY-NC-ND', icon: LicenseCcByNcNd});
+										{code: 'CC-BY-NC-ND', icon: LicenseCcByNcNd},
+										{code: 'COPYRIGHTED', icon: LicenseCopyrighted}
+		);
 		
 		public function LicenseComboBox()
 		{

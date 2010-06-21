@@ -24,30 +24,31 @@ package business
 		private var responder:IResponder;
 		private var uploadReference:FileReference;
 		private var uploadURL:String;
+		
+		private var _dataModel:DataModel = DataModel.getInstance();
 
 		public function UploadDelegate(responder:IResponder)
 		{
-			if(DataModel.getInstance().uploadFileReference == null)
-				DataModel.getInstance().uploadFileReference = new FileReference();
+			if(_dataModel.uploadFileReference == null)
+				_dataModel.uploadFileReference = new FileReference();
 			this.responder=responder;
 		}
 		
 		public function browse():void{
 			var videosFilter:FileFilter = new FileFilter("Videos", "*.avi;*.flv;*.mp4");
-			uploadReference=DataModel.getInstance().uploadFileReference;
+			uploadReference=_dataModel.uploadFileReference;
 			uploadReference.addEventListener(Event.SELECT, onSelectFile);
 			uploadReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
 			uploadReference.browse([videosFilter]);
-			//uploadReference.browse();
 		}				
 
 		public function upload():void
 		{
-			uploadReference=DataModel.getInstance().uploadFileReference;
+			uploadReference=_dataModel.uploadFileReference;
 			var sendVars:URLVariables=new URLVariables();
 			sendVars.action="upload";
 			
-			uploadURL = DataModel.getInstance().uploadURL;
+			uploadURL = _dataModel.uploadURL;
 			
 			var request:URLRequest=new URLRequest();
 			request.data=sendVars;
@@ -75,11 +76,12 @@ package business
 		}
 		
 		public function cancel():void{
-			uploadReference=DataModel.getInstance().uploadFileReference;
+			uploadReference=_dataModel.uploadFileReference;
 			uploadReference.removeEventListener(ProgressEvent.PROGRESS, onUploadProgress);
 			uploadReference.removeEventListener(Event.COMPLETE, onUploadComplete);
 			uploadReference.removeEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
 			uploadReference.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+			uploadReference.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onUploadCompleteData);
 			uploadReference.removeEventListener(HTTPStatusEvent.HTTP_STATUS, onHttpStatusError);
 			uploadReference.cancel();
 		}
@@ -98,12 +100,14 @@ package business
 		private function onUploadComplete(event:Event):void
 		{
 			//Pass Event to UploadOngoingCommand
+			uploadReference.removeEventListener(Event.COMPLETE, onUploadComplete);
 			this.responder.result(event);
 		}
 
 		private function onUploadCompleteData(event:DataEvent):void
 		{
 			//Pass DataEvent to UploadOngoingCommand
+			uploadReference.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onUploadCompleteData);
 			this.responder.result(event);
 		}
 

@@ -94,7 +94,6 @@
 						   fontFamily="Arial"
 						   fontSize="10"
 						   label="{data.reference}"
-						   textDecoration="underline"
 						   click="referenceClickHandler(event)"/>
 		</mx:HBox>
 
@@ -106,18 +105,20 @@
 
 	<mx:Script>
 		<![CDATA[
+			import control.CuePointManager;
+			
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.Text;
-
+			
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-
+			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
@@ -143,6 +144,7 @@
 				_creationComplete=true;
 
 				setupEventListeners();
+				setupReferenceComponent();
 			}
 
 			private function setupEventListeners():void
@@ -167,6 +169,15 @@
 				if (_creationComplete)
 					setupEventListeners();
 			}
+			
+			private function setupReferenceComponent():void{
+				if(checkExternalUrl(data.reference)){
+					referenceUrl.setStyle('textDecoration', 'underline');
+				} else{
+					referenceUrl.setStyle('skin', null);
+					referenceUrl.useHandCursor = false;
+				}
+			}
 
 			private function imageClickHandler(event:MouseEvent):void
 			{
@@ -185,7 +196,8 @@
 
 			private function referenceClickHandler(event:MouseEvent):void
 			{
-				navigateToURL(new URLRequest(parseExternalUrl(data.reference)), '_blank');
+				if(checkExternalUrl(data.reference))
+					navigateToURL(new URLRequest(data.reference), '_blank');
 			}
 
 			public function getFlagSource(temp:ExerciseVO):String
@@ -227,6 +239,8 @@
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tempEx.language);
 				var roles:ExerciseRoleVO=new ExerciseRoleVO();
 				roles.exerciseId=tempEx.id;
+				
+				CuePointManager.getInstance().reset();
 
 				//If it doesn't work this way, we can chain the events
 				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
@@ -235,7 +249,7 @@
 			}
 
 			//http://livedocs.adobe.com/flex/3/langref/flash/net/package.html#navigateToURL%28%29
-			private function parseExternalUrl(url:String):String
+			private function addHttpIfneeded(url:String):String
 			{
 				var urlparse:String=url;
 				var httpPattern:RegExp=new RegExp("^http[s]?\:\\/\\/");
@@ -244,6 +258,17 @@
 					urlparse="http://" + urlparse;
 				}
 				return urlparse;
+			}
+			
+			private function checkExternalUrl(url:String):Boolean
+			{
+				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
+				var result:Object=pattern.exec(url);
+				if (result == null || url.length >= 4096)
+				{
+					return (false);
+				}
+				return (true);
 			}
 
 			private function trimTitle():void

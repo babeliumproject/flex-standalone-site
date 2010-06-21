@@ -41,6 +41,9 @@ package view.common
 					license.imageResource = 'resources/images/licenses/cc-by.png';
 					license.licenseUrl = license.licenseUrl+'by/3.0/';
 					break;
+				case 'copyrighted':
+					license.imageResource = 'resources/images/licenses/copyrighted.png';
+					license.licenseUrl = '';
 				default:
 					break;
 			}

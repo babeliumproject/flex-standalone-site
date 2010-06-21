@@ -15,19 +15,19 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-			
+
 			import flash.events.*;
 			import flash.net.*;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -43,15 +43,11 @@
 			//private var _numCurrentUpload:Number=0;
 
 			private var youtubeVideoData:ExerciseVO;
-
 			private var youtubeVideoLevel:ExerciseLevelVO;
 
 			private var red5VideoData:ExerciseVO;
-
 			private var red5VideoLevel:ExerciseLevelVO;
 
-			[Bindable]
-			private var categories:Array=new Array("Autos", "Music", "Animals", "Sports", "Travel", "Games", "Comedy", "People", "News", "Entertainment", "Education", "Howto", "Nonprofit", "Tech");
 
 			private var checkStatusTimer:Timer;
 
@@ -215,19 +211,6 @@
 				progBar.validateNow();
 			}
 
-			// Called on upload complete
-			private function set onUploadComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().uploadFinished)
-				{
-					enableUI();
-					clearUpload();
-					//uploadInformationLabel.text="Upload successful. Now Processing file...";
-					//uploadInformationLabel.text="Successful Upload.";
-					DataModel.getInstance().uploadFinished=false;
-				}
-			}
-
 			private function set onUploadCompleteData(value:Boolean):void
 			{
 				if (DataModel.getInstance().uploadFinishedData)
@@ -262,58 +245,59 @@
 						red5VideoLevel=new ExerciseLevelVO();
 						red5VideoLevel.suggestedLevel=difficultySelector.selectedIndex + 1;
 
-						DataModel.getInstance().uploadFinishedData=false;
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
 						/*
 						   new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
 						 */
 					}
 					else
-					{
 						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
-						DataModel.getInstance().uploadFinishedData=false;
-					}
+					DataModel.getInstance().uploadFinishedData=false;
+					clearUpload();
 				}
 			}
 
-			private function set onYoutubeTransferComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().youtubeTransferComplete == true)
-				{
-					checkStatusTimer=new Timer(30000, 0);
-					checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
-					checkStatusTimer.start();
-					DataModel.getInstance().youtubeTransferComplete=false;
-				}
-			}
+			/*
+			   private function set onYoutubeTransferComplete(value:Boolean):void
+			   {
+			   if (DataModel.getInstance().youtubeTransferComplete == true)
+			   {
+			   checkStatusTimer=new Timer(30000, 0);
+			   checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
+			   checkStatusTimer.start();
+			   DataModel.getInstance().youtubeTransferComplete=false;
+			   }
+			   }
 
-			private function onTimer(event:TimerEvent):void
-			{
-				var checkExercise:ExerciseVO=DataModel.getInstance().newYoutubeData;
-				new UploadEvent(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, checkExercise).dispatch();
-			}
+			   private function onTimer(event:TimerEvent):void
+			   {
+			   var checkExercise:ExerciseVO=DataModel.getInstance().newYoutubeData;
+			   new UploadEvent(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, checkExercise).dispatch();
+			   }
 
-			private function set onYoutubeProcessingComplete(value:Boolean):void
-			{
-				uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_UPLOADFINISHED');
-				checkStatusTimer.stop();
-				DataModel.getInstance().youtubeProcessingComplete=false;
-				youtubeVideoData.userId=DataModel.getInstance().loggedUser.id;
-				youtubeVideoData.source="Youtube";
 
-				_arrUploadFiles.pop();
-				listFiles.dataProvider=_arrUploadFiles;
-				clearUpload();
-				resetComponent();
+			   private function set onYoutubeProcessingComplete(value:Boolean):void
+			   {
+			   uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_UPLOADFINISHED');
+			   checkStatusTimer.stop();
+			   DataModel.getInstance().youtubeProcessingComplete=false;
+			   youtubeVideoData.userId=DataModel.getInstance().loggedUser.id;
+			   youtubeVideoData.source="Youtube";
 
-				new ExerciseEvent(ExerciseEvent.ADD_EXERCISE, youtubeVideoData).dispatch();
-			}
+			   _arrUploadFiles.pop();
+			   listFiles.dataProvider=_arrUploadFiles;
+			   clearUpload();
+			   resetComponent();
 
-			private function set onYoutubeProcessUpdate(value:Boolean):void
-			{
-				uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
-				DataModel.getInstance().youtubeProcessUpdate=false;
-			}
+			   new ExerciseEvent(ExerciseEvent.ADD_EXERCISE, youtubeVideoData).dispatch();
+			   }
+
+			   private function set onYoutubeProcessUpdate(value:Boolean):void
+			   {
+			   uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
+			   DataModel.getInstance().youtubeProcessUpdate=false;
+			   }
+			 */
 
 			private function set onUnprocessedExerciseComplete(value:Boolean):void
 			{
@@ -356,38 +340,28 @@
 				var validUrl:Boolean=true;
 				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '')
 				{
-					if (referenceUrl.text != '')
-						validUrl=checkExternalUrl(referenceUrl.text);
-					if (validUrl)
-					{
-						red5VideoData=new ExerciseVO();
-						red5VideoData.title=videoTitle.text;
-						red5VideoData.description=videoDescription.text;
-						red5VideoData.tags=parseTags(videoTags.text);
-						red5VideoData.language=languageSelector.selectedItem.code;
-						red5VideoData.name=recFromWebcamBox.recordingFileName;
-						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
+					red5VideoData=new ExerciseVO();
+					red5VideoData.title=videoTitle.text;
+					red5VideoData.description=videoDescription.text;
+					red5VideoData.tags=parseTags(videoTags.text);
+					red5VideoData.language=languageSelector.selectedItem.code;
+					red5VideoData.name=recFromWebcamBox.recordingFileName;
+					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
-						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
-						red5VideoData.reference=referenceUrl.text;
+					red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+					red5VideoData.reference=referenceUrl.text;
 
-						red5VideoLevel=new ExerciseLevelVO();
-						red5VideoLevel.suggestedLevel=difficultySelector.selectedIndex + 1;
+					red5VideoLevel=new ExerciseLevelVO();
+					red5VideoLevel.suggestedLevel=difficultySelector.selectedIndex + 1;
 
-						var historic:CreditHistoryVO=new CreditHistoryVO();
-						historic.videoExerciseName=recFromWebcamBox.recordingFileName;
-						DataModel.getInstance().historicData=historic;
+					var historic:CreditHistoryVO=new CreditHistoryVO();
+					historic.videoExerciseName=recFromWebcamBox.recordingFileName;
+					DataModel.getInstance().historicData=historic;
 
-						new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
-					} else {
-						CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
-					}
-						
+					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
 				}
 				else
-				{
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
-				}
 			}
 
 			private function resetComponent():void
@@ -396,6 +370,7 @@
 
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
+				licenseSelector.selectedIndex=0;
 
 				recFromWebcamBox.resetComponent();
 
@@ -410,6 +385,7 @@
 				videoTitle.text="";
 				videoDescription.text="";
 				videoTags.text="";
+				referenceUrl.text="";
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
@@ -495,16 +471,18 @@
 				destination="this.fileSelected"/>
 	<mx:Binding source="{DataModel.getInstance().uploadProgressUpdated}"
 				destination="this.onUploadProgress"/>
-	<mx:Binding source="{DataModel.getInstance().uploadFinished}"
-				destination="this.onUploadComplete"/>
 	<mx:Binding source="{DataModel.getInstance().uploadFinishedData}"
 				destination="this.onUploadCompleteData"/>
-	<mx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
-				destination="this.onYoutubeTransferComplete"/>
-	<mx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
-				destination="this.onYoutubeProcessingComplete"/>
-	<mx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
-				destination="this.onYoutubeProcessUpdate"/>
+	<!--
+		 <mx:Binding source="{DataModel.getInstance().uploadFinished}"
+		 destination="this.onUploadComplete"/>
+		 <mx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
+		 destination="this.onYoutubeTransferComplete"/>
+		 <mx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
+		 destination="this.onYoutubeProcessingComplete"/>
+		 <mx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
+		 destination="this.onYoutubeProcessUpdate"/>
+	-->
 	<mx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
 				destination="this.onUnprocessedExerciseComplete"/>
 	<mx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
