@@ -4,6 +4,7 @@ require_once ('Datasource.php');
 require_once ('Config.php');
 require_once ('Zend/Mail.php');
 require_once ('Zend/Mail/Transport/Smtp.php');
+require_once ('EmailAddressValidator.php');
 
 class Mailer
 {
@@ -93,6 +94,12 @@ class Mailer
 	{
 		$reg = "/^[^0-9][a-zA-Z0-9_-]+([.][a-zA-Z0-9_-]+)*[@][a-zA-Z0-9_-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z]{2,4}$/";
 		return preg_match($reg, $email);
+	}
+	
+	public static function checkEmailWithValidator($email)
+	{
+		$validator = new EmailAddressValidator();
+		return $validator->check_email_address($email);
 	}
 	
 	public function makeTemplate($templateFile, $templateArgs, $language)

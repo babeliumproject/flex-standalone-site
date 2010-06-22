@@ -1,9 +1,12 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
-require_once ('NewUserVO.php');
-require_once ('UserVO.php');
+require_once 'Datasource.php';
+require_once 'Config.php';
+require_once 'NewUserVO.php';
+require_once 'UserVO.php';
+
+require_once 'EmailAddressValidator.php';
+require_once 'Mailer.php';
 
 class RegisterUser{
 
@@ -21,56 +24,57 @@ class RegisterUser{
 
 	public function register($user)
 	{
+		$validator = new EmailAddressValidator();
+		if(!$validator->check_email_address($user->email)){
+			return 'wrong_email';
+		} else {
+			$sql = "SELECT prefValue FROM preferences WHERE ( prefName='initialCredits' )";
 
-		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='initialCredits' )";
+			$initialCredits = $this->_getInitialCreditsQuery($sql);
 
-		$initialCredits = $this->_getInitialCreditsQuery($sql);
+			$hash = $this->_createRegistrationHash();
+			$insert = "INSERT INTO users (name, password, email, realName, realSurname, creditCount, activation_hash)";
+			$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
 
-		$hash = $this->_createRegistrationHash();
-		$insert = "INSERT INTO users (name, password, email, realName, realSurname, creditCount, activation_hash)";
-		$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
+			$realName = $user->realName? $user->realName : "unknown";
+			$realSurname = $user->realSurname? $user->realSurname : "unknown";
 
-		$realName = $user->realName? $user->realName : "unknown";
-		$realSurname = $user->realSurname? $user->realSurname : "unknown";
-
-		$result = $this->_create ( $user, $insert, $user->name, $user->pass, $user->email,
-		$realName, $realSurname, $initialCredits, $hash );
+			$result = $this->_create ( $user, $insert, $user->name, $user->pass, $user->email,
+			$realName, $realSurname, $initialCredits, $hash );
 
 
-		//If not null $result is an instance of UserVO
-		if ( $result != false )
-		{
-			//Add the languages selected by the user
-			$languages = $user->languages;
-			if (count($languages) > 0)
+			//If not null $result is an instance of UserVO
+			if ( $result != false )
+			{
+				//Add the languages selected by the user
+				$languages = $user->languages;
+				if (count($languages) > 0)
 				$this->addUserLanguages($languages, $result->id);
-				
-			//We get the first mother tongue as message locale
-			$motherTongueLocale = $languages[0]->language;
+
+				//We get the first mother tongue as message locale
+				$motherTongueLocale = $languages[0]->language;
 
 
-			// Submit activatión email
-			include_once ('Mailer.php');
+				// Submit activation email
+				$mail = new Mailer($user->name);
 
-			$mail = new Mailer($user->name);
-				
-			$subject = 'Babelium Project: Account Activation';
+				$subject = 'Babelium Project: Account Activation';
 
-			$args = array(
+				$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->name,
 						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#',
 						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name,
 						'SIGNATURE' => 'The Babelium Project Team');
 
-			if ( !$mail->makeTemplate("mail_activation", $args, $motherTongueLocale) ) return null;
+				if ( !$mail->makeTemplate("mail_activation", $args, $motherTongueLocale) ) return null;
 
-			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
+				$mail->send($mail->txtContent, $subject, $mail->htmlContent);
 
-			return $result;
+				return $result;
+			}
+			return "User or email already exists";
 		}
-
-		return "User or email already exists";
 	}
 
 	//The parameter should be an array of UserLanguageVO
@@ -89,7 +93,7 @@ class RegisterUser{
 			array_push($params, $userId, $language->language, $language->level, $positivesToNextLevel);
 		}
 		unset($language);
-		$sql = substr($sql,'',-1);
+		$sql = substr($sql,0,-1);
 		// put sql query and all params in one array
 		$merge = array_merge((array)$sql, $params);
 

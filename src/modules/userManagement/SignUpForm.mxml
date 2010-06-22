@@ -145,7 +145,7 @@
 					var languages:Array=mLangArray.concat(kLangArray, iLangArray);
 
 
-					if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
+					if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
 					{
 						var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, '', languages);
 						new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
@@ -280,8 +280,8 @@
 					<mx:TextInput id="email"
 								  maxChars="80"
 								  fontWeight="normal"
-								  change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN, false, false)"
-								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN, false, false)"/>
+								  change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
+								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}"

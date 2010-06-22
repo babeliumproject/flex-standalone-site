@@ -14,6 +14,9 @@ package modules.userManagement
 	{
 		// Variables
 		public static var MAIL_PATTERN:RegExp=/^[a-zA-Z]\w+([.]\w+)*[@]\w+([.]\w+)*[.][a-zA-Z]{2,4}$/;
+		//Only one @ and one or more non-@ characters at each side of it
+		public static var MAIL_PATTERN_LAX:RegExp=/^[^@]+@[^@]+$/;
+		public static var MAIL_PATTERN_LAX_NO_SPACE:RegExp=/^[^@ ]+@[^@ ]+$/;
 		public static var FIELD_PATTERN:RegExp=/^[a-zA-Z_]\w*$/;
 		public static var ANY_PATTERN:RegExp=/^\w*$/s;
 		
