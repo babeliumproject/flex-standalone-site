@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	xmlns:tc="modules.search.*"
-	width="100%"
-	creationComplete="init()" >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:tc="modules.search.*"
+		 width="100%"
+		 creationComplete="init()">
 
 	<mx:ArrayCollection id="sortFields1">
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_AUTOMATIC')}" data="score"/>
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_USER')}" data="userName"/>
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_LANGUAGE')}" data="language"/>
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_RATING')}" data="avgRating"/>
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DIFFICULTY')}" data="avgDifficulty"/>
-		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DATE')}" data="addingDate"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_AUTOMATIC')}"
+				   data="score"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_USER')}"
+				   data="userName"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_LANGUAGE')}"
+				   data="language"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_RATING')}"
+				   data="avgRating"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DIFFICULTY')}"
+				   data="avgDifficulty"/>
+		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DATE')}"
+				   data="addingDate"/>
 	</mx:ArrayCollection>
-	
+
 
 	<mx:Script>
 		<![CDATA[
@@ -23,153 +29,194 @@
 			import mx.events.ItemClickEvent;
 			import model.DataModel;
 			import view.common.CustomAlert;
-			
-			[Bindable] [Embed(source="../../resources/images/first.png")]
+
+			[Bindable]
+			[Embed(source="../../resources/images/first.png")]
 			public var firstI:Class;
-			[Bindable] [Embed(source="../../resources/images/previous.png")]
+			[Bindable]
+			[Embed(source="../../resources/images/previous.png")]
 			public var previousI:Class;
-			[Bindable] [Embed(source="../../resources/images/next.png")]
+			[Bindable]
+			[Embed(source="../../resources/images/next.png")]
 			public var nextI:Class;
-			[Bindable] [Embed(source="../../resources/images/last.png")]
+			[Bindable]
+			[Embed(source="../../resources/images/last.png")]
 			public var lastI:Class;
-						
-			[Bindable] private var dataProvider:ArrayCollection = new ArrayCollection();
-			[Bindable] private var dataTemp:ArrayCollection = new ArrayCollection();
-			[Bindable] private var nav:ArrayCollection =new ArrayCollection();
-			[Bindable] private var currentCBIndex:int=0;
-			[Bindable] private var descendingCB:Boolean=true;
-			[Bindable] private var sortFields:ArrayCollection = new ArrayCollection(
-                [ {label:"Automatic", data:"score"}, 
-                  {label:"User", data:"userName"}, 
-                  {label:"Language", data:"language"},
-                  {label:"Rating", data:"avgRating"},
-                  {label:"Difficulty", data:"avgDifficulty"},
-                  {label:"Date", data:"addingDate"}]);
-					
-			public function init():void{
-				
+
+			[Bindable]
+			private var dataProvider:ArrayCollection=new ArrayCollection();
+			[Bindable]
+			private var dataTemp:ArrayCollection=new ArrayCollection();
+			[Bindable]
+			private var nav:ArrayCollection=new ArrayCollection();
+			[Bindable]
+			private var currentCBIndex:int=0;
+			[Bindable]
+			private var descendingCB:Boolean=true;
+			[Bindable]
+			private var sortFields:ArrayCollection=new ArrayCollection([{label: "Automatic", data: "score"}, {label: "User", data: "userName"}, {label: "Language", data: "language"}, {label: "Rating", data: "avgRating"}, {label: "Difficulty", data: "avgDifficulty"}, {label: "Date", data: "addingDate"}]);
+
+			public function init():void
+			{
+
 			}
-		
-			public function set onSearchRetrieved(value:Boolean):void{
-				if (DataModel.getInstance().videoSearchesRetrieved){
+
+			public function set onSearchRetrieved(value:Boolean):void
+			{
+				if (DataModel.getInstance().videoSearchesRetrieved)
+				{
 					dataProvider=DataModel.getInstance().videoSearches;
 					DataModel.getInstance().currentPage=1;
 					sort.selectedIndex=0;
-					if(dataProvider.length >0){
+					if (dataProvider.length > 0)
+					{
 						labelSort.enabled=true;
 						sort.enabled=true;
 						pageNav.enabled=true;
-					}else{
+					}
+					else
+					{
 						labelSort.enabled=false;
 						sort.enabled=false;
 						pageNav.enabled=false;
 					}
 					createNavigatePage();
-					DataModel.getInstance().videoSearchesRetrieved = false;
+					DataModel.getInstance().videoSearchesRetrieved=false;
 					descendingCB=true;
 					currentCBIndex=0;
 				}
 			}
-			
-			public function refreshDataProvider():void{
-             	var current:int=DataModel.getInstance().currentPage-1;
-             	var pageSize:int=DataModel.getInstance().pageSize;
-             	dataTemp = new ArrayCollection( dataProvider.source.slice((current * pageSize),(current * pageSize) + pageSize) );
-        		searchListTable.rowCount=dataTemp.length;
+
+			public function refreshDataProvider():void
+			{
+				var current:int=DataModel.getInstance().currentPage - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				dataTemp=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				searchListTable.rowCount=dataTemp.length;
 				searchListTable.dataProvider=dataTemp;
-        	}
-		
-        	public function closeHandler(event:Event):void {
-        		var dataSortField:SortField=new SortField();
-        		var dataSortField1:SortField=new SortField();
-         		var dataSort:Sort=new Sort();
-        		var name:String = event.target.selectedItem.data;
-        		var eSI:int= event.target.selectedIndex;
-        		//Create the SortField object for the data
-        		dataSortField.numeric=false;
-        		dataSortField.name=name;
-        		if (currentCBIndex==eSI){
-        			descendingCB=!descendingCB;
-        		}else{
-        			descendingCB=true;
-        		}
-        		dataSortField.descending=descendingCB;
-        		//Create the second SortField object for the data
-        		dataSortField1.numeric=false;
-        		dataSortField1.name="title";
-        		dataSortField1.descending=true;
-        		//Create the Sort object and add the SortField object to the array of fields to sort
-        		dataSort.fields=[dataSortField,dataSortField1];
-        		//Set the ArrayCollection objects sort property to our custom sort, and refresh
-        		dataProvider.sort=dataSort;
-        		dataProvider.refresh();
-        		dataProvider.source=dataProvider.toArray();
-        		currentCBIndex=eSI;
-        		DataModel.getInstance().currentPage=1;
-        		createNavigatePage();
-        	}
-        	public function createNavigatePage():void{
-        		var upm:int =DataModel.getInstance().numberOfPagesNav;
-        		var upmt:int;
-        		var psize:int=DataModel.getInstance().pageSize;
-        		var tpxpm:int;
-        		if (dataProvider.length%psize==0){
-        			tpxpm =dataProvider.length/psize;
-        		}else{
-        			tpxpm =dataProvider.length/psize+1;
-        		}
-        		var current:int =DataModel.getInstance().currentPage;
-        		var limit:int=(DataModel.getInstance().numberOfPagesNav+1)/2;
-        		nav.removeAll();
-        		nav.addItem({label: "", data: 1, icon: firstI});
-        		if (current>1){
-        			nav.addItem({label: "",data: current-1, icon: previousI});
-        		}else{
-        			nav.addItem({label: "",data: 1, icon: previousI});
-        		}
-        		if (current<=limit){
-        			for(upmt = 1; (upmt <= tpxpm && upmt <= upm); upmt++){
-        				nav.addItem({label:upmt,data:upmt});
-        			}
-        		}else if(current>tpxpm-limit){
-        			for(upmt = tpxpm-upm+1; upmt <= tpxpm; upmt++){
-        				nav.addItem({label:upmt,data:upmt});
-        			}
-        		}else{
-        			for(upmt = current-limit+1; upmt <= current+limit-1; upmt++){
-        				nav.addItem({label: upmt,data: upmt});
-        			}
-        		}
-        		//upm=upmt;
-        		if (current<tpxpm){
-        			nav.addItem({label: "",data: current+1, icon: nextI});
-        		}else{
-        			nav.addItem({label: "",data: tpxpm, icon: nextI});
-        		}
-				nav.addItem({label: "",data: tpxpm, icon: lastI});
+			}
+
+			public function closeHandler(event:Event):void
+			{
+				var dataSortField:SortField=new SortField();
+				var dataSortField1:SortField=new SortField();
+				var dataSort:Sort=new Sort();
+				var name:String=event.target.selectedItem.data;
+				var eSI:int=event.target.selectedIndex;
+				//Create the SortField object for the data
+				dataSortField.numeric=false;
+				dataSortField.name=name;
+				if (currentCBIndex == eSI)
+				{
+					descendingCB=!descendingCB;
+				}
+				else
+				{
+					descendingCB=true;
+				}
+				dataSortField.descending=descendingCB;
+				//Create the second SortField object for the data
+				dataSortField1.numeric=false;
+				dataSortField1.name="title";
+				dataSortField1.descending=true;
+				//Create the Sort object and add the SortField object to the array of fields to sort
+				dataSort.fields=[dataSortField, dataSortField1];
+				//Set the ArrayCollection objects sort property to our custom sort, and refresh
+				dataProvider.sort=dataSort;
+				dataProvider.refresh();
+				dataProvider.source=dataProvider.toArray();
+				currentCBIndex=eSI;
+				DataModel.getInstance().currentPage=1;
+				createNavigatePage();
+			}
+
+			public function createNavigatePage():void
+			{
+				var upm:int=DataModel.getInstance().numberOfPagesNav;
+				var upmt:int;
+				var psize:int=DataModel.getInstance().pageSize;
+				var tpxpm:int;
+				if (dataProvider.length % psize == 0)
+				{
+					tpxpm=dataProvider.length / psize;
+				}
+				else
+				{
+					tpxpm=dataProvider.length / psize + 1;
+				}
+				var current:int=DataModel.getInstance().currentPage;
+				var limit:int=(DataModel.getInstance().numberOfPagesNav + 1) / 2;
+				nav.removeAll();
+				nav.addItem({label: "", data: 1, icon: firstI});
+				if (current > 1)
+				{
+					nav.addItem({label: "", data: current - 1, icon: previousI});
+				}
+				else
+				{
+					nav.addItem({label: "", data: 1, icon: previousI});
+				}
+				if (current <= limit)
+				{
+					for (upmt=1; (upmt <= tpxpm && upmt <= upm); upmt++)
+					{
+						nav.addItem({label: upmt, data: upmt});
+					}
+				}
+				else if (current > tpxpm - limit)
+				{
+					for (upmt=tpxpm - upm + 1; upmt <= tpxpm; upmt++)
+					{
+						nav.addItem({label: upmt, data: upmt});
+					}
+				}
+				else
+				{
+					for (upmt=current - limit + 1; upmt <= current + limit - 1; upmt++)
+					{
+						nav.addItem({label: upmt, data: upmt});
+					}
+				}
+				//upm=upmt;
+				if (current < tpxpm)
+				{
+					nav.addItem({label: "", data: current + 1, icon: nextI});
+				}
+				else
+				{
+					nav.addItem({label: "", data: tpxpm, icon: nextI});
+				}
+				nav.addItem({label: "", data: tpxpm, icon: lastI});
 				//DataModel.getInstance().lastPageShow=upm;
 				refreshDataProvider();
-				if (pageNav.enabled){
+				if (pageNav.enabled)
+				{
 					pageNav.dataProvider=nav;
-				}else{
+				}
+				else
+				{
 					pageNav.dataProvider=new ArrayCollection;
 				}
-				
-        	}
-        	public function navigatePage(event:ItemClickEvent):void{
-        		var pag:int=event.item.data;
-        		DataModel.getInstance().currentPage=pag;
-        		createNavigatePage();  	      		
-        	}
-			public function set onLanguage(value:Boolean):void{
-				if (DataModel.getInstance().languageChanged){
-					var oldIndex:int = sort.selectedIndex;
+
+			}
+
+			public function navigatePage(event:ItemClickEvent):void
+			{
+				var pag:int=event.item.data;
+				DataModel.getInstance().currentPage=pag;
+				createNavigatePage();
+			}
+
+			public function set onLanguage(value:Boolean):void
+			{
+				if (DataModel.getInstance().languageChanged)
+				{
+					var oldIndex:int=sort.selectedIndex;
 					sort.dataProvider=sortFields1;
-					sort.selectedIndex = oldIndex;
+					sort.selectedIndex=oldIndex;
 					DataModel.getInstance().languageChanged=false;
 				}
 			}
-
 		]]>
 	</mx:Script>
 
@@ -177,40 +224,39 @@
 				destination="this.onSearchRetrieved"/>
 	<mx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="this.onLanguage"/>
-	
+
 	<mx:ApplicationControlBar>
-		
-	<mx:HBox>
-		<mx:Label id="numResul"
-				  text="{resourceManager.getString('myResources','SEARCH_RESULTSFOUND')} {dataProvider.length}"/>
-		<mx:Label id="labelSort"
-				text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
-				enabled="false"/>
-		<mx:ComboBox id="sort"
-				fontWeight="normal"
-				close="closeHandler(event)"
-				editable="false"
-				enabled="false"
-				dataProvider="{sortFields1}">
-				
-		</mx:ComboBox>				
-		<mx:LinkBar id="pageNav" 
-              	itemClick="navigatePage(event)"
-              	horizontalGap="0" 
-              	horizontalAlign="center"
-              	width="100%"
-              	enabled="false"/>
-	</mx:HBox>
+		<mx:HBox>
+			<mx:Label id="numResul"
+					  text="{resourceManager.getString('myResources','SEARCH_RESULTSFOUND')} {dataProvider.length}"/>
+			<mx:Label id="labelSort"
+					  text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
+					  enabled="false"/>
+			<mx:ComboBox id="sort"
+						 fontWeight="normal"
+						 close="closeHandler(event)"
+						 editable="false"
+						 enabled="false"
+						 dataProvider="{sortFields1}">
+
+			</mx:ComboBox>
+			<mx:LinkBar id="pageNav"
+						itemClick="navigatePage(event)"
+						horizontalGap="0"
+						horizontalAlign="center"
+						width="100%"
+						enabled="false"/>
+		</mx:HBox>
 	</mx:ApplicationControlBar>
 	<mx:Canvas id="canvasScroll"
 			   height="100%"
-		       width="100%"
-		       verticalScrollPolicy="auto"
-		       horizontalScrollPolicy="off">
+			   width="100%"
+			   verticalScrollPolicy="auto"
+			   horizontalScrollPolicy="off">
 		<mx:HBox width="100%"
-				 paddingRight="20">	
+				 paddingRight="20">
 			<mx:DataGrid id="searchListTable"
-						 width="75%"
+						 width="100%"
 						 editable="false"
 						 selectable="false"
 						 verticalScrollPolicy="off"
@@ -221,16 +267,18 @@
 					<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 				</mx:columns>
 			</mx:DataGrid>
-			<mx:VBox>
-				<tc:TagCloud id="tagCloud" 
-						 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
-						 width="300"
-						 height="300">
-				</tc:TagCloud>
-				<!--<mx:SWFLoader id="myLoader" width="300" height="300"
-						 source="../libs/tagcloud.swf"/>-->
-			</mx:VBox>
-			
+			<!--
+				 <mx:VBox>
+				 <tc:TagCloud id="tagCloud"
+				 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
+				 width="300"
+				 height="300">
+				 </tc:TagCloud>
+				 <mx:SWFLoader id="myLoader" width="300" height="300"
+				 source="../libs/tagcloud.swf"/>
+				 </mx:VBox>
+			-->
+
 		</mx:HBox>
 	</mx:Canvas>
 </mx:VBox>

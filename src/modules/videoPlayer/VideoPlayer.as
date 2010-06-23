@@ -555,9 +555,13 @@ package modules.videoPlayer
 					playbackState=PLAYBACK_READY_STATE;
 					break;
 				case "NetStream.Buffer.Full":
-					if (playbackState == PLAYBACK_READY_STATE || playbackState == PLAYBACK_UNPAUSED_STATE)
+					if(playbackState == PLAYBACK_UNPAUSED_STATE)
 						playbackState=PLAYBACK_STARTED_STATE;
-					break;
+					if (playbackState == PLAYBACK_READY_STATE){
+						playbackState=PLAYBACK_STARTED_STATE;
+						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_STARTED_PLAYING));
+					}
+					break;		
 				case "NetStream.Buffer.Empty":
 					if (playbackState == PLAYBACK_STOPPED_STATE)
 					{

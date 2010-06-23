@@ -20,10 +20,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -31,18 +31,18 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-
-			import view.common.CustomAlert;
-
+			
+			import view.common.*;
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -73,6 +73,8 @@
 			private var _roles:ArrayCollection;
 			private var _exerciseName:String;
 			private var _exerciseId:int;
+			
+			private var _exerciseStartedPlaying:Boolean = false;
 
 			/**
 			 * Recording related variables
@@ -120,6 +122,7 @@
 			private function setupVideoPlayer():void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying);
 				VP.addEventListener(RecordingEvent.END, onRecordingEnd);
 				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
 				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied);
@@ -266,6 +269,7 @@
 				}
 
 				_cueManagerReady=true;
+				onVideoStartedPlaying(null);
 			}
 
 			/**
@@ -370,11 +374,12 @@
 					_localesReady=false;
 					_cueManagerReady=false;
 
-					if (DataModel.getInstance().isLoggedIn){
+					if (DataModel.getInstance().isLoggedIn)
+					{
 						ratingShareReport.exerciseData=tmp;
 						showSelectedExercise();
 					}
-			
+
 					prepareExercise();
 					resetCueManager();
 				}
@@ -651,6 +656,20 @@
 				}
 				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, userId, 0, _exerciseId, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
+			}
+
+			private function onVideoStartedPlaying(e:VideoPlayerEvent):void
+			{
+				_exerciseStartedPlaying = true;
+				if (DataModel.getInstance().isLoggedIn && _cueManagerReady && _rolesReady && _localesReady && _exerciseStartedPlaying)
+				{
+					_exerciseStartedPlaying = false;
+					var userId:int=DataModel.getInstance().loggedUser.id;
+					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
+					var subtitleId:int=_cueManager.currentSubtitle;
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, userId, 0, _exerciseId, false, 0, '', subtitlesAreUsed, subtitleId, 0);
+					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
+				}
 			}
 
 			// Evaluation request
