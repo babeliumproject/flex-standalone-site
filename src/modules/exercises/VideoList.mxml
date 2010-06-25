@@ -73,6 +73,8 @@
 				 verticalScrollPolicy="off"
 				 sortableColumns="false"
 				 draggableColumns="false"
+				 backgroundAlpha="0"
+				 borderThickness="0"
 				 useHandCursor="true">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"

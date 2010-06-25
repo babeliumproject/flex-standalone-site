@@ -62,6 +62,8 @@
 				 sortableColumns="false"
 				 draggableColumns="false"
 				 headerHeight="0"
+				 backgroundAlpha="0"
+				 borderThickness="0"
 				 dataProvider="{DataModel.getInstance().availableExercises}">
 		<mx:columns>
 			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>

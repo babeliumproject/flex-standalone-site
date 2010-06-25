@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:tc="modules.search.*"
-		 width="100%"
-		 creationComplete="init()">
+		 width="100%">
 
 	<mx:ArrayCollection id="sortFields1">
 		<mx:Object label="{resourceManager.getString('myResources','SEARCH_CB_AUTOMATIC')}"
@@ -22,13 +21,12 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.events.FlexEvent;
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
-			import mx.collections.ArrayCollection;
-			import mx.events.ItemClickEvent;
-			import model.DataModel;
-			import view.common.CustomAlert;
+			import mx.controls.Button;
 
 			[Bindable]
 			[Embed(source="../../resources/images/first.png")]
@@ -48,18 +46,12 @@
 			[Bindable]
 			private var dataTemp:ArrayCollection=new ArrayCollection();
 			[Bindable]
-			private var nav:ArrayCollection=new ArrayCollection();
-			[Bindable]
 			private var currentCBIndex:int=0;
 			[Bindable]
 			private var descendingCB:Boolean=true;
 			[Bindable]
 			private var sortFields:ArrayCollection=new ArrayCollection([{label: "Automatic", data: "score"}, {label: "User", data: "userName"}, {label: "Language", data: "language"}, {label: "Rating", data: "avgRating"}, {label: "Difficulty", data: "avgDifficulty"}, {label: "Date", data: "addingDate"}]);
-
-			public function init():void
-			{
-
-			}
+			
 
 			public function set onSearchRetrieved(value:Boolean):void
 			{
@@ -72,15 +64,13 @@
 					{
 						labelSort.enabled=true;
 						sort.enabled=true;
-						pageNav.enabled=true;
 					}
 					else
 					{
 						labelSort.enabled=false;
 						sort.enabled=false;
-						pageNav.enabled=false;
 					}
-					createNavigatePage();
+					createPaginationMenu();
 					DataModel.getInstance().videoSearchesRetrieved=false;
 					descendingCB=true;
 					currentCBIndex=0;
@@ -127,84 +117,61 @@
 				dataProvider.source=dataProvider.toArray();
 				currentCBIndex=eSI;
 				DataModel.getInstance().currentPage=1;
-				createNavigatePage();
+				createPaginationMenu();
 			}
 
-			public function createNavigatePage():void
+			public function createPaginationMenu():void
 			{
-				var upm:int=DataModel.getInstance().numberOfPagesNav;
-				var upmt:int;
-				var psize:int=DataModel.getInstance().pageSize;
-				var tpxpm:int;
-				if (dataProvider.length % psize == 0)
+				var buttonCountInPaginationBox:int=DataModel.getInstance().numberOfPagesNav;
+				var limit:int=(buttonCountInPaginationBox + 1) / 2;
+				var itemsPerPage:int=DataModel.getInstance().pageSize;
+				var searchItemCount:int=dataProvider.length;
+				var currentPage:int=DataModel.getInstance().currentPage;
+				var searchPageCount:int=(searchItemCount % itemsPerPage == 0) ? (searchItemCount / itemsPerPage) : searchItemCount / itemsPerPage + 1;
+
+				destroyPaginationMenu();
+
+				if (searchItemCount / itemsPerPage >= 1)
 				{
-					tpxpm=dataProvider.length / psize;
-				}
-				else
-				{
-					tpxpm=dataProvider.length / psize + 1;
-				}
-				var current:int=DataModel.getInstance().currentPage;
-				var limit:int=(DataModel.getInstance().numberOfPagesNav + 1) / 2;
-				nav.removeAll();
-				nav.addItem({label: "", data: 1, icon: firstI});
-				if (current > 1)
-				{
-					nav.addItem({label: "", data: current - 1, icon: previousI});
-				}
-				else
-				{
-					nav.addItem({label: "", data: 1, icon: previousI});
-				}
-				if (current <= limit)
-				{
-					for (upmt=1; (upmt <= tpxpm && upmt <= upm); upmt++)
+					if (currentPage > 1)
 					{
-						nav.addItem({label: upmt, data: upmt});
+						paginationBox.addChild(createControlButton(1, firstI));
+						paginationBox.addChild(createControlButton(currentPage -1, previousI));
+					}
+					if (currentPage <= limit)
+					{
+						for (var i:int=1; (i <= searchPageCount && i <= buttonCountInPaginationBox); i++)
+						{
+							paginationBox.addChild(createPageButton(i));
+						}
+					}
+					else if (currentPage > searchPageCount - limit)
+					{
+						for (var j:int=searchPageCount - buttonCountInPaginationBox + 1; j <= searchPageCount; j++)
+						{
+							paginationBox.addChild(createPageButton(j));
+						}
+					}
+					else
+					{
+						for (var k:int=currentPage - limit + 1; k <= currentPage + limit - 1; k++)
+						{
+							paginationBox.addChild(createPageButton(k));
+						}
+					}
+					if (currentPage < searchPageCount)
+					{
+						paginationBox.addChild(createControlButton(currentPage+1, nextI));
+						paginationBox.addChild(createControlButton(searchPageCount, lastI));
 					}
 				}
-				else if (current > tpxpm - limit)
-				{
-					for (upmt=tpxpm - upm + 1; upmt <= tpxpm; upmt++)
-					{
-						nav.addItem({label: upmt, data: upmt});
+				for each (var b:Button in paginationBox.getChildren()){
+					if(int(b.id) == currentPage){
+						b.enabled=false;
+						break;
 					}
 				}
-				else
-				{
-					for (upmt=current - limit + 1; upmt <= current + limit - 1; upmt++)
-					{
-						nav.addItem({label: upmt, data: upmt});
-					}
-				}
-				//upm=upmt;
-				if (current < tpxpm)
-				{
-					nav.addItem({label: "", data: current + 1, icon: nextI});
-				}
-				else
-				{
-					nav.addItem({label: "", data: tpxpm, icon: nextI});
-				}
-				nav.addItem({label: "", data: tpxpm, icon: lastI});
-				//DataModel.getInstance().lastPageShow=upm;
 				refreshDataProvider();
-				if (pageNav.enabled)
-				{
-					pageNav.dataProvider=nav;
-				}
-				else
-				{
-					pageNav.dataProvider=new ArrayCollection;
-				}
-
-			}
-
-			public function navigatePage(event:ItemClickEvent):void
-			{
-				var pag:int=event.item.data;
-				DataModel.getInstance().currentPage=pag;
-				createNavigatePage();
 			}
 
 			public function set onLanguage(value:Boolean):void
@@ -216,6 +183,57 @@
 					sort.selectedIndex=oldIndex;
 					DataModel.getInstance().languageChanged=false;
 				}
+			}
+
+			private function destroyPaginationMenu():void
+			{
+				paginationBox.removeAllChildren();
+			}
+
+			private function createPageButton(label:int):Button
+			{
+				var navButton:Button=new Button();
+				navButton.id=label.toString();
+				navButton.label=label.toString();
+				navButton.setStyle('cornerRadius', 4);
+				navButton.setStyle('paddingLeft', 0);
+				navButton.setStyle('paddingRight', 0);
+				navButton.setStyle('hihglightAlphas', [0, 0]);
+				navButton.setStyle('fillAlphas', [0, 0, 1, 1]);
+				navButton.setStyle('fillColors', [0xffffff, 0xcccccc, 0xaadeff, 0xaadeff]);
+				navButton.setStyle('fontFamily', 'Arial');
+				navButton.setStyle('fontSize', 12);
+				navButton.minWidth=24;
+				navButton.measuredWidth=24;
+				navButton.height=24;
+				navButton.addEventListener(MouseEvent.CLICK, navigateToPage);
+
+				return navButton;
+			}
+			
+			private function createControlButton(target:int, icon:Class):Button{
+				var ctrlButton:Button=new Button();
+				ctrlButton.id=target.toString();
+				ctrlButton.setStyle('cornerRadius', 4);
+				ctrlButton.setStyle('paddingLeft', 1);
+				ctrlButton.setStyle('paddingRight', 1);
+				ctrlButton.setStyle('fontFamily', 'Arial');
+				ctrlButton.setStyle('fontSize', 12);
+				ctrlButton.setStyle('icon', icon);
+				ctrlButton.width=24;
+				ctrlButton.height=24;
+				
+				ctrlButton.addEventListener(MouseEvent.CLICK, navigateToPage);
+				
+				return ctrlButton;
+			}
+
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				DataModel.getInstance().currentPage = int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPaginationMenu();
 			}
 		]]>
 	</mx:Script>
@@ -240,45 +258,38 @@
 						 dataProvider="{sortFields1}">
 
 			</mx:ComboBox>
-			<mx:LinkBar id="pageNav"
-						itemClick="navigatePage(event)"
-						horizontalGap="0"
-						horizontalAlign="center"
-						width="100%"
-						enabled="false"/>
 		</mx:HBox>
 	</mx:ApplicationControlBar>
-	<mx:Canvas id="canvasScroll"
-			   height="100%"
-			   width="100%"
-			   verticalScrollPolicy="auto"
-			   horizontalScrollPolicy="off">
-		<mx:HBox width="100%"
-				 paddingRight="20">
-			<mx:DataGrid id="searchListTable"
-						 width="100%"
-						 editable="false"
-						 selectable="false"
-						 verticalScrollPolicy="off"
-						 sortableColumns="false"
-						 draggableColumns="false"
-						 headerHeight="0">
-				<mx:columns>
-					<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
-				</mx:columns>
-			</mx:DataGrid>
-			<!--
-				 <mx:VBox>
-				 <tc:TagCloud id="tagCloud"
-				 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
-				 width="300"
-				 height="300">
-				 </tc:TagCloud>
-				 <mx:SWFLoader id="myLoader" width="300" height="300"
-				 source="../libs/tagcloud.swf"/>
-				 </mx:VBox>
-			-->
+	<mx:VBox width="100%">
+		<mx:DataGrid id="searchListTable"
+					 width="100%"
+					 editable="false"
+					 selectable="false"
+					 verticalScrollPolicy="off"
+					 sortableColumns="false"
+					 draggableColumns="false"
+					 headerHeight="0"
+					 backgroundAlpha="0"
+					 borderThickness="0">
+			<mx:columns>
+				<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<!--
+			 <mx:VBox>
+			 <tc:TagCloud id="tagCloud"
+			 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"
+			 width="300"
+			 height="300">
+			 </tc:TagCloud>
+			 <mx:SWFLoader id="myLoader" width="300" height="300"
+			 source="../libs/tagcloud.swf"/>
+			 </mx:VBox>
+		-->
 
-		</mx:HBox>
-	</mx:Canvas>
+		<mx:HBox id="paginationBox"
+				 width="100%"
+				 horizontalAlign="left"
+				 horizontalGap="2"/>
+	</mx:VBox>
 </mx:VBox>

@@ -20,25 +20,7 @@ package view.common
 		
 		public function CustomAlert()
 		{
-			super();
-			
-			setStyle('backgroundColor', 0xffffff);
-			setStyle('borderColor',0xE5E8EA);
-			setStyle('borderThickness',1);
-			setStyle('borderStyle', "solid");
-			setStyle('dropShadowEnabled', true);
-			setStyle('dropShadowColor', 0x000000);
-			setStyle('cornerRadius',6);
-			setStyle('color',0x2B333C);
-			setStyle('fontSize',11);
-			setStyle('paddingBottom', 2);
-			setStyle('paddingLeft', 2);
-			setStyle('paddingRight',2);
-			setStyle('headerHeight', 19);
-			setStyle('headerColors', [0x919191, 0xFFFFFF]);
-			setStyle('footerColors', [0x9db6d9, 0xffffff]);
-			setStyle('borderColor', 0xaaaaaa);
-			
+			super();	
 		}
 		
 		public static function info(text:String = "",
@@ -69,6 +51,7 @@ package view.common
 		}
 		
 		private static function setStyles(alert:Alert):void{
+			alert.setStyle('fontSize',11);
 			alert.setStyle('backgroundColor', 0xffffff);
 			alert.setStyle('borderColor',0xE5E8EA);
 			alert.setStyle('borderThickness',1);
@@ -77,7 +60,6 @@ package view.common
 			alert.setStyle('dropShadowColor', 0x000000);
 			alert.setStyle('cornerRadius',6);
 			alert.setStyle('color',0x2B333C);
-			alert.setStyle('fontSize',11);
 			alert.setStyle('paddingBottom', 2);
 			alert.setStyle('paddingLeft', 2);
 			alert.setStyle('paddingRight',2);
@@ -85,6 +67,8 @@ package view.common
 			alert.setStyle('headerColors', [0x919191, 0xFFFFFF]);
 			alert.setStyle('footerColors', [0x9db6d9, 0xffffff]);
 			alert.setStyle('borderColor', 0xaaaaaa);
+			
+			alert.autoLayout = true;
 		}
 		
 		
