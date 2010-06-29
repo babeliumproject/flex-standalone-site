@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 creationComplete="onComplete()"
 		 verticalScrollPolicy="off">
@@ -10,10 +10,14 @@
 			
 			import model.DataModel;
 			
+			import modules.search.VideoPaginator;
+			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
+			import mx.controls.Button;
 			
 			private var _refreshTimer:Timer;
+			
+			[Bindable] private var _currentPage:int = 1;
 			
 			[Bindable] private var _dataProvider:ArrayCollection;
 
@@ -37,9 +41,34 @@
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(0))
 				{
 					_dataProvider=DataModel.getInstance().availableExercises;
+					
+					createPagination();
+					
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
-					resizeDataGrid();
+					//resizeDataGrid();
 				}
+			}
+			
+			public function createPagination():void{
+				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav,  paginationBox, navigateToPage);
+				refreshDataProvider();
+			}
+			
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				_currentPage = int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+			
+			public function refreshDataProvider():void
+			{
+				var current:int=_currentPage - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				exerciseListTable.rowCount=dataTemp.length;
+				exerciseListTable.dataProvider=dataTemp;
 			}
 			
 			private function resizeDataGrid():void{
@@ -69,5 +98,9 @@
 			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 		</mx:columns>
 	</mx:DataGrid>
-
-</mx:HBox>
+	
+	<mx:HBox id="paginationBox"
+			 width="100%"
+			 horizontalAlign="left"
+			 horizontalGap="2"/>
+</mx:VBox>

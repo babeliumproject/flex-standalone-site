@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:exercises="modules.main.*"
 		 width="100%"
 		 horizontalAlign="center"
-		 creationComplete="onComplete()" xmlns:exercises1="commands.exercises.*">
+		 creationComplete="onComplete()"
+		 xmlns:exercises1="commands.exercises.*">
 	<mx:Metadata>
         [ResourceBundle("myResources")]
     </mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-			
+
 			import model.DataModel;
-			
+
+			import modules.search.VideoPaginator;
+
 			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
 			import mx.core.Application;
-			
+
 			import vo.ExerciseVO;
 
 
 			[Bindable]
-			private var dp:ArrayCollection;
+			private var _dataProvider:ArrayCollection;
+
+			[Bindable]
+			private var _currentPage:int=1;
 
 			public var thumbURL:String='';
 
@@ -35,9 +42,35 @@
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
 				{
 					exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
-					dp=DataModel.getInstance().availableRecordableExercises;
+					_dataProvider=DataModel.getInstance().availableRecordableExercises;
+
+					createPagination();
+
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
+			}
+
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
+				refreshDataProvider();
+			}
+
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				_currentPage=int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+
+			public function refreshDataProvider():void
+			{
+				var current:int=_currentPage - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				exerciseListDatagrid.rowCount=dataTemp.length;
+				exerciseListDatagrid.dataProvider=dataTemp;
 			}
 
 			private function changeHandler(event:Event):void
@@ -54,7 +87,7 @@
 
 			public function updateVerticalScroll():void
 			{
-				Application.application.verticalScrollPosition = 0;
+				Application.application.verticalScrollPosition=0;
 			}
 		]]>
 	</mx:Script>
@@ -67,7 +100,7 @@
 				 width="100%"
 				 height="100%"
 				 id="exerciseListDatagrid"
-				 dataProvider="{dp}"
+				 dataProvider="{_dataProvider}"
 				 enabled="{!DataModel.getInstance().recordingExercise}"
 				 change="changeHandler(event)"
 				 verticalScrollPolicy="off"
@@ -84,7 +117,9 @@
 						<exercises:ExerciseListItem specificClickListeners="false"/>
 					</mx:Component>
 				</mx:itemRenderer>
-			</mx:DataGridColumn>	
+			</mx:DataGridColumn>
 		</mx:columns>
 	</mx:DataGrid>
-</mx:HBox>
+	<mx:HBox id="paginationBox"
+			 width="100%"/>
+</mx:VBox>
