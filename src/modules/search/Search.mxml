@@ -70,11 +70,16 @@
 						labelSort.enabled=false;
 						sort.enabled=false;
 					}
-					createPaginationMenu();
+					createPagination();
 					DataModel.getInstance().videoSearchesRetrieved=false;
 					descendingCB=true;
 					currentCBIndex=0;
 				}
+			}
+			
+			public function createPagination():void{
+				VideoPaginator.createPaginationMenu(dataProvider.length, DataModel.getInstance().pageSize, DataModel.getInstance().currentPage, DataModel.getInstance().numberOfPagesNav,  paginationBox, navigateToPage);
+				refreshDataProvider();
 			}
 
 			public function refreshDataProvider():void
@@ -117,61 +122,7 @@
 				dataProvider.source=dataProvider.toArray();
 				currentCBIndex=eSI;
 				DataModel.getInstance().currentPage=1;
-				createPaginationMenu();
-			}
-
-			public function createPaginationMenu():void
-			{
-				var buttonCountInPaginationBox:int=DataModel.getInstance().numberOfPagesNav;
-				var limit:int=(buttonCountInPaginationBox + 1) / 2;
-				var itemsPerPage:int=DataModel.getInstance().pageSize;
-				var searchItemCount:int=dataProvider.length;
-				var currentPage:int=DataModel.getInstance().currentPage;
-				var searchPageCount:int=(searchItemCount % itemsPerPage == 0) ? (searchItemCount / itemsPerPage) : searchItemCount / itemsPerPage + 1;
-
-				destroyPaginationMenu();
-
-				if (searchItemCount / itemsPerPage >= 1)
-				{
-					if (currentPage > 1)
-					{
-						paginationBox.addChild(createControlButton(1, firstI));
-						paginationBox.addChild(createControlButton(currentPage -1, previousI));
-					}
-					if (currentPage <= limit)
-					{
-						for (var i:int=1; (i <= searchPageCount && i <= buttonCountInPaginationBox); i++)
-						{
-							paginationBox.addChild(createPageButton(i));
-						}
-					}
-					else if (currentPage > searchPageCount - limit)
-					{
-						for (var j:int=searchPageCount - buttonCountInPaginationBox + 1; j <= searchPageCount; j++)
-						{
-							paginationBox.addChild(createPageButton(j));
-						}
-					}
-					else
-					{
-						for (var k:int=currentPage - limit + 1; k <= currentPage + limit - 1; k++)
-						{
-							paginationBox.addChild(createPageButton(k));
-						}
-					}
-					if (currentPage < searchPageCount)
-					{
-						paginationBox.addChild(createControlButton(currentPage+1, nextI));
-						paginationBox.addChild(createControlButton(searchPageCount, lastI));
-					}
-				}
-				for each (var b:Button in paginationBox.getChildren()){
-					if(int(b.id) == currentPage){
-						b.enabled=false;
-						break;
-					}
-				}
-				refreshDataProvider();
+				createPagination();
 			}
 
 			public function set onLanguage(value:Boolean):void
@@ -185,55 +136,12 @@
 				}
 			}
 
-			private function destroyPaginationMenu():void
-			{
-				paginationBox.removeAllChildren();
-			}
-
-			private function createPageButton(label:int):Button
-			{
-				var navButton:Button=new Button();
-				navButton.id=label.toString();
-				navButton.label=label.toString();
-				navButton.setStyle('cornerRadius', 4);
-				navButton.setStyle('paddingLeft', 0);
-				navButton.setStyle('paddingRight', 0);
-				navButton.setStyle('hihglightAlphas', [0, 0]);
-				navButton.setStyle('fillAlphas', [0, 0, 1, 1]);
-				navButton.setStyle('fillColors', [0xffffff, 0xcccccc, 0xaadeff, 0xaadeff]);
-				navButton.setStyle('fontFamily', 'Arial');
-				navButton.setStyle('fontSize', 12);
-				navButton.minWidth=24;
-				navButton.measuredWidth=24;
-				navButton.height=24;
-				navButton.addEventListener(MouseEvent.CLICK, navigateToPage);
-
-				return navButton;
-			}
-			
-			private function createControlButton(target:int, icon:Class):Button{
-				var ctrlButton:Button=new Button();
-				ctrlButton.id=target.toString();
-				ctrlButton.setStyle('cornerRadius', 4);
-				ctrlButton.setStyle('paddingLeft', 1);
-				ctrlButton.setStyle('paddingRight', 1);
-				ctrlButton.setStyle('fontFamily', 'Arial');
-				ctrlButton.setStyle('fontSize', 12);
-				ctrlButton.setStyle('icon', icon);
-				ctrlButton.width=24;
-				ctrlButton.height=24;
-				
-				ctrlButton.addEventListener(MouseEvent.CLICK, navigateToPage);
-				
-				return ctrlButton;
-			}
-
 			private function navigateToPage(event:MouseEvent):void
 			{
 				//Go to the page
 				DataModel.getInstance().currentPage = int((event.target as Button).id);
 				//Refresh the pagination controls
-				createPaginationMenu();
+				createPagination();
 			}
 		]]>
 	</mx:Script>

@@ -7,6 +7,7 @@ package business
 	import mx.rpc.remoting.RemoteObject;
 	
 	import vo.LoginVO;
+	import vo.UserVO;
 	
 	public class LoginDelegate
 	{
@@ -20,6 +21,12 @@ package business
 		public function processLogin(user:LoginVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("loginRO");
 			var pendingCall:AsyncToken = service.processLogin(user);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function resendActivationEmail(data:UserVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("loginRO");
+			var pendingCall:AsyncToken = service.resendActivationEmail(data);
 			pendingCall.addResponder(responder);
 		}
 

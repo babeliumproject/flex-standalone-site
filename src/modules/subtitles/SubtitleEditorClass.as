@@ -469,7 +469,8 @@ package modules.subtitles
 		public function onTabChange(value:Boolean):void
 		{
 			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX){
-				VP.endVideo();
+				if(videoPlayerReady) 
+					VP.endVideo();
 				VP.setSubtitle(""); // Clear subtitles if any
 				VP.videoSource = ""; // Reset video source
 				VP.subtitlingControls = false;

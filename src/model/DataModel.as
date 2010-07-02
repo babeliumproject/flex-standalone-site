@@ -53,6 +53,7 @@ package model
 		[Bindable] public var creditUpdateRetrieved:Boolean = false;
 		[Bindable] public var keepAliveInterval:int = 180000; //3 minutes
 		[Bindable] public var eventSchedulerInstance:KeepAliveTimer = new KeepAliveTimer();
+		[Bindable] public var activationEmailResent:Boolean = false;
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

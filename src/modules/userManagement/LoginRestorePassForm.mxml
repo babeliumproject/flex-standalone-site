@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 						  xmlns:common="view.common.*"
-						  showCloseButton="true"
+						  verticalScrollPolicy="off"
+						  horizontalScrollPolicy="off"
 						  autoLayout="true"
+						  showCloseButton="true"
 						  title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
 						  creationComplete="completeHandler()">
 	<mx:Metadata>
@@ -21,22 +23,18 @@
 			import mx.managers.PopUpManager;
 			
 			import vo.LoginVO;
+			import vo.UserVO;
 
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int=13;
-
-			[Bindable]
-			private var dataModel:DataModel=DataModel.getInstance();
 
 			private var rememberSO:SharedObject;
 
 			public function completeHandler():void
 			{
-				this.addEventListener(CloseEvent.CLOSE, cancelButtonClickHandler);
+				this.addEventListener(CloseEvent.CLOSE, closeButtonClickHandler);
 				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
 				focusManager.setFocus(username);
-
-				rememberSO=SharedObject.getLocal("babeliaData");
 			}
 
 			private function checkPressedKey(e:KeyboardEvent):void
@@ -47,6 +45,8 @@
 						processLogin(null);
 					else if(loginViewStack.selectedChild == restorePassFormBox)
 						processRestorePass(null);
+					else if(loginViewStack.selectedChild == resendActivationEmailBox)
+						resendActivationEmail(null);
 				}
 			}
 
@@ -57,25 +57,33 @@
 				var user:LoginVO=new LoginVO(username.text, passHash);
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, user).dispatch();
 			}
+			
+			public function closeButtonClickHandler(event:CloseEvent):void{
+				PopUpManager.removePopUp(this);
+			}
 
-			public function cancelButtonClickHandler(event:Event):void
+			public function cancelButtonClickHandler(event:MouseEvent):void
 			{
 				PopUpManager.removePopUp(this);
 			}
 
 			private function set wrongLogin(upd:Boolean):void
 			{
-				if (dataModel.loginErrorMessage != '')
+				if (DataModel.getInstance().loginErrorMessage != '')
 				{
-					errorInfo.text=resourceManager.getString('myResources','LABEL_'+dataModel.loginErrorMessage);
-					dataModel.loginErrorMessage="";
+					if(DataModel.getInstance().loginErrorMessage == "inactive_user"){
+						resendEmailLink.visible = true;
+					}
+					errorInfo.text=resourceManager.getString('myResources','LABEL_'+DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					DataModel.getInstance().loginErrorMessage="";
 				}
 			}
 
 			private function set loggedSuccessfully(upd:Boolean):void
 			{
-				if (dataModel.isSuccessfullyLogged == true)
+				if (DataModel.getInstance().isSuccessfullyLogged == true)
 				{
+					rememberSO=SharedObject.getLocal("babeliaData");
 					if (rememberSO.data.username == undefined || rememberSO.data.hash == undefined)
 					{
 						//The user wants the application to remember him/her
@@ -89,15 +97,15 @@
 						username.text="";
 						password.text="";
 					}
-					dataModel.isSuccessfullyLogged=false;
-					cancelButtonClickHandler(null);
+					DataModel.getInstance().isSuccessfullyLogged=false;
+					PopUpManager.removePopUp(this);
 				}
 			}
 
 			private function showRestorePass(event:Event):void
 			{
-				errorInfo.text=dataModel.restorePassErrorMessage;
-				dataModel.restorePassErrorMessage="";
+				errorInfo.text=DataModel.getInstance().restorePassErrorMessage;
+				DataModel.getInstance().restorePassErrorMessage="";
 				this.title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
 				username.text = '';
 				password.text = '';
@@ -110,13 +118,24 @@
 				this.title = resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
 				userOrEmail.text = '';
 				focusManager.setFocus(username);
+				resendEmailLink.visible = false;
 				loginViewStack.selectedChild=loginFormBox;
+			}
+			
+			private function showActivationResend(even:Event):void{
+				errorInfo.text='';
+				this.title = resourceManager.getString('myResources','LABEL_SEND_EMAIL_AGAIN');
+				activationUsername.text = '';
+				activationEmail.text = '';
+				resendEmailLink.visible = false;
+				focusManager.setFocus(activationUsername);
+				loginViewStack.selectedChild = resendActivationEmailBox;
 			}
 
 
 			private function set passRecoveryDone(flag:Boolean):void
 			{
-				cancelButtonClickHandler(null);
+				PopUpManager.removePopUp(this);
 			}
 
 			private function processRestorePass(event:Event):void
@@ -124,15 +143,29 @@
 				var user:LoginVO=new LoginVO(userOrEmail.text, "");
 				new LoginEvent(LoginEvent.RESTORE_PASS, user).dispatch();
 			}
+			
+			private function resendActivationEmail(event:Event):void{
+				var data:UserVO=new UserVO();
+				data.name = activationUsername.text;
+				data.email = activationEmail.text;
+				new LoginEvent(LoginEvent.RESEND_ACTIVATION_EMAIL, null, data);
+			}
+			
+			private function set onActivationEmailResent(value:Boolean):void{
+				
+			}
+			
 		]]>
 	</mx:Script>
 
-	<mx:Binding source="{dataModel.loginErrorMessage}"
+	<mx:Binding source="{DataModel.getInstance().loginErrorMessage}"
 				destination="wrongLogin"/>
-	<mx:Binding source="{dataModel.isSuccessfullyLogged}"
+	<mx:Binding source="{DataModel.getInstance().isSuccessfullyLogged}"
 				destination="loggedSuccessfully"/>
-	<mx:Binding source="{dataModel.passRecoveryDone}"
+	<mx:Binding source="{DataModel.getInstance().passRecoveryDone}"
 				destination="passRecoveryDone"/>
+	<mx:Binding source="{DataModel.getInstance().activationEmailResent}"
+				destination="onActivationEmailResent"/>
 
 	<mx:Label id="errorInfo"
 			  fontFamily="Arial"
@@ -174,14 +207,20 @@
 						   id="cancelButton"
 						   click="cancelButtonClickHandler(event)"/>
 			</mx:HBox>
-			<mx:HBox width="100%"
+			<mx:VBox id="loginProblemTroubleshootingBox"
+					 width="100%"
 					 horizontalAlign="center"
 					 paddingTop="10">
 				<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}"
 							   id="restorePassword"
 							   textDecoration="underline"
 							   click="showRestorePass(event)"/>
-			</mx:HBox>
+				<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_SEND_EMAIL_AGAIN')}"
+							   id="resendEmailLink"
+							   textDecoration="underline"
+							   click="showActivationResend(event)"
+							   visible="false"/>
+			</mx:VBox>
 		</mx:VBox>
 
 		<mx:VBox id="restorePassFormBox"
@@ -202,5 +241,30 @@
 						   click="showLogin(event)"/>
 			</mx:HBox>
 		</mx:VBox>
+		
+		<mx:VBox id="resendActivationEmailBox" width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_INPUT_USER_AND_EMAIL')}"/>
+			<mx:Form width="100%">
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
+					<mx:TextInput id="activationUsername"
+								  width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_EMAIL')}">
+					<mx:TextInput id="activationEmail"
+								  width="100%"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:HBox width="100%"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+						   id="activationOkButton"
+						   click="resendActivationEmail(event)"/>
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						   id="activationCancelButton"
+						   click="cancelButtonClickHandler(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+		
 	</mx:ViewStack>
 </common:CustomTitleWindow>

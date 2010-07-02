@@ -66,6 +66,7 @@ package control {
 	import commands.userManagement.KeepSessionAliveCommand;
 	import commands.userManagement.ProcessLoginCommand;
 	import commands.userManagement.RegisterUserCommand;
+	import commands.userManagement.ResendActivationEmailCommand;
 	import commands.userManagement.RestorePassCommand;
 	import commands.userManagement.SignOutCommand;
 	import commands.userManagement.ViewAccountModuleCommand;
@@ -170,6 +171,7 @@ package control {
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);
 			addCommand(LoginEvent.SIGN_OUT, SignOutCommand);
 			addCommand(LoginEvent.RESTORE_PASS, RestorePassCommand);
+			addCommand(LoginEvent.RESEND_ACTIVATION_EMAIL, ResendActivationEmailCommand);
 
 			// User Registration management
 			addCommand(RegisterUserEvent.REGISTER_USER, RegisterUserCommand);

@@ -85,8 +85,9 @@ class Mailer
 		
 		try {
 			$mail->send($transport);
-		} catch (Exception $e) {return false;}
-
+		} catch (Exception $e) {
+			return false;
+		}
 		return true;
 	}
 
