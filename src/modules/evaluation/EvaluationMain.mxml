@@ -199,11 +199,6 @@
 				VP.stopVideo();
 				VP.videoSource="";
 
-				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
-				VP.refresh();
-
 				hideArrows();
 				resetCueManager();
 				prepareCueManager();
@@ -228,8 +223,13 @@
 
 			private function onSubtitlesRetrieved(e:CueManagerEvent):void
 			{
-				showArrows();
 				setupSimultaneousPlaybackCommands();
+				
+				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+				VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
+				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
+				VP.refresh();
 			}
 
 			private function setupExercisePlaybackCommands():void
@@ -300,6 +300,11 @@
 			{
 				VP.arrows=false;
 				VP.removeArrows();
+			}
+			
+			private function onMetadataRetrieved(e:Event) : void
+			{
+				showArrows();
 			}
 
 			private function sendAssessmentClickHandler():void
