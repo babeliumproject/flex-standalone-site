@@ -578,7 +578,8 @@
 				assessedByCurrentUserDataGrid.selectedIndex = -1;
 				assessedToCurrentUserDataGrid.selectedIndex = -1;
 
-				VP.stopVideo();
+				VP.endVideo();
+				VP.setSubtitle("");
 				VP.videoSource="";
 				hideArrows();
 				resetCueManager();

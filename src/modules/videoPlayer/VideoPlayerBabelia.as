@@ -609,6 +609,17 @@ package modules.videoPlayer
 
 			setSubtitle("");
 		}
+		
+		override public function endVideo() : void
+		{
+			super.endVideo();
+			
+			if ( state == PLAY_BOTH_STATE && _inNs != null )
+			{
+				_inNs.close();
+				_inNs = null;
+			}
+		}
 
 		/**
 		 * Overriden on seek end:
@@ -1089,6 +1100,9 @@ package modules.videoPlayer
 		 **/
 		private function playSecondStream():void
 		{
+			if ( _inNs != null )
+				_inNs.close();
+			
 			if (_inNc.connected)
 			{
 				_inNs=new NetStream(_inNc);
