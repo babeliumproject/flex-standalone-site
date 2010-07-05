@@ -24,6 +24,7 @@ package commands.cuepointManager
 				VP.setSubtitle("");
 				VP.muteVideo(false);
 				VP.muteRecording(true);
+				VP.highlight = false;
 			}
 		/*
 		   if(!DataModel.getInstance().soundDetected &&

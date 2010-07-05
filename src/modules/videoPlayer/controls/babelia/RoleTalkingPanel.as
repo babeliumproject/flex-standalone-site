@@ -1,14 +1,15 @@
 package modules.videoPlayer.controls.babelia
 {
+	import flash.display.Sprite;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	import modules.videoPlayer.controls.SkinableComponent;
 	
 	import mx.controls.ProgressBar;
 	import mx.controls.ProgressBarMode;
 	import mx.controls.Text;
 	import mx.core.UIComponent;
-	import flash.display.Sprite;
-	import flash.utils.Timer;
-	import flash.events.TimerEvent;
 	
 	public class RoleTalkingPanel extends SkinableComponent
 	{
@@ -20,6 +21,7 @@ package modules.videoPlayer.controls.babelia
 		public static const BAR_COLOR:String = "barColor";
 		public static const BORDER_COLOR:String = "borderColor";
 		public static const BG_COLOR:String = "bgColor";
+		public static const HL_COLOR:String="hlColor";
 		
 		private var _bg:Sprite;
 		private var _textBox:Text;
@@ -34,6 +36,7 @@ package modules.videoPlayer.controls.babelia
 		private var _refreshTime:Number = 10;
 		private var _startTime:Number;
 		private var _pauseTime:Number;
+		private var _highlight:Boolean = false;
 		
 		public function RoleTalkingPanel()
 		{
@@ -75,6 +78,14 @@ package modules.videoPlayer.controls.babelia
 		{			
 			this.width = width;
 			this.height = height;
+			
+			refresh();
+		}
+		
+		override protected function updateDisplayList(w:Number, h:Number):void
+		{
+			if ( w != 0 ) width = w;
+			if ( h != 0 ) height = h;
 			
 			CreateBG( width, height );
 			
@@ -159,9 +170,18 @@ package modules.videoPlayer.controls.babelia
 			_bg.graphics.beginFill( getSkinColor(BORDER_COLOR) );
 			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
 			_bg.graphics.endFill();
-			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
+			if ( !_highlight )
+				_bg.graphics.beginFill(getSkinColor(BG_COLOR));
+			else
+				_bg.graphics.beginFill(getSkinColor(HL_COLOR));
 			_bg.graphics.drawRoundRect(2, 2, width-4, height-4, 10, 10);
 			_bg.graphics.endFill();
+		}
+		
+		public function set highlight(flag:Boolean) : void
+		{
+			_highlight = flag;
+			refresh();
 		}
 	}
 }

@@ -16,12 +16,14 @@ package modules.videoPlayer.controls.babelia
 		 */
 		public static const BORDER_COLOR:String="borderColor";
 		public static const BG_COLOR:String="bgColor";
+		public static const HL_COLOR:String="hlColor";
 
 		private var _bg:Sprite;
 		private var _arrows:ArrayCollection;
 		private var _dataProvider:ArrayCollection;
 		private var _boxWidth:Number=500;
 		private var _boxHeight:Number=50;
+		private var _highlight:Boolean=false;
 
 		public function ArrowPanel(state:Boolean=false)
 		{
@@ -45,6 +47,14 @@ package modules.videoPlayer.controls.babelia
 			this.width=width;
 			this.height=height;
 
+			refresh();
+		}
+		
+		override protected function updateDisplayList(w:Number, h:Number):void
+		{
+			if ( w != 0 ) width = w;
+			if ( h != 0 ) height = h;
+			
 			CreateBG(width, height);
 		}
 
@@ -77,9 +87,18 @@ package modules.videoPlayer.controls.babelia
 			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
 			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
 			_bg.graphics.endFill();
-			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
+			if ( !_highlight )
+				_bg.graphics.beginFill(getSkinColor(BG_COLOR));
+			else
+				_bg.graphics.beginFill(getSkinColor(HL_COLOR));
 			_bg.graphics.drawRoundRect(2, 2, width - 4, height - 4, 10, 10);
 			_bg.graphics.endFill();
+		}
+		
+		public function set highlight(flag:Boolean) : void
+		{
+			_highlight = flag;
+			refresh();
 		}
 
 		private function doShowArrow(time:Number, duration:Number, flag:Boolean):void

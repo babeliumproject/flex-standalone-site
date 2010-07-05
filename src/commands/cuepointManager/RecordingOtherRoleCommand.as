@@ -24,6 +24,7 @@ package commands.cuepointManager
 		{
 			VP.setSubtitle(text);
 			VP.startTalking(role, time);
+			VP.highlight = false;
 		}	
 	}
 }

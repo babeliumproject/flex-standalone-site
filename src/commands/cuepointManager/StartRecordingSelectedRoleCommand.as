@@ -31,6 +31,7 @@ package commands.cuepointManager
 				VP.muteVideo(true);
 				VP.muteRecording(false);
 				VP.startTalking(role, time);
+				VP.highlight = true;
 					//if(!DataModel.getInstance().soundDetected)
 					//	DataModel.getInstance().gapsWithNoSound++;
 			}

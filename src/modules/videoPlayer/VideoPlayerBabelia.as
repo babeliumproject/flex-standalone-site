@@ -391,6 +391,16 @@ package modules.videoPlayer
 			// splits video panel into 2 views
 			splitVideoPanel();
 		}
+		
+		/**
+		 *  Highlight components
+		 **/
+		public function set highlight(flag:Boolean) : void
+		{
+			_arrowPanel.highlight = flag;
+			_roleTalkingPanel.highlight = flag;
+		}
+		
 
 		/**
 		 * Get video time

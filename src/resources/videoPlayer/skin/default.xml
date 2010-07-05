@@ -16,6 +16,7 @@
 	</Component>
 	<Component name="ArrowPanel">
 		<Property name="bgColor">0x343434</Property>
+		<Property name="hlColor">0xFFCB99</Property>
 		<Property name="borderColor">0x000000</Property>
 	</Component>
 	<Component name="LocaleComboBox">
@@ -27,6 +28,7 @@
 		<Property name="textColor">0xFFB600</Property>
 		<Property name="roleColor">0xFFFFFF</Property>
 		<Property name="barColor">0xFFB600</Property>
+		<Property name="hlColor">0xFFCB99</Property>
 	</Component>
 	<Component name="SubtitleButton">
 		<Property name="bgColor">0x343434</Property>
