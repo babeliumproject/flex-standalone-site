@@ -2,7 +2,6 @@ package modules.videoPlayer.controls.babelia
 {
 	import modules.videoPlayer.controls.SkinableComponent;
 	
-	import mx.controls.Alert;
 	import mx.controls.ProgressBar;
 	import mx.controls.ProgressBarMode;
 	import mx.controls.Text;
@@ -133,6 +132,7 @@ package modules.videoPlayer.controls.babelia
 		{
 			_timer.stop();
 			_timer.reset();
+			_talking = false;
 			_pBar.setProgress(0,1);
 			_roleBox.text = "";
 		}

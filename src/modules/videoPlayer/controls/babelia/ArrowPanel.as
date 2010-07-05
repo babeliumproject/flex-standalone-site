@@ -1,11 +1,12 @@
 package modules.videoPlayer.controls.babelia
 {
+	import flash.display.Sprite;
+	
+	import modules.videoPlayer.controls.SkinableComponent;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Image;
-	import mx.controls.Alert;
 	import mx.core.UIComponent;
-	import flash.display.Sprite;
-	import modules.videoPlayer.controls.SkinableComponent;
 
 
 	public class ArrowPanel extends SkinableComponent
@@ -73,8 +74,6 @@ package modules.videoPlayer.controls.babelia
 		{
 			_bg.graphics.clear();
 
-			//Alert.show(getSkinColor(BORDER_COLOR).toString());
-
 			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
 			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
 			_bg.graphics.endFill();
@@ -88,13 +87,27 @@ package modules.videoPlayer.controls.babelia
 			var arrow:Image=new Image();
 			if (flag)
 				arrow.source="resources/images/fletxa_gorri.png";
-			//else
+			else return;
 			//	arrow.source="resources/images/fletxa_beltza.png";
 
-			arrow.x=time * this.width / duration - 3; // TODO 3
-			arrow.y=4;
+			/*************************************
+			 *    \/  (0)
+			 *  _________________________________
+			 * |__|______________________________|
+			 * 0                               duration
+			 * 
+			 * arrow's width: 17px
+			 * scrubber's width: 10px
+			 * margins: ~5px (left) ~5px (right)
+			 * ***********************************/
+			var margin:int = 5;
+			var scrubberW:int = 10;
+			
 			arrow.width=17;
 			arrow.height=35;
+			arrow.x=time * (width-scrubberW - margin*2) / duration + 
+							(margin + scrubberW - arrow.width/2 -1); // -1 
+			arrow.y=4;
 
 			_arrows.addItem(arrow);
 			addChild(arrow);
