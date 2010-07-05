@@ -9,6 +9,7 @@ package model
 	
 	import modules.autoevaluation.Evaluation;
 	import modules.userManagement.KeepAliveTimer;
+	import modules.userManagement.LoginRestorePassForm;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -54,6 +55,7 @@ package model
 		[Bindable] public var keepAliveInterval:int = 180000; //3 minutes
 		[Bindable] public var eventSchedulerInstance:KeepAliveTimer = new KeepAliveTimer();
 		[Bindable] public var activationEmailResent:Boolean = false;
+		[Bindable] public var loginPop:LoginRestorePassForm;
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

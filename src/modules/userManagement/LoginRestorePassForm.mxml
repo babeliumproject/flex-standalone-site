@@ -98,7 +98,7 @@
 						password.text="";
 					}
 					DataModel.getInstance().isSuccessfullyLogged=false;
-					PopUpManager.removePopUp(this);
+					PopUpManager.removePopUp(DataModel.getInstance().loginPop);
 				}
 			}
 

@@ -25,10 +25,6 @@ package modules.main
 
 	public class HeaderClass extends HBox
 	{
-
-		//Login related properties
-		public var loginPop:LoginRestorePassForm;
-
 		private var interval:uint;
 		private var intervalLoops:int;
 
@@ -96,8 +92,8 @@ package modules.main
 
 		public function showLogin():void
 		{
-			loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
-			PopUpManager.centerPopUp(loginPop);
+			DataModel.getInstance().loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
+			PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 		}
 
 		private function cachedAuthentication():void
