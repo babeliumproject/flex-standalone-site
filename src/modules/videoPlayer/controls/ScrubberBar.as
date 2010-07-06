@@ -260,7 +260,7 @@ package modules.videoPlayer.controls
 		{
 			_marks.graphics.beginFill(0xFF0000);
 			_marks.graphics.drawRect( time*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2,
-											0, 2, _defaultHeight );
+											2, 2, _defaultHeight-4 );
 			_marks.graphics.endFill();
 		}
 		
