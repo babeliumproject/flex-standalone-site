@@ -1,16 +1,17 @@
 package modules.videoPlayer.controls
 {
-	import modules.videoPlayer.events.ScrubberBarEvent;
-	
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
+	import modules.videoPlayer.events.ScrubberBarEvent;
+	
+	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
-	import mx.controls.Alert;
 
 	public class ScrubberBar extends SkinableComponent
 	{
@@ -35,6 +36,7 @@ package modules.videoPlayer.controls
 		private var _loadedBar:Sprite;
 		private var _scrubber:Sprite;
 		private var _bg:Sprite;
+		private var _marks:Sprite;
 		
 		private var _barWidth:Number = 100;
 		private var _barHeight:Number = 10;
@@ -46,6 +48,8 @@ package modules.videoPlayer.controls
 		private var _minX:Number;
 		private var _dragging:Boolean = false;
 		
+		private var _dataProvider:ArrayCollection;
+		private var _duration:Number;
 		
 		
 		public function ScrubberBar()
@@ -57,9 +61,11 @@ package modules.videoPlayer.controls
 			_loadedBar = new Sprite();
 			_scrubber = new Sprite();
 			_bg = new Sprite();
+			_marks = new Sprite();
 			
 			addChild( _bg );
 			addChild( _bar );
+			addChild( _marks ); // z-index
 			addChild( _loadedBar );
 			addChild( _progBar );
 			addChild( _scrubber );
@@ -136,6 +142,11 @@ package modules.videoPlayer.controls
 			
 			_minX = _scrubber.x;
 			_maxX = _bar.x + _bar.width - _scrubber.width;
+			
+			// set marks
+			_marks.graphics.clear();
+			for each (var obj:Object in _dataProvider)
+				doShowMark(obj.time, _duration);
 		}
 		
 		private function onBarClick( e:MouseEvent ) : void
@@ -211,12 +222,12 @@ package modules.videoPlayer.controls
 		}
 		
 		
-		private function createBG( _bg:Sprite, bgWidth:Number, bgHeight:Number ):void
+		private function createBG( bg:Sprite, bgWidth:Number, bgHeight:Number ):void
 		{
-			_bg.graphics.clear();
-			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
-			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
-			_bg.graphics.endFill();
+			bg.graphics.clear();
+			bg.graphics.beginFill( getSkinColor(BG_COLOR) );
+			bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
+			bg.graphics.endFill();
 		}
 		
 		
@@ -238,5 +249,26 @@ package modules.videoPlayer.controls
 			return Math.floor( ( _scrubber.x / ( _bar.width - _scrubber.width ) ) * duration );
 		}
 		
+		public function setMarks(data:ArrayCollection, duration:Number):void
+		{
+			_dataProvider=data;
+			_duration = duration;
+			refresh();
+		}
+		
+		private function doShowMark(time:Number, duration:Number) : void
+		{
+			_marks.graphics.beginFill(0xFF0000);
+			_marks.graphics.drawRect( time*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2,
+											0, 2, _defaultHeight );
+			_marks.graphics.endFill();
+		}
+		
+		public function removeMarks() : void
+		{
+			if ( _dataProvider != null )
+				_dataProvider.removeAll();
+			refresh();
+		}
 	}
 }

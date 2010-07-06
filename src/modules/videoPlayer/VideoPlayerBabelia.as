@@ -264,12 +264,21 @@ package modules.videoPlayer
 		public function setArrows(arrows:ArrayCollection, selectedRole:String):void
 		{
 			_arrowPanel.setArrows(arrows, _duration, selectedRole);
+			
+			// Extract only selected roles
+			var tmp:ArrayCollection = new ArrayCollection();
+			for ( var i:Number = 0; i < arrows.length; i++ )
+				if ( arrows.getItemAt(i).role == selectedRole )
+					tmp.addItem(arrows.getItemAt(i));
+				
+			_sBar.setMarks(tmp, _duration);
 		}
 
 		// remove arrows from panel
 		public function removeArrows():void
 		{
 			_arrowPanel.removeArrows();
+			_sBar.removeMarks();
 		}
 
 		// show/hide arrow panel
