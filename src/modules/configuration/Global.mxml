@@ -158,25 +158,25 @@
 		]]>
 	</mx:Script>
 
-	<mx:HBox width="100%" height="100%">
-		<mx:TabNavigator id="configurationMenu" x="10" y="10" width="64%" height="95%" >			
-			<mx:VBox label="WebCam Configuration">
+	<mx:HBox width="100%" height="100%" fontFamily="Arial" fontSize="12">
+		<mx:TabNavigator id="configurationMenu" width="100%" height="100%">			
+			<mx:VBox label="{resourceManager.getString('myResources','LABEL_WEBCAM_SETUP')}">
 				<mod1:webCamCheck id="webCamCheck"/>
 				<mx:LinkButton id="refreshCamButton" visible="false" color="red" textDecoration="underline"
 					label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}" click="refreshWebCam()"/>
 			</mx:VBox>
 			
-			<mx:VBox label="Mic Configuration">
+			<mx:VBox label="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}">
 				<mod2:micCheck id="micCheck"/>
 				<mx:LinkButton id="refreshMicButton" visible="false" color="red" textDecoration="underline"
 					label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}" click="refreshMic()"/>
 			</mx:VBox>
 			
-			<mx:VBox label="BandWidth Configuration">
+			<mx:VBox label="{resourceManager.getString('myResources','LABEL_BANDWIDTH_CHECK')}">
 				<mod3:connectionCheck id="bandwidthCheck"/>
 			</mx:VBox>								
 		</mx:TabNavigator>
-		<mx:VBox>
+		<mx:VBox width="300">
 			<mx:Text text="{resourceManager.getString('myResources', 'RESULTS')}" fontSize="30" fontWeight="bold" textDecoration="underline"/>
 			<mx:Text text="{resourceManager.getString('myResources', 'WEBCAM')+':'}" id="webCamStatus" fontSize="20" visible="true"/>
 			<mx:Text text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}" id="microphoneStatus" fontSize="20"/>

@@ -55,6 +55,7 @@ package model
 		[Bindable] public var keepAliveInterval:int = 180000; //3 minutes
 		[Bindable] public var eventSchedulerInstance:KeepAliveTimer = new KeepAliveTimer();
 		[Bindable] public var activationEmailResent:Boolean = false;
+		[Bindable] public var activationEmailResentErrorMessage:String = '';
 		[Bindable] public var loginPop:LoginRestorePassForm;
 		
 		//Pass recovery
@@ -204,6 +205,8 @@ package model
 		[Bindable] public var micCamAllowed:Boolean = false;
 		[Bindable] public var gapsWithNoSound:int = 0;
 		[Bindable] public var soundDetected:Boolean = false;
+		[Bindable] public var cameraWidth:int = 320;
+		[Bindable] public var cameraHeight:int = 240;
 		
 		// Checks for exercise rating and reporting
 		[Bindable] public var userRatedExercise:Boolean = false;

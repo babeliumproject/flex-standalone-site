@@ -7,6 +7,9 @@ package commands.userManagement
 	
 	import events.LoginEvent;
 	
+	import model.DataModel;
+	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -24,8 +27,11 @@ package commands.userManagement
 		{
 			if(data.result as Boolean == true){
 				//Activation email successfully resent
+				DataModel.getInstance().activationEmailResent = !DataModel.getInstance().activationEmailResent;
+				CustomAlert.info("The activation data has been resent to the email address you specified.");
 			} else if (data.result == "user_active_wrong_email"){
 				//Error message incorrect data
+				DataModel.getInstance().activationEmailResentErrorMessage = ResourceManager.getInstance().getString('myResources','LABEL_ERROR_WRONG_ACTIVATION_RESEND_DATA');
 			}
 		}
 		

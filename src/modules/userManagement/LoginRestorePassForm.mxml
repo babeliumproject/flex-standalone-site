@@ -59,12 +59,12 @@
 			}
 			
 			public function closeButtonClickHandler(event:CloseEvent):void{
-				PopUpManager.removePopUp(this);
+				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
 			}
 
 			public function cancelButtonClickHandler(event:MouseEvent):void
 			{
-				PopUpManager.removePopUp(this);
+				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
 			}
 
 			private function set wrongLogin(upd:Boolean):void
@@ -135,7 +135,7 @@
 
 			private function set passRecoveryDone(flag:Boolean):void
 			{
-				PopUpManager.removePopUp(this);
+				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
 			}
 
 			private function processRestorePass(event:Event):void
@@ -148,11 +148,14 @@
 				var data:UserVO=new UserVO();
 				data.name = activationUsername.text;
 				data.email = activationEmail.text;
-				new LoginEvent(LoginEvent.RESEND_ACTIVATION_EMAIL, null, data);
+				new LoginEvent(LoginEvent.RESEND_ACTIVATION_EMAIL, null, data).dispatch();
 			}
 			
 			private function set onActivationEmailResent(value:Boolean):void{
-				
+				if(DataModel.getInstance().activationEmailResentErrorMessage != '')
+					errorInfo.text = DataModel.getInstance().activationEmailResentErrorMessage;
+				else
+					PopUpManager.removePopUp(DataModel.getInstance().loginPop);
 			}
 			
 		]]>

@@ -835,7 +835,9 @@ package modules.videoPlayer
 		 */
 		private function prepareDevices():void
 		{
-			if (DataModel.getInstance().micCamAllowed)
+			//The devices are permitted and initialized. Time to configure them
+			if((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) ||
+			   (state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
 			{
 				configureDevices();
 			}
@@ -855,6 +857,7 @@ package modules.videoPlayer
 		private function configureDevices():void
 		{
 			_camera=DataModel.getInstance().camera;
+			_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
 			_mic=DataModel.getInstance().microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setLoopBack(true);
@@ -911,6 +914,7 @@ package modules.videoPlayer
 			{
 				// Attach Camera
 				_camVideo.attachCamera(_camera);
+				_camVideo.smoothing = true;
 
 				splitVideoPanel();
 				_camVideo.visible=false;
@@ -1244,7 +1248,7 @@ package modules.videoPlayer
 					break;
 				default:
 					trace("Second NetStream Error: " + info.code);
-					CustomAlert.error("Error while transferring data from the streaming server. Please try again later.");
+					//CustomAlert.error("Error while transferring data from the streaming server. Please try again later.");
 					break;
 			}
 		}

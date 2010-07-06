@@ -467,8 +467,8 @@
 			}
 
 			private function prepareDevices():void
-			{
-				if (DataModel.getInstance().micCamAllowed && DataModel.getInstance().microphone != null && DataModel.getInstance().camera != null)
+			{	
+				if(PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
 				{
 					_micCamEnabled = DataModel.getInstance().micCamAllowed;
 					configureDevices();
@@ -485,6 +485,7 @@
 			private function configureDevices():void
 			{
 				_camera=DataModel.getInstance().camera;
+				_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
 				_mic=DataModel.getInstance().microphone;
 				_mic.setUseEchoSuppression(true);
 				_mic.setLoopBack(true);

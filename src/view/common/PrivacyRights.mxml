@@ -15,7 +15,7 @@
 
 		<![CDATA[
 			import model.DataModel;
-
+			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 
@@ -30,6 +30,17 @@
 			public static var cameraFound:Boolean=false;
 
 			public static var useMicAndCamera:Boolean=false;
+			
+			
+			public static function cameraReady():Boolean
+			{
+				return (DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted);
+			}
+			
+			public static function microphoneReady():Boolean
+			{
+				return (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted);
+			}
 
 			private function creationCompleteHandler():void
 			{
@@ -86,6 +97,7 @@
 								{
 									_cameraChanged=true;
 									DataModel.getInstance().camera=camera;
+	
 									trace("Camera device changed.");
 								}
 								if (DataModel.getInstance().camera.muted)
@@ -116,6 +128,7 @@
 				}
 				if (_devicesAllowed)
 				{
+					DataModel.getInstance().micCamAllowed=_devicesAllowed;
 					if (useMicAndCamera)
 					{
 						if (microphoneFound && cameraFound)
@@ -126,24 +139,6 @@
 						if (microphoneFound)
 							cancelButtonClickHandler(null);
 					}
-				}
-			}
-
-			private function initMicrophone():void
-			{
-				if (microphoneAvailable())
-				{
-					DataModel.getInstance().microphone=Microphone.getMicrophone();
-					DataModel.getInstance().microphone.addEventListener(StatusEvent.STATUS, microphonePrivacyStatus);
-				}
-			}
-
-			private function initCamera():void
-			{
-				if (cameraAvailable())
-				{
-					DataModel.getInstance().camera=Camera.getCamera();
-					DataModel.getInstance().camera.addEventListener(StatusEvent.STATUS, cameraPrivacyStatus);
 				}
 			}
 
@@ -166,16 +161,6 @@
 			public function microphoneAvailable():Boolean
 			{
 				return (Microphone.names.length > 0);
-			}
-
-			public function cameraReady():Boolean
-			{
-				return (DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted);
-			}
-
-			public function microphoneReady():Boolean
-			{
-				return (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted);
 			}
 
 			private function microphonePrivacyStatus(event:StatusEvent):void

@@ -52,7 +52,7 @@ class LoginDAO{
 		if($this->getUserInfo($user->name)==false){
 			return "wrong_user";
 		} else {
-			$sql = "SELECT id, hash FROM users WHERE (name= '%s' AND email= '%s' AND active = 0 AND hash <> '')";
+			$sql = "SELECT id, activation_hash FROM users WHERE (name= '%s' AND email= '%s' AND active = 0 AND activation_hash <> '')";
 			$inactiveUserExists = $this->_singleQueryInactiveUser($sql, $user->name, $user->email);
 			if ($inactiveUserExists){
 				$userId = $inactiveUserExists->id;
