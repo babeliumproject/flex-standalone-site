@@ -11,7 +11,6 @@ class SpinvoxConnection {
 	private $appname;
 	private $accountId;
 	private $useragent;
-	private $ffmpegPath;
 	private $tmpFolder;
 	
 	/**
@@ -25,14 +24,13 @@ class SpinvoxConnection {
 	 * @param $useragent
 	 * @param $ffmpegPath
 	 */
-	public function __construct($url, $user, $pass, $appname, $accountId, $useragent, $ffmpegPath, $tempFolder = "/tmp") {
+	public function __construct($url, $user, $pass, $appname, $accountId, $useragent, $tempFolder = "/tmp") {
 		$this->url = $url;
 		$this->username = $user;
 		$this->password = $pass;
 		$this->appname = $appname;
 		$this->accountId = $accountId;
 		$this->useragent = $useragent;
-		$this->ffmpegPath = $ffmpegPath;
 		$this->tmpFolder = $tempFolder;
 	}
 	
@@ -291,7 +289,7 @@ class SpinvoxConnection {
 		if (file_exists($destFile))
 			unlink($destFile);
 		
-		exec($this->ffmpegPath . " -i " . $srcFile . " -acodec pcm_alaw -ar 8000 -ac 1 " . $destFile, $output);
+		exec("ffmpeg -i " . $srcFile . " -acodec pcm_alaw -ar 8000 -ac 1 " . $destFile, $output);
 	}
 }
 

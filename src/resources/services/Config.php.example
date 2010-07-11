@@ -18,6 +18,13 @@
 		public $yt_password = '';
 		public $yt_developerKey = '';
 		
+		//SpinVox settings
+		public $spinvox_user = '';
+		public $spinvox_password = '';
+		public $spinvox_accountId = '';
+		public $spinvox_appName = '';
+		public $spinvox_useragent = 'babelium';
+		
 		//Smtp server settings
 		public $smtp_server_host = 'smtp.googlemail.com';
 		public $smtp_server_username = ''; //example -> from example@gmail.com
@@ -37,6 +44,9 @@
 		//Path to store the notification templates
 		public $templatePath = '';
 
+		//Directory for temporary files
+		public $temp_folder = '/tmp';
+		
 		//Server path to store the search index. Must be a folder with write permissions set for www-data
 		public $indexPath = '';
 

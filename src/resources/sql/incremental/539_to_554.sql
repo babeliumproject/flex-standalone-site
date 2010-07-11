@@ -1,0 +1,1 @@
+DELETE FROM preferences WHERE prefName = 'ffmpeg.path' OR prefName='spinvox.useragent' OR prefName='spinvox.appname' OR prefName='spinvox.password' OR prefName='spinvox.username' OR prefName='spinvox.account_id' OR prefName='spinvox.video_path' OR prefName='spinvox.temp_folder';
