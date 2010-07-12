@@ -1,10 +1,13 @@
 package model
 {
+	import business.NetConnectionDelegate;
+	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
 	import flash.media.Camera;
 	import flash.media.Microphone;
 	import flash.net.FileReference;
+	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
 	
 	import modules.autoevaluation.Evaluation;
@@ -28,6 +31,11 @@ package model
 		[Bindable] public static var SUBTITLE_MODULE:int = 0;
 		[Bindable] public static var RECORDING_MODULE:int = 1;
 		[Bindable] public static var GAPS_TO_ABORT_RECORDING:int = 3;
+		
+		//NetConnection management variables
+		[Bindable] public var netConnectionDelegate:NetConnectionDelegate;
+		[Bindable] public var netConnection:NetConnection;
+		[Bindable] public var netConnected:Boolean;
 		
 		//ViewStack management variables
 		[Bindable] public var currentContentViewStackIndex:int;

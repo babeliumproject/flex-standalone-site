@@ -9,6 +9,8 @@
 		<![CDATA[
 			import events.ViewChangeEvent;
 			
+			import model.DataModel;
+			
 			import modules.userManagement.LoginRestorePassForm;
 			
 			import mx.core.Application;
@@ -18,8 +20,8 @@
 			
 			protected function signInLink_clickHandler(event:MouseEvent):void
 			{
-				loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
-				PopUpManager.centerPopUp(loginPop);
+				DataModel.getInstance().loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
+				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 			}
 			
 			protected function signUpLink_clickHandler(event:MouseEvent):void

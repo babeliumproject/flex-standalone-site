@@ -12,8 +12,13 @@
 	<mx:Script>
 
 		<![CDATA[
+			import events.CloseConnectionEvent;
+			import events.StartConnectionEvent;
+			
 			import model.DataModel;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
@@ -22,16 +27,16 @@
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
-			
+
 
 			/**
 			 *  Constants
 			 */
 			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
-			private const MAXIMUM_VIDEO_DURATION:int = 120; //seconds
-			private const MINIMUM_VIDEO_DURATION:int = 15; //seconds
-			private const DEFAULT_VIDEO_WIDTH:int = 320; //pixels
-			private const DEFAULT_VIDEO_HEIGHT:int = 240; //pixels
+			private const MAXIMUM_VIDEO_DURATION:int=120; //seconds
+			private const MINIMUM_VIDEO_DURATION:int=15; //seconds
+			private const DEFAULT_VIDEO_WIDTH:int=DataModel.getInstance().cameraWidth; //pixels
+			private const DEFAULT_VIDEO_HEIGHT:int=DataModel.getInstance().cameraHeight; //pixels
 
 			/**
 			 *  Variable definition
@@ -43,7 +48,7 @@
 
 			[Bindable]
 			public var recordingFileName:String;
-			
+
 			[Bindable]
 			public var isRecording:Boolean;
 
@@ -52,27 +57,27 @@
 
 			private var video:Video;
 			[Bindable]
-			private var _videoHeight:int = DEFAULT_VIDEO_HEIGHT;
+			private var _videoHeight:int=DEFAULT_VIDEO_HEIGHT;
 			[Bindable]
-			private var _videoWidth:int = DEFAULT_VIDEO_WIDTH;
+			private var _videoWidth:int=DEFAULT_VIDEO_WIDTH;
 
 			private var _camera:Camera;
 			private var _mic:Microphone;
 			private var _micCamEnabled:Boolean=false;
-			
-			private var _streamingServerConnection:Boolean = false;
-			private var _streamsFolder:String = '';
-			private var _streamFilePrefix:String = '';
-			
+
+			private var _streamingServerConnection:Boolean=false;
+			private var _streamsFolder:String='';
+			private var _streamFilePrefix:String='';
+
 			private var _countdown:Timer;
 			private var _countdownTxt:Text;
-			
+
 			private var _recordCountDown:Timer;
 
 			private var privacyRights:PrivacyRights;
 
 			private var anyContent:Boolean;
-			
+
 			private var _timeFormatter:TimeFormatter;
 
 			[Embed(source='../../resources/images/playerPlayIcon.png')]
@@ -95,10 +100,10 @@
 				//Button icon initialization
 				recStopButton.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
-				
-				_timeFormatter = new TimeFormatter();
-				_timeFormatter.outputMilliseconds = false;
-				
+
+				_timeFormatter=new TimeFormatter();
+				_timeFormatter.outputMilliseconds=false;
+
 				_countdownTxt=new Text();
 				_countdownTxt.text="5";
 				_countdownTxt.setStyle("fontWeight", "bold");
@@ -106,8 +111,7 @@
 				_countdownTxt.setStyle("color", 0xFFFFFF);
 				_countdownTxt.selectable=false;
 				_countdownTxt.visible=false;
-				
-				
+
 				_countdownTxt.x=_videoWidth / 2 - 10;
 				_countdownTxt.y=_videoHeight / 2 - 10;
 				_countdownTxt.width=_videoWidth;
@@ -116,99 +120,114 @@
 				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
+
 			}
-			
-			public function resetComponent():void{
+
+			public function resetComponent():void
+			{
 				recStopButton.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
-				playPauseButton.enabled = false;
-				
+				playPauseButton.enabled=false;
+
+				estat.text='';
+
 				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
 
-				recordingFileName = null;
+				recordingFileName=null;
+
+				/**
+				 * This feature is disabled until we decide which behaviour is best
+				 * 
+				 * disconnectFromStreamingServer();
+				 * 
+				 */
 				
-				if(publishNetStream)
-					publishNetStream.close();
-				if(playbackNetStream)
+				disconnnectStreams();
+			}
+
+			public function set streamsFolder(folder:String):void
+			{
+				_streamsFolder=folder;
+			}
+
+			public function get streamsFolder():String
+			{
+				return _streamsFolder;
+			}
+
+			public function set filePrefix(prefix:String):void
+			{
+				_streamFilePrefix=prefix;
+			}
+
+			public function get filePrefix():String
+			{
+				return _streamFilePrefix;
+			}
+
+			private function connectToStreamingServer():void
+			{
+				if (DataModel.getInstance().netConnection.connected == false)
+					new StartConnectionEvent(DataModel.getInstance().streamingResourcesPath).dispatch();
+				else
+					onConnectionStatus=false;
+			}
+
+			private function disconnectFromStreamingServer():void
+			{
+				if (DataModel.getInstance().netConnection.connected)
+					new CloseConnectionEvent().dispatch();
+			}
+			
+			private function disconnnectStreams():void{
+				if (playbackNetStream)
 					playbackNetStream.close();
-				if(netConnection)
-					netConnection.close();
-				if(video)
+				if (publishNetStream)
+					publishNetStream.close();
+				if (video)
 				{
 					video.attachCamera(null);
 					video.clear();
 				}
-				
-				_streamingServerConnection = false;
-			}
-			
-			public function set streamsFolder(folder:String):void{
-				_streamsFolder = folder;
-			}
-			
-			public function get streamsFolder():String{
-				return _streamsFolder;
-			}
-			
-			public function set filePrefix(prefix:String):void{
-				_streamFilePrefix = prefix;
-			}
-			
-			public function get filePrefix():String{
-				return _streamFilePrefix;
-			}
-			
-			private function connectToStreamingServer():void{
-				netConnection=new NetConnection();
-				netConnection.connect(DataModel.getInstance().streamingResourcesPath);
-				netConnection.addEventListener(NetStatusEvent.NET_STATUS, connectionNetStatusHandler);
-				netConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError);
-				netConnection.client=this;
 			}
 
-			private function connectionNetStatusHandler(event:NetStatusEvent):void
+			private function set onConnectionStatus(value:Boolean):void
 			{
-				var info:Object=event.info;
-				switch (info.code)
+				if (DataModel.getInstance().netConnected == true)
 				{
-					case "NetConnection.Connect.Success":
-						// Close and recreate streams
-						if (playbackNetStream)
-							playbackNetStream.close();
-						if (publishNetStream)
-							publishNetStream.close();
 
-						playbackNetStream=new NetStream(netConnection);
-						publishNetStream=new NetStream(netConnection);
+					//Get the netConnection reference
+					netConnection=DataModel.getInstance().netConnection;
+					_streamingServerConnection=true;
 
-						playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
+					if (playbackNetStream)
+						playbackNetStream.close();
+					if (publishNetStream)
+						publishNetStream.close();
 
-						playbackNetStream.client=this; // onPlayStatus
-						playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
-						
-						_streamingServerConnection = true;
-						
-						prepareDevices();
-						
-						break;
+					playbackNetStream=new NetStream(netConnection);
+					publishNetStream=new NetStream(netConnection);
 
-					case "NetConnection.Connect.Closed":
-						if (playbackNetStream)
-							playbackNetStream.close();
-						if (publishNetStream)
-							publishNetStream.close();
-						
-						_streamingServerConnection = false;
-						
-						break;
-					default:
-						trace("NetConnection Error: "+info.code);
-						CustomAlert.error("Error while connecting to the streaming server. Please try again later.");
-						_streamingServerConnection = false;
-						
-						break;
+					playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
+
+					playbackNetStream.client=this; // onPlayStatus
+					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
+
+				}
+				else
+				{
+					if (playbackNetStream)
+						playbackNetStream.close();
+					if (publishNetStream)
+						publishNetStream.close();
+					if (video)
+					{
+						video.attachCamera(null);
+						video.clear();
+					}
+					_streamingServerConnection=false;
 				}
 			}
 
@@ -220,7 +239,7 @@
 				{
 					recStopButton.setStyle('icon', recImageEmbed);
 					playPauseButton.setStyle('icon', playImageEmbed);
-					
+
 					recStopButton.enabled=true;
 					playPauseButton.enabled=true;
 
@@ -228,17 +247,12 @@
 				}
 			}
 
-			private function netSecurityError(event:SecurityErrorEvent):void
-			{
-				trace("netSecurityError: " + event);
-			}
-
 			private function playAudio():void
 			{
 				if (audio_pause)
 				{
 					playbackNetStream.resume();
-					estat.text="*Playing...";
+					estat.text="Playing...";
 					audio_pause=false;
 				}
 				else
@@ -252,7 +266,7 @@
 					playbackNetStream.client=this; // onPlayStatus
 					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
 
-					playbackNetStream.play(_streamsFolder+"/"+recordingFileName);
+					playbackNetStream.play(_streamsFolder + "/" + recordingFileName);
 					video.attachNetStream(playbackNetStream); // JUANAN
 					estat.text="Playing...";
 				}
@@ -287,7 +301,7 @@
 
 				// Close output stream
 				publishNetStream.close();
-				isRecording = false;
+				isRecording=false;
 
 				// It's not possible playing audio while recording
 				recStopButton.enabled=true;
@@ -299,25 +313,21 @@
 
 			private function recStopAudio():void
 			{
-				if(_streamingServerConnection == false)
-				{
+				if (!_streamingServerConnection)
 					connectToStreamingServer();
-				} else {
-					if (recStopButton.getStyle('icon') == recImageEmbed)
+				if (recStopButton.getStyle('icon') == recImageEmbed)
+					prepareDevices();
+				else
+				{
+					if (_recordCountDown.running)
 					{
-						prepareDevices();
+						_recordCountDown.stop();
+						_recordCountDown.reset();
+						recordCountdown.text=_timeFormatter.format(0);
+						recordCountdown.visible=false;
 					}
-					else
-					{
-						if(_recordCountDown.running){
-							_recordCountDown.stop();
-							_recordCountDown.reset();
-							recordCountdown.text = _timeFormatter.format(0);
-							recordCountdown.visible = false;
-						}
-						stopCamera();
-						stopAudio();
-					}
+					stopCamera();
+					stopAudio();
 				}
 			}
 
@@ -341,11 +351,6 @@
 						pauseAudio();
 						break;
 				}
-			}
-
-			public function onBWDone():void
-			{
-				trace("BWworked");
 			}
 
 			public function onPlayStatus(o:Object):void
@@ -373,6 +378,7 @@
 						if (publishNetStream != null)
 							publishNetStream.attachCamera(_camera);
 						video.attachCamera(_camera);
+						video.smoothing=true;
 
 						videoHolder.addChild(video);
 						videoHolder.addChild(_countdownTxt);
@@ -389,7 +395,7 @@
 						_mic.gain=40;
 
 						// Start publishing the audio output as a recorded stream
-						if(publishNetStream != null)
+						if (publishNetStream != null)
 							publishNetStream.attachAudio(_mic);
 
 						// It's not possible playing audio while recording
@@ -398,33 +404,37 @@
 
 						playPauseButton.enabled=false;
 						playPauseButton.setStyle('icon', playImageEmbed);
-						recStopButton.enabled = false;
+						recStopButton.enabled=false;
 					}
 				}
 			}
-			
-			private function startRecordCountDown():void{
+
+			private function startRecordCountDown():void
+			{
 				_recordCountDown=new Timer(1000, MAXIMUM_VIDEO_DURATION);
 				_recordCountDown.addEventListener(TimerEvent.TIMER, onRecordCountDownTick);
 				_recordCountDown.start();
 			}
-			
-			private function onRecordCountDownTick(tick:TimerEvent):void{
-				
-				recordCountdown.text = _timeFormatter.format( MAXIMUM_VIDEO_DURATION - _recordCountDown.currentCount);
-				if(_recordCountDown.currentCount >= MINIMUM_VIDEO_DURATION){
-					recStopButton.enabled = true;
+
+			private function onRecordCountDownTick(tick:TimerEvent):void
+			{
+
+				recordCountdown.text=_timeFormatter.format(MAXIMUM_VIDEO_DURATION - _recordCountDown.currentCount);
+				if (_recordCountDown.currentCount >= MINIMUM_VIDEO_DURATION)
+				{
+					recStopButton.enabled=true;
 				}
-				if(_recordCountDown.currentCount == _recordCountDown.repeatCount){
+				if (_recordCountDown.currentCount == _recordCountDown.repeatCount)
+				{
 					//Maximum recording time elapsed stop recording at this point
 					_recordCountDown.stop();
 					_recordCountDown.reset();
-					recordCountdown.text = _timeFormatter.format(0);
-					recordCountdown.visible = false;
+					recordCountdown.text=_timeFormatter.format(0);
+					recordCountdown.visible=false;
 					recStopAudio();
 				}
 			}
-			
+
 			// Prepare countdown timer
 			private function startCountdown():void
 			{
@@ -432,7 +442,7 @@
 				_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
 				_countdown.start();
 			}
-			
+
 			// On Countdown tick
 			private function onCountdownTick(tick:TimerEvent):void
 			{
@@ -440,12 +450,12 @@
 				{
 					_countdownTxt.visible=false;
 					video.visible=true;
-					
+
 					// Reset countdown timer
 					_countdownTxt.text="5";
 					_countdown.stop();
 					_countdown.reset();
-					
+
 					startRecording();
 				}
 				else
@@ -455,27 +465,27 @@
 			private function startRecording():void
 			{
 				var d:Date=new Date();
-				recordingFileName=_streamFilePrefix+"-"+d.getTime().toString();
+				recordingFileName=_streamFilePrefix + "-" + d.getTime().toString();
 
 				// Publish the stream
-				publishNetStream.publish(_streamsFolder+"/"+recordingFileName, "record");
-				isRecording = true;
-				
+				publishNetStream.publish(_streamsFolder + "/" + recordingFileName, "record");
+				isRecording=true;
+
 				//Recording time elpased variables
-				recordCountdown.visible = true;
+				recordCountdown.visible=true;
 				startRecordCountDown();
 			}
 
 			private function prepareDevices():void
-			{	
-				if(PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
+			{
+				if (PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
 				{
-					_micCamEnabled = DataModel.getInstance().micCamAllowed;
+					_micCamEnabled=DataModel.getInstance().micCamAllowed;
 					configureDevices();
 				}
 				else
 				{
-					PrivacyRights.useMicAndCamera = true;
+					PrivacyRights.useMicAndCamera=true;
 					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
@@ -485,7 +495,7 @@
 			private function configureDevices():void
 			{
 				_camera=DataModel.getInstance().camera;
-				_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
+				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
 				_mic=DataModel.getInstance().microphone;
 				_mic.setUseEchoSuppression(true);
 				_mic.setLoopBack(true);
@@ -510,6 +520,9 @@
 			}
 		]]>
 	</mx:Script>
+
+	<mx:Binding source="{DataModel.getInstance().netConnected}"
+				destination="onConnectionStatus"/>
 
 	<mx:VBox width="100%"
 			 height="100%"
@@ -547,12 +560,15 @@
 					   height="20"
 					   cornerRadius="4"/>
 			<mx:Label id="statusLabel"
-				text="Status:"
+					  text="Status:"
 					  fontWeight="bold"/>
 			<mx:Label id="estat"
 					  width="100%"/>
-			<mx:HBox width="100%" horizontalAlign="right">
-				<mx:Label id="recordCountdown" visible="false" text=""/>
+			<mx:HBox width="100%"
+					 horizontalAlign="right">
+				<mx:Label id="recordCountdown"
+						  visible="false"
+						  text=""/>
 			</mx:HBox>
 		</mx:HBox>
 	</mx:VBox>

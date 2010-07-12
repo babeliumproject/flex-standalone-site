@@ -546,6 +546,9 @@
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 
 				exerciseList.exerciseListDatagrid.selectedItem=null;
+				
+				//Remove the current exercise's info
+				ratingShareReport.exerciseData = null;
 			}
 
 
@@ -771,7 +774,7 @@
 										height="{Math.floor(VP.width * 10 / 16)}"
 										streamSource="{_streamSource}"
 										controlsEnabled="{_exerciseSelected}"/>
-		<videoPlayerControls:RatingShareReportBox id="ratingShareReport"
+		<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
 												  width="100%"/>
 	</mx:VBox>
 	<mx:Spacer width="20"/>

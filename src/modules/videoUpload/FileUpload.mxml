@@ -15,19 +15,19 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -445,6 +445,10 @@
 				}
 				return (true);
 			}
+			
+			private function set onTabChange(value:Boolean):void{
+				resetComponent();
+			}
 
 
 			private function enableAutoevaluation(exerciseId:int):void
@@ -487,6 +491,9 @@
 				destination="this.onUnprocessedExerciseComplete"/>
 	<mx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
 				destination="this.onAutoevaluationEnableError"/>
+	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="this.onTabChange"/>
+	
 	<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
 			  fontWeight="bold"
 			  fontFamily="Arial"

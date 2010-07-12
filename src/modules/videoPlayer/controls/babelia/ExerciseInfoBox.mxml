@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:rating="com.asfusion.controls.*"
+		 horizontalAlign="left"
+		 paddingTop="2"
+		 paddingBottom="2"
+		 paddingLeft="2"
+		 paddingRight="2"
+		 verticalGap="0"
+		 borderStyle="solid"
+		 cornerRadius="6">
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+
+			import events.ExerciseEvent;
+			import events.SearchEvent;
+			import events.ViewChangeEvent;
+
+			import model.DataModel;
+
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+
+			import view.common.ReportInappropriatePopUp;
+
+			import vo.ExerciseReportVO;
+			import vo.ExerciseScoreVO;
+			import vo.ExerciseVO;
+
+			[Bindable]
+			private var _exercise:ExerciseVO=null;
+
+			[Bindable]
+			private var _tags:Array;
+
+			[Bindable]
+			private var _exerciseRating:int=0;
+
+			[Bindable]
+			private var _dataAvailable:Boolean=false;
+
+			private var reportPopUp:ReportInappropriatePopUp;
+
+			public function set exerciseData(exercise:ExerciseVO):void
+			{
+				if (exercise)
+				{
+					_exercise=exercise;
+					_exerciseRating=exercise.avgRating;
+					_dataAvailable=true;
+					updateComponents();
+				}
+				else
+				{
+					_dataAvailable=false;
+					disableComponents();
+				}
+			}
+
+			public function get exerciseData():ExerciseVO
+			{
+				return _exercise;
+			}
+
+			private function updateComponents():void
+			{
+				rating.value=_exerciseRating;
+				addTagLinkButtons();
+				var userId:int=DataModel.getInstance().loggedUser.id;
+
+				var score:ExerciseScoreVO=new ExerciseScoreVO();
+				var report:ExerciseReportVO=new ExerciseReportVO();
+				score.exerciseId=_exercise.id;
+				score.userId=userId;
+				report.exerciseId=_exercise.id;
+				report.userId=userId;
+
+				new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
+				new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
+			}
+
+			private function disableComponents():void
+			{
+				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
+				{
+					_exerciseRating=0;
+					removeTagLinkButtons();
+				}
+			}
+
+			private function addTagLinkButtons():void
+			{
+				removeTagLinkButtons();
+				tagBoxSeparator.height=1;
+				_tags=_exercise.tags.split(',');
+				for each (var tag:String in _tags)
+				{
+					var linkTag:LinkButton=new LinkButton();
+					linkTag.label=StringUtil.trim(tag);
+					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+					exerciseTagsBox.addChild(linkTag);
+				}
+			}
+
+			private function removeTagLinkButtons():void
+			{
+				tagBoxSeparator.height=0;
+				exerciseTagsBox.removeAllChildren();
+				_tags=null;
+			}
+
+			protected function tagClickHandler(event:MouseEvent):void
+			{
+				DataModel.getInstance().searchField=(event.target as LinkButton).label;
+				if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+			}
+
+			protected function ratingClickHandler(event:MouseEvent):void
+			{
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
+				{
+					var score:ExerciseScoreVO=new ExerciseScoreVO();
+					score.userId=DataModel.getInstance().loggedUser.id;
+					score.suggestedScore=rating.selectedValue;
+					score.exerciseId=_exercise.id;
+					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
+				}
+			}
+
+			protected function reportVideoClickHandler(event:MouseEvent):void
+			{
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
+				{
+					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(Application.application.parent, ReportInappropriatePopUp, true));
+					PopUpManager.centerPopUp(reportPopUp);
+					reportPopUp.exerciseData=_exercise;
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:HBox id="ratingAndReportBox"
+			 width="100%">
+		<mx:HBox paddingTop="4"
+				 paddingLeft="4">
+			<rating:Rating id="rating"
+						   value="{_exerciseRating}"
+						   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
+						   click="ratingClickHandler(event)"/>
+		</mx:HBox>
+		<mx:VRule height="24"/>
+		<mx:HBox horizontalAlign="right"
+				 paddingBottom="0"
+				 paddingTop="0"
+				 paddingLeft="0"
+				 paddingRight="0"
+				 width="100%">
+			<mx:LinkButton id="reportVideo"
+						   label="Report"
+						   toolTip="Report innapropriate video."
+						   icon="@Embed(source='../../../../resources/images/shield.png')"
+						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
+						   click="reportVideoClickHandler(event)"/>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:VBox horizontalAlign="center"
+			 width="100%">
+		<mx:HRule id="tagBoxSeparator"
+				  width="100%"
+				  height="0"/>
+		<mx:Tile id="exerciseTagsBox"
+				 width="100%"
+				 horizontalGap="1"
+				 verticalGap="1"
+				 autoLayout="true">
+		</mx:Tile>
+	</mx:VBox>
+
+</mx:VBox>

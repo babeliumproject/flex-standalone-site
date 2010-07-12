@@ -6,6 +6,9 @@
 
 package modules.videoPlayer
 {
+	import events.CloseConnectionEvent;
+	import events.StartConnectionEvent;
+
 	import flash.display.Sprite;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
@@ -21,7 +24,9 @@ package modules.videoPlayer
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
-	
+
+	import model.DataModel;
+
 	import modules.videoPlayer.controls.AudioSlider;
 	import modules.videoPlayer.controls.ElapsedTime;
 	import modules.videoPlayer.controls.PlayButton;
@@ -33,10 +38,11 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
-	
+
+	import mx.binding.utils.BindingUtils;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
-	
+
 	import view.common.CustomAlert;
 
 	public class VideoPlayer extends SkinableComponent
@@ -457,67 +463,46 @@ package modules.videoPlayer
 		 */
 		private function onComplete(e:FlexEvent):void
 		{
-			_nc=new NetConnection();
-			disableControls(); // Disable controls until video streaming connect
+			//Establish a binding to listen the status of netConnection
+			BindingUtils.bindSetter(onStreamNetConnect, DataModel.getInstance(), "netConnected");
 
-			trace(_streamSource);
+			// Disable controls until streaming connection is made
+			disableControls();
 
 			if (_streamSource)
-			{
-				_nc.connect(_streamSource);
-				_nc.addEventListener(NetStatusEvent.NET_STATUS, onStreamNetConnect);
-				_nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
-				_nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
-				_nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
-				_nc.client=this;
-			}
-			else
-			{
-				_nc.connect(null);
-				_nc.client=this;
-
-				if (_autoPlay)
-				{
-					playVideo();
-					_ppBtn.State=PlayButton.PAUSE_STATE;
-				}
-			}
+				connectToStreamingServer(_streamSource);
 
 			// Dispatch CREATION_COMPLETE event
-			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
+			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CREATION_COMPLETE));
 
 		}
 
-		protected function asyncErrorHandler(event:AsyncErrorEvent):void
+
+
+		public function connectToStreamingServer(streamSource:String):void
 		{
-			// Avoid debug messages
+			if (!DataModel.getInstance().netConnection.connected)
+				new StartConnectionEvent(streamSource).dispatch();
+			else
+				onStreamNetConnect(true);
 		}
 
-		protected function netSecurityError(event:SecurityErrorEvent):void
+		public function disconnectFromStreamingService():void
 		{
-			// Avoid debug messages
-		}
-
-		protected function netIOError(event:IOErrorEvent):void
-		{
-			// Avoid debug messages
-		}
-
-		public function onCuePoint(obj:Object):void
-		{
-			// Avoid debug messages
+			if (DataModel.getInstance().netConnection.connected)
+				new CloseConnectionEvent().dispatch();
 		}
 
 		/**
 		 * On stream connect
 		 */
-		private function onStreamNetConnect(e:NetStatusEvent):void
+		private function onStreamNetConnect(value:Boolean):void
 		{
-			trace("onStreamNetConnect");
-
-			if (e.info.code == "NetConnection.Connect.Success")
+			if (DataModel.getInstance().netConnected == true)
 			{
-				trace("successful connection");
+
+				//Get the netConnection reference
+				_nc=DataModel.getInstance().netConnection;
 
 				if (_autoPlay)
 				{
@@ -528,24 +513,17 @@ package modules.videoPlayer
 				enableControls();
 
 				this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
-
 			}
 			else
-			{
 				disableControls();
-				trace("Connection Fail Code: " + e.info.code);
-			}
 		}
 
 
 		private function netStatus(e:NetStatusEvent):void
 		{
-			trace("netStatus");
-
 			switch (e.info.code)
 			{
 				case "NetStream.Play.StreamNotFound":
-					CustomAlert.info("Stream Not Found.");
 					trace("Stream not found code: " + e.info.code + " for video " + _videoSource);
 					break;
 				case "NetStream.Play.Stop":
@@ -555,13 +533,14 @@ package modules.videoPlayer
 					playbackState=PLAYBACK_READY_STATE;
 					break;
 				case "NetStream.Buffer.Full":
-					if(playbackState == PLAYBACK_UNPAUSED_STATE)
+					if (playbackState == PLAYBACK_UNPAUSED_STATE)
 						playbackState=PLAYBACK_STARTED_STATE;
-					if (playbackState == PLAYBACK_READY_STATE){
+					if (playbackState == PLAYBACK_READY_STATE)
+					{
 						playbackState=PLAYBACK_STARTED_STATE;
 						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_STARTED_PLAYING));
 					}
-					break;		
+					break;
 				case "NetStream.Buffer.Empty":
 					if (playbackState == PLAYBACK_STOPPED_STATE)
 					{
@@ -581,8 +560,23 @@ package modules.videoPlayer
 					break;
 			}
 
-			trace("code: " + e.info.code, "level: " + e.info.level);
+			//trace("code: " + e.info.code, "level: " + e.info.level);
 
+		}
+
+		protected function asyncErrorHandler(event:AsyncErrorEvent):void
+		{
+			// Avoid debug messages
+		}
+
+		protected function netIOError(event:IOErrorEvent):void
+		{
+			// Avoid debug messages
+		}
+
+		public function onCuePoint(obj:Object):void
+		{
+			// Avoid debug messages
 		}
 
 		/**
@@ -593,31 +587,35 @@ package modules.videoPlayer
 			if (!_nc.connected)
 			{
 				_ppBtn.State=PlayButton.PLAY_STATE;
-				CustomAlert.error("Please wait for connection from server.");
 				return;
 			}
-
-			trace("Video Started");
 
 			if (_ns != null)
 				_ns.close();
 
 			_ns=new NetStream(_nc);
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
-			_ns.client=this;
 			_ns.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
-
+			_ns.client=this;
 			_video.attachNetStream(_ns);
 
-			_ns.play(_videoSource);
+			if (_videoSource != '')
+			{
+				try{
+					_ns.play(_videoSource);
+				}catch (e:Error){
+					trace("Error: Can't play. Not connected to the server");
+					return;
+				}
+				
+				_started=true;
 
-			_started=true;
-
-			if (_timer)
-				_timer.stop();
-			_timer=new Timer(300);
-			_timer.addEventListener(TimerEvent.TIMER, updateProgress);
-			_timer.start();
+				if (_timer)
+					_timer.stop();
+				_timer=new Timer(300);
+				_timer.addEventListener(TimerEvent.TIMER, updateProgress);
+				_timer.start();
+			}
 		}
 
 
@@ -655,14 +653,14 @@ package modules.videoPlayer
 			{
 				_ns.seek(_currentTime);
 				_ns.resume();
-				trace(_currentTime, _ns.time);
+					//trace(_currentTime, _ns.time);
 			}
 		}
 
 
 		public function onPlayStatus(e:Object):void
 		{
-			trace(e);
+			//trace(e);
 		}
 
 		/**
@@ -670,10 +668,13 @@ package modules.videoPlayer
 		 */
 		public function onMetaData(msg:Object):void
 		{
+			
+			/*
 			trace("metadata: ");
 
 			for (var a:* in msg)
 				trace(a + " : " + msg[a]);
+			*/
 
 			_duration=msg.duration;
 
@@ -696,8 +697,8 @@ package modules.videoPlayer
 		 */
 		public function onSourceChange(e:VideoPlayerEvent):void
 		{
-			trace("source has changed");
-			trace(e.currentTarget);
+			trace("Video source has changed");
+			//trace(e.currentTarget);
 
 			if (_ns)
 			{

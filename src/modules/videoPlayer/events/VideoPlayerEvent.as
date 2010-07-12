@@ -9,6 +9,7 @@ package modules.videoPlayer.events
 		public static const VIDEO_FINISHED_PLAYING:String = "VideoFinishedPlaying";
 		public static const VIDEO_STARTED_PLAYING:String = "VideoStartedPlaying";
 		public static const METADATA_RETRIEVED:String = "MetadataRetrieved";
+		public static const CREATION_COMPLETE:String = "VideoPlayerCreationComplete";
 		public static const CONNECTED:String = "VideoConnected";
 		
 		public function VideoPlayerEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)

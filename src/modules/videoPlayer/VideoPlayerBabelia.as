@@ -13,6 +13,7 @@ package modules.videoPlayer
 	
 	import model.DataModel;
 	
+	import modules.configuration.Red5Connection;
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
 	import modules.videoPlayer.controls.babelia.MicActivityBar;
@@ -399,6 +400,10 @@ package modules.videoPlayer
 
 			// splits video panel into 2 views
 			splitVideoPanel();
+		}
+		
+		private function netSecurityError(e:SecurityErrorEvent):void{
+			//Avoid debug messages
 		}
 		
 		/**
@@ -856,8 +861,10 @@ package modules.videoPlayer
 
 		private function configureDevices():void
 		{
-			_camera=DataModel.getInstance().camera;
-			_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
+			if(state == RECORD_BOTH_STATE){
+				_camera=DataModel.getInstance().camera;
+				_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
+			}
 			_mic=DataModel.getInstance().microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setLoopBack(true);
