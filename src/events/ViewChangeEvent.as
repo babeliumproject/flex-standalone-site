@@ -36,6 +36,10 @@ package events
 		public static const VIEW_UPLOAD_UNSIGNED:String="viewUploadUnsigned";
 		public static const VIEW_UPLOAD_SIGNED_IN:String="viewUploadSignedIn";
 		
+		//Configuration related views
+		public static const VIEW_CONFIG_UNSIGNED:String="viewConfigUnsigned";
+		public static const VIEW_CONFIG_SIGNED:String="viewConfigSigned";
+		
 		//Evaluation related views
 		public static const VIEW_EVALUATION_UNSIGNED:String="viewEvaluationUnsigned";
 		public static const VIEW_EVALUATION_SIGNED_IN:String="viewEvaluationSignedIn";

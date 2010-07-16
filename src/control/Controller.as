@@ -51,6 +51,10 @@ package control {
 			//Evaluation ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_EVALUATION_UNSIGNED, ViewEvaluationUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_EVALUATION_SIGNED_IN, ViewEvaluationSignedInCommand);
+			
+			//Configuration ViewStack related commands
+			addCommand(ViewChangeEvent.VIEW_CONFIG_UNSIGNED, ViewConfigUnsignedCommand);
+			addCommand(ViewChangeEvent.VIEW_CONFIG_SIGNED, ViewConfigSignedCommand);
 
 			//Credit management commands
 			addCommand(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, SubCreditsForEvalRequestCommand);

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
-	<mx:VBox horizontalAlign="center" verticalAlign="middle">
-		<mx:Text color="red" fontSize="20"
-				 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}" />
-	</mx:VBox>
-</mx:Canvas>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 horizontalAlign="center"
+		 verticalAlign="middle">
+	<mx:Text color="red"
+			 fontSize="20"
+			 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
+</mx:VBox>
+

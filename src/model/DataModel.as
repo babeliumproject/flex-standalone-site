@@ -43,6 +43,7 @@ package model
 		[Bindable] public var currentExerciseViewStackIndex:int;
 		[Bindable] public var currentUploadViewStackIndex:int;
 		[Bindable] public var currentEvaluationViewStackIndex:int;
+		[Bindable] public var currentConfigViewStackIndex:int;
 		
 		[Bindable] public var oldContentViewStackIndex:int;
 		[Bindable] public var newContentViewStackIndex:int;
@@ -207,7 +208,7 @@ package model
 		// l10n
 		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
 		
-		// Shows if users denied access to cam or mic to video player
+		// Variables to manage the input devices
 		[Bindable] public var microphone:Microphone;
 		[Bindable] public var camera:Camera;
 		[Bindable] public var micCamAllowed:Boolean = false;

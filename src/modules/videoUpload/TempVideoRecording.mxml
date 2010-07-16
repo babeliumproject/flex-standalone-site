@@ -14,16 +14,16 @@
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -139,11 +139,11 @@
 
 				/**
 				 * This feature is disabled until we decide which behaviour is best
-				 * 
+				 *
 				 * disconnectFromStreamingServer();
-				 * 
+				 *
 				 */
-				
+
 				disconnnectStreams();
 			}
 
@@ -180,12 +180,17 @@
 				if (DataModel.getInstance().netConnection.connected)
 					new CloseConnectionEvent().dispatch();
 			}
-			
-			private function disconnnectStreams():void{
+
+			private function disconnnectStreams():void
+			{
 				if (playbackNetStream)
 					playbackNetStream.close();
 				if (publishNetStream)
+				{
+					publishNetStream.attachCamera(null);
+					publishNetStream.attachAudio(null);
 					publishNetStream.close();
+				}
 				if (video)
 				{
 					video.attachCamera(null);
@@ -221,7 +226,11 @@
 					if (playbackNetStream)
 						playbackNetStream.close();
 					if (publishNetStream)
+					{
+						publishNetStream.attachCamera(null);
+						publishNetStream.attachAudio(null);
 						publishNetStream.close();
+					}
 					if (video)
 					{
 						video.attachCamera(null);

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:configuration="modules.configuration.*"
+		 xmlns:main="modules.main.*">
+
+	<mx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+
+			import model.DataModel;
+
+
+			private function set onUserAuthenticationStatus(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_CONFIG_SIGNED).dispatch();
+				else
+					new ViewChangeEvent(ViewChangeEvent.VIEW_CONFIG_UNSIGNED).dispatch();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="configContainerViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().currentConfigViewStackIndex }">
+		<main:UnauthorizedNotice id="unsignedScreen"
+								 width="100%"
+								 height="100%"/>
+		<configuration:ConfigurationMain id="configurationMain"
+										 width="100%"
+										 height="100%"/>
+
+	</mx:ViewStack>
+
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onUserAuthenticationStatus"/>
+</mx:HBox>

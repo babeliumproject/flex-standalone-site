@@ -143,8 +143,8 @@ class SearchDAO {
 	    }
 	 
 	    // Clean up
-	    $dir->close();
-	    return rmdir($dirname);
+	    return $dir->close();
+	    //return rmdir($dirname);
 	}
 	
 	public function createIndex() {
@@ -229,8 +229,8 @@ class SearchDAO {
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('userId', $userId, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('duration', $duration, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgRating', $avgRating, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('avgDifficulty', $avgDifficulty, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('avgRating', $avgRating, 'utf-8'));
+		$doc->addField(Zend_Search_Lucene_Field::Text('avgDifficulty', $avgDifficulty, 'utf-8'));
 		$this->index->addDocument($doc);
 	}
 }

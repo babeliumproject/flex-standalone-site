@@ -51,6 +51,20 @@
 					  toolTip="{exerciseLanguage.source}"
 					  source="{getFlagSource(data as ExerciseVO)}"
 					  id="exerciseLanguage"/>
+			<mx:HBox id="avgDifficultyIndicator"
+					 fontFamily="Arial"
+					 fontSize="10"
+					 borderStyle="solid"
+					 borderThickness="1"
+					 cornerRadius="4"
+					 borderColor="0xcccccc"
+					 backgroundColor="0xffffff"
+					 horizontalAlign="center"
+					 verticalAlign="middle"
+					 paddingTop="0"
+					 paddingBottom="0">
+				<mx:Label text="{getLevelCorrespondence(data.avgDifficulty)}"/>
+			</mx:HBox>
 			<mx:LinkButton id="title"
 						   label="{data.title}"
 						   fontSize="12"
@@ -114,6 +128,9 @@
 			import model.DataModel;
 			
 			import mx.controls.Text;
+			import mx.formatters.NumberBaseRoundType;
+			import mx.formatters.NumberFormatter;
+			import mx.formatters.SwitchSymbolFormatter;
 			
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
@@ -169,13 +186,17 @@
 				if (_creationComplete)
 					setupEventListeners();
 			}
-			
-			private function setupReferenceComponent():void{
-				if(checkExternalUrl(data.reference)){
+
+			private function setupReferenceComponent():void
+			{
+				if (checkExternalUrl(data.reference))
+				{
 					referenceUrl.setStyle('textDecoration', 'underline');
-				} else{
+				}
+				else
+				{
 					referenceUrl.setStyle('skin', null);
-					referenceUrl.useHandCursor = false;
+					referenceUrl.useHandCursor=false;
 				}
 			}
 
@@ -196,8 +217,43 @@
 
 			private function referenceClickHandler(event:MouseEvent):void
 			{
-				if(checkExternalUrl(data.reference))
+				if (checkExternalUrl(data.reference))
 					navigateToURL(new URLRequest(data.reference), '_blank');
+			}
+
+			public function getLevelCorrespondence(avgDifficulty:Number):String
+			{
+				var numFormat:NumberFormatter=new NumberFormatter();
+				numFormat.precision=0;
+				numFormat.rounding=NumberBaseRoundType.NEAREST;
+				var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
+				switch (roundedAvgDifficulty)
+				{
+					case 1:
+						return 'A1';
+						break;
+					case 2:
+						return 'A2';
+						break;
+					case 3:
+						return 'B1.1';
+						break;
+					case 4:
+						return 'B1.2';
+						break;
+					case 5:
+						return 'B2.1';
+						break;
+					case 6:
+						return 'B2.2';
+						break;
+					case 7:
+						return 'C1';
+						break;
+					default:
+						return '';
+						break;
+				}
 			}
 
 			public function getFlagSource(temp:ExerciseVO):String
@@ -239,7 +295,7 @@
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tempEx.language);
 				var roles:ExerciseRoleVO=new ExerciseRoleVO();
 				roles.exerciseId=tempEx.id;
-				
+
 				CuePointManager.getInstance().reset();
 
 				//If it doesn't work this way, we can chain the events
@@ -259,7 +315,7 @@
 				}
 				return urlparse;
 			}
-			
+
 			private function checkExternalUrl(url:String):Boolean
 			{
 				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");

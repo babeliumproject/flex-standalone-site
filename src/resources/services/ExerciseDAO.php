@@ -1,10 +1,11 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
-require_once ('ExerciseVO.php');
-require_once ('ExerciseReportVO.php');
-require_once ('ExerciseScoreVO.php');
+require_once 'Datasource.php';
+require_once 'Config.php';
+require_once 'ExerciseVO.php';
+require_once 'ExerciseReportVO.php';
+require_once 'ExerciseScoreVO.php';
+require_once 'ExerciseLevelVO.php';
 
 class ExerciseDAO {
 	
@@ -38,11 +39,20 @@ class ExerciseDAO {
 	
 	public function addUnprocessedExercise(ExerciseVO $exercise) {
 		
+		$exerciseLevel = new ExerciseLevelVO();
+		$exerciseLevel->userId = $exercise->userId;
+		$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
+		
 		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference) ";
 		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s') ";
 		
-		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId, $exercise->duration, $exercise->license, $exercise->reference );
+		$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+										  $exercise->language, $exercise->userId, $exercise->duration, $exercise->license, $exercise->reference );
+		if($lastExerciseId){
+			$exerciseLevel->exerciseId = $lastExerciseId;
+			if($this->addExerciseLevel($exerciseLevel))
+				return $lastExerciseId;
+		}
 	}
 	
 	public function addWebcamExercise(ExerciseVO $exercise) {
@@ -52,11 +62,26 @@ class ExerciseDAO {
 		$duration = $this->calculateVideoDuration($exercise->name);
 		$this->takeRandomSnapshot($exercise->name, $exercise->name);
 		
+		$exerciseLevel = new ExerciseLevelVO();
+		$exerciseLevel->userId = $exercise->userId;
+		$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
+		
 		$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
 		$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
 		
-		return $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-								$exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
+		$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+								          $exercise->language, $exercise->userId, $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
+		if($lastExerciseId){
+			$exerciseLevel->exerciseId = $lastExerciseId;
+			if($this->addExerciseLevel($exerciseLevel))
+				return $lastExerciseId;
+		}
+	}
+	
+	public function addExerciseLevel(ExerciseLevelVO $exerciseLevel){
+		$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level, suggest_date) 
+						 VALUES ('%d', '%d', '%d', NOW()) ";
+		return $this->_create($sql, $exerciseLevel->exerciseId, $exerciseLevel->userId, $exerciseLevel->suggestedLevel);
 	}
 	
 	public function takeRandomSnapshot($videoFileName,$outputImageName){

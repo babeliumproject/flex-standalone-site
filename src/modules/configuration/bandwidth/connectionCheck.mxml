@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
-		   width="100%"
-		   height="100%"
-		   xmlns:ns1="modules.configuration.bandwidth.*"
-		   creationComplete="init()">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:ns1="modules.configuration.bandwidth.*"
+		 xmlns:common="view.common.*"
+		 width="100%"
+		 height="100%"
+		 paddingLeft="10"
+		 paddingRight="10"
+		 paddingTop="10"
+		 paddingBottom="10"
+		 creationComplete="init()">
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -37,8 +42,8 @@
 			private function init():void
 			{
 				bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
-				red5Connection = new Red5Connection('bwcheck');
-				nc = red5Connection.getNetConnection();
+				red5Connection=new Red5Connection('bwcheck');
+				nc=red5Connection.getNetConnection();
 				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
 			}
 
@@ -82,59 +87,58 @@
 	</mx:Script>
 
 
-	<mx:HBox x="10"
-			 y="10"
-			 width="100%"
-			 height="90%"
+	<mx:HBox width="100%"
 			 id="allMenu"
 			 visible="true">
 
-		<mx:VBox id="explicacion"
-				 height="90%"
-				 width="347">
-			<mx:Text/>
-			<mx:Button id="comprobacionButton"
-					   label="{resourceManager.getString('myResources', 'CONFIGURATION_BW_TITTLE')}"
-					   enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}"
-					   click="startCheck()"/>
-			<ns1:explicacionBandwidth height="100%"
-									  width="100%"
-									  id="texto"/>
-			<mx:VBox id="bwInfo"
-					 visible="false">
-				<mx:Text id="Needed"
-						 color="#425fd9"
-						 fontSize="25"
-						 fontWeight="bold"/>
-				<mx:Text id="Real"
-						 color="#425fd9"
-						 fontSize="25"
-						 fontWeight="bold"/>
+		<mx:HBox width="100%">
+			<mx:VBox id="explicacion">
+				<mx:Text/>
+				<mx:Button id="comprobacionButton"
+						   label="{resourceManager.getString('myResources', 'CONFIGURATION_BW_TITTLE')}"
+						   enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}"
+						   click="startCheck()"/>
+				<ns1:explicacionBandwidth id="texto"
+										  width="100%"/>
+				<mx:VBox id="bwInfo"
+						 visible="false">
+					<mx:Text id="Needed"
+							 color="#425fd9"
+							 fontSize="25"
+							 fontWeight="bold"/>
+					<mx:Text id="Real"
+							 color="#425fd9"
+							 fontSize="25"
+							 fontWeight="bold"/>
+				</mx:VBox>
 			</mx:VBox>
-		</mx:VBox>
+		</mx:HBox>
 
-		<mx:Panel title="BandWidth Chart"
-				  id="bwChart"
-				  width="400"
-				  height="400">
-			<mx:ColumnChart id="myChart"
-							dataProvider="{chartData}"
-							showDataTips="true"
-							width="340"
-							height="320">
-				<mx:horizontalAxis>
-					<mx:CategoryAxis categoryField="Connection"/>
-				</mx:horizontalAxis>
-				<mx:series>
-					<mx:ColumnSeries dataProvider="{chartData}"
-									 yField="BWDown"
-									 xField="Connection"
-									 displayName="Kbit Down"/>
-				</mx:series>
-			</mx:ColumnChart>
-			<mx:Legend dataProvider="{myChart}"/>
-		</mx:Panel>
+		<mx:HBox width="100%"
+				 horizontalAlign="right">
+			<common:CustomPanel title="{resourceManager.getString('myResources','TITLE_BANDWIDTH_CHART')}"
+								id="bwChart"
+								width="400"
+								height="400">
+				<mx:ColumnChart id="myChart"
+								dataProvider="{chartData}"
+								showDataTips="true"
+								width="340"
+								height="320">
+					<mx:horizontalAxis>
+						<mx:CategoryAxis categoryField="Connection"/>
+					</mx:horizontalAxis>
+					<mx:series>
+						<mx:ColumnSeries dataProvider="{chartData}"
+										 yField="BWDown"
+										 xField="Connection"
+										 displayName="Kbit Down"/>
+					</mx:series>
+				</mx:ColumnChart>
+				<mx:Legend dataProvider="{myChart}"/>
+			</common:CustomPanel>
+		</mx:HBox>
 
 	</mx:HBox>
 
-</mx:Canvas>
+</mx:VBox>

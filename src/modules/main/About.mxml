@@ -14,6 +14,7 @@
 			  fontSize="14"
 			  textDecoration="underline"/>
 	<mx:VBox width="100%"
+			 height="100%"
 			 fontSize="12">
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"
@@ -30,7 +31,7 @@
 					  fontWeight="bold"
 					  text="{userFlashVersion()}"/>
 		</mx:HBox>
-		<mx:Label text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"/>
+		<mx:Text text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"/>
 	</mx:VBox>
 	<mx:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
 			  fontFamily="Arial"
@@ -114,17 +115,7 @@
 			import mx.controls.LinkButton;
 
 			[Bindable]
-			public var productData:Array=new Array(
-				{product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, 
-				{product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, 
-				{product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, 
-				{product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'},
-				{product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'},
-				{product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'},
-				{product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl:'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'},
-				{product: 'RTMP Video Player', licenseName:'Unknown: No response from Leland Cope (author)', licenseUrl:'', productUrl:'http://lelandcope.com/flex-video-player-red5-compatable/'},
-				{product: 'Flex Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.asfusion.com/examples/item/rating-component'},
-				{product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/' }
+			public var productData:Array=new Array({product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, {product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, {product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, {product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'}, {product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'}, {product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'}, {product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl: 'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'}, {product: 'RTMP Video Player', licenseName: 'Unknown: No response from Leland Cope (author)', licenseUrl: '', productUrl: 'http://lelandcope.com/flex-video-player-red5-compatable/'}, {product: 'Flex Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.asfusion.com/examples/item/rating-component'}, {product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/'}
 
 				);
 
@@ -150,6 +141,7 @@
 
 			private function userFlashVersion():String
 			{
+				var isDebugger:Boolean=Capabilities.isDebugger;
 				var versionString:String=Capabilities.version;
 				var pattern:RegExp=/^(\w*) (\d*),(\d*),(\d*),(\d*)$/;
 				var result:Object=pattern.exec(versionString);
@@ -164,6 +156,8 @@
 						text="MacOS ";
 					text+=result[2] + '.' + result[3] + '.' + result[4] + '.' + result[5];
 				}
+				if (isDebugger)
+					text+='  (Debugger)';
 				return text;
 			}
 		]]>
