@@ -21,7 +21,8 @@
 				  width="100%"
 				  height="100%"
 				  selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
-				  resizeToContent="true">
+				  resizeToContent="true"
+				  creationPolicy="all">
 		<main:ExerciseList id="homeModule"
 						   width="100%">
 		</main:ExerciseList>

@@ -16,7 +16,7 @@
 				  width="100%"
 				  fontSize="16"
 				  fontWeight="bold"/>
-		<videoPlayer:VideoPlayerBabelia id="VP"
+		<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
 										autoPlay="true"
 										skin="white"
 										seek="true"
@@ -139,7 +139,7 @@
 						   paddingLeft="6"
 						   paddingRight="6"
 						   cornerRadius="8"
-						   enabled="{VP.playbackState == videoPlaybackStartedState}"
+						   enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
 						   icon="@Embed(source='../../resources/images/add.png')"
 						   click="{subtitleInsertHandler(event)}"
 						   id="addSubtitleLine"/>

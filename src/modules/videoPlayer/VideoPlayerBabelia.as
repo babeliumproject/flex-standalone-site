@@ -1035,7 +1035,7 @@ package modules.videoPlayer
 			_camVideo.visible=false;
 			_micActivityBar.visible=false;
 
-			trace("The video panel has recovered his original size");
+			trace("The video panel recovered its original size");
 		}
 
 		// Aux: scaling cam image

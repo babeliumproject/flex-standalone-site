@@ -97,7 +97,7 @@ package modules.subtitles
 		 *  Visual components declaration
 		 */
 		[Bindable]
-		public var VP:VideoPlayerBabelia = new VideoPlayerBabelia();
+		public var VPSubtitle:VideoPlayerBabelia = new VideoPlayerBabelia();
 		public var exerciseTitle:Label;
 		public var subtitleExerciseButton:Button;
 
@@ -132,15 +132,15 @@ package modules.subtitles
 		
 		public function setupVideoPlayer() : void
 		{
-			VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
-			VP.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
-			VP.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
+			VPSubtitle.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
+			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
 		}
 		
 		public function onVideoPlayerReady(e:VideoPlayerEvent) : void
 		{
 			videoPlayerReady = true;
-			VP.stopVideo();
+			VPSubtitle.stopVideo();
 
 			onExerciseSelected(true);
 		}
@@ -161,12 +161,12 @@ package modules.subtitles
 		}
 		
 		public function prepareVideoPlayer():void{
-			VP.stopVideo();
-			VP.state = VideoPlayerBabelia.PLAY_STATE;
-			VP.videoSource = EXERCISE_FOLDER+'/'+exerciseFileName;
-			VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			VP.enableSubtitlingEndButton = false;
+			VPSubtitle.stopVideo();
+			VPSubtitle.state = VideoPlayerBabelia.PLAY_STATE;
+			VPSubtitle.videoSource = EXERCISE_FOLDER+'/'+exerciseFileName;
+			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			VPSubtitle.enableSubtitlingEndButton = false;
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -190,8 +190,8 @@ package modules.subtitles
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
 				subtitleCollection=_cueManager.cuelist;
 				for each (var cueObj:CueObject in subtitleCollection){
-					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VP, subtitleList));
-					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VP, subtitleList));
+					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VPSubtitle, subtitleList));
+					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle, subtitleList));
 				}
 			}
 		}
@@ -236,11 +236,11 @@ package modules.subtitles
 
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
-			VP.enableSubtitlingEndButton = true;
+			VPSubtitle.enableSubtitlingEndButton = true;
 			subtitleStartTime=e.time; 
 			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'');
-			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry,VP));
-			startEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
+			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry,VPSubtitle));
+			startEntry.setEndCommand(new ShowHideSubtitleCommand(null,VPSubtitle));
 
 			_cueManager.addCue(startEntry);
 
@@ -248,20 +248,20 @@ package modules.subtitles
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
 		{
-			VP.enableSubtitlingEndButton = false;
+			VPSubtitle.enableSubtitlingEndButton = false;
 			if (subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;
 				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'');
-				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry,VP));
-				endEntry.setEndCommand(new ShowHideSubtitleCommand(null,VP));
+				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry,VPSubtitle));
+				endEntry.setEndCommand(new ShowHideSubtitleCommand(null,VPSubtitle));
 				_cueManager.setCueAt(endEntry, _cueManager.getCueIndex(startEntry));
 			}
 		}
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			VP.onSubtitlingEvent(new SubtitlingEvent( SubtitlingEvent.START ));
+			VPSubtitle.onSubtitlingEvent(new SubtitlingEvent( SubtitlingEvent.START ));
 		}
 
 		public function subtitleRemoveHandler():void
@@ -323,7 +323,7 @@ package modules.subtitles
 			if (subtitleList.selectedIndex != -1)
 			{
 				var tempEntry:CueObject=_cueManager.getCueAt(subtitleList.selectedIndex) as CueObject;
-				VP.seekTo(tempEntry.getStartTime());
+				VPSubtitle.seekTo(tempEntry.getStartTime());
 			}
 		}
 
@@ -470,11 +470,11 @@ package modules.subtitles
 		{
 			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX){
 				if(videoPlayerReady) 
-					VP.endVideo();
-				VP.setSubtitle(""); // Clear subtitles if any
-				VP.videoSource = ""; // Reset video source
-				VP.subtitlingControls = false;
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+					VPSubtitle.endVideo();
+				VPSubtitle.setSubtitle(""); // Clear subtitles if any
+				VPSubtitle.videoSource = ""; // Reset video source
+				VPSubtitle.subtitlingControls = false;
+				VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				_cueManager.reset();
 			}
 			hideSubtitlingControls(null);
@@ -491,14 +491,14 @@ package modules.subtitles
 		public function showSubtitleEditor() : void
 		{
 			videoPlayerControlsViewStack=0;
-			VP.subtitlingControls = true;
+			VPSubtitle.subtitlingControls = true;
 			subtitleEditorVisible=!subtitleEditorVisible;
 		}
 		
 		public function hideSubtitleEditor() : void
 		{
 			videoPlayerControlsViewStack=1;
-			VP.subtitlingControls = false;
+			VPSubtitle.subtitlingControls = false;
 			subtitleEditorVisible=!subtitleEditorVisible;
 		}
 		
