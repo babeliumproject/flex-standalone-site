@@ -24,20 +24,30 @@ class CleanUpDAO{
 		//$this->_getResourceDirectories();
 		$this->_deleteUnreferencedExercises();
 		if($this->exerciseFolder != $this->responseFolder)
-			$this->_deleteUnreferencedResponses();
+		$this->_deleteUnreferencedResponses();
 		if($this->exerciseFolder != $this->evaluationFolder)
-			$this->_deleteUnreferencedEvaluations();
+		$this->_deleteUnreferencedEvaluations();
 	}
-	
+
+	public function deleteInactiveUsers($days){
+		if($days<7)
+		return;
+		else{
+			$sql = "DELETE FROM users
+					WHERE (DATE_SUB(CURDATE(),INTERVAL '%d' DAY) > joiningDate AND active = 0 AND activation_hash <> '')";
+			$result = $this->conn->_execute($sql,$days);
+		}
+	}
+
 	public function monitorizeSessionKeepAlive(){
-		$sql = "UPDATE user_session SET duration = TIMESTAMPDIFF(SECOND,session_date,CURRENT_TIMESTAMP), closed=1 
+		$sql = "UPDATE user_session SET duration = TIMESTAMPDIFF(SECOND,session_date,CURRENT_TIMESTAMP), closed=1
 				WHERE (keep_alive = 0 AND closed=0 AND duration=0)";
-		
+
 		$result = $this->conn->_execute($sql);
 
-		$sql = "UPDATE user_session SET keep_alive = 0 
+		$sql = "UPDATE user_session SET keep_alive = 0
 				WHERE (keep_alive = 1 AND closed = 0)";
-		
+
 		$result = $this->conn->_execute($sql);
 	}
 

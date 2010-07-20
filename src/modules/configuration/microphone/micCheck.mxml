@@ -7,7 +7,7 @@
 		 paddingRight="10"
 		 paddingTop="10"
 		 paddingBottom="10"
-		 creationComplete="init()">
+		 creationComplete="onComplete()">
 
 	<mx:Script>
 		<![CDATA[
@@ -38,7 +38,7 @@
 			private var privacyRights:PrivacyRights;
 			private var _micCamEnabled:Boolean;
 
-			private function init():void
+			private function onComplete():void
 			{
 				oflaDemoRed5Sentences=new OflaDemoRed5Sentences();
 				oflaDemoRed5Sentences.connect();

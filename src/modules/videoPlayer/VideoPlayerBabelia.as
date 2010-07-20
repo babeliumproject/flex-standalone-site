@@ -90,12 +90,10 @@ package modules.videoPlayer
 		// Other constants
 		private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 		private const DEFAULT_VOLUME:Number=40;
-		private const ACCESS_TIMEOUT_SECS:int=5;
 		private const COUNTDOWN_TIMER_SECS:int=5;
 
 		private var _outNs:NetStream;
 		private var _inNs:NetStream;
-		private var _inNc:NetConnection;
 		private var _secondStreamSource:String;
 
 		private var _mic:Microphone;
@@ -103,18 +101,15 @@ package modules.videoPlayer
 
 		private var _camera:Camera;
 		private var _camVideo:Video;
-		private var _defaultCamWidth:Number=320;
-		private var _defaultCamHeight:Number=240;
+		private var _defaultCamWidth:Number=DataModel.getInstance().cameraWidth;
+		private var _defaultCamHeight:Number=DataModel.getInstance().cameraHeight;
 
-		//The privacy box asks only once for permission per application session and
-		//gives all the permissions. There's no distinction between cam or mic permissions.
 		private var _micCamEnabled:Boolean=false;
 
 		private var privacyRights:PrivacyRights;
 
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
-		private var _accessTimeout:Timer;
 
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
@@ -130,10 +125,6 @@ package modules.videoPlayer
 
 		[Bindable]
 		public var secondStreamState:int;
-
-		[Embed(source="resources/sounds/speak_notice.mp3")]
-		private var speakNoticeClass:Class;
-		private var speakNoticeSound:Sound;
 
 		private var _cuePointTimer:Timer;
 
@@ -230,9 +221,6 @@ package modules.videoPlayer
 
 			// Loads default skin
 			skin="default";
-
-			//Initialize sound asset
-			speakNoticeSound=new speakNoticeClass() as Sound;
 		}
 
 
@@ -265,13 +253,13 @@ package modules.videoPlayer
 		public function setArrows(arrows:ArrayCollection, selectedRole:String):void
 		{
 			_arrowPanel.setArrows(arrows, _duration, selectedRole);
-			
+
 			// Extract only selected roles
-			var tmp:ArrayCollection = new ArrayCollection();
-			for ( var i:Number = 0; i < arrows.length; i++ )
-				if ( arrows.getItemAt(i).role == selectedRole )
+			var tmp:ArrayCollection=new ArrayCollection();
+			for (var i:Number=0; i < arrows.length; i++)
+				if (arrows.getItemAt(i).role == selectedRole)
 					tmp.addItem(arrows.getItemAt(i));
-				
+
 			_sBar.setMarks(tmp, _duration);
 		}
 
@@ -381,19 +369,26 @@ package modules.videoPlayer
 
 			_secondStreamSource=source;
 
-			if (_inNc == null)
+			/*
+			   if (_inNc == null)
+			   {
+			   _inNc=new NetConnection();
+			   _inNc.connect(_streamSource);
+			   _inNc.addEventListener(NetStatusEvent.NET_STATUS, onSecondStreamNetConnect);
+			   _inNc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
+			   _inNc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
+			   _inNc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
+			   _inNc.client=this;
+			   if (_video != null)
+			   {
+			   _video.clear();
+			   }
+			 }*/
+			if (_nc == null)
 			{
-				_inNc=new NetConnection();
-				_inNc.connect(_streamSource);
-				_inNc.addEventListener(NetStatusEvent.NET_STATUS, onSecondStreamNetConnect);
-				_inNc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // Avoid debug messages
-				_inNc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, netSecurityError); // Avoid debug messages
-				_inNc.addEventListener(IOErrorEvent.IO_ERROR, netIOError); // Avoid debug messages
-				_inNc.client=this;
 				if (_video != null)
-				{
 					_video.clear();
-				}
+				return;
 			}
 			else
 				playSecondStream();
@@ -401,20 +396,21 @@ package modules.videoPlayer
 			// splits video panel into 2 views
 			splitVideoPanel();
 		}
-		
-		private function netSecurityError(e:SecurityErrorEvent):void{
+
+		private function netSecurityError(e:SecurityErrorEvent):void
+		{
 			//Avoid debug messages
 		}
-		
+
 		/**
 		 *  Highlight components
 		 **/
-		public function set highlight(flag:Boolean) : void
+		public function set highlight(flag:Boolean):void
 		{
-			_arrowPanel.highlight = flag;
-			_roleTalkingPanel.highlight = flag;
+			_arrowPanel.highlight=flag;
+			_roleTalkingPanel.highlight=flag;
 		}
-		
+
 
 		/**
 		 * Get video time
@@ -550,7 +546,8 @@ package modules.videoPlayer
 		{
 			super.playVideo();
 
-			if (!_cuePointTimer){
+			if (!_cuePointTimer)
+			{
 				_cuePointTimer=new Timer(20, 0); //Try to tick every 20ms
 				_cuePointTimer.addEventListener(TimerEvent.TIMER, onEnterFrame);
 				_cuePointTimer.start();
@@ -633,15 +630,15 @@ package modules.videoPlayer
 
 			setSubtitle("");
 		}
-		
-		override public function endVideo() : void
+
+		override public function endVideo():void
 		{
 			super.endVideo();
-			
-			if ( state == PLAY_BOTH_STATE && _inNs != null )
+
+			if (state == PLAY_BOTH_STATE && _inNs != null)
 			{
 				_inNs.close();
-				_inNs = null;
+				_inNs=null;
 			}
 		}
 
@@ -841,8 +838,7 @@ package modules.videoPlayer
 		private function prepareDevices():void
 		{
 			//The devices are permitted and initialized. Time to configure them
-			if((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) ||
-			   (state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
+			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || (state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
 			{
 				configureDevices();
 			}
@@ -861,9 +857,10 @@ package modules.videoPlayer
 
 		private function configureDevices():void
 		{
-			if(state == RECORD_BOTH_STATE){
+			if (state == RECORD_BOTH_STATE)
+			{
 				_camera=DataModel.getInstance().camera;
-				_camera.setMode(DataModel.getInstance().cameraWidth,DataModel.getInstance().cameraHeight,15,false);
+				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
 			}
 			_mic=DataModel.getInstance().microphone;
 			_mic.setUseEchoSuppression(true);
@@ -921,7 +918,7 @@ package modules.videoPlayer
 			{
 				// Attach Camera
 				_camVideo.attachCamera(_camera);
-				_camVideo.smoothing = true;
+				_camVideo.smoothing=true;
 
 				splitVideoPanel();
 				_camVideo.visible=false;
@@ -1060,11 +1057,6 @@ package modules.videoPlayer
 			_camVideo.width-=2;
 		}
 
-		public function playSpeakNotice():void
-		{
-			speakNoticeSound.play();
-		}
-
 		override protected function scaleVideo():void
 		{
 			super.scaleVideo();
@@ -1117,6 +1109,14 @@ package modules.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
+				if (_outNs)
+				{
+					_outNs.attachCamera(null);
+					_outNs.attachAudio(null);
+					_camVideo.clear();
+					_camVideo.attachCamera(null);
+				}
+
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
@@ -1130,12 +1130,15 @@ package modules.videoPlayer
 		 **/
 		private function playSecondStream():void
 		{
-			if ( _inNs != null )
+			if (_inNs != null)
 				_inNs.close();
-			
-			if (_inNc.connected)
+
+			//if (_inNc.connected)
+			//{
+			if (_nc.connected)
 			{
-				_inNs=new NetStream(_inNc);
+				//_inNs=new NetStream(_inNc);
+				_inNs=new NetStream(_nc);
 				_inNs.addEventListener(NetStatusEvent.NET_STATUS, onSecondStreamNetStream);
 				_inNs.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
 
@@ -1166,21 +1169,22 @@ package modules.videoPlayer
 			}
 		}
 
-		// second net connection checks
-		private function onSecondStreamNetConnect(e:NetStatusEvent):void
-		{
-			trace("onStreamNetConnect");
+		/*
+		   // second net connection checks
+		   private function onSecondStreamNetConnect(e:NetStatusEvent):void
+		   {
+		   trace("onStreamNetConnect");
 
-			if (e.info.code == "NetConnection.Connect.Success")
-			{
-				trace("Second stream connected successfully");
-				playSecondStream();
-			}
-			else
-			{
-				trace("Second stream connection Fail Code: " + e.info.code);
-			}
-		}
+		   if (e.info.code == "NetConnection.Connect.Success")
+		   {
+		   trace("Second stream connected successfully");
+		   playSecondStream();
+		   }
+		   else
+		   {
+		   trace("Second stream connection Fail Code: " + e.info.code);
+		   }
+		 }*/
 
 		private function onSecondStreamNetStream(event:NetStatusEvent):void
 		{

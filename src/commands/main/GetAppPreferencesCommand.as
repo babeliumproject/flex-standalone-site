@@ -39,6 +39,7 @@ package commands.main
 					dic[p.prefName] = p.prefValue;
 				}
 				DataModel.getInstance().prefDic = dic;
+				DataModel.getInstance().preferencesRetrieved = !DataModel.getInstance().preferencesRetrieved;
 			}
 			
 		}

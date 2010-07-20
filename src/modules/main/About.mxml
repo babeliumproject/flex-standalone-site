@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 creationComplete="onComplete()"
-		 backgroundAlpha="0.0"
 		 verticalGap="14">
 	<mx:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
 			  fontFamily="Arial"
@@ -107,11 +105,13 @@
 					   textDecoration="underline"
 					   click="emailButtonClickHandler(event)"/>
 	</mx:VBox>
-
+	
+	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
+				destination="onPreferencesRetrieved"/>
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-
+			
 			import mx.controls.LinkButton;
 
 			[Bindable]
@@ -119,9 +119,10 @@
 
 				);
 
-			public function onComplete():void
+			public function set onPreferencesRetrieved(flag:Boolean):void
 			{
-				appRevisionLabel.text="r" + DataModel.getInstance().prefDic['appRevision'];
+				if(DataModel.getInstance().prefDic != null)
+					appRevisionLabel.text="r" + DataModel.getInstance().prefDic['appRevision'];
 			}
 
 			public function licenseUrlClickHandler(event:MouseEvent):void

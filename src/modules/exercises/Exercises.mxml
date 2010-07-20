@@ -581,6 +581,7 @@
 				setupReplayCommands();
 
 				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
+				VP.state = VideoPlayerBabelia.PLAY_STATE;
 				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;
@@ -589,6 +590,7 @@
 			// Record again
 			private function onRecordAgain(e:Event):void
 			{
+				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 				setupRecordingCommands();
 				showArrows();

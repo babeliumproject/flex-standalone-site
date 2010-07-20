@@ -22,6 +22,7 @@
 			
 			import model.DataModel;
 			
+			import modules.search.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
@@ -55,6 +56,9 @@
 
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			
+			[Bindable]
+			public var thumbUrl:String = DataModel.getInstance().thumbURL;
 
 
 
@@ -82,6 +86,14 @@
 			private var _videoCommentName:String;
 			private var _score:int;
 			private var _comment:String;
+			
+			/**
+			 *  Pagination control variables
+			 */
+			
+			private var _currentPageWaitingForAssessment:uint = 1;
+			private var _currentPageAssessedByCurrentUser:uint = 1;
+			private var _currentPageAssessedToCurrentUser:uint = 1;
 
 			/**
 			 *  Back-end data holders
@@ -128,24 +140,27 @@
 			private function set waitingAssessmentRetrievedHandler(value:Boolean):void
 			{
 				var waDataprovider:ArrayCollection=dataModel.waitingForAssessmentData;
-				waitingAssessmentDataGrid.rowCount=waDataprovider.length;
+				//waitingAssessmentDataGrid.rowCount=waDataprovider.length;
 				waitingForAssessmentList=waDataprovider;
+				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 				allDataReceived();
 			}
 
 			private function set assessedByCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var abcuDataprovider:ArrayCollection=dataModel.assessedByCurrentUserData;
-				assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
+				//assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
 				assessedByCurrentUserList=abcuDataprovider;
+				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 				allDataReceived();
 			}
 
 			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var atcuDataprovider:ArrayCollection=dataModel.assessedToCurrentUserData;
-				assessedToCurrentUserDataGrid.rowCount=atcuDataprovider.length;
+				//assessedToCurrentUserDataGrid.rowCount=atcuDataprovider.length;
 				assessedToCurrentUserList=atcuDataprovider;
+				createPagination(assessedToCurrentUserDataGrid, assessedToCurrentUserList, _currentPageAssessedToCurrentUser, paginationAssessedToCurrentUser, navigateToPageAssessedToCurrentUser);
 				allDataReceived();
 			}
 
@@ -188,6 +203,9 @@
 					assessedToCurrentUserList=new ArrayCollection();
 					assessedByCurrentUserList=new ArrayCollection();
 					assessmentDetailList=new ArrayCollection();
+					createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
+					createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+					createPagination(assessedToCurrentUserDataGrid, assessedToCurrentUserList, _currentPageAssessedToCurrentUser, paginationAssessedToCurrentUser, navigateToPageAssessedToCurrentUser);
 				}
 				assessmentsOfSelectedResponse.visible=false;
 				ratingBox.visible=false;
@@ -585,6 +603,36 @@
 				resetCueManager();
 				waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
+			
+			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HBox, pageClickHandler:Function):void{
+				VideoPaginator.createPaginationMenu(dataProvider.length, DataModel.getInstance().pageSize, currentPageIndicator, DataModel.getInstance().numberOfPagesNav,  paginationContainer, pageClickHandler);
+				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
+			}
+			
+			public function refreshDataProvider(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint):void
+			{
+				var current:int=currentPageIndicator - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				targetDatagrid.rowCount=dataTemp.length;
+				targetDatagrid.dataProvider=dataTemp;
+			}
+			
+			private function navigateToPageWaitingAssessment(event:MouseEvent):void
+			{
+				_currentPageWaitingForAssessment = int((event.target as Button).id);
+				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
+			}
+			
+			private function navigateToPageAssessedByCurrentUser(event:MouseEvent):void{
+				_currentPageAssessedByCurrentUser = int((event.target as Button).id);
+				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+			}
+			
+			private function navigateToPageAssessedToCurrentUser(event:MouseEvent):void{
+				_currentPageAssessedToCurrentUser = int((event.target as Button).id);
+				createPagination(assessedToCurrentUserDataGrid, assessedToCurrentUserList, _currentPageAssessedToCurrentUser, paginationAssessedToCurrentUser, navigateToPageAssessedToCurrentUser);
+			}
 
 			private function set onURLChange(value:Object):void
 			{
@@ -796,16 +844,13 @@
 							 change="waitingAssessmentChangeHandler(event)">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-										   dataField="exerciseThumbnailUri"
+										   dataField="responseThumbnailUri"
 										   width="{120*0.8}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:VBox>
-										<mx:Image id="albumImage"
-												  height="{90*0.8}"
+										<mx:Image height="{90*0.8}"
 												  width="{120*0.8}"
-												  source="resources/images/thumbs/{data.exerciseThumbnailUri}"/>
-									</mx:VBox>
+												  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -823,6 +868,10 @@
 										   dataField="responseAddingDate"/>
 					</mx:columns>
 				</mx:DataGrid>
+				<mx:HBox id="paginationWaitingAssessment"
+						 width="100%"
+						 horizontalAlign="left"
+						 horizontalGap="2"/>
 
 				<!-- Epaitu gabeko bideoak baloratzeko kaxa -->
 				<mx:HBox paddingLeft="10"
@@ -909,12 +958,9 @@
 										   width="{120*0.8}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:VBox>
-										<mx:Image id="albumImageNorb"
-												  height="{90*0.8}"
-												  width="{120*0.8}"
-												  source="resources/images/thumbs/{data.exerciseThumbnailUri}"/>
-									</mx:VBox>
+									<mx:Image height="{90*0.8}"
+											  width="{120*0.8}"
+											  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -929,6 +975,12 @@
 										   dataField="responseCharacterName"/>
 					</mx:columns>
 				</mx:DataGrid>
+				
+				<mx:HBox id="paginationAssessedToCurrentUser"
+						 width="100%"
+						 horizontalAlign="left"
+						 horizontalGap="2"/>
+				
 				<mx:Spacer height="30"/>
 				<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
 				<mx:HBox id="assessmentsOfSelectedResponse"
@@ -1001,12 +1053,9 @@
 										   width="{120*0.8}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:VBox>
-										<mx:Image id="albumImageNorb"
-												  height="{90*0.8}"
-												  width="{120*0.8}"
-												  source="resources/images/thumbs/{data.exerciseThumbnailUri}"/>
-									</mx:VBox>
+									<mx:Image height="{90*0.8}"
+											  width="{120*0.8}"
+											  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -1021,6 +1070,10 @@
 										   dataField="responseCharacterName"/>
 					</mx:columns>
 				</mx:DataGrid>
+				<mx:HBox id="paginationAssessedByCurrentUser"
+						 width="100%"
+						 horizontalAlign="left"
+						 horizontalGap="2"/>
 			</mx:VBox>
 		</mx:ViewStack>
 	</mx:VBox>

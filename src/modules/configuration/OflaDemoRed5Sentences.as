@@ -1,5 +1,7 @@
 package modules.configuration
 {
+	import events.StartConnectionEvent;
+	
 	import flash.events.AsyncErrorEvent;
 	import flash.events.NetStatusEvent;
 	import flash.net.NetConnection;
@@ -7,38 +9,42 @@ package modules.configuration
 	
 	import model.DataModel;
 	
+	import mx.binding.utils.BindingUtils;
+	
 	public class OflaDemoRed5Sentences
 	{
 		
-		private var red5Connection:Red5Connection;
 		public var rec_ns:NetStream;
 		public var play_ns:NetStream;
 		public var nc:NetConnection;
 		
 		public function OflaDemoRed5Sentences()
 		{
+			BindingUtils.bindSetter(netStatusHandler, DataModel.getInstance(), "netConnected");
 		}
 		
 		public function connect():void{
-			red5Connection = new Red5Connection('oflaDemo');
-			nc=red5Connection.getNetConnection();
-			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrrorHandler);  
+			if (DataModel.getInstance().netConnection.connected == false)
+				new StartConnectionEvent(DataModel.getInstance().streamingResourcesPath).dispatch();
+			else
+				netStatusHandler(false);
 		}
 		
-		private function netStatusHandler(e:NetStatusEvent):void{   
-			if(e.info.code == "NetConnection.Connect.Success"){
+		private function netStatusHandler(value:Boolean):void{   
+			if (DataModel.getInstance().netConnected == true)
+			{
+				nc = DataModel.getInstance().netConnection;
 				rec_ns = new NetStream(nc);
 				play_ns = new NetStream(nc); 
 				rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
 				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-			}else   
-				//Problemas en la conexion
-				trace(e.info.code); 
+			} else {
+				//Streaming server connection = false;
+			}
 		}
 			
 		private function asyncErrrorHandler(e:AsyncErrorEvent):void{
-			//No se usa, pero evita que aparezcan errores con flash player debugg version
+			//Not used but avoids error display in flash debugger version
 		}
 		
 		public function closeNetStreamObjects():void{

@@ -50,6 +50,7 @@ package model
 		
 		//Application preferences value pair
 		[Bindable] public var prefDic:Dictionary;
+		[Bindable] public var preferencesRetrieved:Boolean = false;
 		
 		//Top ten collaborators data and service state
 		[Bindable] public var topTenUsers:ArrayCollection;

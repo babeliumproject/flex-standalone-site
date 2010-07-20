@@ -8,7 +8,7 @@
 		 paddingRight="10"
 		 paddingTop="10"
 		 paddingBottom="10"
-		 creationComplete="init()">
+		 creationComplete="onComplete()">
 
 	<mx:Metadata>
 		[ResourceBundle("myResources")]
@@ -18,12 +18,12 @@
 		<![CDATA[
 			import flash.events.NetStatusEvent;
 			import flash.net.NetConnection;
-
+			
 			import model.DataModel;
-
+			
 			import modules.configuration.ConfigurationResultEvent;
 			import modules.configuration.Red5Connection;
-
+			
 			import mx.charts.series.ColumnSeries;
 			import mx.collections.ArrayCollection;
 
@@ -39,12 +39,21 @@
 			[Bindable]
 			private var bwMin:Number;
 
-			private function init():void
+			private function onComplete():void
 			{
-				bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
-				red5Connection=new Red5Connection('bwcheck');
-				nc=red5Connection.getNetConnection();
-				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+//				bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
+//				red5Connection=new Red5Connection('bwcheck');
+//				nc=red5Connection.getNetConnection();
+//				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+			}
+			
+			private function set onPreferencesRetrieved(flag:Boolean):void{
+				if(DataModel.getInstance().prefDic != null){
+					bwMin=DataModel.getInstance().prefDic["bwCheckMin"];
+					red5Connection=new Red5Connection('bwcheck');
+					nc=red5Connection.getNetConnection();
+					nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+				}
 			}
 
 			public function onStatus(event:NetStatusEvent):void
@@ -86,6 +95,8 @@
 		]]>
 	</mx:Script>
 
+	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
+				destination="onPreferencesRetrieved"/>
 
 	<mx:HBox width="100%"
 			 id="allMenu"
