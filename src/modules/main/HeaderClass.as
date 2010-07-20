@@ -83,7 +83,7 @@ package modules.main
 			BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
 			BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
 			BindingUtils.bindSetter(exerciseRecording, model, "recordingExercise");
-
+			BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
 		}
 
 		public function signInClickHandler():void
@@ -186,6 +186,11 @@ package modules.main
 		
 		public function helpFAQ_clickHandler(event:MouseEvent):void{
 			new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();	
+		}
+		
+		private function onAccountActivation(flag:Boolean) : void
+		{
+			localeComboBox.updateSelectedIndex();
 		}
 
 	}

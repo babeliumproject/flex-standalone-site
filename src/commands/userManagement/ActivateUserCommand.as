@@ -9,6 +9,8 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -24,11 +26,17 @@ package commands.userManagement
 		
 		public function result(data:Object):void
 		{
-			var successfulUpdate:Boolean = data.result as Boolean;
-			if(!successfulUpdate)
+			var localeCode:Object = data.result;
+			if(data.result == null)
 				DataModel.getInstance().accountActivationStatus = 0;
 			else
+			{
 				DataModel.getInstance().accountActivationStatus = 1;
+				ResourceManager.getInstance().localeChain=[localeCode];
+				//Updating changes in DataModel, used in Search.mxml 
+				DataModel.getInstance().languageChanged=true;
+			}
+			
 			DataModel.getInstance().accountActivationRetrieved = true;
 		}
 		

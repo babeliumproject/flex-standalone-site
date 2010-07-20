@@ -105,17 +105,18 @@ class RegisterUser{
 	public function activate($user){
 
 
-		$sql = "SELECT id FROM users WHERE (name = '%s' AND activation_hash = '%s') ";
-		$result = $this->_getUserSingleQuery($sql, $user->name, $user->activationHash);
+		$sql = "select language FROM users AS u INNER JOIN user_languages AS ul ON u.id = ul.fk_user_id WHERE (u.name = '%s' AND u.activation_hash = '%s') LIMIT 1";
+		$result = $this->conn->_execute($sql, $user->name, $user->activationHash);
+		$row = $this->conn->_nextRow ($result);
 
-		if ( $result )
+		if ( $row )
 		{
 			$sql = "UPDATE users SET active = 1, activation_hash = ''
 			        WHERE (name = '%s' AND activation_hash = '%s')";
 			$update = $this->_databaseUpdate($sql, $user->name, $user->activationHash);
 		}
 
-		return ($result && $update);
+		return ($row && $update)? $row[0] : NULL ;
 	}
 
 	private function _getUserSingleQuery(){
