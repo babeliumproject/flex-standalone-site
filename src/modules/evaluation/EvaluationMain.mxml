@@ -784,7 +784,7 @@
 		<videoPlayer:VideoPlayerBabelia id="VP"
 										autoPlay="true"
 										skin="white"
-										seek="true"
+										seek="false"
 										subtitles="true"
 										autoScale="false"
 										arrows="false"
