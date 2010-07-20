@@ -83,12 +83,32 @@ package modules.main
 		
 		private function updateLocaleComboBox():void
 		{
-			var oldSelectedItem:Object=this.selectedItem;
 			// Repopulate the combobox with locales,
 			// re-sorting by localized language name.
 			_availableLocales.sort(localeCompareFunction);
 			this.dataProvider=_availableLocales;
-			this.selectedItem=oldSelectedItem;
+			updateSelected(resourceManager.localeChain[0]);
+		}
+		
+		private function updateSelected(localeCode:String) : void
+		{
+			// Update selected index
+			for ( var i:int; i < _availableLocales.length; i++)
+			{
+				if ( localeCode == _availableLocales[i].code )
+				{
+					this.selectedIndex = i;
+					this.selectedItem = _availableLocales[i];
+					break;
+				}
+			}
+		}
+		
+		public function updateSelectedIndex(): void
+		{
+			var localeCode:String = resourceManager.localeChain[0];
+			_availableLocales.sort(localeCompareFunction);
+			updateSelected(localeCode);
 		}
 		
 	}

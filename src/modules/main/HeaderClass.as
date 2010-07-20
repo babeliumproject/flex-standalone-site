@@ -46,6 +46,8 @@ package modules.main
 		public var signUpButton:LinkButton;
 		public var signOutButton:LinkButton;
 		public var helpFAQButton:LinkButton;
+		
+		public var localeComboBox:LocalizationComboBox;
 
 
 		public function HeaderClass()
@@ -138,6 +140,7 @@ package modules.main
 				userCPName.label=DataModel.getInstance().loggedUser.name;
 				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
 				userCP.visible=true;
+				localeComboBox.updateSelectedIndex();
 			}
 		}
 

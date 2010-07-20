@@ -34,9 +34,6 @@ package commands.userManagement
 			if (result is UserVO)
 			{
 				var user:UserVO=result as UserVO;
-				DataModel.getInstance().loggedUser=user;
-				DataModel.getInstance().isSuccessfullyLogged=true;
-				DataModel.getInstance().isLoggedIn=true;
 				
 				var ifaceLanguageCode:String = 'none';
 				for each(var lang:UserLanguageVO in user.userLanguages){
@@ -46,6 +43,10 @@ package commands.userManagement
 					}
 				}
 				switchLocale(ifaceLanguageCode);
+
+				DataModel.getInstance().loggedUser=user;
+				DataModel.getInstance().isSuccessfullyLogged=true;
+				DataModel.getInstance().isLoggedIn=true;
 				
 				//Initialize the timer that keeps this session alive
 				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();

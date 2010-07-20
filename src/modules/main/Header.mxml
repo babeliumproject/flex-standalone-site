@@ -84,7 +84,7 @@
 			</mx:HBox>
 		</mx:Canvas>
 
-		<main:LocalizationComboBox/>
+		<main:LocalizationComboBox id="localeComboBox"/>
 		
 		<mx:VRule height="20"/>
 		<mx:LinkButton id="helpFAQButton"
