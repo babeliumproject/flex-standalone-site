@@ -83,6 +83,20 @@ class UserDAO {
 		return $valueObject;
 	}
 	
+	public function changePass($userId, $oldpass, $newpass)
+	{
+		$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
+		$result = $this->conn->_execute($sql, $userId, $oldpass);
+		$row = $this->conn->_nextRow($result);
+		if (!$row)
+			return false;
+
+		$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
+		$result = $this->conn->_execute($sql, $newpass, $userId, $oldpass);
+		
+		return true;
+	}
+	
 	public function restorePass($username)
 	{
 		$id = -1;

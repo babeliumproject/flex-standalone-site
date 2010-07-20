@@ -93,7 +93,8 @@ package control {
 			addCommand(LoginEvent.SIGN_OUT, SignOutCommand);
 			addCommand(LoginEvent.RESTORE_PASS, RestorePassCommand);
 			addCommand(LoginEvent.RESEND_ACTIVATION_EMAIL, ResendActivationEmailCommand);
-
+			addCommand(ModifyUserEvent.CHANGE_PASS, ChangePassCommand);
+			
 			// User Registration management
 			addCommand(RegisterUserEvent.REGISTER_USER, RegisterUserCommand);
 			addCommand(RegisterUserEvent.ACTIVATE_USER, ActivateUserCommand);

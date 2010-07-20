@@ -66,6 +66,7 @@ package model
 		[Bindable] public var activationEmailResent:Boolean = false;
 		[Bindable] public var activationEmailResentErrorMessage:String = '';
 		[Bindable] public var loginPop:LoginRestorePassForm;
+		[Bindable] public var passwordChanged:Boolean = false;
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;
