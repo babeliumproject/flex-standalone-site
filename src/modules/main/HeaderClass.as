@@ -17,6 +17,7 @@ package modules.main
 	import mx.controls.LinkButton;
 	import mx.controls.PopUpMenuButton;
 	import mx.core.Application;
+	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
@@ -94,7 +95,7 @@ package modules.main
 
 		public function showLogin():void
 		{
-			DataModel.getInstance().loginPop=LoginRestorePassForm(PopUpManager.createPopUp(Application.application.parent, LoginRestorePassForm, true));
+			DataModel.getInstance().loginPop = PopUpManager.createPopUp(Application.application.parentDocument, LoginRestorePassForm, true) as LoginRestorePassForm;
 			PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 		}
 

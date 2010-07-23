@@ -5,6 +5,8 @@
 						  horizontalScrollPolicy="off"
 						  autoLayout="true"
 						  showCloseButton="true"
+						  close="onClose(event)"
+						  resize="onWindowResize(event)"
 						  title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
 						  creationComplete="completeHandler()">
 	<mx:Metadata>
@@ -19,27 +21,25 @@
 			
 			import model.DataModel;
 			
+			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
+			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 			
 			import vo.LoginVO;
 			import vo.UserVO;
 
-			//The keyCode for ENTER key
-			public static const ENTER_KEY:int=13;
-
 			private var rememberSO:SharedObject;
 
 			public function completeHandler():void
 			{
-				this.addEventListener(CloseEvent.CLOSE, closeButtonClickHandler);
 				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
 				focusManager.setFocus(username);
 			}
 
 			private function checkPressedKey(e:KeyboardEvent):void
 			{
-				if (e.keyCode == ENTER_KEY)
+				if (e.keyCode == Keyboard.ENTER)
 				{
 					if(loginViewStack.selectedChild == loginFormBox)
 						processLogin(null);
@@ -57,14 +57,10 @@
 				var user:LoginVO=new LoginVO(username.text, passHash);
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, user).dispatch();
 			}
-			
-			public function closeButtonClickHandler(event:CloseEvent):void{
-				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
-			}
 
 			public function cancelButtonClickHandler(event:MouseEvent):void
 			{
-				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 
 			private function set wrongLogin(upd:Boolean):void
@@ -74,7 +70,7 @@
 					if(DataModel.getInstance().loginErrorMessage == "inactive_user"){
 						resendEmailLink.visible = true;
 					}
-					errorInfo.text=resourceManager.getString('myResources','LABEL_'+DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					DataModel.getInstance().loginPop.errorInfo.text=resourceManager.getString('myResources','LABEL_'+DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
 				}
 			}
@@ -97,8 +93,7 @@
 						username.text="";
 						password.text="";
 					}
-					DataModel.getInstance().isSuccessfullyLogged=false;
-					PopUpManager.removePopUp(DataModel.getInstance().loginPop);
+					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				}
 			}
 
@@ -106,7 +101,7 @@
 			{
 				errorInfo.text=DataModel.getInstance().restorePassErrorMessage;
 				DataModel.getInstance().restorePassErrorMessage="";
-				this.title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
+				title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
 				username.text = '';
 				password.text = '';
 				focusManager.setFocus(userOrEmail);
@@ -115,7 +110,7 @@
 			
 			private function showLogin(event:Event):void{
 				errorInfo.text = '';
-				this.title = resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
+				title = resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
 				userOrEmail.text = '';
 				focusManager.setFocus(username);
 				resendEmailLink.visible = false;
@@ -135,7 +130,11 @@
 
 			private function set passRecoveryDone(flag:Boolean):void
 			{
-				PopUpManager.removePopUp(DataModel.getInstance().loginPop);
+				if ( DataModel.getInstance().passRecoveryDone )
+				{
+					DataModel.getInstance().passRecoveryDone = false;
+					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				}
 			}
 
 			private function processRestorePass(event:Event):void
@@ -153,9 +152,21 @@
 			
 			private function set onActivationEmailResent(value:Boolean):void{
 				if(DataModel.getInstance().activationEmailResentErrorMessage != '')
-					errorInfo.text = DataModel.getInstance().activationEmailResentErrorMessage;
+					errorInfo.text = DataModel.getInstance().activationEmailResentErrorMessage;	
 				else
-					PopUpManager.removePopUp(DataModel.getInstance().loginPop);
+					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				DataModel.getInstance().activationEmailResent = false;
+			}
+			
+			private function onClose(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(evt.target as IFlexDisplayObject);
+				DataModel.getInstance().loginPop = null;
+			}
+			
+			private function onWindowResize(evt:ResizeEvent):void
+			{
+				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 			}
 			
 		]]>
