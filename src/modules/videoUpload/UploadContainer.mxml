@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="modules.videoUpload.*"
-		 xmlns:main="modules.main.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:videoUpload="modules.videoUpload.*"
+		 xmlns:main="modules.main.*"
+		 verticalScrollPolicy="off">
 
 	<mx:Script>
 		<![CDATA[
@@ -16,25 +17,23 @@
 				else
 					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED).dispatch();
 			}
-			
 		]]>
 	</mx:Script>
 
 	<mx:ViewStack id="uploadModuleViewStack"
 				  width="100%"
 				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().currentUploadViewStackIndex }">
+				  selectedIndex="{ DataModel.getInstance().currentUploadViewStackIndex }"
+				  creationPolicy="all"
+				  resizeToContent="true">
 		<main:UnauthorizedNotice id="unsignedScreen"
-								 width="100%"
-								 height="100%"/>
-		<ns1:FileUpload id="videoUploadMain"
-						width="100%"
-						height="100%"
-						uploadUrl="{DataModel.getInstance().uploadURL}"/>
-
+								 width="100%"/>
+		<videoUpload:FileUpload id="videoUploadMain"
+								width="100%"
+								uploadUrl="{DataModel.getInstance().uploadURL}"/>
 	</mx:ViewStack>
 
 	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onUserAuthenticationStatus"/>
 
-</mx:HBox>
+</mx:VBox>

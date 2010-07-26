@@ -271,18 +271,9 @@ package modules.subtitles
 
 				var previouslySelectedIndex:Number=subtitleList.selectedIndex;
 				var indexToBeSelected:Number;
-				if (previouslySelectedIndex == subtitleList.rowCount)
-				{
+				if (previouslySelectedIndex != 0 || subtitleList.rowCount != 1)
 					indexToBeSelected=previouslySelectedIndex - 1;
-				}
-				else if (previouslySelectedIndex == 0 && subtitleList.rowCount == 1)
-				{
-					//nothing
-				}
-				else
-				{
-					indexToBeSelected=previouslySelectedIndex;
-				}
+		
 				_cueManager.removeCueAt(subtitleList.selectedIndex);
 				subtitleList.selectedIndex=indexToBeSelected;
 
@@ -323,7 +314,7 @@ package modules.subtitles
 			if (subtitleList.selectedIndex != -1)
 			{
 				var tempEntry:CueObject=_cueManager.getCueAt(subtitleList.selectedIndex) as CueObject;
-				VPSubtitle.seekTo(tempEntry.getStartTime());
+				VPSubtitle.seekTo(tempEntry.startTime);
 			}
 		}
 

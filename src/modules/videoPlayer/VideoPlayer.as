@@ -699,7 +699,7 @@ package modules.videoPlayer
 		{
 			trace("Video source has changed");
 			//trace(e.currentTarget);
-
+	
 			if (_ns)
 			{
 				playVideo();

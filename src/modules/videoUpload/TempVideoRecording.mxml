@@ -14,16 +14,16 @@
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -33,8 +33,8 @@
 			 *  Constants
 			 */
 			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
-			private const MAXIMUM_VIDEO_DURATION:int=120; //seconds
-			private const MINIMUM_VIDEO_DURATION:int=15; //seconds
+			private const MAXIMUM_VIDEO_DURATION:int=DataModel.getInstance().maxExerciseDuration; //seconds
+			private const MINIMUM_VIDEO_DURATION:int=DataModel.getInstance().minExerciseDuration; //seconds
 			private const DEFAULT_VIDEO_WIDTH:int=DataModel.getInstance().cameraWidth; //pixels
 			private const DEFAULT_VIDEO_HEIGHT:int=DataModel.getInstance().cameraHeight; //pixels
 
