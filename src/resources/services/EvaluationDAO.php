@@ -85,7 +85,8 @@ class EvaluationDAO {
 		$sql = "SELECT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id, 
 		               A.adding_date, A.source, A.thumbnail_uri, A.duration, C.fk_user_id, 
 		               B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source,
-		               AVG(C.score) AS avg_rating
+		               AVG(C.score_overall) AS avg_rating, AVG(C.score_intonation) AS avg_intonation, 
+		               AVG(score_fluency) AS avg_fluency, AVG(score_rhythm) avg_rhythm, AVG(score_spontaneity) AS avg_spontaneity
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
 				WHERE ( A.fk_user_id = '%d' ) 
@@ -123,7 +124,11 @@ class EvaluationDAO {
 			$temp->exerciseTitle = $row[15];
 			$temp->exerciseSource = $row[16];
 			
-			$temp->evaluationAverage = $row[17];
+			$temp->overallScoreAverage = $row[17];
+			$temp->intonationScoreAverage = $row[18];
+			$temp->fluencyScoreAverage = $row[19];
+			$temp->rhythmScoreAverage = $row[20];
+			$temp->spontaneityScoreAverage = $row[21];
 			
 			array_push ( $searchResults, $temp );
 		}
@@ -134,7 +139,8 @@ class EvaluationDAO {
 	public function getResponsesAssessedByCurrentUser($userId){
 		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id, 
 		               			A.adding_date, A.source, A.thumbnail_uri, A.duration, A.fk_user_id,
-		               			U.name, C.fk_user_id, C.score, C.comment, C.adding_date,
+		               			U.name, C.fk_user_id, C.score_overall, C.score_intonation, C.score_fluency, C.score_rhythm,
+		               			C.score_spontaneity, C.comment, C.adding_date,
 		               			B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
@@ -166,17 +172,21 @@ class EvaluationDAO {
 			$temp->responseUserName = $row[10];
 			
 			$temp->userId = $row[11];
-			$temp->score = $row[12];
-			$temp->comment = $row[13];
-			$temp->addingDate = $row[14];
+			$temp->overallScore = $row[12];
+			$temp->intonationScore = $row[13];
+			$temp->fluencyScore = $row[14];
+			$temp->rhythmScore = $row[15];
+			$temp->spontaneityScore = $row[16];
+			$temp->comment = $row[17];
+			$temp->addingDate = $row[18];
 			
-			$temp->exerciseId = $row[15];
-			$temp->exerciseName = $row[16];
-			$temp->exerciseDuration = $row[17];
-			$temp->exerciseLanguage = $row[18];
-			$temp->exerciseThumbnailUri = $row[19];
-			$temp->exerciseTitle = $row[20];
-			$temp->exerciseSource = $row[21];
+			$temp->exerciseId = $row[19];
+			$temp->exerciseName = $row[20];
+			$temp->exerciseDuration = $row[21];
+			$temp->exerciseLanguage = $row[22];
+			$temp->exerciseThumbnailUri = $row[23];
+			$temp->exerciseTitle = $row[24];
+			$temp->exerciseSource = $row[25];
 			
 			array_push ( $searchResults, $temp );
 		}
@@ -185,7 +195,8 @@ class EvaluationDAO {
 	}
 	
 	public function detailsOfAssessedResponse($responseId){
-		$sql = "SELECT C.name, A.score, A.adding_date, A.comment, B.video_identifier 
+		$sql = "SELECT C.name, A.score_overall, A.score_intonation, A.score_fluency, A.score_rhythm, A.score_spontaneity,
+					   A.adding_date, A.comment, B.video_identifier 
 			    FROM (evaluation AS A INNER JOIN users AS C ON A.fk_user_id = C.id) 
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
@@ -203,10 +214,14 @@ class EvaluationDAO {
 			$temp = new EvaluationVO();
 
 			$temp->userName = $row[0];
-			$temp->score = $row[1];
-			$temp->addingDate = $row[2];
-			$temp->comment = $row[3];
-			$temp->evaluationVideoFileIdentifier = $row[4];
+			$temp->overallScore = $row[1];
+			$temp->intonationScore = $row[2];
+			$temp->fluencyScore = $row[3];
+			$temp->rhythmScore = $row[4];
+			$temp->spontaneityScore = $row[5];
+			$temp->addingDate = $row[6];
+			$temp->comment = $row[7];
+			$temp->evaluationVideoFileIdentifier = $row[8];
 
 			array_push ( $searchResults, $temp );
 		}
@@ -215,7 +230,7 @@ class EvaluationDAO {
 	}
 	
 	public function getEvaluationChartData($responseId){
-		$sql = "SELECT U.name, E.score, E.comment 
+		$sql = "SELECT U.name, E.score_overall, E.comment 
 				FROM evaluation AS E INNER JOIN users AS U ON E.fk_user_id = U.ID 
 				     INNER JOIN response AS R ON E.fk_response_id = R.id 
 				WHERE (R.id = '%d') ";
@@ -233,7 +248,7 @@ class EvaluationDAO {
 			$temp = new EvaluationVO();
 			
 			$temp->userName = $row[0];
-			$temp->score = $row[1];
+			$temp->overallScore = $row[1];
 			$temp->comment = $row[2];
 			
 			array_push ( $searchResults, $temp );
@@ -242,13 +257,19 @@ class EvaluationDAO {
 	}	
 	
 	public function addAssessment(EvaluationVO $evalData){
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score, comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%s', NOW() )";
 		
-		$result = $this->_databaseUpdate ( $sql, $evalData->responseId, $evalData->userId, $evalData->score, $evalData->comment );
+		$result = $this->_databaseUpdate ( $sql, $evalData->responseId, $evalData->userId, $evalData->overallScore, 
+												 $evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore, 
+												 $evalData->spontaneityScore, $evalData->comment );
 		
 		$sql = "SELECT last_insert_id()";
 		$result = $this->conn->_execute ( $sql );

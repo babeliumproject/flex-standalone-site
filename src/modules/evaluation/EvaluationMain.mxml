@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="modules.evaluation.*"
-		 xmlns:ns2="modules.autoevaluation.*"
+		 xmlns:evaluation="modules.evaluation.*"
+		 xmlns:autoEvaluation="modules.autoevaluation.*"
 		 xmlns:videoPlayer="modules.videoPlayer.*"
-		 creationComplete="completeHandler()"
 		 paddingBottom="8"
 		 fontFamily="Arial"
-		 fontSize="12">
+		 fontSize="12"
+		 verticalAlign="top"
+		 verticalScrollPolicy="off"
+		 creationComplete="completeHandler()">
 
 	<mx:Script>
 		<![CDATA[
@@ -329,10 +331,14 @@
 			{
 				if ((ratingRadioGroup.selectedValue) && (commentsTextArea.text != ""))
 				{
-					_score=ratingRadioGroup.selectedValue as int;
+					_score=ratingRadioGroup.selectedValue as uint;
 					_comment=commentsTextArea.text;
 					var evaluation:EvaluationVO=new EvaluationVO();
-					evaluation.score=_score;
+					evaluation.overallScore=_score;
+					evaluation.intonationScore=0;
+					evaluation.fluencyScore=0;
+					evaluation.rhythmScore=0;
+					evaluation.spontaneityScore=0;
 					evaluation.comment=_comment;
 					evaluation.userId=_userId;
 					evaluation.userName=_userName;
@@ -452,7 +458,7 @@
 				prepareEvaluation();
 
 
-				averageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.evaluationAverage;
+				overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
 
 				assessmentsOfSelectedResponse.visible=true;
 
@@ -793,6 +799,7 @@
 										height="{Math.floor(VP.width * 10 / 16)}"
 										streamSource="{_streamSource}"
 										controlsEnabled="{_evaluationSelected}"/>
+		<evaluation:EvaluationRatingBox id="evaluationRatingBox" width="100%"/>
 	</mx:VBox>
 	<mx:Spacer width="20"/>
 
@@ -827,14 +834,15 @@
 		<mx:ViewStack id="evaluationOptionsViewStack"
 					  width="100%"
 					  height="100%"
-					  creationPolicy="all">
+					  creationPolicy="all"
+					  resizeToContent="true">
 
 			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
 			<mx:VBox id="waitingAssessmentBox"
 					 horizontalAlign="center"
 					 width="100%"
 					 height="100%"
-					 horizontalScrollPolicy="off">
+					 verticalScrollPolicy="off">
 				<mx:DataGrid id="waitingAssessmentDataGrid"
 							 dataProvider="{waitingForAssessmentList}"
 							 width="100%"
@@ -970,7 +978,15 @@
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 										   dataField="responseRatingAmount"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'AVG')}"
-										   dataField="evaluationAverage"/>
+										   dataField="overallScoreAverage"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+										   dataField="intonationScoreAverage"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+										   dataField="fluencyScoreAverage"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+										   dataField="rhythmScoreAverage"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+										   dataField="spontaneityScoreAverage"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
 										   dataField="responseCharacterName"/>
 					</mx:columns>
@@ -982,7 +998,7 @@
 						 horizontalGap="2"/>
 				
 				<mx:Spacer height="30"/>
-				<!-- Niri epaitutako bideoen xehetasunak ematen dituen panela -->
+				<!-- Panel to show details of one of the responses that have been evaluated to this user-->
 				<mx:HBox id="assessmentsOfSelectedResponse"
 						 width="100%"
 						 height="100%">
@@ -996,11 +1012,10 @@
 						<mx:VBox id="humanEvaluation"
 								 label="Human Evaluation">
 							<mx:HBox>
-								<mx:Label id="averageRating"/>
+								<mx:Label id="overallAverageRating"/>
 								<mx:Button id="viewGraphicButton"
 										   label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
 										   click="viewGraphicClickHandler()"/>
-								<!-- <mx:Image source="images/graf_icon.png" width="20" height="20" click="grafikoaIkusi()"/> -->
 							</mx:HBox>
 
 							<mx:DataGrid id="assessmentDetailDataGrid"
@@ -1012,7 +1027,15 @@
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
 													   dataField="userName"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-													   dataField="score"/>
+													   dataField="overallScore"/>
+									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+													   dataField="intonationScore"/>
+									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+													   dataField="fluencyScore"/>
+									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+													   dataField="rhythmScore"/>
+									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+													   dataField="spontaneityScore"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
 													   dataField="addingDate"/>
 									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
@@ -1030,15 +1053,15 @@
 								</mx:columns>
 							</mx:DataGrid>
 						</mx:VBox>
-						<ns2:AutoevaluationPanel id="computerEvaluation">
-						</ns2:AutoevaluationPanel>
+						<autoEvaluation:AutoevaluationPanel id="computerEvaluation">
+						</autoEvaluation:AutoevaluationPanel>
 					</mx:TabNavigator>
 				</mx:HBox>
 
 			</mx:VBox>
 
 
-			<!-- Nik epaitu ditudan bideoen zerrenda erakusten du -->
+			<!-- Displays a list of responses that the user assessed -->
 			<mx:VBox label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}"
 					 id="assessedByCurrentUserBox">
 				<mx:DataGrid width="100%"

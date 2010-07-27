@@ -1,5 +1,7 @@
 package vo
 {
+	import com.adobe.cairngorm.vo.ValueObject;
+
 	[RemoteClass(alias="CreditHistoryVO")]
 	[Bindable]
 	public class CreditHistoryVO

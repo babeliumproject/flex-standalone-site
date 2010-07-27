@@ -127,6 +127,8 @@ package modules.videoPlayer
 		public var secondStreamState:int;
 
 		private var _cuePointTimer:Timer;
+		
+		public static const SUBTILE_INSERT_DELAY:Number = 0.5;
 
 
 		/**
@@ -754,7 +756,7 @@ package modules.videoPlayer
 		{
 			var time:Number=_ns != null ? _ns.time : 0;
 
-			this.dispatchEvent(new SubtitlingEvent(e.type, time));
+			this.dispatchEvent(new SubtitlingEvent(e.type, time - SUBTILE_INSERT_DELAY));
 		}
 
 

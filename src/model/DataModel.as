@@ -219,6 +219,9 @@ package model
 		[Bindable] public var cameraWidth:int = 320;
 		[Bindable] public var cameraHeight:int = 240;
 		
+		[Bindable] public var minExerciseDuration:uint = 15; //seconds
+		[Bindable] public var maxExerciseDuration:uint = 120; //seconds
+		
 		// Checks for exercise rating and reporting
 		[Bindable] public var userRatedExercise:Boolean = false;
 		[Bindable] public var userRatedExerciseFlag:Boolean = false;

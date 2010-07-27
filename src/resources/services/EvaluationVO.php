@@ -5,12 +5,20 @@ class EvaluationVO{
 	public $id;
 	public $responseId; //The resource that has been assessed
 	public $userId; //Who assessed the response
-	public $score;
+	public $overallScore;
+	public $intonationScore;
+	public $fluencyScore;
+	public $rhythmScore;
+	public $spontaneityScore;
 	public $comment;
 	public $addingDate;
 	
-	//When the same responseId has more than one entry this returns the average score.
-	public $evaluationAverage; 
+	//When the same responseId has more than one entry this returns the average scores.
+	public $overallScoreAverage;
+	public $intonationScoreAverage;
+	public $fluencyScoreAverage;
+	public $rhythmScoreAverage;
+	public $spontaneityScoreAverage; 
 	
 	//When the video has video comments this fields are filled up with that video's data
 	public $evaluationVideoId;

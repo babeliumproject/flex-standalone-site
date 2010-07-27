@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:rating="com.asfusion.controls.*"
+		 width="100%"
+		 verticalAlign="middle"
+		 paddingLeft="0"
+		 paddingRight="0"
+		 horizontalGap="0"
+		 borderStyle="solid">
+	<mx:Text id="parameterText"
+			 width="{this.width - 2 - scoreMeter.width}"/>
+	<mx:HBox id="scoreMeter"
+			 horizontalGap="0"
+			 horizontalAlign="center"
+			 verticalAlign="middle"
+			 width="140"
+			 height="100%">
+		<mx:Label text="-"/>
+		<rating:Rating click="ratingItemClickHandler(event)"/>
+		<mx:Label text="  +"/>
+	</mx:HBox>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			public function set parameter(text:String):void{
+				parameterText.text = resourceManager.getString('myResources',text);
+			}
+			
+		]]>
+	</mx:Script>
+</mx:HBox>

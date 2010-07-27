@@ -160,13 +160,14 @@
 			
 			private function onClose(evt:CloseEvent):void
 			{
-				PopUpManager.removePopUp(evt.target as IFlexDisplayObject);
-				DataModel.getInstance().loginPop = null;
+				//PopUpManager.removePopUp(evt.target as IFlexDisplayObject);
+				//DataModel.getInstance().loginPop = null;
+				PopUpManager.removePopUp(this);
 			}
 			
 			private function onWindowResize(evt:ResizeEvent):void
 			{
-				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
+				//PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 			}
 			
 		]]>
