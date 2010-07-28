@@ -8,6 +8,7 @@
 		 horizontalGap="0"
 		 borderStyle="solid">
 	<mx:Text id="parameterText"
+			 text="{resourceManager.getString('myResources',text)}"
 			 width="{this.width - 2 - scoreMeter.width}"/>
 	<mx:HBox id="scoreMeter"
 			 horizontalGap="0"
@@ -16,17 +17,25 @@
 			 width="140"
 			 height="100%">
 		<mx:Label text="-"/>
-		<rating:Rating click="ratingItemClickHandler(event)"/>
+		<rating:Rating id="ratingComponent"
+					   click="ratingItemClickHandler(event)"/>
 		<mx:Label text="  +"/>
 	</mx:HBox>
-	
+
 	<mx:Script>
 		<![CDATA[
-			
-			public function set parameter(text:String):void{
-				parameterText.text = resourceManager.getString('myResources',text);
+			[Bindable]
+			private var text:String='';
+
+			public function set parameter(text:String):void
+			{
+				this.text=text;
 			}
-			
+
+			public function ratingItemClickHandler(event:MouseEvent):void
+			{
+				(event.currentTarget).value=(event.currentTarget).selectedValue;
+			}
 		]]>
 	</mx:Script>
 </mx:HBox>

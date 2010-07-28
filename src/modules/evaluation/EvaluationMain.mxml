@@ -131,6 +131,7 @@
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
 				VP.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onResponseFinished);
+				VP.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, evaluationRatingBox.onResponseFinished);
 			}
 
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
@@ -340,6 +341,7 @@
 					evaluation.rhythmScore=0;
 					evaluation.spontaneityScore=0;
 					evaluation.comment=_comment;
+					
 					evaluation.userId=_userId;
 					evaluation.userName=_userName;
 					evaluation.responseId=_responseId;
