@@ -9,7 +9,8 @@
 		 verticalScrollPolicy="off"
 		 horizontalScrollPolicy="off"
 		 fontFamily="Arial"
-		 creationComplete="completeHandler()">
+		 creationComplete="completeHandler()"
+		 xmlns:controls="com.asfusion.controls.*">
 
 
 	<mx:VBox id="thumbnailsBox">
@@ -17,14 +18,14 @@
 				  scaleContent="true"
 				  source="{getExerciseImageSource(data as EvaluationVO)}"
 				  autoLoad="true"
-				  width="96"
-				  height="72"/>
+				  width="60"
+				  height="45"/>
 		<mx:Image id="responseThumbnail"
 				  scaleContent="true"
 				  source="{getResponseImageSource(data as EvaluationVO)}"
 				  autoLoad="true"
-				  width="96"
-				  height="72"/>
+				  width="60"
+				  height="45"/>
 	</mx:VBox>
 
 	<mx:VBox id="assessmentDataBox"
@@ -57,7 +58,7 @@
 				<mx:Label text="{getLevelCorrespondence(data.exerciseAvgDifficulty)}"/>
 			</mx:HBox>
 			<mx:Label id="exerciseTitle"
-					  label="{data.exerciseTitle}"
+					  text="{data.exerciseTitle}"
 					  fontSize="12"
 					  width="100%"
 					  textAlign="left"/>
@@ -78,29 +79,40 @@
 			<mx:Label text="{data.responseRatingAmount}"/>
 		</mx:HBox>
 
-		<mx:HBox id="intonationFluencyBox"
-				 width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
-			<mx:Label text="{data.intonationScoreAverage}"/>
-			<mx:Spacer/>
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
-			<mx:Label text="{data.fluencyScoreAverage}"/>
-		</mx:HBox>
+		<mx:HBox width="100%"
+				 horizontalAlign="center">
+			<mx:VBox width="50%">
+				<mx:HBox id="intonationBox">
+					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+':' }"/>
+					<controls:Rating value="{data.intonationScoreAverage}"
+									 liveRollOver="false"/>
+				</mx:HBox>
+				<mx:HBox id="rhythmBox">
+					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')+':' }"/>
+					<controls:Rating value="{data.rhythmScoreAverage}"
+									 liveRollOver="false"/>
+				</mx:HBox>
+			</mx:VBox>
 
-		<mx:HBox id="rhythmSpontaneityBox"
-				 width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
-			<mx:Label text="{data.rhythmScoreAverage}"/>
-			<mx:Spacer/>
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
-			<mx:Label text="{data.spontaneityScoreAverage}"/>
+			<mx:VBox width="50%">
+				<mx:HBox id="fluencyBox">
+					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')+':' }"/>
+					<controls:Rating value="{data.fluencyScoreAverage}"
+									 liveRollOver="false"/>
+				</mx:HBox>
+				<mx:HBox id="spontaneityBox">
+					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')+':' }"/>
+					<controls:Rating value="{data.spontaneityScoreAverage}"
+									 liveRollOver="false"/>
+				</mx:HBox>
+			</mx:VBox>
 		</mx:HBox>
-
 		<mx:HBox id="overallBox"
 				 width="100%"
 				 horizontalAlign="center">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
-			<mx:Label text="{data.overallScoreAverage}"/>
+			<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_OVERALL_SCORE')+':' }"/>
+			<controls:Rating value="{data.overallScoreAverage}"
+							 liveRollOver="false"/>
 		</mx:HBox>
 
 
@@ -111,21 +123,25 @@
 
 	<mx:Script>
 		<![CDATA[
+			import model.DataModel;
+
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
-			
+
+			import view.common.LocaleFlagResource;
+
 			import vo.EvaluationVO;
-			
+
 			private var _data:Object;
 			private var _creationComplete:Boolean=false;
-			
+
 			public function completeHandler():void
 			{
 				_data=data;
 				_creationComplete=true;
-				
+
 			}
-			
+
 			public function getLevelCorrespondence(avgDifficulty:Number):String
 			{
 				var numFormat:NumberFormatter=new NumberFormatter();
@@ -160,12 +176,12 @@
 						break;
 				}
 			}
-			
+
 			public function getFlagSource(temp:EvaluationVO):String
 			{
 				return LocaleFlagResource.getFlagResource(temp.exerciseLanguage);
 			}
-			
+
 			public function getExerciseImageSource(temp:EvaluationVO):String
 			{
 				var url:String='';
@@ -175,7 +191,7 @@
 					url=temp.exerciseThumbnailUri;
 				return url;
 			}
-			
+
 			public function getResponseImageSource(temp:EvaluationVO):String
 			{
 				var url:String='';
@@ -185,7 +201,6 @@
 					url=temp.responseThumbnailUri;
 				return url;
 			}
-			
 		]]>
 	</mx:Script>
 

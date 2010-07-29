@@ -1,43 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 verticalScrollPolicy="off">
-	
+
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import modules.search.VideoPaginator;
-			
+
 			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
 			import mx.events.ListEvent;
-			
-			
-			[Bindable] private var _currentPage:int = 1;
-			
-			[Bindable] private var _dataProvider:ArrayCollection;
-			
-			public function set dataProvider(assessedToCurrentUserData:ArrayCollection):void{
-				_dataProvider = assessedToCurrentUserData;
-				createPagination();
+
+
+			[Bindable]
+			private var _currentPage:int=1;
+
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+
+			public function set dataProvider(assessedToCurrentUserData:ArrayCollection):void
+			{
+				_dataProvider=assessedToCurrentUserData;
+				if (_dataProvider.length > 0)
+				{
+					assessedToCurrentUserListTable.includeInLayout=true;
+					assessedToCurrentUserListTable.visible=true;
+					createPagination();
+				}
+				else
+				{
+					assessedToCurrentUserListTable.includeInLayout=false;
+					assessedToCurrentUserListTable.visible=false;
+				}
 			}
-			
-			public function set changeListener(changeFunction:Function):void{
+
+			public function set changeListener(changeFunction:Function):void
+			{
 				assessedToCurrentUserListTable.addEventListener(ListEvent.CHANGE, changeFunction);
 			}
-			
-			public function createPagination():void{
-				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav,  paginationBox, navigateToPage);
+
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
-			
+
 			private function navigateToPage(event:MouseEvent):void
 			{
 				//Go to the page
-				_currentPage = int((event.target as Button).id);
+				_currentPage=int((event.target as Button).id);
 				//Refresh the pagination controls
 				createPagination();
 			}
-			
+
 			public function refreshDataProvider():void
 			{
 				var current:int=_currentPage - 1;
@@ -48,24 +64,21 @@
 			}
 		]]>
 	</mx:Script>
-	
-	
+
+
 	<mx:DataGrid id="assessedToCurrentUserListTable"
 				 width="100%"
 				 editable="false"
-				 selectable="false"
 				 verticalScrollPolicy="off"
 				 sortableColumns="false"
 				 draggableColumns="false"
 				 headerHeight="0"
-				 backgroundAlpha="0"
-				 borderThickness="0"
-				 dataProvider="{DataModel.getInstance().availableExercises}">
+				 dataProvider="{_dataProvider}">
 		<mx:columns>
 			<mx:DataGridColumn itemRenderer="modules.evaluation.AssessedToCurrentUserListItem"/>
 		</mx:columns>
 	</mx:DataGrid>
-	
+
 	<mx:HBox id="paginationBox"
 			 width="100%"
 			 horizontalAlign="left"

@@ -784,9 +784,17 @@
 						 horizontalAlign="left"
 						 horizontalGap="2"/>
 			</mx:VBox>
+			
+			
+			
 
 			<!-- Niri epaitutako bideoen zerrenda erakusten du -->
 			<mx:VBox id="assessedToCurrentUserBox">
+				
+				<!--
+				<evaluation:AssessedToCurrentUserList id="testing" dataProvider="{assessedToCurrentUserList}" changeListener="{assessedToCurrentUserChangeHandler}" width="100%"/>
+				-->
+				
 				<mx:DataGrid width="100%"
 							 height="100%"
 							 id="assessedToCurrentUserDataGrid"
