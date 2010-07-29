@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 paddingTop="4"
+		 paddingBottom="4"
+		 paddingLeft="8"
+		 paddingRight="8"
+		 width="100%"
+		 verticalAlign="middle"
+		 verticalScrollPolicy="off"
+		 horizontalScrollPolicy="off"
+		 fontFamily="Arial"
+		 creationComplete="completeHandler()">
+
+
+	<mx:VBox id="thumbnailsBox">
+		<mx:Image id="exerciseThumbnail"
+				  scaleContent="true"
+				  source="{getExerciseImageSource(data as EvaluationVO)}"
+				  autoLoad="true"
+				  width="96"
+				  height="72"/>
+		<mx:Image id="responseThumbnail"
+				  scaleContent="true"
+				  source="{getResponseImageSource(data as EvaluationVO)}"
+				  autoLoad="true"
+				  width="96"
+				  height="72"/>
+	</mx:VBox>
+
+	<mx:VBox id="assessmentDataBox"
+			 width="100%"
+			 verticalGap="2"
+			 verticalScrollPolicy="off"
+			 horizontalScrollPolicy="off">
+
+		<mx:HBox id="difficultyLanguageTitleBox"
+				 horizontalAlign="left"
+				 verticalAlign="middle"
+				 horizontalGap="2"
+				 width="100%">
+			<mx:Image id="exerciseLanguage"
+					  width="16"
+					  height="16"
+					  source="{getFlagSource(data as EvaluationVO)}"/>
+			<mx:HBox id="avgDifficultyIndicator"
+					 fontFamily="Arial"
+					 fontSize="10"
+					 borderStyle="solid"
+					 borderThickness="1"
+					 cornerRadius="4"
+					 borderColor="0xcccccc"
+					 backgroundColor="0xffffff"
+					 horizontalAlign="center"
+					 verticalAlign="middle"
+					 paddingTop="0"
+					 paddingBottom="0">
+				<mx:Label text="{getLevelCorrespondence(data.exerciseAvgDifficulty)}"/>
+			</mx:HBox>
+			<mx:Label id="exerciseTitle"
+					  label="{data.exerciseTitle}"
+					  fontSize="12"
+					  width="100%"
+					  textAlign="left"/>
+		</mx:HBox>
+
+		<mx:HRule width="100%"
+				  height="1"/>
+
+		<mx:HBox id="selectedRoleRatingAmountBox"
+				 width="100%">
+			<mx:Image id="roleIcon"
+					  source="@Embed('../../resources/images/roles.png')"
+					  toolTip="{resourceManager.getString('myResources','SELECTEDCHAR')}"/>
+			<mx:Label text="{data.responseCharacterName}"/>
+			<mx:Spacer/>
+			<mx:Label text="{resourceManager.getString('myResources','BALORAZIOKOP')+':'}"
+					  fontWeight="bold"/>
+			<mx:Label text="{data.responseRatingAmount}"/>
+		</mx:HBox>
+
+		<mx:HBox id="intonationFluencyBox"
+				 width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
+			<mx:Label text="{data.intonationScoreAverage}"/>
+			<mx:Spacer/>
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
+			<mx:Label text="{data.fluencyScoreAverage}"/>
+		</mx:HBox>
+
+		<mx:HBox id="rhythmSpontaneityBox"
+				 width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
+			<mx:Label text="{data.rhythmScoreAverage}"/>
+			<mx:Spacer/>
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
+			<mx:Label text="{data.spontaneityScoreAverage}"/>
+		</mx:HBox>
+
+		<mx:HBox id="overallBox"
+				 width="100%"
+				 horizontalAlign="center">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')+' '+ resourceManager.getString('myResources','AVG')+':' }"/>
+			<mx:Label text="{data.overallScoreAverage}"/>
+		</mx:HBox>
+
+
+
+
+
+	</mx:VBox>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.formatters.NumberBaseRoundType;
+			import mx.formatters.NumberFormatter;
+			
+			import vo.EvaluationVO;
+			
+			private var _data:Object;
+			private var _creationComplete:Boolean=false;
+			
+			public function completeHandler():void
+			{
+				_data=data;
+				_creationComplete=true;
+				
+			}
+			
+			public function getLevelCorrespondence(avgDifficulty:Number):String
+			{
+				var numFormat:NumberFormatter=new NumberFormatter();
+				numFormat.precision=0;
+				numFormat.rounding=NumberBaseRoundType.NEAREST;
+				var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
+				switch (roundedAvgDifficulty)
+				{
+					case 1:
+						return 'A1';
+						break;
+					case 2:
+						return 'A2';
+						break;
+					case 3:
+						return 'B1.1';
+						break;
+					case 4:
+						return 'B1.2';
+						break;
+					case 5:
+						return 'B2.1';
+						break;
+					case 6:
+						return 'B2.2';
+						break;
+					case 7:
+						return 'C1';
+						break;
+					default:
+						return '';
+						break;
+				}
+			}
+			
+			public function getFlagSource(temp:EvaluationVO):String
+			{
+				return LocaleFlagResource.getFlagResource(temp.exerciseLanguage);
+			}
+			
+			public function getExerciseImageSource(temp:EvaluationVO):String
+			{
+				var url:String='';
+				if (temp.exerciseSource == "Red5")
+					url=DataModel.getInstance().thumbURL + "/" + temp.exerciseThumbnailUri;
+				else
+					url=temp.exerciseThumbnailUri;
+				return url;
+			}
+			
+			public function getResponseImageSource(temp:EvaluationVO):String
+			{
+				var url:String='';
+				if (temp.responseSource == "Red5")
+					url=DataModel.getInstance().thumbURL + "/" + temp.responseThumbnailUri;
+				else
+					url=temp.responseThumbnailUri;
+				return url;
+			}
+			
+		]]>
+	</mx:Script>
+
+</mx:HBox>

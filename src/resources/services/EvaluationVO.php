@@ -33,6 +33,7 @@ class EvaluationVO{
 	public $exerciseLanguage;
 	public $exerciseDuration;
 	public $exerciseThumbnailUri;
+	public $exerciseAvgDifficulty;
 	
 	
 	public $responseFileIdentifier;

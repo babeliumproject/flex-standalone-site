@@ -3,10 +3,12 @@
 					xmlns:common="view.common.*"
 					xmlns:rating="com.asfusion.controls.*"
 					xmlns:evaluation="modules.evaluation.*"
+					xmlns:videoUpload="modules.videoUpload.*"
 					title="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
 					paddingTop="4"
-					creationComplete="onComplete(event)"
-					xmlns:videoUpload="modules.videoUpload.*">
+					includeInLayout="false"
+					visible="false"
+					creationComplete="onComplete(event)">
 
 	<mx:Script>
 		<![CDATA[
@@ -30,11 +32,11 @@
 			private var _responseDataAvailable:Boolean=false;
 
 			private var _userId:uint;
-			private var _userName:String;
 			private var _responseId:uint;
+			
+			//These are used for sending notification emails
+			private var _userName:String;
 			private var _responseName:String;
-			private var _responseSubtitleId:uint;
-			private var _responseCharacterName:String;
 			private var _responseAddingDate:String;
 			private var _responseUserId:uint;
 			private var _responseUserName:String;
@@ -50,23 +52,22 @@
 				sendEvaluationButton.enabled=true;
 			}
 
-			public function responseData(userId:uint, userName:String, responseId:uint, responseName:String, responseSubtitleId:uint, responseCharacterName:String, responseAddingDate:String, responseUserId:uint, responseUserName:String, exerciseTitle:String):void
+			public function responseData(userId:uint, responseId:uint, userName:String, responseName:String, responseAddingDate:String, responseUserId:uint, responseUserName:String, exerciseTitle:String):void
 			{
 				_userId=userId;
-				_userName=userName;
 				_responseId=responseId;
+				
+				_userName=userName;
 				_responseName=responseName;
-				_responseSubtitleId=responseSubtitleId;
-				_responseCharacterName=responseCharacterName;
 				_responseAddingDate=responseAddingDate;
-				_responseUserId=responseUserId
+				_responseUserId=responseUserId;
 				_responseUserName=responseUserName;
-				_exerciseTitle=exerciseTitle;
+				_exerciseTitle=exerciseTitle;	
 
 				_responseDataAvailable=true;
 			}
 
-			protected function sendEvaluationButtonClickHandler(event:MouseEvent):void
+			public function sendEvaluationButtonClickHandler(event:MouseEvent):void
 			{
 
 				if (_responseDataAvailable)
@@ -77,7 +78,7 @@
 							CustomAlert.info(resourceManager.getString('myResources','ERROR_SELECTED_TEXT_COMMENT_NO_FILL'));
 							return;
 						}
-						if(includeVideoCheck.selected && videoComment.recordingFileName==''){
+						if(includeVideoCheck.selected && !videoComment.recordingFileName){
 							CustomAlert.info(resourceManager.getString('myResources','ERROR_SELECTED_VIDEO_COMMENT_NO_FILL'));
 							return;
 						}
@@ -92,14 +93,18 @@
 						evaluation.comment=textComment.text;
 
 						evaluation.userId=_userId;
-						evaluation.userName=_userName;
 						evaluation.responseId=_responseId;
+		
+						evaluation.evaluationVideoFileIdentifier=videoComment.recordingFileName;
+						
+						//This data is used to send an email notification to the user that received the evaluation
+						evaluation.userName=_userName;
 						evaluation.responseFileIdentifier=_responseName;
 						evaluation.responseAddingDate=_responseAddingDate;
 						evaluation.responseUserId=_responseUserId;
 						evaluation.responseUserName=_responseUserName;
-						evaluation.exerciseTitle=_exerciseTitle;
-						evaluation.evaluationVideoFileIdentifier=videoComment.recordingFileName;
+						evaluation.exerciseTitle=_exerciseTitle;	
+						
 
 						//If the user added a video comment
 						if (includeVideoCheck.selected)
@@ -121,7 +126,7 @@
 
 			}
 
-			protected function resetEvaluationButtonClickHandler(event:MouseEvent):void
+			public function resetEvaluationButtonClickHandler(event:MouseEvent):void
 			{
 				userIntonationScore.ratingComponent.value=0;
 				userFluencyScore.ratingComponent.value=0;

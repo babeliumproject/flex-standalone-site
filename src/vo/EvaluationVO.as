@@ -35,6 +35,7 @@ package vo
 	   public var exerciseLanguage:String;
 	   public var exerciseDuration:int;
 	   public var exerciseThumbnailUri:String;
+	   public var exerciseAvgDifficulty:Number;
 	   
 	   
 	   public var responseFileIdentifier:String;

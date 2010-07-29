@@ -86,11 +86,13 @@ class EvaluationDAO {
 		               A.adding_date, A.source, A.thumbnail_uri, A.duration, C.fk_user_id, 
 		               B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source,
 		               AVG(C.score_overall) AS avg_rating, AVG(C.score_intonation) AS avg_intonation, 
-		               AVG(score_fluency) AS avg_fluency, AVG(score_rhythm) avg_rhythm, AVG(score_spontaneity) AS avg_spontaneity
+		               AVG(score_fluency) AS avg_fluency, AVG(score_rhythm) avg_rhythm, AVG(score_spontaneity) AS avg_spontaneity,
+		               AVG(suggested_level) as avg_exerciselevel
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
+					 LEFT OUTER JOIN exercise_level E ON B.id=E.fk_exercise_id
 				WHERE ( A.fk_user_id = '%d' ) 
-				GROUP BY B.id";
+				GROUP BY A.id,B.id";
 		
 		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $userId );
 		
@@ -129,6 +131,8 @@ class EvaluationDAO {
 			$temp->fluencyScoreAverage = $row[19];
 			$temp->rhythmScoreAverage = $row[20];
 			$temp->spontaneityScoreAverage = $row[21];
+			
+			$temp->exerciseAvgDifficulty = $row[22];
 			
 			array_push ( $searchResults, $temp );
 		}
