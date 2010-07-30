@@ -81,29 +81,37 @@
 
 		<mx:HBox width="100%"
 				 horizontalAlign="center">
-			<mx:VBox width="50%">
-				<mx:HBox id="intonationBox">
-					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+':' }"/>
-					<controls:Rating value="{data.intonationScoreAverage}"
-									 liveRollOver="false"/>
+			<mx:VBox width="100%">
+				<mx:HBox id="intonationBox" width="100%">
+						<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+':' }"/>
+					<mx:HBox horizontalAlign="right" width="100%">
+						<controls:Rating value="{data.intonationScoreAverage}"
+										 liveRollOver="false"/>
+					</mx:HBox>
 				</mx:HBox>
-				<mx:HBox id="rhythmBox">
+				<mx:HBox id="rhythmBox" width="100%">
 					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')+':' }"/>
-					<controls:Rating value="{data.rhythmScoreAverage}"
-									 liveRollOver="false"/>
+					<mx:HBox horizontalAlign="right" width="100%">
+						<controls:Rating value="{data.rhythmScoreAverage}"
+										 liveRollOver="false"/>
+					</mx:HBox>
 				</mx:HBox>
 			</mx:VBox>
 
-			<mx:VBox width="50%">
-				<mx:HBox id="fluencyBox">
+			<mx:VBox width="100%">
+				<mx:HBox id="fluencyBox" width="100%">
 					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')+':' }"/>
-					<controls:Rating value="{data.fluencyScoreAverage}"
-									 liveRollOver="false"/>
+					<mx:HBox horizontalAlign="right" width="100%">
+						<controls:Rating value="{data.fluencyScoreAverage}"
+										 liveRollOver="false"/>
+					</mx:HBox>
 				</mx:HBox>
-				<mx:HBox id="spontaneityBox">
+				<mx:HBox id="spontaneityBox" width="100%">
 					<mx:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')+':' }"/>
-					<controls:Rating value="{data.spontaneityScoreAverage}"
-									 liveRollOver="false"/>
+					<mx:HBox horizontalAlign="right" width="100%">
+						<controls:Rating value="{data.spontaneityScoreAverage}"
+										 liveRollOver="false"/>
+					</mx:HBox>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:HBox>

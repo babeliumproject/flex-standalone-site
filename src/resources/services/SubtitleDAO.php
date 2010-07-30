@@ -19,8 +19,9 @@ class SubtitleDAO {
 
 	public function getExerciseRoles($exerciseId) {
 
-		$sql = "SELECT id,fk_exercise_id,fk_user_id,character_name 
-				FROM exercise_role WHERE (fk_exercise_id = %d) ";
+		$sql = "SELECT MAX(id),fk_exercise_id,fk_user_id,character_name 
+				FROM exercise_role WHERE (fk_exercise_id = %d) 
+				GROUP BY exercise_role.character_name ";
 
 		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId );
 
@@ -28,8 +29,9 @@ class SubtitleDAO {
 	}
 
 	public function getUserRoles($exerciseId, $userId){
-		$sql = "SELECT id,fk_exercise_id,fk_user_id,character_name 
-		    	FROM exercise_role WHERE (fk_exercise_id = %d AND fk_user_id= %d)";
+		$sql = "SELECT MAX(id),fk_exercise_id,fk_user_id,character_name 
+		    	FROM exercise_role WHERE (fk_exercise_id = %d AND fk_user_id= %d) 
+		    	GROUP BY exercise_role.character_name ";
 		
 		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId, $userId );
 
@@ -64,11 +66,13 @@ class SubtitleDAO {
 	}
 
 	public function getSubtitleLines($exerciseId, $language) {
-		$sql = "SELECT SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id
+		$sql = "SELECT  SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name 
             	FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON 
 				SL.fk_subtitle_id = S.id) INNER JOIN exercise AS E ON E.id = 
 				S.fk_exercise_id RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id
-				WHERE E.id = %d AND S.language = '%s'";
+				WHERE  S.id = (SELECT MAX(SS.id)
+						       FROM subtitle SS 
+						       WHERE SS.fk_exercise_id ='%d' AND SS.language = '%s') ";
 
 
 		$searchResults = $this->_listSubtitleLinesQuery ( $sql, $exerciseId, $language );
@@ -118,7 +122,7 @@ class SubtitleDAO {
 
 		//if ($subtitles->id == 0){
 			
-		$this->_deletePreviousSubtitles($subtitles->exerciseId);
+		//$this->_deletePreviousSubtitles($subtitles->exerciseId);
 			
 		//We are adding a new subtitle
 		//First, we insert the new subtitle on the database
