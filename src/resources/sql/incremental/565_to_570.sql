@@ -24,3 +24,4 @@ ALTER TABLE `babeliumproject`.`exercise_level`
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
+UPDATE `preferences` SET `prefValue` =  '$Revision: 570 $'  WHERE `preferences`.`prefName` = 'dbrevision';
