@@ -66,7 +66,7 @@ class SubtitleDAO {
 	}
 
 	public function getSubtitleLines($exerciseId, $language) {
-		$sql = "SELECT  SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name 
+		$sql = "SELECT  SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id 
             	FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON 
 				SL.fk_subtitle_id = S.id) INNER JOIN exercise AS E ON E.id = 
 				S.fk_exercise_id RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id

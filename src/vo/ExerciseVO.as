@@ -25,6 +25,8 @@ package vo
 		public var reference:String;
 		
 		public var avgRating:Number;
+		public var ratingCount:int; //used for bayesian average rating calculation
+		
 		public var avgDifficulty:Number;
 		
 		public var score:Number; //is used to sort the searches

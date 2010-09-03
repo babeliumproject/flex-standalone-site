@@ -18,6 +18,9 @@ class ExerciseDAO {
 	private $exerciseFolder = '';
 	private $responseFolder = '';
 	
+	private $exerciseGlobalAvgRating;
+	private $exerciseMinRatingCount;
+	
 	public function ExerciseDAO() {
 			$settings = new Config ( );
 			$this->filePath = $settings->filePath;
@@ -127,13 +130,9 @@ class ExerciseDAO {
 		$this->responseFolder = $row ? $row[0] : '';
 	}
 	
-
 	public function getExercises(){
-		//$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date, e.fk_user_id, u.name 
-		//        FROM exercise e INNER JOIN users u ON e.fk_user_id=u.ID ORDER BY e.adding_date DESC";
-		
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       				   e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
+       				   e.adding_date, e.fk_user_id, e.duration, u.name, 
        				   avg (suggested_level) as avgLevel, e.status, license, reference
 				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -142,15 +141,14 @@ class ExerciseDAO {
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 		
-		
-		$searchResults = $this->_listQuery($sql);
+		$searchResults = $this->_exerciseListQuery($sql);
 		
 		return $searchResults;
 	}
 	
 	public function getRecordableExercises(){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, 
        					avg (suggested_level) as avgLevel, e.status, license, reference
 				 FROM   exercise e 
 				 		INNER JOIN users u ON e.fk_user_id= u.ID
@@ -161,15 +159,14 @@ class ExerciseDAO {
 				 GROUP BY e.id
 				 ORDER BY e.adding_date DESC";
 		
-		
-		$searchResults = $this->_listQuery($sql);
+		$searchResults = $this->_exerciseListQuery($sql);
 		
 		return $searchResults;
 	}
 	
 	public function getUsersExercises($userId){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
+       					e.adding_date, e.fk_user_id, e.duration, u.name, 
        					avg (suggested_level) as avgLevel, e.status, license, reference
 				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -221,7 +218,8 @@ class ExerciseDAO {
 			
 			$insert_result = $this->_create($sql, $score->exerciseId, $score->userId, $score->suggestedScore);
 			
-			return $this->getExerciseAvgScore($score->exerciseId);
+			//return $this->getExerciseAvgScore($score->exerciseId);
+			return $this->getExerciseAvgBayesianScore($score->exerciseId);
 			
 		} else {
 			//The user has already given a score ignore the input.
@@ -258,11 +256,52 @@ class ExerciseDAO {
 	
 	public function getExerciseAvgScore($exerciseId){
 		
-		$sql = "SELECT e.id, avg (suggested_score) as avgScore
+		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount 
 				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
 				WHERE (e.id = '%d' )";
 		
 		return $this->_singleScoreQuery($sql, $exerciseId);
+	}
+	
+	public function getExerciseAvgBayesianScore($exerciseId){
+		
+		if(!isset($this->exerciseMinRatingCount)){
+					$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
+		
+					$result = $this->conn->_execute($sql);
+					$row = $this->conn->_nextRow($result);
+					
+					if($row)
+						$this->exerciseMinRatingCount = $row[0];
+					else
+						$this->exerciseMinRatingCount = 0;
+		}
+		
+		if(!isset($this->exerciseGlobalAvgRating)){
+			$this->exerciseGlobalAvgRating = $this->getExercisesGlobalAvgScore();
+		}
+		
+		$exerciseRatingData = $this->getExerciseAvgScore($exerciseId);
+		
+		$exerciseAvgRating = $exerciseRatingData->avgRating;
+		$exerciseRatingCount = $exerciseRatingData->ratingCount;
+		
+		$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) + 
+							   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
+							   
+		return $exerciseBayesianAvg;
+		
+	}
+	
+	public function getExercisesGlobalAvgScore(){
+		$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
+		
+		$result = $this->conn->_execute($sql);
+		$row = $this->conn->_nextRow($result);
+		if($row)
+			return $row[0]; //The avg of all the exercises so far
+		else
+			return 0;
 	}
 	
 	public function deactivateReportedVideos(){
@@ -294,6 +333,7 @@ class ExerciseDAO {
 		if ($row){
 			$exercise->id = $row[0];
 			$exercise->avgRating = $row[1];
+			$exercise->ratingCount = $row[2];
 		} else {
 			return false;
 		}
@@ -301,7 +341,7 @@ class ExerciseDAO {
 		
 	}
 	
-	private function _listQuery() {
+	private function _exerciseListQuery() {
 		$searchResults = array ();
 		$result = $this->conn->_execute ( func_get_args() );
 		
@@ -320,11 +360,12 @@ class ExerciseDAO {
 			$temp->userId = $row[9];
 			$temp->duration = $row[10];
 			$temp->userName = $row[11];
-			$temp->avgRating = $row[12];
-			$temp->avgDifficulty = $row[13];
-			$temp->status = $row[14];
-			$temp->license = $row[15];
-			$temp->reference = $row[16];
+			$temp->avgDifficulty = $row[12];
+			$temp->status = $row[13];
+			$temp->license = $row[14];
+			$temp->reference = $row[15];
+			
+			$temp->avgRating = $this->getExerciseAvgBayesianScore($temp->id);
 			
 			array_push ( $searchResults, $temp );
 		}

@@ -22,6 +22,8 @@ class ExerciseVO {
 	public $reference;
 	
 	public $avgRating;
+	public $ratingCount;
+	
 	public $avgDifficulty;
 	
 	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
