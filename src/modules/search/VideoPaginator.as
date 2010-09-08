@@ -1,15 +1,15 @@
 package modules.search
 {
 	import flash.events.MouseEvent;
-	
+
 	import model.DataModel;
-	
+
 	import mx.containers.Box;
 	import mx.controls.Button;
 
 	public class VideoPaginator
 	{
-		
+
 		[Bindable]
 		[Embed(source="resources/images/first.png")]
 		public static var firstI:Class;
@@ -22,66 +22,83 @@ package modules.search
 		[Bindable]
 		[Embed(source="resources/images/last.png")]
 		public static var lastI:Class;
-		
+
 		public static function createPaginationMenu(totalItemCount:int, itemsPerPage:int, currentPageNumber:int, displayedPageCount:int, container:Box, buttonClickHandler:Function):void
 		{
-			var buttonCountInPaginationBox:int=displayedPageCount;
-			var limit:int=(buttonCountInPaginationBox + 1) / 2;
+			var maxPageButtonsInPagination:int=displayedPageCount;
+			var limit:int=(maxPageButtonsInPagination + 1) / 2;
 			var itemsPerPage:int=itemsPerPage;
 			var itemCount:int=totalItemCount;
 			var currentPage:int=currentPageNumber;
-			var searchPageCount:int=(itemCount % itemsPerPage == 0) ? (itemCount / itemsPerPage) : itemCount / itemsPerPage + 1;
-			
+			var neededPageButtons:int=(itemCount % itemsPerPage == 0) ? (itemCount / itemsPerPage) : itemCount / itemsPerPage + 1;
+
 			//Destroy the previous navigation menu
 			destroyPaginationMenu(container);
-			
+
 			if (itemCount / itemsPerPage > 1)
 			{
+				//Create the first and previous page buttons if needed
 				if (currentPage > 1)
 				{
 					container.addChild(createControlButton(1, firstI, buttonClickHandler));
-					container.addChild(createControlButton(currentPage -1, previousI, buttonClickHandler));
+					container.addChild(createControlButton(currentPage - 1, previousI, buttonClickHandler));
 				}
-				if (currentPage <= limit)
+
+				//Create the numbered page buttons
+				if (neededPageButtons > maxPageButtonsInPagination)
 				{
-					for (var i:int=1; (i <= searchPageCount && i <= buttonCountInPaginationBox); i++)
+					if (currentPage <= limit)
 					{
-						container.addChild(createPageButton(i, buttonClickHandler));
+						for (var i:int=1; (i <= neededPageButtons && i <= maxPageButtonsInPagination); i++)
+						{
+							container.addChild(createPageButton(i, buttonClickHandler));
+						}
 					}
-				}
-				else if (currentPage > searchPageCount - limit)
-				{
-					for (var j:int=searchPageCount - buttonCountInPaginationBox + 1; j <= searchPageCount; j++)
+					else if (currentPage > neededPageButtons - limit)
 					{
-						container.addChild(createPageButton(j, buttonClickHandler));
+						for (var j:int=neededPageButtons - maxPageButtonsInPagination + 1; j <= neededPageButtons; j++)
+						{
+							container.addChild(createPageButton(j, buttonClickHandler));
+						}
+					}
+					else
+					{
+						for (var k:int=currentPage - limit + 1; k <= currentPage + limit - 1; k++)
+						{
+							container.addChild(createPageButton(k, buttonClickHandler));
+						}
 					}
 				}
 				else
 				{
-					for (var k:int=currentPage - limit + 1; k <= currentPage + limit - 1; k++)
+					for (var h:int=1; (h <= neededPageButtons && h <= maxPageButtonsInPagination); h++)
 					{
-						container.addChild(createPageButton(k, buttonClickHandler));
+						container.addChild(createPageButton(h, buttonClickHandler));
 					}
 				}
-				if (currentPage < searchPageCount)
+
+				//Create the last and next page buttons if needed
+				if (currentPage < neededPageButtons)
 				{
-					container.addChild(createControlButton(currentPage+1, nextI, buttonClickHandler));
-					container.addChild(createControlButton(searchPageCount, lastI, buttonClickHandler));
+					container.addChild(createControlButton(currentPage + 1, nextI, buttonClickHandler));
+					container.addChild(createControlButton(neededPageButtons, lastI, buttonClickHandler));
 				}
 			}
-			for each (var b:Button in container.getChildren()){
-				if(int(b.id) == currentPage){
+			for each (var b:Button in container.getChildren())
+			{
+				if (int(b.id) == currentPage)
+				{
 					b.enabled=false;
 					break;
 				}
 			}
 		}
-		
+
 		private static function destroyPaginationMenu(container:Box):void
 		{
 			container.removeAllChildren();
 		}
-		
+
 		private static function createPageButton(label:int, clickHandler:Function):Button
 		{
 			var navButton:Button=new Button();
@@ -99,11 +116,12 @@ package modules.search
 			navButton.measuredWidth=24;
 			navButton.height=24;
 			navButton.addEventListener(MouseEvent.CLICK, clickHandler);
-			
+
 			return navButton;
 		}
-		
-		private static function createControlButton(target:int, icon:Class, clickHandler:Function):Button{
+
+		private static function createControlButton(target:int, icon:Class, clickHandler:Function):Button
+		{
 			var ctrlButton:Button=new Button();
 			ctrlButton.id=target.toString();
 			ctrlButton.setStyle('cornerRadius', 4);
@@ -114,11 +132,11 @@ package modules.search
 			ctrlButton.setStyle('icon', icon);
 			ctrlButton.width=24;
 			ctrlButton.height=24;
-			
+
 			ctrlButton.addEventListener(MouseEvent.CLICK, clickHandler);
-			
+
 			return ctrlButton;
-		}	
-		
+		}
+
 	}
 }

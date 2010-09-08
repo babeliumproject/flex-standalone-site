@@ -6,6 +6,7 @@ package commands.videoUpload
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
 	
 	import model.DataModel;
 	
@@ -32,6 +33,8 @@ package commands.videoUpload
 		{
 			if (info is HTTPStatusEvent)
 				CustomAlert.error("Error while uploading file.");
+			if(info is IOErrorEvent)
+				CustomAlert.error("The file you selected exceeds the maximum allowed file size.");
 			else
 				CustomAlert.error("Error while uploading file.");
 			trace(ObjectUtil.toString(info));

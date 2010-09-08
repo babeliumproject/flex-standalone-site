@@ -16,19 +16,19 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -154,12 +154,14 @@
 
 			private function startUpload():void
 			{
-				if (_arrUploadFiles.length > 0)
+				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text) && _arrUploadFiles.length > 0)
 				{
 					disableUI();
 					uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_UPLOADINPROGRESS');
 					new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
 				}
+				else
+					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
 			}
 
 
@@ -167,6 +169,11 @@
 			private function parseTags(tags:String):String
 			{
 				return tags;
+			}
+			
+			private function fieldHasData(fieldText:String):Boolean{
+				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
+				return (fieldData.length < 1) ? false : true;
 			}
 
 			private function clearUpload():void
@@ -343,7 +350,7 @@
 			{
 
 				var validUrl:Boolean=true;
-				if (videoTitle.text != '' && videoDescription.text != '' && videoTags.text != '')
+				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text))
 				{
 					red5VideoData=new ExerciseVO();
 					red5VideoData.title=videoTitle.text;
@@ -371,14 +378,22 @@
 
 			private function resetComponent():void
 			{
+				//Reset the file-based upload components
 				addFileReference=null;
-
+				
+				_arrUploadFiles.pop();
+				listFiles.dataProvider=_arrUploadFiles;
+				clearUpload();
+				
+				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
 
+				//Reset the webcam-based upload components
 				recFromWebcamBox.resetComponent();
 
+				//Reset the video form fields
 				videoTitle.removeEventListener(Event.CHANGE, validateForm);
 				videoDescription.removeEventListener(Event.CHANGE, validateForm);
 				videoTags.removeEventListener(Event.CHANGE, validateForm);
@@ -398,6 +413,12 @@
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
+				
+				uploadOptionsGroup.selectedValue = null;
+				uploadChoice.selected = false;
+				recordChoice.selected = false;
+				uploadFileBox.visible = false;
+				recFromWebcamBox.visible = false;
 			}
 
 
@@ -575,6 +596,7 @@
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 fontWeight="bold"
 							 visible="{DataModel.getInstance().loggedUser.isAdmin}"
+							 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
 							 height="67">
 					<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
 								 id="autoevaluateCheckbox"/>
@@ -659,6 +681,8 @@
 				</mx:ControlBar>
 			</mx:VBox>
 		</mx:VBox>
+		
+		<!-- Wecbam recording widget -->
 		<mx:VBox>
 			<ns1:TempVideoRecording id="recFromWebcamBox"
 									visible="false"

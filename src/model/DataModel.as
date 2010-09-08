@@ -221,6 +221,7 @@ package model
 		
 		[Bindable] public var minExerciseDuration:uint = 15; //seconds
 		[Bindable] public var maxExerciseDuration:uint = 120; //seconds
+		[Bindable] public var maxFileSize:uint = 188743680; //Bytes (180MB)
 		
 		// Checks for exercise rating and reporting
 		[Bindable] public var userRatedExercise:Boolean = false;
