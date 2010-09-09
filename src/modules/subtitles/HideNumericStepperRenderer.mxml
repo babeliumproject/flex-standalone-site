@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns2="view.*"
+		 height="100%"
 		 verticalScrollPolicy="off"
 		 horizontalScrollPolicy="off"
-		 horizontalAlign="center" xmlns:common="view.common.*">
+		 horizontalAlign="center"
+		 xmlns:common="view.common.*">
 	<mx:Script>
 		<![CDATA[
 			public function get value():Number
@@ -19,10 +21,12 @@
 		]]>
 	</mx:Script>
 	<ns2:FormattedStepper id="HideTimeStepper"
+						  height="100%"
 						  stepSize="0.01"
 						  width="81"
 						  maximum="250000"
 						  formatter="{formater1}"
 						  valueCommit="{data.endTime = Number(HideTimeStepper.value); }"/>
-	<common:TimeFormatter id="formater1" outputMilliseconds="true"/>
+	<common:TimeFormatter id="formater1"
+						  outputMilliseconds="true"/>
 </mx:HBox>

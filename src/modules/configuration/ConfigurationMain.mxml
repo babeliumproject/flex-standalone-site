@@ -221,7 +221,7 @@
 			<mod3:connectionCheck id="bandwidthCheck"/>
 		</mx:VBox>
 	</mx:TabNavigator>
-	<common:CustomPanel title="{resourceManager.getString('myResources', 'RESULTS')}">
+	<mx:Panel title="{resourceManager.getString('myResources', 'RESULTS')}">
 		<mx:HBox id="webCamStatus"
 				 verticalAlign="middle">
 			<mx:Text text="{resourceManager.getString('myResources', 'WEBCAM')+':'}"
@@ -245,5 +245,5 @@
 					 fontSize="20"/>
 			<mx:Image id="bandwidthStatusIcon"/>
 		</mx:HBox>
-	</common:CustomPanel>
+	</mx:Panel>
 </mx:HBox>

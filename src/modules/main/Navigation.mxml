@@ -4,33 +4,27 @@
 <mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
 						  height="40"
 						  dock="false"
-						  paddingTop="0"
-						  fillAlphas="[1.0, 1.0]"
-						  fillColors="[#919191, #FFFFFF]"
-						  creationComplete="init();">
+						  creationComplete="init()">
 	<mx:HBox width="55%"
 			 horizontalAlign="left"
 			 verticalAlign="middle"
 			 height="100%">
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
-					   fontSize="14"
-					   fontFamily="Arial"
+					   styleName="boldLinkButton"
 					   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_HOME_MODULE)"/>
 		<mx:VRule height="40"/>
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_EXERCISES')}"
-					   fontFamily="Arial"
-					   fontSize="14"
+					   styleName="boldLinkButton"
 					   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_EXERCISE_MODULE)"/>
 		<mx:VRule height="40"/>
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
-					   fontFamily="Arial"
-					   fontSize="14"
+					   styleName="boldLinkButton"
 					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
 					   		!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
@@ -39,23 +33,15 @@
 		<mx:VRule height="40"/>
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
 					   id="configuration"
-					   fontFamily="Arial"
-					   fontSize="14"
+					   styleName="boldLinkButton"
 					   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; 
 					   		!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE)"/>
 		<mx:VRule height="40"/>
-		<!--<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_RANKINGS')}"
-			 fontFamily="Arial"
-			 fontSize="14"
-			 enabled="{!DataModel.getInstance().recordingExercise}"
-			 click="changeView(ViewChangeEvent.VIEW_RANKING_MODULE)"/>
-			 <mx:VRule height="40"/> -->
 		<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_ABOUT')}"
-					   fontSize="14"
-					   fontFamily="Arial"
+					   styleName="boldLinkButton"
 					   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 					   		!DataModel.getInstance().recording &amp;&amp;
 					   		!DataModel.getInstance().playing}"
@@ -70,27 +56,13 @@
 					  width="80%"
 					  height="26"
 					  maxChars="100"
-					  fontFamily="Arial"
-					  fontSize="12"
 					  enter="launchSearch()"/>
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
-				   fontFamily="Arial"
-				   fontSize="14"
-				   fillAlphas="[0.0, 1.0, 1.0, 0.0]"
-				   fillColors="[#6FA3D3, #6FA3D3]"
+				   styleName="searchButton"
 				   enabled="true"
-				   paddingLeft="6"
-				   paddingRight="6"
-				   cornerRadius="8"
 				   click="launchSearch()"/>
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
-				   fontFamily="Arial"
-				   fontSize="14"
-				   fillAlphas="[1.0, 0.5, 0.5, 0.5]"
-				   fillColors="[#FFC960, #FFEA60, #FF9860, #FFB260]"
-				   paddingLeft="6"
-				   paddingRight="6"
-				   cornerRadius="8"
+				   styleName="uploadButton"
 				   enabled="{!DataModel.getInstance().recordingExercise}"
 				   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
 	</mx:HBox>

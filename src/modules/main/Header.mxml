@@ -27,14 +27,10 @@
 					 visible="true">
 				<mx:LinkButton id="signInButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
-							   fontFamily="Arial"
-							   fontSize="12"
-							   fontWeight="normal"
 							   click="signInClickHandler()"/>
 				<mx:LinkButton id="signUpButton"
+							   styleName="boldLinkButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
-							   fontFamily="Arial"
-							   fontSize="12"
 							   click="signUpClickHandler()"/>
 			</mx:HBox>
 			<mx:HBox id="userCP"
@@ -45,41 +41,22 @@
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="false">
-				<mx:HBox cornerRadius="4"
-						 borderStyle="solid"
-						 backgroundColor="#9AA3B9"
-						 borderColor="#FFFFFF"
-						 alpha="1.0"
-						 borderThickness="0"
-						 horizontalAlign="center"
-						 verticalAlign="middle"
-						 paddingLeft="6"
-						 paddingRight="6"
+				<mx:HBox styleName="roundedPurpleBox"
 						 height="60%">
 					<mx:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
-							  fontFamily="Arial"
-							  fontSize="12"
-							  fontWeight="bold"/>
+							  styleName="boldLabel"/>
 					<mx:LinkButton id="uCrds"
-								   label="uCrds"
-								   fontFamily="Arial"
-								   fontSize="14"
-								   fontWeight="bold"
-								   color="#FFFFFF"
-								   themeColor="#FFFFFF"/>
+								   label="cr."
+								   styleName="creditHighlightLink"/>
 				</mx:HBox>
 				<mx:VRule height="20"/>
 				<mx:PopUpMenuButton id="userCPName"
 							   label="UserName"
 							   labelFunction="userOptionsLabelFunction"
 							   dataProvider="{userOptions}"
-							   fontFamily="Arial"
-							   fontSize="12"
 							   itemClick="userOptionsItemClickHandler(event)"/>
 				<mx:LinkButton id="signOutButton"
 							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
-							   fontFamily="Arial"
-							   fontSize="12"
 							   click="signOutClickHandler()"/>
 			</mx:HBox>
 		</mx:Canvas>

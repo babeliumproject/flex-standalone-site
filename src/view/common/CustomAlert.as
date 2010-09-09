@@ -28,7 +28,7 @@ package view.common
 									closehandler:Function=null):void{
 			var localizedTitle:String = ResourceManager.getInstance().getString('myResources','TITLE_INFORMATION');
 			var alert:Alert = show(text,localizedTitle,0x4,parent,closehandler,infoIcon,0x4);
-			setStyles(alert);
+			//setStyles(alert);
 		}
 		
 		public static function error(text:String = "", 
@@ -36,7 +36,7 @@ package view.common
 									 closehandler:Function=null):void{
 			var localizedTitle:String = ResourceManager.getInstance().getString('myResources','TITLE_ERROR');
 			var alert:Alert = show(text,localizedTitle,0x4,parent,closehandler,errorIcon,0x4);
-			setStyles(alert);
+			//setStyles(alert);
 		}
 		
 		public static function confirm(text:String = "",
@@ -46,10 +46,10 @@ package view.common
 									   defaultButtonFlag:uint = 0x2):void{
 			var localizedTitle:String = ResourceManager.getInstance().getString('myResources','TITLE_CONFIRMATION');
 			var alert:Alert = show(text,localizedTitle,flags,parent,closehandler,confirmationIcon,defaultButtonFlag);
-			setStyles(alert);
+			//setStyles(alert);
 
 		}
-		
+		/*
 		private static function setStyles(alert:Alert):void{
 			alert.setStyle('fontSize',11);
 			alert.setStyle('backgroundColor', 0xffffff);
@@ -69,7 +69,7 @@ package view.common
 			alert.setStyle('borderColor', 0xaaaaaa);
 			
 			alert.autoLayout = true;
-		}
+		}*/
 		
 		
 	}

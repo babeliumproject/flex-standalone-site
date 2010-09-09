@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
 				layout="vertical"
-				backgroundGradientAlphas="[1.0, 1.0]"
-				backgroundGradientColors="[#E5E8EA, #FFFFFF]"
-				verticalAlign="top"
-				horizontalAlign="center"
-				borderSides="0"
-				paddingTop="5"
-				paddingBottom="5" 
 				xmlns:control="control.*" 
 				xmlns:business="business.*"
 				xmlns:ns1="modules.main.*"
 				xmlns:ns2="modules.userManagement.*"
-				preinitialize="init();"
+				preinitialize="init()"
 				height="100%"
 				width="100%"
 				pageTitle="Babelium Project: Collaborative Language Speaking Practice"
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
 				creationComplete="onComplete()">
+	
+	<mx:Style source="Main.css"/>
 
 	<mx:Script>
 		<![CDATA[

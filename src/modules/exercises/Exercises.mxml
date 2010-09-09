@@ -792,7 +792,7 @@
 			 verticalScrollPolicy="off">
 
 		<!-- Selected Exercise Panel -->
-		<common:CustomPanel id="panelSelectedExercise"
+		<mx:Panel id="panelSelectedExercise"
 							width="100%"
 							minHeight="0"
 							title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
@@ -853,7 +853,7 @@
 					</mx:HBox>
 				</mx:VBox>
 			</mx:HBox>
-		</common:CustomPanel>
+		</mx:Panel>
 
 		<!-- Video List -->
 		<exercises:VideoList width="100%"

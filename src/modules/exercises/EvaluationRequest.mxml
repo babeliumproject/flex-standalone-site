@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomPanel xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
 					xmlns:common="view.common.*"
 					layout="vertical"
 					autoLayout="true"
@@ -152,4 +152,4 @@
 	<mx:Binding source="{DataModel.getInstance().historicData.videoResponseId}"
 				destination="this.checkAutoevaluationSupport"/>
 
-</common:CustomPanel>
+</mx:Panel>

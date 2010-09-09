@@ -127,7 +127,7 @@
 
 		<mx:HBox width="100%"
 				 horizontalAlign="right">
-			<common:CustomPanel title="{resourceManager.getString('myResources','TITLE_BANDWIDTH_CHART')}"
+			<mx:Panel title="{resourceManager.getString('myResources','TITLE_BANDWIDTH_CHART')}"
 								id="bwChart"
 								width="400"
 								height="400">
@@ -147,7 +147,7 @@
 					</mx:series>
 				</mx:ColumnChart>
 				<mx:Legend dataProvider="{myChart}"/>
-			</common:CustomPanel>
+			</mx:Panel>
 		</mx:HBox>
 
 	</mx:HBox>

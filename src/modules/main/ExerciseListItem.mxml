@@ -24,18 +24,13 @@
 				  useHandCursor="true"
 				  buttonMode="true"/>
 		<mx:TextInput text="{_timeFormatter.format(data.duration)}"
+					  styleName="videoDurationLabel"
 					  x="88"
 					  y="0"
 					  width="32"
-					  disabledColor="0xffffff"
-					  backgroundDisabledColor="0x000000"
-					  backgroundAlpha="0.75"
-					  editable="false"
-					  borderStyle="none"
-					  enabled="false"
 					  height="16"
-					  fontFamily="Arial"
-					  fontSize="10"/>
+					  editable="false"
+					  enabled="false"/>
 	</mx:Canvas>
 
 	<mx:VBox width="100%"
@@ -52,22 +47,11 @@
 					  source="{getFlagSource(data as ExerciseVO)}"
 					  id="exerciseLanguage"/>
 			<mx:HBox id="avgDifficultyIndicator"
-					 fontFamily="Arial"
-					 fontSize="10"
-					 borderStyle="solid"
-					 borderThickness="1"
-					 cornerRadius="4"
-					 borderColor="0xcccccc"
-					 backgroundColor="0xffffff"
-					 horizontalAlign="center"
-					 verticalAlign="middle"
-					 paddingTop="0"
-					 paddingBottom="0">
+					 styleName="roundedBorderWhiteBox">
 				<mx:Label text="{getLevelCorrespondence(data.avgDifficulty)}"/>
 			</mx:HBox>
 			<mx:LinkButton id="title"
 						   label="{data.title}"
-						   fontSize="12"
 						   width="100%"
 						   textAlign="left"/>
 		</mx:HBox>
@@ -78,7 +62,6 @@
 				 width="100%"
 				 height="100%"
 				 selectable="false"
-				 fontSize="12"
 				 toolTip="{data.description}"/>
 		<mx:HBox verticalAlign="middle"
 				 width="100%">
@@ -86,7 +69,6 @@
 						liveRollOver="false"/>
 			<mx:Label text="{dateFormatter.format(data.addingDate)}"
 					  fontWeight="bold"
-					  fontFamily="Arial"
 					  fontSize="10"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</mx:HBox>
@@ -105,7 +87,6 @@
 			<mx:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					  visible="{data.reference}"/>
 			<mx:LinkButton id="referenceUrl"
-						   fontFamily="Arial"
 						   fontSize="10"
 						   label="{data.reference}"
 						   click="referenceClickHandler(event)"/>
