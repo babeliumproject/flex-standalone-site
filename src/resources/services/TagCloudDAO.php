@@ -1,8 +1,8 @@
 <?php
 
-require_once ('Config.php');
-require_once ('Datasource.php');
-require_once ('TagVO.php');
+require_once 'utils/Config.php';
+require_once 'utils/Datasource.php';
+require_once 'vo/TagVO.php';
 
 class TagCloudDAO {
 	private $conn;

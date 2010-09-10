@@ -1,10 +1,11 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
-require_once ('Zend/Mail.php');
-require_once ('Zend/Mail/Transport/Smtp.php');
-require_once ('EmailAddressValidator.php');
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'utils/EmailAddressValidator.php';
+require_once 'Zend/Mail.php';
+require_once 'Zend/Mail/Transport/Smtp.php';
+
 
 class Mailer
 {

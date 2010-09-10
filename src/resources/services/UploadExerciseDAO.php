@@ -1,22 +1,29 @@
 <?php
 
-require_once 'Config.php';
-require_once 'Datasource.php';
-require_once 'ExerciseVO.php';
+require_once 'utils/Config.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/VideoProcessor.php';
+require_once 'vo/ExerciseVO.php';
+require_once 'vo/CreditHistoryVO.php';
+
 require_once 'CreditDAO.php';
-require_once 'CreditHistoryVO.php';
 
 class UploadExerciseDAO{
 
 	private $filePath;
 	private $imagePath;
 	private $red5Path;
+	
+	private $evaluationFolder;
+	private $exerciseFolder;
+	private $responseFolder;
 
 	private $frameWidth4_3;
 	private $frameWidth16_9;
 	private $frameHeight;
 
 	private $conn;
+	private $videoProcessor;
 
 	public function UploadExerciseDAO(){
 		$settings = new Config();
@@ -29,27 +36,27 @@ class UploadExerciseDAO{
 		$this->frameHeight = $settings->frameHeight;
 
 		$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		
+		//This class handles all the video processing tasks
+		$this->videoProcessor = new VideoProcessor();
+		
+		//We retrieve the resource directories from the database
+		$this->_getResourceDirectories();
 	}
 
 	private function checkVideoFeatures($fileName){
 		$correctMimetype = true;
 		$correctDuration = true;
 		$path = $this->filePath.'/'.$fileName;
-		$this->videoObject = new ffmpeg_movie($path,false);
-		if ($this->videoObject && checkMimeType($path)){
+		
+		if ($this->videoProcessor->isVideoFile($path) && $this->videoProcessor->checkMimeType($path)){
 			//The video must be less than 3minutes long
-			if($this->videoObject->getDuration() >= 180 ){
+			if($this->videoProcessor->calculateVideoDuration($path) >= 180 ){
 				$correctDuration = false;
 			}
 		} else{
 			$correctMimetype = false;
 		}
-	}
-
-	private function checkMimeType($path){
-		//$mimetype = system("file -bi " . $path);
-		//$mimecode = split($mime, ";");
-		return true;
 	}
 
 	public function processPendingVideos(){
@@ -63,27 +70,27 @@ class UploadExerciseDAO{
 				$this->setExerciseProcessing($pendingVideo->id);
 				$path = $this->filePath.'/'.$pendingVideo->name;
 				if(is_file($path) && filesize($path)>0){
-					$outputHash = $this->str_makerand(11,1,1);
+					$outputHash = $this->videoProcessor->str_makerand(11,1,1);
 					$outputName = $outputHash . ".flv";
 					$outputPath = $this->filePath .'/'. $outputName;
 					
-					$encoding_output = $this->balancedEncoding($path,$outputPath);
+					$encoding_output = $this->videoProcessor->balancedEncoding($path,$outputPath);
 					
 					//Check if the video already exists
 					if(!$this->checkIfFileExists($outputPath)){
 						//Asuming everything went ok, take a snapshot of the video
-						$snapshot_output = $this->takeRandomSnapshot($outputName, $outputHash);
+						$snapshot_output = $this->videoProcessor->takeRandomSnapshot($outputName, $outputHash);
 		
 						//move the outputFile to it's final destination
-						rename($outputPath, $this->red5Path. '/'. $outputName);
+						$finalPath = $this->red5Path. '/'. $this->exerciseFolder . '/' . $outputName;
+						rename($outputPath, $finalPath);
 						//Remove the old file
 						@unlink($path);
-						//Set the exercise as available and update it's data
-							
-						$movie = new ffmpeg_movie($this->red5Path.'/'.$outputName, false);
-						$duration = $movie->getDuration();
+		 
+						$duration = $this->videoProcessor->calculateVideoDuration($finalPath);
 						
-						$this->setExerciseAvailable($pendingVideo->id, $outputHash, $outputHash.'.jpg', $duration, md5_file($this->red5Path. '/'. $outputName));
+						//Set the exercise as available and update it's data
+						$this->setExerciseAvailable($pendingVideo->id, $outputHash, $outputHash.'.jpg', $duration, md5_file($finalPath));
 						$this->updateCreditCount($pendingVideo->userId, $pendingVideo->id);
 						echo "\n";
 						echo "          filename: ".$pendingVideo->name."\n";
@@ -108,73 +115,6 @@ class UploadExerciseDAO{
 		} else {
 			echo "  * There aren't videos that need to be processed.\n";		
 		}
-	}
-
-	private function qualityEncoding($inputFileName, $outputFileName){
-		$movie = new ffmpeg_movie($inputFileName,false);
-		$videoHeight = $movie->getFrameHeight();
-		$videoWidth = $movie->getFrameWidth();
-
-		$ratio = $this->encodingAspectRatio($videoHeight, $videoWidth);
-		if ($ratio == 43){
-			$width = $this->frameWidth4_3;
-			$height = $this->frameHeight;
-		} else {
-			$width = $this->frameWidth16_9;
-			$height = $this->frameHeight;
-		}
-		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 300 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
-	}
-
-	private function balancedEncoding($inputFileName, $outputFileName){
-		$movie = new ffmpeg_movie($inputFileName,false);
-		$videoHeight = $movie->getFrameHeight();
-		$videoWidth = $movie->getFrameWidth();
-
-		$ratio = $this->encodingAspectRatio($videoHeight, $videoWidth);
-		if ($ratio == 43){
-			$width = $this->frameWidth4_3;
-			$height = $this->frameHeight;
-		} else {
-			$width = $this->frameWidth16_9;
-			$height = $this->frameHeight;
-		}
-		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 300 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
-		return $result;	
-	}
-
-	private function encodingAspectRatio($frameHeight, $frameWidth){
-		if($frameWidth > $frameHeight){
-			$originalRatio = $frameWidth / $frameHeight;
-			$deviation16_9 = abs(((16/9)-$originalRatio));
-			$deviation4_3 = abs(((4/3)-$originalRatio));
-			if($deviation4_3 < $deviation16_9){
-				//Aspect ratio is likely to be 4:3
-				return 43;
-			}else{
-				//Aspect ratio is likely to be 16:9
-				return 169;
-			}
-		} else{
-			return 43;
-		}
-	}
-
-	public function takeRandomSnapshot($videoFileName,$outputImageName){
-		$videoPath  = $this->filePath .'/'. $videoFileName;
-		// where you'll save the image
-		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
-		// default time to get the image
-		$second = 1;
-
-		// get the duration and a random place within that
-		$resultduration = (exec("ffmpeg -i $videoPath 2>&1",$cmd));
-		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
-			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
-			$second = rand(1, ($total - 1));
-		}
-		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
-		return $resultsnap;
 	}
 
 	private function setExerciseAvailable($exerciseId, $newName, $newThumbnail, $newDuration, $fileHash){
@@ -238,6 +178,20 @@ class UploadExerciseDAO{
 		}
 		return $searchResults;
 	}
+	
+	private function _getResourceDirectories(){
+		$sql = "SELECT prefValue FROM preferences
+				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
+				ORDER BY prefName";
+		$result = $this->conn->_execute($sql);
+
+		$row = $this->conn->_nextRow($result);
+		$this->evaluationFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->exerciseFolder = $row ? $row[0] : '';
+		$row = $this->conn->_nextRow($result);
+		$this->responseFolder = $row ? $row[0] : '';
+	}
 
 	private function _databaseUpdate() 
 	{	
@@ -258,23 +212,6 @@ class UploadExerciseDAO{
 			}
 		}
 		return $fileExists;
-	}
-
-	/*
-	 Author: Peter Mugane Kionga-Kamau
-	 http://www.pmkmedia.com
-	 */
-	private function str_makerand ($length, $useupper, $usenumbers)
-	{
-		$key= '';
-		$charset = "abcdefghijklmnopqrstuvwxyz";
-		if ($useupper)
-		$charset .= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		if ($usenumbers)
-		$charset .= "0123456789";
-		for ($i=0; $i<$length; $i++)
-		$key .= $charset[(mt_rand(0,(strlen($charset)-1)))];
-		return $key;
 	}
 }
 

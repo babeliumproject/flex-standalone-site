@@ -1,12 +1,12 @@
 <?php
 
-require_once 'Datasource.php';
-require_once 'Config.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
 
-require_once 'ExerciseVO.php';
-require_once 'ExerciseRoleVO.php';
-require_once 'SubtitleLineVO.php';
-require_once 'SubtitleAndSubtitleLinesVO.php';
+require_once 'vo/ExerciseVO.php';
+require_once 'vo/ExerciseRoleVO.php';
+require_once 'vo/SubtitleLineVO.php';
+require_once 'vo/SubtitleAndSubtitleLinesVO.php';
 
 class SubtitleDAO {
 

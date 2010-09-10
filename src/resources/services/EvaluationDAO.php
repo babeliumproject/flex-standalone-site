@@ -1,9 +1,9 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
-require_once ('EvaluationVO.php');
-require_once ('Mailer.php');
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/EvaluationVO.php';
+require_once 'Mailer.php';
 
 class EvaluationDAO {
 	

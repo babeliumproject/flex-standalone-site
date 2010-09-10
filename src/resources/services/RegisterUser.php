@@ -1,11 +1,11 @@
 <?php
 
-require_once 'Datasource.php';
-require_once 'Config.php';
-require_once 'NewUserVO.php';
-require_once 'UserVO.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/NewUserVO.php';
+require_once 'vo/UserVO.php';
 
-require_once 'EmailAddressValidator.php';
+require_once 'utils/EmailAddressValidator.php';
 require_once 'Mailer.php';
 
 class RegisterUser{

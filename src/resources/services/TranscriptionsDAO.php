@@ -1,9 +1,9 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
 
-require_once ('TranscriptionsVO.php');
+require_once 'vo/TranscriptionsVO.php';
 
 class TranscriptionsDAO {
 	

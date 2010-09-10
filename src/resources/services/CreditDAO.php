@@ -1,8 +1,8 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
-require_once ('CreditHistoryVO.php');
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/CreditHistoryVO.php';
 
 /**
  * This class is used to make queries related to an VO object. When the results

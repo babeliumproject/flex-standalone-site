@@ -1,10 +1,10 @@
 <?php
 
-require_once 'Datasource.php';
-require_once 'Config.php';
-require_once 'UserVO.php';
-require_once 'UserLanguageVO.php';
-require_once 'LoginVO.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/UserVO.php';
+require_once 'vo/UserLanguageVO.php';
+require_once 'vo/LoginVO.php';
 require_once 'Mailer.php';
 
 class LoginDAO{

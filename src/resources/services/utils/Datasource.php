@@ -14,9 +14,9 @@ class Datasource
    function _execute()
    {
       if ( is_array(func_get_arg(0)) ) 
-         return $this->_vexecute(func_get_arg(0)); // Recive un array con parametros
+         return $this->_vexecute(func_get_arg(0)); // Get's an array of parameters
       else
-         return $this->_vexecute(func_get_args()); // Recive parametros separados
+         return $this->_vexecute(func_get_args()); // Get's separate parameteres
    }
    
    function _vexecute($params)

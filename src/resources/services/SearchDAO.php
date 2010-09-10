@@ -1,9 +1,10 @@
 <?php
 
-require_once ('Config.php');
-require_once ('ExerciseVO.php');
-require_once ('Datasource.php');
-require_once ('Zend/Search/Lucene.php');
+require_once 'utils/Config.php';
+require_once 'utils/Datasource.php';
+require_once 'vo/ExerciseVO.php';
+
+require_once 'Zend/Search/Lucene.php';
 
 class SearchDAO {
 	private $conn;

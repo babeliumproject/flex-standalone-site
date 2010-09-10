@@ -1,9 +1,9 @@
 <?php
 
-require_once ('Datasource.php');
-require_once ('Config.php');
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
 
-class CleanUpDAO{
+class PeriodicTaskDAO{
 
 	private $conn;
 	private $filePath;
@@ -13,7 +13,7 @@ class CleanUpDAO{
 	private $responseFolder = 'audio';
 	private $evaluationFolder = 'evaluations';
 
-	public function CleanUpDAO(){
+	public function PeriodicTaskDAO(){
 		$settings = new Config ( );
 		$this->filePath = $settings->filePath;
 		$this->red5Path = $settings->red5Path;

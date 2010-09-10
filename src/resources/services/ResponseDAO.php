@@ -1,8 +1,8 @@
 <?php
 
-require_once 'Datasource.php';
-require_once 'Config.php';
-require_once 'ResponseVO.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/ResponseVO.php';
 
 class ResponseDAO {
 	

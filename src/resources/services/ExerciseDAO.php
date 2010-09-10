@@ -1,11 +1,11 @@
 <?php
 
-require_once 'Datasource.php';
-require_once 'Config.php';
-require_once 'ExerciseVO.php';
-require_once 'ExerciseReportVO.php';
-require_once 'ExerciseScoreVO.php';
-require_once 'ExerciseLevelVO.php';
+require_once 'utils/Datasource.php';
+require_once 'utils/Config.php';
+require_once 'vo/ExerciseVO.php';
+require_once 'vo/ExerciseReportVO.php';
+require_once 'vo/ExerciseScoreVO.php';
+require_once 'vo/ExerciseLevelVO.php';
 
 class ExerciseDAO {
 	
