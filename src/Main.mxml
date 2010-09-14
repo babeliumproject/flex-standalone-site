@@ -7,7 +7,7 @@
 				xmlns:ns2="modules.userManagement.*"
 				preinitialize="init()"
 				height="100%"
-				width="100%"
+		
 				pageTitle="Babelium Project: Collaborative Language Speaking Practice"
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
@@ -84,9 +84,9 @@
 	<ns1:Header id="header"
 				width="100%">
 	</ns1:Header>
-	<ns1:Navigation id="navigation"
+	<ns1:NewNavigation id="navigation"
 					width="100%">
-	</ns1:Navigation>
+	</ns1:NewNavigation>
 	<ns1:Body id="content"
 			  height="100%"
 			  width="100%">

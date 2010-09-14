@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="100%"
+		   horizontalScrollPolicy="off">
+
+
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:HBox id="sectionLinks"
+				 paddingLeft="200"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 width="100%"
+				 height="100%">
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
+						   styleName="homeLinkButton"
+						   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_HOME_MODULE)"/>
+			<mx:VRule height="40"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_EXERCISES')}"
+						   styleName="practiceLinkButton"
+						   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_EXERCISE_MODULE)"/>
+			<mx:VRule height="40"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
+						   styleName="evaluateLinkButton"
+						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
+						   !DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_EVALUATION_MODULE)"/>
+			<mx:VRule height="40"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_SUBTITLE')}"
+						   styleName="subtitleLinkButton"
+						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
+						   !DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_PLAYER_MODULE)"/>
+			<mx:VRule height="40"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
+						   id="configuration"
+						   styleName="configureLinkButton"
+						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; 
+						   !DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE)"/>
+			<mx:VRule height="40"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_ABOUT')}"
+						   styleName="aboutLinkButton"
+						   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
+						   !DataModel.getInstance().recording &amp;&amp;
+						   !DataModel.getInstance().playing}"
+						   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
+		</mx:HBox>
+		<mx:HBox id="searchUploadBar"
+				 borderStyle="solid"
+				 borderSides="top bottom"
+				 borderThickness="1"
+				 borderColor="#92d3d5"
+				 backgroundColor="#dae9ed"
+				 width="100%"
+				 horizontalAlign="right"
+				 verticalAlign="middle"
+				 paddingTop="4"
+				 paddingBottom="4"
+				 paddingLeft="250"
+				 paddingRight="8">
+			<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
+					   styleName="uploadButton"
+					   enabled="{!DataModel.getInstance().recordingExercise}"
+					   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
+			<mx:TextInput id="searchField"
+						  width="100%"
+						  height="26"
+						  borderStyle="solid"
+						  borderColor= "#92D3D5"
+						  cornerRadius="8"
+						  maxChars="100"
+						  enter="launchSearch()"/>
+			<mx:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
+					   styleName="searchButton"
+					   enabled="true"
+					   click="launchSearch()"/>
+
+
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:Image source="resources/images/flan_dull.png"
+			  x="20"/>
+
+	<mx:Binding source="{DataModel.getInstance().tagCloudClicked}"
+				destination="this.onTagCloudClicked"/>
+	<mx:Script>
+		<![CDATA[
+			import events.VideoStopEvent;
+			import events.ViewChangeEvent;
+			import events.SearchEvent;
+			import model.DataModel;
+
+			//Initialization method
+			private function init():void
+			{
+			}
+
+			private function changeView(event:String):void
+			{
+				new ViewChangeEvent(event).dispatch();
+			}
+
+			private function launchSearch():void
+			{
+				DataModel.getInstance().searchField=searchField.text;
+				if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				{
+					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
+				}
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+			}
+
+			public function set onTagCloudClicked(value:Boolean):void
+			{
+				if (DataModel.getInstance().tagCloudClicked)
+				{
+					searchField.text=DataModel.getInstance().searchField;
+					DataModel.getInstance().tagCloudClicked=false;
+				}
+			}
+		]]>
+	</mx:Script>
+
+</mx:Canvas>

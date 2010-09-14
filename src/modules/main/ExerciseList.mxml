@@ -2,7 +2,10 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="com.asfusion.controls.*"
 		 creationComplete="onComplete()"
-		 verticalScrollPolicy="off">
+		 verticalScrollPolicy="off"
+		 horizontalAlign="center"
+		 verticalAlign="middle"
+		 resize="calculateNeededColumns(event)">
 
 	<mx:Script>
 		<![CDATA[
@@ -11,28 +14,38 @@
 			import model.DataModel;
 			
 			import modules.search.VideoPaginator;
+			import modules.userManagement.TopCollaborators;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.Button;
+			import mx.core.Application;
+			import mx.events.ResizeEvent;
 			
+			import vo.ExerciseVO;
+
 			private var _refreshTimer:Timer;
-			
-			[Bindable] private var _currentPage:int = 1;
-			
-			[Bindable] private var _dataProvider:ArrayCollection;
+
+			[Bindable]
+			private var _currentPage:int=1;
+
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
 
 			public function onComplete():void
 			{
 				retrieveExercises();
-				_refreshTimer = new Timer(300000,0);
+				_refreshTimer=new Timer(100000, 0); // Refresh the exercise list every 10 minutes
 				_refreshTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
 			}
-			
-			private function retrieveExercises():void{
+
+			private function retrieveExercises():void
+			{
 				new ExerciseEvent(ExerciseEvent.GET_EXERCISES).dispatch();
 			}
-			
-			private function onTimerTick(tick:TimerEvent):void{
+
+			private function onTimerTick(tick:TimerEvent):void
+			{
 				retrieveExercises();
 			}
 
@@ -41,66 +54,60 @@
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(0))
 				{
 					_dataProvider=DataModel.getInstance().availableExercises;
-					
+
 					createPagination();
-					
+
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, 0);
-					//resizeDataGrid();
+						//resizeDataGrid();
 				}
 			}
-			
-			public function createPagination():void{
-				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav,  paginationBox, navigateToPage);
+
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
-			
+
 			private function navigateToPage(event:MouseEvent):void
 			{
 				//Go to the page
-				_currentPage = int((event.target as Button).id);
+				_currentPage=int((event.target as Button).id);
 				//Refresh the pagination controls
 				createPagination();
 			}
-			
-			public function refreshDataProvider():void
+
+			private function refreshDataProvider():void
 			{
 				var current:int=_currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				exerciseListTable.rowCount=dataTemp.length;
-				exerciseListTable.dataProvider=dataTemp;
+				exerciseTileList.dataProvider=dataTemp;
 			}
-			
-			private function resizeDataGrid():void{
-				exerciseListTable.rowCount = _dataProvider.length;
-				exerciseListTable.rowHeight = 117;
-				exerciseListTable.height = exerciseListTable.measureHeightOfItems(0, _dataProvider.length) + exerciseListTable.headerHeight;
-				
+
+			public function calculateNeededColumns(event:ResizeEvent):void
+			{
+				exerciseTileList.columnCount = Application.application.parent.width / exerciseTileList.columnWidth;
+				exerciseTileList.validateNow();
 			}
-			
 		]]>
 	</mx:Script>
 	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(0)}"
 				destination="this.onExercisesRetrieved"/>
 
-	<mx:DataGrid id="exerciseListTable"
-				 width="100%"
-				 editable="false"
-				 selectable="false"
+	<mx:TileList id="exerciseTileList"
 				 verticalScrollPolicy="off"
-				 sortableColumns="false"
-				 draggableColumns="false"
-				 headerHeight="0"
-				 backgroundAlpha="0"
-				 borderThickness="0"
-				 dataProvider="{DataModel.getInstance().availableExercises}">
-		<mx:columns>
-			<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
-		</mx:columns>
-	</mx:DataGrid>
-	
+				 horizontalScrollPolicy="off"
+				 dataProvider="{_dataProvider}"
+				 itemRenderer="modules.main.ExerciseListItem"
+				 borderStyle="none"
+				 backgroundAlpha="0.0"
+				 columnWidth="500"
+				 columnCount="2"
+				 selectable="false"
+				 verticalAlign="middle"/>
+
 	<mx:HBox id="paginationBox"
 			 width="100%"
-			 horizontalAlign="left"
+			 horizontalAlign="center"
 			 horizontalGap="2"/>
 </mx:VBox>

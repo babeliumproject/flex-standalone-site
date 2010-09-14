@@ -3,6 +3,9 @@ package modules.main
 	import events.LoginEvent;
 	import events.ViewChangeEvent;
 	
+	import flash.display.BitmapData;
+	import flash.display.Shape;
+	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
@@ -17,10 +20,13 @@ package modules.main
 	import mx.controls.LinkButton;
 	import mx.controls.PopUpMenuButton;
 	import mx.core.Application;
+	import mx.core.UIComponent;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
+	
+	import view.common.PrivacyRights;
 	
 	import vo.LoginVO;
 
@@ -49,15 +55,29 @@ package modules.main
 		public var helpFAQButton:LinkButton;
 		
 		public var localeComboBox:LocalizationComboBox;
+		
+		[Embed(source='resources/images/header_bgr_pttr.png')]
+		public var bg:Class;
+
 
 
 		public function HeaderClass()
 		{
-			super();
-			this.height=60;
+			super(); 			
+			
+			this.setStyle('paddingTop', 4);
+			this.setStyle('paddingBottom', 4);
+			this.setStyle('backgroundColor', 0xFFFFFF);
+			this.setStyle('backgroundAlpha', 0.5);
+			
+			this.setStyle('borderStyle', "solid");
+			this.setStyle('borderSides', "bottom");
+			this.setStyle('borderThickness', 1);
+			this.setStyle('borderColor', 0x92d3d5);
+			
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
-
+		
 		public function onCreationComplete(event:FlexEvent):void
 		{
 

@@ -2,6 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:userManagement="modules.userManagement.*"
 		 xmlns:exercises="modules.exercises.*"
+		 xmlns:home="modules.home.*"
 		 xmlns:main="modules.main.*"
 		 xmlns:subtitles="modules.subtitles.*"
 		 xmlns:videoUpload="modules.videoUpload.*"
@@ -22,7 +23,7 @@
 				  resizeToContent="true"
 				  creationPolicy="all">
 		
-		<main:ExerciseList id="homeModule"/>
+		<home:HomeMain id="homeModule"/>
 
 		<exercises:Exercises id="exerciseModule"/>
 
@@ -34,7 +35,7 @@
 		
 		<videoUpload:UploadContainer id="uploadModule"/>
 		
-		<subtitles:SubtitleEditor id="subtitlingModule"/>
+		<subtitles:SubtitleMain id="subtitlingModule"/>
 		
 		<configuration:ConfigurationContainer id="configurationModule"/>
 		

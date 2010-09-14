@@ -6,22 +6,14 @@
 		[ResourceBundle("myResources")]
 	</mx:Metadata>
 
-	<mx:HBox width="30%"
-			 height="100%">
-		<mx:Image width="396"
-				  height="60"
-				  source="resources/images/babelium_project.png"/>
-	</mx:HBox>
-	<mx:HBox width="70%"
-			 height="100%"
-			 horizontalAlign="right"
-			 verticalAlign="middle">
-		<mx:Canvas>
+	<mx:HBox horizontalAlign="right"
+			 verticalAlign="middle" width="100%">
+		<mx:Canvas height="100%">
 			<mx:HBox id="anonymousCP"
 					 x="0"
 					 y="0"
+					 height="100%"
 					 width="360"
-					 height="60"
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="true">
@@ -36,8 +28,8 @@
 			<mx:HBox id="userCP"
 					 x="0"
 					 y="0"
+					 height="100%"
 					 width="360"
-					 height="60"
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="false">
@@ -68,6 +60,5 @@
 					   icon="@Embed(source='../../resources/images/help.png')"
 					   click="helpFAQ_clickHandler(event)"
 					   toolTip="Help/FAQ"/>
-
 	</mx:HBox>
 </main:HeaderClass>

@@ -4,11 +4,11 @@
 
 Application{
 	backgroundGradientAlphas: 1.0, 1.0;
-	backgroundGradientColors: #E5E8EA, #FFFFFF;
+	backgroundGradientColors: #f2eeef, #FFFFFF;
 	verticalAlign: top;
 	horizontalAlign: center;
 	borderSides: 0;
-	paddingTop: 5;
+	paddingTop: 0;
 	paddingBottom: 5;
 	fontFamily: Arial;
 	fontSize: 12;
@@ -33,6 +33,66 @@ LinkButton{
 	fontWeight: bold;
 }
 
+.homeLinkButton{
+	rollOverColor: #258daa;
+	selectionColor: #20778f;
+	color: #258daa;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
+.practiceLinkButton{
+	rollOverColor: #38bcbe;
+	selectionColor: #2d9a9b;
+	color: #38bcbe;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
+.evaluateLinkButton{
+	rollOverColor: #7b980a;
+	selectionColor: #607707;
+	color: #7b980a;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
+.subtitleLinkButton{
+	rollOverColor: #962b07;
+	selectionColor: #752105;
+	color: #962b07;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
+.configureLinkButton{
+	rollOverColor: #de5c04;
+	selectionColor: #bf4f04;
+	color: #de5c04;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
+.aboutLinkButton{
+	rollOverColor: #e6ce56;
+	selectionColor: #c0ac47;
+	color: #e6ce56;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+}
+
 Label{
 	fontWeight: normal;
 }
@@ -43,11 +103,15 @@ Label{
 
 .searchButton{
 	fontSize: 14;
-	fillAlphas: 0.0, 1.0, 1.0, 0.0;
-	fillColors: #6FA3D3, #6FA3D3;
+	fillAlphas: 1.0, 1.0, 1.0, 1.0;
+	fillColors: #FFFFFF, #FFFFFF, #92d377, #92d377;
+	highlightAlphas: 0, 0;
 	paddingLeft: 6;
 	paddingRight: 6;
 	cornerRadius: 8;
+	color: #92D3D5;
+	borderColor: #92D3D5;
+	
 }
 
 .uploadButton{
