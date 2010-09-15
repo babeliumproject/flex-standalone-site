@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 styleName="hvCenteredBox"
-		 name="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"
+		 label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"
 		 verticalScrollPolicy="off"
 		 width="100%"
 		 creationComplete="onComplete(event)"
@@ -9,9 +9,15 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import events.SubtitleListEvent;
+			
 			import model.DataModel;
 			
+			import modules.search.VideoPaginator;
+			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
 			
@@ -19,6 +25,9 @@
 			
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var _currentPage:int=1;
 			
 			private var _refreshTimer:Timer;
 			
@@ -43,7 +52,7 @@
 					_userId = dataModel.loggedUser.id;
 					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, _userId).dispatch();
 				} else {
-					_userId = null;
+					_userId = 0;
 					_exercisesWithoutSubtitlesList = new ArrayCollection();
 					createPagination();
 				}
@@ -89,6 +98,8 @@
 			
 		]]>
 	</mx:Script>
+	
+	<mx:Label text="tab1"/>
 	
 	<mx:TileList id="exercisesWithoutSubtitlesTile"
 				 verticalScrollPolicy="off"

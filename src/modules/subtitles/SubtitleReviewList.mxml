@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 styleName="hvCenteredBox"
-		 name="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
+		 label="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
+	
+	<mx:Label text="tab2"/>
 	
 </mx:VBox>

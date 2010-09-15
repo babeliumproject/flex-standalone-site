@@ -38,7 +38,7 @@
 		
 		<videoUpload:UploadContainer id="uploadModule"/>
 		
-		<subtitles:SubtitleEditor id="subtitlingModule"/>
+		<subtitles:SubtitleMain id="subtitlingModule"/>
 		
 		<configuration:ConfigurationContainer id="configurationModule"/>
 		

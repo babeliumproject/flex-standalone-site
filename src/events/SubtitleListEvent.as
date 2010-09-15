@@ -2,13 +2,15 @@ package events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import flash.events.Event;
+	
 	public class SubtitleListEvent extends CairngormEvent
 	{
 		
-		public const GET_EXERCISES_WITHOUT_SUBTITLES:String = "getExercisesWithoutSubtitles";
-		public const GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW:String = "getExercisesWithSubtitlesToReview";
+		public static const GET_EXERCISES_WITHOUT_SUBTITLES:String = "getExercisesWithoutSubtitles";
+		public static const GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW:String = "getExercisesWithSubtitlesToReview";
 		
-		public userId:uint;
+		public var userId:uint;
 		
 		public function SubtitleListEvent(type:String, userId:uint)
 		{

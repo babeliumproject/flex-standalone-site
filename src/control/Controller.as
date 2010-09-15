@@ -44,6 +44,10 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_EXERCISE_HOME, ViewExerciseHomeCommand);
 			addCommand(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS, ViewExerciseEvaluationOptionsCommand);
 
+			//Subtitle ViewStack related commands
+			addCommand(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED, ViewSubtitleUnsignedCommand);
+			addCommand(ViewChangeEvent.VIEW_SUBTITLES_SIGNED_IN, ViewSubtitleSignedInCommand);
+			
 			//Upload ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED, ViewUploadUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN, ViewUploadSignedInCommand);

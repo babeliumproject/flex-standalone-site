@@ -14,7 +14,8 @@
 
 		<mx:HBox horizontalAlign="right"
 				 width="100%">
-			<mx:TabBar dataProvider="subtitleListOverviewViewStack"/>
+			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"
+					   />
 		</mx:HBox>
 	</mx:VBox>
 
