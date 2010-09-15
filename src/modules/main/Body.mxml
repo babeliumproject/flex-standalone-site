@@ -10,6 +10,9 @@
 		 xmlns:configuration="modules.configuration.*"
 		 xmlns:search="modules.search.*"
 		 height="100%"
+		 borderSides="left right bottom"
+		 borderStyle="solid"
+		 borderColor="#92d3d5"
 		 paddingTop="10"
 		 horizontalGap="0"
 		 creationComplete="onComplete()"
@@ -35,7 +38,7 @@
 		
 		<videoUpload:UploadContainer id="uploadModule"/>
 		
-		<subtitles:SubtitleMain id="subtitlingModule"/>
+		<subtitles:SubtitleEditor id="subtitlingModule"/>
 		
 		<configuration:ConfigurationContainer id="configurationModule"/>
 		

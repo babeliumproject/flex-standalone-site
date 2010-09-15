@@ -359,6 +359,7 @@ CREATE TABLE IF NOT EXISTS `user_languages` (
   `language` varchar(45) NOT NULL,
   `level` int(10) unsigned NOT NULL COMMENT 'Level goes from 1 to 6. 7 used for mother tongue',
   `positives_to_next_level` int(10) unsigned NOT NULL,
+  `purpose` ENUM('practice','evaluate') NOT NULL DEFAULT 'practice',
   PRIMARY KEY (`id`),
   KEY `FK_user_languages_1` (`fk_user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
@@ -504,7 +505,8 @@ INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES
 ('bwCheckMin', '3000'),
 ('exerciseFolder', 'exercises'),
 ('evaluationFolder','evaluations'),
-('responseFolder','responses');
+('responseFolder','responses'),
+('minVideoRatingCount', 10);
 
 --
 -- Volcar la base de datos para la tabla `subtitle`
@@ -693,11 +695,11 @@ INSERT INTO `users` (`ID`, `name`, `password`, `email`, `realName`, `realSurname
 (3, 'erab3', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab3@gmail.com', 'erab3', 'erab3', 25, '2009-07-02 12:30:00', 0, ''),
 (5, 'erab4', '4eff1c28f92bb604596e75d2c98bf7085ac685c4', 'erab4@gmail.com', 'erab4', 'erab4', 25, '2009-07-02 12:30:00', 0, '');
 
-INSERT INTO `user_languages` (`fk_user_id`,`language`,`level`,`positives_to_next_level`) VALUES
-(1, 'es_ES', 7, 0),
-(1, 'en_US', 3, 15),
-(2, 'en_US', 7, 0),
-(2, 'es_ES', 3, 15);
+INSERT INTO `user_languages` (`fk_user_id`,`language`,`level`,`positives_to_next_level`,`purpose`) VALUES
+(1, 'es_ES', 7, 0,'evaluate'),
+(1, 'en_US', 3, 15,'practice'),
+(2, 'en_US', 7, 0, 'evaluate'),
+(2, 'es_ES', 3, 15, 'practice');
 
 
 --
@@ -709,7 +711,7 @@ INSERT INTO `user_languages` (`fk_user_id`,`language`,`level`,`positives_to_next
 --
 ALTER TABLE `credithistory`
   ADD CONSTRAINT `FK_credithistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `FK_credithistory_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_credithistory_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_credithistory_3` FOREIGN KEY (`fk_response_id`) REFERENCES `response` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
@@ -736,14 +738,14 @@ ALTER TABLE `exercise`
 -- Filtros para la tabla `exercise_comment`
 --
 ALTER TABLE `exercise_comment`
-  ADD CONSTRAINT `FK_exercise_comments_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_exercise_comments_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_exercise_comments_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `exercise_level`
 --
 ALTER TABLE `exercise_level`
-  ADD CONSTRAINT `FK_exercise_level_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_exercise_level_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_exercise_level_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`);
 
 --

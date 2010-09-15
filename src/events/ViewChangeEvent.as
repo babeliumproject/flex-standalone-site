@@ -10,7 +10,7 @@ package events
 		public static const VIEW_EXERCISE_MODULE:String="viewExerciseModule";
 		public static const VIEW_HOME_MODULE:String="viewHomeModule";
 		public static const VIEW_UPLOAD_MODULE:String="viewUploadModule";
-		public static const VIEW_PLAYER_MODULE:String="viewPlayerModule";
+		public static const VIEW_SUBTITLE_MODULE:String="viewSubtitleModule";
 		public static const VIEW_CONFIGURATION_MODULE:String="viewConfigurationModule";
 		public static const VIEW_RANKING_MODULE:String="viewRankingModule";
 		public static const VIEW_ABOUT_MODULE:String="viewAboutModule";
@@ -44,6 +44,12 @@ package events
 		public static const VIEW_EVALUATION_UNSIGNED:String="viewEvaluationUnsigned";
 		public static const VIEW_EVALUATION_SIGNED_IN:String="viewEvaluationSignedIn";
 		
+		//Subtitle related views
+		public static const VIEW_SUBTITLES_UNSIGNED:String="viewSubtitlesUnsigned";
+		public static const VIEW_SUBTITLES_SIGNED_IN:String="viewSubtitlesSignedIn";
+		public static const VIEW_SUBTITLE_EDITOR:String="viewSubtitleEditor";
+		
+		
 		//Index of application's content ViewStack
 		public static const VIEWSTACK_HOME_MODULE_INDEX:int = 0;
 		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:int = 1;
@@ -53,7 +59,6 @@ package events
 		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:int = 5;
 		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:int = 6;
 		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:int = 7;
-		//public static const VIEWSTACK_RANKING_MODULE_INDEX:int = 8;
 		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 8;
 		public static const VIEWSTACK_SEARCH_MODULE_INDEX:int = 9;
 		public static const VIEWSTACK_HELP_MODULE_INDEX:int = 10;

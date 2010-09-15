@@ -32,7 +32,7 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_REGISTER_MODULE, ViewRegisterModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_MODULE, ViewAccountModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_MODULE, ViewUploadModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_PLAYER_MODULE, ViewPlayerModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_SUBTITLE_MODULE, ViewPlayerModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_RANKING_MODULE, ViewRankingModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);

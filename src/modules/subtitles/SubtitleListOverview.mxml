@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:subtitles="modules.subtitles.*"
+		 verticalScrollPolicy="off"
+		 width="100%">
+
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%">
+		<mx:Label id="subtitleModuleTitle"
+				  styleName="sectionTitleLabel"
+				  text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
+
+		<mx:Text text="{resourceManager.getString('myResources','TEXT_MODULE_INFO_SUBTITLE')}"/>
+
+		<mx:HBox horizontalAlign="right"
+				 width="100%">
+			<mx:TabBar dataProvider="subtitleListOverviewViewStack"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:ViewStack id="subtitleListOverviewViewStack"
+				  creationPolicy="all"
+				  resizeToContent="true">
+
+		<subtitles:SubtitlePendingList/>
+
+		<subtitles:SubtitleReviewList/>
+
+	</mx:ViewStack>
+
+
+</mx:VBox>

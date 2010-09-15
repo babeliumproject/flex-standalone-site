@@ -63,18 +63,7 @@ package modules.main
 
 		public function HeaderClass()
 		{
-			super(); 			
-			
-			this.setStyle('paddingTop', 4);
-			this.setStyle('paddingBottom', 4);
-			this.setStyle('backgroundColor', 0xFFFFFF);
-			this.setStyle('backgroundAlpha', 0.5);
-			
-			this.setStyle('borderStyle', "solid");
-			this.setStyle('borderSides', "bottom");
-			this.setStyle('borderThickness', 1);
-			this.setStyle('borderColor', 0x92d3d5);
-			
+			super();
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
 		

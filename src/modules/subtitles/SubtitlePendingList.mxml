@@ -1,4 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="hvCenteredBox"
+		 name="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"
+		 verticalScrollPolicy="off"
+		 width="100%"
+		 creationComplete="onComplete(event)"
+		 resize="onResize(event)">
 	
+	<mx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			private const REFRESH_INTERVAL_MILLISECONDS:uint = 600000; // 10 minutes
+			
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+			
+			private var _refreshTimer:Timer;
+			
+			private var _exerciseId:uint;
+			private var _userId:uint;
+			
+			[Bindable]
+			private var _exercisesWithoutSubtitlesList:ArrayCollection;
+			
+			protected function onComplete(event:FlexEvent):void{
+				refreshSubtitlePendingList();
+			}
+			
+			protected function onResize(event:ResizeEvent):void{
+				exercisesWithoutSubtitlesTile.columnCount = Application.application.parent.width / exercisesWithoutSubtitlesTile.columnWidth;
+				exercisesWithoutSubtitlesTile.validateNow();
+			}
+			
+			public function refreshSubtitlePendingList():void{
+				
+				if(dataModel.isLoggedIn){
+					_userId = dataModel.loggedUser.id;
+					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, _userId).dispatch();
+				} else {
+					_userId = null;
+					_exercisesWithoutSubtitlesList = new ArrayCollection();
+					createPagination();
+				}
+			}
+			
+			private function startRefreshScheduler():void{
+				_refreshTimer=new Timer(REFRESH_INTERVAL_MILLISECONDS, 0); 
+				_refreshTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				_refreshTimer.start();
+			}
+			
+			private function stopRefreshScheduler():void{
+				_refreshTimer.stop();
+				_refreshTimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
+			}
+			
+			private function onTimerTick(tick:TimerEvent):void
+			{
+				refreshSubtitlePendingList();
+			}
+			
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_exercisesWithoutSubtitlesList.length, dataModel.pageSize, _currentPage, dataModel.numberOfPagesNav, paginationBox, navigateToPage);
+				refreshDataProvider();
+			}
+			
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				_currentPage=int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+			
+			private function refreshDataProvider():void
+			{
+				var current:int=_currentPage - 1;
+				var pageSize:int=dataModel.pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(_exercisesWithoutSubtitlesList.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				exercisesWithoutSubtitlesTile.dataProvider=dataTemp;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:TileList id="exercisesWithoutSubtitlesTile"
+				 verticalScrollPolicy="off"
+				 horizontalScrollPolicy="off"
+				 dataProvider="{_exercisesWithoutSubtitlesList}"
+				 itemRenderer="modules.main.ExerciseListItem"
+				 borderStyle="none"
+				 backgroundAlpha="0.0"
+				 columnWidth="500"
+				 columnCount="2"
+				 selectable="false"
+				 verticalAlign="middle"/>
+	
+	<mx:HBox id="paginationBox"
+			 width="100%"
+			 horizontalAlign="center"
+			 horizontalGap="2"/>
 </mx:VBox>

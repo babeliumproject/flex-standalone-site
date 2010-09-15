@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
 		   width="100%"
-		   horizontalScrollPolicy="off">
+		   horizontalScrollPolicy="off"
+		   borderSides="left right"
+		   borderStyle="solid"
+		   borderColor="#92d3d5">
 
 
 	<mx:VBox width="100%"
@@ -40,7 +43,7 @@
 						   !DataModel.getInstance().recordingExercise &amp;&amp;
 						   !DataModel.getInstance().recording &amp;&amp;
 						   !DataModel.getInstance().playing}"
-						   click="changeView(ViewChangeEvent.VIEW_PLAYER_MODULE)"/>
+						   click="changeView(ViewChangeEvent.VIEW_SUBTITLE_MODULE)"/>
 			<mx:VRule height="40"/>
 			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
 						   id="configuration"
@@ -59,28 +62,16 @@
 						   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
 		</mx:HBox>
 		<mx:HBox id="searchUploadBar"
-				 borderStyle="solid"
-				 borderSides="top bottom"
-				 borderThickness="1"
-				 borderColor="#92d3d5"
-				 backgroundColor="#dae9ed"
-				 width="100%"
-				 horizontalAlign="right"
-				 verticalAlign="middle"
-				 paddingTop="4"
-				 paddingBottom="4"
-				 paddingLeft="250"
-				 paddingRight="8">
+				 styleName="uploadSearchBox"
+				 width="100%">
 			<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 					   styleName="uploadButton"
 					   enabled="{!DataModel.getInstance().recordingExercise}"
 					   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
 			<mx:TextInput id="searchField"
+						  styleName="searchTextInput"
 						  width="100%"
 						  height="26"
-						  borderStyle="solid"
-						  borderColor= "#92D3D5"
-						  cornerRadius="8"
 						  maxChars="100"
 						  enter="launchSearch()"/>
 			<mx:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"

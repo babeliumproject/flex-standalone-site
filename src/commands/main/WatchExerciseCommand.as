@@ -21,7 +21,7 @@ package commands.main
 			var recModuleCurrentExerciseRetr:Boolean = DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
-			new ViewChangeEvent(ViewChangeEvent.VIEW_PLAYER_MODULE).dispatch();
+			new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLE_MODULE).dispatch();
 		}
 		
 	}

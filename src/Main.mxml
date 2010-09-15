@@ -7,8 +7,8 @@
 				xmlns:ns2="modules.userManagement.*"
 				preinitialize="init()"
 				height="100%"
-		
-				pageTitle="Babelium Project: Collaborative Language Speaking Practice"
+				width="100%"
+				pageTitle="Babelium Project"
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
 				creationComplete="onComplete()">

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="hvCenteredBox"
+		 name="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
 	
 </mx:VBox>

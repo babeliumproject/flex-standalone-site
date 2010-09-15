@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:subtitles="modules.subtitles.*">
+		 xmlns:main="modules.main.*"
+		 xmlns:subtitles="modules.subtitles.*"
+		 verticalScrollPolicy="off">
 	
-	<mx:VBox styleName="sectionInfoBox" width="100%">
-		<mx:Label id="subtitleModuleTitle" styleName="sectionTitleLabel" text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
-		
-		<mx:Text text="{resourceManager.getString('myResources','TEXT_MODULE_INFO_SUBTITLE')}"/>
-		
-		<mx:HBox horizontalAlign="right" width="100%">
-			<mx:TabBar dataProvider="subtitleViewStack"/>
-		</mx:HBox>
-	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			private function set onUserAuthenticationStatus(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLES_SIGNED_IN).dispatch();
+				else
+					new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED).dispatch();
+			}
+			
+		]]>
+	</mx:Script>
 	
-	<mx:ViewStack id="subtitleViewStack">
+	<mx:ViewStack id="subtitleModuleViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().currentSubtitleViewStackIndex }"
+				  resizeToContent="true">
 		
-		<subtitles:SubtitlePendingList name="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"/>
+		<!-- The current user has no rights to access this module. -->
+		<main:UnauthorizedNotice id="subtitleUnauthorizedUser" />
 		
-		<subtitles:SubtitleReviewList name="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}"/>
+		<!-- The user is logged in. The app lists the exercises that need subtitles or subtitle reviewing. -->
+		<subtitles:SubtitleListOverview id="subtitleListOverview" />
 		
+		<!-- The subtitle editor for a concrete exercise. Accessed via list item click. -->
+		<subtitles:SubtitleEditor id="subtitleEditor" />
 	</mx:ViewStack>
+	
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onUserAuthenticationStatus"/>
 
 	
 </mx:VBox>

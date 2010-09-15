@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="com.asfusion.controls.*"
 		 creationComplete="onComplete()"
 		 verticalScrollPolicy="off"
 		 horizontalAlign="center"
@@ -35,8 +34,9 @@
 			public function onComplete():void
 			{
 				retrieveExercises();
-				_refreshTimer=new Timer(100000, 0); // Refresh the exercise list every 10 minutes
+				_refreshTimer=new Timer(600000, 0); // Refresh the exercise list every 10 minutes
 				_refreshTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				_refreshTimer.start();
 			}
 
 			private function retrieveExercises():void
