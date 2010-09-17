@@ -80,10 +80,6 @@ package modules.subtitles
 
 		[Bindable]
 		public var subtitleStarted:Boolean=false;
-
-		[Bindable]
-		public var videoPlayerControlsViewStack:int=1;
-		public var subtitleEditorVisible:Boolean=false;
 		
 		/**
 		 * Retrieved data holders
@@ -99,12 +95,10 @@ package modules.subtitles
 		[Bindable]
 		public var VPSubtitle:VideoPlayerBabelia = new VideoPlayerBabelia();
 		public var exerciseTitle:Label;
-		public var subtitleExerciseButton:Button;
 
 		public var subtitleEditor:Panel;
 		[Bindable]
 		public var subtitleList:DataGrid=new DataGrid();
-		public var languageComboBox:IconComboBox;
 	
 		
 		public function SubtitleEditorClass()
@@ -126,7 +120,6 @@ package modules.subtitles
 			BindingUtils.bindSetter(onURLChange, _browser, "targetFragment");
 			
 			BindingUtils.bindProperty(subtitleEditor, "visible", _dataModel, "isLoggedIn");
-			BindingUtils.bindProperty(subtitleExerciseButton, "enabled", _dataModel, "isLoggedIn");
 
 		}
 		
@@ -439,24 +432,6 @@ package modules.subtitles
 			return String(iIndex);
 		}
 
-
-		public function viewSubtitlingControls(event:MouseEvent):void
-		{	
-			if(!subtitleEditorVisible){
-				showSubtitleEditor();
-				updateURL(BabeliaBrowserManager.SUBTITLE, exerciseFileName);
-				
-			} else {
-				hideSubtitleEditor();
-				updateURL(BabeliaBrowserManager.VIEW, exerciseFileName);
-			}
-		}
-
-		public function hideSubtitlingControls(event:MouseEvent):void
-		{
-			subtitleEditorVisible=false;
-		}
-
 		public function onTabChange(value:Boolean):void
 		{
 			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX){
@@ -468,7 +443,6 @@ package modules.subtitles
 				VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				_cueManager.reset();
 			}
-			hideSubtitlingControls(null);
 		}
 
 		public function onLogout(value:Boolean):void
@@ -477,20 +451,6 @@ package modules.subtitles
 			{
 				onTabChange(false);
 			}
-		}
-		
-		public function showSubtitleEditor() : void
-		{
-			videoPlayerControlsViewStack=0;
-			VPSubtitle.subtitlingControls = true;
-			subtitleEditorVisible=!subtitleEditorVisible;
-		}
-		
-		public function hideSubtitleEditor() : void
-		{
-			videoPlayerControlsViewStack=1;
-			VPSubtitle.subtitlingControls = false;
-			subtitleEditorVisible=!subtitleEditorVisible;
 		}
 		
 		public function onURLChange(value:Object) : void
@@ -544,26 +504,6 @@ package modules.subtitles
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 					return;
 				}
-			}
-			
-			if ( actionFragment == BabeliaBrowserManager.SUBTITLE &&
-					DataModel.getInstance().isLoggedIn )
-			{
-				subtitleEditorVisible = false;
-				showSubtitleEditor();
-			}
-			else if ( actionFragment == BabeliaBrowserManager.SUBTITLE &&
-					!DataModel.getInstance().isLoggedIn )
-			{
-				updateURL(BabeliaBrowserManager.VIEW, exerciseFileName);
-			}
-			
-			if ( (actionFragment == BabeliaBrowserManager.SUBTITLE &&
-					!DataModel.getInstance().isLoggedIn) 
-					|| actionFragment == BabeliaBrowserManager.VIEW) 
-			{
-				subtitleEditorVisible = true;
-				hideSubtitleEditor();
 			}
 		}
 		

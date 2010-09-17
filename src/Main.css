@@ -93,8 +93,8 @@ Button{
 }
 
 .hvCenteredBox{
-	horizontalAlign: center;
-	verticalAlign: middle;
+	horizontalAlign: "center";
+	verticalAlign: "middle";
 }
 
 /* Navigation menu style properties */
@@ -230,7 +230,18 @@ Button{
 
 .sectionTitleLabel{
 	fontWeight: bold;
-	fontSize: 18;
+	fontSize: 20;
+	color: #972c0a;	
+}
+
+.sectionInfoBox{
+	backgroundColor: #f0f3e2;
+	borderSides: bottom;
+	borderStyle: solid;
+	borderColor: #92d3d5;
+	paddingTop: 16;
+	paddingLeft: 16;
+	paddingRight: 16;
 }
 
 .roundedPurpleBox{

@@ -147,6 +147,30 @@ class ExerciseDAO {
 	}
 	
 	/**
+	 * Return an array of ExerciseVO. The returned exercises don't have any subtitles and their language is
+	 * the same as the languages the user states he is skilled (the ones which will be used for evaluation).
+	 * @param uint $userId
+	 */
+	public function getExercisesWithoutSubtitles($userId){
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+       					e.adding_date, e.fk_user_id, e.duration, u.name, 
+       					avg (suggested_level) as avgLevel, e.status, license, reference
+				FROM exercise e 
+					 INNER JOIN users u ON e.fk_user_id= u.ID
+	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			 	 WHERE e.status = 'Available' AND 
+					 	   e.id NOT IN (SELECT fk_exercise_id FROM subtitle) AND
+					 	   e.language IN (SELECT language FROM user_languages WHERE fk_user_id= '%d' AND purpose = 'evaluate')
+				 GROUP BY e.id
+				 ORDER BY e.adding_date DESC";
+		
+		$searchResults = $this->_exerciseListQuery($sql, $userId);
+		
+		return $searchResults;
+	}
+	
+	/**
 	 * Returns an array of ExerciseVO. The returned exercises are those that have already been subtitled and are
 	 * ready to be used on a recording workflow.
 	 */

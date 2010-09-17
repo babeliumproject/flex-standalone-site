@@ -13,7 +13,6 @@
 		 borderSides="left right bottom"
 		 borderStyle="solid"
 		 borderColor="#92d3d5"
-		 paddingTop="10"
 		 horizontalGap="0"
 		 creationComplete="onComplete()"
 		 horizontalAlign="right"

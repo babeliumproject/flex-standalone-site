@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:subtitles="modules.subtitles.*"
 		 verticalScrollPolicy="off"
+		 paddingTop="0"
 		 width="100%">
 
 	<mx:VBox styleName="sectionInfoBox"
@@ -14,8 +15,7 @@
 
 		<mx:HBox horizontalAlign="right"
 				 width="100%">
-			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"
-					   />
+			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"/>
 		</mx:HBox>
 	</mx:VBox>
 
@@ -28,6 +28,5 @@
 		<subtitles:SubtitleReviewList/>
 
 	</mx:ViewStack>
-
 
 </mx:VBox>

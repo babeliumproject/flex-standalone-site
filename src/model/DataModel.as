@@ -155,7 +155,10 @@ package model
 		[Bindable] public var subtileSaveId:int;
 		[Bindable] public var subtitleSaved:Boolean = false;
 	
-		[Bindable] public var videoPlayerControlsViewStack:int;	
+		[Bindable] public var videoPlayerControlsViewStack:int;
+		
+		[Bindable] public var exercisesWithoutSubtitles:ArrayCollection = new ArrayCollection();
+		[Bindable] public var exercisesWithoutSubtitlesRetrieved:Boolean = false;
 				
 		//Used to store exercise's roles added by the user  
 		[Bindable] public var availableExerciseRoles:ArrayCollection = new ArrayCollection(new Array(null, null));

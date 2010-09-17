@@ -24,130 +24,101 @@
 										arrows="false"
 										width="400"
 										height="250"
-										subtitlingControls="false"
+										subtitlingControls="true"
 										streamSource="{streamSource}"/>
-		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle">
-			<mx:Button id="subtitleExerciseButton"
-					   label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLES_TO_EXERCISE')}"
-					   fontWeight="normal"
-					   labelPlacement="bottom"
-					   click="viewSubtitlingControls(event)"
-					   width="80"
-					   height="80"
-					   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_SUBTITLES_TO_EXERCISE')}"
-					   icon="@Embed(source='../../resources/images/addSubtitles.png')"/>
-		</mx:HBox>
 	</mx:VBox>
 
-	<mx:ViewStack height="100%"
-				  width="100%"
-				  selectedIndex="{this.videoPlayerControlsViewStack}">
+	<mx:Panel id="subtitleEditor"
+			  width="100%"
+			  height="100%"
+			  layout="vertical"
+			  title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
 
-
-		<mx:Panel id="subtitleEditor"
-				  width="100%"
-				  height="100%"
-				  layout="vertical"
-				  title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"
-				  horizontalAlign="center"
-				  verticalAlign="middle">
-			<mx:HBox horizontalAlign="center"
-					 verticalAlign="middle"
+		<mx:DataGrid id="subtitleList"
+					 sortableColumns="false"
 					 width="100%"
-					 visible="false">
-				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_CHOOSE_SUBTITLE_LANGUAGE')}"/>
-				<common:LanguageComboBox id="subtitleLanguage"/>
-			</mx:HBox>
+					 height="100%"
+					 editable="true"
+					 dataProvider="{this.subtitleCollection}"
+					 rowHeight="28">
+			<mx:columns>
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
+								   labelFunction="{lfRowNum}"
+								   editable="false"
+								   width="60">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:LinkButton click="outerDocument.goToTimeHandler()"
+										   selectionColor="0xB7F39B"
+										   rollOverColor="0xEEFEE6"
+										   toolTip="{resourceManager.getString('myResources','TOOLTIP_SEEK_TO_LINE')}"/>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
+								   editable="true"
+								   editorDataField="value"
+								   width="85"
+								   rendererIsEditor="true"
+								   itemRenderer="modules.subtitles.ShowNumericStepperRenderer">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
+								   width="85"
+								   editable="true"
+								   editorDataField="value"
+								   rendererIsEditor="true"
+								   itemRenderer="modules.subtitles.HideNumericStepperRenderer"/>
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
+								   dataField="text">
+					<mx:itemEditor>
+						<mx:Component>
+							<mx:TextInput maxChars="80"/>
+						</mx:Component>
+					</mx:itemEditor>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn id="comboColumn"
+								   width="200"
+								   dataField="roleId"
+								   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
+								   rendererIsEditor="true"
+								   labelFunction="{resolveIdToRole}"
+								   editorDataField="selectedItemKey">
+					<mx:itemRenderer>
+						<mx:Component>
+							<subtitles:GridComboBox dataProvider="{outerDocument.comboData}"
+													labelField="charName"
+													lookupField="roleId"
+													prompt="Select a role..."/>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Spacer height="10"/>
+		<mx:HBox height="40"
+				 width="45%"
+				 styleName="roundedBorderGreyBox">
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
+					   enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
+					   icon="@Embed(source='../../resources/images/add.png')"
+					   click="{subtitleInsertHandler(event)}"
+					   id="addSubtitleLine"/>
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+					   enabled="{subtitleCollection.length > 0}"
+					   click="subtitleRemoveHandler()"
+					   icon="@Embed(source='../../resources/images/delete.png')"/>
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
+					   enabled="{subtitleCollection.length > 0}"
+					   click="subtitleClearHandler()"
+					   icon="@Embed(source='../../resources/images/cancel.png')"/>
+			<mx:VRule height="30"/>
+			<mx:Button label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
+					   icon="@Embed(source='../../resources/images/save.png')"
+					   click="saveSubtitlesHandler()"/>
+		</mx:HBox>
 
-			<mx:DataGrid id="subtitleList"
-						 sortableColumns="false"
-						 width="100%"
-						 height="100%"
-						 editable="true"
-						 dataProvider="{this.subtitleCollection}"
-						 rowHeight="28">
-				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
-									   labelFunction="{lfRowNum}"
-									   editable="false"
-									   width="60">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:LinkButton click="outerDocument.goToTimeHandler()"
-											   selectionColor="0xB7F39B"
-											   rollOverColor="0xEEFEE6"
-											   toolTip="{resourceManager.getString('myResources','TOOLTIP_SEEK_TO_LINE')}"/>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
-									   editable="true"
-									   editorDataField="value"
-									   width="85"
-									   rendererIsEditor="true"
-									   itemRenderer="modules.subtitles.ShowNumericStepperRenderer">
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
-									   width="85"
-									   editable="true"
-									   editorDataField="value"
-									   rendererIsEditor="true"
-									   itemRenderer="modules.subtitles.HideNumericStepperRenderer"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
-									   dataField="text">
-						<mx:itemEditor>
-							<mx:Component>
-								<mx:TextInput maxChars="80"/>
-							</mx:Component>
-						</mx:itemEditor>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn id="comboColumn"
-									   width="200"
-									   dataField="roleId"
-									   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
-									   rendererIsEditor="true"
-									   labelFunction="{resolveIdToRole}"
-									   editorDataField="selectedItemKey">
-						<mx:itemRenderer>
-							<mx:Component>
-								<subtitles:GridComboBox dataProvider="{outerDocument.comboData}"
-														labelField="charName"
-														lookupField="roleId"
-														prompt="Select a role..."/>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-				</mx:columns>
-			</mx:DataGrid>
-			<mx:Spacer height="10"/>
-			<mx:HBox height="40"
-					 width="45%"
-					 styleName="roundedBorderGreyBox">
-				<mx:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
-						   enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
-						   icon="@Embed(source='../../resources/images/add.png')"
-						   click="{subtitleInsertHandler(event)}"
-						   id="addSubtitleLine"/>
-				<mx:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
-						   enabled="{subtitleCollection.length > 0}"
-						   click="subtitleRemoveHandler()"
-						   icon="@Embed(source='../../resources/images/delete.png')"/>
-				<mx:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
-						   enabled="{subtitleCollection.length > 0}"
-						   click="subtitleClearHandler()"
-						   icon="@Embed(source='../../resources/images/cancel.png')"/>
-				<mx:VRule height="30"/>
-				<mx:Button label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
-						   icon="@Embed(source='../../resources/images/save.png')"
-						   click="saveSubtitlesHandler()"/>
-			</mx:HBox>
-
-		</mx:Panel>
-
-		<mx:HBox width="100%"
-				 height="100%"/>
-	</mx:ViewStack>
+	</mx:Panel>
 
 </subtitles:SubtitleEditorClass>

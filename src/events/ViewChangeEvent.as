@@ -50,7 +50,7 @@ package events
 		public static const VIEW_SUBTITLE_EDITOR:String="viewSubtitleEditor";
 		
 		
-		//Index of application's content ViewStack
+		//Indexes of application's content ViewStack
 		public static const VIEWSTACK_HOME_MODULE_INDEX:int = 0;
 		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:int = 1;
 		public static const VIEWSTACK_EVALUATION_MODULE_INDEX:int = 2;

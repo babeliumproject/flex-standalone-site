@@ -64,6 +64,13 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		//Methods for retrieving different exercise lists that have to do with the subtitling process
+		public function getExercisesWithoutSubtitles(userId:uint):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken = service.getExercisesWithoutSubtitles(userId);
+			pendingCall.addResponder(responder);
+		}
+		
 		public function addInappropriateExerciseReport(report:ExerciseReportVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
 			var pendingCall:AsyncToken=service.addInappropriateExerciseReport(report);

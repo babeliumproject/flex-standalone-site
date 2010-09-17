@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:exercises="modules.exercises.*"
 		 xmlns:common="view.common.*"
 		 xmlns:videoPlayer="modules.videoPlayer.*"
@@ -20,10 +20,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -31,18 +31,18 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -73,8 +73,8 @@
 			private var _roles:ArrayCollection;
 			private var _exerciseName:String;
 			private var _exerciseId:int;
-			
-			private var _exerciseStartedPlaying:Boolean = false;
+
+			private var _exerciseStartedPlaying:Boolean=false;
 
 			/**
 			 * Recording related variables
@@ -334,9 +334,8 @@
 			 **/
 			private function showSelectedExercise():void
 			{
-				panelSelectedExercise.minHeight=0;
-				panelSelectedExercise.height=200;
-				panelSelectedExercise.visible=true;
+				videoPlayerAndRecordingControls.includeInLayout=true;
+				videoPlayerAndRecordingControls.visible=true;
 
 				// Update URL
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, _exerciseName);
@@ -346,9 +345,8 @@
 
 			private function hideSelectedExercise():void
 			{
-				panelSelectedExercise.minHeight=0;
-				panelSelectedExercise.height=0;
-				panelSelectedExercise.visible=false;
+				videoPlayerAndRecordingControls.includeInLayout=false;
+				videoPlayerAndRecordingControls.visible=false;
 
 				_exerciseSelected=false;
 			}
@@ -546,9 +544,9 @@
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 
 				exerciseList.exerciseListDatagrid.selectedItem=null;
-				
+
 				//Remove the current exercise's info
-				ratingShareReport.exerciseData = null;
+				ratingShareReport.exerciseData=null;
 			}
 
 
@@ -581,7 +579,7 @@
 				setupReplayCommands();
 
 				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
-				VP.state = VideoPlayerBabelia.PLAY_STATE;
+				VP.state=VideoPlayerBabelia.PLAY_STATE;
 				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;
@@ -665,10 +663,10 @@
 
 			private function onVideoStartedPlaying(e:VideoPlayerEvent):void
 			{
-				_exerciseStartedPlaying = true;
+				_exerciseStartedPlaying=true;
 				if (DataModel.getInstance().isLoggedIn && _cueManagerReady && _rolesReady && _localesReady && _exerciseStartedPlaying)
 				{
-					_exerciseStartedPlaying = false;
+					_exerciseStartedPlaying=false;
 					var userId:int=DataModel.getInstance().loggedUser.id;
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 					var subtitleId:int=_cueManager.currentSubtitle;
@@ -754,110 +752,100 @@
 				destination="statisticRecSave"/>
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
-
-
-	<!-- Video Player -->
-	<mx:VBox>
-		<mx:Label id="exerciseTitle"
-				  text="{_exerciseTitle}"
-				  width="100%"
-				  fontSize="16"
-				  fontWeight="bold"/>
-		<!-- w/h = 16:10 -->
-		<videoPlayer:VideoPlayerBabelia id="VP"
-										autoPlay="true"
-										skin="white"
-										seek="true"
-										subtitles="true"
-										autoScale="false"
-										arrows="false"
-										subtitlingControls="false"
-										width="500"
-										height="{Math.floor(VP.width * 10 / 16)}"
-										streamSource="{_streamSource}"
-										controlsEnabled="{_exerciseSelected}"/>
-		<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
-												  width="100%"/>
+	
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%"
+			 paddingBottom="16">
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+				  styleName="sectionTitleLabel"/>
+		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
-	<mx:Spacer width="20"/>
 
 
-	<mx:VBox width="100%"
-			 height="100%"
-			 fontFamily="Arial"
-			 fontSize="12"
+	<mx:HBox id="videoPlayerAndRecordingControls"
+			 width="100%"
 			 horizontalAlign="center"
-			 verticalAlign="top"
-			 horizontalScrollPolicy="off"
-			 verticalScrollPolicy="off">
+			 verticalAlign="middle"
+			 includeInLayout="false"
+			 visible="false">
+
+
+		<!-- Video Player -->
+		<mx:VBox>
+			<mx:Label id="exerciseTitle"
+					  text="{_exerciseTitle}"
+					  width="100%"
+					  fontSize="16"
+					  fontWeight="bold"/>
+			<!-- w/h = 16:10 -->
+			<videoPlayer:VideoPlayerBabelia id="VP"
+											autoPlay="true"
+											skin="white"
+											seek="true"
+											subtitles="true"
+											autoScale="false"
+											arrows="false"
+											subtitlingControls="false"
+											width="500"
+											height="{Math.floor(VP.width * 10 / 16)}"
+											streamSource="{_streamSource}"
+											controlsEnabled="{_exerciseSelected}"/>
+			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
+												 width="100%"/>
+		</mx:VBox>
+		<mx:Spacer width="20"/>
 
 		<!-- Selected Exercise Panel -->
 		<mx:Panel id="panelSelectedExercise"
-							width="100%"
-							minHeight="0"
-							title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
-			<mx:HBox id="hboxSelectedExercise"
-					 width="100%">
+				  width="100%"
+				  layout="vertical"
+				  paddingTop="10"
+				  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
+
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
+				<mx:ComboBox id="availableRoles"
+							 dataProvider="{_characterNames}"
+							 enabled="{!DataModel.getInstance().recordingExercise}"/>
+			</mx:HBox>
+
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
+				<common:LanguageComboBox id="availableLocales"
+										 useCustomDataProvider="true"
+										 customDataProvider="{_locales}"
+										 displayPrompt="false"
+										 change="this.onLocaleComboChanged(event)"
+										 enabled="{!DataModel.getInstance().recordingExercise}"/>
+			</mx:HBox>
+			<mx:Spacer height="5"/>
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
 				<mx:VBox>
-					<mx:Image id="thumbnail"
-							  scaleContent="true"
-							  source="{_thumbURL + _currentExercise.thumbnailUri}"
-							  autoLoad="true"
-							  width="120"
-							  height="90"
-							  minHeight="0"
-							  toolTip="{_currentExercise.title}"
-							  useHandCursor="true"
-							  buttonMode="true"/>
-					<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
-							   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
-								   			&amp;&amp; !DataModel.getInstance().recordingExercise}"
-							   click="onStartRecordingClicked(event)"/>
-				</mx:VBox>
-				<mx:VBox width="100%"
-						 verticalGap="2">
-					<mx:LinkButton label="{_currentExercise.title}"
-								   fontSize="12"
-								   width="100%"
-								   textAlign="left"/>
-					<mx:HRule height="1"
-							  width="100%"/>
-					<mx:Spacer height="5"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
-						<mx:ComboBox id="availableRoles"
-									 dataProvider="{_characterNames}"
-									 enabled="{!DataModel.getInstance().recordingExercise}"/>
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
-						<common:LanguageComboBox id="availableLocales"
-												 useCustomDataProvider="true"
-												 customDataProvider="{_locales}"
-												 displayPrompt="false"
-												 change="this.onLocaleComboChanged(event)"
-												 enabled="{!DataModel.getInstance().recordingExercise}"/>
-					</mx:HBox>
-					<mx:Spacer height="5"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
-						<mx:VBox>
-							<mx:RadioButton id="micOnly"
-											selected="true"
-											groupName="recMode"
-											label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
-							<mx:RadioButton id="micAndCam"
-											groupName="recMode"
-											label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
-						</mx:VBox>
-					</mx:HBox>
+					<mx:RadioButton id="micOnly"
+									selected="true"
+									groupName="recMode"
+									label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
+					<mx:RadioButton id="micAndCam"
+									groupName="recMode"
+									label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 				</mx:VBox>
 			</mx:HBox>
+
+			<mx:HBox horizontalAlign="right" width="100%">
+				<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+						   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
+						   &amp;&amp; !DataModel.getInstance().recordingExercise}"
+						   click="onStartRecordingClicked(event)"/>
+			</mx:HBox>
+
 		</mx:Panel>
 
-		<!-- Video List -->
-		<exercises:VideoList width="100%"
-							 id="exerciseList"/>
-	</mx:VBox>
+	</mx:HBox>
 
-</mx:HBox>
+
+	<!-- Video List -->
+	<exercises:VideoList width="100%"
+						 id="exerciseList"/>
+
+</mx:VBox>

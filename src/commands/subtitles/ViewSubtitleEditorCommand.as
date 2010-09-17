@@ -16,8 +16,8 @@ package commands.subtitles
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var index:int=ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX;
-			DataModel.getInstance().currentContentViewStackIndex=index;
+			var index:int = ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX;
+			DataModel.getInstance().currentSubtitleViewStackIndex = 2;
 			
 			var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
 			

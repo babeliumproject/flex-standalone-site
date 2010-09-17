@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 verticalGap="14">
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
-			  fontFamily="Arial"
-			  fontSize="18"
-			  fontWeight="bold"/>
-	<mx:HRule width="100%"/>
+
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%"
+			 paddingBottom="16">
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
+				  styleName="sectionTitleLabel"/>
+		<mx:Text text="Enter section description here."/>
+	</mx:VBox>
 	<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
 			  fontFamily="Arial"
 			  fontWeight="bold"
@@ -105,34 +108,25 @@
 					   textDecoration="underline"
 					   click="emailButtonClickHandler(event)"/>
 	</mx:VBox>
-	
+
 	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
 				destination="onPreferencesRetrieved"/>
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import mx.controls.LinkButton;
 
 			[Bindable]
 			public var productData:Array=new Array(
-				
-				{product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, 
-				{product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, 
-				{product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, 
-				{product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'}, 
-				{product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'}, 
-				{product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'}, 
-				{product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl: 'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'}, 
-				{product: 'RTMP Video Player', licenseName: 'MIT License', licenseUrl: 'http://www.opensource.org/licenses/mit-license.php', productUrl: 'http://lelandcope.com/flex-video-player-red5-compatable/'}, 
-				{product: 'Flex Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.asfusion.com/examples/item/rating-component'}, 
-				{product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/'}
+
+				{product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, {product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, {product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, {product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'}, {product: 'Adobe Flex SDK 3.5', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'}, {product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'}, {product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl: 'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'}, {product: 'RTMP Video Player', licenseName: 'MIT License', licenseUrl: 'http://www.opensource.org/licenses/mit-license.php', productUrl: 'http://lelandcope.com/flex-video-player-red5-compatable/'}, {product: 'Flex Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.asfusion.com/examples/item/rating-component'}, {product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/'}
 
 				);
 
 			public function set onPreferencesRetrieved(flag:Boolean):void
 			{
-				if(DataModel.getInstance().prefDic != null)
+				if (DataModel.getInstance().prefDic != null)
 					appRevisionLabel.text="r" + DataModel.getInstance().prefDic['appRevision'];
 			}
 

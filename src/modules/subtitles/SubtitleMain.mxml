@@ -2,14 +2,29 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:main="modules.main.*"
 		 xmlns:subtitles="modules.subtitles.*"
-		 verticalScrollPolicy="off">
-	
+		 verticalScrollPolicy="off"
+		 creationComplete="onComplete()">
+
 	<mx:Script>
 		<![CDATA[
+			import events.VideoStopEvent;
 			import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			
+			import mx.events.IndexChangedEvent;
+
+			private function onComplete():void
+			{
+				subtitleModuleViewStack.addEventListener(IndexChangedEvent.CHANGE, onChildChange);
+			}
+
+			private function onChildChange(event:IndexChangedEvent):void
+			{
+				// Video stop on tab change
+				new VideoStopEvent().dispatch();
+			}
+
 			private function set onUserAuthenticationStatus(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == true)
@@ -17,28 +32,27 @@
 				else
 					new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED).dispatch();
 			}
-			
 		]]>
 	</mx:Script>
-	
+
 	<mx:ViewStack id="subtitleModuleViewStack"
 				  width="100%"
 				  height="100%"
 				  selectedIndex="{ DataModel.getInstance().currentSubtitleViewStackIndex }"
 				  resizeToContent="true">
-		
+
 		<!-- The current user has no rights to access this module. -->
-		<main:UnauthorizedNotice id="subtitleUnauthorizedUser" />
-		
+		<main:UnauthorizedNotice id="subtitleUnauthorizedUser"/>
+
 		<!-- The user is logged in. The app lists the exercises that need subtitles or subtitle reviewing. -->
-		<subtitles:SubtitleListOverview id="subtitleListOverview" />
-		
+		<subtitles:SubtitleListOverview id="subtitleListOverview"/>
+
 		<!-- The subtitle editor for a concrete exercise. Accessed via list item click. -->
-		<subtitles:SubtitleEditor id="subtitleEditor" />
+		<subtitles:SubtitleEditor id="subtitleEditor"/>
 	</mx:ViewStack>
-	
+
 	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onUserAuthenticationStatus"/>
 
-	
+
 </mx:VBox>
