@@ -123,17 +123,17 @@
 				for each (var mLang:LanguageComboBox in motherLanguagesArray)
 				{
 					if (mLang.selectedIndex != -1)
-						mLangCollection.addItem(new UserLanguageVO(0, 0, mLang.selectedItem.code, 7, 0));
+						mLangCollection.addItem(new UserLanguageVO(0, 0, mLang.selectedItem.code, 7, UserLanguageVO.PURPOSE_EVALUATE, 0));
 				}
 				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
 				{
 					if (kLang.languageCombo.selectedIndex != -1)
-						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, 0));
+						kLangCollection.addItem(new UserLanguageVO(0, 0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, UserLanguageVO.PURPOSE_EVALUATE, 0));
 				}
 				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
 				{
 					if (iLang.languageCombo.selectedIndex != -1)
-						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, 0));
+						iLangCollection.addItem(new UserLanguageVO(0, 0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, UserLanguageVO.PURPOSE_PRACTICE, 0));
 				}
 
 

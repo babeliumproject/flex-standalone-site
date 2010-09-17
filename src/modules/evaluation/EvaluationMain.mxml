@@ -17,27 +17,29 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.*;
-
+			
 			import model.DataModel;
-
+			
 			import modules.search.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -325,6 +327,10 @@
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 				_evaluationSelected=true;
+				
+				//Visualize the video player component
+				videoPlayerBox.includeInLayout = true;
+				videoPlayerBox.visible = true;
 
 				//Prepare the component in which the user leaves the assessment
 				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
@@ -351,10 +357,15 @@
 
 				_exerciseTitle=selectedItem.exerciseTitle;
 				_evaluationSelected=true;
+				
+				
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 
+				//Visualize the video player component
+				videoPlayerBox.includeInLayout = true;
+				videoPlayerBox.visible = true;
 
 				//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
 
@@ -385,6 +396,10 @@
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
+				
+				//Visualize the video player component
+				videoPlayerBox.includeInLayout = true;
+				videoPlayerBox.visible = true;
 
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
@@ -437,51 +452,40 @@
 				VP.state=VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
 
 				resetCueManager();
+				
+				//Hide the video player until an exercise is selected
+				videoPlayerBox.includeInLayout = false;
+				videoPlayerBox.visible = false;
 			}
 
-			private function onEvaluationTabChange(event:MouseEvent):void
+			private function onEvaluationTabChange(event:IndexChangedEvent):void
 			{
-				var pressedButton:Object=event.currentTarget;
-				switch (pressedButton)
+				var newIndex:uint=event.newIndex;
+				switch (newIndex)
 				{
-					case waitingAssessmentButton:
-						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
-						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
-						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+					case evaluationOptionsViewStack.getChildIndex(waitingAssessmentBox):
 						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
-
 						resetVideoPlayer();
-
-						evaluationOptionsViewStack.selectedChild=waitingAssessmentBox;
+						
 						break;
-					case assessedToCurrentUserButton:
-						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
-						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
-						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
+					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBox):
 						waitingAssessmentDataGrid.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-
 						resetVideoPlayer();
-
-						evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBox;
+						
 						break;
-					case assessedByCurrentUserButton:
-						waitingAssessmentButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
-						assessedToCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0xCCCCCC]);
-						assessedByCurrentUserButton.setStyle('fillColors', [0xFFFFFF, 0x6FA3D3]);
+					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBox):
 						waitingAssessmentDataGrid.selectedItem=null;
 						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-
 						resetVideoPlayer();
-
-						evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBox;
+						
 						break;
 					default:
 						break;
@@ -493,8 +497,8 @@
 				refreshEvaluationLists();
 
 				resetVideoPlayer();
-
-				waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				
+				evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
 			}
 
 			private function set onTabChange(value:Boolean):void
@@ -510,7 +514,7 @@
 
 				resetVideoPlayer();
 
-				waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
 			}
 
 			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HBox, pageClickHandler:Function):void
@@ -530,13 +534,13 @@
 
 			private function navigateToPageWaitingAssessment(event:MouseEvent):void
 			{
-				_currentPageWaitingForAssessment=int((event.target as MultiLineButton).id);
+				_currentPageWaitingForAssessment=int((event.target as Button).id);
 				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 			}
 
 			private function navigateToPageAssessedByCurrentUser(event:MouseEvent):void
 			{
-				_currentPageAssessedByCurrentUser=int((event.target as MultiLineButton).id);
+				_currentPageAssessedByCurrentUser=int((event.target as Button).id);
 				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 			}
 
@@ -582,7 +586,7 @@
 							if (tmpEvaluate)
 							{
 								//Go to the speficied tab and dispatch a change event
-								waitingAssessmentButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+								evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
 								waitingAssessmentDataGrid.selectedItem=tmpEvaluate;
 								waitingAssessmentDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
@@ -611,7 +615,7 @@
 							if (tmpRevise)
 							{
 								//Go to the speficied tab and dispatch a change event
-								assessedToCurrentUserButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+								evaluationOptionsViewStack.selectedChild = assessedToCurrentUserBox;
 								assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=tmpRevise;
 								assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
@@ -639,7 +643,7 @@
 							if (tmpView != null)
 							{
 								//Go to the speficied tab and dispatch a change event
-								assessedByCurrentUserButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+								evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBox;
 								assessedByCurrentUserDataGrid.selectedItem=tmpView;
 								assessedByCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 							}
@@ -682,7 +686,7 @@
 
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_EVALUATION')}"
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
 				  styleName="sectionTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 		<mx:HBox horizontalAlign="right"
@@ -691,7 +695,7 @@
 		</mx:HBox>
 	</mx:VBox>
 
-	<mx:VBox id="videoPlayerBox" width="100%">
+	<mx:VBox id="videoPlayerBox" width="100%" includeInLayout="false" visible="false">
 		<mx:Label id="exerciseTitle"
 				  text="{_exerciseTitle}"
 				  width="100%"
@@ -723,40 +727,13 @@
 			 paddingRight="4"
 			 paddingBottom="4"
 			 horizontalScrollPolicy="off">
-		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle"
-				 cornerRadius="8"
-				 paddingTop="2"
-				 paddingBottom="2"
-				 backgroundColor="#DDDDDD"
-				 borderStyle="solid"
-				 horizontalGap="16">
-			<common:MultiLineButton id="waitingAssessmentButton"
-									label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}"
-									cornerRadius="8"
-									width="130"
-									height="100%"
-									click="onEvaluationTabChange(event)"/>
-			<common:MultiLineButton id="assessedToCurrentUserButton"
-									label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}"
-									cornerRadius="8"
-									width="130"
-									height="100%"
-									click="onEvaluationTabChange(event)"/>
-			<common:MultiLineButton id="assessedByCurrentUserButton"
-									label="{resourceManager.getString('myResources','NIKEPAITUTAKOAK')}"
-									cornerRadius="8"
-									width="130"
-									height="100%"
-									click="onEvaluationTabChange(event)"/>
-		</mx:HBox>
-
+		
 		<mx:ViewStack id="evaluationOptionsViewStack"
 					  width="100%"
 					  height="100%"
 					  creationPolicy="all"
-					  resizeToContent="true">
+					  resizeToContent="true"
+					  change="onEvaluationTabChange(event)">
 
 			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
 			<mx:VBox id="waitingAssessmentBox"

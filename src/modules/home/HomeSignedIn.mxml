@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 verticalScrollPolicy="off"
+		 creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			private const SLIDE_CHANGE_DELAY:uint = 5000; //5 seconds
+			
+			[Bindable]
+			private var selectedIndex:int=0;
+			
+			private var slideTimer:Timer;
+			
+			protected function onComplete():void{
+				slideTimer = new Timer(SLIDE_CHANGE_DELAY, 0);
+				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				slideTimer.start();
+			}
+			
+			protected function onTimerTick(event:TimerEvent):void{
+				var slideCount:int = appDescriptionViewStack.getChildren().length;
+				var currentlySelectedIndex:int = appDescriptionViewStack.selectedIndex;
+				if (currentlySelectedIndex < (slideCount - 1))
+					selectedIndex=currentlySelectedIndex + 1;
+				else
+					selectedIndex=0;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%">
+		<mx:HBox id="descriptionPaginationSigned"/>
+		<mx:ViewStack id="appDescriptionViewStack"
+					  selectedIndex="{selectedIndex}"
+					  width="100%">
+
+			<mx:HBox id="desc1"
+					 width="100%">
+				<mx:Image source=""/>
+				<mx:VBox width="100%">
+					<mx:Label styleName="sectionTitleLabel"
+							  text="Welcome to Babelium!"/>
+					<mx:Text text="In this application you can practice languages in an collaborative environment"/>
+				</mx:VBox>
+			</mx:HBox>
+
+			<mx:HBox id="desc2"
+					 width="100%">
+				<mx:VBox width="100%">
+					<mx:Label styleName="sectionTitleLabel"
+							  text="Practice the language of your choice"/>
+					<mx:Text text="Register in our application and choose the languages you want to improve in, and start recording yourself."/>
+				</mx:VBox>
+			</mx:HBox>
+
+			<mx:HBox id="desc3"
+					 width="100%">
+				<mx:VBox width="100%">
+					<mx:Label styleName="sectionTitleLabel"
+							  text="Receive other users' feedback"/>
+					<mx:Text text="You think you did well on that exercise but do the other users' which by the way are native speakers in the language you're practicing think the same?"/>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:ViewStack>
+
+		<mx:HBox horizontalAlign="right"
+				 width="100%">
+			<mx:TabBar dataProvider="{myHomeViewStack}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:ViewStack id="myHomeViewStack">
+		
+	</mx:ViewStack>
+
+</mx:VBox>

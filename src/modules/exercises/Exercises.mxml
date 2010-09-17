@@ -767,7 +767,10 @@
 			 horizontalAlign="center"
 			 verticalAlign="middle"
 			 includeInLayout="false"
-			 visible="false">
+			 visible="false"
+			 paddingTop="16"
+			 paddingLeft="16"
+			 paddingRight="16">
 
 
 		<!-- Video Player -->

@@ -234,6 +234,12 @@ Button{
 	color: #972c0a;	
 }
 
+.sectionLowerTitleLabel{
+	fontWeight: bold;
+	fontSize: 18;
+	color: #bbbbbb;
+}
+
 .sectionInfoBox{
 	backgroundColor: #f0f3e2;
 	borderSides: bottom;

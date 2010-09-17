@@ -2,10 +2,12 @@
 
 require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
+require_once 'utils/EmailAddressValidator.php';
+
 require_once 'vo/NewUserVO.php';
 require_once 'vo/UserVO.php';
 
-require_once 'utils/EmailAddressValidator.php';
+
 require_once 'Mailer.php';
 
 class RegisterUser{
@@ -87,10 +89,10 @@ class RegisterUser{
 		$params = array();
 
 
-		$sql = "INSERT INTO user_languages (fk_user_id, language, level, positives_to_next_level) VALUES ";
+		$sql = "INSERT INTO user_languages (fk_user_id, language, level, purpose, positives_to_next_level) VALUES ";
 		foreach($languages as $language) {
-			$sql .= " ('%d', '%s', '%d', '%d'),";
-			array_push($params, $userId, $language->language, $language->level, $positivesToNextLevel);
+			$sql .= " ('%d', '%s', '%d', '%s', '%d'),";
+			array_push($params, $userId, $language->language, $language->level, $language->purpose, $positivesToNextLevel);
 		}
 		unset($language);
 		$sql = substr($sql,0,-1);

@@ -34,7 +34,7 @@ package commands.subtitles
 			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
 			
-			if (result is Array)
+			if (result is Array && (result as Array).length > 0)
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				

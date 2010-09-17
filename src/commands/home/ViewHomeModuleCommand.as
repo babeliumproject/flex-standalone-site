@@ -1,4 +1,4 @@
-package commands.main
+package commands.home
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;

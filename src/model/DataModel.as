@@ -40,6 +40,7 @@ package model
 		//ViewStack management variables
 		[Bindable] public var currentContentViewStackIndex:int;
 		
+		[Bindable] public var currentHomeViewStackIndex:int;
 		[Bindable] public var currentConfigViewStackIndex:int;
 		[Bindable] public var currentExerciseViewStackIndex:int;
 		[Bindable] public var currentEvaluationViewStackIndex:int;

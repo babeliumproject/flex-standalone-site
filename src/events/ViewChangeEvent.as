@@ -17,7 +17,6 @@ package events
 		public static const VIEW_SEARCH_MODULE:String="viewSearchModule";
 		public static const VIEW_HELP_MODULE:String="viewHelpModule";
 
-
 		//User related views
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";
 		public static const VIEW_ACCOUNT_MODULE:String="viewAccountModule";
@@ -32,6 +31,10 @@ package events
 		public static const VIEW_EXERCISE_AVAILABLE_OPTIONS:String="viewExerciseAvailableOptions";
 		public static const VIEW_EXERCISE_EVALUATION_OPTIONS:String="viewExerciseEvaluationOptions";
 
+		//Home related views
+		public static const VIEW_HOME_UNSIGNED:String="viewHomeUnsigned";
+		public static const VIEW_HOME_SIGNED_IN:String="viewHomeSignedIn";
+		
 		//Upload related views
 		public static const VIEW_UPLOAD_UNSIGNED:String="viewUploadUnsigned";
 		public static const VIEW_UPLOAD_SIGNED_IN:String="viewUploadSignedIn";

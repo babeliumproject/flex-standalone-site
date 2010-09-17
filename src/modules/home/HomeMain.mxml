@@ -1,41 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
-
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:home="modules.home.*">
+	
 	<mx:Script>
 		<![CDATA[
+			import events.ViewChangeEvent;
 			
-			[Bindable]
-			private var selectedIndex:int = 0;
+			import model.DataModel;
 			
-			protected function linkbutton1_clickHandler(event:MouseEvent):void
+			
+			private function set onUserAuthenticationStatus(value:Boolean):void
 			{
-				selectedIndex = homeViewStack.selectedIndex + 1;
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_SIGNED_IN).dispatch();
+				else
+					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_UNSIGNED).dispatch();
 			}
 		]]>
 	</mx:Script>
-
 	
-	<mx:ViewStack id="homeViewStack" selectedIndex="{selectedIndex}">
-		
-		<mx:VBox>
-			<mx:Label styleName="sectionTitleLabel" text="Welcome to Babelium!"/>
-			<mx:Text text="In this application you can practice languages in an collaborative environment"/>
-			<mx:LinkButton label="Find out more!" click="linkbutton1_clickHandler(event)"/>
-		</mx:VBox>
-							
-		<mx:VBox>
-			<mx:Label styleName="sectionTitleLabel" text="Practice the language of your choice"/>
-			<mx:Text text="Register in our application and choose the languages you want to improve in, and start recording yourself."/>
-			<mx:LinkButton label="Be evaluated by another user" click="linkbutton1_clickHandler(event)"/>
-		</mx:VBox>
-		
-		<mx:VBox>
-			<mx:Label styleName="sectionTitleLabel" text="Receive other users' feedback"/>
-			<mx:Text text="You think you did well on that exercise but do the other users' which by the way are native speakers in the language you're practicing think the same?"/>
-		</mx:VBox>
-		
-		
+	<mx:ViewStack id="homeMainViewStack"
+				  width="100%"
+				  selectedIndex="{ DataModel.getInstance().currentHomeViewStackIndex }"
+				  resizeToContent="true">
+		<home:HomeUnsigned />
+		<home:HomeSignedIn />
 	</mx:ViewStack>
 	
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onUserAuthenticationStatus"/>
 	
 </mx:VBox>

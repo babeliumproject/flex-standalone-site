@@ -23,14 +23,10 @@
 	<mx:ViewStack id="configContainerViewStack"
 				  width="100%"
 				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().currentConfigViewStackIndex }">
-		<main:UnauthorizedNotice id="unsignedScreen"
-								 width="100%"
-								 height="100%"/>
-		<configuration:ConfigurationMain id="configurationMain"
-										 width="100%"
-										 height="100%"/>
-
+				  selectedIndex="{ DataModel.getInstance().currentConfigViewStackIndex }"
+				  resizeToContent="true">
+		<main:UnauthorizedNotice id="unsignedScreen"/>
+		<configuration:ConfigurationMain id="configurationMain"/>
 	</mx:ViewStack>
 
 	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"

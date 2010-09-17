@@ -6,6 +6,9 @@ package control {
 	import commands.configuration.*;
 	import commands.evaluation.*;
 	import commands.exercises.*;
+	import commands.home.ViewHomeModuleCommand;
+	import commands.home.ViewHomeSignedInCommand;
+	import commands.home.ViewHomeUnsignedCommand;
 	import commands.main.*;
 	import commands.search.*;
 	import commands.subtitles.*;
@@ -33,7 +36,6 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_MODULE, ViewAccountModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_UPLOAD_MODULE, ViewUploadModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_SUBTITLE_MODULE, ViewSubtitleModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_RANKING_MODULE, ViewRankingModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
@@ -44,6 +46,10 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_EXERCISE_HOME, ViewExerciseHomeCommand);
 			addCommand(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS, ViewExerciseEvaluationOptionsCommand);
 
+			//Home ViewStack related commands
+			addCommand(ViewChangeEvent.VIEW_HOME_UNSIGNED, ViewHomeUnsignedCommand);
+			addCommand(ViewChangeEvent.VIEW_HOME_SIGNED_IN, ViewHomeSignedInCommand);
+			
 			//Subtitle ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED, ViewSubtitleUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_SUBTITLES_SIGNED_IN, ViewSubtitleSignedInCommand);

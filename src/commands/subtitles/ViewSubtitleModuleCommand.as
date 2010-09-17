@@ -1,4 +1,4 @@
-package commands.main
+package commands.subtitles
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
