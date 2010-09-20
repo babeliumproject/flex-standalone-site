@@ -129,6 +129,7 @@
 			private function setupVideoPlayer():void
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VP.addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, evaluationRatingBox.onResponseFinished);
 				VP.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, evaluationRatingBox.onResponseFinished);
 			}
 

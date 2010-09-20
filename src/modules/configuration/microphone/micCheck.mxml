@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="modules.configuration.microphone.*"
+		 styleName="padding10AllSidesBox"
 		 width="100%"
 		 height="100%"
-		 paddingLeft="10"
-		 paddingRight="10"
-		 paddingTop="10"
-		 paddingBottom="10"
 		 creationComplete="onComplete()">
 
 	<mx:Script>
 		<![CDATA[
 			import flash.sampler.getInvocationCount;
-			
+
 			import model.DataModel;
-			
+
 			import modules.configuration.ConfigurationResultEvent;
 			import modules.configuration.OflaDemoRed5Sentences;
 			import modules.configuration.ShowStatusMessage;
-			
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -34,7 +31,7 @@
 			public var timerSound:Timer;
 			public var onMic:Boolean=false;
 			public var oflaDemoRed5Sentences:OflaDemoRed5Sentences;
-			
+
 			private var privacyRights:PrivacyRights;
 			private var _micCamEnabled:Boolean;
 
@@ -79,8 +76,10 @@
 				denb=timerRec.currentCount
 				if (timerRec.currentCount <= 10)
 				{
-					contador.text=denb.toString();
-					statusText.text=statusText.text + ".";
+					recordProgressBar.setProgress(10 - denb, 10);
+					recordProgressBar.label=denb + "/10 " + "seconds";
+						//contador.text=denb.toString();
+						//statusText.text=statusText.text + ".";
 				}
 				else if (timerRec.currentCount > 10)
 				{
@@ -89,10 +88,10 @@
 					hideInfo();
 					rec=true;
 					timerRec.reset(); //Prepare for the next recording
-					
+
 					/*
-					 If no signal was detected during the 10 second recording, ConfigurationResultEvent.MICROPHONE_RESULT event
-					 is dispatched with false value so that the result panel displays an issue with the microphone.
+					   If no signal was detected during the 10 second recording, ConfigurationResultEvent.MICROPHONE_RESULT event
+					   is dispatched with false value so that the result panel displays an issue with the microphone.
 					 */
 					if (!onMic)
 					{
@@ -108,8 +107,9 @@
 				denb=timerPlay.currentCount;
 				if (timerPlay.currentCount <= 10)
 				{
-					contador.text=denb.toString();
-					statusText.text=statusText.text + ".";
+					recordProgressBar.setProgress(denb, 10);
+						//contador.text=denb.toString();
+						//statusText.text=statusText.text + ".";
 				}
 				else if (timerPlay.currentCount > 10)
 				{
@@ -133,16 +133,15 @@
 
 			private function initCont():void
 			{
-				contador.text="0";
-				contador.visible=true;
+				//contador.text="0";
+				//contador.visible=true;
+				recordProgressBar.setProgress(0, 10);
 			}
 
 			private function hideInfo():void
 			{
-				noSoundText.visible=false;
 				statusText.visible=false;
-				contador.visible=false;
-				barraSonido.visible=false;
+
 			}
 
 			private function statusTextFunc(s:String):void
@@ -161,17 +160,16 @@
 			private function soundDetect(e:TimerEvent):void
 			{
 				/*
-				 The audio only FLV file is only generated if ActivityEvent.ACTIVITY is dispatched and
-				 the sound signal is good enough to be distinguished from noise.
-				
-				 The aforementioned file should be created only once, and statusText text should be
-				 initialized once. This is controlled with the boolean variable onMic (which is
-				 important to reset if want the subsequent recordings to work properly).
-				*/
+				   The audio only FLV file is only generated if ActivityEvent.ACTIVITY is dispatched and
+				   the sound signal is good enough to be distinguished from noise.
+
+				   The aforementioned file should be created only once, and statusText text should be
+				   initialized once. This is controlled with the boolean variable onMic (which is
+				   important to reset if want the subsequent recordings to work properly).
+				 */
 				if (!onMic && mic.activityLevel > 10)
 				{
 					oflaDemoRed5Sentences.publish('audio');
-					noSoundText.visible=false;
 					statusTextFunc("Recording");
 					onMic=true;
 				}
@@ -180,11 +178,10 @@
 			private function prepareRecording():void
 			{
 				onMic=false;
-				barraSonido.visible=true;
 				barraSonido.giveMicrophone(mic);
 				mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
 				oflaDemoRed5Sentences.rec_ns.attachAudio(mic);
-				noSoundText.visible=true;
+				statusText.visible=true;
 				DataModel.getInstance().audioRec=true;
 				DataModel.getInstance().recording=true;
 				timerRec.start();
@@ -235,92 +232,60 @@
 	</mx:Script>
 
 
-	<mx:HBox id="allMenu"
-			 visible="true"
-			 width="100%">
 
-		<mx:HBox width="100%">
-			<mx:VBox id="explicacion"
+	<mx:Text text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
+			 styleName="sectionLowerTitleLabel"/>
+	<mx:HRule height="1"
+			  width="100%"/>
+	<ns1:explicacionMic height="100%"
+						width="100%"
+						id="texto"/>
+
+	<mx:Spacer height="20"/>
+
+	<mx:HBox cornerRadius="8"
+			 borderStyle="solid"
+			 borderColor="#92d3d5"
+			 paddingTop="10"
+			 paddingBottom="10"
+			 paddingLeft="10"
+			 paddingRight="10">
+		<mx:Button id="recButton"
+				   click="recStart()"
+				   icon="@Embed(source='resources/images/playerRecIcon.png')"
+				   horizontalCenter="true"
+				   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+					   !DataModel.getInstance().recording &amp;&amp;
+					   DataModel.getInstance().permissions}"/>
+		<mx:Button id="playButton"
+				   click="playStart()"
+				   icon="@Embed(source='resources/images/playerPlayIcon.png')"
+				   horizontalCenter="true"
+				   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+					   !DataModel.getInstance().recording &amp;&amp;
+					   DataModel.getInstance().permissions}"/>
+		<mx:VBox>
+			<mx:HBox horizontalAlign="right"
 					 width="100%">
-				<mx:Text/>
-				<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MICRO_TITTLE')}"
-						 fontSize="18"
-						 fontWeight="bold"/>
-				<mx:HRule height="1"
-						  width="100%"/>
-				<ns1:explicacionMic height="100%"
-									width="100%"
-									id="texto"/>
-			</mx:VBox>
-		</mx:HBox>
+				<mx:ProgressBar id="recordProgressBar"
+								mode="manual"
+								minimum="0"
+								maximum="10"
+								direction="left"
+								trackHeight="20"
+								label="0/10 seconds"
+								labelPlacement="center"/>
+			</mx:HBox>
+			<mx:Label id="statusText"
+					  styleName="errorLabel"
+					  text="{resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}"
+					  visible="false"/>
+			<mx:HBox verticalAlign="middle">
+				<mx:Label text="Level: "/>
+				<ns1:barraSonido id="barraSonido"/>
+			</mx:HBox>
 
-		<mx:HBox width="100%"
-				 horizontalAlign="right">
-			<mx:VBox id="videoPanel"
-					 width="100%"
-					 horizontalAlign="center"
-					 verticalAlign="top">
-				<mx:VBox borderStyle="solid"
-						 cornerRadius="3"
-						 backgroundColor="#e9edee"
-						 horizontalAlign="center"
-						 verticalAlign="middle">
-					<mx:VBox borderStyle="solid"
-							 width="320"
-							 height="240"
-							 backgroundColor="black">
-						<mx:Text fontWeight="bold"
-								 id="statusText"
-								 text="{resourceManager.getString('myResources','MESSAGE_STATUS_RECORDING')}"
-								 color="red"
-								 fontSize="13"
-								 visible="false"/>
-						<mx:Spacer height="40"/>
-						<mx:HBox width="100%"
-								 horizontalAlign="center"
-								 horizontalScrollPolicy="off">
-							<mx:Text id="noSoundText"
-									 text="{resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}"
-									 color="red"
-									 width="100%"
-									 height="100%"
-									 selectable="false"
-									 fontSize="20"
-									 visible="false"/>
-						</mx:HBox>
-
-						<mx:UIComponent id="videoHolder"
-										width="100%"
-										height="100%"/>
-						<ns1:barraSonido id="barraSonido"
-										 visible="false"/>
-					</mx:VBox>
-					<mx:HBox horizontalAlign="center">
-						<mx:Button label="REC"
-								   click="recStart()"
-								   horizontalCenter="true"
-								   enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							   !DataModel.getInstance().recording &amp;&amp;
-							   DataModel.getInstance().permissions}"/>
-						<mx:Button id="playButton"
-								   label="PLAY"
-								   click="playStart()"
-								   horizontalCenter="true"
-								   enabled="{!DataModel.getInstance().playing &amp;&amp; 
-							   !DataModel.getInstance().recording &amp;&amp;
-							   DataModel.getInstance().permissions}"/>
-					</mx:HBox>
-					<mx:VBox horizontalAlign="center"
-							 fontSize="15">
-						<mx:Text id="contador"
-								 text="10"
-								 visible="false"
-								 fontWeight="bold"/>
-					</mx:VBox>
-				</mx:VBox>
-			</mx:VBox>
-		</mx:HBox>
-
+		</mx:VBox>
 	</mx:HBox>
 
 	<mx:HBox id="notConect"

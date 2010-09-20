@@ -82,6 +82,10 @@ Button{
 	cornerRadius: 8;
 }
 
+TextInput{
+	fontWeight: normal;
+}
+
 /* Commonly used component style variants */
 
 .boldLinkButton{
@@ -228,16 +232,31 @@ Button{
 	fontSize: 10;
 }
 
+.errorLabel{
+	fontWeight: bold;
+	color: red;
+}
+
+.roundedBlueBorderBox{
+	cornerRadius: 8;
+	borderStyle: solid;
+	borderColor: #92d3d5;
+	paddingTop: 10;
+	paddingBottom: 10;
+	paddingLeft: 10;
+	paddingRight: 10;
+}
+
 .sectionTitleLabel{
 	fontWeight: bold;
-	fontSize: 20;
+	fontSize: 24;
 	color: #972c0a;	
 }
 
 .sectionLowerTitleLabel{
 	fontWeight: bold;
 	fontSize: 18;
-	color: #bbbbbb;
+	color: #aaaaaa;
 }
 
 .sectionInfoBox{
@@ -293,4 +312,31 @@ Button{
 	themeColor: #FFFFFF;
 }
 
+.configResultBox{
+	paddingTop: 12;
+	paddingLeft: 16;
+	paddingRight: 16;
+	borderStyle: solid;
+	borderSides: right;
+	borderColor: #92d3d5;
+}
 
+.padding10AllSidesBox{
+	paddingTop: 10;
+	paddingLeft: 10;
+	paddingRight: 10;
+	paddingBottom: 10;
+}
+
+.padding20AllSidesBox{
+	paddingTop: 20;
+	paddingLeft: 20;
+	paddingRight: 20;
+	paddingBottom: 20;
+}
+
+.bwResultLabel{
+	color: #425fd9;
+	fontSize: 25;
+	fontWeight: bold;
+}

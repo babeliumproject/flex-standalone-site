@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
-		<mx:Spacer/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE1')}" fontWeight="bold"/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE2')}" fontWeight="bold"/>
-		<mx:Spacer/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE3')}" fontWeight="bold"/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE4')}" fontWeight="bold"/>
+	<mx:Spacer/>
+	<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE1')}"
+			 styleName="boldLabel"/>
+	<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE2')}"
+			 styleName="boldLabel"/>
+	<mx:Spacer/>
+	<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE3')}"
+			 styleName="boldLabel"/>
+	<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE4')}"
+			 styleName="boldLabel"/>
 </mx:VBox>

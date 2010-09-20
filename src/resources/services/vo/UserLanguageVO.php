@@ -2,8 +2,8 @@
 
 class UserLanguageVO{
 	
-	public static const PURPOSE_EVALUATE = 'evaluate';
-	public static const PURPOSE_PRACTICE = 'practice';
+	const PURPOSE_EVALUATE = 'evaluate';
+	const PURPOSE_PRACTICE = 'practice';
 	
 	public $id;
 	public $userId;

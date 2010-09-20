@@ -12,12 +12,14 @@
 
 		]]>
 	</mx:Script>
+	
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%">
+		<mx:Label text="Babelium Project Help/FAQ"
+				  styleName="sectionTitleLabel"/>
+		<mx:Text text="Enter section description here."/>
+	</mx:VBox>
 
-	<mx:Label text="Babelium Project Help/FAQ"
-			  fontSize="18"
-			  fontWeight="bold"/>
-	<mx:HRule width="100%"/>
-	<mx:Spacer/>
 	<mx:Label text="Video tutorials"
 			  fontWeight="bold"
 			  fontSize="14"

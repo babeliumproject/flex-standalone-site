@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="modules.videoUpload.*"
+		 xmlns:common="view.common.*"
 		 creationComplete="onComplete()"
-		 fontFamily="Arial"
-		 fontSize="12"
-		 paddingLeft="8"
-		 paddingRight="8"
-		 paddingTop="8"
-		 paddingBottom="8"
-		 verticalScrollPolicy="off"
-		 xmlns:common="view.common.*">
+		 verticalScrollPolicy="off">
 
 	<mx:Script>
 		<![CDATA[
@@ -520,24 +514,26 @@
 				destination="this.onAutoevaluationEnableError"/>
 	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
+	
+	<mx:VBox styleName="sectionInfoBox"
+			 width="100%">
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
+				  styleName="sectionTitleLabel"/>
+		<mx:Text text="Enter section description here."/>
+	</mx:VBox>
 
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
-			  fontWeight="bold"
-			  fontFamily="Arial"
-			  fontSize="18"/>
-	<mx:HBox width="100%">
+	
+	<mx:HBox width="100%" styleName="padding20AllSidesBox">
 		<mx:VBox width="100%"
 				 height="100%">
 			<mx:Form width="100%"
-					 borderStyle="solid"
-					 borderThickness="2">
+					 styleName="roundedBlueBorderBox">
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
 							 width="100%"
 							 fontWeight="bold"
 							 required="true">
 					<mx:TextInput width="100%"
-								  id="videoTitle"
-								  fontWeight="normal"/>
+								  id="videoTitle"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
 							 width="100%"
@@ -545,7 +541,6 @@
 							 required="true">
 					<mx:TextArea width="100%"
 								 id="videoDescription"
-								 fontWeight="normal"
 								 maxChars="500"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
@@ -554,8 +549,7 @@
 							 toolTip="Comma separated words"
 							 required="true">
 					<mx:TextArea width="100%"
-								 id="videoTags"
-								 fontWeight="normal"/>
+								 id="videoTags"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
 							 fontWeight="bold"
@@ -577,8 +571,7 @@
 							 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
 							 width="100%">
 					<mx:TextInput width="100%"
-								  id="referenceUrl"
-								  fontWeight="normal"/>
+								  id="referenceUrl"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
 							 fontWeight="bold">
@@ -608,15 +601,10 @@
 			</mx:Form>
 
 			<mx:VBox id="uploadFileBox"
-					 borderStyle="solid"
-					 borderThickness="2"
+					 styleName="roundedBlueBorderBox"
 					 width="100%"
 					 minHeight="0"
 					 height="0"
-					 paddingBottom="4"
-					 paddingTop="4"
-					 paddingLeft="4"
-					 paddingRight="4"
 					 visible="false">
 				<mx:HBox width="100%"
 						 height="60"
@@ -689,12 +677,7 @@
 									streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
 									filePrefix="upld"/>
 			<mx:VBox id="recUploadBox"
-					 borderStyle="solid"
-					 borderThickness="2"
-					 paddingBottom="8"
-					 paddingTop="8"
-					 paddingLeft="8"
-					 paddingRight="8"
+					 styleName="roundedBlueBorderBox"
 					 width="{recFromWebcamBox.width}"
 					 visible="false">
 				<mx:Text width="{recFromWebcamBox.width-22}"

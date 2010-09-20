@@ -70,13 +70,11 @@
 						micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT, microphoneResult);
 						micCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT, webcamResult);
 						micCheck.addEventListener(ShowStatusMessage.CAM_MESSAGE, webCamStatusMessage);
-						micCheck.allMenu.visible=true;
 						micCheck.notConect.visible=false;
 					}
 					else
 					{ //El usuario no dispone de microfono
 						refreshMicButton.visible=true;
-						micCheck.allMenu.visible=false;
 						micCheck.notConect.visible=true;
 						correctIncorrectIcon(microphoneStatusIcon, false);
 					}
@@ -158,7 +156,6 @@
 				if (Microphone.names.length > 0)
 				{ //El usuario ha conectado su microfono
 					micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT, microphoneResult);
-					micCheck.allMenu.visible=true;
 					micCheck.notConect.visible=false;
 					refreshMicButton.visible=false;
 				}
@@ -207,13 +204,8 @@
 
 	<mx:HBox width="100%">
 		<mx:VBox id="checkResultBox"
+				 styleName="configResultBox"
 				 height="100%"
-				 paddingTop="12"
-				 paddingLeft="16"
-				 paddingRight="16"
-				 borderStyle="solid"
-				 borderSides="right"
-				 borderColor="#92d3d5"
 				 includeInLayout="false"
 				 visible="false">
 			<mx:Label styleName="sectionLowerTitleLabel"
