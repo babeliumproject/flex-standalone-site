@@ -19,8 +19,10 @@ class ExerciseRoleDAO
 
 	public function getExerciseRoles($exerciseId)
 	{
-
-		$sql = "SELECT * FROM exercise_role WHERE (fk_exercise_id = %d) ";
+		$sql = "SELECT MAX(id) as id, fk_exercise_id, fk_user_id, character_name
+				FROM exercise_role
+				WHERE fk_exercise_id = '%d'
+				GROUP BY character_name";
 
 		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId );
 
@@ -30,13 +32,13 @@ class ExerciseRoleDAO
 	private function _listRolesQuery(){
 		$searchResults = array ();
 		$result = $this->conn->_execute ( func_get_args() );
-		
+
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new ExerciseRoleVO ( );	
+			$temp = new ExerciseRoleVO ( );
 			$temp->id = $row[0];
 			$temp->exerciseId = $row[1];
 			$temp->userId = $row[2];
-			$temp->characterName = $row[3];	
+			$temp->characterName = $row[3];
 			array_push ( $searchResults, $temp );
 		}
 
@@ -51,7 +53,7 @@ class ExerciseRoleDAO
 
 		$result = $this->conn->_execute($sql,$id);
 	}
-	 
+
 	public function deleteAllExerciseRoles($exerciseId)
 	{
 		$sql = "DELETE FROM exercise_role
@@ -60,7 +62,7 @@ class ExerciseRoleDAO
 		$result = $this->conn->_execute($sql,$exerciseId);
 	}
 
-	 
+
 	public function saveExerciseRoles($roles)
 	{
 		$sql = "INSERT INTO exercise_role (fk_exercise_id, fk_user_id, character_name)";
