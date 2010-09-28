@@ -32,8 +32,8 @@ $INPUT_TEST_VIDEO = $HOME . $UPLOADS . "/test.flv";
 $OUTPUT_TEST_VIDEO = $HOME . $UPLOADS . "/output.flv";
 
 // ================================
-require_once ($HOME . $SERVICES . "/Config.php");
-require_once ($HOME . $SERVICES . "/Datasource.php");
+require_once ($HOME . $SERVICES . "/utils/Config.php");
+require_once ($HOME . $SERVICES . "/utils/Datasource.php");
 
 // ================================
 
@@ -157,8 +157,8 @@ Testing if there is a correct amfphp folder (<?php echo $HOME . $SERVICES ?>):
 <? test( file_exists($HOME . $SERVICES )) ?>
 <br>
 
-Testing if Config.php exists where it should (<?php echo $HOME.$SERVICES .'/Config.php' ?>):
-<? test( file_exists($HOME . $SERVICES . "/Config.php")) ?>
+Testing if Config.php exists where it should (<?php echo $HOME.$SERVICES .'/utils/Config.php' ?>):
+<? test( file_exists($HOME . $SERVICES . "/utils/Config.php")) ?>
 
 <br>
 Testing if there is a correct DB login configuration:
