@@ -17,7 +17,7 @@ package commands.userManagement
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).keepSessionAlive((event as UserEvent).userId);
+			new UserDelegate(this).keepSessionAlive();
 		}
 		
 		public function result(data:Object):void

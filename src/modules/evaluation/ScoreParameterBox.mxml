@@ -9,7 +9,8 @@
 		 borderStyle="solid">
 	<mx:Text id="parameterText"
 			 text="{resourceManager.getString('myResources',text)}"
-			 width="{this.width - 2 - scoreMeter.width}"/>
+			 width="{this.width - 2 - scoreMeter.width}"
+			 height="100%"/>
 	<mx:HBox id="scoreMeter"
 			 horizontalGap="0"
 			 horizontalAlign="center"

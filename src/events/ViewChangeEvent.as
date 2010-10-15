@@ -21,16 +21,7 @@ package events
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";
 		public static const VIEW_ACCOUNT_MODULE:String="viewAccountModule";
 		public static const VIEW_ACTIVATION_MODULE:String="viewActivationModule";
-
-		//This views belong to the application's exercise module's ViewStack
-		public static const VIEW_EXERCISE_HOME:String="viewExerciseHome";
-		public static const VIEW_EXERCISE_VIDEO_PLAY:String="viewExerciseVideoPlay";
-		public static const VIEW_EXERCISE_VIDEO_RECORD:String="viewExerciseVideoRecord";
-		public static const VIEW_EXERCISE_VIDEO_PLAY_BOTH:String="viewExerciseVideoPlayBoth";
-		public static const VIEW_EXERCISE_VIDEO_PLAY_RECORDED:String="viewExerciseVideoPlayRecorded";
-		public static const VIEW_EXERCISE_AVAILABLE_OPTIONS:String="viewExerciseAvailableOptions";
-		public static const VIEW_EXERCISE_EVALUATION_OPTIONS:String="viewExerciseEvaluationOptions";
-
+		
 		//Home related views
 		public static const VIEW_HOME_UNSIGNED:String="viewHomeUnsigned";
 		public static const VIEW_HOME_SIGNED_IN:String="viewHomeSignedIn";

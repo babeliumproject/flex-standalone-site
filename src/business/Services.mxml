@@ -91,4 +91,10 @@
 		showBusyCursor="false"
 		source="UserVideoHistoryDAO"/>
 	
+	<mx:RemoteObject
+		id="motdRO"
+		destination="empService"
+		showBusyCursor="true"
+		source="MessageOfTheDayDAO"/>
+	
 </ServiceLocator>

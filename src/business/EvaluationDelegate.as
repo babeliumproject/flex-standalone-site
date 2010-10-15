@@ -18,22 +18,22 @@ package business
 			this.responder = responder;
 		}
 		
-		public function getResponsesWaitingAssessment(userId:int):void
+		public function getResponsesWaitingAssessment():void
 		{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.getResponsesWaitingAssessment(userId);
+			var pendingCall:AsyncToken=service.getResponsesWaitingAssessment();
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getResponsesAssessedToCurrentUser(userId:int):void{
+		public function getResponsesAssessedToCurrentUser():void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.getResponsesAssessedToCurrentUser(userId);
+			var pendingCall:AsyncToken=service.getResponsesAssessedToCurrentUser();
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getResponsesAssessedByCurrentUser(userId:int):void{
+		public function getResponsesAssessedByCurrentUser():void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.getResponsesAssessedByCurrentUser(userId);
+			var pendingCall:AsyncToken=service.getResponsesAssessedByCurrentUser();
 			pendingCall.addResponder(responder);
 		}
 		

@@ -41,7 +41,6 @@ package modules.userManagement
 			
 			if (toolTipExists)
 			{
-				trace("error corrected removing tooltip");
 				ToolTipManager.destroyToolTip(errorMessageToolTips[target.name] as ToolTip);
 				delete errorMessageToolTips[target.name];
 			}

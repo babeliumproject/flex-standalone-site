@@ -20,64 +20,27 @@ package business
 			this.responder = responder;
 		}
 		
-		//This is used to make a request to the server through amfphp		
-		public function subCreditsForEvalRequest(userId:int):void{
+		public function getCurrentDayCreditHistory():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.subCreditsForEvalRequest(userId);
+			var pendingCall:AsyncToken = service.getCurrentDayCreditHistory();
 			pendingCall.addResponder(responder);
 		}
 		
-		public function addCreditsForSubtitling(userId:int):void{
+		public function getLastWeekCreditHistory():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.addCreditsForSubtitling(userId);
+			var pendingCall:AsyncToken = service.getLastWeekCreditHistory();
 			pendingCall.addResponder(responder);
 		}
 		
-		public function addCreditsForEvaluating(userId:int):void{
+		public function getLastMonthCreditHistory():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.addCreditsForEvaluating(userId);
+			var pendingCall:AsyncToken = service.getLastMonthCreditHistory();
 			pendingCall.addResponder(responder);
 		}
 		
-		public function addCreditsForExerciseAdvising(userId:int):void{
+		public function getAllTimeCreditHistory():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.addCreditsForExerciseAdvising(userId);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function addCreditsForUploading(userId:int):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.addCreditsForUploading(userId);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function addEntryToCreditHistory(credit:CreditHistoryVO):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.addEntryToCreditHistory(credit);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function getCurrentDayCreditHistory(userId:int):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.getCurrentDayCreditHistory(userId);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function getLastWeekCreditHistory(userId:int):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.getLastWeekCreditHistory(userId);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function getLastMonthCreditHistory(userId:int):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.getLastMonthCreditHistory(userId);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function getAllTimeCreditHistory(userId:int):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "creditRO" );
-			var pendingCall:AsyncToken = service.getAllTimeCreditHistory(userId);
+			var pendingCall:AsyncToken = service.getAllTimeCreditHistory();
 			pendingCall.addResponder(responder);
 		}
 

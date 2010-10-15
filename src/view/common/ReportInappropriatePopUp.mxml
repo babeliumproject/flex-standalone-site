@@ -5,10 +5,6 @@
 				creationComplete="creationCompleteHandler()"
 				showCloseButton="true">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-
 	<mx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
@@ -61,7 +57,6 @@
 				{
 					var report:ExerciseReportVO=new ExerciseReportVO();
 					report.exerciseId=_exercise.id;
-					report.userId=DataModel.getInstance().loggedUser.id;
 					report.reason=reportComboBox.reportInappropriateComboBox.selectedItem.toString();
 					PopUpManager.removePopUp(this);
 					new ExerciseEvent(ExerciseEvent.REPORT_EXERCISE, null, report, null).dispatch();

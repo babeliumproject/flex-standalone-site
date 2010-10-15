@@ -28,8 +28,7 @@ package modules.userManagement
 		}
 		
 		private function onTimerTick(event:TimerEvent):void{
-			var currentUser:UserVO = DataModel.getInstance().loggedUser;
-			new UserEvent(UserEvent.KEEP_SESSION_ALIVE, currentUser.id).dispatch();
+			new UserEvent(UserEvent.KEEP_SESSION_ALIVE).dispatch();
 		}
 	}
 }

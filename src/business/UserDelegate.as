@@ -29,11 +29,8 @@ package business
 		}
 		
 		public function getUserInfo():void{
-			var userId:int = 0;
-			if (DataModel.getInstance().loggedUser != null)
-				userId = DataModel.getInstance().loggedUser.id;
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.getUserInfo(userId);
+			var pendingCall:AsyncToken = service.getUserInfo();
 			pendingCall.addResponder(responder);
 		}
 		
@@ -45,13 +42,13 @@ package business
 
 		public function changePass(user:ChangePassVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.changePass(user.id, user.oldpass, user.newpass);
+			var pendingCall:AsyncToken = service.changePass(user.oldpass, user.newpass);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function keepSessionAlive(userId:int):void{
+		public function keepSessionAlive():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.keepAlive(userId);
+			var pendingCall:AsyncToken = service.keepAlive();
 			pendingCall.addResponder(responder);
 		}
 	}

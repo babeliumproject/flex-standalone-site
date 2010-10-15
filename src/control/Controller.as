@@ -6,9 +6,7 @@ package control {
 	import commands.configuration.*;
 	import commands.evaluation.*;
 	import commands.exercises.*;
-	import commands.home.ViewHomeModuleCommand;
-	import commands.home.ViewHomeSignedInCommand;
-	import commands.home.ViewHomeUnsignedCommand;
+	import commands.home.*;
 	import commands.main.*;
 	import commands.search.*;
 	import commands.subtitles.*;
@@ -40,12 +38,7 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ACTIVATION_MODULE, ViewActivationModuleCommand);
-
-
-			//Exercise ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_EXERCISE_HOME, ViewExerciseHomeCommand);
-			addCommand(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS, ViewExerciseEvaluationOptionsCommand);
-
+			
 			//Home ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_HOME_UNSIGNED, ViewHomeUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_HOME_SIGNED_IN, ViewHomeSignedInCommand);
@@ -68,19 +61,14 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_CONFIG_SIGNED, ViewConfigSignedCommand);
 
 			//Credit management commands
-			addCommand(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, SubCreditsForEvalRequestCommand);
-			addCommand(CreditEvent.ADD_CREDITS_FOR_EVALUATING, AddCreditsForEvaluatingCommand);
-			addCommand(CreditEvent.ADD_CREDITS_FOR_SUBTITLING, AddCreditsForSubtitlingCommand);
-			addCommand(CreditEvent.ADD_CREDITS_FOR_UPLOADING, AddCreditsForUploadingCommand);
-
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);
 			addCommand(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY, GetCurrentDayCreditHistoryCommand);
 			addCommand(CreditEvent.GET_LAST_WEEK_CREDIT_HISTORY, GetLastWeekCreditHistoryCommand);
 			addCommand(CreditEvent.GET_LAST_MONTH_CREDIT_HISTORY, GetLastMonthCreditHistoryCommand);
-			addCommand(CreditEvent.ADD_CREDIT_ENTRY_EVAL_REQUEST, AddCreditEntryEvalRequestCommand);
-			addCommand(CreditEvent.ADD_CREDIT_ENTRY_EVALUATING, AddCreditEntryEvaluatingCommand);
-			addCommand(CreditEvent.ADD_CREDIT_ENTRY_SUBTITLING, AddCreditEntrySubtitlingCommand);
-			addCommand(CreditEvent.ADD_CREDIT_ENTRY_UPLOADING, AddCreditEntryUploadingCommand);
+			
+			//Messages of the day management commands
+			addCommand(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, UnsignedMessageOfTheDayCommand);
+			addCommand(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, SignedMessageOfTheDayCommand);
 			
 			//Video history management commands
 			addCommand(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, VideoHistoryWatchCommand);
@@ -92,7 +80,6 @@ package control {
 
 			//User management commands
 			addCommand(UserEvent.GET_TOP_TEN_CREDITED, GetTopTenCreditedCommand);
-			addCommand(UserEvent.GET_USER_INFO, GetUserInfoCommand);
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 
 			//Search management commands
@@ -114,13 +101,10 @@ package control {
 			addCommand(UploadEvent.UPLOAD_BROWSE, UploadBrowseCommand);
 			addCommand(UploadEvent.UPLOAD_START, UploadStartCommand);
 			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
-			addCommand(UploadEvent.YOUTUBE_UPLOAD, YoutubeUploadCommand);
-			addCommand(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, YoutubeCheckStatusCommand);
 			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
 			addCommand(ExerciseEvent.ADD_WEBCAM_EXERCISE, AddWebcamExerciseCommand);
 
 			//Exercise management commands
-			addCommand(ExerciseEvent.ADD_EXERCISE, AddExerciseCommand);
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
 			addCommand(ExerciseEvent.GET_RECORDABLE_EXERCISES, GetRecordableExercisesCommand);
 			addCommand(ExerciseEvent.GET_EXERCISE_LOCALES, GetExerciseLocalesCommand);
@@ -138,7 +122,6 @@ package control {
 			addCommand(EvaluationEvent.ADD_ASSESSMENT, AddAssessmentCommand);
 			addCommand(EvaluationEvent.ADD_VIDEO_ASSESSMENT, AddVideoAssessmentCommand);
 			addCommand(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, DetailsOfAssessedResponseCommand);
-			addCommand(EvaluationEvent.UPDATE_RESPONSE_RATING_AMOUNT, UpdateResponseRatingAmountCommand);
 			addCommand(EvaluationEvent.GET_EVALUATION_CHART_DATA, GetEvaluationChartDataCommand);
 			
 			//Autoevaluation management commands
@@ -159,6 +142,7 @@ package control {
 			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);
 			
 			// Video stop after tab changing
 			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);

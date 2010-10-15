@@ -20,11 +20,14 @@ package commands.subtitles
 	import view.common.CustomAlert;
 	
 	import vo.CueObject;
+	import vo.ExerciseRoleVO;
 	import vo.SubtitleLineVO;
 
 	public class GetExerciseSubtitleLinesCommand implements ICommand, IResponder
 	{
 		private var cueManager:CuePointManager=CuePointManager.getInstance();
+
+		private var subtitleRoles:ArrayCollection=new ArrayCollection();
 
 		public function execute(event:CairngormEvent):void
 		{
@@ -32,11 +35,11 @@ package commands.subtitles
 		}
 
 		public function result(data:Object):void
-		{	
+		{
 			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
-			
-			var untouchedSubtitles:ArrayCollection = new ArrayCollection();
+
+			var untouchedSubtitles:ArrayCollection=new ArrayCollection();
 
 			if (result is Array)
 			{
@@ -48,14 +51,39 @@ package commands.subtitles
 					{
 						for (var i:int=0; i < resultCollection.length; i++)
 						{
-							var item:SubtitleLineVO = resultCollection.getItemAt(i) as SubtitleLineVO;
-							untouchedSubtitles.addItem(new CueObject(item.showTime,item.hideTime,item.text,item.exerciseRoleId,item.exerciseRoleName));
+							var item:SubtitleLineVO=resultCollection.getItemAt(i) as SubtitleLineVO;
+							generateRoleArray(item);
+							untouchedSubtitles.addItem(new CueObject(item.subtitleId, item.showTime, item.hideTime, item.text, item.exerciseRoleId, item.exerciseRoleName));
 							cueManager.addCueFromSubtitleLine(item);
 						}
 					}
 				}
-				DataModel.getInstance().unmodifiedAvailableSubtitleLines = untouchedSubtitles;
+				//Exercise Role bindings
+				DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBTITLE_MODULE);
+				DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.RECORDING_MODULE);
+				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
+				
+				
+				//Subtitle editor bindings
+				DataModel.getInstance().unmodifiedAvailableSubtitleLines=untouchedSubtitles;
 				DataModel.getInstance().availableSubtitleLinesRetrieved=true;
+			}
+		}
+
+		private function generateRoleArray(subtitleLine:SubtitleLineVO):void
+		{
+			var containsElement:Boolean = false;
+			var tempRole:ExerciseRoleVO=new ExerciseRoleVO(subtitleLine.exerciseRoleId, 0, subtitleLine.exerciseRoleName);
+			
+			for each(var roleItem:ExerciseRoleVO in subtitleRoles){
+				if(roleItem.id == tempRole.id){
+					containsElement=true;
+					break;
+				}
+			}
+			if (!containsElement)
+			{
+				subtitleRoles.addItem(tempRole);
 			}
 		}
 

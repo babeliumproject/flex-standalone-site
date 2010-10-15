@@ -26,13 +26,19 @@ package business
 		
 		public function getSubtitleLines(subtitle:SubtitleAndSubtitleLinesVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
-			var pendingCall:AsyncToken = service.getSubtitleLines(subtitle.exerciseId,subtitle.language);
+			var pendingCall:AsyncToken = service.getSubtitleLines(subtitle);
 			pendingCall.addResponder(responder);	
 		}
 		
 		public function getSubtitleLinesUsingId(subtitleId:int):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getSubtitleLinesUsingId(subtitleId);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function getExerciseSubtitles(subtitle:SubtitleAndSubtitleLinesVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
+			var pendingCall:AsyncToken = service.getExerciseSubtitles(subtitle.exerciseId);
 			pendingCall.addResponder(responder);
 		}
 		

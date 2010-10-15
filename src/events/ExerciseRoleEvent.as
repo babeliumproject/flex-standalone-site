@@ -10,9 +10,6 @@ package events
 	{
 		
 		public static const GET_EXERCISE_ROLES:String = "getExerciseRoles";
-		public static const DELETE_SINGLE_EXERCISE_ROL:String = "deleteSingleExerciseRol";
-		public static const DELETE_ALL_EXERCISE_ROLES:String = "deleteAllExerciseRoles";
-		public static const SAVE_EXERCISE_ROLES:String = "saveExerciseRoles";
 		
 		public var exerciseRoles:ExerciseRoleVO;
 

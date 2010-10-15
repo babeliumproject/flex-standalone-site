@@ -15,6 +15,8 @@ package commands.evaluation
 	
 	import view.common.CustomAlert;
 	
+	import vo.UserVO;
+	
 	public class AddVideoAssessmentCommand implements ICommand, IResponder
 	{
 		private var dataModel:DataModel = DataModel.getInstance();
@@ -26,12 +28,18 @@ package commands.evaluation
 		
 		public function result(data:Object):void
 		{
-			//We check if the insert went well by checking the last_insert_id value
-			if (!data.result is int){
-				CustomAlert.error("Your assessment couldn't be properly saved");
-			} else {
+			var result:Object=data.result;
+			if (!result is UserVO)
+			{
+				CustomAlert.error("Your assessment couldn't be properly saved.");
+			}
+			else
+			{
+				var userData:UserVO=result as UserVO;
+				dataModel.loggedUser.creditCount=userData.creditCount;
 				CustomAlert.info("Your assessment has been saved. Thanks for your collaboration.");
-				dataModel.addAssessmentRetrieved = !dataModel.addAssessmentRetrieved;
+				dataModel.addAssessmentRetrieved=!dataModel.addAssessmentRetrieved;
+				dataModel.creditUpdateRetrieved=true;
 			}
 		}
 		

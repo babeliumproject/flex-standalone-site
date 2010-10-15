@@ -24,6 +24,12 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		public function doLogout():void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("loginRO");
+			var pendingCall:AsyncToken = service.doLogout();
+			pendingCall.addResponder(responder);
+		}
+		
 		public function resendActivationEmail(data:UserVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("loginRO");
 			var pendingCall:AsyncToken = service.resendActivationEmail(data);

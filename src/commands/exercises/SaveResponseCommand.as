@@ -15,6 +15,8 @@ package commands.exercises
 	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
+	
+	import vo.ResponseVO;
 
 	public class SaveResponseCommand implements ICommand, IResponder
 	{
@@ -32,12 +34,11 @@ package commands.exercises
 			} else {
 				var responseId:int = data.result.toString();
 				//The response has been successfully saved, so we must store it's id in the model
-				DataModel.getInstance().historicData.videoResponseId = responseId;
 				DataModel.getInstance().savedResponseId = responseId;
 				DataModel.getInstance().savedResponseRetrieved = !DataModel.getInstance().savedResponseRetrieved;
 				
-				//Change the exercise viewstack to view the evaluation options
-				new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_EVALUATION_OPTIONS).dispatch();
+				var response:ResponseVO=new ResponseVO(responseId, 0, "", false, "", "", 0, "", 0, "", 0, 0);
+				new ResponseEvent(ResponseEvent.MAKE_RESPONSE_PUBLIC, response).dispatch();
 			}
 			
 		}

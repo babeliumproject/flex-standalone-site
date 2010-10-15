@@ -24,7 +24,7 @@
 				  selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
 				  resizeToContent="true"
 				  creationPolicy="all">
-		
+
 		<home:HomeMain id="homeModule"/>
 
 		<exercises:Exercises id="exerciseModule"/>
@@ -32,23 +32,23 @@
 		<evaluation:EvaluationContainer id="evaluationModule"/>
 
 		<userManagement:SignUpForm id="registerModule"/>
-		
+
 		<userManagement:AccountMain id="accountModule"/>
-		
+
 		<videoUpload:UploadContainer id="uploadModule"/>
-		
+
 		<subtitles:SubtitleMain id="subtitlingModule"/>
-		
+
 		<configuration:ConfigurationContainer id="configurationModule"/>
-		
+
 		<main:About id="aboutModule"/>
-		
+
 		<search:Search id="searchModule"/>
-		
+
 		<main:HelpFAQMain id="helpModule"/>
-		
+
 		<userManagement:AccountActivation id="accountActivation"/>
-		
+
 	</mx:ViewStack>
 
 	<mx:Script>

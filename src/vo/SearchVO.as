@@ -13,7 +13,6 @@ package vo
 		public var language:String;
 		public var source:String; //Youtube or Red5
 
-		public var userId:int;
 		public var userName:String;
 
 		public var thumbnailUri:String;

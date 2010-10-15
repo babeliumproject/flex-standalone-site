@@ -22,7 +22,7 @@ package commands.evaluation
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getResponsesWaitingAssessment((event as EvaluationEvent).userId);
+			new EvaluationDelegate(this).getResponsesWaitingAssessment();
 		}
 		
 		public function result(data:Object):void

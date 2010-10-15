@@ -6,7 +6,6 @@ package vo
    {
 	   public var id:int;
 	   public var responseId:int; //The resource that has been assessed
-	   public var userId:int; //Who assessed the response
 	   public var overallScore:uint;
 	   public var intonationScore:uint;
 	   public var fluencyScore:uint;
@@ -45,7 +44,6 @@ package vo
 	   public var responseCharacterName:String;
 	   public var responseRatingAmount:int;
 	   public var responseAddingDate:String;
-	   public var responseUserId:int;
 	   public var responseUserName:String;
 	   public var responseSubtitleId:int;
 	   

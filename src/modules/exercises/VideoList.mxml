@@ -5,9 +5,7 @@
 		 horizontalAlign="center"
 		 creationComplete="onComplete()"
 		 xmlns:exercises1="commands.exercises.*">
-	<mx:Metadata>
-        [ResourceBundle("myResources")]
-    </mx:Metadata>
+
 	<mx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;

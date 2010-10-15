@@ -6,7 +6,6 @@ package vo
 	public class UserVideoHistoryVO
 	{
 		public var id:int;
-		public var userId:int;
 		public var userSessionId:int;
 		public var exerciseId:int;
 		public var responseAttempt:Boolean;
@@ -16,10 +15,9 @@ package vo
 		public var subtitleId:int;
 		public var exerciseRoleId:int;
 
-		public function UserVideoHistoryVO(id:int=0, userId:int=0, userSessionId:int=0, exerciseId:int=0, responseAttempt:Boolean=false, responseId:int=0, incidenceDate:String='', subtitlesAreUsed:Boolean=false, subtitleId:int=0, exerciseRoleId:int=0)
+		public function UserVideoHistoryVO(id:int=0, userSessionId:int=0, exerciseId:int=0, responseAttempt:Boolean=false, responseId:int=0, incidenceDate:String='', subtitlesAreUsed:Boolean=false, subtitleId:int=0, exerciseRoleId:int=0)
 		{
 			this.id=id;
-			this.userId=userId;
 			this.userSessionId=userSessionId;
 			this.exerciseId=exerciseId;
 			this.responseAttempt=responseAttempt;

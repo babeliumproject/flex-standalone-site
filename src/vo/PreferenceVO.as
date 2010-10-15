@@ -5,6 +5,6 @@ package vo
 	[Bindable ] public class PreferenceVO
 	{
 			public var prefName:String;
-			public var prefValue:Number;
+			public var prefValue:String;
 	}
 }

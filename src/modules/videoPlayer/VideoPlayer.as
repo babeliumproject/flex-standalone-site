@@ -42,6 +42,7 @@ package modules.videoPlayer
 	import mx.binding.utils.BindingUtils;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
+	import mx.utils.ObjectUtil;
 
 	import view.common.CustomAlert;
 
@@ -174,6 +175,7 @@ package modules.videoPlayer
 		 */
 		public function set videoSource(location:String):void
 		{
+		
 			_videoSource=location;
 			_video.visible=true;
 
@@ -193,6 +195,7 @@ package modules.videoPlayer
 		 */
 		public function set streamSource(location:String):void
 		{
+		
 			_streamSource=location;
 		}
 
@@ -206,6 +209,7 @@ package modules.videoPlayer
 		 */
 		public function set autoPlay(tf:Boolean):void
 		{
+		
 			_autoPlay=tf;
 		}
 
@@ -219,6 +223,7 @@ package modules.videoPlayer
 		 */
 		public function set videoSmooting(tf:Boolean):void
 		{
+		
 			_autoPlay=_smooth;
 		}
 
@@ -232,6 +237,7 @@ package modules.videoPlayer
 		 */
 		public function set autoScale(flag:Boolean):void
 		{
+		
 			_autoScale=flag;
 		}
 
@@ -245,6 +251,7 @@ package modules.videoPlayer
 		 */
 		public function set seek(flag:Boolean):void
 		{
+		
 			if (flag)
 			{
 				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped);
@@ -261,6 +268,7 @@ package modules.videoPlayer
 
 		public function seekTo(time:Number):void
 		{
+		
 			this.onScrubberDragging(null);
 			_sBar.updateProgress(time, _duration);
 			this.onScrubberDropped(null);
@@ -271,23 +279,27 @@ package modules.videoPlayer
 		 **/
 		public function set controlsEnabled(flag:Boolean):void
 		{
+		
 			flag ? enableControls() : disableControls();
 
 		}
 
 		public function toggleControls():void
 		{
+		
 			(_ppBtn.enabled) ? disableControls() : enableControls();
 		}
 
 		public function enableControls():void
 		{
+		
 			_ppBtn.enabled=true;
 			_stopBtn.enabled=true;
 		}
 
 		public function disableControls():void
 		{
+		
 			_ppBtn.enabled=false;
 			_stopBtn.enabled=false;
 		}
@@ -297,6 +309,7 @@ package modules.videoPlayer
 		 */
 		protected function putSkinableComponent(name:String, cmp:SkinableComponent):void
 		{
+		
 			_skinableComponents[name]=cmp;
 		}
 
@@ -307,6 +320,7 @@ package modules.videoPlayer
 
 		public function setSkin(fileName:String):void
 		{
+		
 			skin=fileName;
 		}
 
@@ -323,7 +337,7 @@ package modules.videoPlayer
 		 */
 		public function set skin(name:String):void
 		{
-
+		
 			var fileName:String=SKIN_PATH + name + ".xml";
 
 			if (_loadingSkin)
@@ -344,6 +358,7 @@ package modules.videoPlayer
 		 */
 		public function onSkinFileReaded(e:Event):void
 		{
+		
 			var xml:XML=new XML(_skinLoader.data);
 
 			for each (var xChild:XML in xml.child("Component"))
@@ -376,6 +391,7 @@ package modules.videoPlayer
 
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
+		
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 
 			this.graphics.clear();
@@ -416,6 +432,7 @@ package modules.videoPlayer
 		 */
 		override public function set width(w:Number):void
 		{
+		
 			totalWidth=w;
 			_videoWidth=w - 2 * _defaultMargin;
 			this.updateDisplayList(0, 0); // repaint
@@ -423,6 +440,7 @@ package modules.videoPlayer
 
 		override public function set height(h:Number):void
 		{
+		
 			totalHeight=h;
 			_videoHeight=h - 2 * _defaultMargin;
 			this.updateDisplayList(0, 0); // repaint
@@ -433,11 +451,13 @@ package modules.videoPlayer
 		 */
 		protected function set totalWidth(w:Number):void
 		{
+		
 			super.width=w;
 		}
 
 		protected function set totalHeight(h:Number):void
 		{
+
 			super.height=h;
 		}
 
@@ -446,6 +466,7 @@ package modules.videoPlayer
 		 */
 		protected function drawBG():void
 		{
+
 			totalHeight=_defaultMargin * 2 + _videoHeight + _videoBarPanel.height;
 
 			_bg.graphics.clear();
@@ -463,14 +484,16 @@ package modules.videoPlayer
 		 */
 		private function onComplete(e:FlexEvent):void
 		{
+
 			//Establish a binding to listen the status of netConnection
 			BindingUtils.bindSetter(onStreamNetConnect, DataModel.getInstance(), "netConnected");
 
 			// Disable controls until streaming connection is made
-			disableControls();
+			//disableControls();
 
-			if (_streamSource)
-				connectToStreamingServer(_streamSource);
+			//if (_streamSource){
+			//	connectToStreamingServer(_streamSource);
+			//}
 
 			// Dispatch CREATION_COMPLETE event
 			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CREATION_COMPLETE));
@@ -481,6 +504,7 @@ package modules.videoPlayer
 
 		public function connectToStreamingServer(streamSource:String):void
 		{
+
 			if (!DataModel.getInstance().netConnection.connected)
 				new StartConnectionEvent(streamSource).dispatch();
 			else
@@ -489,6 +513,7 @@ package modules.videoPlayer
 
 		public function disconnectFromStreamingService():void
 		{
+
 			if (DataModel.getInstance().netConnection.connected)
 				new CloseConnectionEvent().dispatch();
 		}
@@ -498,9 +523,9 @@ package modules.videoPlayer
 		 */
 		private function onStreamNetConnect(value:Boolean):void
 		{
+
 			if (DataModel.getInstance().netConnected == true)
 			{
-
 				//Get the netConnection reference
 				_nc=DataModel.getInstance().netConnection;
 
@@ -601,13 +626,17 @@ package modules.videoPlayer
 
 			if (_videoSource != '')
 			{
-				try{
+				try
+				{
+					trace("NetStream Play: " + _videoSource);
 					_ns.play(_videoSource);
-				}catch (e:Error){
+				}
+				catch (e:Error)
+				{
 					trace("Error: Can't play. Not connected to the server");
 					return;
 				}
-				
+
 				_started=true;
 
 				if (_timer)
@@ -621,6 +650,7 @@ package modules.videoPlayer
 
 		public function stopVideo():void
 		{
+			
 			if (_ns)
 			{
 				_ns.pause();
@@ -632,6 +662,7 @@ package modules.videoPlayer
 
 		public function endVideo():void
 		{
+		
 			stopVideo();
 			if (_ns)
 				_ns.close();
@@ -641,20 +672,24 @@ package modules.videoPlayer
 
 		public function pauseVideo():void
 		{
+		
 			if (_ns)
 			{
 				_ns.pause();
 			}
+			_ppBtn.State=PlayButton.PLAY_STATE;
 		}
 
 		public function resumeVideo():void
 		{
+		
 			if (_ns)
 			{
 				_ns.seek(_currentTime);
 				_ns.resume();
 					//trace(_currentTime, _ns.time);
 			}
+			_ppBtn.State=PlayButton.PAUSE_STATE;
 		}
 
 
@@ -668,13 +703,13 @@ package modules.videoPlayer
 		 */
 		public function onMetaData(msg:Object):void
 		{
-			
+		
 			/*
-			trace("metadata: ");
+			   trace("metadata: ");
 
-			for (var a:* in msg)
-				trace(a + " : " + msg[a]);
-			*/
+			   for (var a:* in msg)
+			   trace(a + " : " + msg[a]);
+			 */
 
 			_duration=msg.duration;
 
@@ -697,9 +732,9 @@ package modules.videoPlayer
 		 */
 		public function onSourceChange(e:VideoPlayerEvent):void
 		{
-			trace("Video source has changed");
+			trace("Requested to play another video");
 			//trace(e.currentTarget);
-	
+
 			if (_ns)
 			{
 				playVideo();
@@ -715,6 +750,7 @@ package modules.videoPlayer
 		 */
 		protected function onPPBtnChanged(e:PlayPauseEvent):void
 		{
+			
 			if (_ppBtn.getState() == PlayButton.PAUSE_STATE)
 			{
 				if (_ns)
@@ -818,7 +854,7 @@ package modules.videoPlayer
 
 			_ns.soundTransform=new SoundTransform(e.volumeAmount);
 
-			trace(_ns.soundTransform.volume, e.volumeAmount);
+			//trace(_ns.soundTransform.volume, e.volumeAmount);
 		}
 
 		/**

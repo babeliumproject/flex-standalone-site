@@ -14,7 +14,7 @@ package modules.main
 	public class LocalizationComboBox extends IconComboBox
 	{
 		
-		private var _availableLocales:Array=DataModel.getInstance().localesAndFlags.availableLanguages;
+		private var _availableLocales:Array=DataModel.getInstance().localesAndFlags.availableI18n;
 		
 		public function LocalizationComboBox()
 		{
@@ -44,6 +44,7 @@ package modules.main
 		public function localeComboBoxChangeHandler(event:Event):void
 		{
 			var newLocale:String=String(this.selectedItem.code);
+			DataModel.getInstance().currentlyActiveLocale = newLocale;
 			if (resourceManager.getLocales().indexOf(newLocale) != -1)
 			{
 				switchLocale();
@@ -68,6 +69,7 @@ package modules.main
 			updateLocaleComboBox();
 			//Updating changes in DataModel, used in Search.mxml 
 			DataModel.getInstance().languageChanged=true;
+			DataModel.getInstance().currentlyActiveLocale=newLocale;
 		}
 		
 		private function localeCompareFunction(item1:Object, item2:Object):int

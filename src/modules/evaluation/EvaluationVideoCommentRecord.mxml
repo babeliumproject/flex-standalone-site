@@ -23,6 +23,10 @@
 			private function onComplete(event:FlexEvent):void{
 				
 			}
+			
+			public function set minimumCommentDuration(duration:uint):void{
+				videoRecorderPlayer.minimumVideoDuration = duration;
+			}
 
 			private function saveVideoComment():void
 			{

@@ -7,6 +7,7 @@
  */
 
 require_once 'PeriodicTaskDAO.php';
+
 $periodicTaskDAO = new PeriodicTaskDAO();
 $periodicTaskDAO->deleteAllUnreferenced();
 

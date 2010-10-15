@@ -6,7 +6,6 @@ package vo
 	{
 		public var id:int;
 		public var exerciseId:int;
-		public var userId:int;
 		public var reason:String;
 		public var reportDate:String;
 	}

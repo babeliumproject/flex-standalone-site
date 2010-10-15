@@ -4,10 +4,6 @@
 			 change="onSelectionChange(event)"
 			 itemRenderer="modules.subtitles.GridComboBoxItemRenderer">
 	
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-	
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.dataGridClasses.DataGridListData;
@@ -188,6 +184,8 @@
 
 				//We add a key listener so that we can push enter to processLogin
 				newRolePopUp.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+				
+				newRolePopUp.newrole.setFocus();
 			}
 
 			private function insertNewRole(event:Event):void

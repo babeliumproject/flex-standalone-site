@@ -16,6 +16,8 @@ package commands.subtitles
 	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
+	
+	import vo.UserVO;
 
 	public class SaveSubtitlesCommand implements ICommand, IResponder
 	{
@@ -24,27 +26,29 @@ package commands.subtitles
 		{
 			new SubtitleDelegate(this).saveSubtitles((event as SubtitleEvent).subtitle);
 		}
-		
+
 		public function result(data:Object):void
 		{
-			//We check if the insert went well by checking the last_insert_id value
-			if (!data.result is int){
-				CustomAlert.error("Your subtitles couldn't be saved properly");
-			} else {
-				// Add some credits to the user to award the colaboration
-				var loggedUser:int = DataModel.getInstance().loggedUser.id;
-				new CreditEvent(CreditEvent.ADD_CREDITS_FOR_SUBTITLING, loggedUser).dispatch();
-				//Notify the listeners that the subtitles have been saved
-				DataModel.getInstance().subtitleSaved = true;
+			var result:Object=data.result;
+			if (!result is UserVO)
+			{
+				CustomAlert.error("Your subtitles couldn't be properly saved.");
+			}
+			else
+			{
+				var userData:UserVO=result as UserVO;
+				DataModel.getInstance().loggedUser.creditCount=userData.creditCount;
+				DataModel.getInstance().subtitleSaved=true;
+				DataModel.getInstance().creditUpdateRetrieved=true;
 			}
 		}
-		
+
 		public function fault(info:Object):void
 		{
-			var faultEvent: FaultEvent = FaultEvent(info);
+			var faultEvent:FaultEvent=FaultEvent(info);
 			CustomAlert.error("Error while saving your subtitles. Try again later.");
 			trace(ObjectUtil.toString(info));
 		}
-		
+
 	}
 }

@@ -5,7 +5,6 @@ package vo
 	public class ResponseVO
 	{
 		public var id:int;
-		public var userId:int;
 		public var exerciseId:int;
 		public var fileIdentifier:String;
 		public var isPrivate:Boolean;
@@ -19,9 +18,8 @@ package vo
 		public var subtitleId:int;
 		
 		
-		public function ResponseVO(id:int, userId:int, exerciseId:int, fileIdentifier:String, isPrivate:Boolean, thumbnailUri:String, source:String, duration:int, addingDate:String, ratingAmount:int, characterName:String, transcriptionId:int, subtitleId:int){
+		public function ResponseVO(id:int, exerciseId:int, fileIdentifier:String, isPrivate:Boolean, thumbnailUri:String, source:String, duration:int, addingDate:String, ratingAmount:int, characterName:String, transcriptionId:int, subtitleId:int){
 			this.id = id;
-			this.userId = userId;
 			this.exerciseId = exerciseId;
 			this.fileIdentifier = fileIdentifier;
 			this.isPrivate = isPrivate;

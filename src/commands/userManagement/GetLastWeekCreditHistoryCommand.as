@@ -32,7 +32,7 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			new CreditsDelegate(this).getLastWeekCreditHistory((event as CreditEvent).userId);
+			new CreditsDelegate(this).getLastWeekCreditHistory();
 		}
 		
 		public function result(data:Object):void

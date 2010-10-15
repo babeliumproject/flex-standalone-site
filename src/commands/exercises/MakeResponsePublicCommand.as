@@ -16,6 +16,8 @@ package commands.exercises
 	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
+	
+	import vo.UserVO;
 
 	public class MakeResponsePublicCommand implements ICommand, IResponder
 	{
@@ -26,13 +28,17 @@ package commands.exercises
 		}
 		
 		public function result(data:Object):void {
-			//Process the returned data and call the required events
-			var successfulUpdate:Boolean = data.result as Boolean;
-			if(!successfulUpdate){
+			
+			var result:Object=data.result;
+			if (!result is UserVO)
+			{
 				CustomAlert.error("A problem occurred while trying to update your response.");
-			} else{
-				var userId:int = DataModel.getInstance().loggedUser.id;
-				new CreditEvent(CreditEvent.SUB_CREDITS_FOR_EVAL_REQUEST, userId).dispatch();
+			}
+			else
+			{
+				var userData:UserVO=result as UserVO;
+				DataModel.getInstance().loggedUser.creditCount=userData.creditCount;
+				DataModel.getInstance().creditUpdateRetrieved=true;
 			}
 		}
 

@@ -5,9 +5,9 @@
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-
+			
 			import modules.search.VideoPaginator;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Button;
 			import mx.events.ListEvent;
@@ -18,6 +18,11 @@
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
+			
+			public function set currentPaginationPage(value:uint):void{
+				_currentPage = value;
+				createPagination();
+			}
 
 			public function set dataProvider(assessedToCurrentUserData:ArrayCollection):void
 			{

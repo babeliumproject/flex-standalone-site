@@ -1,5 +1,9 @@
-#!/usr/bin/php -q
-<?php require_once 'ExerciseDAO.php';
-      $exerciseDAO = new ExerciseDAO();
-      $exerciseDAO->deactivateReportedVideos(); 
+
+<?php 
+
+require_once 'PeriodicTaskDAO.php';
+
+$periodicTask = new PeriodicTaskDAO();
+$periodicTask->deactivateReportedVideos(); 
+      
 ?>

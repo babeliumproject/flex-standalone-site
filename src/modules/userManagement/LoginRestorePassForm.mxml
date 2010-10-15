@@ -9,9 +9,6 @@
 						  resize="onWindowResize(event)"
 						  title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
 						  creationComplete="completeHandler()">
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
 
 	<mx:Script>
 		<![CDATA[

@@ -3,10 +3,6 @@
 						  xmlns:common="view.common.*"
 						  autoLayout="true">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-
 	<mx:Label id="errorInfo"
 			  fontFamily="Arial"
 			  fontSize="12"

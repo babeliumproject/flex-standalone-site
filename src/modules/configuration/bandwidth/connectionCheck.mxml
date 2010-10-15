@@ -7,10 +7,6 @@
 		 height="100%"
 		 creationComplete="onComplete()">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-
 	<mx:Script>
 		<![CDATA[
 			import flash.events.NetStatusEvent;

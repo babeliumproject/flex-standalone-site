@@ -6,6 +6,7 @@ package modules.subtitles
 	import control.BabeliaBrowserManager;
 	import control.CuePointManager;
 	
+	import events.ExerciseEvent;
 	import events.ExerciseRoleEvent;
 	import events.SubtitleEvent;
 	import events.ViewChangeEvent;
@@ -24,13 +25,17 @@ package modules.subtitles
 	import mx.collections.ArrayCollection;
 	import mx.containers.HBox;
 	import mx.containers.Panel;
+	import mx.containers.VBox;
 	import mx.controls.Alert;
 	import mx.controls.Button;
+	import mx.controls.ComboBox;
 	import mx.controls.DataGrid;
 	import mx.controls.Label;
+	import mx.controls.VRule;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
+	import mx.events.ListEvent;
 	
 	import view.common.CustomAlert;
 	import view.common.IconComboBox;
@@ -49,22 +54,23 @@ package modules.subtitles
 		/**
 		 * Singleton objects
 		 */
-		private var _dataModel:DataModel = DataModel.getInstance();
-		private var _cueManager:CuePointManager = CuePointManager.getInstance();
-		private var _browser:BabeliaBrowserManager = BabeliaBrowserManager.getInstance();
-		
+		private var _dataModel:DataModel=DataModel.getInstance();
+		private var _cueManager:CuePointManager=CuePointManager.getInstance();
+		private var _browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+
 		/**
 		 * Variables
 		 */
 		[Bindable]
-		private var videoPlayerReady:Boolean = false;
-		
-		[Bindable] public var videoPlaybackStartedState:int = VideoPlayer.PLAYBACK_STARTED_STATE;
-		
-		[Bindable] 
-		public var streamSource:String = DataModel.getInstance().streamingResourcesPath;
-		
-		private const EXERCISE_FOLDER:String = DataModel.getInstance().exerciseStreamsFolder;
+		private var videoPlayerReady:Boolean=false;
+
+		[Bindable]
+		public var videoPlaybackStartedState:int=VideoPlayer.PLAYBACK_STARTED_STATE;
+
+		[Bindable]
+		public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+
+		private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
 
 		private var exerciseFileName:String;
 		private var exerciseId:int;
@@ -80,27 +86,36 @@ package modules.subtitles
 
 		[Bindable]
 		public var subtitleStarted:Boolean=false;
-		
+
 		/**
 		 * Retrieved data holders
 		 */
 		[Bindable]
 		public var subtitleCollection:ArrayCollection;
 		[Bindable]
-		public var comboData:ArrayCollection = new ArrayCollection();
+		public var comboData:ArrayCollection=new ArrayCollection();
+
+		[Bindable]
+		public var availableSubtitleVersions:ArrayCollection = new ArrayCollection();
 
 		/**
 		 *  Visual components declaration
 		 */
 		[Bindable]
-		public var VPSubtitle:VideoPlayerBabelia = new VideoPlayerBabelia();
+		public var VPSubtitle:VideoPlayerBabelia=new VideoPlayerBabelia();
 		public var exerciseTitle:Label;
 
-		public var subtitleEditor:Panel;
 		[Bindable]
 		public var subtitleList:DataGrid=new DataGrid();
-	
 		
+		public var guestEditWarningBox:HBox;
+
+		public var subtitleVersionBox:VBox;
+		public var subtitleVersionSelector:ComboBox;
+		
+		public var saveSubtitleButton:Button;
+		public var saveSubtitleSeparator:VRule;
+
 		public function SubtitleEditorClass()
 		{
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
@@ -114,25 +129,29 @@ package modules.subtitles
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved");
 			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved");
 			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved");
+			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved");
 			BindingUtils.bindSetter(onTabChange, _dataModel, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, _dataModel, "isLoggedIn");
 
 			BindingUtils.bindSetter(onURLChange, _browser, "targetFragment");
-			
-			BindingUtils.bindProperty(subtitleEditor, "visible", _dataModel, "isLoggedIn");
+
+			BindingUtils.bindProperty(saveSubtitleButton, "enabled", _dataModel, "isLoggedIn");
+			BindingUtils.bindProperty(saveSubtitleButton, "includeInLayout", _dataModel, "isLoggedIn");
+			BindingUtils.bindProperty(saveSubtitleButton, "visible", _dataModel, "isLoggedIn");
+			BindingUtils.bindProperty(saveSubtitleSeparator, "visible", _dataModel, "isLoggedIn");
 
 		}
-		
-		public function setupVideoPlayer() : void
+
+		public function setupVideoPlayer():void
 		{
 			VPSubtitle.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
 			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
 			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
 		}
-		
-		public function onVideoPlayerReady(e:VideoPlayerEvent) : void
+
+		public function onVideoPlayerReady(e:VideoPlayerEvent):void
 		{
-			videoPlayerReady = true;
+			videoPlayerReady=true;
 			VPSubtitle.stopVideo();
 
 			onExerciseSelected(true);
@@ -147,28 +166,30 @@ package modules.subtitles
 				exerciseFileName=watchExercise.name;
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
-				exerciseTitle.text = watchExercise.title;
+				exerciseTitle.text=watchExercise.title;
 
 				prepareVideoPlayer();
 			}
 		}
-		
-		public function prepareVideoPlayer():void{
+
+		public function prepareVideoPlayer():void
+		{
 			VPSubtitle.stopVideo();
-			VPSubtitle.state = VideoPlayerBabelia.PLAY_STATE;
-			VPSubtitle.videoSource = EXERCISE_FOLDER+'/'+exerciseFileName;
+			VPSubtitle.state=VideoPlayerBabelia.PLAY_STATE;
+			VPSubtitle.videoSource=EXERCISE_FOLDER + '/' + exerciseFileName;
 			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			VPSubtitle.enableSubtitlingEndButton = false;
+			VPSubtitle.enableSubtitlingEndButton=false;
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
 		{
-			var label:String = "";
+			var label:String="";
 			for each (var dp:RoleComboDataVO in comboData)
 			{
-				if (dp.roleId == item.roleId){
-					label = dp.charName;
+				if (dp.roleId == item.roleId)
+				{
+					label=dp.charName;
 					break;
 				}
 			}
@@ -182,13 +203,41 @@ package modules.subtitles
 			{
 				DataModel.getInstance().availableSubtitleLinesRetrieved=false;
 				subtitleCollection=_cueManager.cuelist;
-				for each (var cueObj:CueObject in subtitleCollection){
+				if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length > 0)
+					setSelectedSubtitleVersion(DataModel.getInstance().unmodifiedAvailableSubtitleLines.getItemAt(0).subtitleId);
+				for each (var cueObj:CueObject in subtitleCollection)
+				{
 					cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VPSubtitle, subtitleList));
 					cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle, subtitleList));
 				}
 			}
 		}
-		
+
+		private function setSelectedSubtitleVersion(activeSubtitleId:int):void
+		{
+			if (availableSubtitleVersions.length > 1)
+			{
+				for each (var subtVer:Object in availableSubtitleVersions)
+				{
+					if (subtVer.id == activeSubtitleId)
+					{
+						subtitleVersionSelector.selectedItem=subtVer;
+						break;
+					}
+				}
+			}
+		}
+
+		private function onSubtitlesRetrieved(value:Boolean):void
+		{
+			if (DataModel.getInstance().availableSubtitles.length > 1)
+			{
+				subtitleVersionBox.includeInLayout=true;
+				subtitleVersionBox.visible=true;
+				availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
+			}
+		}
+
 		private function onRolesRetrieved(value:Boolean):void
 		{
 
@@ -196,29 +245,29 @@ package modules.subtitles
 			{
 				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.SUBTITLE_MODULE) as ArrayCollection;
 				var cData:ArrayCollection=new ArrayCollection;
-				var insertOption:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+				var insertOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 				cData.addItem(insertOption);
 				if (avrol.length > 0)
 				{
 					for each (var itemIns:ExerciseRoleVO in avrol)
 					{
-						var selectLine:RoleComboDataVO = new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+						var selectLine:RoleComboDataVO=new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 						cData.addItem(selectLine);
 					}
-					var deleteOption:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+					var deleteOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 					cData.addItem(deleteOption);
 					for each (var itemDel:ExerciseRoleVO in avrol)
 					{
-						var deleteLine:RoleComboDataVO = new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+						var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 						cData.addItem(deleteLine);
 					}
 					comboData.removeAll();
 					comboData=cData;
-					
+
 				}
 				else
 				{
-					var deleteOptionEmpty:RoleComboDataVO = new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+					var deleteOptionEmpty:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 					cData.addItem(deleteOptionEmpty);
 					comboData.removeAll();
 					comboData=cData;
@@ -229,11 +278,11 @@ package modules.subtitles
 
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
-			VPSubtitle.enableSubtitlingEndButton = true;
-			subtitleStartTime=e.time; 
-			startEntry=new CueObject(subtitleStartTime, subtitleStartTime + 0.5,'',0,'');
-			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry,VPSubtitle));
-			startEntry.setEndCommand(new ShowHideSubtitleCommand(null,VPSubtitle));
+			VPSubtitle.enableSubtitlingEndButton=true;
+			subtitleStartTime=e.time;
+			startEntry=new CueObject(0, subtitleStartTime, subtitleStartTime + 0.5, '', 0, '');
+			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry, VPSubtitle));
+			startEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
 
 			_cueManager.addCue(startEntry);
 
@@ -241,20 +290,20 @@ package modules.subtitles
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
 		{
-			VPSubtitle.enableSubtitlingEndButton = false;
+			VPSubtitle.enableSubtitlingEndButton=false;
 			if (subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;
-				endEntry=new CueObject(subtitleStartTime, subtitleEndTime, '',0,'');
-				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry,VPSubtitle));
-				endEntry.setEndCommand(new ShowHideSubtitleCommand(null,VPSubtitle));
+				endEntry=new CueObject(0, subtitleStartTime, subtitleEndTime, '', 0, '');
+				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry, VPSubtitle));
+				endEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
 				_cueManager.setCueAt(endEntry, _cueManager.getCueIndex(startEntry));
 			}
 		}
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			VPSubtitle.onSubtitlingEvent(new SubtitlingEvent( SubtitlingEvent.START ));
+			VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
 		}
 
 		public function subtitleRemoveHandler():void
@@ -266,7 +315,7 @@ package modules.subtitles
 				var indexToBeSelected:Number;
 				if (previouslySelectedIndex != 0 || subtitleList.rowCount != 1)
 					indexToBeSelected=previouslySelectedIndex - 1;
-		
+
 				_cueManager.removeCueAt(subtitleList.selectedIndex);
 				subtitleList.selectedIndex=indexToBeSelected;
 
@@ -314,17 +363,17 @@ package modules.subtitles
 		public function saveSubtitlesHandler():void
 		{
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
-			var subLines:ArrayCollection = new ArrayCollection();
+			var subLines:ArrayCollection=new ArrayCollection();
 			if (subtitleCollection.length > 0)
 			{
 				for each (var s:CueObject in subtitleCollection)
 				{
-					var subLine:SubtitleLineVO = new SubtitleLineVO(0,0,s.startTime,s.endTime,s.text,s.roleId)
+					var subLine:SubtitleLineVO=new SubtitleLineVO(0, 0, s.startTime, s.endTime, s.text, s.roleId)
 					for each (var dp:Object in comboData)
 					{
 						if (dp.roleId == subLine.exerciseRoleId)
 						{
-							subLine.exerciseRoleName = dp.charName;
+							subLine.exerciseRoleName=dp.charName;
 						}
 					}
 					subLines.addItem(subLine);
@@ -338,11 +387,10 @@ package modules.subtitles
 						var subtitleLines:Array=subLines.toArray();
 						var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO();
 						subtitles.exerciseId=currentExercise.id;
-						subtitles.userId=DataModel.getInstance().loggedUser.id;
 						subtitles.language=exerciseLanguage;
 						subtitles.subtitleLines=subtitleLines;
 						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)
-							subtitles.id=0;
+						subtitles.id=0;
 						//else
 						//	subtitles.id=DataModel.getInstance().availableSubtitleLines.getItemAt(0).subtitleId;
 
@@ -359,27 +407,31 @@ package modules.subtitles
 				}
 				else
 				{
-					CustomAlert.confirm((resourceManager.getString('myResources','WARNING_NOT_MODIFIED_SUBTITLES')),0x4,null,null,0x4);
+					CustomAlert.confirm((resourceManager.getString('myResources', 'WARNING_NOT_MODIFIED_SUBTITLES')), 0x4, null, null, 0x4);
 				}
 			}
 			else
 			{
-				CustomAlert.confirm((resourceManager.getString('myResources', 'WARNING_EMPTY_SUBTITLE')),0x4,null,null,0x4);
+				CustomAlert.confirm((resourceManager.getString('myResources', 'WARNING_EMPTY_SUBTITLE')), 0x4, null, null, 0x4);
 			}
 
 		}
 
 		private function subtitlesWereModified(compareSubject:ArrayCollection):Boolean
 		{
-			var modified:Boolean = false;
-			var unmodifiedSubtitlesLines:ArrayCollection = DataModel.getInstance().unmodifiedAvailableSubtitleLines;
+			var modified:Boolean=false;
+			var unmodifiedSubtitlesLines:ArrayCollection=DataModel.getInstance().unmodifiedAvailableSubtitleLines;
 			if (unmodifiedSubtitlesLines.length != compareSubject.length)
-				modified = true;
-			else{
-				var i:int;
-				for(i=0; i<unmodifiedSubtitlesLines.length; i++){
-					if(unmodifiedSubtitlesLines.getItemAt(i).text != compareSubject.getItemAt(i).text){
-						modified = true;
+				modified=true;
+			else
+			{
+				for (var i:int=0; i < unmodifiedSubtitlesLines.length; i++)
+				{
+					var unmodifiedItem:CueObject=unmodifiedSubtitlesLines.getItemAt(i) as CueObject;
+					var compareItem:SubtitleLineVO=compareSubject.getItemAt(i) as SubtitleLineVO;
+					if ((unmodifiedItem.text != compareItem.text) || (unmodifiedItem.startTime != compareItem.showTime) || (unmodifiedItem.endTime != compareItem.hideTime))
+					{
+						modified=true;
 						break;
 					}
 				}
@@ -415,16 +467,15 @@ package modules.subtitles
 			{
 				_cueManager.removeAllCue();
 				DataModel.getInstance().subtitleSaved=false;
-				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, 0, '', currentExercise.language);
-				var roles:ExerciseRoleVO = new ExerciseRoleVO();
-				roles.exerciseId = currentExercise.id;
-				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
+				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
+
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', '')).dispatch();
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
 			}
 
 		}
 
-		
+
 
 		public function lfRowNum(oItem:Object, iCol:int):String
 		{
@@ -434,68 +485,74 @@ package modules.subtitles
 
 		public function onTabChange(value:Boolean):void
 		{
-			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX){
-				if(videoPlayerReady) 
+			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+			{
+				if (videoPlayerReady)
 					VPSubtitle.endVideo();
 				VPSubtitle.setSubtitle(""); // Clear subtitles if any
-				VPSubtitle.videoSource = ""; // Reset video source
-				VPSubtitle.subtitlingControls = false;
+				VPSubtitle.videoSource=""; // Reset video source
 				VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				_cueManager.reset();
 			}
+			subtitleVersionBox.includeInLayout = false;
+			subtitleVersionBox.visible = false;
+			availableSubtitleVersions = new ArrayCollection();
+			comboData = new ArrayCollection();
 		}
 
 		public function onLogout(value:Boolean):void
 		{
 			if (DataModel.getInstance().isLoggedIn == false)
 			{
+				guestEditWarningBox.includeInLayout = true;
+				guestEditWarningBox.visible = true;
 				onTabChange(false);
+			} else {
+				guestEditWarningBox.includeInLayout = false;
+				guestEditWarningBox.visible = false;
 			}
 		}
-		
-		public function onURLChange(value:Object) : void
+
+		public function onURLChange(value:Object):void
 		{
-			if ( _browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX )
+			if (_browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
 				return;
-			
-			if ( value == null )
+
+			if (value == null)
 				return;
-			
-			var actionFragment:String = _browser.actionFragment;
-			
-			if ( actionFragment == BabeliaBrowserManager.VIEW
-					|| actionFragment == BabeliaBrowserManager.SUBTITLE )
+
+			var actionFragment:String=_browser.actionFragment;
+
+			if (actionFragment == BabeliaBrowserManager.SUBTITLE)
 			{
-				if ( _browser.targetFragment != '' )
+				if (_browser.targetFragment != '')
 				{
-					var tempEx:ExerciseVO = null;
-					var exercises:ArrayCollection = DataModel.getInstance().availableExercises;
-					
-					for ( var i:int = 0; i < exercises.length; i++ )
+					var tempEx:ExerciseVO=null;
+					var exercises:ArrayCollection=DataModel.getInstance().availableExercises;
+
+					for (var i:int=0; i < exercises.length; i++)
 					{
-						var tmp:ExerciseVO = exercises.getItemAt(i) as ExerciseVO;
-						if ( tmp.name == _browser.targetFragment )
+						var tmp:ExerciseVO=exercises.getItemAt(i) as ExerciseVO;
+						if (tmp.name == _browser.targetFragment)
 						{
-							tempEx = tmp;
+							tempEx=tmp;
 							break;
 						}
 					}
-					
-					if ( tempEx == null )
+
+					if (tempEx == null)
 					{
 						new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 						return;
 					}
 					else
-						exerciseFileName = tempEx.name;
+						exerciseFileName=tempEx.name;
+
+					var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, '', tmp.language);
 					
-					var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tmp.language);
-					var roles:ExerciseRoleVO=new ExerciseRoleVO();
-					roles.exerciseId=tempEx.id;
-					
-					//If it doesn't work this way, we can chain the events
-					new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
+					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, tempEx.id, '', '')).dispatch();
 					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+					new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();
 					DataModel.getInstance().currentExercise.setItemAt(tempEx, DataModel.SUBTITLE_MODULE);
 					DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, DataModel.SUBTITLE_MODULE);
 				}
@@ -506,14 +563,40 @@ package modules.subtitles
 				}
 			}
 		}
-		
-		public function updateURL(action:String, target:String) : void
+
+		public function updateURL(action:String, target:String):void
 		{
 			// Update URL
-			BabeliaBrowserManager.getInstance().updateURL(
-				BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX),
-				action,
-				target);
+			BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), action, target);
+		}
+
+		public function subtitleVersionComboLabelFunction(item:Object):String
+		{
+			return "[" + item.addingDate + "]  " + item.userName;
+		}
+
+		public function onSubtitleVersionChange(event:Event):void
+		{
+
+			var exerciseToWatch:ExerciseVO=new ExerciseVO();
+			exerciseToWatch.name=exerciseFileName;
+			exerciseToWatch.id=exerciseId;
+			exerciseToWatch.language=exerciseLanguage;
+			exerciseToWatch.title=exerciseTitle.text;
+
+			//Which subtitle version we want to retrieve
+			var subtitleId:int=subtitleVersionSelector.selectedItem.id;
+
+			//Set a flag that notices the currently selected label we're no longer dealing with the most recent subtitle.
+
+			//Request the specified subtitles and launch the same events as when we watch the latest ones.
+			var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(subtitleId, 0, '', exerciseLanguage);
+
+			CuePointManager.getInstance().reset();
+
+			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, exerciseId, '', '')).dispatch();
+			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+			new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, exerciseToWatch).dispatch();
 		}
 
 	}

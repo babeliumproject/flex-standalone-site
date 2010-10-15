@@ -10,9 +10,6 @@
 		 width="100%"
 		 creationComplete="onComplete()">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
@@ -410,7 +407,6 @@
 
 			private function statisticRecAttempt():void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 				var subtitleId:int=_cueManager.currentSubtitle;
 				var roleId:int=0;
@@ -422,7 +418,7 @@
 						break;
 					}
 				}
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, userId, 0, _exerciseId, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
+				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
@@ -617,34 +613,34 @@
 			private function onSaveResponse(e:Event):void
 			{
 
-				//First, we retrieve all of this response's data
-				var user:int=DataModel.getInstance().loggedUser.id;
+				var userCredCount:int=DataModel.getInstance().loggedUser.creditCount;
+				var credsEvalRequest:int=DataModel.getInstance().prefDic['evaluationRequestCredits'];
+				if (userCredCount - credsEvalRequest >= 0)
+				{
+					//This must be changed by some function that takes a snapshot of the Response video
+					var responseThumbnail:String="nothumb.png";
+					var subtitleId:int=_cueManager.currentSubtitle;
+					var responseData:ResponseVO=new ResponseVO(0, _exerciseId, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
 
-				//This must be changed by some function that takes a snapshot of the Response video
-				var responseThumbnail:String="nothumb.png";
-				var subtitleId:int=_cueManager.currentSubtitle;
-				var responseData:ResponseVO=new ResponseVO(0, user, _exerciseId, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
+					//Third, save response				
+					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 
-				//Second, we create an historic data container to store the info we have so far.
-				var creditChange:CreditHistoryVO=new CreditHistoryVO();
-				creditChange.videoExerciseId=_exerciseId;
-				DataModel.getInstance().historicData=creditChange;
+					// Close options
+					PopUpManager.removePopUp(_recordingEndOptions);
+					//showEvaluationRequest();
 
-				//Third, save response				
-				new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
-
-				// Close options
-				PopUpManager.removePopUp(_recordingEndOptions);
-				showEvaluationRequest();
-
-				// End record mode
-				DataModel.getInstance().recordingExercise=false;
-				resetComponent();
+					// End record mode
+					DataModel.getInstance().recordingExercise=false;
+					resetComponent();
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
+				}
 			}
 
 			private function set statisticRecSave(value:Boolean):void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 				var subtitleId:int=_cueManager.currentSubtitle;
 				var roleId:int=0;
@@ -657,7 +653,7 @@
 						break;
 					}
 				}
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, userId, 0, _exerciseId, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
+				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
 			}
 
@@ -667,30 +663,31 @@
 				if (DataModel.getInstance().isLoggedIn && _cueManagerReady && _rolesReady && _localesReady && _exerciseStartedPlaying)
 				{
 					_exerciseStartedPlaying=false;
-					var userId:int=DataModel.getInstance().loggedUser.id;
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 					var subtitleId:int=_cueManager.currentSubtitle;
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, userId, 0, _exerciseId, false, 0, '', subtitlesAreUsed, subtitleId, 0);
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, 0, '', subtitlesAreUsed, subtitleId, 0);
 					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
 				}
 			}
 
-			// Evaluation request
-			private function showEvaluationRequest():void
-			{
-				_evaluationRequest=EvaluationRequest(PopUpManager.createPopUp(parent, EvaluationRequest, true));
-				_evaluationRequest.title="Evaluation Request";
-				PopUpManager.centerPopUp(_evaluationRequest);
+			/*
+			   // Evaluation request
+			   private function showEvaluationRequest():void
+			   {
+			   _evaluationRequest=EvaluationRequest(PopUpManager.createPopUp(parent, EvaluationRequest, true));
+			   _evaluationRequest.title="Evaluation Request";
+			   PopUpManager.centerPopUp(_evaluationRequest);
 
-				_evaluationRequest.addEventListener(RecordingEndOptionEvent.CLOSE_REQUEST, onCloseRequest);
-			}
+			   _evaluationRequest.addEventListener(RecordingEndOptionEvent.CLOSE_REQUEST, onCloseRequest);
+			   }
 
-			// On close request
-			private function onCloseRequest(e:Event):void
-			{
-				// Close options
-				PopUpManager.removePopUp(_evaluationRequest);
-			}
+			   // On close request
+			   private function onCloseRequest(e:Event):void
+			   {
+			   // Close options
+			   PopUpManager.removePopUp(_evaluationRequest);
+			   }
+			 */
 
 
 			// On URL change
@@ -737,6 +734,20 @@
 					}
 				}
 			}
+
+			public function set onLogout(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == false)
+				{
+					guestEditWarningBox.includeInLayout=true;
+					guestEditWarningBox.visible=true;
+				}
+				else
+				{
+					guestEditWarningBox.includeInLayout=false;
+					guestEditWarningBox.visible=false;
+				}
+			}
 		]]>
 	</mx:Script>
 
@@ -752,6 +763,8 @@
 				destination="statisticRecSave"/>
 	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
+	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onLogout"/>
 	
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%"
@@ -760,8 +773,8 @@
 				  styleName="sectionTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
-
-
+	
+	
 	<mx:HBox id="videoPlayerAndRecordingControls"
 			 width="100%"
 			 horizontalAlign="center"
@@ -771,8 +784,8 @@
 			 paddingTop="16"
 			 paddingLeft="16"
 			 paddingRight="16">
-
-
+		
+		
 		<!-- Video Player -->
 		<mx:VBox>
 			<mx:Label id="exerciseTitle"
@@ -797,21 +810,29 @@
 												 width="100%"/>
 		</mx:VBox>
 		<mx:Spacer width="20"/>
-
+		
+		<mx:HBox id="guestEditWarningBox"
+				 verticalAlign="middle">
+			<mx:Image source="@Embed(source='resources/images/alertConfirmation.png')"/>
+			<mx:Label id="notLoggedWarning"
+					  styleName="guestVersionWarningLabel"
+					  text="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"/>
+		</mx:HBox>
+		
 		<!-- Selected Exercise Panel -->
 		<mx:Panel id="panelSelectedExercise"
 				  width="100%"
 				  layout="vertical"
 				  paddingTop="10"
 				  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
-
+			
 			<mx:HBox>
 				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
 				<mx:ComboBox id="availableRoles"
 							 dataProvider="{_characterNames}"
 							 enabled="{!DataModel.getInstance().recordingExercise}"/>
 			</mx:HBox>
-
+			
 			<mx:HBox>
 				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
 				<common:LanguageComboBox id="availableLocales"
@@ -834,21 +855,21 @@
 									label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 				</mx:VBox>
 			</mx:HBox>
-
+			
 			<mx:HBox horizontalAlign="right" width="100%">
 				<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
 						   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
 						   &amp;&amp; !DataModel.getInstance().recordingExercise}"
 						   click="onStartRecordingClicked(event)"/>
 			</mx:HBox>
-
+			
 		</mx:Panel>
-
+		
 	</mx:HBox>
-
-
+	
+	
 	<!-- Video List -->
 	<exercises:VideoList width="100%"
 						 id="exerciseList"/>
-
+	
 </mx:VBox>

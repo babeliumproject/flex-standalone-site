@@ -7,10 +7,6 @@
 						  creationComplete="creationCompleteHandler()"
 						  title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-
 	<mx:Script>
 
 		<![CDATA[

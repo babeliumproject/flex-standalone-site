@@ -7,6 +7,7 @@
  */
 
 require_once 'PeriodicTaskDAO.php';
+
 $periodicTaskDAO = new PeriodicTaskDAO();
 
 //Removes the users that haven't activated their account for the period of time given as a parameter.

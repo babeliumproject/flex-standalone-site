@@ -239,7 +239,6 @@
 						red5VideoData.tags=parseTags(videoTags.text);
 						red5VideoData.language=languageSelector.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
-						red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
 						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 						red5VideoData.reference=referenceUrl.text;
@@ -283,7 +282,6 @@
 			   uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_UPLOADFINISHED');
 			   checkStatusTimer.stop();
 			   DataModel.getInstance().youtubeProcessingComplete=false;
-			   youtubeVideoData.userId=DataModel.getInstance().loggedUser.id;
 			   youtubeVideoData.source="Youtube";
 
 			   _arrUploadFiles.pop();
@@ -352,7 +350,6 @@
 					red5VideoData.tags=parseTags(videoTags.text);
 					red5VideoData.language=languageSelector.selectedItem.code;
 					red5VideoData.name=recFromWebcamBox.recordingFileName;
-					red5VideoData.userId=DataModel.getInstance().loggedUser.id;
 
 					red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 					red5VideoData.reference=referenceUrl.text;
@@ -477,7 +474,6 @@
 				var requestData:EvaluationVO=new EvaluationVO();
 				requestData.exerciseId=exerciseId;
 				requestData.transcriptionSystem=transcSystemSelector.transcriptionSystemComboBox.selectedItem.data;
-				requestData.userId=DataModel.getInstance().loggedUser.id;
 				new EvaluationEvent(EvaluationEvent.ENABLE_TRANSCRIPTION_TO_EXERCISE, requestData).dispatch();
 			}
 

@@ -68,14 +68,11 @@
 			{
 				rating.value=_exerciseRating;
 				addTagLinkButtons();
-				var userId:int=DataModel.getInstance().loggedUser.id;
 
 				var score:ExerciseScoreVO=new ExerciseScoreVO();
 				var report:ExerciseReportVO=new ExerciseReportVO();
 				score.exerciseId=_exercise.id;
-				score.userId=userId;
 				report.exerciseId=_exercise.id;
-				report.userId=userId;
 
 				new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
 				new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
@@ -124,7 +121,6 @@
 				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
 				{
 					var score:ExerciseScoreVO=new ExerciseScoreVO();
-					score.userId=DataModel.getInstance().loggedUser.id;
 					score.suggestedScore=rating.selectedValue;
 					score.exerciseId=_exercise.id;
 					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();

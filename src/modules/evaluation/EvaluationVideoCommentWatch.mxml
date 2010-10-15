@@ -26,8 +26,8 @@
 			[Bindable]
 			private var _videoPlayerReady:Boolean=false;
 			
-			public static function set videoSource(source:String):void{
-				_commentSource = source;
+			public function set videoSource(source:String):void{
+				VideoCommentVP.videoSource = source;
 			}
 
 			private function onComplete():void
@@ -38,28 +38,29 @@
 
 			private function setupVideoPlayer():void
 			{
-				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+				VideoCommentVP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
 			}
 
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
 			{
 				_videoPlayerReady=true;
-				VP.stopVideo();
-				VP.state = VideoPlayerBabelia.PLAY_STATE;
-				VP.videoSource=_commentSource;
+				VideoCommentVP.stopVideo();
+				VideoCommentVP.state = VideoPlayerBabelia.PLAY_STATE;
+				VideoCommentVP.videoSource=_commentSource;
+				VideoCommentVP.controlsEnabled = true;
 			}
 
 			private function closeButtonClickHandler(event:Event):void
 			{
-				VP.stopVideo();
-				VP.endVideo();
+				VideoCommentVP.stopVideo();
+				VideoCommentVP.endVideo();
 				PopUpManager.removePopUp(this);
 			}
 		]]>
 	</mx:Script>
 
 	<mx:VBox id="videoPlayerBox">
-		<videoPlayer:VideoPlayerBabelia id="VP"
+		<videoPlayer:VideoPlayerBabelia id="VideoCommentVP"
 										autoPlay="true"
 										skin="white"
 										seek="true"
@@ -68,9 +69,9 @@
 										arrows="false"
 										subtitlingControls="false"
 										width="400"
-										height="{Math.floor(VP.width * 10 / 16)}"
+										height="{Math.floor(VideoCommentVP.width * 10 / 16)}"
 										streamSource="{_streamSource}"
-										controlsEnabled="{_videoPlayerReady}"/>
+										controlsEnabled="true"/>
 	</mx:VBox>
 	<mx:Spacer width="20"/>
 	<common:CloseButton click="closeButtonClickHandler(event)"/>

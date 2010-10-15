@@ -268,6 +268,7 @@ package modules.videoPlayer
 		// remove arrows from panel
 		public function removeArrows():void
 		{
+
 			_arrowPanel.removeArrows();
 			_sBar.removeMarks();
 		}
@@ -336,6 +337,7 @@ package modules.videoPlayer
 		 **/
 		public function muteVideo(flag:Boolean):void
 		{
+
 			_audioSlider.muted=flag;
 
 		/*if ( flag )
@@ -366,6 +368,7 @@ package modules.videoPlayer
 		 **/
 		public function set secondSource(source:String):void
 		{
+			trace("Second video added to player stage")
 			if (state != PLAY_BOTH_STATE)
 				return;
 
@@ -401,6 +404,7 @@ package modules.videoPlayer
 
 		private function netSecurityError(e:SecurityErrorEvent):void
 		{
+			
 			//Avoid debug messages
 		}
 
@@ -431,6 +435,7 @@ package modules.videoPlayer
 
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
+			
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 
 			_arrowContainer.width=_videoBarPanel.width;
@@ -521,6 +526,7 @@ package modules.videoPlayer
 
 		override protected function drawBG():void
 		{
+			
 			/**
 			 * Recalculate total height
 			 */
@@ -546,6 +552,7 @@ package modules.videoPlayer
 		 */
 		override public function playVideo():void
 		{
+			
 			super.playVideo();
 
 			if (!_cuePointTimer)
@@ -575,6 +582,7 @@ package modules.videoPlayer
 		 */
 		override public function pauseVideo():void
 		{
+			
 			super.pauseVideo();
 
 			if (_roleTalkingPanel.talking)
@@ -594,6 +602,7 @@ package modules.videoPlayer
 		 */
 		override public function resumeVideo():void
 		{
+			
 			super.resumeVideo();
 
 			if (_roleTalkingPanel.talking)
@@ -613,6 +622,7 @@ package modules.videoPlayer
 		 */
 		override public function stopVideo():void
 		{
+			
 			super.stopVideo();
 
 			if (_roleTalkingPanel.talking)
@@ -635,6 +645,7 @@ package modules.videoPlayer
 
 		override public function endVideo():void
 		{
+			
 			super.endVideo();
 
 			if (state == PLAY_BOTH_STATE && _inNs != null)
@@ -650,6 +661,7 @@ package modules.videoPlayer
 		 **/
 		override protected function onScrubberDropped(e:Event):void
 		{
+			
 			super.onScrubberDropped(e);
 
 			this.setSubtitle("");
@@ -661,6 +673,7 @@ package modules.videoPlayer
 		 */
 		private function onSubtitleButtonClicked(e:SubtitleButtonEvent):void
 		{
+			
 			if (e.state == SubtitleButton.SUBTITLES_ENABLED)
 				doShowSubtitlePanel();
 			else
@@ -672,6 +685,7 @@ package modules.videoPlayer
 		 */
 		private function doShowSubtitlePanel():void
 		{
+			
 			_subtitlePanel.visible=true;
 			var a1:AnimateProperty=new AnimateProperty();
 			a1.target=_subtitlePanel;
@@ -709,6 +723,7 @@ package modules.videoPlayer
 		 */
 		private function doHideSubtitlePanel():void
 		{
+	
 			var a1:AnimateProperty=new AnimateProperty();
 			a1.target=_subtitlePanel;
 			a1.property="alpha";
@@ -741,6 +756,7 @@ package modules.videoPlayer
 
 		private function onHideSubtitleBar(e:Event):void
 		{
+		
 			_subtitlePanel.visible=false;
 			this.drawBG(); // Repaint bg
 		}
@@ -754,6 +770,7 @@ package modules.videoPlayer
 		 */
 		public function onSubtitlingEvent(e:SubtitlingEvent):void
 		{
+		
 			var time:Number=_ns != null ? _ns.time : 0;
 
 			this.dispatchEvent(new SubtitlingEvent(e.type, time - SUBTILE_INSERT_DELAY));
@@ -766,6 +783,7 @@ package modules.videoPlayer
 		 */
 		private function switchPerspective():void
 		{
+	
 			switch (_state)
 			{
 				case RECORD_BOTH_STATE:
@@ -806,6 +824,7 @@ package modules.videoPlayer
 		// Prepare countdown timer
 		private function startCountdown():void
 		{
+		
 			_countdown=new Timer(1000, COUNTDOWN_TIMER_SECS)
 			_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
 			_countdown.start();
@@ -814,6 +833,7 @@ package modules.videoPlayer
 		// On Countdown tick
 		private function onCountdownTick(tick:TimerEvent):void
 		{
+	
 			if (_countdown.currentCount == _countdown.repeatCount)
 			{
 				_countdownTxt.visible=false;
@@ -839,6 +859,7 @@ package modules.videoPlayer
 		 */
 		private function prepareDevices():void
 		{
+	
 			//The devices are permitted and initialized. Time to configure them
 			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || (state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
 			{
@@ -859,6 +880,7 @@ package modules.videoPlayer
 
 		private function configureDevices():void
 		{
+		
 			if (state == RECORD_BOTH_STATE)
 			{
 				_camera=DataModel.getInstance().camera;
@@ -880,6 +902,7 @@ package modules.videoPlayer
 
 		public function micActivityHandler(event:ActivityEvent):void
 		{
+	
 			//The mic has received an input louder than the 0% volume, so there's a mic working correctly.
 			if (event.activating)
 			{
@@ -891,6 +914,7 @@ package modules.videoPlayer
 
 		private function privacyBoxClosed(event:Event):void
 		{
+		
 			PopUpManager.removePopUp(privacyRights);
 			_micCamEnabled=DataModel.getInstance().micCamAllowed;
 			if (state == RECORD_MIC_STATE)
@@ -912,6 +936,7 @@ package modules.videoPlayer
 		// splits panel into a 2 different views
 		private function prepareRecording():void
 		{
+			
 			// Disable seek
 			seek=false;
 			_mic.setLoopBack(false);
@@ -947,6 +972,7 @@ package modules.videoPlayer
 		 */
 		private function startRecording():void
 		{
+		
 			if (!(state & RECORD_FLAG))
 				return; // security check
 
@@ -973,7 +999,7 @@ package modules.videoPlayer
 
 			_outNs.publish(responseFilename, "record");
 
-			trace("Started recording of " + _fileName);
+			trace("Recording of " + _fileName + " file has started");
 
 			//TODO: new feature - enableControls();
 		}
@@ -984,6 +1010,7 @@ package modules.videoPlayer
 		 */
 		private function splitVideoPanel():void
 		{
+		
 			if (!(state & SPLIT_FLAG))
 				return; // security check
 
@@ -1017,7 +1044,7 @@ package modules.videoPlayer
 
 			updateDisplayList(0, 0); // repaint
 
-			trace("The video panel has been splitted");
+			//trace("The video panel has been splitted");
 		}
 
 		/**
@@ -1025,6 +1052,7 @@ package modules.videoPlayer
 		 */
 		private function recoverVideoPanel():void
 		{
+		
 			// NOTE: problems with _videoWrapper.width
 			if (_lastVideoHeight > _videoHeight)
 				_videoHeight=_lastVideoHeight;
@@ -1034,12 +1062,13 @@ package modules.videoPlayer
 			_camVideo.visible=false;
 			_micActivityBar.visible=false;
 
-			trace("The video panel recovered its original size");
+			//trace("The video panel recovered its original size");
 		}
 
 		// Aux: scaling cam image
 		private function scaleCamVideo(w:Number, h:Number):void
 		{
+		
 			var scaleY:Number=h / _defaultCamHeight;
 			var scaleX:Number=w / _defaultCamWidth;
 			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
@@ -1061,6 +1090,7 @@ package modules.videoPlayer
 
 		override protected function scaleVideo():void
 		{
+	
 			super.scaleVideo();
 			if (state & SPLIT_FLAG)
 			{
@@ -1091,6 +1121,7 @@ package modules.videoPlayer
 
 		override protected function resetAppearance():void
 		{
+		
 			super.resetAppearance();
 
 			if (state & SPLIT_FLAG)
@@ -1107,6 +1138,7 @@ package modules.videoPlayer
 		 **/
 		override protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
+			
 			super.onVideoFinishedPlaying(e);
 
 			if (state & RECORD_FLAG)
@@ -1132,6 +1164,7 @@ package modules.videoPlayer
 		 **/
 		private function playSecondStream():void
 		{
+		
 			if (_inNs != null)
 				_inNs.close();
 
@@ -1190,12 +1223,11 @@ package modules.videoPlayer
 
 		private function onSecondStreamNetStream(event:NetStatusEvent):void
 		{
-
 			var info:Object=event.info;
 			switch (info.code)
 			{
 				case "NetStream.Buffer.Empty":
-					trace("Second NetStream Status: " + info.code);
+					//trace("Second NetStream Status: " + info.code);
 					if (secondStreamState == SECONDSTREAM_STOPPED_STATE)
 					{
 						secondStreamState=SECONDSTREAM_FINISHED_STATE;
@@ -1205,62 +1237,45 @@ package modules.videoPlayer
 						secondStreamState=SECONDSTREAM_BUFFERING_STATE;
 					break;
 				case "NetStream.Buffer.Full":
-					trace("Second NetStream Status: " + info.code);
 					if (secondStreamState == SECONDSTREAM_READY_STATE)
 						playbackState=SECONDSTREAM_STARTED_STATE;
 					break;
 				case "NetStream.Buffer.Flush":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Publish.Start":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Publish.Idle":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Unpublish.Success":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Play.Start":
-					trace("Second NetStream Status: " + info.code);
 					secondStreamState=SECONDSTREAM_READY_STATE;
 					break;
 				case "NetStream.Play.Stop":
-					trace("Second NetStream Status: " + info.code);
 					secondStreamState=SECONDSTREAM_STOPPED_STATE;
 					break;
 				case "NetStream.Play.Reset":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Play.PublishNotify":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Play.UnpublishNotify":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Pause.Notify":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Unpause.Notify":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Record.Start":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Record.Stop":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Seek.Notify":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Connect.Closed":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				case "NetStream.Connect.Success":
-					trace("Second NetStream Status: " + info.code);
 					break;
 				default:
-					trace("Second NetStream Error: " + info.code);
+					//trace("Second NetStream Error: " + info.code);
 					//CustomAlert.error("Error while transferring data from the streaming server. Please try again later.");
 					break;
 			}

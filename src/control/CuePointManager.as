@@ -252,7 +252,7 @@ package control
 
 		public function addCueFromSubtitleLine(subline:SubtitleLineVO):void
 		{
-			var cueObj:CueObject=new CueObject(subline.showTime, subline.hideTime, subline.text, subline.exerciseRoleId, subline.exerciseRoleName);
+			var cueObj:CueObject=new CueObject(subline.subtitleId, subline.showTime, subline.hideTime, subline.text, subline.exerciseRoleId, subline.exerciseRoleName);
 			this.addCue(cueObj);
 		}
 

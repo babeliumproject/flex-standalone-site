@@ -5,6 +5,7 @@ package vo
 	[Bindable]
 	public class CueObject
 	{
+		public var subtitleId:uint;
 		public var startTime:Number;
 		public var endTime:Number;
 		public var roleId:int;
@@ -15,8 +16,9 @@ package vo
 		private var endCommand:ICommand;
 
 
-		public function CueObject(startTime:Number, endTime:Number=-1, text:String=null, roleId:int=0, role:String=null, startCommand:ICommand=null, endCommand:ICommand=null)
+		public function CueObject(subtitleId:uint, startTime:Number, endTime:Number=-1, text:String=null, roleId:int=0, role:String=null, startCommand:ICommand=null, endCommand:ICommand=null)
 		{
+			this.subtitleId=subtitleId;
 			this.startTime=startTime;
 			this.endTime=endTime;
 			this.text=text;

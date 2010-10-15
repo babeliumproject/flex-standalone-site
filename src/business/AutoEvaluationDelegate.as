@@ -25,9 +25,8 @@ package business {
 		public function enableTranscriptionToExercise(requestData:EvaluationVO):void {
 			var exerciseId:int = requestData.exerciseId;
 			var transcriptionSystem:String = requestData.transcriptionSystem;
-			var userId:int = requestData.userId;
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("autoevaluationRO");
-			var pendingCall:AsyncToken = service.enableTranscriptionToExercise(exerciseId, transcriptionSystem.toLowerCase(), userId);
+			var pendingCall:AsyncToken = service.enableTranscriptionToExercise(exerciseId, transcriptionSystem.toLowerCase());
 			pendingCall.addResponder(responder);
 		}
 		

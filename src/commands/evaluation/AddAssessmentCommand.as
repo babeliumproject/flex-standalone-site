@@ -15,26 +15,35 @@ package commands.evaluation
 	
 	import view.common.CustomAlert;
 	
+	import vo.UserVO;
+
 	public class AddAssessmentCommand implements ICommand, IResponder
 	{
-		private var dataModel:DataModel = DataModel.getInstance();
-		
+		private var dataModel:DataModel=DataModel.getInstance();
+
 		public function execute(event:CairngormEvent):void
 		{
 			new EvaluationDelegate(this).addAssessment((event as EvaluationEvent).evaluation);
 		}
-		
+
 		public function result(data:Object):void
 		{
-			//We check if the insert went well by checking the last_insert_id value
-			if (!data.result is int){
-				CustomAlert.error("Your assessment couldn't be properly saved");
-			} else {
+
+			var result:Object=data.result;
+			if (!result is UserVO)
+			{
+				CustomAlert.error("Your assessment couldn't be properly saved.");
+			}
+			else
+			{
+				var userData:UserVO=result as UserVO;
+				dataModel.loggedUser.creditCount=userData.creditCount;
 				CustomAlert.info("Your assessment has been saved. Thanks for your collaboration.");
-				dataModel.addAssessmentRetrieved = !dataModel.addAssessmentRetrieved;
+				dataModel.addAssessmentRetrieved=!dataModel.addAssessmentRetrieved;
+				dataModel.creditUpdateRetrieved=true;
 			}
 		}
-		
+
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));

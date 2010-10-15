@@ -35,10 +35,9 @@ package commands.videoUpload
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ALERT_SUCCESSFUL_FILE_UPLOAD_RED5'));
 				//Add this to the DataModel
 				var exerciseId:int = int(data.result);
-				var userId:int = DataModel.getInstance().loggedUser.id;
+		
 				
 				var tempCreditHistory:CreditHistoryVO = new CreditHistoryVO();
-				tempCreditHistory.userId = userId;
 				tempCreditHistory.videoExerciseId = exerciseId;
 				
 				DataModel.getInstance().historicData = tempCreditHistory;

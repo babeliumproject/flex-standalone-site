@@ -24,9 +24,11 @@
 			private function onComplete():void
 			{
 				refreshTableData(null);
+				/* Disabled for now. May be useful when more others come up
 				tableRefreshTimer = new Timer(120000,0);
 				tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
 				tableRefreshTimer.start();
+				*/
 			}
 			
 			private function refreshTableData(event:TimerEvent):void{

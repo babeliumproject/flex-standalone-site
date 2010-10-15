@@ -5,10 +5,6 @@
 		 creationComplete="onComplete()"
 		 cornerRadius="4">
 
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
-
 	<mx:Script>
 
 		<![CDATA[
@@ -33,10 +29,10 @@
 			 *  Constants
 			 */
 			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
-			private const MAXIMUM_VIDEO_DURATION:int=DataModel.getInstance().maxExerciseDuration; //seconds
-			private const MINIMUM_VIDEO_DURATION:int=DataModel.getInstance().minExerciseDuration; //seconds
-			private const DEFAULT_VIDEO_WIDTH:int=DataModel.getInstance().cameraWidth; //pixels
-			private const DEFAULT_VIDEO_HEIGHT:int=DataModel.getInstance().cameraHeight; //pixels
+			private var _maximumVideoDuration:int=DataModel.getInstance().maxExerciseDuration; //seconds
+			private var _minimumVideoDuration:int=DataModel.getInstance().minExerciseDuration; //seconds
+			private var _defaultVideoWidth:int=DataModel.getInstance().cameraWidth; //pixels
+			private var _defaultVideoHeight:int=DataModel.getInstance().cameraHeight; //pixels
 
 			/**
 			 *  Variable definition
@@ -57,9 +53,9 @@
 
 			private var video:Video;
 			[Bindable]
-			private var _videoHeight:int=DEFAULT_VIDEO_HEIGHT;
+			private var _videoHeight:int=_defaultVideoHeight;
 			[Bindable]
-			private var _videoWidth:int=DEFAULT_VIDEO_WIDTH;
+			private var _videoWidth:int=_defaultVideoWidth;
 
 			private var _camera:Camera;
 			private var _mic:Microphone;
@@ -145,6 +141,10 @@
 				 */
 
 				disconnnectStreams();
+			}
+			
+			public function set minimumVideoDuration(duration:uint):void{
+				_minimumVideoDuration = duration;
 			}
 
 			public function set streamsFolder(folder:String):void
@@ -393,7 +393,6 @@
 						videoHolder.addChild(_countdownTxt);
 						video.visible=false;
 						_countdownTxt.visible=true;
-						trace("All added you should see video");
 					}
 					if (_mic != null)
 					{
@@ -420,7 +419,7 @@
 
 			private function startRecordCountDown():void
 			{
-				_recordCountDown=new Timer(1000, MAXIMUM_VIDEO_DURATION);
+				_recordCountDown=new Timer(1000, _maximumVideoDuration);
 				_recordCountDown.addEventListener(TimerEvent.TIMER, onRecordCountDownTick);
 				_recordCountDown.start();
 			}
@@ -428,8 +427,8 @@
 			private function onRecordCountDownTick(tick:TimerEvent):void
 			{
 
-				recordCountdown.text=_timeFormatter.format(MAXIMUM_VIDEO_DURATION - _recordCountDown.currentCount);
-				if (_recordCountDown.currentCount >= MINIMUM_VIDEO_DURATION)
+				recordCountdown.text=_timeFormatter.format(_maximumVideoDuration - _recordCountDown.currentCount);
+				if (_recordCountDown.currentCount >= _minimumVideoDuration)
 				{
 					recStopButton.enabled=true;
 				}

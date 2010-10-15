@@ -6,9 +6,7 @@
 		  paddingTop="8"
 		  xmlns:ns1="modules.userManagement.*"
 		  xmlns:common="view.common.*">
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
+
 	<mx:Script>
 		<![CDATA[
 			import view.common.CustomAlert;
@@ -59,37 +57,33 @@
 
 			private function todayClickHandler():void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var initDate:Date = lineChartContainer.chartMaximum;
 				var prevDate:Date = new Date(initDate.time - MILLISECONDS_DAY);
 				lineChartContainer.chartMinimum = prevDate;
 				lineChartContainer.labelUnits = "hours";
-				new CreditEvent(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY, userId).dispatch();
+				new CreditEvent(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY).dispatch();
 			}
 
 			private function lastWeekClickHandler():void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var initDate:Date = lineChartContainer.chartMaximum;
 				var prevDate:Date = new Date(initDate.time - 7*MILLISECONDS_DAY);
 				lineChartContainer.chartMinimum = prevDate;
 				lineChartContainer.labelUnits = "days";
-				new CreditEvent(CreditEvent.GET_LAST_WEEK_CREDIT_HISTORY, userId).dispatch();
+				new CreditEvent(CreditEvent.GET_LAST_WEEK_CREDIT_HISTORY).dispatch();
 			}
 
 			private function lastMonthClickHandler():void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var initDate:Date = lineChartContainer.chartMaximum;
 				var prevDate:Date = new Date(initDate.setMonth(initDate.month - 1));
 				lineChartContainer.chartMinimum = prevDate;
 				lineChartContainer.labelUnits = "days";
-				new CreditEvent(CreditEvent.GET_LAST_MONTH_CREDIT_HISTORY, userId).dispatch();
+				new CreditEvent(CreditEvent.GET_LAST_MONTH_CREDIT_HISTORY).dispatch();
 			}
 
 			private function allTimeClickHandler():void
 			{
-				var userId:int=DataModel.getInstance().loggedUser.id;
 				var initDate:Date = lineChartContainer.chartMaximum;
 				
 				var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
@@ -103,7 +97,7 @@
 				lineChartContainer.chartMinimum = prevDate;
 				lineChartContainer.labelUnits = "months";
 				
-				new CreditEvent(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, userId).dispatch();
+				new CreditEvent(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY).dispatch();
 			}
 
 			public function exerciseNameClickHandler():void

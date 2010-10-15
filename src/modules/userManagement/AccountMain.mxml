@@ -4,9 +4,7 @@
 		 paddingRight="8"
 		 paddingBottom="8"
 		 xmlns:userManagement="modules.userManagement.*">
-	<mx:Metadata>
-		[ResourceBundle("myResources")]
-	</mx:Metadata>
+
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;

@@ -273,14 +273,15 @@
 			{
 				var temp:Object=data;
 				var tempEx:ExerciseVO=temp as ExerciseVO;
-				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, 0, '', tempEx.language);
+				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, '', tempEx.language);
 				var roles:ExerciseRoleVO=new ExerciseRoleVO();
 				roles.exerciseId=tempEx.id;
 
 				CuePointManager.getInstance().reset();
 
 				//If it doesn't work this way, we can chain the events
-				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
+				//new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
 				new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();
 			}

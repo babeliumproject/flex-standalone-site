@@ -20,13 +20,6 @@ package business
 		{
 			this.responder=responder;
 		}
-
-		public function addExercise(local:ExerciseVO, youtube:ExerciseVO):void
-		{
-			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.addExercise(local, youtube);
-			pendingCall.addResponder(responder);
-		}
 		
 		public function addUnprocessedExercise(exercise:ExerciseVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");

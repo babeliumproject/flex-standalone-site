@@ -27,6 +27,7 @@ package model
 		public static var instance:DataModel = new DataModel();
 		
 		public var localesAndFlags:LocalesAndFlags;
+		public var currentlyActiveLocale:String = 'en_US';
 		
 		[Bindable] public static var SUBTITLE_MODULE:int = 0;
 		[Bindable] public static var RECORDING_MODULE:int = 1;
@@ -36,10 +37,10 @@ package model
 		[Bindable] public var netConnectionDelegate:NetConnectionDelegate;
 		[Bindable] public var netConnection:NetConnection;
 		[Bindable] public var netConnected:Boolean;
+		[Bindable] public var netConnectOngoingAttempt:Boolean;
 		
 		//ViewStack management variables
 		[Bindable] public var currentContentViewStackIndex:int;
-		
 		[Bindable] public var currentHomeViewStackIndex:int;
 		[Bindable] public var currentConfigViewStackIndex:int;
 		[Bindable] public var currentExerciseViewStackIndex:int;
@@ -152,6 +153,10 @@ package model
 		
 		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
+		//Message of the day related data
+		[Bindable] public var messagesOfTheDayRetrieved:Boolean;
+		[Bindable] public var messagesOfTheDayData:ArrayCollection = new ArrayCollection();
+		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;
 		[Bindable] public var subtitleSaved:Boolean = false;
@@ -166,6 +171,8 @@ package model
 		[Bindable] public var availableExerciseRolesRetrieved:ArrayCollection = new ArrayCollection(new Array(false, false));
 		
 		//Used to store subtitle-lines and roles in the same DP
+		[Bindable] public var availableSubtitles:ArrayCollection = new ArrayCollection();
+		[Bindable] public var availableSubtitlesRetrieved:Boolean = false;
 		[Bindable] public var availableSubtitleLinesRetrieved: Boolean = false;
 		[Bindable] public var availableSubtitleLines:ArrayCollection = new ArrayCollection();
 		[Bindable] public var unmodifiedAvailableSubtitleLines:ArrayCollection = new ArrayCollection();
@@ -226,6 +233,7 @@ package model
 		
 		[Bindable] public var minExerciseDuration:uint = 15; //seconds
 		[Bindable] public var maxExerciseDuration:uint = 120; //seconds
+		[Bindable] public var minVideoEvalDuration:uint = 5; //seconds
 		[Bindable] public var maxFileSize:uint = 188743680; //Bytes (180MB)
 		
 		// Checks for exercise rating and reporting
