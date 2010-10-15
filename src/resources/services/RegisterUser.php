@@ -1,14 +1,15 @@
 <?php
 
-require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
+require_once 'utils/Datasource.php';
 require_once 'utils/EmailAddressValidator.php';
+require_once 'utils/Mailer.php';
+require_once 'utils/SessionHandler.php';
 
 require_once 'vo/NewUserVO.php';
 require_once 'vo/UserVO.php';
 
 
-require_once 'Mailer.php';
 
 class RegisterUser{
 
@@ -17,6 +18,7 @@ class RegisterUser{
 
 	public function RegisterUser(){
 		try{
+			$verifySession = new SessionHandler();
 			$this->settings = new Config();
 			$this->conn = new Datasource($this->settings->host, $this->settings->db_name, $this->settings->db_username, $this->settings->db_password);
 		} catch (Exception $e){
@@ -80,7 +82,7 @@ class RegisterUser{
 	}
 
 	//The parameter should be an array of UserLanguageVO
-	public function addUserLanguages($languages, $userId) {
+	private function addUserLanguages($languages, $userId) {
 
 
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='positives_to_next_level' )";
@@ -131,7 +133,7 @@ class RegisterUser{
 	}
 
 
-	public function _create() {
+	private function _create() {
 		$data = func_get_args();
 		$user = array_shift($data); // remove User VO
 
@@ -245,7 +247,7 @@ class RegisterUser{
 		throw new Exception("Unexpected error while trying to retrieve preference data");
 	}
 
-	public function _databaseUpdate() {
+	private function _databaseUpdate() {
 		$result = $this->conn->_execute ( func_get_args() );
 
 		return $result;

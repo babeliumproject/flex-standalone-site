@@ -2,49 +2,98 @@
 
 require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
+require_once 'utils/Mailer.php';
+
 require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
 require_once 'vo/LoginVO.php';
-require_once 'Mailer.php';
+
+
 
 class LoginDAO{
 
 	private $conn;
 
 	public function LoginDAO(){
-		$settings = new Config();
-		$this->conn = new DataSource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		try {
+			$verifySession = new SessionHandler();
+			$settings = new Config();
+			$this->conn = new DataSource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}
 	}
 
-	public function getUserInfo($username){
+	public function processLogin(LoginVO $user){
+		//Check if the given username exists
+		if($this->getUserInfo($user->name)==false){
+			return "wrong_user";
+		} else {
+			//Check whether the user is active or not
+			$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
+			$result = $this->_singleQuery($sql, $user->name);
+			if ( $result )
+			return "inactive_user";
+			//Check if the user provided correct authentication data
+			$sql = "SELECT id, name, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
+			$result = $this->_singleQuery($sql, $user->name, $user->pass);
+			if($result){
+				$userId = $result->id;
+				$userLanguages = $this->_getUserLanguages($userId);
+				$this->_startUserSession($userId);
+
+				$filteredResult = new UserVO();
+				$filteredResult->name = $result->name;
+				$filteredResult->creditCount = $result->creditCount;
+				$filteredResult->joiningDate = $result->joiningDate;
+				$filteredResult->isAdmin = $result->isAdmin;
+				$filteredResult->userLanguages = $userLanguages;
+
+				return $filteredResult;
+			} else {
+				return "wrong_password";
+			}
+		}
+	}
+
+	private function getUserInfo($username){
 		if (!$username)
 		{
 			return false;
 		}
 
-		$sql = "SELECT id, name, email, creditCount FROM users WHERE (name = '%s') ";
+		$sql = "SELECT id, name, creditCount FROM users WHERE (name = '%s') ";
 
 		return $this->_singleQuery($sql, $username);
 	}
 
-	public function processLogin(LoginVO $user){
-		if($this->getUserInfo($user->name)==false){
-			return "wrong_user";
-		} else {
-			$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
-			$result = $this->_singleQuery($sql, $user->name);
-			if ( $result )
-			return "inactive_user";
-			$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
-			$result = $this->_singleQuery($sql, $user->name, $user->pass);
-			if($result){
-				$userId = $result->id;
-				$result->userLanguages = $this->_getUserLanguages($userId);
-				$this->_startUserSession($userId);
-				return $result;
-			} else {
-				return "wrong_password";
-			}
+	private function _singleQuery(){
+		$valueObject = new UserVO();
+		$result = $this->conn->_execute(func_get_args());
+
+		$row = $this->conn->_nextRow($result);
+		if ($row)
+		{
+			$valueObject->id = $row[0];
+			$valueObject->name = $row[1];
+			$valueObject->creditCount = $row[2];
+			$valueObject->joiningDate = $row[3];
+			$valueObject->isAdmin = $row[4] == 1;
+		}
+		else
+		{
+			return false;
+		}
+		return $valueObject;
+	}
+
+	public function doLogout(){
+		try {
+			$verifySession = new SessionHandler(true);
+			$this->_resetSessionData();
+			return true;
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
 		}
 	}
 
@@ -86,58 +135,6 @@ class LoginDAO{
 
 	}
 
-	private function _startUserSession($userId){
-
-		//Initialize session
-		session_start();
-		$sessionId = session_id();
-
-		//Check that there's not another active session for this user
-		$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";
-		$result = $this->conn->_execute ( $sql, $sessionId, $userId );
-		$row = $this->conn->_nextRow($result);
-		if(!$row){
-			//Generate a new session id and remove previous data (if any)
-			session_regenerate_id(true);
-			$sessionId = session_id();
-
-			$sql = "INSERT INTO user_session (fk_user_id, session_id, session_date, duration, keep_alive)
-					VALUES ('%d', '%s', now(), 0, 1)";
-			$result = $this->_create($sql, $userId, $sessionId);
-		}
-	}
-
-	private function _getUserLanguages($userId){
-		$sql = "SELECT language, level, positives_to_next_level
-				FROM user_languages WHERE (fk_user_id='%d')";
-		return $this->_listUserLanguagesQuery($sql, $userId);
-	}
-
-	//Returns a single User object
-	private function _singleQuery(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->id = $row[0];
-			$valueObject->name = $row[1];
-			$valueObject->email = $row[2];
-			$valueObject->creditCount = $row[3];
-			$valueObject->realName = $row[4];
-			$valueObject->realSurname = $row[5];
-			$valueObject->active = $row[6];
-			$valueObject->joiningDate = $row[7];
-			$valueObject->isAdmin = $row[8] == 1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
-	}
-
 	private function _singleQueryInactiveUser(){
 		$valueObject = new UserVO();
 		$result = $this->conn->_execute(func_get_args());
@@ -153,6 +150,41 @@ class LoginDAO{
 		return $valueObject;
 	}
 
+	private function _startUserSession($userId){
+
+		$this->_setSessionData($userId);
+
+		$sql = "INSERT INTO user_session (fk_user_id, session_id, session_date, duration, keep_alive)
+				VALUES ('%d', '%s', now(), 0, 1)";
+		return $this->_create($sql, $_SESSION['uid'], session_id());
+	}
+
+	private function _setSessionData($userId){
+		//We are changing the privilege level, so we generate a new session id
+		session_regenerate_id();
+		$_SESSION['logged'] = true;
+		$_SESSION['uid'] = $userId;
+		$_SESSION['user-agent-hash'] = sha1($_SERVER['HTTP_USER_AGENT']);
+		$_SESSION['user-addr'] = $_SERVER['REMOTE_ADDR'];
+	}
+
+	private function _resetSessionData(){
+		//We are changing the privilege level, so first we generate a new session id
+		session_regenerate_id();
+		$_SESSION['logged'] = false;
+		$_SESSION['uid'] = 0;
+		$_SESSION['user-agent-hash'] = '';
+		$_SESSION['user-addr'] = 0;
+	}
+
+	private function _getUserLanguages($userId){
+		$sql = "SELECT language, level, positives_to_next_level, purpose
+				FROM user_languages WHERE (fk_user_id='%d')";
+		return $this->_listUserLanguagesQuery($sql, $userId);
+	}
+
+
+
 	private function _listUserLanguagesQuery(){
 		$searchResults = array();
 
@@ -162,6 +194,7 @@ class LoginDAO{
 			$temp->language = $row[0];
 			$temp->level = $row[1];
 			$temp->positivesToNextLevel = $row[2];
+			$temp->purpose = $row[3];
 
 			array_push($searchResults, $temp);
 		}

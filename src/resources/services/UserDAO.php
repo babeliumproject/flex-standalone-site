@@ -19,84 +19,64 @@ class UserDAO {
 
 	public function UserDAO(){
 		$settings = new Config();
-		$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		try {
+			$verifySession = new SessionHandler();
+			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}
 	}
 
 	public function getTopTenCredited()
 	{
-		$sql = "SELECT id, name, email, creditCount FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
+		$sql = "SELECT name, creditCount FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
 
 		$searchResults = $this->_listQuery($sql);
 
 		return (count($searchResults))? $searchResults : false ;
 	}
 
-	public function getUserInfo($userId){
-		if (!$userId)
-		{
-			return false;
-		}
+	public function keepAlive(){
 
-		$sql = "SELECT id, name, email, creditCount, realName, realSurname, active, joiningDate, isAdmin FROM users WHERE (id = %d) ";
+		try {
+			$verifySession = new SessionHandler(true);
 
-		return $this->_singleQuery($sql, $userId);
-	}
-	
-	public function keepAlive($userId){
-		
-		session_start();
-		$sessionId = session_id();
-		
-		//Check that there's not another active session for this user
-		$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";
-		$result = $this->conn->_execute ( $sql, $sessionId, $userId );
-		$row = $this->conn->_nextRow($result);
-		if($row){
-			$sql = "UPDATE user_session SET keep_alive = 1 WHERE fk_user_id = '%d' AND closed=0";
-		
-			return $this->_databaseUpdate($sql, $userId);
+			$sessionId = session_id();
+
+			//Check that there's not another active session for this user
+			$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";
+			$result = $this->conn->_execute ( $sql, $sessionId, $_SESSION['uid'] );
+			$row = $this->conn->_nextRow($result);
+			if($row){
+				$sql = "UPDATE user_session SET keep_alive = 1 WHERE fk_user_id = '%d' AND closed=0";
+
+				return $this->_databaseUpdate($sql, $_SESSION['uid']);
+			}
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
 		}
 	}
 
-	//Returns a single User object
-	private function _singleQuery($sql, $userId){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute($sql, $userId);
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->id = $row[0];
-			$valueObject->name = $row[1];
-			$valueObject->email = $row[2];
-			$valueObject->creditCount = $row[3];
-			$valueObject->realName = $row[4];
-			$valueObject->realSurname = $row[5];
-			$valueObject->active = $row[6];
-			$valueObject->joiningDate = $row[7];
-			$valueObject->isAdmin = $row[8]==1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
-	}
-	
-	public function changePass($userId, $oldpass, $newpass)
+	public function changePass($oldpass, $newpass)
 	{
-		$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
-		$result = $this->conn->_execute($sql, $userId, $oldpass);
-		$row = $this->conn->_nextRow($result);
-		if (!$row)
+		try {
+			$verifySession = new SessionHandler(true);
+
+			$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
+			$result = $this->conn->_execute($sql, $_SESSION['uid'], $oldpass);
+			$row = $this->conn->_nextRow($result);
+			if (!$row)
 			return false;
 
-		$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
-		$result = $this->conn->_execute($sql, $newpass, $userId, $oldpass);
-		
-		return true;
+			$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
+			$result = $this->conn->_execute($sql, $newpass, $_SESSION['uid'], $oldpass);
+
+			return true;
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}
 	}
-	
+
 	public function restorePass($username)
 	{
 		$id = -1;
@@ -108,7 +88,7 @@ class UserDAO {
 
 		$aux = "name";
 		if ( Mailer::checkEmail($username) )
-			$aux = "email";
+		$aux = "email";
 
 		// Username or email checking
 		$sql = "SELECT id, name, email, realName FROM users WHERE $aux = '%s'";
@@ -124,16 +104,16 @@ class UserDAO {
 		}
 
 		if ( $realName == '' || $realName == 'unknown' ) $realName = $user;
-		
+
 		// User dont exists
 		if ( $id == -1 ) return "Unregistered user";
 
 		$newPassword = $this->_createNewPassword();
-		
+
 		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
 		$result = $this->conn->_execute($sql, sha1($newPassword), $id);
 
-		
+
 		$args = array(
 						'REAL_NAME' => $realName,
 						'USERNAME' => $user,
@@ -147,28 +127,21 @@ class UserDAO {
 		$subject = "Your password has been reseted";
 
 		$mail->send($mail->txtContent, $subject, $mail->htmlContent);
-		
+
 		return "Done";
 	}
-	
+
 	// Returns an array of Users
-	private function _listQuery($sql)
+	private function _listQuery()
 	{
 		$searchResults = array();
-		$result = $this->conn->_execute($sql);
+		$result = $this->conn->_execute(func_get_args());
 
 		while ($row = $this->conn->_nextRow($result))
 		{
 			$temp = new UserVO();
-			$temp->id = $row[0];
-			$temp->name = $row[1];
-			$temp->email = $row[2];
-			$temp->creditCount = $row[3];
-			$temp->realName = $row[4];
-			$temp->realSurname = $row[5];
-			$temp->active = $row[6];
-			$temp->joiningDate = $row[7];
-			$temp->isAdmin = $row[8]==1;
+			$temp->name = $row[0];
+			$temp->creditCount = $row[1];
 			array_push($searchResults, $temp);
 		}
 
@@ -183,14 +156,14 @@ class UserDAO {
 
 		// Generate password
 		for ( $i = 0; $i < $length; $i++ )
-			$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
+		$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $pass;
 	}
-	
+
 	private function _databaseUpdate() {
 		$result = $this->conn->_execute ( func_get_args() );
-		
+
 		return $result;
 	}
 

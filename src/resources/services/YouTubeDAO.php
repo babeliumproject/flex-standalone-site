@@ -1,9 +1,11 @@
 <?php
 
+require_once 'utils/Config.php';
+
+require_once 'vo/ExerciseVO.php';
+
 require_once 'Zend/Loader.php';
 
-require_once 'utils/Config.php';
-require_once 'vo/ExerciseVO.php';
 
 class YouTubeDAO {
 	
