@@ -4,6 +4,8 @@ require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
 
+require_once 'vo/MotdVO.php';
+
 class MessageOfTheDayDAO{
 
 	private $conn;
@@ -45,7 +47,7 @@ class MessageOfTheDayDAO{
 		$result = $this->conn->_execute ( func_get_args() );
 
 		while ( $row = $this->conn->_nextRow($result)){
-			$temp = new stdClass();
+			$temp = new MotdVO();
 			$temp->title = $row[0];
 			$temp->message = $row[1];
 			$temp->code = $row[2];

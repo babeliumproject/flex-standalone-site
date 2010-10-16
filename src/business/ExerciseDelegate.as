@@ -58,9 +58,9 @@ package business
 		}
 		
 		//Methods for retrieving different exercise lists that have to do with the subtitling process
-		public function getExercisesWithoutSubtitles(userId:uint):void{
+		public function getExercisesWithoutSubtitles():void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken = service.getExercisesWithoutSubtitles(userId);
+			var pendingCall:AsyncToken = service.getExercisesWithoutSubtitles();
 			pendingCall.addResponder(responder);
 		}
 		

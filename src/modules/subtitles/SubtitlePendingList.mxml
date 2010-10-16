@@ -33,7 +33,6 @@
 			private var _refreshTimer:Timer;
 
 			private var _exerciseId:uint;
-			private var _userId:uint;
 
 			[Bindable]
 			private var _exercisesWithoutSubtitlesList:ArrayCollection;
@@ -54,12 +53,10 @@
 
 				if (dataModel.isLoggedIn)
 				{
-					_userId=dataModel.loggedUser.id;
-					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, _userId).dispatch();
+					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES).dispatch();
 				}
 				else
 				{
-					_userId=0;
 					_exercisesWithoutSubtitlesList=new ArrayCollection();
 					createPagination();
 				}

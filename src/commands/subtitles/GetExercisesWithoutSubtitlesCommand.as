@@ -26,7 +26,7 @@ package commands.subtitles
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseDelegate(this).getExercisesWithoutSubtitles((event as SubtitleListEvent).userId);
+			new ExerciseDelegate(this).getExercisesWithoutSubtitles();
 		}
 		
 		public function result(data:Object):void

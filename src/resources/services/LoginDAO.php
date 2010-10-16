@@ -1,8 +1,10 @@
 <?php
 
-require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
+require_once 'utils/Datasource.php';
 require_once 'utils/Mailer.php';
+require_once 'utils/SessionHandler.php';
+
 
 require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
@@ -24,7 +26,7 @@ class LoginDAO{
 		}
 	}
 
-	public function processLogin(LoginVO $user){
+	public function processLogin($user){
 		//Check if the given username exists
 		if($this->getUserInfo($user->name)==false){
 			return "wrong_user";

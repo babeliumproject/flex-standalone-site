@@ -372,9 +372,8 @@
 					if (DataModel.getInstance().isLoggedIn)
 					{
 						ratingShareReport.exerciseData=tmp;
-						showSelectedExercise();
 					}
-
+					showSelectedExercise();
 					prepareExercise();
 					resetCueManager();
 				}
@@ -741,11 +740,15 @@
 				{
 					guestEditWarningBox.includeInLayout=true;
 					guestEditWarningBox.visible=true;
+					panelSelectedExercise.includeInLayout = false;
+					panelSelectedExercise.visible = false;
 				}
 				else
 				{
 					guestEditWarningBox.includeInLayout=false;
 					guestEditWarningBox.visible=false;
+					panelSelectedExercise.includeInLayout=true;
+					panelSelectedExercise.visible=true;
 				}
 			}
 		]]>
@@ -821,6 +824,8 @@
 		
 		<!-- Selected Exercise Panel -->
 		<mx:Panel id="panelSelectedExercise"
+				  includeInLayout="false"
+				  visible="false"
 				  width="100%"
 				  layout="vertical"
 				  paddingTop="10"

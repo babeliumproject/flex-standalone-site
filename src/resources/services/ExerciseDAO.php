@@ -38,7 +38,7 @@ class ExerciseDAO {
 		}
 	}
 
-	public function addUnprocessedExercise(ExerciseVO $exercise) {
+	public function addUnprocessedExercise($exercise) {
 
 		try {
 			$verifySession = new SessionHandler(true);
@@ -64,12 +64,12 @@ class ExerciseDAO {
 
 	}
 
-	public function addWebcamExercise(ExerciseVO $exercise) {
+	public function addWebcamExercise($exercise) {
 
 		try {
 
 			$verifySession = new SessionHandler(true);
-			
+				
 			$result = 0;
 
 			set_time_limit(0);
@@ -81,7 +81,7 @@ class ExerciseDAO {
 			$exerciseLevel = new ExerciseLevelVO();
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-				
+
 			$this->conn->_startTransaction();
 
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
@@ -89,19 +89,19 @@ class ExerciseDAO {
 
 			$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 			$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
-				
+
 			if(!$lastExerciseId){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise save failed.");
 			}
-				
+
 			$exerciseLevel->exerciseId = $lastExerciseId;
 			$insertLevel = $this->addExerciseLevel($exerciseLevel);
 			if(!$insertLevel){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise level save failed.");
 			}
-				
+
 			//Update the user's credit count
 			$creditUpdate = $this->_addCreditsForUploading();
 			if(!$creditUpdate){
@@ -115,12 +115,12 @@ class ExerciseDAO {
 				$this->conn->_failedTransaction();
 				throw new Exception("Credit history update failed");
 			}
-				
+
 			if($lastExerciseId && $insertLevel && $creditUpdate && $creditHistoryInsert){
 				$this->conn->_endTransaction();
 				$result = $this->_getUserInfo();
 			}
-				
+
 			return $result;
 
 		} catch (Exception $e) {
@@ -128,19 +128,19 @@ class ExerciseDAO {
 		}
 	}
 
-	private function addExerciseLevel(ExerciseLevelVO $exerciseLevel){
+	private function addExerciseLevel($exerciseLevel){
 		$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level, suggest_date)
 						 VALUES ('%d', '%d', '%d', NOW()) ";
 		return $this->_create($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
 	}
-	
+
 	private function _addCreditsForUploading() {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
 				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
 		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
 	}
-	
+
 	private function _addUploadingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='uploadExerciseCredits' )";
 		$result = $this->conn->_execute ( $sql );
@@ -239,6 +239,30 @@ class ExerciseDAO {
 		return $searchResults;
 	}
 
+	public function getExercisesWithoutSubtitles(){
+		try {
+			$verifySession = new SessionHandler(true);
+			
+			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+       					   e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
+					FROM exercise e 
+					 	 INNER JOIN users u ON e.fk_user_id= u.ID
+	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			 	 	 WHERE e.status = 'Available' AND 
+					 	   	   e.id NOT IN (SELECT fk_exercise_id FROM subtitle) AND
+					 	   	   e.language IN (SELECT language FROM user_languages WHERE fk_user_id= '%d' AND purpose = 'evaluate')
+				 	GROUP BY e.id
+				 	ORDER BY e.adding_date DESC";
+
+			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+
+			return $searchResults;
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
+
 	public function getRecordableExercises(){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
        					e.adding_date, e.duration, u.name, 
@@ -270,7 +294,7 @@ class ExerciseDAO {
 		return $searchResults; // return languages
 	}
 
-	public function addInappropriateExerciseReport(ExerciseReportVO $report){
+	public function addInappropriateExerciseReport($report){
 		try {
 			$verifySession = new SessionHandler(true);
 
@@ -291,7 +315,7 @@ class ExerciseDAO {
 		}
 	}
 
-	public function addExerciseScore(ExerciseScoreVO $score){
+	public function addExerciseScore($score){
 		try {
 			$verifySession = new SessionHandler(true);
 
@@ -321,7 +345,7 @@ class ExerciseDAO {
 	 * @param ExerciseScoreVO $score
 	 * @throws Exception
 	 */
-	public function userRatedExercise(ExerciseScoreVO $score){
+	public function userRatedExercise($score){
 		try {
 			$verifySession = new SessionHandler(true);
 
@@ -344,7 +368,7 @@ class ExerciseDAO {
 	 * Check if the user has already reported about this exercise
 	 * @param ExerciseReportVO $report
 	 */
-	public function userReportedExercise(ExerciseReportVO $report){
+	public function userReportedExercise($report){
 		try {
 			$verifySession = new SessionHandler(true);
 
