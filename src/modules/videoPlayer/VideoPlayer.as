@@ -484,38 +484,11 @@ package modules.videoPlayer
 		 */
 		private function onComplete(e:FlexEvent):void
 		{
-
 			//Establish a binding to listen the status of netConnection
 			BindingUtils.bindSetter(onStreamNetConnect, DataModel.getInstance(), "netConnected");
 
-			// Disable controls until streaming connection is made
-			//disableControls();
-
-			//if (_streamSource){
-			//	connectToStreamingServer(_streamSource);
-			//}
-
 			// Dispatch CREATION_COMPLETE event
 			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CREATION_COMPLETE));
-
-		}
-
-
-
-		public function connectToStreamingServer(streamSource:String):void
-		{
-
-			if (!DataModel.getInstance().netConnection.connected)
-				new StartConnectionEvent(streamSource).dispatch();
-			else
-				onStreamNetConnect(true);
-		}
-
-		public function disconnectFromStreamingService():void
-		{
-
-			if (DataModel.getInstance().netConnection.connected)
-				new CloseConnectionEvent().dispatch();
 		}
 
 		/**
@@ -539,8 +512,29 @@ package modules.videoPlayer
 
 				this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
 			}
-			else
+			else{
 				disableControls();
+				
+				if (_streamSource){
+					connectToStreamingServer(_streamSource);
+				}
+			}
+		}
+		
+		public function connectToStreamingServer(streamSource:String):void
+		{
+			
+			if (!DataModel.getInstance().netConnection.connected)
+				new StartConnectionEvent(streamSource).dispatch();
+			else
+				onStreamNetConnect(true);
+		}
+		
+		public function disconnectFromStreamingService():void
+		{
+			
+			if (DataModel.getInstance().netConnection.connected)
+				new CloseConnectionEvent().dispatch();
 		}
 
 
@@ -609,6 +603,11 @@ package modules.videoPlayer
 		 */
 		public function playVideo():void
 		{
+			if(!_nc){
+				_ppBtn.State=PlayButton.PLAY_STATE;
+				return;
+			}
+			
 			if (!_nc.connected)
 			{
 				_ppBtn.State=PlayButton.PLAY_STATE;
@@ -666,7 +665,8 @@ package modules.videoPlayer
 			stopVideo();
 			if (_ns)
 				_ns.close();
-			_timer.stop();
+			if(_timer && _timer.running)
+				_timer.stop();
 		}
 
 

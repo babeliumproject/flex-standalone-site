@@ -129,7 +129,8 @@
 				userOverallScore.ratingComponent.value=0;
 				
 				textComment.text='';
-				videoComment.resetComponent();
+				if(videoComment)
+					videoComment.resetComponent();
 				
 				includeTextCheck.selected = false;
 				includeVideoCheck.selected = false;

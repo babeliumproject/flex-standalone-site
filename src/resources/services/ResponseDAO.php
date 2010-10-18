@@ -5,6 +5,7 @@ require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
 
 require_once 'vo/ResponseVO.php';
+require_once 'vo/UserVO.php';
 
 class ResponseDAO {
 

@@ -485,7 +485,7 @@ package modules.subtitles
 
 		public function onTabChange(value:Boolean):void
 		{
-			if (_dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+			if (_dataModel.appBody.getChildAt(0) is ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
 			{
 				if (videoPlayerReady)
 					VPSubtitle.endVideo();
@@ -515,7 +515,7 @@ package modules.subtitles
 
 		public function onURLChange(value:Object):void
 		{
-			if (_browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+			if (_browser.moduleClass != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
 				return;
 
 			if (value == null)

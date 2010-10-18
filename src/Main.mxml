@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
 				layout="vertical"
-				xmlns:control="control.*" 
+				xmlns:control="control.*"
 				xmlns:business="business.*"
 				xmlns:ns1="modules.main.*"
 				xmlns:ns2="modules.userManagement.*"
@@ -12,71 +12,65 @@
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
 				creationComplete="onComplete()">
-	
+
 	<mx:Style source="Main.css"/>
 
 	<mx:Script>
 		<![CDATA[
 			import control.*;
-			
+
 			import events.PreferenceEvent;
 			import events.SetupConnectionEvent;
-			
+
 			import model.DataModel;
-			
+
+			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
-			
-			private const WIDTH_THRESHOLD:int = 1280;
-			private const HEIGHT_THRESHOLD:int = 1024;
-			
+
+			private const WIDTH_THRESHOLD:int=1280;
+			private const HEIGHT_THRESHOLD:int=1024;
+
 			private var mainSO:SharedObject;
-			
+
 			[Bindable]
-			public var appModelLocator: DataModel;
+			public var appModelLocator:DataModel;
 			[Bindable]
-			public var cuePointManager: CuePointManager;
+			public var cuePointManager:CuePointManager;
 			[Bindable]
 			public var browserManager:BabeliaBrowserManager;
 
 			//Initialization method
 			private function init():void
 			{
-				appModelLocator = DataModel.getInstance();
-				cuePointManager = CuePointManager.getInstance();
-				
+				appModelLocator=DataModel.getInstance();
+				cuePointManager=CuePointManager.getInstance();
+
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				new SetupConnectionEvent().dispatch();
-				
+
 				Security.allowDomain(appModelLocator.uploadDomain);
-				
+
 			}
-			
-			private function isHorizontalScrollNeeded():String{
-				if(Capabilities.screenResolutionX < WIDTH_THRESHOLD)
+
+			private function isHorizontalScrollNeeded():String
+			{
+				if (Capabilities.screenResolutionX < WIDTH_THRESHOLD)
 					return "auto";
 				else
 					return "off";
 			}
-			
-			private function onComplete(e:Event = null) : void
+
+			private function onComplete():void
 			{
-				browserManager = BabeliaBrowserManager.getInstance();
-			}
-			
-			private function set onExercisesRetrieved(value:Object) : void
-			{
+				appModelLocator.appBody = content;
+				browserManager=BabeliaBrowserManager.getInstance();
 				browserManager.parseURL();
 			}
 		]]>
 	</mx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().availableExercises}"
-				destination="this.onExercisesRetrieved"/>
-	
-	<!--Instantiate controller and services singleton -->
-
 	<!--This defines the reachable remote services -->
-	<business:Services />
+	<business:Services/>
 
 	<!--This defines all the actions available -->
 	<control:Controller/>
@@ -85,7 +79,7 @@
 				width="100%">
 	</ns1:Header>
 	<ns1:NewNavigation id="navigation"
-					width="100%">
+					   width="100%">
 	</ns1:NewNavigation>
 	<ns1:Body id="content"
 			  height="100%"

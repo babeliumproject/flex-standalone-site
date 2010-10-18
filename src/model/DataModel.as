@@ -11,6 +11,7 @@ package model
 	import flash.utils.Dictionary;
 	
 	import modules.autoevaluation.Evaluation;
+	import modules.main.Body;
 	import modules.userManagement.KeepAliveTimer;
 	import modules.userManagement.LoginRestorePassForm;
 	
@@ -26,6 +27,8 @@ package model
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel = new DataModel();
 		
+		public var appBody:Body;
+		
 		public var localesAndFlags:LocalesAndFlags;
 		public var currentlyActiveLocale:String = 'en_US';
 		
@@ -40,7 +43,7 @@ package model
 		[Bindable] public var netConnectOngoingAttempt:Boolean;
 		
 		//ViewStack management variables
-		[Bindable] public var currentContentViewStackIndex:int;
+		//[Bindable] public var currentContentViewStackIndex:int;
 		[Bindable] public var currentHomeViewStackIndex:int;
 		[Bindable] public var currentConfigViewStackIndex:int;
 		[Bindable] public var currentExerciseViewStackIndex:int;
@@ -256,7 +259,7 @@ package model
 		}
 		
 		private function initialize():void{
-			currentContentViewStackIndex = 0;
+//			currentContentViewStackIndex = 0;
 			currentExerciseViewStackIndex = 0;
 			
 			oldContentViewStackIndex = 0;

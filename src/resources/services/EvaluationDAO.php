@@ -7,6 +7,7 @@ require_once 'utils/Mailer.php';
 require_once 'utils/SessionHandler.php';
 
 require_once 'vo/EvaluationVO.php';
+require_once 'vo/UserVO.php';
 
 class EvaluationDAO {
 

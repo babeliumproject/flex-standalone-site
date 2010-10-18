@@ -4,7 +4,6 @@ class EvaluationVO{
 	
 	public $id;
 	public $responseId; //The resource that has been assessed
-	public $userId; //Who assessed the response
 	public $overallScore;
 	public $intonationScore;
 	public $fluencyScore;
@@ -43,7 +42,6 @@ class EvaluationVO{
 	public $responseCharacterName;
 	public $responseRatingAmount;
 	public $responseAddingDate;
-	public $responseUserId;
 	public $responseUserName;
 	public $responseSubtitleId;
 	

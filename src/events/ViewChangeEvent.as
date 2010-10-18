@@ -1,6 +1,20 @@
 package events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import modules.configuration.ConfigurationContainer;
+	import modules.configuration.ConfigurationMain;
+	import modules.evaluation.EvaluationContainer;
+	import modules.exercises.Exercises;
+	import modules.home.HomeMain;
+	import modules.main.About;
+	import modules.main.HelpFAQMain;
+	import modules.search.Search;
+	import modules.subtitles.SubtitleMain;
+	import modules.userManagement.AccountActivation;
+	import modules.userManagement.AccountMain;
+	import modules.userManagement.SignUpForm;
+	import modules.videoUpload.UploadContainer;
 
 
 	public class ViewChangeEvent extends CairngormEvent
@@ -45,18 +59,18 @@ package events
 		
 		
 		//Indexes of application's content ViewStack
-		public static const VIEWSTACK_HOME_MODULE_INDEX:int = 0;
-		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:int = 1;
-		public static const VIEWSTACK_EVALUATION_MODULE_INDEX:int = 2;
-		public static const VIEWSTACK_REGISTER_MODULE_INDEX:int = 3;
-		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:int = 4;
-		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:int = 5;
-		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:int = 6;
-		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:int = 7;
-		public static const VIEWSTACK_ABOUT_MODULE_INDEX:int = 8;
-		public static const VIEWSTACK_SEARCH_MODULE_INDEX:int = 9;
-		public static const VIEWSTACK_HELP_MODULE_INDEX:int = 10;
-		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:int = 11;
+		public static const VIEWSTACK_HOME_MODULE_INDEX:Class = HomeMain;
+		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:Class = Exercises;
+		public static const VIEWSTACK_EVALUATION_MODULE_INDEX:Class = EvaluationContainer;
+		public static const VIEWSTACK_REGISTER_MODULE_INDEX:Class = SignUpForm;
+		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:Class = AccountMain;
+		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:Class = UploadContainer;
+		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:Class = SubtitleMain;
+		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:Class = ConfigurationContainer;
+		public static const VIEWSTACK_ABOUT_MODULE_INDEX:Class = About;
+		public static const VIEWSTACK_SEARCH_MODULE_INDEX:Class = Search;
+		public static const VIEWSTACK_HELP_MODULE_INDEX:Class = HelpFAQMain;
+		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:Class = AccountActivation;
 
 		public function ViewChangeEvent(type:String)
 		{

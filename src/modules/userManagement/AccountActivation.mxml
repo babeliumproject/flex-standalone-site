@@ -36,7 +36,7 @@
 
 			public function set checkUrlParameters(value:String):void
 			{
-				if (BabeliaBrowserManager.getInstance().moduleIndex != ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX)
+				if (BabeliaBrowserManager.getInstance().moduleClass != ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX)
 					return;
 
 				if (BabeliaBrowserManager.getInstance().actionFragment != BabeliaBrowserManager.ACTIVATE)

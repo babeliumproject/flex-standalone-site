@@ -3,7 +3,8 @@
 		 horizontalAlign="center"
 		 verticalAlign="top"
 		 paddingTop="20"
-		 verticalGap="10">
+		 verticalGap="10"
+		 width="100%">
 	
 	<mx:Script>
 		<![CDATA[

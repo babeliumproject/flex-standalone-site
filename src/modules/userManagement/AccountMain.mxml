@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:userManagement="modules.userManagement.*"
 		 paddingLeft="8"
 		 paddingRight="8"
 		 paddingBottom="8"
-		 xmlns:userManagement="modules.userManagement.*">
+		 width="100%">
 
 	<mx:Script>
 		<![CDATA[

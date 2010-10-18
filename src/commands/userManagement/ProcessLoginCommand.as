@@ -9,6 +9,8 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
+	import modules.userManagement.SignUpForm;
+	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -52,7 +54,7 @@ package commands.userManagement
 				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();
 
 				// If user is in register module, redirect to home
-				if (DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX)
+				if (DataModel.getInstance().appBody.getChildren().length > 0 && DataModel.getInstance().appBody.getChildAt(0) is SignUpForm)
 				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				}

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:evaluation="modules.evaluation.*"
 		 xmlns:autoEvaluation="modules.autoevaluation.*"
+		 xmlns:common="view.common.*"
+		 xmlns:evaluation="modules.evaluation.*"
 		 xmlns:videoPlayer="modules.videoPlayer.*"
 		 paddingBottom="8"
-		 fontFamily="Arial"
-		 fontSize="12"
 		 verticalAlign="top"
 		 verticalScrollPolicy="off"
-		 creationComplete="completeHandler()"
-		 xmlns:common="view.common.*">
+		 width="100%"
+		 creationComplete="completeHandler()">
 
 	<mx:Script>
 		<![CDATA[
@@ -576,7 +575,7 @@
 			{
 				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
 
-				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX)
+				if (browser.moduleClass != ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX)
 					return;
 
 				if (value == null)

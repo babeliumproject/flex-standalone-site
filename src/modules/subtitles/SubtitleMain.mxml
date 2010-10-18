@@ -3,6 +3,7 @@
 		 xmlns:main="modules.main.*"
 		 xmlns:subtitles="modules.subtitles.*"
 		 verticalScrollPolicy="off"
+		 width="100%"
 		 creationComplete="onComplete()">
 
 	<mx:Script>

@@ -2,7 +2,8 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:videoUpload="modules.videoUpload.*"
 		 xmlns:main="modules.main.*"
-		 verticalScrollPolicy="off">
+		 verticalScrollPolicy="off"
+		 width="100%">
 
 	<mx:Script>
 		<![CDATA[

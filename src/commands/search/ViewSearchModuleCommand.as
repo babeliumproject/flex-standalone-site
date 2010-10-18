@@ -5,17 +5,23 @@ package commands.search
 	
 	import control.BabeliaBrowserManager;
 	
+	import events.CloseConnectionEvent;
 	import events.ViewChangeEvent;
 	
 	import model.DataModel;
+	
+	import modules.search.Search;
 	
 	public class ViewSearchModuleCommand implements ICommand
 	{
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var index:int = ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX;
-			DataModel.getInstance().currentContentViewStackIndex = index;
+			var index:Class = ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX;
+			new CloseConnectionEvent().dispatch();
+			if(DataModel.getInstance().appBody.getChildren().length > 0)
+				DataModel.getInstance().appBody.removeAllChildren();
+			DataModel.getInstance().appBody.addChild(new index());
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(

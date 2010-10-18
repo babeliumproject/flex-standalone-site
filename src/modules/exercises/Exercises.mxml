@@ -694,7 +694,7 @@
 			{
 				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
 
-				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
+				if (browser.moduleClass != ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
 					return;
 
 				if (value == null)

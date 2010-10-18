@@ -5,9 +5,12 @@ package commands.main
 	
 	import control.BabeliaBrowserManager;
 	
+	import events.CloseConnectionEvent;
 	import events.ViewChangeEvent;
 	
 	import model.DataModel;
+	
+	import modules.main.HelpFAQMain;
 	
 	public class ViewHelpModuleCommand implements ICommand
 	{
@@ -15,8 +18,11 @@ package commands.main
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var index:int = ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX;
-			DataModel.getInstance().currentContentViewStackIndex = index;
+			var index:Class = ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX;
+			new CloseConnectionEvent().dispatch();
+			if(DataModel.getInstance().appBody.getChildren().length > 0)
+				DataModel.getInstance().appBody.removeAllChildren();
+			DataModel.getInstance().appBody.addChild(new index());
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(

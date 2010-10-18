@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 verticalGap="14">
+		 verticalGap="14"
+		 width="100%">
 
 
 	<mx:VBox styleName="sectionInfoBox"
@@ -10,10 +11,6 @@
 				  styleName="sectionTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
-	
-	
-
-	
 	
 	<mx:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 			  fontStyle="normal"

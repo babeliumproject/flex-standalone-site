@@ -91,8 +91,8 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(0)}"
-				destination="this.onExercisesRetrieved"/>
+	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved}"
+				destination="onExercisesRetrieved"/>
 
 	<mx:TileList id="exerciseTileList"
 				 verticalScrollPolicy="off"
