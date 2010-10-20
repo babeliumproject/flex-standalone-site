@@ -91,19 +91,29 @@
 	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
 				destination="onPreferencesRetrieved"/>
 
+	<mx:Label id="labelBandwidthCheck"
+		     text="{resourceManager.getString('myResources','LABEL_BANDWIDTH_CHECK')}"
+			 styleName="sectionTitleLabel"/>
+	<mx:HRule styleName="sectionTitleHRule"
+			  width="{labelBandwidthCheck.width}"
+			  height="4"/>
 	<mx:HBox width="100%"
 			 id="allMenu"
 			 visible="true">
 
 		<mx:HBox width="100%">
-			<mx:VBox id="explicacion">
-				<mx:Text/>
+			<mx:VBox id="explicacion">		
+				<mx:VBox width="100%" height="100%">
+					<mx:Spacer/>
+					<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE1')+' '+resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE2')}"/>
+					<mx:Spacer/>
+					<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE3')+' '+resourceManager.getString('myResources', 'CONFIGURATION_BW_MESSAGE4')}"/>
+				</mx:VBox>
 				<mx:Button id="comprobacionButton"
+						   styleName="bigBlueButton"
 						   label="{resourceManager.getString('myResources', 'CONFIGURATION_BW_TITTLE')}"
 						   enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}"
 						   click="startCheck()"/>
-				<ns1:explicacionBandwidth id="texto"
-										  width="100%"/>
 				<mx:VBox id="bwInfo"
 						 visible="false">
 					<mx:Text id="Needed"

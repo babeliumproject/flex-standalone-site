@@ -13,20 +13,26 @@
 	<mx:HBox horizontalAlign="right"
 			 verticalAlign="middle"
 			 width="100%">
+
+		<mx:LinkButton id="helpFAQButton"
+					   icon="@Embed(source='../../resources/images/help.png')"
+					   click="helpFAQ_clickHandler(event)"
+					   toolTip="Help/FAQ"/>
+		
 		<mx:Canvas height="100%">
 			<mx:HBox id="anonymousCP"
 					 x="0"
 					 y="0"
 					 height="100%"
-					 width="360"
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="true">
 				<mx:LinkButton id="signInButton"
+							   styleName="yellowLinkButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
 							   click="signInClickHandler()"/>
 				<mx:LinkButton id="signUpButton"
-							   styleName="boldLinkButton"
+							   styleName="yellowLinkButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
 							   click="signUpClickHandler()"/>
 			</mx:HBox>
@@ -34,19 +40,20 @@
 					 x="0"
 					 y="0"
 					 height="100%"
-					 width="360"
 					 horizontalAlign="right"
 					 verticalAlign="middle"
 					 visible="false">
-				<mx:HBox styleName="roundedPurpleBox"
-						 height="60%">
+				<mx:VRule height="20"
+						  styleName="sectionTitleHRule"/>
+				<mx:HBox styleName="hvCenteredBox">
 					<mx:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
-							  styleName="boldLabel"/>
+							  styleName="boldDarkerGreyLabel"/>
 					<mx:LinkButton id="uCrds"
 								   label="cr."
-								   styleName="creditHighlightLink"/>
+								   styleName="creditLinkButton"/>
 				</mx:HBox>
-				<mx:VRule height="20"/>
+				<mx:VRule height="20"
+						  styleName="sectionTitleHRule"/>
 				<mx:PopUpMenuButton id="userCPName"
 									label="UserName"
 									labelFunction="userOptionsLabelFunction"
@@ -57,11 +64,5 @@
 							   click="signOutClickHandler()"/>
 			</mx:HBox>
 		</mx:Canvas>
-
-		<mx:VRule height="20"/>
-		<mx:LinkButton id="helpFAQButton"
-					   icon="@Embed(source='../../resources/images/help.png')"
-					   click="helpFAQ_clickHandler(event)"
-					   toolTip="Help/FAQ"/>
 	</mx:HBox>
 </main:HeaderClass>

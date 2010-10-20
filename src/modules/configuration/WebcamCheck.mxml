@@ -13,16 +13,13 @@
 	<mx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
-			import modules.configuration.ConfigurationResultEvent;
-			import modules.configuration.OflaDemoRed5Sentences;
-			import modules.configuration.ShowStatusMessage;
-			
+
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -33,7 +30,7 @@
 			public var timerRec:Timer;
 			public var timerPlay:Timer;
 			public var oflaDemoRed5Sentences:OflaDemoRed5Sentences;
-			
+
 			private var privacyRights:PrivacyRights;
 			private var _micCamEnabled:Boolean;
 
@@ -48,7 +45,7 @@
 			{
 				//First we close the previous streaming channels
 				oflaDemoRed5Sentences.closeNetStreamObjects();
-				prepareDevices();	
+				prepareDevices();
 			}
 
 			private function playStart():void
@@ -138,8 +135,9 @@
 				statusText.text=s;
 				statusText.visible=true;
 			}
-			
-			private function prepareRecording():void{
+
+			private function prepareRecording():void
+			{
 				oflaDemoRed5Sentences.rec_ns.attachCamera(cam);
 				DataModel.getInstance().videoRec=true;
 				DataModel.getInstance().recording=true;
@@ -152,7 +150,7 @@
 				oflaDemoRed5Sentences.publish('video');
 				initCont();
 			}
-			
+
 			private function prepareDevices():void
 			{
 				if (PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
@@ -168,7 +166,7 @@
 					PopUpManager.centerPopUp(privacyRights);
 				}
 			}
-			
+
 			private function configureDevices():void
 			{
 				cam=DataModel.getInstance().camera;
@@ -178,11 +176,11 @@
 				//mic.setLoopBack(true); only if we want to hear what we are saying. Even using echo supression leads to echoes.
 				mic.setSilenceLevel(0, 60000);
 				//mic.gain=40; inherited from the old code
-				
+
 				prepareRecording();
 				//startCountdown(); maybe we'll need it later
 			}
-			
+
 			private function privacyBoxClosed(event:Event):void
 			{
 				PopUpManager.removePopUp(privacyRights);
@@ -196,18 +194,16 @@
 					CustomAlert.error("In order to record something you must 'Allow' the access to your devices.");
 				}
 			}
-			
-			
-			
 		]]>
 	</mx:Script>
 
 	<mx:VBox width="100%">
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}"
-				 fontSize="18"
-				 fontWeight="bold"/>
-		<mx:HRule height="1"
-				  width="100%"/>
+		<mx:Label id="labelWebcamCheck"
+				  text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}"
+				  styleName="sectionTitleLabel"/>
+		<mx:HRule height="100%"
+				  styleName="sectionTitleHRule"
+				  width="{labelWebcamCheck.width}"/>
 	</mx:VBox>
 	<mx:Spacer/>
 	<mx:HBox id="allMenu"
@@ -215,9 +211,13 @@
 			 width="100%"
 			 horizontalScrollPolicy="off">
 
-		<ns1:explicacionCam id="texto"
-							width="100%"
-							height="100%"/>
+		<mx:VBox width="100%"
+				 height="100%">
+			<mx:Spacer/>
+			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}"/>
+			<mx:Spacer/>
+			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}"/>
+		</mx:VBox>
 		<mx:HBox horizontalAlign="right"
 				 width="100%">
 			<mx:VBox id="videoPanel"
@@ -275,6 +275,11 @@
 			 verticalAlign="middle"
 			 visible="false"
 			 width="100%">
-		<ns1:notCamText/>
+		<mx:VBox horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:Text color="red"
+					 fontSize="20"
+					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_CAM_TEXT')}"/>
+		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>

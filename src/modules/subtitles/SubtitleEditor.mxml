@@ -14,7 +14,7 @@
 		<mx:Label id="exerciseTitle"
 				  text="ExerciseTitle"
 				  width="100%"
-				  styleName="sectionTitleLabel"/>
+				  styleName="sectionInfoTitleLabel"/>
 		<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
 										autoPlay="true"
 										skin="white"

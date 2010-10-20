@@ -4,7 +4,8 @@
 		 styleName="padding10AllSidesBox"
 		 width="100%"
 		 height="100%"
-		 creationComplete="onComplete()">
+		 creationComplete="onComplete()"
+		 xmlns:configuration="modules.configuration.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -12,9 +13,6 @@
 
 			import model.DataModel;
 
-			import modules.configuration.ConfigurationResultEvent;
-			import modules.configuration.OflaDemoRed5Sentences;
-			import modules.configuration.ShowStatusMessage;
 
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -233,13 +231,18 @@
 
 
 
-	<mx:Text text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
-			 styleName="sectionLowerTitleLabel"/>
-	<mx:HRule height="1"
-			  width="100%"/>
-	<ns1:explicacionMic height="100%"
-						width="100%"
-						id="texto"/>
+	<mx:Text id="labelMicrophoneCheck"
+			 text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
+			 styleName="sectionTitleLabel"/>
+	<mx:HRule styleName="sectionTitleHRule"
+			  width="{labelMicrophoneCheck.width}"/>
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:Spacer/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE1') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE2')}"/>
+		<mx:Spacer/>
+		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE3') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE4')}"/>
+	</mx:VBox>
 
 	<mx:Spacer height="20"/>
 
@@ -282,7 +285,7 @@
 					  visible="false"/>
 			<mx:HBox verticalAlign="middle">
 				<mx:Label text="Level: "/>
-				<ns1:barraSonido id="barraSonido"/>
+				<configuration:SoundLevelMeasurer id="barraSonido"/>
 			</mx:HBox>
 
 		</mx:VBox>
@@ -294,6 +297,11 @@
 			 width="100%"
 			 height="100%"
 			 visible="false">
-		<ns1:notMicText/>
+		<mx:VBox horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:Text color="red"
+					 fontSize="20"
+					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
+		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>

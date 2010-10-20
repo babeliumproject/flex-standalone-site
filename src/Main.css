@@ -7,7 +7,7 @@
 
 Application{
 	backgroundGradientAlphas: 1.0, 1.0;
-	backgroundGradientColors: #f2eeef, #FFFFFF;
+	backgroundGradientColors: #e5ecf2, #f9f9f9;
 	verticalAlign: top;
 	verticalGap: 0;
 	horizontalAlign: center;
@@ -92,8 +92,55 @@ TextInput{
 	fontWeight: bold;
 }
 
+.blueLinkButton{
+	rollOverColor: #268caa;
+	selectionColor: #268caa;
+	color: #268caa;
+	textRollOverColor: #f9f9f9;
+	textSelectedColor: #f9f9f9;
+}
+
+.yellowLinkButton{
+	fontWeight: bold;
+	color: #cc9900;
+	rollOverColor: #cc9900;
+	selectionColor: #cc9900;
+	textRollOverColor: #f9f9f9;
+	textSelectedColor: #f9f9f9;
+}
+
+.creditLinkButton{
+	fontWeight: bold;
+	color: #e3bb03;
+	rollOverColor: #e3bb03;
+	selectionColor: #e3bb03;
+	textRollOverColor: #f9f9f9;
+	textSelectedColor: #f9f9f9;
+	fontSize: 14;
+}
+
 .boldLabel{
 	fontWeight: bold;
+}
+
+.boldYellowLabel{
+	fontWeight: bold;
+	fontSize: 14;
+	color: #b29e39;
+}
+
+.lightGreyLabel{
+	color: #797977;
+}
+
+.boldDarkGreyLabel{
+	fontWeight: bold;
+	color: #454543;
+}
+
+.boldDarkerGreyLabel{
+	fontWeight: bold;
+	color: #999999;
 }
 
 .hvCenteredBox{
@@ -208,18 +255,35 @@ TextInput{
 /* Pagination control styles */
 
 .paginationButton{
-	cornerRadius: 4;
+	cornerRadius: 20;
 	paddingLeft: 0;
 	paddingRight: 0;
-	hihglightAlphas: 0.0, 0.0;
-	fillAlphas: 0.0, 0.0, 1.0, 1.0;
-	fillColors: #FFFFFF, #CCCCCC, #AADEFF, #AADEFF;
+	highlightAlphas: 0.52, 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #ffffff, #ffffff, #fccb39, #d5ac32;
+	color: #d5ac32;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #fccb39;
+	borderColor: #e1ded8;
+	themeColor: #d5ac32;
+	fontSize: 14;
+	fontWeight: bold;
 }
 
 .paginationControlButton{
-	cornerRadius: 4;
+	cornerRadius: 20;
 	paddingLeft: 1;
 	paddingRight: 1;
+	highlightAlphas: 0.52, 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #ffffff, #ffffff, #fccb39, #d5ac32;
+	color: #d5ac32;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #fccb39;
+	borderColor: #e1ded8;
+	themeColor: #d5ac32;
+	fontSize: 14;
+	fontWeight: bold;
 }
 
 /* Exercise info box styles */
@@ -247,16 +311,41 @@ TextInput{
 	paddingRight: 10;
 }
 
-.sectionTitleLabel{
+.sectionInfoTitleLabel{
 	fontWeight: bold;
 	fontSize: 24;
 	color: #972c0a;	
+}
+
+.sectionTitleLabel{
+	fontWeight: bold;
+	fontSize: 20;
+	color: #268caa;
+}
+
+.sectionTitleHRule{
+	strokeWidht: 4;
+	strokeColor: #268caa;
 }
 
 .sectionLowerTitleLabel{
 	fontWeight: bold;
 	fontSize: 18;
 	color: #aaaaaa;
+}
+
+.bigBlueButton{
+	cornerRadius: 10;
+	highlightAlphas: 0, 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #31b5de, #207791, #ffffff, #f9f9f9;
+	color: #ffffff;
+	textRollOverColor: #31b5de;
+	textSelectedColor: #207791;
+	borderColor: #31b5de;
+	themeColor: #f9f9f9;
+	fontSize: 14;
+	fontWeight: bold;
 }
 
 .sectionInfoBox{

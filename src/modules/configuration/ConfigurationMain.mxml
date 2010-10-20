@@ -7,7 +7,7 @@
 		 width="100%"
 		 verticalGap="0"
 		 verticalScrollPolicy="off"
-		 creationComplete="init()">
+		 creationComplete="init()" xmlns:configuration="modules.configuration.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -194,7 +194,7 @@
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%">
 		<mx:Label text="{resourceManager.getString('myResources','LABEL_CONFIGURATION')}"
-				  styleName="sectionTitleLabel"/>
+				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 		<mx:HBox horizontalAlign="right"
 				 width="100%">
@@ -241,7 +241,7 @@
 					 width="100%"
 					 height="100%"
 					 horizontalScrollPolicy="off">
-				<mod1:webCamCheck id="webCamCheck"/>
+				<configuration:WebcamCheck id="webCamCheck"/>
 				<mx:LinkButton id="refreshCamButton"
 							   visible="false"
 							   color="red"
@@ -251,7 +251,7 @@
 			</mx:VBox>
 
 			<mx:VBox label="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}">
-				<mod2:micCheck id="micCheck"/>
+				<configuration:MicrophoneCheck id="micCheck"/>
 				<mx:LinkButton id="refreshMicButton"
 							   visible="false"
 							   color="red"

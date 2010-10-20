@@ -7,6 +7,7 @@ package control
 	
 	import model.DataModel;
 	
+	import modules.configuration.ConfigurationContainer;
 	import modules.configuration.ConfigurationMain;
 	import modules.evaluation.EvaluationContainer;
 	import modules.exercises.Exercises;
@@ -88,7 +89,7 @@ package control
 
 			_modulesFragments[About]="about";
 			_modulesFragments[AccountMain]="account";
-			_modulesFragments[ConfigurationMain]="config";
+			_modulesFragments[ConfigurationContainer]="config";
 			_modulesFragments[EvaluationContainer]="evaluation";
 			_modulesFragments[Exercises]="exercises";
 			_modulesFragments[HomeMain]="home";

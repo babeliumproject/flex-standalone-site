@@ -773,7 +773,7 @@
 			 width="100%"
 			 paddingBottom="16">
 		<mx:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
-				  styleName="sectionTitleLabel"/>
+				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
 	

@@ -514,7 +514,7 @@
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%">
 		<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
-				  styleName="sectionTitleLabel"/>
+				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
 

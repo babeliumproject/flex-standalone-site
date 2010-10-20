@@ -8,7 +8,7 @@
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%">
 		<mx:Label id="subtitleModuleTitle"
-				  styleName="sectionTitleLabel"
+				  styleName="sectionInfoTitleLabel"
 				  text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
 
 		<mx:Text text="{resourceManager.getString('myResources','TEXT_MODULE_INFO_SUBTITLE')}"/>

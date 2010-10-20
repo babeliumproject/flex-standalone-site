@@ -102,12 +102,13 @@ package modules.search
 		private static function createPageButton(label:int, clickHandler:Function):Button
 		{
 			var navButton:Button = new Button();
+			navButton.styleName = "paginationButton";
 			navButton.id=label.toString();
 			navButton.label=label.toString();
-			navButton.minWidth=24;
-			navButton.measuredWidth=24;
-			navButton.height=24;
-			navButton.styleName = "paginationButton";
+//			navButton.minWidth=18;
+//			navButton.measuredWidth=18;
+			navButton.height=40;
+		
 			navButton.addEventListener(MouseEvent.CLICK, clickHandler);
 
 			return navButton;
@@ -119,8 +120,8 @@ package modules.search
 			ctrlButton.id=target.toString();
 			ctrlButton.styleName = "paginationControlButton";
 			ctrlButton.setStyle('icon', icon);
-			ctrlButton.width=24;
-			ctrlButton.height=24;
+			ctrlButton.width=40;
+			ctrlButton.height=40;
 
 			ctrlButton.addEventListener(MouseEvent.CLICK, clickHandler);
 

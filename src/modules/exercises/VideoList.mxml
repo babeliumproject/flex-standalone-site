@@ -119,5 +119,6 @@
 		</mx:columns>
 	</mx:DataGrid>
 	<mx:HBox id="paginationBox"
+			 styleName="hvCenteredBox"
 			 width="100%"/>
 </mx:VBox>

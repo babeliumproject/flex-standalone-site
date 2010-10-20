@@ -281,7 +281,7 @@
 	<mx:VBox styleName="sectionInfoBox"
 			 width="100%">
 		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
-				  styleName="sectionTitleLabel"/>
+				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
 	
