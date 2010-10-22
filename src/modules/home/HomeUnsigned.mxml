@@ -7,68 +7,147 @@
 	<mx:Script>
 		<![CDATA[
 			
-			private const SLIDE_CHANGE_DELAY:uint = 5000; //5 seconds
+			import events.MessageOfTheDayEvent;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Label;
+			import mx.controls.Text;
+			import mx.utils.ObjectUtil;
+			
+			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
 			
 			[Bindable]
 			private var selectedIndex:int=0;
 			
+			[Bindable]
+			private var messageArray:ArrayCollection = new ArrayCollection();
+			
 			private var slideTimer:Timer;
-
-			protected function onComplete():void{
-				slideTimer = new Timer(SLIDE_CHANGE_DELAY, 0);
+			
+			protected function onComplete():void
+			{
+				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
 				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
-				slideTimer.start();
+				getUnsignedMessagesOfTheDay();
 			}
 			
-			protected function onTimerTick(event:TimerEvent):void{
-				var slideCount:int = appDescriptionViewStack.getChildren().length;
-				var currentlySelectedIndex:int = appDescriptionViewStack.selectedIndex;
-				if (currentlySelectedIndex < (slideCount - 1))
-					selectedIndex=currentlySelectedIndex + 1;
-				else
-					selectedIndex=0;
+			protected function onTimerTick(event:TimerEvent):void
+			{
+				var slideCount:int=appDescriptionViewStack.getChildren().length;
+				if (slideCount > 0)
+				{
+					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
+					if (currentlySelectedIndex < (slideCount - 1))
+						selectedIndex=currentlySelectedIndex + 1;
+					else
+						selectedIndex=0;
+				}
+			}
+			
+			public function getUnsignedMessagesOfTheDay():void
+			{
+				if (!DataModel.getInstance().isLoggedIn)
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
+			}
+			
+			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
+			{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					messageArray=DataModel.getInstance().messagesOfTheDayData;
+					if (messageArray.length > 0)
+					{
+						slideTimer.stop();
+						appDescriptionViewStack.removeAllChildren();
+						callLater(addMessagesToContainer);
+					} else {
+						unsignedMotdBox.includeInLayout = false;
+						unsignedMotdBox.visible = false;
+					}
+				}
+				
+			}
+			
+			protected function addMessagesToContainer():void{
+				for each (var messageData:Object in messageArray)
+				{
+					appDescriptionViewStack.addChild(generateMessageBox(messageData));
+				}
+				selectedIndex=0;
+				slideTimer.start();
+				unsignedMotdBox.includeInLayout=true;
+				unsignedMotdBox.visible=true;
+			}
+			
+			protected function generateMessageBox(messageData:Object):HBox
+			{
+				var messageImage:Image=new Image();
+				messageImage.source=messageData.resourceUrl;
+				messageImage.width=240;
+				messageImage.height=180;
+				messageImage.scaleContent=true;
+				
+				var titleLabel:Label=new Label();
+				titleLabel.text=messageData.title;
+				titleLabel.styleName="sectionInfoTitleLabel";
+				
+				var messageText:Text=new Text();
+				messageText.text=messageData.message;
+				messageText.percentWidth=100;
+				messageText.percentHeight=100;
+				
+				var messageVBox:VBox=new VBox();
+				messageVBox.percentWidth=100;
+				messageVBox.percentHeight=100;
+				messageVBox.setStyle("verticalAlign", "middle");
+				messageVBox.addChild(titleLabel);
+				messageVBox.addChild(messageText);
+				
+				var motdBox:HBox=new HBox();
+				motdBox.percentWidth=100;
+				motdBox.setStyle("verticalAlign", "middle");
+				motdBox.addChild(messageImage);
+				motdBox.addChild(messageVBox);
+				
+				return motdBox;
+			}
+			
+			public function set onLanguageChanged(value:Boolean):void{
+				getUnsignedMessagesOfTheDay();
 			}
 			
 		]]>
 	</mx:Script>
-
-	<mx:VBox styleName="sectionInfoBox"
-			 width="100%">
-		<mx:HBox id="descriptionPaginationUnsigned" />
+	
+	<mx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
+				destination="onUnsignedMessagesOfTheDayRetrieved"/>
+	
+	<mx:Binding source="{DataModel.getInstance().languageChanged}"
+				destination="onLanguageChanged"/>
+	
+	
+	<mx:VBox id="unsignedMotdBox"
+			 styleName="sectionInfoBox"
+			 width="100%"
+			 includeInLayout="false"
+			 visible="false">
+		<mx:HBox id="descriptionPaginationUnsigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
-					  width="100%">
-
-			<mx:HBox id="desc1" width="100%">
-				<mx:Image source=""/>
-				<mx:VBox width="100%">
-					<mx:Label styleName="sectionTitleLabel"
-							  text="Welcome to Babelium!"/>
-					<mx:Text text="In this application you can practice languages in an collaborative environment"/>
-				</mx:VBox>
-			</mx:HBox>
-		
-			<mx:HBox id="desc2" width="100%">
-				<mx:VBox width="100%">
-					<mx:Label styleName="sectionTitleLabel"
-							  text="Practice the language of your choice"/>
-					<mx:Text text="Register in our application and choose the languages you want to improve in, and start recording yourself."/>
-				</mx:VBox>
-			</mx:HBox>
-			
-			<mx:HBox id="desc3" width="100%">
-				<mx:VBox width="100%">
-					<mx:Label styleName="sectionTitleLabel"
-							  text="Receive other users' feedback"/>
-					<mx:Text text="You think you did well on that exercise but do the other users' which by the way are native speakers in the language you're practicing think the same?"/>
-				</mx:VBox>
-			</mx:HBox>
+					  width="100%"
+					  resizeToContent="true">
 		</mx:ViewStack>
-
+		
+		<!--
 		<mx:HBox horizontalAlign="right"
-				 width="100%">
-			<mx:Button label="Join us!"/>
+		width="100%">
+		<mx:Button label="Join us!"/>
 		</mx:HBox>
+		-->
 	</mx:VBox>
 
 </mx:VBox>

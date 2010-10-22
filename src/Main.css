@@ -335,6 +335,10 @@ TextInput{
 }
 
 .bigBlueButton{
+	paddingLeft: 10;
+	paddingRight: 10;
+	paddingTop: 4;
+	paddingBottom: 4;
 	cornerRadius: 10;
 	highlightAlphas: 0, 0;
 	fillAlphas: 1, 1, 1, 1;

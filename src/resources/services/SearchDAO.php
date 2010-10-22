@@ -39,6 +39,10 @@ class SearchDAO {
 
 	public function launchSearch($search) {
 		$searchResults = array();
+		
+		//Return empty array if empty query
+		if($search == '')
+			return;
 
 		//Opens the index
 		$this->initialize();

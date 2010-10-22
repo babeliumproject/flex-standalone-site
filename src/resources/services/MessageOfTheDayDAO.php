@@ -23,7 +23,7 @@ class MessageOfTheDayDAO{
 
 	public function unsignedMessagesOfTheDay($messageLocale){
 
-		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() = displayDate AND language='%s' AND displaywhenloggedin = false ) ";
+		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = false ) ";
 
 		$searchResults = $this->_listMessagesOfTheDayQuery($sql, $messageLocale);
 
@@ -33,7 +33,7 @@ class MessageOfTheDayDAO{
 
 	public function signedMessagesOfTheDay($messageLocale){
 
-		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() = displayDate AND language='%s' AND displaywhenloggedin = true ) ";
+		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = true ) ";
 
 		$searchResults = $this->_listMessagesOfTheDayQuery($sql, $messageLocale);
 
