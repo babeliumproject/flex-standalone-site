@@ -21,9 +21,7 @@
 	</mx:VBox>
 
 	<mx:Label text="Video tutorials"
-			  fontWeight="bold"
-			  fontSize="14"
-			  textDecoration="underline"/>
+			  styleName="sectionTitleLabel"/>
 	<mx:Label text="The following videos explain how to use some of the features of Babelium Project (in English)."/>
 	<mx:HBox>
 		<mx:Spacer/>

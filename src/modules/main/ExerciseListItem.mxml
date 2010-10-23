@@ -67,8 +67,7 @@
 			<ns1:Rating value="{data.avgRating}"
 						liveRollOver="false"/>
 			<mx:Label text="{dateFormatter.format(data.addingDate)}"
-					  fontWeight="bold"
-					  fontSize="10"/>
+					  styleName="boldLabel"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</mx:HBox>
 		<mx:HBox verticalAlign="middle"
@@ -86,7 +85,6 @@
 			<mx:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					  visible="{data.reference}"/>
 			<mx:LinkButton id="referenceUrl"
-						   fontSize="10"
 						   label="{data.reference}"
 						   click="referenceClickHandler(event)"/>
 		</mx:HBox>

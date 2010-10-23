@@ -4,10 +4,7 @@
 						  autoLayout="true">
 
 	<mx:Label id="errorInfo"
-			  fontFamily="Arial"
-			  fontSize="12"
-			  color="#FF0000"
-			  fontWeight="bold"
+			  styleName="errorLabel"
 			  textAlign="center"
 			  width="100%"/>
 	<mx:Form width="100%">

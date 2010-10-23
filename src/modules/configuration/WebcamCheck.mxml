@@ -237,9 +237,7 @@
 										height="100%"/>
 						<mx:Text id="statusText"
 								 visible="false"
-								 color="red"
-								 fontSize="13"
-								 fontWeight="bold"/>
+								 styleName="errorLabel"/>
 					</mx:VBox>
 					<mx:HBox horizontalAlign="center">
 						<mx:Button label="REC"
@@ -255,12 +253,9 @@
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>
 					</mx:HBox>
-					<mx:VBox horizontalAlign="center"
-							 fontSize="15">
+					<mx:VBox horizontalAlign="center">
 						<mx:Text id="contador"
-								 text="10"
-								 visible="false"
-								 fontWeight="bold"/>
+								 visible="false"/>
 					</mx:VBox>
 				</mx:VBox>
 			</mx:VBox>
@@ -277,8 +272,7 @@
 			 width="100%">
 		<mx:VBox horizontalAlign="center"
 				 verticalAlign="middle">
-			<mx:Text color="red"
-					 fontSize="20"
+			<mx:Text styleName="errorLabel"
 					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_CAM_TEXT')}"/>
 		</mx:VBox>
 	</mx:HBox>

@@ -47,17 +47,12 @@
 			 horizontalAlign="left"
 			 width="20%">
 		<mx:Label text="{resourceManager.getString('myResources','TEXT_USER_ACCOUNT')}"
-				  fontFamily="Arial"
-				  fontSize="18"
-				  fontWeight="bold"
+				  styleName="sectionTitleLabel"
 				  id="navigationLabel"/>
 		<mx:List id="availableOptionsList"
 				 dataProvider="{accountOptions}"
 				 width="100%"
-				 cornerRadius="4"
-				 fontFamily="Arial"
-				 fontSize="12"
-				 fontWeight="bold"
+				 styleName="boldLabel"
 				 change="accountOptionListChangeHandler()">
 		</mx:List>
 	</mx:VBox>

@@ -298,7 +298,7 @@
 				 width="100%"
 				 labelWidth="200">
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
-						 fontWeight="bold"
+						 styleName="boldLabel"
 						 required="true">
 				<mx:HBox>
 					<mx:TextInput id="username"
@@ -309,7 +309,7 @@
 				
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_EMAIL')}"
-						 fontWeight="bold"
+						 styleName="boldLabel"
 						 required="true">
 				<mx:HBox>
 					<mx:TextInput id="email"
@@ -319,7 +319,7 @@
 				</mx:HBox>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
-						 fontWeight="bold"
+						 styleName="boldLabel"
 						 required="true">
 				<mx:HBox>
 					<mx:TextInput id="password"
@@ -331,9 +331,8 @@
 				
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REPASSWORD')}"
-						 fontWeight="bold"
-						 required="true"
-						 borderStyle="none">
+						 styleName="boldLabel"
+						 required="true">
 				<mx:HBox>
 					<mx:TextInput id="repassword"
 								  displayAsPassword="true"
@@ -345,12 +344,12 @@
 			</mx:FormItem>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
-						 fontWeight="bold">
+						 styleName="boldLabel">
 				<mx:TextInput id="realName"
 							  width="100%"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
-						 fontWeight="bold">
+						 styleName="boldLabel">
 				<mx:TextInput id="surname"
 							  width="100%"/>
 			</mx:FormItem>
@@ -360,7 +359,7 @@
 			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_MAIN_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
-						 fontWeight="bold"
+						 styleName="boldLabel"
 						 required="true">
 				<mx:HBox>
 					<mx:VBox id="motherLanguagesBox">
@@ -378,7 +377,7 @@
 			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_OTHER_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
-						 fontWeight="bold">
+						 styleName="boldLabel">
 				<mx:HBox>
 					<mx:VBox id="knownLanguagesBox">
 					</mx:VBox>
@@ -395,7 +394,7 @@
 			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_PRACTICE_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
-						 fontWeight="bold">
+						 styleName="boldLabel">
 				<mx:HBox>
 					<mx:VBox id="interestLanguagesBox">
 					</mx:VBox>
@@ -411,8 +410,7 @@
 		</mx:Form>
 		<mx:Spacer/>
 		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle">
+				 styleName="hvCenteredBox">
 			<mx:Button id="saveButton"
 					   label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
 					   click="processNewUser()"

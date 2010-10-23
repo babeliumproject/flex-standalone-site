@@ -8,7 +8,6 @@
 		 verticalAlign="middle"
 		 verticalScrollPolicy="off"
 		 horizontalScrollPolicy="off"
-		 fontFamily="Arial"
 		 creationComplete="completeHandler()"
 		 xmlns:controls="com.asfusion.controls.*">
 
@@ -44,22 +43,11 @@
 					  height="16"
 					  source="{getFlagSource(data as EvaluationVO)}"/>
 			<mx:HBox id="avgDifficultyIndicator"
-					 fontFamily="Arial"
-					 fontSize="10"
-					 borderStyle="solid"
-					 borderThickness="1"
-					 cornerRadius="4"
-					 borderColor="0xcccccc"
-					 backgroundColor="0xffffff"
-					 horizontalAlign="center"
-					 verticalAlign="middle"
-					 paddingTop="0"
-					 paddingBottom="0">
+					 styleName="roundedBorderWhiteBox">
 				<mx:Label text="{getLevelCorrespondence(data.exerciseAvgDifficulty)}"/>
 			</mx:HBox>
 			<mx:Label id="exerciseTitle"
 					  text="{data.exerciseTitle}"
-					  fontSize="12"
 					  width="100%"
 					  textAlign="left"/>
 		</mx:HBox>
@@ -75,7 +63,7 @@
 			<mx:Label text="{data.responseCharacterName}"/>
 			<mx:Spacer/>
 			<mx:Label text="{resourceManager.getString('myResources','BALORAZIOKOP')+':'}"
-					  fontWeight="bold"/>
+					  styleName="boldLabel"/>
 			<mx:Label text="{data.responseRatingAmount}"/>
 		</mx:HBox>
 

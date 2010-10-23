@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel  xmlns:mx="http://www.adobe.com/2006/mxml"
-		   backgroundAlpha="0.0"
-		   paddingTop="8"
-		   paddingBottom="8"
-		   paddingLeft="8"
-		   paddingRight="8"
-		   fontFamily="Arial"
-		   fontSize="12"
-		   title="User's Credit History"
-		   layout="vertical"
-		   creationComplete="init()"
-		   xmlns:ns1="modules.userManagement.*">
+<mx:Panel  xmlns:mx="http://www.adobe.com/2006/mxml">
 	
 </mx:Panel>

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="modules.configuration.microphone.*"
+		 xmlns:configuration="modules.configuration.*"
 		 styleName="padding10AllSidesBox"
 		 width="100%"
 		 height="100%"
-		 creationComplete="onComplete()"
-		 xmlns:configuration="modules.configuration.*">
+		 creationComplete="onComplete()">
 
 	<mx:Script>
 		<![CDATA[
@@ -292,15 +291,13 @@
 	</mx:HBox>
 
 	<mx:HBox id="notConect"
-			 horizontalAlign="center"
-			 verticalAlign="middle"
+			 styleName="hvCenteredBox"
 			 width="100%"
 			 height="100%"
 			 visible="false">
 		<mx:VBox horizontalAlign="center"
 				 verticalAlign="middle">
-			<mx:Text color="red"
-					 fontSize="20"
+			<mx:Text styleName="errorLabel"
 					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
 		</mx:VBox>
 	</mx:HBox>

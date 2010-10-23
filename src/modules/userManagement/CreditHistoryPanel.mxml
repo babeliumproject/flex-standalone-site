@@ -2,8 +2,6 @@
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
 		  title="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
 		  layout="vertical"
-		  fontFamily="Arial"
-		  paddingTop="8"
 		  xmlns:ns1="modules.userManagement.*"
 		  xmlns:common="view.common.*">
 
@@ -110,12 +108,7 @@
 				destination="creditHistoryRetrieved"/>
 	<mx:HBox width="100%"
 			 height="35"
-			 horizontalAlign="center"
-			 verticalAlign="middle"
-			 cornerRadius="8"
-			 backgroundColor="#DDDDDD"
-			 borderStyle="solid"
-			 horizontalGap="12">
+			styleName="roundedBorderGreyBox">
 		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
 				   cornerRadius="8"
 				   click="todayClickHandler()"/>

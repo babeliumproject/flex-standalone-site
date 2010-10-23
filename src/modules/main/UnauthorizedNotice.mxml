@@ -33,9 +33,7 @@
 	</mx:Script>
 	
 	<mx:Text text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
-			 fontWeight="bold"
-			 color="#FF0000"
-			 fontSize="16"/>
+			styleName="errorLabel"/>
 	<mx:HBox width="100%"
 			 horizontalAlign="center"
 			 verticalAlign="middle"

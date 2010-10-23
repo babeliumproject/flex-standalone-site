@@ -44,8 +44,11 @@
 
 			protected function onResize(event:ResizeEvent):void
 			{
-				exercisesWithoutSubtitlesTile.columnCount=Application.application.parent.width / exercisesWithoutSubtitlesTile.columnWidth;
-				exercisesWithoutSubtitlesTile.validateNow();
+				//if (Application.application.width && exercisesWithoutSubtitlesTile.columnWidth)
+				//{
+				//	exercisesWithoutSubtitlesTile.columnCount=Application.application.width / exercisesWithoutSubtitlesTile.columnWidth;
+				//	exercisesWithoutSubtitlesTile.validateNow();
+				//}
 			}
 
 			public function refreshSubtitlePendingList():void

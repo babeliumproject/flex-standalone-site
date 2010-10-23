@@ -7,65 +7,40 @@
 					verticalAlign="middle">
 
 	<mx:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
-			  fontWeight="bold"
-			  color="#FF0000"
-			  fontSize="16"
+			  styleName="errorLabel"
 			  visible="{ !DataModel.getInstance().isLoggedIn}"/>
-	<mx:Panel id="evaluationOptions"
-			  headerHeight="0"
-			  paddingBottom="0"
-			  paddingTop="0"
-			  paddingLeft="0"
-			  paddingRight="0"
+	<mx:VBox id="evaluationOptions"
 			  visible="{ DataModel.getInstance().isLoggedIn}"
-			  horizontalAlign="center"
-			  verticalAlign="middle"
-			  width="100%"
-			  backgroundAlpha="0.0"
-			  cornerRadius="0"
-			  borderStyle="none">
+			  styleName="hvCenteredBox"
+			  width="100%">
 		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle"
-				 borderThickness="0"
+				 styleName="hvCenteredBox"
 				 visible="{!DataModel.getInstance().isLoggedIn}">
 			<mx:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
-			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"
-						   cornerRadius="4"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
 			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
 			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
 		</mx:HBox>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"
-				  fontSize="16"
-				  fontFamily="Arial"
-				  fontWeight="bold"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"
-				  fontFamily="Arial"
-				  fontSize="14"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"/>
+		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"/>
 		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_1')}"/>
 		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
 		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
 		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle"
+				 styleName="hvCenteredBox"
 				 visible="{DataModel.getInstance().isAutoevaluable}">
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"
-					  fontSize="14"/>
+			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"/>
 			<mx:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
 						 id="autoevaluateCheckbox"/>
 		</mx:HBox>
 		<mx:HBox width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle"
-				 height="34">
+				 styleName="hvCenteredBox">
 			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
-					   fontSize="12"
 					   click="evaluationRequestedClickHandler()"/>
 			<mx:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
-					   fontSize="12"
 					   click="returnToMainClickHandler()"/>
 		</mx:HBox>
-	</mx:Panel>
+	</mx:VBox>
 
 	<mx:Script>
 		<![CDATA[

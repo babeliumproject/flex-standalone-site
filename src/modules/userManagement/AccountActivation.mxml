@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 creationComplete="creationCompleteHandler(event)"
-		 verticalGap="14"
-		 fontFamily="Arial"
-		 fontSize="12">
+		 verticalGap="14">
 
 	<mx:Script>
 		<![CDATA[
@@ -93,9 +91,7 @@
 				destination="onTabChange"/>
 
 	<mx:Label text="Account Activation"
-			  fontFamily="Arial"
-			  fontSize="18"
-			  fontWeight="bold"/>
+			  styleName="sectionTitleLabel"/>
 	<mx:HRule width="100%"/>
 	<mx:Label id="activating"
 			  text="{message}"/>

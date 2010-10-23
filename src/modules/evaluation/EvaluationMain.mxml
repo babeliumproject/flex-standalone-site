@@ -723,8 +723,7 @@
 		<mx:Label id="exerciseTitle"
 				  text="{_exerciseTitle}"
 				  width="100%"
-				  fontSize="16"
-				  fontWeight="bold"/>
+				  styleName="sectionTitleLabel"/>
 		<mx:HBox width="100%">
 			<!-- w/h = 16:10 -->
 			<videoPlayer:VideoPlayerBabelia id="VP"

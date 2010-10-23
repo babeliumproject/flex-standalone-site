@@ -159,7 +159,6 @@
 					  text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
 					  enabled="false"/>
 			<mx:ComboBox id="sort"
-						 fontWeight="normal"
 						 close="closeHandler(event)"
 						 editable="false"
 						 enabled="false"
