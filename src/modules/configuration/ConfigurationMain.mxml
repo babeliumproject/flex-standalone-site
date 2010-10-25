@@ -208,7 +208,6 @@
 				 includeInLayout="false"
 				 visible="false">
 			<mx:Label styleName="sectionLowerTitleLabel"
-					  textDecoration="underline"
 					  text="{resourceManager.getString('myResources','RESULTS')}"/>
 			<mx:HBox id="webCamStatus"
 					 verticalAlign="middle">
@@ -243,8 +242,7 @@
 				<configuration:WebcamCheck id="webCamCheck"/>
 				<mx:LinkButton id="refreshCamButton"
 							   visible="false"
-							   color="red"
-							   textDecoration="underline"
+							   styleName="errorLabel"
 							   label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}"
 							   click="refreshWebCam()"/>
 			</mx:VBox>
@@ -253,8 +251,7 @@
 				<configuration:MicrophoneCheck id="micCheck"/>
 				<mx:LinkButton id="refreshMicButton"
 							   visible="false"
-							   color="red"
-							   textDecoration="underline"
+							   styleName="errorLabel"
 							   label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}"
 							   click="refreshMic()"/>
 			</mx:VBox>

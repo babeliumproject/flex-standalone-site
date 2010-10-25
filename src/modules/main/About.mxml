@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 verticalGap="14"
 		 width="100%">
 
 
@@ -12,85 +11,88 @@
 		<mx:Text text="Enter section description here."/>
 	</mx:VBox>
 
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
-			  styleName="boldYellowLabel"/>
-	<mx:HBox width="100%"
-			 verticalAlign="middle">
-		<mx:Spacer width="10"/>
-		<mx:Image id="groupLogo"
-				  height="87"
-				  width="87"
-				  source="resources/images/ghym_logo_degr_87px.png"/>
-		<mx:Text text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
-				 width="100%"
-				 height="100%"/>
-	</mx:HBox>
-
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
-			  styleName="boldYellowLabel"/>
-	<mx:VBox width="100%">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
-		<mx:LinkButton label="babeliumproject@gmail.com"
-					   styleName="blueLinkButton"
-					   click="emailButtonClickHandler(event)"/>
-	</mx:VBox>
-
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
-			  styleName="boldYellowLabel"/>
-	<mx:VBox width="100%">
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
-			<mx:Label id="appRevisionLabel"
-					  styleName="boldDarkGreyLabel"/>
+	<mx:VBox styleName="padding10AllSidesBox">
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
+				  styleName="boldYellowLabel"/>
+		<mx:HBox width="100%"
+				 verticalAlign="middle">
+			<mx:Spacer width="10"/>
+			<mx:Image id="groupLogo"
+					  height="87"
+					  width="87"
+					  source="resources/images/ghym_logo_degr_87px.png"/>
+			<mx:Text text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
+					 width="100%"
+					 height="100%"/>
 		</mx:HBox>
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
-			<mx:Label id="flashVersionLabel"
-					  styleName="boldDarkGreyLabel"
-					  text="{userFlashVersion()}"/>
-		</mx:HBox>
-		<!--
-			 mx:Text text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"
-			 / -->
-	</mx:VBox>
-	<mx:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
-			  styleName="boldYellowLabel"/>
+		<mx:Spacer height="24"/>
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
+				  styleName="boldYellowLabel"/>
+		<mx:VBox width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
+			<mx:LinkButton label="babeliumproject@gmail.com"
+						   styleName="blueLinkButton"
+						   click="emailButtonClickHandler(event)"/>
+		</mx:VBox>
+		<mx:Spacer height="24"/>
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
+				  styleName="boldYellowLabel"/>
+		<mx:VBox width="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
+				<mx:Label id="appRevisionLabel"
+						  styleName="boldDarkGreyLabel"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
+				<mx:Label id="flashVersionLabel"
+						  styleName="boldDarkGreyLabel"
+						  text="{userFlashVersion()}"/>
+			</mx:HBox>
+			<!--
+				 mx:Text text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"
+				 / -->
+		</mx:VBox>
+		<mx:Spacer height="24"/>
+		<mx:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
+				  styleName="boldYellowLabel"/>
 
-	<mx:DataGrid borderStyle="solid"
-				 headerColors="[0xAAAAAA, 0xCCCCCC]"
-				 sortableColumns="false"
-				 selectable="false"
-				 editable="false"
-				 width="80%"
-				 dataProvider="{productData}"
-				 rowCount="{productData.length}"
-				 verticalScrollPolicy="off">
-		<mx:columns>
-			<mx:DataGridColumn headerText="Product"
-							   dataField="product"
-							   textAlign="center"/>
-			<mx:DataGridColumn headerText="License"
-							   editable="false"
-							   textAlign="center">
-				<mx:itemRenderer>
-					<mx:Component>
-						<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
-									   label="{data.licenseName}"/>
-					</mx:Component>
-				</mx:itemRenderer>
-			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="Website"
-							   editable="false"
-							   textAlign="center">
-				<mx:itemRenderer>
-					<mx:Component>
-						<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
-									   label="{data.productUrl}"/>
-					</mx:Component>
-				</mx:itemRenderer>
-			</mx:DataGridColumn>
-		</mx:columns>
-	</mx:DataGrid>
+		<mx:DataGrid borderStyle="solid"
+					 headerColors="[0xAAAAAA, 0xCCCCCC]"
+					 sortableColumns="false"
+					 selectable="false"
+					 editable="false"
+					 width="80%"
+					 dataProvider="{productData}"
+					 rowCount="{productData.length}"
+					 verticalScrollPolicy="off">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Product"
+								   dataField="product"
+								   textAlign="center"/>
+				<mx:DataGridColumn headerText="License"
+								   editable="false"
+								   textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
+										   label="{data.licenseName}"/>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="Website"
+								   editable="false"
+								   textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
+										   label="{data.productUrl}"/>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
 
 	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
 				destination="onPreferencesRetrieved"/>

@@ -32,43 +32,46 @@
 	</mx:Canvas>
 
 	<mx:VBox width="100%"
-			 horizontalAlign="right"
+			 horizontalAlign="left"
 			 verticalGap="2"
 			 verticalScrollPolicy="off"
 			 horizontalScrollPolicy="off">
-		<mx:HBox horizontalAlign="left"
-				 verticalAlign="middle"
-				 horizontalGap="2"
-				 width="100%">
-			<mx:Image width="16"
-					  height="16"
-					  toolTip="{exerciseLanguage.source}"
-					  source="{getFlagSource(data as ExerciseVO)}"
-					  id="exerciseLanguage"/>
-			<mx:HBox id="avgDifficultyIndicator"
-					 styleName="roundedBorderWhiteBox">
-				<mx:Label text="{getLevelCorrespondence(data.avgDifficulty)}"/>
+		<mx:Label id="title"
+				  text="{data.title}"
+				  width="100%"/>
+		<mx:HRule width="100%"/>
+		<mx:HBox horizontalGap="20"
+				 styleName="hvCenteredBox">
+			<mx:HBox horizontalGap="2" verticalAlign="middle">
+				<mx:Image width="16"
+						  height="16"
+						  toolTip="{exerciseLanguage.source}"
+						  source="{getFlagSource(data as ExerciseVO)}"
+						  id="exerciseLanguage"/>
+				<mx:Label text="{getLevelCorrespondence(data.avgDifficulty)}"
+						  styleName="boldYellowLabel"/>
 			</mx:HBox>
-			<mx:LinkButton id="title"
-						   label="{data.title}"
-						   width="100%"
-						   textAlign="left"/>
+			<ns1:Rating value="{data.avgRating}"
+						liveRollOver="false"/>
+			<mx:Label text="{dateFormatter.format(data.addingDate)}"
+					  styleName="boldYellowLabel"/>
 		</mx:HBox>
 
-		<mx:HRule height="1"
-				  width="100%"/>
+
 		<mx:Text text="{truncateDescription(data.description)}"
 				 width="100%"
 				 height="100%"
 				 selectable="false"
 				 toolTip="{data.description}"/>
-		<mx:HBox verticalAlign="middle"
+		<mx:HBox horizontalAlign="right"
+				 verticalAlign="middle"
 				 width="100%">
-			<ns1:Rating value="{data.avgRating}"
-						liveRollOver="false"/>
-			<mx:Label text="{dateFormatter.format(data.addingDate)}"
-					  styleName="boldLabel"/>
+			<mx:Label text="user:"/>
 			<mx:LinkButton label="{data.userName}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Tags:"/>
+			<mx:HBox id="tagRow"/>
 		</mx:HBox>
 		<mx:HBox verticalAlign="middle"
 				 width="100%">
@@ -98,22 +101,22 @@
 	<mx:Script>
 		<![CDATA[
 			import control.CuePointManager;
-			
+
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
 			import events.SubtitleEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
-			
+
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-			
+
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;

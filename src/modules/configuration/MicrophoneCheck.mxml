@@ -245,13 +245,7 @@
 
 	<mx:Spacer height="20"/>
 
-	<mx:HBox cornerRadius="8"
-			 borderStyle="solid"
-			 borderColor="#92d3d5"
-			 paddingTop="10"
-			 paddingBottom="10"
-			 paddingLeft="10"
-			 paddingRight="10">
+	<mx:HBox styleName="roundedBlueBorderBox">
 		<mx:Button id="recButton"
 				   click="recStart()"
 				   icon="@Embed(source='resources/images/playerRecIcon.png')"

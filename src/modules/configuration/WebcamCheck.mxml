@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:ns1="modules.configuration.webcam.*"
-		 paddingLeft="10"
-		 paddingTop="10"
-		 paddingRight="10"
-		 paddingBottom="10"
+		 styleName="padding10AllSidesBox"
 		 width="100%"
 		 height="100%"
 		 horizontalScrollPolicy="off"

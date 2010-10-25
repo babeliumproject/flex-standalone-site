@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 styleName="hvCenteredBox"
 		 label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"
 		 verticalScrollPolicy="off"
 		 width="100%"
