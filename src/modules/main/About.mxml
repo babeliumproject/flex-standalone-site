@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="100%">
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%">
 
 
 	<s:VGroup styleName="sectionInfoBox"
-			 width="100%"
-			 paddingBottom="16">
+			  width="100%"
+			  paddingBottom="16">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
-				  styleName="sectionInfoTitleLabel"/>
+				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
 	</s:VGroup>
 
 	<s:VGroup styleName="padding10AllSidesBox">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
-				  styleName="boldYellowLabel"/>
+				 styleName="boldYellowLabel"/>
 		<s:HGroup width="100%"
-				 verticalAlign="middle">
+				  verticalAlign="middle">
 			<mx:Spacer width="10"/>
 			<mx:Image id="groupLogo"
 					  height="87"
@@ -29,7 +29,7 @@
 		</s:HGroup>
 		<mx:Spacer height="24"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
-				  styleName="boldYellowLabel"/>
+				 styleName="boldYellowLabel"/>
 		<s:VGroup width="100%">
 			<s:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
 			<mx:LinkButton label="babeliumproject@gmail.com"
@@ -38,18 +38,18 @@
 		</s:VGroup>
 		<mx:Spacer height="24"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
-				  styleName="boldYellowLabel"/>
+				 styleName="boldYellowLabel"/>
 		<s:VGroup width="100%">
 			<s:HGroup width="100%">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
 				<s:Label id="appRevisionLabel"
-						  styleName="boldDarkGreyLabel"/>
+						 styleName="boldDarkGreyLabel"/>
 			</s:HGroup>
 			<s:HGroup width="100%">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
 				<s:Label id="flashVersionLabel"
-						  styleName="boldDarkGreyLabel"
-						  text="{userFlashVersion()}"/>
+						 styleName="boldDarkGreyLabel"
+						 text="{userFlashVersion()}"/>
 			</s:HGroup>
 			<!--
 				 mx:Text text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"
@@ -57,17 +57,16 @@
 		</s:VGroup>
 		<mx:Spacer height="24"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
-				  styleName="boldYellowLabel"/>
+				 styleName="boldYellowLabel"/>
 
 		<mx:DataGrid borderStyle="solid"
-					 headerColors="[0xAAAAAA, 0xCCCCCC]"
+					 headerBackgroundSkin="skins.DataGridHeaderGradientSkin"
 					 sortableColumns="false"
 					 selectable="false"
 					 editable="false"
 					 width="80%"
 					 dataProvider="{productData}"
-					 rowCount="{productData.length}"
-					 >
+					 rowCount="{productData.length}">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Product"
 								   dataField="product"

@@ -3,7 +3,6 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:common="view.common.*"
-		 xmlns:rating="com.asfusion.controls.*"
 		 xmlns:evaluation="modules.evaluation.*"
 		 xmlns:videoUpload="modules.videoUpload.*"
 		 title="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
@@ -13,7 +12,6 @@
 
 	<fx:Script>
 		<![CDATA[
-			import com.asfusion.controls.*;
 
 			import events.EvaluationEvent;
 
@@ -69,7 +67,7 @@
 
 				if (_responseDataAvailable)
 				{
-					if (userIntonationScore.ratingComponent.value > 0 && userFluencyScore.ratingComponent.value > 0 && userRhythmScore.ratingComponent.value > 0 && userSpontaneityScore.ratingComponent.value > 0 && userOverallScore.ratingComponent.value > 0)
+					if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
 					{
 						if (includeTextCheck.selected && textComment.text == '')
 						{
@@ -83,12 +81,12 @@
 						}
 						var evaluation:EvaluationVO=new EvaluationVO();
 
-						evaluation.intonationScore=userIntonationScore.ratingComponent.value;
-						evaluation.fluencyScore=userFluencyScore.ratingComponent.value;
-						evaluation.rhythmScore=userRhythmScore.ratingComponent.value;
-						evaluation.spontaneityScore=userSpontaneityScore.ratingComponent.value;
+						evaluation.intonationScore=userIntonationScore.ratingComponent.rating;
+						evaluation.fluencyScore=userFluencyScore.ratingComponent.rating;
+						evaluation.rhythmScore=userRhythmScore.ratingComponent.rating;
+						evaluation.spontaneityScore=userSpontaneityScore.ratingComponent.rating;
 
-						evaluation.overallScore=userOverallScore.ratingComponent.value;
+						evaluation.overallScore=userOverallScore.ratingComponent.rating;
 						evaluation.comment=textComment.text;
 
 						evaluation.responseId=_responseId;
@@ -125,11 +123,11 @@
 
 			public function resetEvaluationButtonClickHandler(event:MouseEvent):void
 			{
-				userIntonationScore.ratingComponent.value=0;
-				userFluencyScore.ratingComponent.value=0;
-				userRhythmScore.ratingComponent.value=0;
-				userSpontaneityScore.ratingComponent.value=0;
-				userOverallScore.ratingComponent.value=0;
+				userIntonationScore.ratingComponent.rating=0;
+				userFluencyScore.ratingComponent.rating=0;
+				userRhythmScore.ratingComponent.rating=0;
+				userSpontaneityScore.ratingComponent.rating=0;
+				userOverallScore.ratingComponent.rating=0;
 
 				textComment.text='';
 				if (videoComment)

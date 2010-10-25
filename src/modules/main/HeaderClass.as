@@ -26,13 +26,14 @@ package modules.main
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
+	import spark.components.BorderContainer;
 	import spark.components.HGroup;
 	
 	import view.common.PrivacyRights;
 	
 	import vo.LoginVO;
 
-	public class HeaderClass extends HGroup
+	public class HeaderClass extends BorderContainer
 	{
 		private var interval:uint;
 		private var intervalLoops:int;

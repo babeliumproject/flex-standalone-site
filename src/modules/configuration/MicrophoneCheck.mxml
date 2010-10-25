@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:configuration="modules.configuration.*"
-		 styleName="padding10AllSidesBox"
-		 width="100%"
-		 height="100%"
-		 creationComplete="onComplete()">
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:configuration="modules.configuration.*"
+		  styleName="padding10AllSidesBox"
+		  width="100%"
+		  height="100%"
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
 			import flash.sampler.getInvocationCount;
-
+			
 			import model.DataModel;
-
-
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -196,7 +196,7 @@
 				}
 				else
 				{
-					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
 				}
@@ -238,7 +238,7 @@
 	<mx:HRule styleName="sectionTitleHRule"
 			  width="{labelMicrophoneCheck.width}"/>
 	<s:VGroup width="100%"
-			 height="100%">
+			  height="100%">
 		<mx:Spacer/>
 		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE1') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE2')}"/>
 		<mx:Spacer/>
@@ -249,22 +249,22 @@
 
 	<s:HGroup styleName="roundedBlueBorderBox">
 		<s:Button id="recButton"
-				   click="recStart()"
-				   icon="@Embed(source='resources/images/playerRecIcon.png')"
-				   horizontalCenter="true"
-				   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+				  click="recStart()"
+				  horizontalCenter="true"
+				  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 					   !DataModel.getInstance().recording &amp;&amp;
 					   DataModel.getInstance().permissions}"/>
+		<!-- icon="@Embed(source='resources/images/playerRecIcon.png')" -->
 		<s:Button id="playButton"
-				   click="playStart()"
-				   icon="@Embed(source='resources/images/playerPlayIcon.png')"
-				   horizontalCenter="true"
-				   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+				  click="playStart()"
+				  horizontalCenter="true"
+				  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 					   !DataModel.getInstance().recording &amp;&amp;
 					   DataModel.getInstance().permissions}"/>
+		<!--  icon="@Embed(source='resources/images/playerPlayIcon.png')" -->
 		<s:VGroup>
 			<s:HGroup horizontalAlign="right"
-					 width="100%">
+					  width="100%">
 				<mx:ProgressBar id="recordProgressBar"
 								mode="manual"
 								minimum="0"
@@ -275,9 +275,9 @@
 								labelPlacement="center"/>
 			</s:HGroup>
 			<s:Label id="statusText"
-					  styleName="errorLabel"
-					  text="{resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}"
-					  visible="false"/>
+					 styleName="errorLabel"
+					 text="{resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}"
+					 visible="false"/>
 			<s:HGroup verticalAlign="middle">
 				<s:Label text="Level: "/>
 				<configuration:SoundLevelMeasurer id="barraSonido"/>
@@ -287,12 +287,12 @@
 	</s:HGroup>
 
 	<s:HGroup id="notConect"
-			 styleName="hvCenteredBox"
-			 width="100%"
-			 height="100%"
-			 visible="false">
+			  styleName="hvCenteredBox"
+			  width="100%"
+			  height="100%"
+			  visible="false">
 		<s:VGroup horizontalAlign="center"
-				 verticalAlign="middle">
+				  verticalAlign="middle">
 			<mx:Text styleName="errorLabel"
 					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
 		</s:VGroup>

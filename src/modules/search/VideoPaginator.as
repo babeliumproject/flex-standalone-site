@@ -40,8 +40,8 @@ package modules.search
 				//Create the first and previous page buttons if needed
 				if (currentPage > 1)
 				{
-					container.addChild(createControlButton(1, firstI, buttonClickHandler));
-					container.addChild(createControlButton(currentPage - 1, previousI, buttonClickHandler));
+					container.addElement(createControlButton(1, firstI, buttonClickHandler));
+					container.addElement(createControlButton(currentPage - 1, previousI, buttonClickHandler));
 				}
 
 				//Create the numbered page buttons
@@ -51,21 +51,21 @@ package modules.search
 					{
 						for (var i:int=1; (i <= neededPageButtons && i <= maxPageButtonsInPagination); i++)
 						{
-							container.addChild(createPageButton(i, buttonClickHandler));
+							container.addElement(createPageButton(i, buttonClickHandler));
 						}
 					}
 					else if (currentPage > neededPageButtons - limit)
 					{
 						for (var j:int=neededPageButtons - maxPageButtonsInPagination + 1; j <= neededPageButtons; j++)
 						{
-							container.addChild(createPageButton(j, buttonClickHandler));
+							container.addElement(createPageButton(j, buttonClickHandler));
 						}
 					}
 					else
 					{
 						for (var k:int=currentPage - limit + 1; k <= currentPage + limit - 1; k++)
 						{
-							container.addChild(createPageButton(k, buttonClickHandler));
+							container.addElement(createPageButton(k, buttonClickHandler));
 						}
 					}
 				}
@@ -73,15 +73,15 @@ package modules.search
 				{
 					for (var h:int=1; (h <= neededPageButtons && h <= maxPageButtonsInPagination); h++)
 					{
-						container.addChild(createPageButton(h, buttonClickHandler));
+						container.addElement(createPageButton(h, buttonClickHandler));
 					}
 				}
 
 				//Create the last and next page buttons if needed
 				if (currentPage < neededPageButtons)
 				{
-					container.addChild(createControlButton(currentPage + 1, nextI, buttonClickHandler));
-					container.addChild(createControlButton(neededPageButtons, lastI, buttonClickHandler));
+					container.addElement(createControlButton(currentPage + 1, nextI, buttonClickHandler));
+					container.addElement(createControlButton(neededPageButtons, lastI, buttonClickHandler));
 				}
 			}
 			for (var z:uint = 0; z<container.numElements; z++)

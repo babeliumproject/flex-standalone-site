@@ -3,7 +3,8 @@
 						  xmlns:s="library://ns.adobe.com/flex/spark"
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:ns1="com.asfusion.controls.*"
-						  creationComplete="completeHandler()">
+						  creationComplete="completeHandler()"
+						  xmlns:hulstkamp="com.hulstkamp.*">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="middle"
@@ -53,8 +54,9 @@
 				<s:Label text="{getLevelCorrespondence(data.avgDifficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<ns1:Rating value="{data.avgRating}"
-						liveRollOver="false"/>
+			<hulstkamp:AhFxRatingComponent rating="{data.avgRating}"
+										   enabled="false"
+										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
 			<s:Label text="{dateFormatter.format(data.addingDate)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>

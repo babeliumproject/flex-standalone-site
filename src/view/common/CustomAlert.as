@@ -50,7 +50,7 @@ package view.common
 			alert.setStyle('fontSize', 11);
 			alert.setStyle('backgroundColor', 0xffffff);
 			alert.setStyle('borderColor', 0xE5E8EA);
-			alert.setStyle('borderThickness', 1);
+			alert.setStyle('borderWeight', 1);
 			alert.setStyle('borderStyle', "solid");
 			alert.setStyle('dropShadowEnabled', true);
 			alert.setStyle('dropShadowColor', 0x000000);

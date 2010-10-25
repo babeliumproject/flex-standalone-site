@@ -10,7 +10,7 @@ package view.common
 			
 			setStyle('backgroundColor', 0xffffff);
 			setStyle('borderColor',0xE5E8EA);
-			setStyle('borderThickness',1);
+			setStyle('borderWeight',1);
 			setStyle('borderStyle', "solid");
 			setStyle('dropShadowEnabled', true);
 			setStyle('dropShadowColor', 0x000000);

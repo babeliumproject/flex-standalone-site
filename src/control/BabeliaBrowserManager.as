@@ -23,6 +23,7 @@ package control
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.core.UIComponent;
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
@@ -30,6 +31,7 @@ package control
 	import mx.utils.ObjectUtil;
 	
 	import spark.components.Group;
+	import spark.components.SkinnableContainer;
 
 
 	/**
@@ -205,7 +207,7 @@ package control
 			DataModel.getInstance().appBody.addElement(new moduleClass());
 		}
 		
-		protected function removeAllChildrenFromComponent(component:Group):void
+		protected function removeAllChildrenFromComponent(component:SkinnableContainer):void
 		{
 			for (var i:uint=0; i < component.numElements; i++)
 				component.removeElementAt(i);

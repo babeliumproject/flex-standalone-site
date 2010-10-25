@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:s="library://ns.adobe.com/flex/spark"
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
 		   width="100%"
 		   horizontalScrollPolicy="off"
-		   borderSides="left right"
 		   borderStyle="solid"
 		   borderColor="#92d3d5">
+	<!-- borderSides="left right" -->
 
 
 	<s:VGroup width="100%"
-			 height="100%">
+			  height="100%">
 		<s:HGroup id="sectionLinks"
-				 paddingLeft="200"
-				 horizontalAlign="center"
-				 verticalAlign="middle"
-				 width="100%"
-				 height="100%">
+				  paddingLeft="200"
+				  horizontalAlign="center"
+				  verticalAlign="middle"
+				  width="100%"
+				  height="100%">
 			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
 						   styleName="homeLinkButton"
 						   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
@@ -64,22 +64,22 @@
 						   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
 		</s:HGroup>
 		<s:HGroup id="searchUploadBar"
-				 styleName="uploadSearchBox"
-				 width="100%">
+				  styleName="uploadSearchBox"
+				  width="100%">
 			<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
-					   styleName="uploadButton"
-					   enabled="{!DataModel.getInstance().recordingExercise}"
-					   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
+					  styleName="uploadButton"
+					  enabled="{!DataModel.getInstance().recordingExercise}"
+					  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
 			<s:TextInput id="searchField"
-						  styleName="searchTextInput"
-						  width="100%"
-						  height="26"
-						  maxChars="100"
-						  enter="launchSearch()"/>
+						 styleName="searchTextInput"
+						 width="100%"
+						 height="26"
+						 maxChars="100"
+						 enter="launchSearch()"/>
 			<s:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
-					   styleName="searchButton"
-					   enabled="true"
-					   click="launchSearch()"/>
+					  styleName="searchButton"
+					  enabled="true"
+					  click="launchSearch()"/>
 
 
 		</s:HGroup>
@@ -112,7 +112,7 @@
 				DataModel.getInstance().searchField=searchField.text;
 				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
 				//{
-					changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
+				changeView(ViewChangeEvent.VIEW_SEARCH_MODULE);
 				//}
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}

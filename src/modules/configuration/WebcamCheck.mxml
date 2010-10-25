@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:ns1="modules.configuration.webcam.*"
-		 styleName="padding10AllSidesBox"
-		 width="100%"
-		 height="100%"
-		 creationComplete="init()">
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:ns1="modules.configuration.webcam.*"
+		  styleName="padding10AllSidesBox"
+		  width="100%"
+		  height="100%"
+		  creationComplete="init()">
 
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-
-
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -159,7 +159,7 @@
 				else
 				{
 					PrivacyRights.useMicAndCamera=true;
-					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
 				}
@@ -197,56 +197,61 @@
 
 	<s:VGroup width="100%">
 		<s:Label id="labelWebcamCheck"
-				  text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}"
-				  styleName="sectionTitleLabel"/>
+				 text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}"
+				 styleName="sectionTitleLabel"/>
 		<mx:HRule height="100%"
 				  styleName="sectionTitleHRule"
 				  width="{labelWebcamCheck.width}"/>
 	</s:VGroup>
 	<mx:Spacer/>
 	<s:HGroup id="allMenu"
-			 visible="true"
-			 width="100%">
+			  visible="true"
+			  width="100%">
 
 		<s:VGroup width="100%"
-				 height="100%">
+				  height="100%">
 			<mx:Spacer/>
 			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}"/>
 			<mx:Spacer/>
 			<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}"/>
 		</s:VGroup>
 		<s:HGroup horizontalAlign="right"
-				 width="100%">
+				  width="100%">
 			<s:VGroup id="videoPanel"
-					 horizontalAlign="center"
-					 verticalAlign="top">
-				<s:VGroup borderStyle="solid"
-						 cornerRadius="3"
-						 backgroundColor="#e9edee"
-						 horizontalAlign="center"
-						 verticalAlign="middle">
-					<s:VGroup borderStyle="solid"
-							 width="320"
-							 height="240"
-							 backgroundColor="black">
+					  horizontalAlign="center"
+					  verticalAlign="top">
+				<s:BorderContainer borderStyle="solid"
+								   cornerRadius="3"
+								   backgroundColor="#e9edee">
+					<s:layout>
+						<s:VerticalLayout horizontalAlign="center"
+										  verticalAlign="middle"/>
+					</s:layout>
+					<s:BorderContainer borderStyle="solid"
+									   width="320"
+									   height="240"
+									   backgroundColor="black">
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
 						<mx:UIComponent id="videoHolder"
 										width="100%"
 										height="100%"/>
 						<mx:Text id="statusText"
 								 visible="false"
 								 styleName="errorLabel"/>
-					</s:VGroup>
+					</s:BorderContainer>
 					<s:HGroup horizontalAlign="center">
 						<s:Button label="REC"
-								   click="recStart()"
-								   horizontalCenter="true"
-								   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+								  click="recStart()"
+								  horizontalCenter="true"
+								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>
 						<s:Button label="PLAY"
-								   click="playStart()"
-								   horizontalCenter="true"
-								   enabled="{!DataModel.getInstance().playing &amp;&amp; 
+								  click="playStart()"
+								  horizontalCenter="true"
+								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>
 					</s:HGroup>
@@ -254,7 +259,7 @@
 						<mx:Text id="contador"
 								 visible="false"/>
 					</s:VGroup>
-				</s:VGroup>
+				</s:BorderContainer>
 			</s:VGroup>
 
 		</s:HGroup>
@@ -263,12 +268,12 @@
 
 
 	<s:HGroup id="notConect"
-			 horizontalAlign="center"
-			 verticalAlign="middle"
-			 visible="false"
-			 width="100%">
+			  horizontalAlign="center"
+			  verticalAlign="middle"
+			  visible="false"
+			  width="100%">
 		<s:VGroup horizontalAlign="center"
-				 verticalAlign="middle">
+				  verticalAlign="middle">
 			<mx:Text styleName="errorLabel"
 					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_CAM_TEXT')}"/>
 		</s:VGroup>

@@ -15,6 +15,7 @@ package commands.evaluation
 	import modules.evaluation.EvaluationContainer;
 	
 	import spark.components.Group;
+	import spark.components.SkinnableContainer;
 
 	public class ViewEvaluationModuleCommand implements ICommand
 	{
@@ -32,7 +33,7 @@ package commands.evaluation
 				BabeliaBrowserManager.index2fragment(index));
 		}
 		
-		protected function removeAllChildrenFromComponent(component:Group):void
+		protected function removeAllChildrenFromComponent(component:SkinnableContainer):void
 		{
 			for (var i:uint=0; i < component.numElements; i++)
 				component.removeElementAt(i);

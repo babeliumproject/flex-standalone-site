@@ -105,14 +105,14 @@
 				messageVBox.percentWidth=100;
 				messageVBox.percentHeight=100;
 				messageVBox.setStyle("verticalAlign", "middle");
-				messageVBox.addChild(titleLabel);
-				messageVBox.addChild(messageText);
+				messageVBox.addElement(titleLabel);
+				messageVBox.addElement(messageText);
 				
 				var motdBox:HGroup=new HGroup();
 				motdBox.percentWidth=100;
 				motdBox.setStyle("verticalAlign", "middle");
-				motdBox.addChild(messageImage);
-				motdBox.addChild(messageVBox);
+				motdBox.addElement(messageImage);
+				motdBox.addElement(messageVBox);
 				
 				return motdBox;
 			}

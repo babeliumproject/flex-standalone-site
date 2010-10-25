@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  borderStyle="solid"
-		  borderThickness="2"
+		  borderWeight="2"
 		  creationComplete="onComplete()"
 		  cornerRadius="4">
+	
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
 
 	<fx:Script>
 
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
 			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -497,7 +502,7 @@
 				else
 				{
 					PrivacyRights.useMicAndCamera=true;
-					privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
 				}
@@ -586,4 +591,4 @@
 	</s:VGroup>
 
 
-</s:HGroup>
+</s:BorderContainer>

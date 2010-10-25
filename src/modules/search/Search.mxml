@@ -177,12 +177,11 @@
 					 width="100%"
 					 editable="false"
 					 selectable="false"
-					 
+					 borderStyle="none"
 					 sortableColumns="false"
 					 draggableColumns="false"
 					 headerHeight="0"
-					 contentBackgroundAlpha="0"
-					 borderThickness="0">
+					 contentBackgroundAlpha="0">
 			<mx:columns>
 				<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 			</mx:columns>

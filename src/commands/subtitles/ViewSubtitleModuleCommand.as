@@ -13,6 +13,7 @@ package commands.subtitles
 	import modules.subtitles.SubtitleMain;
 	
 	import spark.components.Group;
+	import spark.components.SkinnableContainer;
 	
 	import vo.ExerciseVO;
 
@@ -48,7 +49,7 @@ package commands.subtitles
 		}
 
 
-		protected function removeAllChildrenFromComponent(component:Group):void
+		protected function removeAllChildrenFromComponent(component:SkinnableContainer):void
 		{
 			for (var i:uint=0; i < component.numElements; i++)
 				component.removeElementAt(i);

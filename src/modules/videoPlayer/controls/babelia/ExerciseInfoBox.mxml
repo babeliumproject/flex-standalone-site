@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:rating="com.asfusion.controls.*"
-		 horizontalAlign="left"
-		 paddingTop="2"
-		 paddingBottom="2"
-		 paddingLeft="2"
-		 paddingRight="2"
-		 gap="0"
-		 borderStyle="solid"
-		 cornerRadius="6">
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:rating="com.asfusion.controls.*"
+				   borderStyle="solid"
+				   cornerRadius="6"
+				   xmlns:hulstkamp="com.hulstkamp.*">
+
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="left"
+						  paddingTop="2"
+						  paddingBottom="2"
+						  paddingLeft="2"
+						  paddingRight="2"
+						  gap="0"/>
+	</s:layout>
 
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-
+			
 			import events.ExerciseEvent;
 			import events.SearchEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.ReportInappropriatePopUp;
-
+			
 			import vo.ExerciseReportVO;
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
@@ -68,7 +73,7 @@
 
 			private function updateComponents():void
 			{
-				rating.value=_exerciseRating;
+				rating.rating=_exerciseRating;
 				addTagLinkButtons();
 
 				var score:ExerciseScoreVO=new ExerciseScoreVO();
@@ -114,7 +119,7 @@
 			{
 				DataModel.getInstance().searchField=(event.target as LinkButton).label;
 				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
-					new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
+				new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 
@@ -123,7 +128,7 @@
 				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
 				{
 					var score:ExerciseScoreVO=new ExerciseScoreVO();
-					score.suggestedScore=rating.selectedValue;
+					score.suggestedScore=rating.rating;
 					score.exerciseId=_exercise.id;
 					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
 				}
@@ -133,7 +138,7 @@
 			{
 				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
 				{
-					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(Application.application.parent, ReportInappropriatePopUp, true));
+					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, ReportInappropriatePopUp, true));
 					PopUpManager.centerPopUp(reportPopUp);
 					reportPopUp.exerciseData=_exercise;
 				}
@@ -142,21 +147,22 @@
 	</fx:Script>
 
 	<s:HGroup id="ratingAndReportBox"
-			 width="100%">
+			  width="100%">
 		<s:HGroup paddingTop="4"
-				 paddingLeft="4">
-			<rating:Rating id="rating"
-						   value="{_exerciseRating}"
-						   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
-						   click="ratingClickHandler(event)"/>
+				  paddingLeft="4">
+			<hulstkamp:AhFxRatingComponent id="rating"
+										   rating="{_exerciseRating}"
+										   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
+										   click="ratingClickHandler(event)"
+										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
 		</s:HGroup>
 		<mx:VRule height="24"/>
 		<s:HGroup horizontalAlign="right"
-				 paddingBottom="0"
-				 paddingTop="0"
-				 paddingLeft="0"
-				 paddingRight="0"
-				 width="100%">
+				  paddingBottom="0"
+				  paddingTop="0"
+				  paddingLeft="0"
+				  paddingRight="0"
+				  width="100%">
 			<mx:LinkButton id="reportVideo"
 						   label="Report"
 						   toolTip="Report innapropriate video."
@@ -166,7 +172,7 @@
 		</s:HGroup>
 	</s:HGroup>
 	<s:VGroup horizontalAlign="center"
-			 width="100%">
+			  width="100%">
 		<mx:HRule id="tagBoxSeparator"
 				  width="100%"
 				  height="0"/>
@@ -178,4 +184,4 @@
 		</mx:Tile>
 	</s:VGroup>
 
-</s:VGroup>
+</s:BorderContainer>

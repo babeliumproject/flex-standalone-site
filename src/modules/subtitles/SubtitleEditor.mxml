@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <subtitles:SubtitleEditorClass xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
+							   xmlns:s="library://ns.adobe.com/flex/spark"
+							   xmlns:mx="library://ns.adobe.com/flex/mx"
 							   xmlns:subtitles="modules.subtitles.*"
 							   xmlns:videoPlayer="modules.videoPlayer.*"
 							   xmlns:videoUpload="modules.videoUpload.*"
 							   xmlns:common="view.common.*">
-	
+
 	<!-- Video Player -->
 	<s:VGroup>
 		<s:Label id="exerciseTitle"
-				  text="ExerciseTitle"
-				  width="100%"
-				  styleName="sectionInfoTitleLabel"/>
+				 text="ExerciseTitle"
+				 width="100%"
+				 styleName="sectionInfoTitleLabel"/>
 		<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
 										autoPlay="true"
 										skin="white"
@@ -25,36 +25,40 @@
 										subtitlingControls="true"
 										streamSource="{streamSource}"/>
 	</s:VGroup>
-	
+
 	<s:Panel id="subtitleEditor"
-			  width="100%"
-			  height="100%"
-			  title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}">
-		
+			 width="100%"
+			 height="100%"
+			 title="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}">
+
 		<s:layout>
-			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+			<s:VerticalLayout horizontalAlign="center"
+							  verticalAlign="middle"/>
 		</s:layout>
-		
-		<s:HGroup id="guestEditWarningBox" verticalAlign="middle">
+
+		<s:HGroup id="guestEditWarningBox"
+				  verticalAlign="middle">
 			<mx:Image source="@Embed(source='resources/images/alertConfirmation.png')"/>
-			<s:Label id="notLoggedWarning" styleName="guestVersionWarningLabel" text="{resourceManager.getString('myResources','LABEL_GUEST_EDIT_WARNING')}"/>
+			<s:Label id="notLoggedWarning"
+					 styleName="guestVersionWarningLabel"
+					 text="{resourceManager.getString('myResources','LABEL_GUEST_EDIT_WARNING')}"/>
 		</s:HGroup>
 		<s:VGroup id="subtitleVersionBox"
-				 includeInLayout="false"
-				 visible="false"
-				 width="100%"
-				 horizontalAlign="left"
-				 paddingTop="10">			
+				  includeInLayout="false"
+				  visible="false"
+				  width="100%"
+				  horizontalAlign="left"
+				  paddingTop="10">
 			<s:HGroup verticalAlign="middle"
-					 width="100%">
+					  width="100%">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION')}"/>
 				<s:ComboBox id="subtitleVersionSelector"
-							 dataProvider="{availableSubtitleVersions}"
-							 change="{onSubtitleVersionChange(event)}"
-							 labelFunction="{subtitleVersionComboLabelFunction}"/>
+							dataProvider="{availableSubtitleVersions}"
+							change="{onSubtitleVersionChange(event)}"
+							labelFunction="{subtitleVersionComboLabelFunction}"/>
 			</s:HGroup>
 		</s:VGroup>
-		
+
 		<mx:DataGrid id="subtitleList"
 					 sortableColumns="false"
 					 width="100%"
@@ -117,28 +121,30 @@
 		</mx:DataGrid>
 		<mx:Spacer height="10"/>
 		<s:HGroup height="40"
-				 width="45%"
-				 styleName="roundedBorderGreyBox">
+				  width="45%"
+				  styleName="roundedBorderGreyBox">
 			<s:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
-					   enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
-					   icon="@Embed(source='../../resources/images/add.png')"
-					   click="{subtitleInsertHandler(event)}"
-					   id="addSubtitleLine"/>
+					  enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
+					  click="{subtitleInsertHandler(event)}"
+					  id="addSubtitleLine"/>
+			<!-- icon="@Embed(source='../../resources/images/add.png')"-->
 			<s:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
-					   enabled="{subtitleCollection.length > 0}"
-					   click="subtitleRemoveHandler()"
-					   icon="@Embed(source='../../resources/images/delete.png')"/>
+					  enabled="{subtitleCollection.length > 0}"
+					  click="subtitleRemoveHandler()"/>
+			<!-- icon="@Embed(source='../../resources/images/delete.png')" -->
+
 			<s:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
-					   enabled="{subtitleCollection.length > 0}"
-					   click="subtitleClearHandler()"
-					   icon="@Embed(source='../../resources/images/cancel.png')"/>
-			<mx:VRule id="saveSubtitleSeparator" height="30"/>
+					  enabled="{subtitleCollection.length > 0}"
+					  click="subtitleClearHandler()"/>
+			<!-- icon="@Embed(source='../../resources/images/cancel.png')" -->
+			<mx:VRule id="saveSubtitleSeparator"
+					  height="30"/>
 			<s:Button id="saveSubtitleButton"
-					   label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
-					   icon="@Embed(source='../../resources/images/save.png')"
-					   click="saveSubtitlesHandler()"/>
+					  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
+					  click="saveSubtitlesHandler()"/>
+			<!-- icon="@Embed(source='../../resources/images/save.png')" -->
 		</s:HGroup>
-		
+
 	</s:Panel>
-	
+
 </subtitles:SubtitleEditorClass>

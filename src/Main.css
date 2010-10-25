@@ -7,12 +7,9 @@
 /* Styles applied by default on specified components */
 
 s|Application{
-	backgroundGradientAlphas: 1.0, 1.0;
-	backgroundGradientColors: #e5ecf2, #f9f9f9;
 	verticalAlign: top;
 	verticalGap: 0;
 	horizontalAlign: center;
-	borderSides: 0;
 	paddingTop: 0;
 	paddingBottom: 5;
 	fontFamily: Arial;
@@ -31,7 +28,7 @@ s|Label{
 
 s|Panel{
 	backgroundColor: #FFFFFF;
-	borderThickness: 1;
+	borderWeight: 1;
 	borderStyle: solid;
 	borderColor: #AAAAAA;
 	dropShadowEnabled: false;
@@ -47,25 +44,6 @@ s|Panel{
 	roundedBottomCorners: true;
 }
 
-common|CustomAlert{
-	fontSize: 11;
-	backgroundColor: #FFFFFF;
-	borderColor: #E5E8EA;
-	borderThickness: 1;
-	borderStyle: solid;
-	dropShadowEnabled: true;
-	dropShadowColor: #000000;
-	cornerRadius: 6;
-	color: #2B333C;
-	paddingBottom: 2;
-	paddingLeft: 2;
-	paddingRight: 2;
-	headerHeight: 19;
-	headerColors: #919191, #FFFFFF;
-	footerColors: #9DB6D9, #FFFFFF;
-	borderColor: #AAAAAA;
-}
-
 main|HeaderClass{
 	paddingTop: 4;
 	paddingBottom: 4;
@@ -73,7 +51,7 @@ main|HeaderClass{
 	backgroundAlpha: 0.5;
 	borderStyle: "solid";
 	borderSides: "left bottom right";
-	borderThickness: 1;
+	borderWeight: 1;
 	borderColor: #92d3d5;
 }
 
@@ -154,7 +132,7 @@ s|TextInput{
 .uploadSearchBox{
 	borderStyle: "solid";
 	borderSides: "top bottom";
-	borderThickness: 1;
+	borderWeight: 1;
 	borderColor: #92d3d5;
 	backgroundColor: #dae9ed;
 	horizontalAlign: "right";
@@ -369,7 +347,7 @@ s|TextInput{
 	backgroundColor: #9AA3B9;
 	borderColor: #FFFFFF;
 	alpha: 1.0;
-	borderThickness: 0;
+	borderWeight: 0;
 	horizontalAlign: center;
 	verticalAlign: middle;
 	paddingLeft: 6;
@@ -389,7 +367,7 @@ s|TextInput{
 .roundedBorderWhiteBox{
 	fontSize: 10;
 	borderStyle: solid;
-	borderThickness: 1;
+	borderWeight: 1;
 	cornerRadius: 4;
 	borderColor: #cccccc;
 	backgroundColor: #ffffff;

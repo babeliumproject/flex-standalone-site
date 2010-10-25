@@ -4,8 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:ns1="modules.videoUpload.*"
 		  xmlns:common="view.common.*"
-		  creationComplete="onComplete()"
-		  >
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
@@ -572,15 +571,15 @@
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
 							 styleName="boldLabel">
 					<s:RadioButtonGroup id="uploadOptionsGroup"
-										 itemClick="changeUploadMethod(event)"/>
+										itemClick="changeUploadMethod(event)"/>
 					<s:RadioButton id="uploadChoice"
-									value="updChoice"
-									label="{resourceManager.getString('myResources','LABEL_UPLOAD_FILE')}"
-									group="{uploadOptionsGroup}"/>
+								   value="updChoice"
+								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_FILE')}"
+								   group="{uploadOptionsGroup}"/>
 					<s:RadioButton id="recordChoice"
-									value="recChoice"
-									label="{resourceManager.getString('myResources','LABEL_UPLOAD_STREAMING')}"
-									group="{uploadOptionsGroup}"/>
+								   value="recChoice"
+								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_STREAMING')}"
+								   group="{uploadOptionsGroup}"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 styleName="boldLabel"
@@ -588,7 +587,7 @@
 							 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
 							 height="67">
 					<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
-								 id="autoevaluateCheckbox"/>
+								id="autoevaluateCheckbox"/>
 					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
 								 styleName="boldLabel">
 						<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
@@ -608,7 +607,6 @@
 					<mx:DataGrid id="listFiles"
 								 allowMultipleSelection="false"
 								 rowCount="1"
-								 
 								 draggableColumns="false"
 								 resizableColumns="false"
 								 sortableColumns="false"
@@ -632,8 +630,8 @@
 						<s:Button id="btnAdd"
 								  toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
 								  click="addFiles()"
-								  icon="@Embed(source='../../resources/images/add.png')"
 								  label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"/>
+						<!-- icon="@Embed(source='../../resources/images/add.png')" -->
 					</s:HGroup>
 				</s:HGroup>
 				<s:Label paddingLeft="12"
@@ -652,15 +650,15 @@
 									width="100%"/>
 					<s:Button id="btnCancel"
 							  toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
-							  icon="@Embed(source='../../resources/images/cancel.png')"
 							  width="26"
 							  click="onUploadCanceled()"/>
+					<!-- icon="@Embed(source='../../resources/images/cancel.png')" -->
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
 							  toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
 							  id="btnUpload"
 							  click="startUpload()"
-							  enabled="{formIsValid}"
-							  icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+							  enabled="{formIsValid}"/>
+					<!--  icon="@Embed(source='../../resources/images/bullet_go.png')" -->
 				</mx:ControlBar>
 			</s:VGroup>
 		</s:VGroup>

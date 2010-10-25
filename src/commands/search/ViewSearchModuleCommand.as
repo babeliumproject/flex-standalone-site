@@ -13,6 +13,7 @@ package commands.search
 	import modules.search.Search;
 	
 	import spark.components.Group;
+	import spark.components.SkinnableContainer;
 	
 	public class ViewSearchModuleCommand implements ICommand
 	{
@@ -30,7 +31,7 @@ package commands.search
 				BabeliaBrowserManager.index2fragment(index));
 		}
 		
-		protected function removeAllChildrenFromComponent(component:Group):void
+		protected function removeAllChildrenFromComponent(component:SkinnableContainer):void
 		{
 			for (var i:uint=0; i < component.numElements; i++)
 				component.removeElementAt(i);
