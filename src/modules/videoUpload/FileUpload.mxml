@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:ns1="modules.videoUpload.*"
-		 xmlns:common="view.common.*"
-		 creationComplete="onComplete()"
-		 verticalScrollPolicy="off">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:ns1="modules.videoUpload.*"
+		  xmlns:common="view.common.*"
+		  creationComplete="onComplete()"
+		  >
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-			
+
 			import flash.events.*;
 			import flash.net.*;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -117,12 +119,10 @@
 				if (_arrUploadFiles.length == 0)
 				{
 					btnUpload.enabled=false;
-					listFiles.verticalScrollPolicy="off";
 				}
 				else
 				{
 					btnUpload.enabled=true;
-					listFiles.verticalScrollPolicy="off";
 				}
 			}
 
@@ -133,7 +133,6 @@
 				btnUpload.enabled=false;
 				btnCancel.enabled=true;
 				listFiles.enabled=false;
-				listFiles.verticalScrollPolicy="off";
 			}
 
 			// Enable UI control
@@ -143,7 +142,6 @@
 				btnUpload.enabled=true;
 				btnCancel.enabled=false;
 				listFiles.enabled=true;
-				listFiles.verticalScrollPolicy="off";
 			}
 
 			private function startUpload():void
@@ -164,8 +162,9 @@
 			{
 				return tags;
 			}
-			
-			private function fieldHasData(fieldText:String):Boolean{
+
+			private function fieldHasData(fieldText:String):Boolean
+			{
 				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				return (fieldData.length < 1) ? false : true;
 			}
@@ -371,11 +370,11 @@
 			{
 				//Reset the file-based upload components
 				addFileReference=null;
-				
+
 				_arrUploadFiles.pop();
 				listFiles.dataProvider=_arrUploadFiles;
 				clearUpload();
-				
+
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
@@ -404,12 +403,12 @@
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
-				
-				uploadOptionsGroup.selectedValue = null;
-				uploadChoice.selected = false;
-				recordChoice.selected = false;
-				uploadFileBox.visible = false;
-				recFromWebcamBox.visible = false;
+
+				uploadOptionsGroup.selectedValue=null;
+				uploadChoice.selected=false;
+				recordChoice.selected=false;
+				uploadFileBox.visible=false;
+				recFromWebcamBox.visible=false;
 			}
 
 
@@ -486,50 +485,51 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().uploadFileSelected}"
+	<fx:Binding source="{DataModel.getInstance().uploadFileSelected}"
 				destination="this.fileSelected"/>
-	<mx:Binding source="{DataModel.getInstance().uploadProgressUpdated}"
+	<fx:Binding source="{DataModel.getInstance().uploadProgressUpdated}"
 				destination="this.onUploadProgress"/>
-	<mx:Binding source="{DataModel.getInstance().uploadFinishedData}"
+	<fx:Binding source="{DataModel.getInstance().uploadFinishedData}"
 				destination="this.onUploadCompleteData"/>
 	<!--
-		 <mx:Binding source="{DataModel.getInstance().uploadFinished}"
+		 <fx:Binding source="{DataModel.getInstance().uploadFinished}"
 		 destination="this.onUploadComplete"/>
-		 <mx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
+		 <fx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
 		 destination="this.onYoutubeTransferComplete"/>
-		 <mx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
+		 <fx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
 		 destination="this.onYoutubeProcessingComplete"/>
-		 <mx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
+		 <fx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
 		 destination="this.onYoutubeProcessUpdate"/>
 	-->
-	<mx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
+	<fx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
 				destination="this.onUnprocessedExerciseComplete"/>
-	<mx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
+	<fx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
 				destination="this.onAutoevaluationEnableError"/>
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
-	
-	<mx:VBox styleName="sectionInfoBox"
-			 width="100%">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
-				  styleName="sectionInfoTitleLabel"/>
-		<mx:Text text="Enter section description here."/>
-	</mx:VBox>
 
-	
-	<mx:HBox width="100%" styleName="padding20AllSidesBox">
-		<mx:VBox width="100%"
-				 height="100%">
+	<s:VGroup styleName="sectionInfoBox"
+			  width="100%">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
+				 styleName="sectionInfoTitleLabel"/>
+		<mx:Text text="Enter section description here."/>
+	</s:VGroup>
+
+
+	<s:HGroup width="100%"
+			  styleName="padding20AllSidesBox">
+		<s:VGroup width="100%"
+				  height="100%">
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox">
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
 							 width="100%"
 							 styleName="boldLabel"
 							 required="true">
-					<mx:TextInput width="100%"
-								  id="videoTitle"/>
+					<s:TextInput width="100%"
+								 id="videoTitle"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
 							 width="100%"
@@ -566,18 +566,18 @@
 							 styleName="boldLabel"
 							 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
 							 width="100%">
-					<mx:TextInput width="100%"
-								  id="referenceUrl"/>
+					<s:TextInput width="100%"
+								 id="referenceUrl"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
 							 styleName="boldLabel">
-					<mx:RadioButtonGroup id="uploadOptionsGroup"
+					<s:RadioButtonGroup id="uploadOptionsGroup"
 										 itemClick="changeUploadMethod(event)"/>
-					<mx:RadioButton id="uploadChoice"
+					<s:RadioButton id="uploadChoice"
 									value="updChoice"
 									label="{resourceManager.getString('myResources','LABEL_UPLOAD_FILE')}"
 									group="{uploadOptionsGroup}"/>
-					<mx:RadioButton id="recordChoice"
+					<s:RadioButton id="recordChoice"
 									value="recChoice"
 									label="{resourceManager.getString('myResources','LABEL_UPLOAD_STREAMING')}"
 									group="{uploadOptionsGroup}"/>
@@ -587,7 +587,7 @@
 							 visible="{DataModel.getInstance().loggedUser.isAdmin}"
 							 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
 							 height="67">
-					<mx:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
+					<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
 								 id="autoevaluateCheckbox"/>
 					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
 								 styleName="boldLabel">
@@ -596,19 +596,19 @@
 				</mx:FormItem>
 			</mx:Form>
 
-			<mx:VBox id="uploadFileBox"
-					 styleName="roundedBlueBorderBox"
-					 width="100%"
-					 minHeight="0"
-					 height="0"
-					 visible="false">
-				<mx:HBox width="100%"
-						 height="60"
-						 styleName="hvCenteredBox">
+			<s:VGroup id="uploadFileBox"
+					  styleName="roundedBlueBorderBox"
+					  width="100%"
+					  minHeight="0"
+					  height="0"
+					  visible="false">
+				<s:HGroup width="100%"
+						  height="60"
+						  styleName="hvCenteredBox">
 					<mx:DataGrid id="listFiles"
 								 allowMultipleSelection="false"
 								 rowCount="1"
-								 verticalScrollPolicy="off"
+								 
 								 draggableColumns="false"
 								 resizableColumns="false"
 								 sortableColumns="false"
@@ -624,24 +624,24 @@
 											   textAlign="right"/>
 						</mx:columns>
 					</mx:DataGrid>
-					<mx:HBox width="100%"
-							 height="100%"
-							 horizontalAlign="right"
-							 verticalAlign="middle"
-							 paddingRight="12">
-						<mx:Button id="btnAdd"
-								   toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
-								   click="addFiles()"
-								   icon="@Embed(source='../../resources/images/add.png')"
-								   label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"/>
-					</mx:HBox>
-				</mx:HBox>
-				<mx:Label paddingLeft="12"
-						  paddingRight="12"
-						  text="{resourceManager.getString('myResources','LABEL_UPLOADSTATUS_NOACTIVITY')}"
-						  width="100%"
-						  id="uploadInformationLabel"
-						  fontWeight="bold"/>
+					<s:HGroup width="100%"
+							  height="100%"
+							  horizontalAlign="right"
+							  verticalAlign="middle"
+							  paddingRight="12">
+						<s:Button id="btnAdd"
+								  toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
+								  click="addFiles()"
+								  icon="@Embed(source='../../resources/images/add.png')"
+								  label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"/>
+					</s:HGroup>
+				</s:HGroup>
+				<s:Label paddingLeft="12"
+						 paddingRight="12"
+						 text="{resourceManager.getString('myResources','LABEL_UPLOADSTATUS_NOACTIVITY')}"
+						 width="100%"
+						 id="uploadInformationLabel"
+						 fontWeight="bold"/>
 				<mx:ControlBar horizontalAlign="center"
 							   verticalAlign="middle"
 							   width="100%">
@@ -650,60 +650,61 @@
 									label=""
 									labelPlacement="center"
 									width="100%"/>
-					<mx:Button id="btnCancel"
-							   toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
-							   icon="@Embed(source='../../resources/images/cancel.png')"
-							   width="26"
-							   click="onUploadCanceled()"/>
-					<mx:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
-							   toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
-							   id="btnUpload"
-							   click="startUpload()"
-							   enabled="{formIsValid}"
-							   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+					<s:Button id="btnCancel"
+							  toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
+							  icon="@Embed(source='../../resources/images/cancel.png')"
+							  width="26"
+							  click="onUploadCanceled()"/>
+					<s:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
+							  toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
+							  id="btnUpload"
+							  click="startUpload()"
+							  enabled="{formIsValid}"
+							  icon="@Embed(source='../../resources/images/bullet_go.png')"/>
 				</mx:ControlBar>
-			</mx:VBox>
-		</mx:VBox>
-		
+			</s:VGroup>
+		</s:VGroup>
+
 		<!-- Wecbam recording widget -->
-		<mx:VBox>
+		<s:VGroup>
 			<ns1:TempVideoRecording id="recFromWebcamBox"
 									visible="false"
 									streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
 									filePrefix="upld"/>
-			<mx:VBox id="recUploadBox"
-					 styleName="roundedBlueBorderBox"
-					 width="{recFromWebcamBox.width}"
-					 visible="false">
+			<s:VGroup id="recUploadBox"
+					  styleName="roundedBlueBorderBox"
+					  width="{recFromWebcamBox.width}"
+					  visible="false">
 				<mx:Text width="{recFromWebcamBox.width-22}"
 						 text="{resourceManager.getString('myResources','TEXT_RECORD_VIDEO_UPLOAD')}"
 						 selectable="false"/>
 				<mx:Spacer/>
-				<mx:Button id="saveWebcamRecord"
-						   label="{resourceManager.getString('myResources','BUTTON_SAVE_STREAMING_UPLOAD')}"
-						   enabled="{recFromWebcamBox.recordingFileName != null  &amp;&amp; !recFromWebcamBox.isRecording}"
-						   click="saveRecordedExercise()"/>
-			</mx:VBox>
+				<s:Button id="saveWebcamRecord"
+						  label="{resourceManager.getString('myResources','BUTTON_SAVE_STREAMING_UPLOAD')}"
+						  enabled="{recFromWebcamBox.recordingFileName != null  &amp;&amp; !recFromWebcamBox.isRecording}"
+						  click="saveRecordedExercise()"/>
+			</s:VGroup>
 
-		</mx:VBox>
-	</mx:HBox>
+		</s:VGroup>
+	</s:HGroup>
+
+	<fx:Declarations>
+		<mx:StringValidator id="titleValidator"
+							source="{videoTitle}"
+							property="text"
+							minLength="3"
+							maxLength="80"/>
+		<mx:StringValidator id="descriptionValidator"
+							source="{videoDescription}"
+							property="text"
+							minLength="3"
+							maxLength="512"/>
+		<mx:StringValidator id="tagValidator"
+							source="{videoTags}"
+							property="text"
+							minLength="3"
+							maxLength="255"/>
+	</fx:Declarations>
 
 
-	<mx:StringValidator id="titleValidator"
-						source="{videoTitle}"
-						property="text"
-						minLength="3"
-						maxLength="80"/>
-	<mx:StringValidator id="descriptionValidator"
-						source="{videoDescription}"
-						property="text"
-						minLength="3"
-						maxLength="512"/>
-	<mx:StringValidator id="tagValidator"
-						source="{videoTags}"
-						property="text"
-						minLength="3"
-						maxLength="255"/>
-
-
-</mx:VBox>
+</s:VGroup>

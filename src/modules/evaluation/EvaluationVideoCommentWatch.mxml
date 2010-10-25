@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:videoPlayer="modules.videoPlayer.*"
 						  xmlns:common="view.common.*"
 						  title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
@@ -8,7 +10,7 @@
 						  layout="vertical"
 						  creationComplete="onComplete()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
 			
@@ -57,9 +59,9 @@
 				PopUpManager.removePopUp(this);
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:VBox id="videoPlayerBox">
+	<s:VGroup id="videoPlayerBox">
 		<videoPlayer:VideoPlayerBabelia id="VideoCommentVP"
 										autoPlay="true"
 										skin="white"
@@ -72,7 +74,7 @@
 										height="{Math.floor(VideoCommentVP.width * 10 / 16)}"
 										streamSource="{_streamSource}"
 										controlsEnabled="true"/>
-	</mx:VBox>
+	</s:VGroup>
 	<mx:Spacer width="20"/>
 	<common:CloseButton click="closeButtonClickHandler(event)"/>
 </common:CustomTitleWindow>

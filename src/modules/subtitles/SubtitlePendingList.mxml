@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}"
-		 verticalScrollPolicy="off"
-		 width="100%"
-		 creationComplete="onComplete(event)"
-		 resize="onResize(event)"
-		 xmlns:main="modules.main.*">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  creationComplete="onComplete(event)"
+		  resize="onResize(event)"
+		  xmlns:main="modules.main.*">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.SubtitleListEvent;
 
@@ -116,32 +116,31 @@
 				exercisesWithoutSubtitlesTile.dataProvider=dataTemp;
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{dataModel.isLoggedIn}"
+	<fx:Binding source="{dataModel.isLoggedIn}"
 				destination="userAuthenticationHandler"/>
-	<mx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
+	<fx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
 				destination="onListRetrieved"/>
 
 	<mx:TileList id="exercisesWithoutSubtitlesTile"
-				 verticalScrollPolicy="off"
 				 horizontalScrollPolicy="off"
 				 dataProvider="{_exercisesWithoutSubtitlesList}"
 				 borderStyle="none"
-				 backgroundAlpha="0.0"
+				 contentBackgroundAlpha="0"
 				 columnWidth="500"
 				 columnCount="2"
 				 selectable="false"
 				 verticalAlign="middle">
 		<mx:itemRenderer>
-			<mx:Component>
+			<fx:Component>
 				<main:ExerciseListItem/>
-			</mx:Component>
+			</fx:Component>
 		</mx:itemRenderer>
 	</mx:TileList>
 
-	<mx:HBox id="paginationBox"
-			 width="100%"
-			 horizontalAlign="center"
-			 horizontalGap="2"/>
-</mx:VBox>
+	<s:HGroup id="paginationBox"
+			  width="100%"
+			  horizontalAlign="center"
+			  gap="2"/>
+</s:VGroup>

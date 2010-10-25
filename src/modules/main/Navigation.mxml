@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:ApplicationControlBar xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 						  height="40"
 						  dock="false"
 						  creationComplete="init()">
-	<mx:HBox width="55%"
+	<s:HGroup width="55%"
 			 horizontalAlign="left"
 			 verticalAlign="middle"
 			 height="100%">
@@ -47,28 +49,28 @@
 					   		!DataModel.getInstance().playing}"
 					   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
 		<mx:VRule height="40"/>
-	</mx:HBox>
-	<mx:HBox width="45%"
+	</s:HGroup>
+	<s:HGroup width="45%"
 			 horizontalAlign="right"
 			 height="100%"
 			 verticalAlign="middle">
-		<mx:TextInput id="searchField"
+		<s:TextInput id="searchField"
 					  width="80%"
 					  height="26"
 					  maxChars="100"
 					  enter="launchSearch()"/>
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
+		<s:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
 				   styleName="searchButton"
 				   enabled="true"
 				   click="launchSearch()"/>
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
+		<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 				   styleName="uploadButton"
 				   enabled="{!DataModel.getInstance().recordingExercise}"
 				   click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE)"/>
-	</mx:HBox>
-	<mx:Binding source="{DataModel.getInstance().tagCloudClicked}"
+	</s:HGroup>
+	<fx:Binding source="{DataModel.getInstance().tagCloudClicked}"
 				destination="this.onTagCloudClicked"/>
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.VideoStopEvent;
 			import events.ViewChangeEvent;
@@ -101,6 +103,6 @@
 				}
 			}	
 		]]>
-	</mx:Script>
+	</fx:Script>
 </mx:ApplicationControlBar>
 

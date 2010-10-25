@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:userManagement="modules.userManagement.*"
-		 xmlns:exercises="modules.exercises.*"
-		 xmlns:home="modules.home.*"
-		 xmlns:main="modules.main.*"
-		 xmlns:subtitles="modules.subtitles.*"
-		 xmlns:videoUpload="modules.videoUpload.*"
-		 xmlns:evaluation="modules.evaluation.*"
-		 xmlns:configuration="modules.configuration.*"
-		 xmlns:search="modules.search.*"
-		 height="100%"
-		 borderSides="left right bottom"
-		 borderStyle="solid"
-		 borderColor="#92d3d5"
-		 horizontalGap="0"
-		 creationComplete="onComplete()"
-		 horizontalAlign="right"
-		 verticalScrollPolicy="off">
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:userManagement="modules.userManagement.*"
+		  xmlns:exercises="modules.exercises.*"
+		  xmlns:home="modules.home.*"
+		  xmlns:main="modules.main.*"
+		  xmlns:subtitles="modules.subtitles.*"
+		  xmlns:videoUpload="modules.videoUpload.*"
+		  xmlns:evaluation="modules.evaluation.*"
+		  xmlns:configuration="modules.configuration.*"
+		  xmlns:search="modules.search.*"
+		  height="100%"
+		  borderSides="left right bottom"
+		  borderStyle="solid"
+		  borderColor="#92d3d5"
+		  gap="0"
+		  creationComplete="onComplete()"
+		  horizontalAlign="right">
 
 	<!--
-	<mx:ViewStack id="contentViewStack"
-				  width="100%"
-				  height="100%"
-				  selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
-				  resizeToContent="true"
-				  creationPolicy="all">
+		 <mx:ViewStack id="contentViewStack"
+		 width="100%"
+		 height="100%"
+		 selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
+		 resizeToContent="true"
+		 creationPolicy="all">
 
-		<home:HomeMain id="homeModule"/>
+		 <home:HomeMain id="homeModule"/>
 
-		<exercises:Exercises id="exerciseModule"/>
+		 <exercises:Exercises id="exerciseModule"/>
 
-		<evaluation:EvaluationContainer id="evaluationModule"/>
+		 <evaluation:EvaluationContainer id="evaluationModule"/>
 
-		<userManagement:SignUpForm id="registerModule"/>
+		 <userManagement:SignUpForm id="registerModule"/>
 
-		<userManagement:AccountMain id="accountModule"/>
+		 <userManagement:AccountMain id="accountModule"/>
 
-		<videoUpload:UploadContainer id="uploadModule"/>
+		 <videoUpload:UploadContainer id="uploadModule"/>
 
-		<subtitles:SubtitleMain id="subtitlingModule"/>
+		 <subtitles:SubtitleMain id="subtitlingModule"/>
 
-		<configuration:ConfigurationContainer id="configurationModule"/>
+		 <configuration:ConfigurationContainer id="configurationModule"/>
 
-		<main:About id="aboutModule"/>
+		 <main:About id="aboutModule"/>
 
-		<search:Search id="searchModule"/>
+		 <search:Search id="searchModule"/>
 
-		<main:HelpFAQMain id="helpModule"/>
+		 <main:HelpFAQMain id="helpModule"/>
 
-		<userManagement:AccountActivation id="accountActivation"/>
+		 <userManagement:AccountActivation id="accountActivation"/>
 
-	</mx:ViewStack>-->
+		 </mx:ViewStack>-->
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
 			import events.VideoStopEvent;
@@ -63,16 +64,16 @@
 
 			public function onComplete():void
 			{
-			//	contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
+				//	contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
 			}
-/*
-			public function handleIndexChange(evt:IndexChangedEvent):void
-			{
-				DataModel.getInstance().oldContentViewStackIndex=evt.oldIndex;
-				DataModel.getInstance().newContentViewStackIndex=evt.newIndex;
-				// Video stop on tab change
-				new VideoStopEvent().dispatch();
-			}*/
+			/*
+			   public function handleIndexChange(evt:IndexChangedEvent):void
+			   {
+			   DataModel.getInstance().oldContentViewStackIndex=evt.oldIndex;
+			   DataModel.getInstance().newContentViewStackIndex=evt.newIndex;
+			   // Video stop on tab change
+			   new VideoStopEvent().dispatch();
+			 }*/
 		]]>
-	</mx:Script>
-</mx:HBox>
+	</fx:Script>
+</s:HGroup>

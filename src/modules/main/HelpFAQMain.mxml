@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 width="100%"
 		 height="100%">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			private function externalLinkClickHandler(url:String):void
 			{
@@ -11,29 +13,29 @@
 			}
 
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<mx:VBox styleName="sectionInfoBox"
+	<s:VGroup styleName="sectionInfoBox"
 			 width="100%">
-		<mx:Label text="Babelium Project Help/FAQ"
+		<s:Label text="Babelium Project Help/FAQ"
 				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</mx:VBox>
+	</s:VGroup>
 
-	<mx:Label text="Video tutorials"
+	<s:Label text="Video tutorials"
 			  styleName="sectionTitleLabel"/>
-	<mx:Label text="The following videos explain how to use some of the features of Babelium Project (in English)."/>
-	<mx:HBox>
+	<s:Label text="The following videos explain how to use some of the features of Babelium Project (in English)."/>
+	<s:HGroup>
 		<mx:Spacer/>
 		<mx:LinkButton label="How to add subtitles and roles"
 					   textDecoration="underline"
 					   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"/>
-	</mx:HBox>
-	<mx:HBox>
+	</s:HGroup>
+	<s:HGroup>
 		<mx:Spacer/>
 		<mx:LinkButton label="How to record a response following an exercise"
 					   textDecoration="underline"
 					   click="externalLinkClickHandler('http://www.youtube.com/watch?v=VstggUIIMlY')"/>
-	</mx:HBox>
+	</s:HGroup>
 
-</mx:VBox>
+</s:VGroup>

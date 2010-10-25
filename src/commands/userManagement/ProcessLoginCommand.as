@@ -54,7 +54,7 @@ package commands.userManagement
 				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();
 
 				// If user is in register module, redirect to home
-				if (DataModel.getInstance().appBody.getChildren().length > 0 && DataModel.getInstance().appBody.getChildAt(0) is SignUpForm)
+				if (DataModel.getInstance().appBody.numElements > 0 && DataModel.getInstance().appBody.getElementAt(0) is SignUpForm)
 				{
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				}

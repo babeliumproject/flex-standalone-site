@@ -1,63 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						  xmlns:s="library://ns.adobe.com/flex/spark"
+						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:common="view.common.*"
 						  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}"
 						  paddingTop="8">
-	<mx:VBox horizontalAlign="left"
-			 verticalAlign="middle">
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
-				   icon="@Embed(source='../../resources/images/eo_watch_sim.png')"
-				   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
-				   fillAlphas="[0.9, 0.9, 0.9, 0.9]"
-				   fillColors="[0xeefee6, 0xeefee6, 0xb7f39b, 0xb7f39b]"
-				   borderColor="0x666666"
-				   themeColor="0x999999"
-				   cornerRadius="8"
-				   width="100%"
-				   textAlign="left"/>
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
-				   icon="@Embed(source='../../resources/images/eo_watch_resp.png')"
-				   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_RESPONSE))"
-				   fillAlphas="[0.9, 0.9, 0.9, 0.9]"
-				   fillColors="[0xeefee6, 0xeefee6, 0xb7f39b, 0xb7f39b]"
-				   borderColor="0x666666"
-				   themeColor="0x999999"
-				   cornerRadius="8"
-				   width="100%"
-				   textAlign="left"/>
-		<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
-				   icon="@Embed(source='../../resources/images/eo_rec_again.png')"
-				   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
-				   fillAlphas="[0.9, 0.9, 0.9, 0.9]"
-				   fillColors="[0xeefee6, 0xeefee6, 0x95C9FC, 0x95C9FC]"
-				   borderColor="0x666666"
-				   themeColor="0x999999"
-				   cornerRadius="8"
-				   width="100%"
-				   textAlign="left"/>
+	<s:VGroup horizontalAlign="left"
+			  verticalAlign="middle">
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
+				  icon="@Embed(source='../../resources/images/eo_watch_sim.png')"
+				  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
+				  styleName="watchRecordedButton"
+				  width="100%"
+				  textAlign="left"/>
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
+				  icon="@Embed(source='../../resources/images/eo_watch_resp.png')"
+				  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_RESPONSE))"
+				  styleName="watchRecordedButton"
+				  width="100%"
+				  textAlign="left"/>
+		<s:Button label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
+				  icon="@Embed(source='../../resources/images/eo_rec_again.png')"
+				  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
+				  styleName="recordAgainButton"
+				  width="100%"
+				  textAlign="left"/>
 		<mx:Spacer height="6"/>
 		<mx:HRule height="1"
 				  width="100%"/>
-		<mx:HBox horizontalAlign="right">
+		<s:HGroup horizontalAlign="right">
 			<mx:Spacer width="20"/>
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
-					   icon="@Embed(source='../../resources/images/image_delete.png')"
-					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
-					   cornerRadius="8"/>
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
-					   icon="@Embed(source='../../resources/images/disk.png')"
-					   click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
-					   cornerRadius="8"
-					   enabled="{ DataModel.getInstance().isLoggedIn }"/>
-		</mx:HBox>
+			<s:Button label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
+					  icon="@Embed(source='../../resources/images/image_delete.png')"
+					  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
+					  cornerRadius="8"/>
+			<s:Button label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
+					  icon="@Embed(source='../../resources/images/disk.png')"
+					  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
+					  cornerRadius="8"
+					  enabled="{ DataModel.getInstance().isLoggedIn }"/>
+		</s:HGroup>
 
-	</mx:VBox>
+	</s:VGroup>
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.RecordingEndOptionEvent;
 
 			import model.DataModel;
 		]]>
-	</mx:Script>
+	</fx:Script>
 </common:CustomTitleWindow>

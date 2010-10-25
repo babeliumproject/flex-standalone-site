@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  title="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
-		  layout="vertical"
-		  xmlns:ns1="modules.userManagement.*"
-		  xmlns:common="view.common.*">
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 title="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
+		 xmlns:ns1="modules.userManagement.*"
+		 xmlns:common="view.common.*">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import view.common.CustomAlert;
 			import mx.formatters.DateFormatter;
@@ -18,21 +19,21 @@
 
 			[Bindable]
 			private var historicDataProvider:ArrayCollection;
-			
-			private static const MILLISECONDS_DAY:int = 86400000;
+
+			private static const MILLISECONDS_DAY:int=86400000;
 
 			public function set creditHistoryRetrieved(value:Boolean):void
 			{
 				historicDataProvider=DataModel.getInstance().creditHistory;
 				//if (historicDataProvider.length > 0)
-					creditHistoryTable.dataProvider=historicDataProvider;
+				creditHistoryTable.dataProvider=historicDataProvider;
 				DataModel.getInstance().isCreditHistoryRetrieved=false;
 			}
 
 			private function formatVideoExerciseName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoExerciseName == null)
-					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoExerciseName;
 			}
@@ -40,7 +41,7 @@
 			private function formatVideoResponseName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoResponseName == null)
-					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoResponseName;
 			}
@@ -48,53 +49,53 @@
 			private function formatVideoEvaluationName(item:Object, col:DataGridColumn):String
 			{
 				if (item.videoEvaluationName == null)
-					return resourceManager.getString('myResources','RENDERER_NO_INPUT_DATA');
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
 				else
 					return item.videoEvaluationName;
 			}
 
 			private function todayClickHandler():void
 			{
-				var initDate:Date = lineChartContainer.chartMaximum;
-				var prevDate:Date = new Date(initDate.time - MILLISECONDS_DAY);
-				lineChartContainer.chartMinimum = prevDate;
-				lineChartContainer.labelUnits = "hours";
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.time - MILLISECONDS_DAY);
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="hours";
 				new CreditEvent(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY).dispatch();
 			}
 
 			private function lastWeekClickHandler():void
 			{
-				var initDate:Date = lineChartContainer.chartMaximum;
-				var prevDate:Date = new Date(initDate.time - 7*MILLISECONDS_DAY);
-				lineChartContainer.chartMinimum = prevDate;
-				lineChartContainer.labelUnits = "days";
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.time - 7 * MILLISECONDS_DAY);
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="days";
 				new CreditEvent(CreditEvent.GET_LAST_WEEK_CREDIT_HISTORY).dispatch();
 			}
 
 			private function lastMonthClickHandler():void
 			{
-				var initDate:Date = lineChartContainer.chartMaximum;
-				var prevDate:Date = new Date(initDate.setMonth(initDate.month - 1));
-				lineChartContainer.chartMinimum = prevDate;
-				lineChartContainer.labelUnits = "days";
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.setMonth(initDate.month - 1));
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="days";
 				new CreditEvent(CreditEvent.GET_LAST_MONTH_CREDIT_HISTORY).dispatch();
 			}
 
 			private function allTimeClickHandler():void
 			{
-				var initDate:Date = lineChartContainer.chartMaximum;
-				
-				var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
-				var dateAndTime:Array = rawDbDate.split(" ");
-				var splittedDate:Array = (dateAndTime[0] as String).split("-");
-				var splittedTime:Array = (dateAndTime[1] as String).split(":");
-				var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
-				
-				var prevDate:Date = joiningDate;
-				
-				lineChartContainer.chartMinimum = prevDate;
-				lineChartContainer.labelUnits = "months";
-				
+				var initDate:Date=lineChartContainer.chartMaximum;
+
+				var rawDbDate:String=DataModel.getInstance().loggedUser.joiningDate;
+				var dateAndTime:Array=rawDbDate.split(" ");
+				var splittedDate:Array=(dateAndTime[0] as String).split("-");
+				var splittedTime:Array=(dateAndTime[1] as String).split(":");
+				var joiningDate:Date=new Date(splittedDate[0], splittedDate[1] - 1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
+
+				var prevDate:Date=joiningDate;
+
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="months";
+
 				new CreditEvent(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY).dispatch();
 			}
 
@@ -103,25 +104,30 @@
 				CustomAlert.info("WIP: Watch the selected exercise.");
 			}
 		]]>
-	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().isCreditHistoryRetrieved}"
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isCreditHistoryRetrieved}"
 				destination="creditHistoryRetrieved"/>
-	<mx:HBox width="100%"
-			 height="35"
-			styleName="roundedBorderGreyBox">
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
-				   cornerRadius="8"
-				   click="todayClickHandler()"/>
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_WEEK_CREDITS')}"
-				   cornerRadius="8"
-				   click="lastWeekClickHandler()"/>
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_LAST_MONTH_CREDITS')}"
-				   cornerRadius="8"
-				   click="lastMonthClickHandler()"/>
-		<mx:Button label="{resourceManager.getString('myResources','LABEL_ALL_TIME_CREDITS')}"
-				   cornerRadius="8"
-				   click="allTimeClickHandler()"/>
-	</mx:HBox>
+
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<s:HGroup width="100%"
+			  height="35"
+			  styleName="roundedBorderGreyBox">
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
+				  cornerRadius="8"
+				  click="todayClickHandler()"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_WEEK_CREDITS')}"
+				  cornerRadius="8"
+				  click="lastWeekClickHandler()"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_MONTH_CREDITS')}"
+				  cornerRadius="8"
+				  click="lastMonthClickHandler()"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_ALL_TIME_CREDITS')}"
+				  cornerRadius="8"
+				  click="allTimeClickHandler()"/>
+	</s:HGroup>
 	<mx:DataGrid width="100%"
 				 height="250"
 				 id="creditHistoryTable">
@@ -145,6 +151,8 @@
 							   labelFunction="formatVideoEvaluationName"/>
 		</mx:columns>
 	</mx:DataGrid>
-	<ns1:CreditLineChart id="lineChartContainer" height="250" width="100%"/>
+	<ns1:CreditLineChart id="lineChartContainer"
+						 height="250"
+						 width="100%"/>
 
-</mx:Panel>
+</s:Panel>

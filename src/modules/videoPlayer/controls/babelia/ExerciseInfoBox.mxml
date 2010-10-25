@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:rating="com.asfusion.controls.*"
 		 horizontalAlign="left"
 		 paddingTop="2"
 		 paddingBottom="2"
 		 paddingLeft="2"
 		 paddingRight="2"
-		 verticalGap="0"
+		 gap="0"
 		 borderStyle="solid"
 		 cornerRadius="6">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 
@@ -137,19 +139,19 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:HBox id="ratingAndReportBox"
+	<s:HGroup id="ratingAndReportBox"
 			 width="100%">
-		<mx:HBox paddingTop="4"
+		<s:HGroup paddingTop="4"
 				 paddingLeft="4">
 			<rating:Rating id="rating"
 						   value="{_exerciseRating}"
 						   liveRollOver="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
 						   click="ratingClickHandler(event)"/>
-		</mx:HBox>
+		</s:HGroup>
 		<mx:VRule height="24"/>
-		<mx:HBox horizontalAlign="right"
+		<s:HGroup horizontalAlign="right"
 				 paddingBottom="0"
 				 paddingTop="0"
 				 paddingLeft="0"
@@ -161,9 +163,9 @@
 						   icon="@Embed(source='../../../../resources/images/shield.png')"
 						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
 						   click="reportVideoClickHandler(event)"/>
-		</mx:HBox>
-	</mx:HBox>
-	<mx:VBox horizontalAlign="center"
+		</s:HGroup>
+	</s:HGroup>
+	<s:VGroup horizontalAlign="center"
 			 width="100%">
 		<mx:HRule id="tagBoxSeparator"
 				  width="100%"
@@ -174,6 +176,6 @@
 				 verticalGap="1"
 				 autoLayout="true">
 		</mx:Tile>
-	</mx:VBox>
+	</s:VGroup>
 
-</mx:VBox>
+</s:VGroup>

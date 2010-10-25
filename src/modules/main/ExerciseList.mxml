@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 creationComplete="onComplete()"
-		 verticalScrollPolicy="off"
+		 
 		 horizontalAlign="center"
 		 verticalAlign="middle"
 		 resize="calculateNeededColumns(event)">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
 			
@@ -90,12 +92,12 @@
 				exerciseTileList.validateNow();
 			}
 		]]>
-	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved}"
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved}"
 				destination="onExercisesRetrieved"/>
 
 	<mx:TileList id="exerciseTileList"
-				 verticalScrollPolicy="off"
+				 
 				 horizontalScrollPolicy="off"
 				 dataProvider="{_dataProvider}"
 				 itemRenderer="modules.main.ExerciseListItem"
@@ -106,8 +108,8 @@
 				 selectable="false"
 				 verticalAlign="middle"/>
 
-	<mx:HBox id="paginationBox"
+	<s:HGroup id="paginationBox"
 			 width="100%"
 			 horizontalAlign="center"
-			 horizontalGap="2"/>
-</mx:VBox>
+			 gap="2"/>
+</s:VGroup>

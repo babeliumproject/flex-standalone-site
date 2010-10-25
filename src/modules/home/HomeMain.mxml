@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:home="modules.home.*"
-		 width="100%">
-	
-	<mx:Script>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:home="modules.home.*"
+		  width="100%">
+
+	<fx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
-			
+
+
 			private function set onUserAuthenticationStatus(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == true)
@@ -18,17 +20,21 @@
 					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_UNSIGNED).dispatch();
 			}
 		]]>
-	</mx:Script>
-	
+	</fx:Script>
+
 	<mx:ViewStack id="homeMainViewStack"
 				  width="100%"
 				  selectedIndex="{ DataModel.getInstance().currentHomeViewStackIndex }"
 				  resizeToContent="true">
-		<home:HomeUnsigned />
-		<home:HomeSignedIn />
+		<s:NavigatorContent id="homeUnsignedNavContent">
+			<home:HomeUnsigned/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="homeSignedInNavContent">
+			<home:HomeSignedIn/>
+		</s:NavigatorContent>
 	</mx:ViewStack>
-	
-	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onUserAuthenticationStatus"/>
-	
-</mx:VBox>
+
+</s:VGroup>

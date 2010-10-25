@@ -2,11 +2,12 @@ package modules.userManagement
 {
 	import flash.geom.Point;
 	
-	import mx.controls.TextInput;
 	import mx.controls.ToolTip;
 	import mx.managers.ToolTipManager;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
+	
+	import spark.components.TextInput;
 
 	[ResourceBundle("myResources")]
 	

@@ -23,19 +23,19 @@ package modules.subtitles
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
-	import mx.containers.HBox;
-	import mx.containers.Panel;
-	import mx.containers.VBox;
 	import mx.controls.Alert;
-	import mx.controls.Button;
-	import mx.controls.ComboBox;
 	import mx.controls.DataGrid;
-	import mx.controls.Label;
 	import mx.controls.VRule;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	
+	import spark.components.Button;
+	import spark.components.ComboBox;
+	import spark.components.HGroup;
+	import spark.components.Label;
+	import spark.components.VGroup;
 	
 	import view.common.CustomAlert;
 	import view.common.IconComboBox;
@@ -49,7 +49,7 @@ package modules.subtitles
 	import vo.SubtitleLineVO;
 
 
-	public class SubtitleEditorClass extends HBox
+	public class SubtitleEditorClass extends HGroup
 	{
 		/**
 		 * Singleton objects
@@ -108,9 +108,9 @@ package modules.subtitles
 		[Bindable]
 		public var subtitleList:DataGrid=new DataGrid();
 		
-		public var guestEditWarningBox:HBox;
+		public var guestEditWarningBox:HGroup;
 
-		public var subtitleVersionBox:VBox;
+		public var subtitleVersionBox:VGroup;
 		public var subtitleVersionSelector:ComboBox;
 		
 		public var saveSubtitleButton:Button;

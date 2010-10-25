@@ -4,8 +4,8 @@ package modules.search
 	
 	import model.DataModel;
 	
-	import mx.containers.Box;
-	import mx.controls.Button;
+	import spark.components.Button;
+	import spark.components.Group;
 
 	public class VideoPaginator
 	{
@@ -23,7 +23,7 @@ package modules.search
 		[Embed(source="resources/images/last.png")]
 		public static var lastI:Class;
 
-		public static function createPaginationMenu(totalItemCount:int, itemsPerPage:int, currentPageNumber:int, displayedPageCount:int, container:Box, buttonClickHandler:Function):void
+		public static function createPaginationMenu(totalItemCount:int, itemsPerPage:int, currentPageNumber:int, displayedPageCount:int, container:Group, buttonClickHandler:Function):void
 		{
 			var maxPageButtonsInPagination:int=displayedPageCount;
 			var limit:int=(maxPageButtonsInPagination + 1) / 2;
@@ -84,19 +84,25 @@ package modules.search
 					container.addChild(createControlButton(neededPageButtons, lastI, buttonClickHandler));
 				}
 			}
-			for each (var b:Button in container.getChildren())
+			for (var z:uint = 0; z<container.numElements; z++)
 			{
-				if (int(b.id) == currentPage)
+				if ((int)(container.getElementAt(z) as Button).id == currentPage)
 				{
-					b.enabled=false;
+					(container.getElementAt(z) as Button).enabled=false;
 					break;
 				}
 			}
 		}
 
-		private static function destroyPaginationMenu(container:Box):void
+		private static function destroyPaginationMenu(container:Group):void
 		{
-			container.removeAllChildren();
+			removeAllChildrenFromComponent(container);
+		}
+		
+		protected static function removeAllChildrenFromComponent(component:Group):void
+		{
+			for (var i:uint=0; i < component.numElements; i++)
+				component.removeElementAt(i);
 		}
 
 		private static function createPageButton(label:int, clickHandler:Function):Button
@@ -127,6 +133,8 @@ package modules.search
 
 			return ctrlButton;
 		}
+		
+
 
 	}
 }

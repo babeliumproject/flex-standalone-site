@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 width="100%">
 
 
-	<mx:VBox styleName="sectionInfoBox"
+	<s:VGroup styleName="sectionInfoBox"
 			 width="100%"
 			 paddingBottom="16">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
+		<s:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
 				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</mx:VBox>
+	</s:VGroup>
 
-	<mx:VBox styleName="padding10AllSidesBox">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
+	<s:VGroup styleName="padding10AllSidesBox">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 				  styleName="boldYellowLabel"/>
-		<mx:HBox width="100%"
+		<s:HGroup width="100%"
 				 verticalAlign="middle">
 			<mx:Spacer width="10"/>
 			<mx:Image id="groupLogo"
@@ -24,37 +26,37 @@
 			<mx:Text text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
 					 width="100%"
 					 height="100%"/>
-		</mx:HBox>
+		</s:HGroup>
 		<mx:Spacer height="24"/>
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
+		<s:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
 				  styleName="boldYellowLabel"/>
-		<mx:VBox width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
+		<s:VGroup width="100%">
+			<s:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
 			<mx:LinkButton label="babeliumproject@gmail.com"
 						   styleName="blueLinkButton"
 						   click="emailButtonClickHandler(event)"/>
-		</mx:VBox>
+		</s:VGroup>
 		<mx:Spacer height="24"/>
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
+		<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
 				  styleName="boldYellowLabel"/>
-		<mx:VBox width="100%">
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
-				<mx:Label id="appRevisionLabel"
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
+				<s:Label id="appRevisionLabel"
 						  styleName="boldDarkGreyLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
-				<mx:Label id="flashVersionLabel"
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
+				<s:Label id="flashVersionLabel"
 						  styleName="boldDarkGreyLabel"
 						  text="{userFlashVersion()}"/>
-			</mx:HBox>
+			</s:HGroup>
 			<!--
 				 mx:Text text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"
 				 / -->
-		</mx:VBox>
+		</s:VGroup>
 		<mx:Spacer height="24"/>
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
+		<s:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
 				  styleName="boldYellowLabel"/>
 
 		<mx:DataGrid borderStyle="solid"
@@ -65,7 +67,7 @@
 					 width="80%"
 					 dataProvider="{productData}"
 					 rowCount="{productData.length}"
-					 verticalScrollPolicy="off">
+					 >
 			<mx:columns>
 				<mx:DataGridColumn headerText="Product"
 								   dataField="product"
@@ -74,29 +76,29 @@
 								   editable="false"
 								   textAlign="center">
 					<mx:itemRenderer>
-						<mx:Component>
+						<fx:Component>
 							<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
 										   label="{data.licenseName}"/>
-						</mx:Component>
+						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
 				<mx:DataGridColumn headerText="Website"
 								   editable="false"
 								   textAlign="center">
 					<mx:itemRenderer>
-						<mx:Component>
+						<fx:Component>
 							<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
 										   label="{data.productUrl}"/>
-						</mx:Component>
+						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
 			</mx:columns>
 		</mx:DataGrid>
-	</mx:VBox>
+	</s:VGroup>
 
-	<mx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
+	<fx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
 				destination="onPreferencesRetrieved"/>
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
 
@@ -152,6 +154,6 @@
 				return text;
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-</mx:VBox>
+</s:VGroup>

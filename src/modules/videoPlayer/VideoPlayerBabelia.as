@@ -31,6 +31,7 @@ package modules.videoPlayer
 	import mx.collections.ArrayCollection;
 	import mx.controls.Text;
 	import mx.core.Application;
+	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
 	import mx.events.CloseEvent;
@@ -871,7 +872,7 @@ package modules.videoPlayer
 					PrivacyRights.useMicAndCamera=true;
 				if (state == RECORD_MIC_STATE)
 					PrivacyRights.useMicAndCamera=false;
-				privacyRights=PrivacyRights(PopUpManager.createPopUp(Application.application.parent, PrivacyRights, true));
+				privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
 				privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 
 				PopUpManager.centerPopUp(privacyRights);

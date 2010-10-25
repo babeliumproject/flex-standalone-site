@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:rating="com.asfusion.controls.*"
 		 width="100%"
 		 verticalAlign="middle"
 		 paddingLeft="0"
 		 paddingRight="0"
-		 horizontalGap="0"
+		 gap="0"
 		 borderStyle="solid">
 	<mx:Text id="parameterText"
 			 text="{resourceManager.getString('myResources',text)}"
 			 width="{this.width - 2 - scoreMeter.width}"
 			 height="100%"/>
-	<mx:HBox id="scoreMeter"
-			 horizontalGap="0"
+	<s:HGroup id="scoreMeter"
+			 gap="0"
 			 horizontalAlign="center"
 			 verticalAlign="middle"
 			 width="140"
 			 height="100%">
-		<mx:Label text="-"/>
+		<s:Label text="-"/>
 		<rating:Rating id="ratingComponent"
 					   click="ratingItemClickHandler(event)"/>
-		<mx:Label text="  +"/>
-	</mx:HBox>
+		<s:Label text="  +"/>
+	</s:HGroup>
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			[Bindable]
 			private var text:String='';
@@ -38,5 +40,5 @@
 				(event.currentTarget).value=(event.currentTarget).selectedValue;
 			}
 		]]>
-	</mx:Script>
-</mx:HBox>
+	</fx:Script>
+</s:HGroup>

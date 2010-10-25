@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
 	xmlns:tc="modules.search.*"
 	preinitialize="init()">
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import mx.containers.Canvas;
 			import mx.collections.Sort;
@@ -160,8 +162,8 @@
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 		]]>
-	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().tagCloudRetrieved}"
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().tagCloudRetrieved}"
 	 			destination="this.onTagCloudRetrieved"/>
 		
 	<tc:FlowBox id="tagCloudBox" 
@@ -169,12 +171,12 @@
             height="260"
             horizontalAlign="center"
             verticalAlign="middle"
-            verticalGap="0"
-            horizontalGap="0"
+            gap="0"
+            gap="0"
             paddingLeft="1"
             paddingTop="1"
             paddingBottom="1"
             paddingRight="1">
 	</tc:FlowBox>
 		 
-</mx:Panel>
+</s:Panel>

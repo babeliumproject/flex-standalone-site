@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 horizontalAlign="center"
 		 verticalAlign="top"
 		 paddingTop="20"
-		 verticalGap="10"
+		 gap="10"
 		 width="100%">
 	
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
 			
@@ -30,22 +32,22 @@
 				new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
 	<mx:Text text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
 			styleName="errorLabel"/>
-	<mx:HBox width="100%"
+	<s:HGroup width="100%"
 			 horizontalAlign="center"
 			 verticalAlign="middle"
 			 borderThickness="0">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
+		<s:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
 		<mx:LinkButton id="signInLink"
 					   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
 					   cornerRadius="4"
 					   click="signInLink_clickHandler(event)"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
 		<mx:LinkButton id="signUpLink"
 					   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
 					   click="signUpLink_clickHandler(event)"/>
-	</mx:HBox>
-</mx:VBox>
+	</s:HGroup>
+</s:VGroup>

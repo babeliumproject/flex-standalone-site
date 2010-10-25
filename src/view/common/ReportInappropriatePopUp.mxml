@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 				title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
 				xmlns:common="view.common.*"
 				creationComplete="creationCompleteHandler()"
 				showCloseButton="true">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
 			
@@ -68,36 +70,36 @@
 				PopUpManager.removePopUp(this);
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:VBox>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"
+	<s:VGroup>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"
 				  fontSize="16"
 				  fontWeight="bold"/>
 
-		<mx:HBox width="100%">
+		<s:HGroup width="100%">
 			<mx:Spacer/>
 			<mx:Spacer/>
-			<mx:VBox>
-				<mx:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"/>
+			<s:VGroup>
+				<s:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"/>
 				<common:ReportInappropriateComboBox id="reportComboBox"/>
-			</mx:VBox>
-		</mx:HBox>
+			</s:VGroup>
+		</s:HGroup>
 
 		<mx:Spacer/>
 		<mx:Spacer/>
-	</mx:VBox>
+	</s:VGroup>
 	<mx:HRule width="100%"/>
-	<mx:HBox width="100%"
+	<s:HGroup width="100%"
 			 horizontalAlign="center"
 			 verticalAlign="middle">
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
 				   id="reportButton"
 				   click="reportButtonClickHandler(event)"
 				   enabled="true"/>
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				   id="cancelButton"
 				   click="cancelButtonClickHandler(event)"/>
-	</mx:HBox>
+	</s:HGroup>
 
 </common:CustomTitleWindow>

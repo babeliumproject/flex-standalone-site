@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
-				layout="vertical"
-				xmlns:control="control.*"
-				xmlns:business="business.*"
-				xmlns:ns1="modules.main.*"
-				xmlns:ns2="modules.userManagement.*"
-				preinitialize="init()"
-				height="100%"
-				width="100%"
-				pageTitle="Babelium Project"
-				historyManagementEnabled="false"
-				horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
-				creationComplete="onComplete()">
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:control="control.*"
+			   xmlns:business="business.*"
+			   xmlns:main="modules.main.*"
+			   preinitialize="init()"
+			   height="100%"
+			   width="100%"
+			   pageTitle="Babelium Project"
+			   historyManagementEnabled="false"
+			   horizontalScrollPolicy="{isHorizontalScrollNeeded()}"
+			   creationComplete="onComplete()">
 
-	<mx:Style source="Main.css"/>
+	<fx:Style source="Main.css"/>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import control.*;
 
@@ -62,28 +66,30 @@
 
 			private function onComplete():void
 			{
-				appModelLocator.appBody = content;
+				appModelLocator.appBody=content;
 				browserManager=BabeliaBrowserManager.getInstance();
 				browserManager.parseURL();
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<!--This defines the reachable remote services -->
-	<business:Services/>
+	<fx:Declarations>
+		<!--This defines the reachable remote services -->
+		<business:Services/>
 
-	<!--This defines all the actions available -->
-	<control:Controller/>
+		<!--This defines all the actions available -->
+		<control:Controller/>
+	</fx:Declarations>
 
-	<ns1:Header id="header"
+	<main:Header id="header"
 				width="100%">
-	</ns1:Header>
-	<ns1:NewNavigation id="navigation"
+	</main:Header>
+	<main:NewNavigation id="navigation"
 					   width="100%">
-	</ns1:NewNavigation>
-	<ns1:Body id="content"
+	</main:NewNavigation>
+	<main:Body id="content"
 			  height="100%"
 			  width="100%">
-	</ns1:Body>
+	</main:Body>
 
-</mx:Application>
+</s:Application>

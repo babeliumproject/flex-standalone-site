@@ -12,6 +12,8 @@ package commands.subtitles
 	
 	import modules.subtitles.SubtitleMain;
 	
+	import spark.components.Group;
+	
 	import vo.ExerciseVO;
 
 	public class ViewSubtitleModuleCommand implements ICommand
@@ -21,28 +23,35 @@ package commands.subtitles
 		{
 			var index:Class=ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX;
 			new CloseConnectionEvent().dispatch();
-			if(DataModel.getInstance().appBody.getChildren().length > 0)
-				DataModel.getInstance().appBody.removeAllChildren();
-			DataModel.getInstance().appBody.addChild(new index());
-			
-			if(DataModel.getInstance().isLoggedIn)
-				DataModel.getInstance().currentSubtitleViewStackIndex = 1;
+			if (DataModel.getInstance().appBody.numElements > 0)
+				removeAllChildrenFromComponent(DataModel.getInstance().appBody);
+			DataModel.getInstance().appBody.addElement(new index());
+
+			if (DataModel.getInstance().isLoggedIn)
+				DataModel.getInstance().currentSubtitleViewStackIndex=1;
 			else
-				DataModel.getInstance().currentSubtitleViewStackIndex = 0;
-			
+				DataModel.getInstance().currentSubtitleViewStackIndex=0;
+
 			var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
 
 			if (tmp != null)
 			{
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(index), // module
-															  BabeliaBrowserManager.VIEW, // action
-															  tmp.name); // target
+					BabeliaBrowserManager.VIEW, // action
+					tmp.name); // target
 			}
 			else
 			{
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(index), // module
-															  BabeliaBrowserManager.VIEW); // action
+					BabeliaBrowserManager.VIEW); // action
 			}
+		}
+
+
+		protected function removeAllChildrenFromComponent(component:Group):void
+		{
+			for (var i:uint=0; i < component.numElements; i++)
+				component.removeElementAt(i);
 		}
 
 	}

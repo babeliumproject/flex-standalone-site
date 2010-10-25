@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 horizontalAlign="left"
-		 verticalScrollPolicy="off"
-		 horizontalScrollPolicy="off">
-		 
-		 <mx:Label text="{data.charName}" fontWeight="{data.fontWeight}" textIndent="{data.indent}"/>
-
-</mx:HBox>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  horizontalAlign="left">
+	<s:Label text="{data.charName}"
+			 fontWeight="{data.fontWeight}"
+			 textIndent="{data.indent}"/>
+</s:HGroup>

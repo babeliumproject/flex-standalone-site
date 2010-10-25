@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:subtitles="modules.subtitles.*"
-		 verticalScrollPolicy="off"
-		 paddingTop="0"
-		 width="100%">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:subtitles="modules.subtitles.*"
+		  
+		  paddingTop="0"
+		  width="100%">
 
-	<mx:VBox styleName="sectionInfoBox"
-			 width="100%">
-		<mx:Label id="subtitleModuleTitle"
-				  styleName="sectionInfoTitleLabel"
-				  text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
+	<s:VGroup styleName="sectionInfoBox"
+			  width="100%">
+		<s:Label id="subtitleModuleTitle"
+				 styleName="sectionInfoTitleLabel"
+				 text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
 
 		<mx:Text text="{resourceManager.getString('myResources','TEXT_MODULE_INFO_SUBTITLE')}"/>
 
-		<mx:HBox horizontalAlign="right"
-				 width="100%">
+		<s:HGroup horizontalAlign="right"
+				  width="100%">
 			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"/>
-		</mx:HBox>
-	</mx:VBox>
+		</s:HGroup>
+	</s:VGroup>
 
 	<mx:ViewStack id="subtitleListOverviewViewStack"
 				  creationPolicy="all"
 				  resizeToContent="true">
 
-		<subtitles:SubtitlePendingList/>
+		<s:NavigatorContent id="subtitlePendingListNavContent"
+							label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}">
+			<subtitles:SubtitlePendingList/>
+		</s:NavigatorContent>
 
-		<subtitles:SubtitleReviewList/>
+		<s:NavigatorContent id="subtitleReviewListNavContent"
+							label="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
+			<subtitles:SubtitleReviewList/>
+		</s:NavigatorContent>
 
 	</mx:ViewStack>
 
-</mx:VBox>
+</s:VGroup>

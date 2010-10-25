@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-					xmlns:common="view.common.*"
-					xmlns:rating="com.asfusion.controls.*"
-					xmlns:evaluation="modules.evaluation.*"
-					xmlns:videoUpload="modules.videoUpload.*"
-					title="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
-					paddingTop="4"
-					includeInLayout="false"
-					visible="false"
-					creationComplete="onComplete(event)">
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:common="view.common.*"
+		 xmlns:rating="com.asfusion.controls.*"
+		 xmlns:evaluation="modules.evaluation.*"
+		 xmlns:videoUpload="modules.videoUpload.*"
+		 title="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
+		 includeInLayout="false"
+		 visible="false"
+		 creationComplete="onComplete(event)">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import com.asfusion.controls.*;
-			
+
 			import events.EvaluationEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectProxy;
-			
+
 			import view.common.CustomAlert;
-			
+
 			import vo.EvaluationVO;
 
 			private var _responseDataAvailable:Boolean=false;
 
 			private var _responseId:uint;
-			
+
 			//These are used for sending notification emails
 			private var _userName:String;
 			private var _responseName:String;
@@ -44,7 +45,7 @@
 			{
 
 			}
-			
+
 			public function onResponseFinished(event:Event):void
 			{
 				sendEvaluationButton.enabled=true;
@@ -53,12 +54,12 @@
 			public function responseData(responseId:uint, userName:String, responseName:String, responseAddingDate:String, responseUserName:String, exerciseTitle:String):void
 			{
 				_responseId=responseId;
-				
+
 				_userName=userName;
 				_responseName=responseName;
 				_responseAddingDate=responseAddingDate;
 				_responseUserName=responseUserName;
-				_exerciseTitle=exerciseTitle;	
+				_exerciseTitle=exerciseTitle;
 
 				_responseDataAvailable=true;
 			}
@@ -70,12 +71,14 @@
 				{
 					if (userIntonationScore.ratingComponent.value > 0 && userFluencyScore.ratingComponent.value > 0 && userRhythmScore.ratingComponent.value > 0 && userSpontaneityScore.ratingComponent.value > 0 && userOverallScore.ratingComponent.value > 0)
 					{
-						if(includeTextCheck.selected && textComment.text==''){
-							CustomAlert.info(resourceManager.getString('myResources','ERROR_SELECTED_TEXT_COMMENT_NO_FILL'));
+						if (includeTextCheck.selected && textComment.text == '')
+						{
+							CustomAlert.info(resourceManager.getString('myResources', 'ERROR_SELECTED_TEXT_COMMENT_NO_FILL'));
 							return;
 						}
-						if(includeVideoCheck.selected && !videoComment.recordingFileName){
-							CustomAlert.info(resourceManager.getString('myResources','ERROR_SELECTED_VIDEO_COMMENT_NO_FILL'));
+						if (includeVideoCheck.selected && !videoComment.recordingFileName)
+						{
+							CustomAlert.info(resourceManager.getString('myResources', 'ERROR_SELECTED_VIDEO_COMMENT_NO_FILL'));
 							return;
 						}
 						var evaluation:EvaluationVO=new EvaluationVO();
@@ -89,16 +92,16 @@
 						evaluation.comment=textComment.text;
 
 						evaluation.responseId=_responseId;
-		
+
 						evaluation.evaluationVideoFileIdentifier=videoComment.recordingFileName;
-						
+
 						//This data is used to send an email notification to the user that received the evaluation
 						evaluation.userName=_userName;
 						evaluation.responseFileIdentifier=_responseName;
 						evaluation.responseAddingDate=_responseAddingDate;
 						evaluation.responseUserName=_responseUserName;
-						evaluation.exerciseTitle=_exerciseTitle;	
-						
+						evaluation.exerciseTitle=_exerciseTitle;
+
 
 						//If the user added a video comment
 						if (includeVideoCheck.selected)
@@ -114,7 +117,7 @@
 				}
 				else
 				{
-					CustomAlert.error(resourceManager.getString('myResources','ERROR_EVALUATION_DATA_NOT_SPECIFIED'));
+					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_EVALUATION_DATA_NOT_SPECIFIED'));
 				}
 
 
@@ -127,21 +130,21 @@
 				userRhythmScore.ratingComponent.value=0;
 				userSpontaneityScore.ratingComponent.value=0;
 				userOverallScore.ratingComponent.value=0;
-				
+
 				textComment.text='';
-				if(videoComment)
+				if (videoComment)
 					videoComment.resetComponent();
-				
-				includeTextCheck.selected = false;
-				includeVideoCheck.selected = false;
-				
+
+				includeTextCheck.selected=false;
+				includeVideoCheck.selected=false;
+
 				optionalEvaluationDataBox.visible=false;
 				optionalEvaluationDataBox.getTabAt(0).visible=false;
 				optionalEvaluationDataBox.getTabAt(1).visible=false;
 				optionalEvaluationDataBox.selectedIndex=0;
 				optionalEvaluationDataBox.includeInLayout=false;
-				
-				sendEvaluationButton.enabled = true;
+
+				sendEvaluationButton.enabled=true;
 			}
 
 			protected function includeTextVideoCommentClickHandler(event:MouseEvent):void
@@ -180,17 +183,22 @@
 				}
 			}
 		]]>
-	</mx:Script>
 
-	<mx:VBox id="ratingContainer"
-			 width="100%"
-			 height="100%">
+	</fx:Script>
 
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"/>
+	<s:layout>
+		<s:VerticalLayout paddingTop="4"/>
+	</s:layout>
 
-		<mx:HBox width="100%">
+	<s:VGroup id="ratingContainer"
+			  width="100%"
+			  height="100%">
+
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"/>
+
+		<s:HGroup width="100%">
 			<mx:Spacer width="10"/>
-			<mx:VBox width="100%">
+			<s:VGroup width="100%">
 				<evaluation:ScoreParameterBox id="userIntonationScore"
 											  parameter="MESSAGE_RATE_USER_INTONATION"/>
 				<evaluation:ScoreParameterBox id="userFluencyScore"
@@ -201,57 +209,60 @@
 											  parameter="MESSAGE_RATE_USER_SPONTANEITY"/>
 				<evaluation:ScoreParameterBox id="userOverallScore"
 											  parameter="MESSAGE_RATE_USER_OVERALL_SCORE"/>
-			</mx:VBox>
-		</mx:HBox>
+			</s:VGroup>
+		</s:HGroup>
 		<mx:Spacer height="6"/>
 
 		<!-- Comment section -->
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_OPTIONAL_EVALUATION_DATA') + ':'}"/>
-		<mx:CheckBox id="includeTextCheck"
-					 label="{resourceManager.getString('myResources','LABEL_INCLUDE_TEXT_COMMENT')}"
-					 click="includeTextVideoCommentClickHandler(event)"/>
-		<mx:CheckBox id="includeVideoCheck"
-					 label="{resourceManager.getString('myResources','LABEL_INCLUDE_VIDEO_COMMENT')}"
-					 click="includeTextVideoCommentClickHandler(event)"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_OPTIONAL_EVALUATION_DATA') + ':'}"/>
+		<s:CheckBox id="includeTextCheck"
+					label="{resourceManager.getString('myResources','LABEL_INCLUDE_TEXT_COMMENT')}"
+					click="includeTextVideoCommentClickHandler(event)"/>
+		<s:CheckBox id="includeVideoCheck"
+					label="{resourceManager.getString('myResources','LABEL_INCLUDE_VIDEO_COMMENT')}"
+					click="includeTextVideoCommentClickHandler(event)"/>
 
 		<mx:TabNavigator id="optionalEvaluationDataBox"
 						 visible="false"
 						 width="100%"
 						 includeInLayout="false"
 						 resizeToContent="true">
-			<mx:VBox id="textCommentBox"
-					 label="{resourceManager.getString('myResources','LABEL_TEXT_COMMENT')}"
-					 width="100%">
-				<mx:TextArea id="textComment"
-							 width="100%"
-							 height="100"/>
-			</mx:VBox>
+			<s:NavigatorContent id="textCommentBoxNavContent"
+								label="{resourceManager.getString('myResources','LABEL_TEXT_COMMENT')}">
+				<s:VGroup id="textCommentBox"
+						  width="100%">
+					<mx:TextArea id="textComment"
+								 width="100%"
+								 height="100"/>
+				</s:VGroup>
+			</s:NavigatorContent>
 
-			<mx:VBox id="videoCommentBox"
-					 label="{resourceManager.getString('myResources','LABEL_VIDEO_COMMENT')}"
-					 width="100%">
-				<videoUpload:TempVideoRecording id="videoComment"
-												streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
-												filePrefix="comment"
-												minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>
-			</mx:VBox>
+			<s:NavigatorContent id="videoCommentBoxNavContent"
+								label="{resourceManager.getString('myResources','LABEL_VIDEO_COMMENT')}">
+				<s:VGroup id="videoCommentBox"
+						  width="100%">
+					<videoUpload:TempVideoRecording id="videoComment"
+													streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
+													filePrefix="comment"
+													minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>
+				</s:VGroup>
+			</s:NavigatorContent>
 
 		</mx:TabNavigator>
 
-		<mx:HBox id="controlButtons"
-				 width="100%"
-				 horizontalAlign="center"
-				 verticalAlign="middle">
-			<mx:Button id="sendEvaluationButton"
-					   label="{resourceManager.getString('myResources','LABEL_SEND_EVALUATION')}"
-					   click="sendEvaluationButtonClickHandler(event)"
-					   />
-			<mx:Button id="resetEvaluationButton"
-					   label="{resourceManager.getString('myResources','LABEL_RESET_EVALUATION')}"
-					   click="resetEvaluationButtonClickHandler(event)"/>
-		</mx:HBox>
+		<s:HGroup id="controlButtons"
+				  width="100%"
+				  horizontalAlign="center"
+				  verticalAlign="middle">
+			<s:Button id="sendEvaluationButton"
+					  label="{resourceManager.getString('myResources','LABEL_SEND_EVALUATION')}"
+					  click="sendEvaluationButtonClickHandler(event)"/>
+			<s:Button id="resetEvaluationButton"
+					  label="{resourceManager.getString('myResources','LABEL_RESET_EVALUATION')}"
+					  click="resetEvaluationButtonClickHandler(event)"/>
+		</s:HGroup>
 
 
-	</mx:VBox>
+	</s:VGroup>
 
-</mx:Panel>
+</s:Panel>

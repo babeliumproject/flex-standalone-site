@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 creationComplete="init()">
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
 			import mx.controls.Alert;
@@ -63,8 +65,8 @@
 				return d;
 			}
 		]]>
-	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().isChartDataRetrieved}"
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isChartDataRetrieved}"
 				destination="creditHistoryRetrieved"/>
 	<mx:LineChart id="creditLineChart"
 				  showDataTips="true"
@@ -89,4 +91,4 @@
 	<mx:Legend id="legend"
 			   dataProvider="{creditLineChart}"
 			   color="0x323232"/>
-</mx:HBox>
+</s:HGroup>

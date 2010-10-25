@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:exercises="modules.exercises.*"
 		 xmlns:common="view.common.*"
 		 xmlns:videoPlayer="modules.videoPlayer.*"
 		 xmlns:videoPlayerControls="modules.videoPlayer.controls.babelia.*"
 		 verticalAlign="top"
 		 horizontalAlign="center"
-		 verticalScrollPolicy="off"
+		 
 		 width="100%"
 		 creationComplete="onComplete()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
 			import commands.cuepointManager.ReplayResponseCommand;
@@ -752,33 +754,33 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onExerciseSelected"/>
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
-	<mx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
+	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved"/>
-	<mx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onRolesRetrieved"/>
-	<mx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
+	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
-	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
-	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
 	
-	<mx:VBox styleName="sectionInfoBox"
+	<s:VGroup styleName="sectionInfoBox"
 			 width="100%"
 			 paddingBottom="16">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
 				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</mx:VBox>
+	</s:VGroup>
 	
 	
-	<mx:HBox id="videoPlayerAndRecordingControls"
+	<s:HGroup id="videoPlayerAndRecordingControls"
 			 width="100%"
 			 horizontalAlign="center"
 			 verticalAlign="middle"
@@ -790,8 +792,8 @@
 		
 		
 		<!-- Video Player -->
-		<mx:VBox>
-			<mx:Label id="exerciseTitle"
+		<s:VGroup>
+			<s:Label id="exerciseTitle"
 					  text="{_exerciseTitle}"
 					  width="100%"
 					  styleName="sectionTitleLabel"/>
@@ -810,70 +812,72 @@
 											controlsEnabled="{_exerciseSelected}"/>
 			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
 												 width="100%"/>
-		</mx:VBox>
+		</s:VGroup>
 		<mx:Spacer width="20"/>
 		
-		<mx:HBox id="guestEditWarningBox"
+		<s:HGroup id="guestEditWarningBox"
 				 verticalAlign="middle">
 			<mx:Image source="@Embed(source='resources/images/alertConfirmation.png')"/>
-			<mx:Label id="notLoggedWarning"
+			<s:Label id="notLoggedWarning"
 					  styleName="guestVersionWarningLabel"
 					  text="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"/>
-		</mx:HBox>
+		</s:HGroup>
 		
 		<!-- Selected Exercise Panel -->
-		<mx:Panel id="panelSelectedExercise"
+		<s:Panel id="panelSelectedExercise"
 				  includeInLayout="false"
 				  visible="false"
-				  width="100%"
-				  layout="vertical"
-				  paddingTop="10"
+				  width="100"
 				  title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
 			
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
+			<s:layout>
+				<s:VerticalLayout  paddingTop="10"/>
+			</s:layout>
+			
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
 				<mx:ComboBox id="availableRoles"
 							 dataProvider="{_characterNames}"
 							 enabled="{!DataModel.getInstance().recordingExercise}"/>
-			</mx:HBox>
+			</s:HGroup>
 			
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
 				<common:LanguageComboBox id="availableLocales"
 										 useCustomDataProvider="true"
 										 customDataProvider="{_locales}"
 										 displayPrompt="false"
 										 change="this.onLocaleComboChanged(event)"
 										 enabled="{!DataModel.getInstance().recordingExercise}"/>
-			</mx:HBox>
+			</s:HGroup>
 			<mx:Spacer height="5"/>
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
-				<mx:VBox>
-					<mx:RadioButton id="micOnly"
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
+				<s:VGroup>
+					<s:RadioButton id="micOnly"
 									selected="true"
 									groupName="recMode"
 									label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
-					<mx:RadioButton id="micAndCam"
+					<s:RadioButton id="micAndCam"
 									groupName="recMode"
 									label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
-				</mx:VBox>
-			</mx:HBox>
+				</s:VGroup>
+			</s:HGroup>
 			
-			<mx:HBox horizontalAlign="right" width="100%">
-				<mx:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+			<s:HGroup horizontalAlign="right" width="100%">
+				<s:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
 						   enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
 						   &amp;&amp; !DataModel.getInstance().recordingExercise}"
 						   click="onStartRecordingClicked(event)"/>
-			</mx:HBox>
+			</s:HGroup>
 			
-		</mx:Panel>
+		</s:Panel>
 		
-	</mx:HBox>
+	</s:HGroup>
 	
 	
 	<!-- Video List -->
 	<exercises:VideoList width="100%"
 						 id="exerciseList"/>
 	
-</mx:VBox>
+</s:VGroup>

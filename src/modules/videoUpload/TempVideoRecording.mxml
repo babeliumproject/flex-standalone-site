@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 borderStyle="solid"
-		 borderThickness="2"
-		 creationComplete="onComplete()"
-		 cornerRadius="4">
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  borderStyle="solid"
+		  borderThickness="2"
+		  creationComplete="onComplete()"
+		  cornerRadius="4">
 
-	<mx:Script>
+	<fx:Script>
 
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -142,9 +144,10 @@
 
 				disconnnectStreams();
 			}
-			
-			public function set minimumVideoDuration(duration:uint):void{
-				_minimumVideoDuration = duration;
+
+			public function set minimumVideoDuration(duration:uint):void
+			{
+				_minimumVideoDuration=duration;
 			}
 
 			public function set streamsFolder(folder:String):void
@@ -527,59 +530,60 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().netConnected}"
+	<fx:Binding source="{DataModel.getInstance().netConnected}"
 				destination="onConnectionStatus"/>
 
-	<mx:VBox width="100%"
-			 height="100%"
-			 horizontalAlign="center">
-		<mx:HBox paddingBottom="4"
-				 paddingTop="4"
-				 paddingLeft="4"
-				 paddingRight="4">
-			<mx:HBox backgroundColor="0x000000"
-					 width="100%">
+	<s:VGroup width="100%"
+			  height="100%"
+			  horizontalAlign="center">
+		<s:HGroup paddingBottom="4"
+				  paddingTop="4"
+				  paddingLeft="4"
+				  paddingRight="4">
+			<s:SkinnableContainer backgroundColor="0x000000"
+								  width="100%">
 				<mx:UIComponent id="videoHolder"
 								width="{_videoWidth}"
 								height="{_videoHeight}"/>
-			</mx:HBox>
-		</mx:HBox>
+			</s:SkinnableContainer>
+		</s:HGroup>
 
-		<mx:HBox width="100%"
-				 horizontalAlign="left"
-				 verticalAlign="center"
-				 horizontalGap="4"
-				 backgroundColor="0xCCCCCC"
-				 paddingBottom="2"
-				 paddingTop="2"
-				 paddingLeft="4"
-				 paddingRight="4">
-			<mx:Button click="recStopAudio();"
-					   id="recStopButton"
-					   width="20"
-					   height="20"
-					   cornerRadius="4"/>
-			<mx:Button click="playPauseAudio();"
-					   id="playPauseButton"
-					   enabled="false"
-					   width="20"
-					   height="20"
-					   cornerRadius="4"/>
-			<mx:Label id="statusLabel"
-					  text="Status:"
-					  fontWeight="bold"/>
-			<mx:Label id="estat"
-					  width="100%"/>
-			<mx:HBox width="100%"
-					 horizontalAlign="right">
-				<mx:Label id="recordCountdown"
-						  visible="false"
-						  text=""/>
-			</mx:HBox>
-		</mx:HBox>
-	</mx:VBox>
+		<s:SkinnableContainer width="100%"
+							  backgroundColor="0xCCCCCC">
+			<s:HGroup paddingBottom="2"
+					  paddingTop="2"
+					  paddingLeft="4"
+					  paddingRight="4"
+					  horizontalAlign="left"
+					  verticalAlign="middle"
+					  gap="4">
+				<s:Button click="recStopAudio();"
+						  id="recStopButton"
+						  width="20"
+						  height="20"
+						  cornerRadius="4"/>
+				<s:Button click="playPauseAudio();"
+						  id="playPauseButton"
+						  enabled="false"
+						  width="20"
+						  height="20"
+						  cornerRadius="4"/>
+				<s:Label id="statusLabel"
+						 text="Status:"
+						 fontWeight="bold"/>
+				<s:Label id="estat"
+						 width="100%"/>
+				<s:HGroup width="100%"
+						  horizontalAlign="right">
+					<s:Label id="recordCountdown"
+							 visible="false"
+							 text=""/>
+				</s:HGroup>
+			</s:HGroup>
+		</s:SkinnableContainer>
+	</s:VGroup>
 
 
-</mx:HBox>
+</s:HGroup>

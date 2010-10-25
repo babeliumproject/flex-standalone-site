@@ -16,21 +16,23 @@ package modules.main
 	import modules.userManagement.LoginRestorePassForm;
 	
 	import mx.binding.utils.BindingUtils;
-	import mx.containers.HBox;
 	import mx.controls.LinkButton;
 	import mx.controls.PopUpMenuButton;
 	import mx.core.Application;
+	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
+	import spark.components.HGroup;
+	
 	import view.common.PrivacyRights;
 	
 	import vo.LoginVO;
 
-	public class HeaderClass extends HBox
+	public class HeaderClass extends HGroup
 	{
 		private var interval:uint;
 		private var intervalLoops:int;
@@ -44,8 +46,8 @@ package modules.main
 		public var userOptions:Array= new Array({code: 'LABEL_USER_ACCOUNT', action: ViewChangeEvent.VIEW_ACCOUNT_MODULE});
 
 		//Visual components declaration
-		public var userCP:HBox;
-		public var anonymousCP:HBox;
+		public var userCP:HGroup;
+		public var anonymousCP:HGroup;
 
 		public var userCPName:PopUpMenuButton;
 		public var uCrds:LinkButton;
@@ -104,7 +106,7 @@ package modules.main
 
 		public function showLogin():void
 		{
-			DataModel.getInstance().loginPop = PopUpManager.createPopUp(Application.application.parentDocument, LoginRestorePassForm, true) as LoginRestorePassForm;
+			DataModel.getInstance().loginPop = PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginRestorePassForm, true) as LoginRestorePassForm;
 			PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 		}
 

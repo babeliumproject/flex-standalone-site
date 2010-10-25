@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:main="modules.main.*"
 		 xmlns:userManagement="modules.userManagement.*"
 		 width="100%"
 		 creationComplete="onComplete(event)">
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
 			
@@ -19,6 +21,8 @@
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
+			
+			import spark.components.Group;
 			
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
@@ -251,14 +255,20 @@
 				errorMessageToolTips=new Array();
 				
 				
-				motherLanguagesBox.removeAllChildren();
-				knownLanguagesBox.removeAllChildren();
-				interestLanguagesBox.removeAllChildren();
+				removeAllChildrenFromComponent(motherLanguagesBox);
+				removeAllChildrenFromComponent(knownLanguagesBox);
+				removeAllChildrenFromComponent(interestLanguagesBox);
 				motherLanguagesArray.removeAll();
 				knownLanguagesArray.removeAll();
 				interestLanguagesArray.removeAll();
 				
 				addInitialComboboxes();
+			}
+			
+			protected function removeAllChildrenFromComponent(component:Group):void
+			{
+				for (var i:uint=0; i < component.numElements; i++)
+					component.removeElementAt(i);
 			}
 			
 			protected function set onTabChange(value:Boolean):void
@@ -273,24 +283,24 @@
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 	
-	<mx:VBox styleName="sectionInfoBox"
+	<s:VGroup styleName="sectionInfoBox"
 			 width="100%">
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
 				  styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</mx:VBox>
+	</s:VGroup>
 	
 	
-	<mx:Label id="errorInfo"
+	<s:Label id="errorInfo"
 			  styleName="errorLabel"
 			  width="100%"
 			  text="{DataModel.getInstance().registrationErrorMessage}"/>
-	<mx:VBox width="100%"
+	<s:VGroup width="100%"
 			 horizontalAlign="center"
 			 styleName="padding20AllSidesBox">
 		
@@ -300,70 +310,70 @@
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:HBox>
-					<mx:TextInput id="username"
+				<s:HGroup>
+					<s:TextInput id="username"
 								  maxChars="20"
 								  change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
 								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
-				</mx:HBox>
+				</s:HGroup>
 				
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_EMAIL')}"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:HBox>
-					<mx:TextInput id="email"
+				<s:HGroup>
+					<s:TextInput id="email"
 								  maxChars="80"
 								  change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
 								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
-				</mx:HBox>
+				</s:HGroup>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:HBox>
-					<mx:TextInput id="password"
+				<s:HGroup>
+					<s:TextInput id="password"
 								  displayAsPassword="true"
 								  maxChars="40"
 								  change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
 								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
-				</mx:HBox>
+				</s:HGroup>
 				
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REPASSWORD')}"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:HBox>
-					<mx:TextInput id="repassword"
+				<s:HGroup>
+					<s:TextInput id="repassword"
 								  displayAsPassword="true"
 								  maxChars="40"
 								  change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
 								  focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
-				</mx:HBox>
+				</s:HGroup>
 				
 			</mx:FormItem>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
 						 styleName="boldLabel">
-				<mx:TextInput id="realName"
+				<s:TextInput id="realName"
 							  width="100%"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
 						 styleName="boldLabel">
-				<mx:TextInput id="surname"
+				<s:TextInput id="surname"
 							  width="100%"/>
 			</mx:FormItem>
 		</mx:Form>
 		<mx:Form styleName="roundedBlueBorderBox"
 				 width="100%">
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_MAIN_LANGUAGE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','MESSAGE_MAIN_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:HBox>
-					<mx:VBox id="motherLanguagesBox">
-					</mx:VBox>
+				<s:HGroup>
+					<s:VGroup id="motherLanguagesBox">
+					</s:VGroup>
 					<mx:LinkButton id="addAnotherMotherLang"
 								   click="addAnotherMotherLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
@@ -371,16 +381,16 @@
 								   paddingLeft="6"
 								   paddingRight="6"
 								   icon="@Embed(source='../../resources/images/add.png')"/>
-				</mx:HBox>
+				</s:HGroup>
 			</mx:FormItem>
 			<mx:Spacer/>
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_OTHER_LANGUAGE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','MESSAGE_OTHER_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
 						 styleName="boldLabel">
-				<mx:HBox>
-					<mx:VBox id="knownLanguagesBox">
-					</mx:VBox>
+				<s:HGroup>
+					<s:VGroup id="knownLanguagesBox">
+					</s:VGroup>
 					<mx:LinkButton id="addAnotherKnownLang"
 								   click="addAnotherKnownLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
@@ -388,16 +398,16 @@
 								   paddingLeft="6"
 								   paddingRight="6"
 								   icon="@Embed(source='../../resources/images/add.png')"/>
-				</mx:HBox>
+				</s:HGroup>
 			</mx:FormItem>
 			<mx:Spacer/>
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_PRACTICE_LANGUAGE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','MESSAGE_PRACTICE_LANGUAGE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
 						 styleName="boldLabel">
-				<mx:HBox>
-					<mx:VBox id="interestLanguagesBox">
-					</mx:VBox>
+				<s:HGroup>
+					<s:VGroup id="interestLanguagesBox">
+					</s:VGroup>
 					<mx:LinkButton id="addAnotherInterestLang"
 								   click="addAnotherInterestLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
@@ -405,21 +415,21 @@
 								   paddingLeft="6"
 								   paddingRight="6"
 								   icon="@Embed(source='../../resources/images/add.png')"/>
-				</mx:HBox>
+				</s:HGroup>
 			</mx:FormItem>
 		</mx:Form>
 		<mx:Spacer/>
-		<mx:HBox width="100%"
+		<s:HGroup width="100%"
 				 styleName="hvCenteredBox">
-			<mx:Button id="saveButton"
+			<s:Button id="saveButton"
 					   label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
 					   click="processNewUser()"
 					   icon="@Embed(source='../../resources/images/save.png')"/>
-			<mx:Button id="cancelButton"
+			<s:Button id="cancelButton"
 					   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 					   click="cancelButton_clickHandler(event)"
 					   icon="@Embed(source='../../resources/images/cancel.png')"/>
-		</mx:HBox>
-	</mx:VBox>
+		</s:HGroup>
+	</s:VGroup>
 	
-</mx:VBox>
+</s:VGroup>

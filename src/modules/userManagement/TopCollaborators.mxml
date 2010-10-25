@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  xmlns:common="view.common.*"
-		  layout="vertical"
-		  title="Top Collaborators"
-		  creationComplete="onComplete()">
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:common="view.common.*"
+		 title="Top Collaborators"
+		 creationComplete="onComplete()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
 			import model.DataModel;
@@ -14,7 +15,7 @@
 			import mx.utils.ArrayUtil;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-		
+
 			//Object to store the data received from the server
 			[Bindable]
 			private var dataProvider:ArrayCollection;
@@ -23,21 +24,22 @@
 			private function onComplete():void
 			{
 				refreshTableData(null);
-				/* Disabled for now. May be useful when more others come up
-				tableRefreshTimer = new Timer(120000,0);
-				tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
-				tableRefreshTimer.start();
-				*/
+			/* Disabled for now. May be useful when more others come up
+			   tableRefreshTimer = new Timer(120000,0);
+			   tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
+			   tableRefreshTimer.start();
+			 */
 			}
-			
-			private function refreshTableData(event:TimerEvent):void{
+
+			private function refreshTableData(event:TimerEvent):void
+			{
 				new UserEvent(UserEvent.GET_TOP_TEN_CREDITED).dispatch();
 			}
 
 			private function set setTopTenData(update:Boolean):void
 			{
 				dataProvider=DataModel.getInstance().topTenUsers;
-				DataModel.getInstance().isTopTenRetrieved = false;
+				DataModel.getInstance().isTopTenRetrieved=false;
 			}
 
 			private function setRowNumber(actItem:Object, colInd:int):String
@@ -53,9 +55,14 @@
 				}
 			}
 		]]>
-	</mx:Script>
-	<mx:Binding source="{DataModel.getInstance().isTopTenRetrieved}"
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isTopTenRetrieved}"
 				destination="this.setTopTenData"/>
+
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center"/>
+	</s:layout>
+
 	<mx:DataGrid width="100%"
 				 sortableColumns="false"
 				 editable="false"
@@ -73,4 +80,4 @@
 							   dataField="creditCount"/>
 		</mx:columns>
 	</mx:DataGrid>
-</mx:Panel>
+</s:Panel>

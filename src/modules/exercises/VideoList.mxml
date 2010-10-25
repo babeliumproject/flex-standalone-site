@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:exercises="modules.main.*"
 		 width="100%"
 		 horizontalAlign="center"
 		 creationComplete="onComplete()"
 		 xmlns:exercises1="commands.exercises.*">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
 
@@ -88,9 +90,9 @@
 				Application.application.verticalScrollPosition=0;
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="handleExercisesRetrieve"/>
 
 
@@ -101,24 +103,24 @@
 				 dataProvider="{_dataProvider}"
 				 enabled="{!DataModel.getInstance().recordingExercise}"
 				 change="changeHandler(event)"
-				 verticalScrollPolicy="off"
+				 
 				 sortableColumns="false"
 				 draggableColumns="false"
-				 backgroundAlpha="0"
+				contentBackgroundAlpha="0"
 				 borderThickness="0"
 				 useHandCursor="true">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
 							   editable="false">
 				<mx:itemRenderer>
-					<mx:Component>
+					<fx:Component>
 						<exercises:ExerciseListItem specificClickListeners="false"/>
-					</mx:Component>
+					</fx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
 		</mx:columns>
 	</mx:DataGrid>
-	<mx:HBox id="paginationBox"
+	<s:HGroup id="paginationBox"
 			 styleName="hvCenteredBox"
 			 width="100%"/>
-</mx:VBox>
+</s:VGroup>

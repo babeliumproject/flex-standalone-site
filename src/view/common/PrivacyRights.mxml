@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						  xmlns:s="library://ns.adobe.com/flex/spark"
+						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:common="view.common.*"
 						  showCloseButton="true"
 						  width="355"
@@ -7,11 +9,11 @@
 						  creationComplete="creationCompleteHandler()"
 						  title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
 
-	<mx:Script>
+	<fx:Script>
 
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 
@@ -26,13 +28,13 @@
 			public static var cameraFound:Boolean=false;
 
 			public static var useMicAndCamera:Boolean=false;
-			
-			
+
+
 			public static function cameraReady():Boolean
 			{
 				return (DataModel.getInstance().microphone && !DataModel.getInstance().microphone.muted);
 			}
-			
+
 			public static function microphoneReady():Boolean
 			{
 				return (DataModel.getInstance().camera && !DataModel.getInstance().camera.muted);
@@ -47,7 +49,7 @@
 			{
 				if (devicesAdministrativelyProhibited())
 				{
-					micCamViewStack.selectedChild=adminError;
+					micCamViewStack.selectedChild=adminErrorNavContent;
 					trace("Error: User has no rigths to access devices.");
 				}
 				else
@@ -69,7 +71,7 @@
 						}
 						if (DataModel.getInstance().microphone.muted)
 						{
-							micCamViewStack.selectedChild=privacyNotice;
+							micCamViewStack.selectedChild=privacyNoticeNavContent;
 							_devicesAllowed=false;
 							DataModel.getInstance().microphone.addEventListener(StatusEvent.STATUS, microphonePrivacyStatus);
 						}
@@ -93,12 +95,12 @@
 								{
 									_cameraChanged=true;
 									DataModel.getInstance().camera=camera;
-	
+
 									trace("Camera device changed.");
 								}
 								if (DataModel.getInstance().camera.muted)
 								{
-									micCamViewStack.selectedChild=privacyNotice;
+									micCamViewStack.selectedChild=privacyNoticeNavContent;
 									_devicesAllowed=false;
 									DataModel.getInstance().camera.addEventListener(StatusEvent.STATUS, cameraPrivacyStatus);
 								}
@@ -110,7 +112,7 @@
 							else
 							{
 								cameraFound=false;
-								micCamViewStack.selectedChild=cameraNotFoundError;
+								micCamViewStack.selectedChild=cameraNotFoundErrorNavContent;
 								trace("Error: No camera was detected.");
 							}
 						}
@@ -118,7 +120,7 @@
 					else
 					{
 						microphoneFound=false;
-						micCamViewStack.selectedChild=micNotFoundError;
+						micCamViewStack.selectedChild=micNotFoundErrorNavContent;
 						trace("Error: No mic was detected.");
 					}
 				}
@@ -204,80 +206,92 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
 	<mx:ViewStack id="micCamViewStack"
 				  width="100%"
 				  height="100%">
 
-		<mx:VBox id="micNotFoundError"
-				 width="100%">
-			<mx:HBox>
+		<s:NavigatorContent id="micNotFoundErrorNavContent">
+			<s:VGroup id="micNotFoundError"
+					  width="100%">
+				<s:HGroup>
+					<mx:Text width="100%"
+							 text="{resourceManager.getString('myResources','TEXT_MIC_NOT_FOUND')}"/>
+					<mx:Image source="resources/images/microphone_error.png"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Button id="micNotFoundErrorRetryButton"
+							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
+							  click="initDevices()"/>
+
+					<s:Button id="micNotFoundErrorCancelButton"
+							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  click="cancelButtonClickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+
+		<s:NavigatorContent id="cameraNotFoundErrorNavContent">
+			<s:VGroup id="cameraNotFoundError"
+					  width="100%">
+				<s:HGroup width="100%"
+						  verticalAlign="middle">
+					<mx:Text width="100%"
+							 text="{resourceManager.getString('myResources','TEXT_CAMERA_NOT_FOUND')}"/>
+					<mx:Image source="resources/images/webcam_error.png"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Button id="camNotFoundErrorRetryButton"
+							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
+							  click="initDevices()"/>
+					<s:Button id="camNotFoundErrorCancelButton"
+							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  click="cancelButtonClickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+
+		<s:NavigatorContent id="adminErrorNavContent">
+			<s:VGroup id="adminError"
+					  width="100%">
 				<mx:Text width="100%"
-						 text="{resourceManager.getString('myResources','TEXT_MIC_NOT_FOUND')}"/>
-				<mx:Image source="resources/images/microphone_error.png"/>
-			</mx:HBox>
-			<mx:HBox>
-				<mx:Button id="micNotFoundErrorRetryButton"
-						   label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
-						   click="initDevices()"/>
+						 text="{resourceManager.getString('myResources','TEXT_ADMINISTRATIVELY_DISABLED')}"/>
+				<s:Button id="adminErrorButton"
+						  label="{resourceManager.getString('myResources','BUTTON_OK')}"
+						  click="cancelButtonClickHandler(event)"/>
+			</s:VGroup>
+		</s:NavigatorContent>
 
-				<mx:Button id="micNotFoundErrorCancelButton"
-						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-						   click="cancelButtonClickHandler(event)"/>
-			</mx:HBox>
-		</mx:VBox>
+		<s:NavigatorContent id="privacyNoticeNavContent">
+			<s:VGroup id="privacyNotice"
+					  width="100%">
+				<s:HGroup width="100%"
+						  verticalAlign="middle">
+					<mx:Text width="100%"
+							 text="{resourceManager.getString('myResources','TEXT_PRIVACY_RIGHTS_EXPLAIN')}"/>
+					<mx:Image source="resources/images/privacy_settings.png"
+							  width="160"
+							  height="102"/>
+				</s:HGroup>
+				<s:HGroup width="100%"
+						  horizontalAlign="left">
+					<s:Button id="privacyRecButton"
+							  label="{resourceManager.getString('myResources','BUTTON_OK')}"
+							  click="okButtonClickHandler(event)"/>
+					<s:Button id="privacyCancelButton"
+							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  click="cancelButtonClickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
 
-		<mx:VBox id="cameraNotFoundError"
-				 width="100%">
-			<mx:HBox width="100%"
-					 verticalAlign="middle">
-				<mx:Text width="100%"
-						 text="{resourceManager.getString('myResources','TEXT_CAMERA_NOT_FOUND')}"/>
-				<mx:Image source="resources/images/webcam_error.png"/>
-			</mx:HBox>
-			<mx:HBox>
-				<mx:Button id="camNotFoundErrorRetryButton"
-						   label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
-						   click="initDevices()"/>
-				<mx:Button id="camNotFoundErrorCancelButton"
-						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-						   click="cancelButtonClickHandler(event)"/>
-			</mx:HBox>
-		</mx:VBox>
-
-		<mx:VBox id="adminError"
-				 width="100%">
-			<mx:Text width="100%"
-					 text="{resourceManager.getString('myResources','TEXT_ADMINISTRATIVELY_DISABLED')}"/>
-			<mx:Button id="adminErrorButton"
-					   label="{resourceManager.getString('myResources','BUTTON_OK')}"
-					   click="cancelButtonClickHandler(event)"/>
-		</mx:VBox>
-
-		<mx:VBox id="privacyNotice"
-				 width="100%">
-			<mx:HBox width="100%"
-					 verticalAlign="middle">
-				<mx:Text width="100%"
-						 text="{resourceManager.getString('myResources','TEXT_PRIVACY_RIGHTS_EXPLAIN')}"/>
-				<mx:Image source="resources/images/privacy_settings.png" width="160" height="102"/>
-			</mx:HBox>
-			<mx:HBox width="100%"
-					 horizontalAlign="left">
-				<mx:Button id="privacyRecButton"
-						   label="{resourceManager.getString('myResources','BUTTON_OK')}"
-						   click="okButtonClickHandler(event)"/>
-				<mx:Button id="privacyCancelButton"
-						   label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-						   click="cancelButtonClickHandler(event)"/>
-			</mx:HBox>
-		</mx:VBox>
-
-		<mx:VBox id="micSoundTest"
-				 width="100%">
-			<mx:Text text="{resourceManager.getString('myResources','TEXT_MIC_TEST_EXPLAIN')}"/>
-		</mx:VBox>
+		<s:NavigatorContent id="micSoundTestNavContent">
+			<s:VGroup id="micSoundTest"
+					  width="100%">
+				<mx:Text text="{resourceManager.getString('myResources','TEXT_MIC_TEST_EXPLAIN')}"/>
+			</s:VGroup>
+		</s:NavigatorContent>
 
 	</mx:ViewStack>
 

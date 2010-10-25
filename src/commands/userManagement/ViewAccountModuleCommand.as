@@ -10,7 +10,7 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
-	import modules.userManagement.AccountMain;
+	import spark.components.Group;
 
 	public class ViewAccountModuleCommand implements ICommand
 	{
@@ -19,13 +19,19 @@ package commands.userManagement
 		{
 			var index:Class = ViewChangeEvent.VIEWSTACK_ACCOUNT_MODULE_INDEX;
 			new CloseConnectionEvent().dispatch();
-			if(DataModel.getInstance().appBody.getChildren().length > 0)
-				DataModel.getInstance().appBody.removeAllChildren();
-			DataModel.getInstance().appBody.addChild(new index());
+			if(DataModel.getInstance().appBody.numElements > 0)
+				removeAllChildrenFromComponent(DataModel.getInstance().appBody);
+			DataModel.getInstance().appBody.addElement(new index());
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(
 				BabeliaBrowserManager.index2fragment(index));
+		}
+		
+		protected function removeAllChildrenFromComponent(component:Group):void
+		{
+			for (var i:uint=0; i < component.numElements; i++)
+				component.removeElementAt(i);
 		}
 		
 	}

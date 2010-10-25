@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:autoEvaluation="modules.autoevaluation.*"
-		 xmlns:common="view.common.*"
-		 xmlns:evaluation="modules.evaluation.*"
-		 xmlns:videoPlayer="modules.videoPlayer.*"
-		 paddingBottom="8"
-		 verticalAlign="top"
-		 verticalScrollPolicy="off"
-		 width="100%"
-		 creationComplete="completeHandler()">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:autoEvaluation="modules.autoevaluation.*"
+		  xmlns:common="view.common.*"
+		  xmlns:evaluation="modules.evaluation.*"
+		  xmlns:videoPlayer="modules.videoPlayer.*"
+		  paddingBottom="8"
+		  verticalAlign="top"
+		  
+		  width="100%"
+		  creationComplete="completeHandler()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.*;
-			
+
 			import model.DataModel;
-			
+
 			import modules.search.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Button;
 			import mx.events.IndexChangedEvent;
-
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -317,10 +318,10 @@
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 				_evaluationSelected=true;
-				
+
 				//Visualize the video player component
-				videoPlayerBox.includeInLayout = true;
-				videoPlayerBox.visible = true;
+				videoPlayerBox.includeInLayout=true;
+				videoPlayerBox.visible=true;
 
 				//Prepare the component in which the user leaves the assessment
 				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
@@ -347,15 +348,15 @@
 
 				_exerciseTitle=selectedItem.exerciseTitle;
 				_evaluationSelected=true;
-				
-				
+
+
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 
 				//Visualize the video player component
-				videoPlayerBox.includeInLayout = true;
-				videoPlayerBox.visible = true;
+				videoPlayerBox.includeInLayout=true;
+				videoPlayerBox.visible=true;
 
 				//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
 
@@ -386,10 +387,10 @@
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
+
 				//Visualize the video player component
-				videoPlayerBox.includeInLayout = true;
-				videoPlayerBox.visible = true;
+				videoPlayerBox.includeInLayout=true;
+				videoPlayerBox.visible=true;
 
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
@@ -403,11 +404,11 @@
 				{
 					VP.pauseVideo();
 					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
-					
-					
+
+
 					//EvaluationVideoCommentWatch.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
 					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
-					watchEvaluationVideoComment.videoSource = EVALUATION_FOLDER + '/' + _videoCommentName;
+					watchEvaluationVideoComment.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
 					PopUpManager.centerPopUp(watchEvaluationVideoComment);
 					assessmentDetailDataGrid.selectedItem=null;
 				}
@@ -446,10 +447,10 @@
 				VP.state=VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
 
 				resetCueManager();
-				
+
 				//Hide the video player until an exercise is selected
-				videoPlayerBox.includeInLayout = false;
-				videoPlayerBox.visible = false;
+				videoPlayerBox.includeInLayout=false;
+				videoPlayerBox.visible=false;
 			}
 
 			private function onEvaluationTabChange(event:IndexChangedEvent):void
@@ -461,32 +462,32 @@
 						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
-						
+
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
-						assessedToCurrentUserListAndPagination.currentPaginationPage = _currentPageAssessedToCurrentUser;
+						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
 						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 						resetVideoPlayer();
-						
+
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBox):
 						waitingAssessmentDataGrid.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-						
+
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
-						assessedToCurrentUserListAndPagination.currentPaginationPage = _currentPageAssessedToCurrentUser;
+						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
 						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 						resetVideoPlayer();
-						
+
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBox):
 						waitingAssessmentDataGrid.selectedItem=null;
@@ -494,16 +495,16 @@
 						assessmentsOfSelectedResponse.visible=false;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-						
+
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
-						assessedToCurrentUserListAndPagination.currentPaginationPage = _currentPageAssessedToCurrentUser;
+						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
 						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 						resetVideoPlayer();
-						
+
 						break;
 					default:
 						break;
@@ -515,8 +516,8 @@
 				refreshEvaluationLists();
 
 				resetVideoPlayer();
-				
-				evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
+
+				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
 			}
 
 			private function set onTabChange(value:Boolean):void
@@ -529,22 +530,22 @@
 				waitingAssessmentDataGrid.selectedIndex=-1;
 				assessedByCurrentUserDataGrid.selectedIndex=-1;
 				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=-1;
-				
+
 				//Return the pagination controls to the first page
 				_currentPageWaitingForAssessment=1;
 				_currentPageAssessedByCurrentUser=1;
 				_currentPageAssessedToCurrentUser=1;
-				
-				assessedToCurrentUserListAndPagination.currentPaginationPage = _currentPageAssessedToCurrentUser;
+
+				assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
 				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 				resetVideoPlayer();
 
-				evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
+				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
 			}
 
-			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HBox, pageClickHandler:Function):void
+			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
 			{
 				VideoPaginator.createPaginationMenu(dataProvider.length, DataModel.getInstance().pageSize, currentPageIndicator, DataModel.getInstance().numberOfPagesNav, paginationContainer, pageClickHandler);
 				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
@@ -581,11 +582,11 @@
 				if (value == null)
 					return;
 
-			//	if (!dataModel.isLoggedIn)
-			//	{
-					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
-			//		return;
-			//	}
+				//	if (!dataModel.isLoggedIn)
+				//	{
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
+				//		return;
+				//	}
 
 
 				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
@@ -618,7 +619,7 @@
 					case BabeliaBrowserManager.REVISE:
 						if (browser.targetFragment != '')
 						{
-							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBox;
+							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
 							var tmpRevise:EvaluationVO;
 							for each (var evRevise:EvaluationVO in assessedToCurrentUserList)
 							{
@@ -650,7 +651,7 @@
 								}
 							}
 							if (tmpView != null)
-								callLater(goToSelectedView,[tmpView]);
+								callLater(goToSelectedView, [tmpView]);
 						}
 						break;
 					default:
@@ -658,73 +659,77 @@
 						break;
 				}
 			}
-			
-			private function goToSelectedEvaluate(tmpEvaluate:EvaluationVO):void{
+
+			private function goToSelectedEvaluate(tmpEvaluate:EvaluationVO):void
+			{
 				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild = waitingAssessmentBox;
+				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
 				waitingAssessmentDataGrid.selectedItem=tmpEvaluate;
 				waitingAssessmentDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 			}
-			
-			private function goToSelectedView(tmpView:EvaluationVO):void{
+
+			private function goToSelectedView(tmpView:EvaluationVO):void
+			{
 				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild = assessedByCurrentUserBox;
+				evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBoxNavContent;
 				assessedByCurrentUserDataGrid.selectedItem=tmpView;
 				assessedByCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 			}
-			
-			private function goToSelectedRevise(tmpRevise:EvaluationVO):void{
+
+			private function goToSelectedRevise(tmpRevise:EvaluationVO):void
+			{
 				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild = assessedToCurrentUserBox;
+				evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
 				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=tmpRevise;
 				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
-				
-			}
-			
-			
-		]]>
-	</mx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().autoevaluationAvailable}"
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().autoevaluationAvailable}"
 				destination="showAutoevalTab"/>
-	<mx:Binding source="{DataModel.getInstance().isLoggedIn}"
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="userAuthenticationHandler"/>
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 
-	<mx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
+	<fx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
 				destination="waitingAssessmentRetrievedHandler"/>
-	<mx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
+	<fx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
 				destination="assessedToCurrentUserRetrievedHandler"/>
-	<mx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
+	<fx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
 				destination="assessedByCurrentUserRetrievedHandler"/>
-	<mx:Binding source="{dataModel.detailsOfAssessedResponseDataRetrieved}"
+	<fx:Binding source="{dataModel.detailsOfAssessedResponseDataRetrieved}"
 				destination="detailsOfAssessmentRetrievedHandler"/>
 
-	<mx:Binding source="{dataModel.addAssessmentRetrieved}"
+	<fx:Binding source="{dataModel.addAssessmentRetrieved}"
 				destination="assessmentSavedHandler"/>
 
 
-	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 
-	<mx:VBox styleName="sectionInfoBox"
-			 width="100%">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
-				  styleName="sectionInfoTitleLabel"/>
+	<s:VGroup styleName="sectionInfoBox"
+			  width="100%">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
+				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-		<mx:HBox horizontalAlign="right"
-				 width="100%">
+		<s:HGroup horizontalAlign="right"
+				  width="100%">
 			<mx:TabBar dataProvider="{evaluationOptionsViewStack}"/>
-		</mx:HBox>
-	</mx:VBox>
+		</s:HGroup>
+	</s:VGroup>
 
-	<mx:VBox id="videoPlayerBox" width="100%" includeInLayout="false" visible="false">
-		<mx:Label id="exerciseTitle"
-				  text="{_exerciseTitle}"
-				  width="100%"
-				  styleName="sectionTitleLabel"/>
-		<mx:HBox width="100%">
+	<s:VGroup id="videoPlayerBox"
+			  width="100%"
+			  includeInLayout="false"
+			  visible="false">
+		<s:Label id="exerciseTitle"
+				 text="{_exerciseTitle}"
+				 width="100%"
+				 styleName="sectionTitleLabel"/>
+		<s:HGroup width="100%">
 			<!-- w/h = 16:10 -->
 			<videoPlayer:VideoPlayerBabelia id="VP"
 											autoPlay="true"
@@ -740,17 +745,16 @@
 											controlsEnabled="{_evaluationSelected}"/>
 			<evaluation:EvaluationRatingBox id="evaluationRatingBox"
 											width="100%"/>
-		</mx:HBox>
-	</mx:VBox>
+		</s:HGroup>
+	</s:VGroup>
 	<mx:Spacer width="20"/>
 
-	<mx:VBox width="100%"
-			 height="100%"
-			 paddingLeft="4"
-			 paddingRight="4"
-			 paddingBottom="4"
-			 horizontalScrollPolicy="off">
-		
+	<s:VGroup width="100%"
+			  height="100%"
+			  paddingLeft="4"
+			  paddingRight="4"
+			  paddingBottom="4">
+
 		<mx:ViewStack id="evaluationOptionsViewStack"
 					  width="100%"
 					  height="100%"
@@ -758,175 +762,176 @@
 					  resizeToContent="true"
 					  change="onEvaluationTabChange(event)">
 
-			<!-- Epaitu gabe dauden bideoak aukeratzeko zerrenda erakutsiko du -->
-			<mx:VBox id="waitingAssessmentBox"
-					 label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}"
-					 horizontalAlign="center"
-					 width="100%"
-					 height="100%"
-					 verticalScrollPolicy="off">
-				<mx:DataGrid id="waitingAssessmentDataGrid"
-							 dataProvider="{waitingForAssessmentList}"
-							 width="100%"
-							 horizontalScrollPolicy="off"
-							 verticalScrollPolicy="off"
-							 verticalAlign="middle"
-							 change="waitingAssessmentChangeHandler(event)">
-					<mx:columns>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-										   dataField="responseThumbnailUri"
-										   width="{120*0.8}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Image height="{90*0.8}"
-											  width="{120*0.8}"
-											  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
-										   dataField="responseUserName"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="responseDuration"
-										   labelFunction="{durationLabelFunction}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-										   dataField="responseRatingAmount"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-										   dataField="responseCharacterName"
-										   visible="false"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-										   dataField="responseAddingDate"/>
-					</mx:columns>
-				</mx:DataGrid>
-				<mx:HBox id="paginationWaitingAssessment"
-						 width="100%"
-						 horizontalAlign="left"
-						 horizontalGap="2"/>
-			</mx:VBox>
-
-
-
-
-			<!-- Niri epaitutako bideoen zerrenda erakusten du -->
-			<mx:VBox id="assessedToCurrentUserBox"
-					 label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
-
-
-				<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
-													  dataProvider="{assessedToCurrentUserList}"
-													  changeListener="{assessedToCurrentUserChangeHandler}"
-													  width="100%"/>
-
-				<mx:Spacer height="30"/>
-				<!-- Panel to show details of one of the responses that have been evaluated to this user-->
-				<mx:HBox id="assessmentsOfSelectedResponse"
-						 width="100%"
-						 height="100%">
-					<mx:TabNavigator id="evaluationTypeNavigator"
-									 creationPolicy="all"
-									 width="100%"
-									 paddingLeft="8"
-									 paddingRight="8"
-									 paddingTop="8"
-									 paddingBottom="8"
-									 resizeToContent="true">
-						<mx:VBox id="humanEvaluation"
-								 label="Human Evaluation"
+			<s:NavigatorContent id="waitingAssessmentBoxNavContent" label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
+				<s:VGroup id="waitingAssessmentBox"
+						  horizontalAlign="center"
+						  width="100%"
+						  height="100%"
+						  >
+					<mx:DataGrid id="waitingAssessmentDataGrid"
+								 dataProvider="{waitingForAssessmentList}"
 								 width="100%"
-								 height="100%"
-								 verticalScrollPolicy="off">
-							<!-- Commented for now
-								 <mx:HBox>
-								 <mx:Label id="overallAverageRating"/>
-								 <mx:Button id="viewGraphicButton"
-								 label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
-								 click="viewGraphicClickHandler()"/>
-								 </mx:HBox>
-							-->
-
-							<mx:DataGrid id="assessmentDetailDataGrid"
-										 dataProvider="{assessmentDetailList}"
-										 change="assessmentDetailChangeHandler(event)"
-										 verticalAlign="middle"
-										 verticalScrollPolicy="off"
-										 width="100%">
-								<mx:columns>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
-													   dataField="userName"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-													   dataField="overallScore"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
-													   dataField="intonationScore"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
-													   dataField="fluencyScore"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
-													   dataField="rhythmScore"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
-													   dataField="spontaneityScore"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-													   dataField="addingDate"/>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
-													   dataField="comment"
-													   width="160">
-										<mx:itemRenderer>
-											<mx:Component>
-												<mx:Text text="{data.comment}"
-														 width="160"/>
-											</mx:Component>
-										</mx:itemRenderer>
-									</mx:DataGridColumn>
-									<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
-													   dataField="evaluationVideoFileIdentifier"/>
-								</mx:columns>
-							</mx:DataGrid>
-						</mx:VBox>
-						<autoEvaluation:AutoevaluationPanel id="computerEvaluation">
-						</autoEvaluation:AutoevaluationPanel>
-					</mx:TabNavigator>
-				</mx:HBox>
-
-			</mx:VBox>
+								 horizontalScrollPolicy="off"
+								 
+								 verticalAlign="middle"
+								 change="waitingAssessmentChangeHandler(event)">
+						<mx:columns>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
+											   dataField="responseThumbnailUri"
+											   width="{120*0.8}">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:Image height="{90*0.8}"
+												  width="{120*0.8}"
+												  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
+											   dataField="responseUserName"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
+											   dataField="responseDuration"
+											   labelFunction="{durationLabelFunction}"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
+											   dataField="responseRatingAmount"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
+											   dataField="responseCharacterName"
+											   visible="false"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+											   dataField="responseAddingDate"/>
+						</mx:columns>
+					</mx:DataGrid>
+					<s:HGroup id="paginationWaitingAssessment"
+							  width="100%"
+							  horizontalAlign="left"
+							  gap="2"/>
+				</s:VGroup>
+			</s:NavigatorContent>
 
 
-			<!-- Displays a list of responses that the user assessed -->
-			<mx:VBox label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}"
-					 id="assessedByCurrentUserBox">
-				<mx:DataGrid width="100%"
-							 id="assessedByCurrentUserDataGrid"
-							 dataProvider="{assessedByCurrentUserList}"
-							 change="assessedByCurrentUserChangeHandler(event)"
-							 verticalAlign="middle"
-							 verticalScrollPolicy="off">
-					<mx:columns>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-										   dataField="exerciseThumbnailUri"
-										   width="{120*0.8}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Image height="{90*0.8}"
-											  width="{120*0.8}"
-											  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
-										   dataField="responseUserName"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-										   dataField="responseDuration"
-										   labelFunction="{durationLabelFunction}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-										   dataField="responseRatingAmount"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-										   dataField="responseCharacterName"/>
-					</mx:columns>
-				</mx:DataGrid>
-				<mx:HBox id="paginationAssessedByCurrentUser"
-						 width="100%"
-						 horizontalAlign="left"
-						 horizontalGap="2"/>
-			</mx:VBox>
+			<s:NavigatorContent id="assessedToCurrentUserBoxNavContent" label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
+				<s:VGroup id="assessedToCurrentUserBox"
+						  >
+					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
+														  dataProvider="{assessedToCurrentUserList}"
+														  changeListener="{assessedToCurrentUserChangeHandler}"
+														  width="100%"/>
+					<mx:Spacer height="30"/>
+					<!-- Panel to show details of one of the responses that have been evaluated to this user-->
+					<s:HGroup id="assessmentsOfSelectedResponse"
+							  width="100%"
+							  height="100%">
+						<mx:TabNavigator id="evaluationTypeNavigator"
+										 creationPolicy="all"
+										 width="100%"
+										 paddingLeft="8"
+										 paddingRight="8"
+										 paddingTop="8"
+										 paddingBottom="8"
+										 resizeToContent="true">
+							<s:NavigatorContent id="humanEvaluationNavContent" label="Human Evaluation">
+
+
+								<s:VGroup id="humanEvaluation"
+										  
+										  width="100%"
+										  height="100%"
+										  >
+									<!-- Commented for now
+										 <s:HGroup>
+										 <s:Label id="overallAverageRating"/>
+										 <s:Button id="viewGraphicButton"
+										 label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
+										 click="viewGraphicClickHandler()"/>
+										 </s:HGroup>
+									-->
+
+									<mx:DataGrid id="assessmentDetailDataGrid"
+												 dataProvider="{assessmentDetailList}"
+												 change="assessmentDetailChangeHandler(event)"
+												 verticalAlign="middle"
+												 
+												 width="100%">
+										<mx:columns>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
+															   dataField="userName"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
+															   dataField="overallScore"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+															   dataField="intonationScore"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+															   dataField="fluencyScore"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+															   dataField="rhythmScore"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+															   dataField="spontaneityScore"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+															   dataField="addingDate"/>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
+															   dataField="comment"
+															   width="160">
+												<mx:itemRenderer>
+													<fx:Component>
+														<mx:Text text="{data.comment}"
+																 width="160"/>
+													</fx:Component>
+												</mx:itemRenderer>
+											</mx:DataGridColumn>
+											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+															   dataField="evaluationVideoFileIdentifier"/>
+										</mx:columns>
+									</mx:DataGrid>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="computerEvaluationNavContent">
+								<autoEvaluation:AutoevaluationPanel id="computerEvaluation"/>
+							</s:NavigatorContent>
+						</mx:TabNavigator>
+					</s:HGroup>
+				</s:VGroup>
+			</s:NavigatorContent>
+
+			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"  label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
+				<s:VGroup
+						  id="assessedByCurrentUserBox">
+					<mx:DataGrid width="100%"
+								 id="assessedByCurrentUserDataGrid"
+								 dataProvider="{assessedByCurrentUserList}"
+								 change="assessedByCurrentUserChangeHandler(event)"
+								 verticalAlign="middle"
+								 >
+						<mx:columns>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
+											   dataField="exerciseThumbnailUri"
+											   width="{120*0.8}">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:Image height="{90*0.8}"
+												  width="{120*0.8}"
+												  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
+											   dataField="responseUserName"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
+											   dataField="responseDuration"
+											   labelFunction="{durationLabelFunction}"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
+											   dataField="responseRatingAmount"/>
+							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
+											   dataField="responseCharacterName"/>
+						</mx:columns>
+					</mx:DataGrid>
+					<s:HGroup id="paginationAssessedByCurrentUser"
+							  width="100%"
+							  horizontalAlign="left"
+							  gap="2"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+
 		</mx:ViewStack>
-	</mx:VBox>
+	</s:VGroup>
 
 
-</mx:VBox>
+</s:VGroup>

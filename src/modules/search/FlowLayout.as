@@ -90,8 +90,8 @@ public class FlowLayout extends BoxLayout
 		
 		var hAlign:Number = getHorizontalAlignValue();
 		var vAlign:Number = getVerticalAlignValue();
-		var hGap:Number = target.getStyle( "horizontalGap" );
-		var vGap:Number = target.getStyle( "verticalGap" );
+		var hGap:Number = target.getStyle( "gap" );
+		var vGap:Number = target.getStyle( "gap" );
 		var len:Number = target.numChildren;
 		
 		var currentRowChildren:Array = new Array;

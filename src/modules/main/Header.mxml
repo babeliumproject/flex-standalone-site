@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<main:HeaderClass xmlns:mx="http://www.adobe.com/2006/mxml"
+<main:HeaderClass xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 				  xmlns:main="modules.main.*">
 
-	<mx:HBox width="100%"
+	<s:HGroup width="100%"
 			 horizontalAlign="left"
 			 verticalAlign="middle"
 			 paddingLeft="8">
-		<mx:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
+		<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
 		<main:LocalizationComboBox id="localeComboBox"/>
-	</mx:HBox>
+	</s:HGroup>
 
-	<mx:HBox horizontalAlign="right"
+	<s:HGroup horizontalAlign="right"
 			 verticalAlign="middle"
 			 width="100%">
 
@@ -20,7 +22,7 @@
 					   toolTip="Help/FAQ"/>
 		
 		<mx:Canvas height="100%">
-			<mx:HBox id="anonymousCP"
+			<s:HGroup id="anonymousCP"
 					 x="0"
 					 y="0"
 					 height="100%"
@@ -35,8 +37,8 @@
 							   styleName="yellowLinkButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
 							   click="signUpClickHandler()"/>
-			</mx:HBox>
-			<mx:HBox id="userCP"
+			</s:HGroup>
+			<s:HGroup id="userCP"
 					 x="0"
 					 y="0"
 					 height="100%"
@@ -45,13 +47,13 @@
 					 visible="false">
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-				<mx:HBox styleName="hvCenteredBox">
-					<mx:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
+				<s:HGroup styleName="hvCenteredBox">
+					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
 							  styleName="boldDarkerGreyLabel"/>
 					<mx:LinkButton id="uCrds"
 								   label="cr."
 								   styleName="creditLinkButton"/>
-				</mx:HBox>
+				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
 				<mx:PopUpMenuButton id="userCPName"
@@ -62,7 +64,7 @@
 				<mx:LinkButton id="signOutButton"
 							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   click="signOutClickHandler()"/>
-			</mx:HBox>
+			</s:HGroup>
 		</mx:Canvas>
-	</mx:HBox>
+	</s:HGroup>
 </main:HeaderClass>

@@ -44,7 +44,7 @@ package view.common
 				var tempIcon:IFlexDisplayObject=getCurrentIcon();
 				var w:Number=explicitWidth;
 				if (tempIcon)
-					w-=tempIcon.width + getStyle("horizontalGap") + getStyle("paddingLeft") + getStyle("paddingRight");
+					w-=tempIcon.width + getStyle("gap") + getStyle("paddingLeft") + getStyle("paddingRight");
 				textField.width=w;
 			}
 			super.measure();

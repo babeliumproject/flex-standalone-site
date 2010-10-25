@@ -28,6 +28,8 @@ package control
 	import mx.managers.IBrowserManager;
 	import mx.rpc.CallResponder;
 	import mx.utils.ObjectUtil;
+	
+	import spark.components.Group;
 
 
 	/**
@@ -195,14 +197,19 @@ package control
 		}
 		
 		private function addModuleAsChild(moduleClass:Class):void{
-			if (DataModel.getInstance().appBody.getChildren().length > 0)
+			if (DataModel.getInstance().appBody.numElements > 0)
 			{
 				new CloseConnectionEvent().dispatch();
-				DataModel.getInstance().appBody.removeAllChildren();
+				removeAllChildrenFromComponent(DataModel.getInstance().appBody)
 			}
-			DataModel.getInstance().appBody.addChild(new moduleClass());
+			DataModel.getInstance().appBody.addElement(new moduleClass());
 		}
-
+		
+		protected function removeAllChildrenFromComponent(component:Group):void
+		{
+			for (var i:uint=0; i < component.numElements; i++)
+				component.removeElementAt(i);
+		}
 
 		/**
 		 * Clear Fragments

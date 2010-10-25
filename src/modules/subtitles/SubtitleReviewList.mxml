@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 styleName="hvCenteredBox"
-		 label="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+		 styleName="hvCenteredBox">
 	
-	<mx:Label text="tab2"/>
+	<s:Label text="No content right now."/>
 	
-</mx:VBox>
+</s:VGroup>

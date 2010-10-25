@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 creationComplete="creationCompleteHandler(event)"
-		 verticalGap="14">
+		 gap="14">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
 			
@@ -81,18 +83,18 @@
 			}
 			
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="checkUrlParameters"/>
-	<mx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
+	<fx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
 				destination="greetAndRedirect"/>
-	<mx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 
-	<mx:Label text="Account Activation"
+	<s:Label text="Account Activation"
 			  styleName="sectionTitleLabel"/>
 	<mx:HRule width="100%"/>
-	<mx:Label id="activating"
+	<s:Label id="activating"
 			  text="{message}"/>
-</mx:VBox>
+</s:VGroup>

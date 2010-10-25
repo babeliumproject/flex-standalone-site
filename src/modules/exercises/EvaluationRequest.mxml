@@ -1,48 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-					xmlns:common="view.common.*"
-					layout="vertical"
-					autoLayout="true"
-					horizontalAlign="center"
-					verticalAlign="middle">
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:common="view.common.*"
+		 autoLayout="true">
 
-	<mx:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
-			  styleName="errorLabel"
-			  visible="{ !DataModel.getInstance().isLoggedIn}"/>
-	<mx:VBox id="evaluationOptions"
+	<s:layout>
+		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+
+	<s:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
+			 styleName="errorLabel"
+			 visible="{ !DataModel.getInstance().isLoggedIn}"/>
+	<s:VGroup id="evaluationOptions"
 			  visible="{ DataModel.getInstance().isLoggedIn}"
 			  styleName="hvCenteredBox"
 			  width="100%">
-		<mx:HBox width="100%"
-				 styleName="hvCenteredBox"
-				 visible="{!DataModel.getInstance().isLoggedIn}">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
+		<s:HGroup width="100%"
+				  styleName="hvCenteredBox"
+				  visible="{!DataModel.getInstance().isLoggedIn}">
+			<s:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
 			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
+			<s:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
 			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
-		</mx:HBox>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_1')}"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
-		<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
-		<mx:HBox width="100%"
-				 styleName="hvCenteredBox"
-				 visible="{DataModel.getInstance().isAutoevaluable}">
-			<mx:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"/>
-			<mx:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
+		</s:HGroup>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_1')}"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
+		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
+		<s:HGroup width="100%"
+				  styleName="hvCenteredBox"
+				  visible="{DataModel.getInstance().isAutoevaluable}">
+			<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"/>
+			<s:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
 						 id="autoevaluateCheckbox"/>
-		</mx:HBox>
-		<mx:HBox width="100%"
-				 styleName="hvCenteredBox">
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
-					   click="evaluationRequestedClickHandler()"/>
-			<mx:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
-					   click="returnToMainClickHandler()"/>
-		</mx:HBox>
-	</mx:VBox>
+		</s:HGroup>
+		<s:HGroup width="100%"
+				  styleName="hvCenteredBox">
+			<s:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
+					  click="evaluationRequestedClickHandler()"/>
+			<s:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
+					  click="returnToMainClickHandler()"/>
+		</s:HGroup>
+	</s:VGroup>
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.EvaluationEvent;
 			import events.RecordingEndOptionEvent;
@@ -117,9 +120,9 @@
 				new EvaluationEvent(EvaluationEvent.CHECK_AUTOEVALUATION_SUPPORT_RESPONSE, requestData).dispatch();
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().historicData.videoResponseId}"
+	<fx:Binding source="{DataModel.getInstance().historicData.videoResponseId}"
 				destination="this.checkAutoevaluationSupport"/>
 
-</mx:Panel>
+</s:Panel>

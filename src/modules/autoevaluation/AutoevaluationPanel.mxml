@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ViewStack xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:ViewStack xmlns:fx="http://ns.adobe.com/mxml/2009"
+			  xmlns:s="library://ns.adobe.com/flex/spark"
+			  xmlns:mx="library://ns.adobe.com/flex/mx"
 			  label="Automatic Evaluation"
 			  width="100%"
 			  height="100%"
 			  creationPolicy="all"
 			  creationComplete="init()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import events.EvaluationEvent;
 
@@ -22,7 +24,7 @@
 				scoreLabel.text="";
 				errorLabel.text="";
 
-				selectedChild=evaluationPanel;
+				selectedChild=evaluationPanelNavContent;
 			}
 
 			public function setResponseID(responseID:int):void
@@ -42,7 +44,7 @@
 					DataModel.getInstance().autoevaluationDone=false;
 
 					if (evaluationPanel != null)
-						selectedChild=evaluationPanel;
+						selectedChild=evaluationPanelNavContent;
 					//setVisible(true);
 
 					var evaluation:Evaluation=DataModel.getInstance().autoevaluationResults;
@@ -137,7 +139,7 @@
 				{
 
 					if (errorPanel != null)
-						selectedChild=errorPanel;
+						selectedChild=errorPanelNavContent;
 					//setVisible(true);
 
 					errorLabel.text=DataModel.getInstance().autoevaluationError;
@@ -149,43 +151,49 @@
 				}
 			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 
-	<mx:Binding source="{DataModel.getInstance().autoevaluationDone}"
+	<fx:Binding source="{DataModel.getInstance().autoevaluationDone}"
 				destination="this.onResultReceived"/>
-	<mx:Binding source="{DataModel.getInstance().autoevaluationError != null}"
+	<fx:Binding source="{DataModel.getInstance().autoevaluationError != null}"
 				destination="this.setError"/>
 
-	<mx:HBox id="evaluationPanel"
-			 width="100%"
-			 height="100%"
-			 styleName="padding10AllSidesBox">
-		<mx:VBox width="30%"
-				 height="100%"
-				 styleName="padding10AllSidesBox"
-				 verticalAlign="middle">
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
-			<mx:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
-		</mx:VBox>
-		<mx:VBox width="70%"
-				 height="100%"
-				 styleName="padding10AllSidesBox"
-				 verticalAlign="middle">
-			<mx:Label id="exerciseTranscriptionLabel"/>
-			<mx:Label id="responseTranscriptionLabel"
-					  styleName="errorLabel"/>
-			<mx:Label id="scoreLabel"/>
-		</mx:VBox>
-	</mx:HBox>
-	<mx:HBox id="errorPanel"
-			 width="100%"
-			 height="100%"
-			 styleName="padding10AllSidesBox"
-			 horizontalAlign="center"
-			 verticalAlign="middle">
-		<mx:Label id="errorLabel"
-				  textAlign="center"
-				  text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
-	</mx:HBox>
+	<s:NavigatorContent id="evaluationPanelNavContent">
+		<s:HGroup id="evaluationPanel"
+				  width="100%"
+				  height="100%"
+				  styleName="padding10AllSidesBox">
+			<s:VGroup width="30%"
+					  height="100%"
+					  styleName="padding10AllSidesBox"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
+			</s:VGroup>
+			<s:VGroup width="70%"
+					  height="100%"
+					  styleName="padding10AllSidesBox"
+					  verticalAlign="middle">
+				<mx:Text id="exerciseTranscriptionLabel"/>
+				<mx:Text id="responseTranscriptionLabel"
+						 styleName="errorLabel"/>
+				<mx:Text id="scoreLabel"/>
+			</s:VGroup>
+		</s:HGroup>
+	</s:NavigatorContent>
+	
+	<s:NavigatorContent id="errorPanelNavContent">
+		<s:HGroup id="errorPanel"
+				  width="100%"
+				  height="100%"
+				  styleName="padding10AllSidesBox"
+				  horizontalAlign="center"
+				  verticalAlign="middle">
+			<s:Label id="errorLabel"
+					 textAlign="center"
+					 text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
+		</s:HGroup>
+	</s:NavigatorContent>
+	
 </mx:ViewStack>

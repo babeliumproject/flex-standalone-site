@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel  xmlns:mx="http://www.adobe.com/2006/mxml">
+<s:Panel  xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx">
 	
-</mx:Panel>
+</s:Panel>

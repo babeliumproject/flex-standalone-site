@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
 		 width="100%"
-		 verticalScrollPolicy="off"
+		 
 		 creationComplete="onComplete()">
 
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			
 			import events.MessageOfTheDayEvent;
@@ -83,7 +85,7 @@
 				unsignedMotdBox.visible=true;
 			}
 			
-			protected function generateMessageBox(messageData:Object):HBox
+			protected function generateMessageBox(messageData:Object):HGroup
 			{
 				var messageImage:Image=new Image();
 				messageImage.source=messageData.resourceUrl;
@@ -100,14 +102,14 @@
 				messageText.percentWidth=100;
 				messageText.percentHeight=100;
 				
-				var messageVBox:VBox=new VBox();
+				var messageVBox:VGroup=new VGroup();
 				messageVBox.percentWidth=100;
 				messageVBox.percentHeight=100;
 				messageVBox.setStyle("verticalAlign", "middle");
 				messageVBox.addChild(titleLabel);
 				messageVBox.addChild(messageText);
 				
-				var motdBox:HBox=new HBox();
+				var motdBox:HGroup=new HGroup();
 				motdBox.percentWidth=100;
 				motdBox.setStyle("verticalAlign", "middle");
 				motdBox.addChild(messageImage);
@@ -121,21 +123,21 @@
 			}
 			
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<mx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
+	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
 				destination="onUnsignedMessagesOfTheDayRetrieved"/>
 	
-	<mx:Binding source="{DataModel.getInstance().languageChanged}"
+	<fx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="onLanguageChanged"/>
 	
 	
-	<mx:VBox id="unsignedMotdBox"
+	<s:VGroup id="unsignedMotdBox"
 			 styleName="sectionInfoBox"
 			 width="100%"
 			 includeInLayout="false"
 			 visible="false">
-		<mx:HBox id="descriptionPaginationUnsigned"/>
+		<s:HGroup id="descriptionPaginationUnsigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
 					  width="100%"
@@ -143,11 +145,11 @@
 		</mx:ViewStack>
 		
 		<!--
-		<mx:HBox horizontalAlign="right"
+		<s:HGroup horizontalAlign="right"
 		width="100%">
-		<mx:Button label="Join us!"/>
-		</mx:HBox>
+		<s:Button label="Join us!"/>
+		</s:HGroup>
 		-->
-	</mx:VBox>
+	</s:VGroup>
 
-</mx:VBox>
+</s:VGroup>
