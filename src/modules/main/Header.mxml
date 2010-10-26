@@ -20,15 +20,12 @@
 					   icon="@Embed(source='../../resources/images/help.png')"
 					   click="helpFAQ_clickHandler(event)"
 					   toolTip="Help/FAQ"/>
-
-		<mx:Canvas height="100%">
+			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
-					  x="0"
-					  y="0"
-					  height="100%"
 					  horizontalAlign="right"
 					  verticalAlign="middle"
-					  visible="true">
+					  visible="true"
+					  includeInLayout="true">
 				<mx:LinkButton id="signInButton"
 							   styleName="yellowLinkButton"
 							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
@@ -39,16 +36,16 @@
 							   click="signUpClickHandler()"/>
 			</s:HGroup>
 			<s:HGroup id="userCP"
-					  x="0"
-					  y="0"
-					  height="100%"
 					  horizontalAlign="right"
 					  verticalAlign="middle"
-					  visible="false">
+					  visible="false"
+					  includeInLayout="false">
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-				<s:HGroup styleName="hvCenteredBox">
+				<s:HGroup verticalAlign="middle" horizontalAlign="center">
 					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
+							 height="100%"
+							 verticalAlign="middle"
 							 styleName="boldDarkerGreyLabel"/>
 					<mx:LinkButton id="uCrds"
 								   label="cr."
@@ -65,6 +62,5 @@
 							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   click="signOutClickHandler()"/>
 			</s:HGroup>
-		</mx:Canvas>
 	</s:HGroup>
 </main:HeaderClass>

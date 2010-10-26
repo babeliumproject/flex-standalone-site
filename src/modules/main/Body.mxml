@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:userManagement="modules.userManagement.*"
@@ -11,9 +11,9 @@
 				   xmlns:evaluation="modules.evaluation.*"
 				   xmlns:configuration="modules.configuration.*"
 				   xmlns:search="modules.search.*"
+				   width="100%"
 				   height="100%"
-				   borderStyle="solid"
-				   borderColor="#92d3d5"
+				   gap="0"
 				   creationComplete="onComplete()">
 
 	<!-- borderSides="left right bottom" -->
@@ -75,4 +75,4 @@
 			 }*/
 		]]>
 	</fx:Script>
-</s:BorderContainer>
+</s:VGroup>

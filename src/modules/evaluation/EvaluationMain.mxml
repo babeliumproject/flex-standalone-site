@@ -8,7 +8,6 @@
 		  xmlns:videoPlayer="modules.videoPlayer.*"
 		  paddingBottom="8"
 		  verticalAlign="top"
-		  
 		  width="100%"
 		  creationComplete="completeHandler()">
 
@@ -458,7 +457,7 @@
 				var newIndex:uint=event.newIndex;
 				switch (newIndex)
 				{
-					case evaluationOptionsViewStack.getChildIndex(waitingAssessmentBox):
+					case evaluationOptionsViewStack.getChildIndex(waitingAssessmentBoxNavContent):
 						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
@@ -473,7 +472,7 @@
 						resetVideoPlayer();
 
 						break;
-					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBox):
+					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBoxNavContent):
 						waitingAssessmentDataGrid.selectedItem=null;
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
@@ -489,7 +488,7 @@
 						resetVideoPlayer();
 
 						break;
-					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBox):
+					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBoxNavContent):
 						waitingAssessmentDataGrid.selectedItem=null;
 						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
@@ -710,8 +709,11 @@
 	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 
-	<s:VGroup styleName="sectionInfoBox"
-			  width="100%">
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="0"/>
+		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
 				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
@@ -719,7 +721,7 @@
 				  width="100%">
 			<mx:TabBar dataProvider="{evaluationOptionsViewStack}"/>
 		</s:HGroup>
-	</s:VGroup>
+	</s:BorderContainer>
 
 	<s:VGroup id="videoPlayerBox"
 			  width="100%"
@@ -762,17 +764,16 @@
 					  resizeToContent="true"
 					  change="onEvaluationTabChange(event)">
 
-			<s:NavigatorContent id="waitingAssessmentBoxNavContent" label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
+			<s:NavigatorContent id="waitingAssessmentBoxNavContent"
+								label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
 				<s:VGroup id="waitingAssessmentBox"
 						  horizontalAlign="center"
 						  width="100%"
-						  height="100%"
-						  >
+						  height="100%">
 					<mx:DataGrid id="waitingAssessmentDataGrid"
 								 dataProvider="{waitingForAssessmentList}"
 								 width="100%"
 								 horizontalScrollPolicy="off"
-								 
 								 verticalAlign="middle"
 								 change="waitingAssessmentChangeHandler(event)">
 						<mx:columns>
@@ -809,9 +810,9 @@
 			</s:NavigatorContent>
 
 
-			<s:NavigatorContent id="assessedToCurrentUserBoxNavContent" label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
-				<s:VGroup id="assessedToCurrentUserBox"
-						  >
+			<s:NavigatorContent id="assessedToCurrentUserBoxNavContent"
+								label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
+				<s:VGroup id="assessedToCurrentUserBox">
 					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
 														  dataProvider="{assessedToCurrentUserList}"
 														  changeListener="{assessedToCurrentUserChangeHandler}"
@@ -829,14 +830,13 @@
 										 paddingTop="8"
 										 paddingBottom="8"
 										 resizeToContent="true">
-							<s:NavigatorContent id="humanEvaluationNavContent" label="Human Evaluation">
+							<s:NavigatorContent id="humanEvaluationNavContent"
+												label="Human Evaluation">
 
 
 								<s:VGroup id="humanEvaluation"
-										  
 										  width="100%"
-										  height="100%"
-										  >
+										  height="100%">
 									<!-- Commented for now
 										 <s:HGroup>
 										 <s:Label id="overallAverageRating"/>
@@ -850,7 +850,6 @@
 												 dataProvider="{assessmentDetailList}"
 												 change="assessmentDetailChangeHandler(event)"
 												 verticalAlign="middle"
-												 
 												 width="100%">
 										<mx:columns>
 											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
@@ -891,15 +890,14 @@
 				</s:VGroup>
 			</s:NavigatorContent>
 
-			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"  label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
-				<s:VGroup
-						  id="assessedByCurrentUserBox">
+			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"
+								label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
+				<s:VGroup id="assessedByCurrentUserBox">
 					<mx:DataGrid width="100%"
 								 id="assessedByCurrentUserDataGrid"
 								 dataProvider="{assessedByCurrentUserList}"
 								 change="assessedByCurrentUserChangeHandler(event)"
-								 verticalAlign="middle"
-								 >
+								 verticalAlign="middle">
 						<mx:columns>
 							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
 											   dataField="exerciseThumbnailUri"

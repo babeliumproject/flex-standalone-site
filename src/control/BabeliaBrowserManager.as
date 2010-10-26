@@ -207,7 +207,7 @@ package control
 			DataModel.getInstance().appBody.addElement(new moduleClass());
 		}
 		
-		protected function removeAllChildrenFromComponent(component:SkinnableContainer):void
+		protected function removeAllChildrenFromComponent(component:Group):void
 		{
 			for (var i:uint=0; i < component.numElements; i++)
 				component.removeElementAt(i);

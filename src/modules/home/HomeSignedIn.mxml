@@ -8,7 +8,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			
 			import events.MessageOfTheDayEvent;
 			
 			import model.DataModel;
@@ -18,6 +17,8 @@
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
+			
+			import spark.components.NavigatorContent;
 			
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
 			
@@ -75,7 +76,9 @@
 			protected function addMessagesToContainer():void{
 				for each (var messageData:Object in messageArray)
 				{
-					appDescriptionViewStack.addChild(generateMessageBox(messageData));
+					var navc:NavigatorContent = new NavigatorContent();
+					navc.addElement(generateMessageBox(messageData));
+					appDescriptionViewStack.addChild(navc);
 				}
 				selectedIndex=0;
 				slideTimer.start();
@@ -130,11 +133,14 @@
 	<fx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="onLanguageChanged"/>
 
-	<s:VGroup id="signedMotdBox"
+	<s:BorderContainer id="signedMotdBox"
 			 styleName="sectionInfoBox"
 			 width="100%"
 			 includeInLayout="false"
 			 visible="false">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
 		<s:HGroup id="descriptionPaginationSigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
@@ -146,7 +152,7 @@
 				 width="100%">
 			<mx:TabBar dataProvider="{myHomeViewStack}"/>
 		</s:HGroup>
-	</s:VGroup>
+	</s:BorderContainer>
 	
 	<mx:ViewStack id="myHomeViewStack">
 		

@@ -16,6 +16,7 @@ s|Application{
 	fontSize: 12;
 	fontWeight: normal;
 	color: #000000;
+	skinClass: ClassReference('skins.ApplicationCustomSkin');
 }	
 
 mx|LinkButton{
@@ -332,7 +333,9 @@ s|TextInput{
 }
 
 .sectionInfoBox{
-	backgroundColor: #f0f3e2;
+	backgroundImage: Embed('resources/images/pattern.jpg');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 0.25;
 	borderSides: bottom;
 	borderStyle: solid;
 	borderColor: #92d3d5;

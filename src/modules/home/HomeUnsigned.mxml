@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="100%"
-		 
-		 creationComplete="onComplete()">
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
-			
 			import events.MessageOfTheDayEvent;
 			
 			import model.DataModel;
@@ -20,26 +18,28 @@
 			import mx.controls.Text;
 			import mx.utils.ObjectUtil;
 			
+			import spark.components.NavigatorContent;
+
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
-			
+
 			[Bindable]
 			private var selectedIndex:int=0;
-			
+
 			[Bindable]
-			private var messageArray:ArrayCollection = new ArrayCollection();
-			
+			private var messageArray:ArrayCollection=new ArrayCollection();
+
 			private var slideTimer:Timer;
-			
+
 			protected function onComplete():void
 			{
 				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
 				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
 				getUnsignedMessagesOfTheDay();
 			}
-			
+
 			protected function onTimerTick(event:TimerEvent):void
 			{
-				var slideCount:int=appDescriptionViewStack.getChildren().length;
+				var slideCount:int=appDescriptionViewStack.numChildren;
 				if (slideCount > 0)
 				{
 					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
@@ -49,13 +49,13 @@
 						selectedIndex=0;
 				}
 			}
-			
+
 			public function getUnsignedMessagesOfTheDay():void
 			{
 				if (!DataModel.getInstance().isLoggedIn)
 					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
 			}
-			
+
 			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
 			{
 				if (!DataModel.getInstance().isLoggedIn)
@@ -66,25 +66,30 @@
 						slideTimer.stop();
 						appDescriptionViewStack.removeAllChildren();
 						callLater(addMessagesToContainer);
-					} else {
-						unsignedMotdBox.includeInLayout = false;
-						unsignedMotdBox.visible = false;
+					}
+					else
+					{
+						unsignedMotdBox.includeInLayout=false;
+						unsignedMotdBox.visible=false;
 					}
 				}
-				
+
 			}
-			
-			protected function addMessagesToContainer():void{
+
+			protected function addMessagesToContainer():void
+			{
 				for each (var messageData:Object in messageArray)
 				{
-					appDescriptionViewStack.addChild(generateMessageBox(messageData));
+					var navc:NavigatorContent = new NavigatorContent();
+					navc.addElement(generateMessageBox(messageData));
+					appDescriptionViewStack.addChild(navc);
 				}
 				selectedIndex=0;
 				slideTimer.start();
 				unsignedMotdBox.includeInLayout=true;
 				unsignedMotdBox.visible=true;
 			}
-			
+
 			protected function generateMessageBox(messageData:Object):HGroup
 			{
 				var messageImage:Image=new Image();
@@ -92,64 +97,67 @@
 				messageImage.width=240;
 				messageImage.height=180;
 				messageImage.scaleContent=true;
-				
+
 				var titleLabel:Label=new Label();
 				titleLabel.text=messageData.title;
 				titleLabel.styleName="sectionInfoTitleLabel";
-				
+
 				var messageText:Text=new Text();
 				messageText.text=messageData.message;
 				messageText.percentWidth=100;
 				messageText.percentHeight=100;
-				
+
 				var messageVBox:VGroup=new VGroup();
 				messageVBox.percentWidth=100;
 				messageVBox.percentHeight=100;
 				messageVBox.setStyle("verticalAlign", "middle");
 				messageVBox.addElement(titleLabel);
 				messageVBox.addElement(messageText);
-				
+
 				var motdBox:HGroup=new HGroup();
 				motdBox.percentWidth=100;
 				motdBox.setStyle("verticalAlign", "middle");
 				motdBox.addElement(messageImage);
 				motdBox.addElement(messageVBox);
-				
+
 				return motdBox;
 			}
-			
-			public function set onLanguageChanged(value:Boolean):void{
+
+			public function set onLanguageChanged(value:Boolean):void
+			{
 				getUnsignedMessagesOfTheDay();
 			}
-			
 		]]>
 	</fx:Script>
-	
+
 	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
 				destination="onUnsignedMessagesOfTheDayRetrieved"/>
-	
+
 	<fx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="onLanguageChanged"/>
-	
-	
-	<s:VGroup id="unsignedMotdBox"
-			 styleName="sectionInfoBox"
-			 width="100%"
-			 includeInLayout="false"
-			 visible="false">
+
+
+	<s:BorderContainer id="unsignedMotdBox"
+			  styleName="sectionInfoBox"
+			  width="100%"
+			  includeInLayout="false"
+			  visible="false">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
 		<s:HGroup id="descriptionPaginationUnsigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
 					  width="100%"
 					  resizeToContent="true">
 		</mx:ViewStack>
-		
+
 		<!--
-		<s:HGroup horizontalAlign="right"
-		width="100%">
-		<s:Button label="Join us!"/>
-		</s:HGroup>
+			 <s:HGroup horizontalAlign="right"
+			 width="100%">
+			 <s:Button label="Join us!"/>
+			 </s:HGroup>
 		-->
-	</s:VGroup>
+	</s:BorderContainer>
 
 </s:VGroup>

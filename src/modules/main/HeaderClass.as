@@ -67,6 +67,7 @@ package modules.main
 		public function HeaderClass()
 		{
 			super();
+			this.minHeight=0;
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
 		
@@ -140,7 +141,9 @@ package modules.main
 			new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
 			// Redirecting to home
 			new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+			anonymousCP.includeInLayout=true;
 			anonymousCP.visible=true;
+			userCP.includeInLayout=false;
 			userCP.visible=false;
 			rememberSO.clear();
 		}
@@ -150,8 +153,10 @@ package modules.main
 			if (DataModel.getInstance().isLoggedIn)
 			{
 				anonymousCP.visible=false;
+				anonymousCP.includeInLayout=false;
 				userCPName.label=DataModel.getInstance().loggedUser.name;
 				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
+				userCP.includeInLayout=true;
 				userCP.visible=true;
 				localeComboBox.updateSelectedIndex();
 			}
