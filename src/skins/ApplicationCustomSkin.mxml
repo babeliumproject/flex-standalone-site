@@ -41,21 +41,10 @@
 			 *  @private
 			 */
 
-			private const WIDTH_THRESHOLD:int=1280;
-			private const HEIGHT_THRESHOLD:int=1024;
-
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
 				//bgRectFill.color=getStyle('backgroundColor');
 				super.updateDisplayList(unscaledWidth, unscaledHeight);
-			}
-
-			private function isHorizontalScrollNeeded():String
-			{
-				if (Capabilities.screenResolutionX < WIDTH_THRESHOLD)
-					return "auto";
-				else
-					return "off";
 			}
 		]]>
 	</fx:Script>
@@ -90,8 +79,7 @@
 	</s:Rect>
 
 	<s:Scroller height="100%"
-				width="100%"
-				horizontalScrollPolicy="{isHorizontalScrollNeeded()}">
+				width="100%">
 		<s:Group left="0"
 				 right="0"
 				 top="0"

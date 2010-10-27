@@ -4,16 +4,21 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%">
 
-
-	<s:VGroup styleName="sectionInfoBox"
-			  width="100%"
-			  paddingBottom="16">
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16"/>
+		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
 				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</s:VGroup>
+	</s:BorderContainer>
 
-	<s:VGroup styleName="padding10AllSidesBox">
+	<s:VGroup paddingBottom="10"
+			  paddingTop="10"
+			  paddingLeft="10"
+			  paddingRight="10">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 				 styleName="boldYellowLabel"/>
 		<s:HGroup width="100%"

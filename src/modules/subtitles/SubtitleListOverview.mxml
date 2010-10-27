@@ -3,12 +3,17 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:subtitles="modules.subtitles.*"
-		  
 		  paddingTop="0"
 		  width="100%">
 
-	<s:VGroup styleName="sectionInfoBox"
-			  width="100%">
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingLeft="16"
+							  paddingTop="16"
+							  paddingRight="16"/>
+		</s:layout>
 		<s:Label id="subtitleModuleTitle"
 				 styleName="sectionInfoTitleLabel"
 				 text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
@@ -19,7 +24,7 @@
 				  width="100%">
 			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"/>
 		</s:HGroup>
-	</s:VGroup>
+	</s:BorderContainer>
 
 	<mx:ViewStack id="subtitleListOverviewViewStack"
 				  creationPolicy="all"

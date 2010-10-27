@@ -46,15 +46,13 @@ s|Panel{
 }
 
 main|HeaderClass{
-	paddingTop: 4;
-	paddingBottom: 4;
-	backgroundColor: #FFFFFF;
-	backgroundAlpha: 0.5;
-	borderStyle: "solid";
-	borderSides: "left bottom right";
-	borderWeight: 1;
-	borderColor: #92d3d5;
+	backgroundImage: Embed('resources/images/header_bgr_pttr.png');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 1.0;
+	borderVisible: false;
+	borderWeight: 0;
 }
+
 
 s|Button{
 	paddingLeft: 6;
@@ -336,12 +334,8 @@ s|TextInput{
 	backgroundImage: Embed('resources/images/pattern.jpg');
 	backgroundImageFillMode: repeat;
 	backgroundAlpha: 0.25;
-	borderSides: bottom;
-	borderStyle: solid;
-	borderColor: #92d3d5;
-	paddingTop: 16;
-	paddingLeft: 16;
-	paddingRight: 16;
+	borderWeight: 0;
+	borderVisible: false;
 }
 
 .roundedPurpleBox{

@@ -710,9 +710,13 @@
 				destination="onURLChange"/>
 
 	<s:BorderContainer styleName="sectionInfoBox"
+					   minHeight="0"
 					   width="100%">
 		<s:layout>
-			<s:VerticalLayout paddingBottom="0"/>
+			<s:VerticalLayout paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"
+							  paddingBottom="0"/>
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
 				 styleName="sectionInfoTitleLabel"/>

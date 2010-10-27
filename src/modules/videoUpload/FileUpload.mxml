@@ -509,12 +509,19 @@
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
 
-	<s:VGroup styleName="sectionInfoBox"
-			  width="100%">
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingLeft="16"
+							  paddingRight="16"
+							  paddingTop="16"
+							  paddingBottom="16"/>
+		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
 				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</s:VGroup>
+	</s:BorderContainer>
 
 
 	<s:HGroup width="100%"

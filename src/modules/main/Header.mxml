@@ -5,21 +5,22 @@
 				  xmlns:main="modules.main.*">
 
 	<s:HGroup width="100%"
-			  horizontalAlign="left"
-			  verticalAlign="middle"
-			  paddingLeft="8">
+			  paddingTop="4"
+			  paddingBottom="4"
+			  paddingLeft="4"
+			  paddingRight="4"
+			  verticalAlign="middle">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
 		<main:LocalizationComboBox id="localeComboBox"/>
-	</s:HGroup>
 
-	<s:HGroup horizontalAlign="right"
-			  verticalAlign="middle"
-			  width="100%">
+		<s:HGroup horizontalAlign="right"
+				  verticalAlign="middle"
+				  width="100%">
 
-		<mx:LinkButton id="helpFAQButton"
-					   icon="@Embed(source='../../resources/images/help.png')"
-					   click="helpFAQ_clickHandler(event)"
-					   toolTip="Help/FAQ"/>
+			<mx:LinkButton id="helpFAQButton"
+						   icon="@Embed(source='../../resources/images/help.png')"
+						   click="helpFAQ_clickHandler(event)"
+						   toolTip="Help/FAQ"/>
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"
@@ -42,7 +43,8 @@
 					  includeInLayout="false">
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-				<s:HGroup verticalAlign="middle" horizontalAlign="center">
+				<s:HGroup verticalAlign="middle"
+						  horizontalAlign="center">
 					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
 							 height="100%"
 							 verticalAlign="middle"
@@ -62,5 +64,7 @@
 							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   click="signOutClickHandler()"/>
 			</s:HGroup>
+		</s:HGroup>
+
 	</s:HGroup>
 </main:HeaderClass>

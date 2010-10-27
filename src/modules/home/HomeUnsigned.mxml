@@ -8,16 +8,16 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -80,7 +80,7 @@
 			{
 				for each (var messageData:Object in messageArray)
 				{
-					var navc:NavigatorContent = new NavigatorContent();
+					var navc:NavigatorContent=new NavigatorContent();
 					navc.addElement(generateMessageBox(messageData));
 					appDescriptionViewStack.addChild(navc);
 				}
@@ -138,12 +138,15 @@
 
 
 	<s:BorderContainer id="unsignedMotdBox"
-			  styleName="sectionInfoBox"
-			  width="100%"
-			  includeInLayout="false"
-			  visible="false">
+					   styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0"
+					   includeInLayout="false"
+					   visible="false">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
 		</s:layout>
 		<s:HGroup id="descriptionPaginationUnsigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"

@@ -70,7 +70,8 @@
 		<control:Controller/>
 	</fx:Declarations>
 
-	<s:Scroller width="100%"
+	<s:Scroller id="mainScroller"
+				width="100%"
 				height="100%">
 		<s:VGroup width="100%"
 				  height="100%"

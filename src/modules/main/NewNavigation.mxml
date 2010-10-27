@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
-		   xmlns:s="library://ns.adobe.com/flex/spark"
-		   xmlns:mx="library://ns.adobe.com/flex/mx"
-		   width="100%"
-		   horizontalScrollPolicy="off"
-		   borderStyle="solid"
-		   borderColor="#92d3d5">
-	<!-- borderSides="left right" -->
-
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="100%" xmlns:skins="skins.*">
 
 	<s:VGroup width="100%"
-			  height="100%">
-		<s:HGroup id="sectionLinks"
-				  paddingLeft="200"
-				  horizontalAlign="center"
-				  verticalAlign="middle"
-				  width="100%"
-				  height="100%">
+			  height="100%"
+			  gap="0">
+		<skins:HorizontalSeparatorLine/>
+		<s:BorderContainer id="sectionLinks"
+						   borderVisible="false"
+						   borderWeight="0"
+						   minHeight="0"
+						   width="100%"
+						   height="100%"
+						   backgroundImage="@Embed('resources/images/rainbow_bgr.png')"
+						   backgroundImageFillMode="scale">
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="200"
+									horizontalAlign="center"
+									verticalAlign="middle"/>
+			</s:layout>
 			<mx:LinkButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
 						   styleName="homeLinkButton"
 						   enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
@@ -62,10 +66,33 @@
 						   !DataModel.getInstance().recording &amp;&amp;
 						   !DataModel.getInstance().playing}"
 						   click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE)"/>
-		</s:HGroup>
-		<s:HGroup id="searchUploadBar"
-				  styleName="uploadSearchBox"
-				  width="100%">
+		</s:BorderContainer>
+		<skins:HorizontalSeparatorLine alpha="0.50"/>
+		<s:BorderContainer id="searchUploadBar"
+						   borderVisible="false"
+						   borderWeight="0"
+						   minHeight="0"
+						   width="100%"
+						   dropShadowVisible="true">
+			<s:backgroundFill>
+				<mx:LinearGradient>
+					<mx:entries>
+						<mx:GradientEntry color="#ffffff"
+										  ratio="0"
+										  alpha="0.5"/>
+						<mx:GradientEntry color="#268caa"
+										  ratio="1"
+										  alpha="0.5"/>
+					</mx:entries>
+				</mx:LinearGradient>
+			</s:backgroundFill>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="200"
+									verticalAlign="middle"
+									paddingTop="4"
+									paddingBottom="4"
+									paddingRight="4"/>
+			</s:layout>
 			<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 					  styleName="uploadButton"
 					  enabled="{!DataModel.getInstance().recordingExercise}"
@@ -80,9 +107,8 @@
 					  styleName="searchButton"
 					  enabled="true"
 					  click="launchSearch()"/>
-
-
-		</s:HGroup>
+		</s:BorderContainer>
+		<skins:HorizontalSeparatorLine/>
 	</s:VGroup>
 
 	<mx:Image source="resources/images/flan_dull.png"
@@ -128,4 +154,4 @@
 		]]>
 	</fx:Script>
 
-</mx:Canvas>
+</s:Group>
