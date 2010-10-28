@@ -11,16 +11,17 @@
 	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.search.VideoPaginator;
-			
+
 			import mx.collections.ArrayCollection;
-			import mx.controls.Button;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
-			
+
+			import spark.components.Button;
+
 			import vo.ExerciseVO;
 
 
@@ -42,7 +43,7 @@
 			{
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
 				{
-					exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
+					//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
 					_dataProvider=DataModel.getInstance().availableRecordableExercises;
 
 					createPagination();
@@ -70,15 +71,17 @@
 				var current:int=_currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				exerciseListDatagrid.rowCount=dataTemp.length;
-				exerciseListDatagrid.dataProvider=dataTemp;
+//				exerciseListDatagrid.rowCount=dataTemp.length;
+//				exerciseListDatagrid.dataProvider=dataTemp;
+				exerciseListDataGroup.dataProvider=dataTemp;
 			}
 
 			private function changeHandler(event:Event):void
 			{
-				var obj:ExerciseVO=DataGrid(event.target).selectedItem as ExerciseVO;
-				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-				callLater(updateVerticalScroll);
+//				var obj:ExerciseVO=DataGrid(event.target).selectedItem as ExerciseVO;
+//				var obj:ExerciseVO=DataGroup(event.target).selectedItem as ExerciseVO;
+//				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+//				callLater(updateVerticalScroll);
 			}
 
 			public function thumbSet(data:Object):String
@@ -88,7 +91,7 @@
 
 			public function updateVerticalScroll():void
 			{
-				FlexGlobals.topLevelApplication.verticalScrollPosition=0;
+				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
 			}
 		]]>
 	</fx:Script>
@@ -96,30 +99,43 @@
 	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="handleExercisesRetrieve"/>
 
-
-	<mx:DataGrid id="exerciseListDatagrid"
-				 verticalAlign="middle"
+	<s:DataGroup id="exerciseListDataGroup"
 				 width="100%"
 				 height="100%"
-				 dataProvider="{_dataProvider}"
 				 enabled="{!DataModel.getInstance().recordingExercise}"
-				 change="changeHandler(event)"
-				 sortableColumns="false"
-				 draggableColumns="false"
-				 contentBackgroundAlpha="0"
-				 borderStyle="none"
-				 useHandCursor="true">
-		<mx:columns>
-			<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
-							   editable="false">
-				<mx:itemRenderer>
-					<fx:Component>
-						<exercises:ExerciseListItem specificClickListeners="false"/>
-					</fx:Component>
-				</mx:itemRenderer>
-			</mx:DataGridColumn>
-		</mx:columns>
-	</mx:DataGrid>
+				 itemRenderer="ExerciseItemRenderer"
+				 dataProvider="{_dataProvider}">
+		<s:layout>
+			<s:TileLayout horizontalAlign="justify"
+						  verticalAlign="middle"
+						  columnAlign="justifyUsingGap"/>
+		</s:layout>
+	</s:DataGroup>
+
+	<!--
+		 <mx:DataGrid id="exerciseListDatagrid"
+		 verticalAlign="middle"
+		 width="100%"
+		 height="100%"
+		 dataProvider="{_dataProvider}"
+		 enabled="{!DataModel.getInstance().recordingExercise}"
+		 change="changeHandler(event)"
+		 sortableColumns="false"
+		 draggableColumns="false"
+		 contentBackgroundAlpha="0"
+		 borderStyle="none"
+		 useHandCursor="true">
+		 <mx:columns>
+		 <mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
+		 editable="false">
+		 <mx:itemRenderer>
+		 <fx:Component>
+		 <exercises:ExerciseListItem specificClickListeners="false"/>
+		 </fx:Component>
+		 </mx:itemRenderer>
+		 </mx:DataGridColumn>
+		 </mx:columns>
+		 </mx:DataGrid>-->
 	<s:HGroup id="paginationBox"
 			  styleName="hvCenteredBox"
 			  width="100%"/>

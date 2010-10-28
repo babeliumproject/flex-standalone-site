@@ -14,8 +14,8 @@
 							paddingRight="8"/>
 	</s:layout>
 
-	<mx:Canvas width="120"
-			   height="90">
+	<s:Group width="120"
+			 height="90">
 		<mx:Image id="thumbnail"
 				  scaleContent="true"
 				  source="{getImageSource(data as ExerciseVO)}"
@@ -32,8 +32,8 @@
 					 width="32"
 					 height="16"
 					 editable="false"
-					 enabled="false"/>
-	</mx:Canvas>
+					 selectable="false"/>
+	</s:Group>
 
 	<s:VGroup width="100%"
 			  horizontalAlign="left"

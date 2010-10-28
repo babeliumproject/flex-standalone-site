@@ -77,9 +77,6 @@
 			</mx:LinearGradient>
 		</s:fill>
 	</s:Rect>
-
-	<s:Scroller height="100%"
-				width="100%">
 		<s:Group left="0"
 				 right="0"
 				 top="0"
@@ -155,7 +152,6 @@
 				</s:Group>
 			</s:Group>
 
-
 			<!--- @copy spark.components.SkinnableContainer#contentGroup -->
 			<s:Group id="contentGroup"
 					 width="100%"
@@ -163,5 +159,4 @@
 					 minWidth="0"
 					 minHeight="0"/>
 		</s:Group>
-	</s:Scroller>
 </s:Skin>

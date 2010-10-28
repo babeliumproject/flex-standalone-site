@@ -267,11 +267,12 @@ s|TextInput{
 /* Exercise info box styles */
 
 .videoDurationLabel{
-	disabledColor: #FFFFFF;
-	backgroundDisabledColor: #000000;
-	backgroundAlpha: 0.75;
-	borderStyle: none;
+	borderVisible: false;
 	fontSize: 10;
+	contentBackgroundColor: #000000;
+	contentBackgroundAlpha: 1.0;
+	color: #FFFFFF;
+	inactiveTextSelectionColor: #FFFFFF;
 }
 
 .errorLabel{

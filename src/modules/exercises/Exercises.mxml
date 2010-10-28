@@ -539,7 +539,7 @@
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 
-				exerciseList.exerciseListDatagrid.selectedItem=null;
+//				exerciseList.exerciseListDatagrid.selectedItem=null;
 
 				//Remove the current exercise's info
 				ratingShareReport.exerciseData=null;

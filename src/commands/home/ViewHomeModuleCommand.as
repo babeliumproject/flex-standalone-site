@@ -21,18 +21,12 @@ package commands.home
 			var index:Class = ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX;
 			new CloseConnectionEvent().dispatch();
 			if(DataModel.getInstance().appBody.numElements > 0)
-				removeAllChildrenFromComponent(DataModel.getInstance().appBody);
+				DataModel.getInstance().appBody.removeAllElements();
 			DataModel.getInstance().appBody.addElement(new index());
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(
 				BabeliaBrowserManager.index2fragment(index));
-		}
-		
-		protected function removeAllChildrenFromComponent(component:Group):void
-		{
-			for (var i:uint=0; i < component.numElements; i++)
-				component.removeElementAt(i);
 		}
 		
 	}

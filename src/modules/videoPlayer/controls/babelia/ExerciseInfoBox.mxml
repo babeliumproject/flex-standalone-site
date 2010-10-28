@@ -5,6 +5,7 @@
 				   xmlns:rating="com.asfusion.controls.*"
 				   borderStyle="solid"
 				   cornerRadius="6"
+				   minHeight="0"
 				   xmlns:hulstkamp="com.hulstkamp.*">
 
 	<s:layout>
