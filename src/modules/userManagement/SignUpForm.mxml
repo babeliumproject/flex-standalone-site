@@ -288,12 +288,19 @@
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 
-	<s:VGroup styleName="sectionInfoBox"
-			  width="100%">
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
 				 styleName="sectionInfoTitleLabel"/>
 		<mx:Text text="Enter section description here."/>
-	</s:VGroup>
+	</s:BorderContainer>
 
 
 	<s:Label id="errorInfo"

@@ -106,10 +106,8 @@ package modules.search
 			navButton.styleName = "paginationButton";
 			navButton.id=label.toString();
 			navButton.label=label.toString();
-//			navButton.minWidth=18;
-//			navButton.measuredWidth=18;
-			navButton.height=40;
-		
+//			navButton.height=40;
+			navButton.minWidth=0;
 			navButton.addEventListener(MouseEvent.CLICK, clickHandler);
 
 			return navButton;
@@ -121,8 +119,8 @@ package modules.search
 			ctrlButton.id=target.toString();
 			ctrlButton.styleName = "paginationControlButton";
 			ctrlButton.setStyle('icon', icon);
-			ctrlButton.width=40;
-			ctrlButton.height=40;
+//			ctrlButton.width=40;
+//			ctrlButton.height=40;
 
 			ctrlButton.addEventListener(MouseEvent.CLICK, clickHandler);
 

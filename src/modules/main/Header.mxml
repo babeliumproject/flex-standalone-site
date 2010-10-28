@@ -18,7 +18,8 @@
 				  width="100%">
 
 			<mx:LinkButton id="helpFAQButton"
-						   icon="@Embed(source='../../resources/images/help.png')"
+						   icon="@Embed(source='../../resources/images/help_icon.png')"
+						   label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
 						   click="helpFAQ_clickHandler(event)"
 						   toolTip="Help/FAQ"/>
 			<!-- Show this box when user is not identified -->
@@ -61,7 +62,8 @@
 									dataProvider="{userOptions}"
 									itemClick="userOptionsItemClickHandler(event)"/>
 				<mx:LinkButton id="signOutButton"
-							   label="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
+							   icon="@Embed(source='../../resources/images/close_icon.png')"
+							   toolTip="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 							   click="signOutClickHandler()"/>
 			</s:HGroup>
 		</s:HGroup>

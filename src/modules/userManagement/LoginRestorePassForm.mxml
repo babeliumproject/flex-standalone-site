@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:common="view.common.*"
-						  
-						  horizontalScrollPolicy="off"
-						  autoLayout="true"
-						  showCloseButton="true"
-						  close="onClose(event)"
-						  resize="onWindowResize(event)"
-						  title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
-						  creationComplete="completeHandler()">
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:common="view.common.*"
+			   keyDown="checkPressedKey(event)"
+			   close="onClose(event)"
+			   resize="onWindowResize(event)"
+			   title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
+			   creationComplete="completeHandler()">
+
+	<s:layout>
+		<s:VerticalLayout paddingTop="4"
+						  paddingBottom="4"
+						  paddingLeft="4"
+						  paddingRight="4"
+						  verticalAlign="middle"/>
+	</s:layout>
 
 	<fx:Script>
 		<![CDATA[
@@ -32,7 +37,6 @@
 
 			public function completeHandler():void
 			{
-				this.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
 				focusManager.setFocus(username);
 			}
 
@@ -40,11 +44,11 @@
 			{
 				if (e.keyCode == Keyboard.ENTER)
 				{
-					if (loginViewStack.selectedChild == loginFormBox)
+					if (loginViewStack.selectedChild == loginFormBoxNavContent)
 						processLogin(null);
-					else if (loginViewStack.selectedChild == restorePassFormBox)
+					else if (loginViewStack.selectedChild == restorePassFormBoxNavContent)
 						processRestorePass(null);
-					else if (loginViewStack.selectedChild == resendActivationEmailBox)
+					else if (loginViewStack.selectedChild == resendActivationEmailBoxNavContent)
 						resendActivationEmail(null);
 				}
 			}
@@ -212,7 +216,7 @@
 						  paddingLeft="12"
 						  paddingRight="12">
 					<s:CheckBox label="{resourceManager.getString('myResources','LABEL_REMEMBER_ME')}"
-								 id="rememberUser"/>
+								id="rememberUser"/>
 				</s:HGroup>
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
@@ -291,4 +295,4 @@
 		</s:NavigatorContent>
 
 	</mx:ViewStack>
-</common:CustomTitleWindow>
+</s:TitleWindow>

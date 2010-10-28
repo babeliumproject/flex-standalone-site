@@ -58,11 +58,6 @@ package modules.main
 		public var helpFAQButton:LinkButton;
 		
 		public var localeComboBox:LocalizationComboBox;
-		
-		[Embed(source='resources/images/header_bgr_pttr.png')]
-		public var bg:Class;
-
-
 
 		public function HeaderClass()
 		{

@@ -85,8 +85,7 @@
 			</main:NewNavigation>
 			<main:Body id="content"
 					   height="100%"
-					   width="100%">
-			</main:Body>
+					   width="100%"/>
 		</s:VGroup>
 	</s:Scroller>
 

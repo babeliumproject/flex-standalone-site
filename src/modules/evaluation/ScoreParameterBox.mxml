@@ -4,6 +4,7 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:rating="com.asfusion.controls.*"
 				   width="100%"
+				   minHeight="0"
 				   borderStyle="solid"
 				   xmlns:hulstkamp="com.hulstkamp.*">
 	<s:layout>
