@@ -62,10 +62,9 @@
 		</s:HGroup>
 
 
-		<mx:Text text="{truncateDescription(data.description)}"
+		<s:Label text="{truncateDescription(data.description)}"
 				 width="100%"
 				 height="100%"
-				 selectable="false"
 				 toolTip="{data.description}"/>
 		<s:HGroup horizontalAlign="right"
 				  verticalAlign="middle"

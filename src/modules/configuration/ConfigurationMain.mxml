@@ -201,7 +201,7 @@
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_CONFIGURATION')}"
 				 styleName="sectionInfoTitleLabel"/>
-		<mx:Text text="Enter section description here."/>
+		<s:Label text="Enter section description here."/>
 		<s:HGroup horizontalAlign="right"
 				  width="100%">
 			<mx:TabBar dataProvider="{configurationViewStack}"/>
@@ -219,21 +219,21 @@
 					 text="{resourceManager.getString('myResources','RESULTS')}"/>
 			<s:HGroup id="webCamStatus"
 					  verticalAlign="middle">
-				<mx:Text text="{resourceManager.getString('myResources', 'WEBCAM')+':'}"
+				<s:Label text="{resourceManager.getString('myResources', 'WEBCAM')+':'}"
 						 id="webCamStatusText"
 						 visible="true"/>
 				<mx:Image id="webCamStatusIcon"/>
 			</s:HGroup>
 			<s:HGroup id="microphoneStatus"
 					  verticalAlign="middle">
-				<mx:Text text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}"
+				<s:Label text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}"
 						 id="microphoneStatusText"/>
 				<mx:Image id="microphoneStatusIcon"/>
 			</s:HGroup>
 
 			<s:HGroup id="bandwidthStatus"
 					  verticalAlign="middle">
-				<mx:Text text="{resourceManager.getString('myResources', 'BANDWIDTH')+':'}"
+				<s:Label text="{resourceManager.getString('myResources', 'BANDWIDTH')+':'}"
 						 id="bandwidthStatusText"/>
 				<mx:Image id="bandwidthStatusIcon"/>
 			</s:HGroup>

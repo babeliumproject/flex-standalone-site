@@ -783,7 +783,7 @@
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
 				 styleName="sectionInfoTitleLabel"/>
-		<mx:Text text="Enter section description here."/>
+		<s:Label  text="Enter section description here."/>
 	</s:BorderContainer>
 
 
@@ -834,11 +834,11 @@
 		<s:Panel id="panelSelectedExercise"
 				 includeInLayout="false"
 				 visible="false"
-				 width="100"
+				 width="100%"
 				 title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
 
 			<s:layout>
-				<s:VerticalLayout paddingTop="10"/>
+				<s:VerticalLayout paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10"/>
 			</s:layout>
 
 			<s:HGroup>

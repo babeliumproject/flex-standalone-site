@@ -11,17 +11,17 @@
 	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.search.VideoPaginator;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
-
+			
 			import spark.components.Button;
-
+			
 			import vo.ExerciseVO;
 
 
@@ -79,9 +79,10 @@
 			private function changeHandler(event:Event):void
 			{
 //				var obj:ExerciseVO=DataGrid(event.target).selectedItem as ExerciseVO;
-//				var obj:ExerciseVO=DataGroup(event.target).selectedItem as ExerciseVO;
-//				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-//				callLater(updateVerticalScroll);
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				
+				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+				callLater(updateVerticalScroll);
 			}
 
 			public function thumbSet(data:Object):String
@@ -99,18 +100,22 @@
 	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="handleExercisesRetrieve"/>
 
-	<s:DataGroup id="exerciseListDataGroup"
+	<s:List id="exerciseListDataGroup"
 				 width="100%"
-				 height="100%"
+				 minHeight="0"
+				 change="changeHandler(event)"
+				 borderVisible="false"
+				 skinClass="skins.TransparentBgListSkin"
 				 enabled="{!DataModel.getInstance().recordingExercise}"
-				 itemRenderer="ExerciseItemRenderer"
+				 itemRenderer="modules.exercises.ExerciseItemRenderer"
 				 dataProvider="{_dataProvider}">
 		<s:layout>
 			<s:TileLayout horizontalAlign="justify"
 						  verticalAlign="middle"
-						  columnAlign="justifyUsingGap"/>
+						  columnAlign="justifyUsingWidth"
+						  columnWidth="500"/>
 		</s:layout>
-	</s:DataGroup>
+	</s:List>
 
 	<!--
 		 <mx:DataGrid id="exerciseListDatagrid"
@@ -137,6 +142,8 @@
 		 </mx:columns>
 		 </mx:DataGrid>-->
 	<s:HGroup id="paginationBox"
-			  styleName="hvCenteredBox"
-			  width="100%"/>
+			  horizontalAlign="center"
+			  verticalAlign="middle"
+			  width="100%"
+			  height="100%"/>
 </s:VGroup>

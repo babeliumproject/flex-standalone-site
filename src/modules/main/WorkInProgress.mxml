@@ -11,6 +11,6 @@
 		  borderStyle="none"
 		  paddingTop="30"
 		   backgroundAlpha="0.0" horizontalAlign="center">
-	<mx:Text text="This page has not been implemented yet!"/>
+	<s:Label text="This page has not been implemented yet!"/>
 
 </s:Panel>

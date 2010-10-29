@@ -15,12 +15,15 @@
 		]]>
 	</fx:Script>
 	
-	<s:VGroup styleName="sectionInfoBox"
+	<s:BorderContainer styleName="sectionInfoBox"
 			 width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
 		<s:Label text="Babelium Project Help/FAQ"
 				  styleName="sectionInfoTitleLabel"/>
-		<mx:Text text="Enter section description here."/>
-	</s:VGroup>
+		<s:Label text="Enter section description here."/>
+	</s:BorderContainer>
 
 	<s:Label text="Video tutorials"
 			  styleName="sectionTitleLabel"/>

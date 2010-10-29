@@ -353,8 +353,6 @@ s|TextInput{
 }
 
 .roundedBorderGreyBox{
-	paddingLeft: 4;
-	paddingRight: 4;
 	borderStyle: solid;
 	cornerRadius: 8;
 	backgroundColor: #DDDDDD;

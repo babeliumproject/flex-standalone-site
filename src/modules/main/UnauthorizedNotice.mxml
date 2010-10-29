@@ -35,7 +35,7 @@
 		]]>
 	</fx:Script>
 	
-	<mx:Text text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
+	<s:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
 			styleName="errorLabel"/>
 	<s:HGroup width="100%"
 			 horizontalAlign="center"

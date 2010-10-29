@@ -11,15 +11,15 @@
 	<fx:Script>
 		<![CDATA[
 			import flash.sampler.getInvocationCount;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -232,7 +232,7 @@
 
 
 
-	<mx:Text id="labelMicrophoneCheck"
+	<s:Label id="labelMicrophoneCheck"
 			 text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
 			 styleName="sectionTitleLabel"/>
 	<mx:HRule styleName="sectionTitleHRule"
@@ -240,9 +240,9 @@
 	<s:VGroup width="100%"
 			  height="100%">
 		<mx:Spacer/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE1') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE2')}"/>
+		<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE1') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE2')}"/>
 		<mx:Spacer/>
-		<mx:Text text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE3') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE4')}"/>
+		<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE3') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE4')}"/>
 	</s:VGroup>
 
 	<mx:Spacer height="20"/>
@@ -293,7 +293,7 @@
 			  visible="false">
 		<s:VGroup horizontalAlign="center"
 				  verticalAlign="middle">
-			<mx:Text styleName="errorLabel"
+			<s:Label styleName="errorLabel"
 					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
 		</s:VGroup>
 	</s:HGroup>
