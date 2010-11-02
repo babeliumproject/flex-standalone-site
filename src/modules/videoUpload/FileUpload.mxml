@@ -4,7 +4,8 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:ns1="modules.videoUpload.*"
 		  xmlns:common="view.common.*"
-		  creationComplete="onComplete()">
+		  creationComplete="onComplete()"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -21,6 +22,8 @@
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
+
+			import skins.IconButtonSkin;
 
 			import view.common.*;
 
@@ -634,11 +637,12 @@
 							  horizontalAlign="right"
 							  verticalAlign="middle"
 							  paddingRight="12">
-						<s:Button id="btnAdd"
-								  toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
-								  click="addFiles()"
-								  label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"/>
-						<!-- icon="@Embed(source='../../resources/images/add.png')" -->
+						<skins:IconButton id="btnAdd"
+										  toolTip="{resourceManager.getString('myResources','TOOLTIP_ADD_FILES')}"
+										  click="addFiles()"
+										  label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"
+										  skinClass="skins.IconButtonSkin"
+										  icon="@Embed('resources/images/add.png')"/>
 					</s:HGroup>
 				</s:HGroup>
 				<s:Label paddingLeft="12"
@@ -655,17 +659,19 @@
 									label=""
 									labelPlacement="center"
 									width="100%"/>
-					<s:Button id="btnCancel"
-							  toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
-							  width="26"
-							  click="onUploadCanceled()"/>
-					<!-- icon="@Embed(source='../../resources/images/cancel.png')" -->
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
-							  toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
-							  id="btnUpload"
-							  click="startUpload()"
-							  enabled="{formIsValid}"/>
-					<!--  icon="@Embed(source='../../resources/images/bullet_go.png')" -->
+					<skins:IconButton id="btnCancel"
+									  toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
+									  width="26"
+									  click="onUploadCanceled()"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('resources/images/cancel.png')"/>
+					<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
+									  toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
+									  id="btnUpload"
+									  click="startUpload()"
+									  enabled="{formIsValid}"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('resources/images/bullet_go.png')"/>
 				</mx:ControlBar>
 			</s:VGroup>
 		</s:VGroup>

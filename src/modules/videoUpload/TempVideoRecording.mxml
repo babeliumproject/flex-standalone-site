@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  borderStyle="solid"
-		  borderWeight="2"
-		  creationComplete="onComplete()"
-		  cornerRadius="4">
-	
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   borderStyle="solid"
+				   borderWeight="2"
+				   creationComplete="onComplete()"
+				   cornerRadius="4"
+				   xmlns:skins="skins.*">
+
 	<s:layout>
 		<s:HorizontalLayout/>
 	</s:layout>
@@ -16,9 +17,9 @@
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -26,7 +27,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
+			import skins.IconButtonSkin;
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -563,18 +566,21 @@
 					  paddingRight="4"
 					  horizontalAlign="left"
 					  verticalAlign="middle"
+					  width="100%"
 					  gap="4">
-				<s:Button click="recStopAudio();"
-						  id="recStopButton"
-						  width="20"
-						  height="20"
-						  cornerRadius="4"/>
-				<s:Button click="playPauseAudio();"
-						  id="playPauseButton"
-						  enabled="false"
-						  width="20"
-						  height="20"
-						  cornerRadius="4"/>
+				<skins:IconButton click="recStopAudio();"
+								  id="recStopButton"
+								  width="20"
+								  height="20"
+								  cornerRadius="4"
+								  skinClass="skins.IconButtonSkin"/>
+				<skins:IconButton click="playPauseAudio();"
+								  id="playPauseButton"
+								  enabled="false"
+								  width="20"
+								  height="20"
+								  cornerRadius="4"
+								  skinClass="skins.IconButtonSkin"/>
 				<s:Label id="statusLabel"
 						 text="Status:"
 						 fontWeight="bold"/>

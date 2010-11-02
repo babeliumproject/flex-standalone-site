@@ -4,6 +4,9 @@ package modules.search
 	
 	import model.DataModel;
 	
+	import skins.IconButton;
+	import skins.IconButtonSkin;
+	
 	import spark.components.Button;
 	import spark.components.HGroup;
 
@@ -115,8 +118,9 @@ package modules.search
 
 		private static function createControlButton(target:int, icon:Class, clickHandler:Function):Button
 		{
-			var ctrlButton:Button=new Button();
+			var ctrlButton:IconButton=new IconButton();
 			ctrlButton.id=target.toString();
+			ctrlButton.setStyle('skinClass', 'skins.IconButtonSkin');
 			ctrlButton.styleName = "paginationControlButton";
 			ctrlButton.setStyle('icon', icon);
 //			ctrlButton.width=40;

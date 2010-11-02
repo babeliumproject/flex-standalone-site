@@ -5,7 +5,12 @@
 							   xmlns:subtitles="modules.subtitles.*"
 							   xmlns:videoPlayer="modules.videoPlayer.*"
 							   xmlns:videoUpload="modules.videoUpload.*"
-							   xmlns:common="view.common.*">
+							   xmlns:common="view.common.*" xmlns:skins="skins.*">
+	<fx:Script>
+		<![CDATA[
+			import skins.IconButtonSkin;
+		]]>
+	</fx:Script>
 
 	<!-- Video Player -->
 	<s:VGroup>
@@ -123,26 +128,30 @@
 		<s:HGroup height="40"
 				  width="45%"
 				  styleName="roundedBorderGreyBox">
-			<s:Button label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
+			<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
 					  enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
 					  click="{subtitleInsertHandler(event)}"
-					  id="addSubtitleLine"/>
-			<!-- icon="@Embed(source='../../resources/images/add.png')"-->
-			<s:Button label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+					  id="addSubtitleLine"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/add.png')"/>
+			<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
 					  enabled="{subtitleCollection.length > 0}"
-					  click="subtitleRemoveHandler()"/>
-			<!-- icon="@Embed(source='../../resources/images/delete.png')" -->
+					  click="subtitleRemoveHandler()"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/delete.png')"/>
 
-			<s:Button label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
+			<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
 					  enabled="{subtitleCollection.length > 0}"
-					  click="subtitleClearHandler()"/>
-			<!-- icon="@Embed(source='../../resources/images/cancel.png')" -->
+					  click="subtitleClearHandler()"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/cancel.png')"/>
 			<mx:VRule id="saveSubtitleSeparator"
 					  height="30"/>
-			<s:Button id="saveSubtitleButton"
+			<skins:IconButton id="saveSubtitleButton"
 					  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
-					  click="saveSubtitlesHandler()"/>
-			<!-- icon="@Embed(source='../../resources/images/save.png')" -->
+					  click="saveSubtitlesHandler()"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/save.png')"/>
 		</s:HGroup>
 
 	</s:Panel>

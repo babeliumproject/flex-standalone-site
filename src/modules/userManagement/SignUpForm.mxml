@@ -5,29 +5,31 @@
 		  xmlns:main="modules.main.*"
 		  xmlns:userManagement="modules.userManagement.*"
 		  width="100%"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)" xmlns:skins="skins.*">
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
 			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
 			import model.LocalesAndFlags;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
-
+			
+			import skins.IconButtonSkin;
+			
 			import spark.components.Group;
-
+			
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-
+			
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
 
@@ -427,16 +429,18 @@
 		</mx:Form>
 		<mx:Spacer/>
 		<s:HGroup width="100%"
-				  styleName="hvCenteredBox">
-			<s:Button id="saveButton"
+				  horizontalAlign="center" verticalAlign="middle">
+			<skins:IconButton id="saveButton"
 					  label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
-					  click="processNewUser()"/>
-			<!-- icon="@Embed(source='../../resources/images/save.png')" -->
+					  click="processNewUser()"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/save.png')"/>
 
-			<s:Button id="cancelButton"
+			<skins:IconButton id="cancelButton"
 					  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-					  click="cancelButton_clickHandler(event)"/>
-			<!--  icon="@Embed(source='../../resources/images/cancel.png')" -->
+					  click="cancelButton_clickHandler(event)"
+					  skinClass="skins.IconButtonSkin"
+					  icon="@Embed('resources/images/cancel.png')"/>
 
 		</s:HGroup>
 	</s:VGroup>

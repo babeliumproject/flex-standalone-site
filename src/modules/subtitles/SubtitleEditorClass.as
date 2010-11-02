@@ -31,6 +31,8 @@ package modules.subtitles
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	
+	import skins.IconButton;
+	
 	import spark.components.Button;
 	import spark.components.ComboBox;
 	import spark.components.HGroup;
@@ -113,7 +115,7 @@ package modules.subtitles
 		public var subtitleVersionBox:VGroup;
 		public var subtitleVersionSelector:ComboBox;
 		
-		public var saveSubtitleButton:Button;
+		public var saveSubtitleButton:IconButton;
 		public var saveSubtitleSeparator:VRule;
 
 		public function SubtitleEditorClass()

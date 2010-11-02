@@ -17,29 +17,30 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.*;
-
+			
 			import model.DataModel;
-
+			
 			import modules.search.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Button;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-
+			
+			import spark.components.Button;
+			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -816,81 +817,79 @@
 
 			<s:NavigatorContent id="assessedToCurrentUserBoxNavContent"
 								label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
+				<s:HGroup id="assessmentsOfSelectedResponse"
+						  width="100%"
+						  height="100%">
+					<mx:TabNavigator id="evaluationTypeNavigator"
+									 creationPolicy="all"
+									 width="100%"
+									 paddingLeft="8"
+									 paddingRight="8"
+									 paddingTop="8"
+									 paddingBottom="8"
+									 resizeToContent="true">
+						<s:NavigatorContent id="humanEvaluationNavContent"
+											label="Human Evaluation">
+							
+							
+							<s:VGroup id="humanEvaluation"
+									  width="100%"
+									  height="100%">
+								<!-- Commented for now
+								<s:HGroup>
+								<s:Label id="overallAverageRating"/>
+								<s:Button id="viewGraphicButton"
+								label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
+								click="viewGraphicClickHandler()"/>
+								</s:HGroup>
+								-->
+								
+								<mx:DataGrid id="assessmentDetailDataGrid"
+											 dataProvider="{assessmentDetailList}"
+											 change="assessmentDetailChangeHandler(event)"
+											 verticalAlign="middle"
+											 width="100%">
+									<mx:columns>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
+														   dataField="userName"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
+														   dataField="overallScore"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+														   dataField="intonationScore"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+														   dataField="fluencyScore"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+														   dataField="rhythmScore"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+														   dataField="spontaneityScore"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
+														   dataField="addingDate"/>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
+														   dataField="comment"
+														   width="160">
+											<mx:itemRenderer>
+												<fx:Component>
+													<mx:Text text="{data.comment}"
+															 width="160"/>
+												</fx:Component>
+											</mx:itemRenderer>
+										</mx:DataGridColumn>
+										<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+														   dataField="evaluationVideoFileIdentifier"/>
+									</mx:columns>
+								</mx:DataGrid>
+							</s:VGroup>
+						</s:NavigatorContent>
+						<s:NavigatorContent id="computerEvaluationNavContent">
+							<autoEvaluation:AutoevaluationPanel id="computerEvaluation"/>
+						</s:NavigatorContent>
+					</mx:TabNavigator>
+				</s:HGroup>
 				<s:VGroup id="assessedToCurrentUserBox">
 					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
 														  dataProvider="{assessedToCurrentUserList}"
 														  changeListener="{assessedToCurrentUserChangeHandler}"
 														  width="100%"/>
-					<mx:Spacer height="30"/>
-					<!-- Panel to show details of one of the responses that have been evaluated to this user-->
-					<s:HGroup id="assessmentsOfSelectedResponse"
-							  width="100%"
-							  height="100%">
-						<mx:TabNavigator id="evaluationTypeNavigator"
-										 creationPolicy="all"
-										 width="100%"
-										 paddingLeft="8"
-										 paddingRight="8"
-										 paddingTop="8"
-										 paddingBottom="8"
-										 resizeToContent="true">
-							<s:NavigatorContent id="humanEvaluationNavContent"
-												label="Human Evaluation">
-
-
-								<s:VGroup id="humanEvaluation"
-										  width="100%"
-										  height="100%">
-									<!-- Commented for now
-										 <s:HGroup>
-										 <s:Label id="overallAverageRating"/>
-										 <s:Button id="viewGraphicButton"
-										 label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
-										 click="viewGraphicClickHandler()"/>
-										 </s:HGroup>
-									-->
-
-									<mx:DataGrid id="assessmentDetailDataGrid"
-												 dataProvider="{assessmentDetailList}"
-												 change="assessmentDetailChangeHandler(event)"
-												 verticalAlign="middle"
-												 width="100%">
-										<mx:columns>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
-															   dataField="userName"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-															   dataField="overallScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
-															   dataField="intonationScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
-															   dataField="fluencyScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
-															   dataField="rhythmScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
-															   dataField="spontaneityScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-															   dataField="addingDate"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
-															   dataField="comment"
-															   width="160">
-												<mx:itemRenderer>
-													<fx:Component>
-														<mx:Text text="{data.comment}"
-																 width="160"/>
-													</fx:Component>
-												</mx:itemRenderer>
-											</mx:DataGridColumn>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
-															   dataField="evaluationVideoFileIdentifier"/>
-										</mx:columns>
-									</mx:DataGrid>
-								</s:VGroup>
-							</s:NavigatorContent>
-							<s:NavigatorContent id="computerEvaluationNavContent">
-								<autoEvaluation:AutoevaluationPanel id="computerEvaluation"/>
-							</s:NavigatorContent>
-						</mx:TabNavigator>
-					</s:HGroup>
 				</s:VGroup>
 			</s:NavigatorContent>
 

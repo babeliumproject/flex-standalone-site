@@ -50,9 +50,10 @@
 							 height="100%"
 							 verticalAlign="middle"
 							 styleName="boldDarkerGreyLabel"/>
-					<mx:LinkButton id="uCrds"
-								   label="cr."
-								   styleName="creditLinkButton"/>
+					<s:Label id="uCrds"
+							  text="cr."
+							  styleName="creditLinkButton"
+							  verticalAlign="justify"/>
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>

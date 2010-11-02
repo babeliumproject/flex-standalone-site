@@ -28,6 +28,11 @@ package modules.main
 	
 	import spark.components.BorderContainer;
 	import spark.components.HGroup;
+	import spark.components.Label;
+	import spark.effects.Animate;
+	import spark.effects.animation.MotionPath;
+	import spark.effects.animation.RepeatBehavior;
+	import spark.effects.animation.SimpleMotionPath;
 	
 	import view.common.PrivacyRights;
 	
@@ -51,7 +56,7 @@ package modules.main
 		public var anonymousCP:HGroup;
 
 		public var userCPName:PopUpMenuButton;
-		public var uCrds:LinkButton;
+		[Bindable] public var uCrds:Label;
 		public var signInButton:LinkButton;
 		public var signUpButton:LinkButton;
 		public var signOutButton:LinkButton;
@@ -150,42 +155,38 @@ package modules.main
 				anonymousCP.visible=false;
 				anonymousCP.includeInLayout=false;
 				userCPName.label=DataModel.getInstance().loggedUser.name;
-				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
+				uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 				userCP.includeInLayout=true;
 				userCP.visible=true;
 				localeComboBox.updateSelectedIndex();
+		
 			}
 		}
 
 		private function blinkCredits():void
 		{
-			if (intervalLoops <= 20)
-			{
-				if (uCrds.visible)
-				{
-					uCrds.visible=false;
-					intervalLoops++;
-				}
-				else
-				{
-					uCrds.visible=true;
-					intervalLoops++;
-				}
-			}
-			else
-			{
-				uCrds.visible=true;
-				clearInterval(interval);
-			}
+			var motion:SimpleMotionPath = new SimpleMotionPath();
+			motion.property = "alpha";
+			motion.valueFrom=1.0;
+			motion.valueTo=0.0;
+			var motionVector:Vector.<MotionPath> = new Vector.<MotionPath>();
+			motionVector.push(motion);
+
+			var anim:Animate = new Animate();
+			anim.repeatBehavior = RepeatBehavior.REVERSE;
+			anim.repeatCount=20;
+			anim.duration = 300;
+			anim.target = uCrds;
+			anim.motionPaths=motionVector;
+			anim.play();
 		}
 
 		private function creditsUpdated(retr:Boolean):void
 		{
 			if (DataModel.getInstance().loggedUser && DataModel.getInstance().creditUpdateRetrieved)
 			{
-				uCrds.label=DataModel.getInstance().loggedUser.creditCount.toString();
-				intervalLoops=0;
-				interval=setInterval(blinkCredits, 300);
+				uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+				blinkCredits();
 				DataModel.getInstance().creditUpdateRetrieved=false;
 			}
 		}
