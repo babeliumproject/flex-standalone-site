@@ -48,7 +48,7 @@ package modules.videoPlayer.controls.babelia
 			_textBox = new Text();
 			_textBox.setStyle("fontWeight", "bold");
 			_textBox.selectable = false;
-			_textBox.text = "Talking: ";
+			_textBox.text = resourceManager.getString('myResources','LABEL_ROLE_CURRENTLY_TALKING')+": ";
 			
 			addChild(_textBox);
 			

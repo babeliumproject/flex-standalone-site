@@ -202,12 +202,13 @@ package modules.videoPlayer
 			 */
 			removeChild(_videoBarPanel); // order
 			addChild(_subtitlePanel);
+			addChild(_micActivityBar);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
 			addChild(_camVideo);
 			addChild(_countdownTxt);
 			addChild(_subtitlingControls);
-			addChild(_micActivityBar);
+			
 
 			/**
 			 * Adds skinable components to dictionary
@@ -438,6 +439,11 @@ package modules.videoPlayer
 		{
 			
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			
+			_micActivityBar.width=_videoWidth;
+			_micActivityBar.height=22;
+			_micActivityBar.x=_defaultMargin;
+			_micActivityBar.refresh();
 
 			_arrowContainer.width=_videoBarPanel.width;
 			_arrowContainer.height=50;
@@ -469,15 +475,20 @@ package modules.videoPlayer
 			/*
 			 * Subtitle panel
 			 */
-			var y1:Number=_subtitlePanel.visible ? _subtitlePanel.height : 0;
+			//var y1:Number=_subtitlePanel.visible ? _subtitlePanel.height : 0;
 			var y2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
+			var y3:Number=_micActivityBar.visible ? _micActivityBar.height: 0;
 
-			_videoBarPanel.y+=(y1 + y2);
+			//_videoBarPanel.y+=(y1 + y2);
+			_videoBarPanel.y+= y3 + y2;
 
 			_arrowContainer.y=_videoBarPanel.y - _arrowContainer.height;
-			_subtitlePanel.y=_videoBarPanel.y - y2 - _subtitlePanel.height;
+			//_subtitlePanel.y=_videoBarPanel.y - y2 - _subtitlePanel.height;
+			_subtitlePanel.y=_videoHeight - _subtitlePanel.height;
 
-
+			_micActivityBar.y=_videoBarPanel.y - y2 - _micActivityBar.height;
+		
+			
 			_subtitleBox.y=0;
 			_subtitleBox.resize(_videoWidth, 30);
 
@@ -514,13 +525,9 @@ package modules.videoPlayer
 			//_subtitleEnd.refresh();
 			_subtitleStartEnd.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin + 2;
 			_subtitleStartEnd.refresh();
-
+			
 			// Mic gain bar
-			_micActivityBar.x=_defaultMargin;
-			_micActivityBar.y=_defaultMargin + _videoHeight - 30;
-			_micActivityBar.width=_videoWidth;
-			_micActivityBar.height=22;
-			_micActivityBar.refresh();
+			//_micActivityBar.y=_defaultMargin + _videoHeight - 30;
 
 			drawBG();
 		}
@@ -531,19 +538,24 @@ package modules.videoPlayer
 			/**
 			 * Recalculate total height
 			 */
-			var h1:Number=_subtitlePanel.visible ? _subtitlePanel.height : 0;
+			
+			_micActivityBar.height = 22;
+			
+			//var h1:Number=_subtitlePanel.visible ? _subtitlePanel.height : 0;
 			var h2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
 			var h3:Number=_subtitlingControls.visible ? _subtitlingControls.height : 0;
+			var h4:Number=_micActivityBar.visible ? _micActivityBar.height: 0;
 
-			totalHeight=_defaultMargin * 2 + _videoHeight + h1 + h2 + h3 + _videoBarPanel.height;
+			//totalHeight= _videoHeight + h1 + h2 + h3 + _videoBarPanel.height;
+			totalHeight= _videoHeight + h2 + h3 + h4 + _videoBarPanel.height;
 
 			_bg.graphics.clear();
 
-			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
-			_bg.graphics.drawRoundRect(0, 0, width, height, 15, 15);
-			_bg.graphics.endFill();
+			//_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
+			//_bg.graphics.drawRoundRect(0, 0, width, height, 15, 15);
+			//_bg.graphics.endFill();
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
-			_bg.graphics.drawRoundRect(3, 3, width - 6, height - 6, 12, 12);
+			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
 			_bg.graphics.endFill();
 		}
 
@@ -686,7 +698,6 @@ package modules.videoPlayer
 		 */
 		private function doShowSubtitlePanel():void
 		{
-			
 			_subtitlePanel.visible=true;
 			var a1:AnimateProperty=new AnimateProperty();
 			a1.target=_subtitlePanel;
@@ -695,26 +706,26 @@ package modules.videoPlayer
 			a1.duration=250;
 			a1.play();
 
-			var a2:AnimateProperty=new AnimateProperty();
-			a2.target=_videoBarPanel;
-			a2.property="y";
-			a2.toValue=_videoBarPanel.y + _subtitlePanel.height;
-			a2.duration=250;
-			a2.play();
-
-			var a3:AnimateProperty=new AnimateProperty();
-			a3.target=_arrowContainer;
-			a3.property="y";
-			a3.toValue=_arrowContainer.y + _subtitlePanel.height;
-			a3.duration=250;
-			a3.play();
-
-			var a4:AnimateProperty=new AnimateProperty();
-			a4.target=_subtitlingControls;
-			a4.property="y";
-			a4.toValue=_subtitlingControls.y + _subtitlePanel.height;
-			a4.duration=250;
-			a4.play();
+//			var a2:AnimateProperty=new AnimateProperty();
+//			a2.target=_videoBarPanel;
+//			a2.property="y";
+//			a2.toValue=_videoBarPanel.y + _subtitlePanel.height;
+//			a2.duration=250;
+//			a2.play();
+//
+//			var a3:AnimateProperty=new AnimateProperty();
+//			a3.target=_arrowContainer;
+//			a3.property="y";
+//			a3.toValue=_arrowContainer.y + _subtitlePanel.height;
+//			a3.duration=250;
+//			a3.play();
+//
+//			var a4:AnimateProperty=new AnimateProperty();
+//			a4.target=_subtitlingControls;
+//			a4.property="y";
+//			a4.toValue=_subtitlingControls.y + _subtitlePanel.height;
+//			a4.duration=250;
+//			a4.play();
 
 			this.drawBG(); // Repaint bg
 		}
@@ -732,27 +743,28 @@ package modules.videoPlayer
 			a1.duration=250;
 			a1.play();
 			a1.addEventListener(EffectEvent.EFFECT_END, onHideSubtitleBar);
+		
 
-			var a2:AnimateProperty=new AnimateProperty();
-			a2.target=_videoBarPanel;
-			a2.property="y";
-			a2.toValue=_videoBarPanel.y - _subtitlePanel.height;
-			a2.duration=250;
-			a2.play();
-
-			var a3:AnimateProperty=new AnimateProperty();
-			a3.target=_arrowContainer;
-			a3.property="y";
-			a3.toValue=_arrowContainer.y - _subtitlePanel.height;
-			a3.duration=250;
-			a3.play();
-
-			var a4:AnimateProperty=new AnimateProperty();
-			a4.target=_subtitlingControls;
-			a4.property="y";
-			a4.toValue=_subtitlingControls.y - _subtitlePanel.height;
-			a4.duration=250;
-			a4.play();
+//			var a2:AnimateProperty=new AnimateProperty();
+//			a2.target=_videoBarPanel;
+//			a2.property="y";
+//			a2.toValue=_videoBarPanel.y - _subtitlePanel.height;
+//			a2.duration=250;
+//			a2.play();
+//
+//			var a3:AnimateProperty=new AnimateProperty();
+//			a3.target=_arrowContainer;
+//			a3.property="y";
+//			a3.toValue=_arrowContainer.y - _subtitlePanel.height;
+//			a3.duration=250;
+//			a3.play();
+//
+//			var a4:AnimateProperty=new AnimateProperty();
+//			a4.target=_subtitlingControls;
+//			a4.property="y";
+//			a4.toValue=_subtitlingControls.y - _subtitlePanel.height;
+//			a4.duration=250;
+//			a4.play();
 		}
 
 		private function onHideSubtitleBar(e:Event):void
@@ -966,6 +978,7 @@ package modules.videoPlayer
 
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
+			this.updateDisplayList(0, 0);
 		}
 
 		/**

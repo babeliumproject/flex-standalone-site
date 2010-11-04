@@ -85,7 +85,7 @@ package modules.videoPlayer.controls.babelia
 		private function onGainTick(e:TimerEvent) : void
 		{
 			this.setProgress(_mic.activityLevel, 100);
-			this.label="Mic Level:   " + _mic.activityLevel;
+			this.label=resourceManager.getString('myResources','LABEL_MIC_INPUT_LEVEL')+":   " + _mic.activityLevel+"%";
 		}
 		
 		/** Overriden */

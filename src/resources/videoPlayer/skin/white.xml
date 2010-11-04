@@ -22,8 +22,9 @@
 		<Property name="bgColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="SubtitleTextBox">
-		<Property name="bgColor">0xFFFFFF</Property>
-		<Property name="boxColor">0xB2E1FF</Property>
+		<Property name="bgColor">0x000000</Property>
+		<Property name="boxColor">0x000000</Property>
+		<Property name="textColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="AudioSlider">
 		<Property name="bgColor">0xFFFFFF</Property>

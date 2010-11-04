@@ -76,7 +76,7 @@ package modules.videoPlayer
 		private var _autoScale:Boolean=true;
 		protected var _duration:Number=0;
 		protected var _started:Boolean=false;
-		protected var _defaultMargin:Number=5;
+		protected var _defaultMargin:Number=0;
 
 		private var _bgVideo:Sprite;
 		protected var _ppBtn:PlayButton;
