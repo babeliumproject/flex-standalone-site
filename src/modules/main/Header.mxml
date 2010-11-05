@@ -2,9 +2,12 @@
 <main:HeaderClass xmlns:fx="http://ns.adobe.com/mxml/2009"
 				  xmlns:s="library://ns.adobe.com/flex/spark"
 				  xmlns:mx="library://ns.adobe.com/flex/mx"
-				  xmlns:main="modules.main.*">
+				  xmlns:main="modules.main.*"
+				  minHeight="0"
+				  minWidth="1000">
 
 	<s:HGroup width="100%"
+			  minWidth="1000"
 			  paddingTop="4"
 			  paddingBottom="4"
 			  paddingLeft="4"
@@ -51,9 +54,9 @@
 							 verticalAlign="middle"
 							 styleName="boldDarkerGreyLabel"/>
 					<s:Label id="uCrds"
-							  text="cr."
-							  styleName="creditLinkButton"
-							  verticalAlign="justify"/>
+							 text="cr."
+							 styleName="creditLinkButton"
+							 verticalAlign="justify"/>
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>

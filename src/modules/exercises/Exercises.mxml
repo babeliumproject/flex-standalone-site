@@ -814,7 +814,7 @@
 											arrows="false"
 											subtitlingControls="false"
 											width="500"
-											height="{Math.floor(VP.width * 10 / 16)}"
+											height="{Math.floor(VP.width * 9 / 16)}"
 											streamSource="{_streamSource}"
 											controlsEnabled="{_exerciseSelected}"/>
 			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"

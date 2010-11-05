@@ -139,8 +139,9 @@
 
 	<s:BorderContainer id="unsignedMotdBox"
 					   styleName="sectionInfoBox"
-					   width="100%"
 					   minHeight="0"
+					   width="100%"
+					   minWidth="1000"
 					   includeInLayout="false"
 					   visible="false">
 		<s:layout>
@@ -152,6 +153,7 @@
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
 					  width="100%"
+					  minWidth="1000"
 					  resizeToContent="true">
 		</mx:ViewStack>
 

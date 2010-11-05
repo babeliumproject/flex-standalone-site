@@ -71,7 +71,7 @@
 										arrows="false"
 										subtitlingControls="false"
 										width="400"
-										height="{Math.floor(VideoCommentVP.width * 10 / 16)}"
+										height="{Math.floor(VideoCommentVP.width * 9 / 16)}"
 										streamSource="{_streamSource}"
 										controlsEnabled="true"/>
 	</s:VGroup>

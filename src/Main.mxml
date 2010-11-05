@@ -78,13 +78,9 @@
 				  height="100%"
 				  clipAndEnableScrolling="true"
 				  gap="0">
-			<main:Header id="header"
-						 width="100%"/>
-			<main:NewNavigation id="navigation"
-								width="100%"/>
-			<main:Body id="content"
-					   height="100%"
-					   width="100%"/>
+			<main:Header id="header"/>
+			<main:NewNavigation id="navigation"/>
+			<main:Body id="content"/>
 		</s:VGroup>
 	</s:Scroller>
 

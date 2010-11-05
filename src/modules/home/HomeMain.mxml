@@ -24,6 +24,7 @@
 
 	<mx:ViewStack id="homeMainViewStack"
 				  width="100%"
+				  minWidth="1000"
 				  selectedIndex="{ DataModel.getInstance().currentHomeViewStackIndex }"
 				  resizeToContent="true">
 		<s:NavigatorContent id="homeUnsignedNavContent">

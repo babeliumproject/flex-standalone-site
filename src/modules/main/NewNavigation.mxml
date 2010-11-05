@@ -6,6 +6,7 @@
 		 width="100%">
 
 	<s:VGroup width="100%"
+			  minWidth="1000"
 			  height="100%"
 			  gap="0">
 		<skins:HorizontalSeparatorLine/>
@@ -75,6 +76,7 @@
 						   borderWeight="0"
 						   minHeight="0"
 						   width="100%"
+						   minWidth="1000"
 						   dropShadowVisible="true">
 			<s:backgroundFill>
 				<mx:LinearGradient>

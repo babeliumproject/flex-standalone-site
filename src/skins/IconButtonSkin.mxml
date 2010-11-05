@@ -295,8 +295,8 @@
 					   source="{hostComponent.getStyle('icon')}"/>
 		<s:Label id="labelDisplay"
 				 maxDisplayedLines="1"
+				 height="100%"
 				 textAlign="center"
-				 verticalCenter="1"
 				 verticalAlign="middle">
 		</s:Label>
 	</s:Group>

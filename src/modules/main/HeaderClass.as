@@ -67,7 +67,6 @@ package modules.main
 		public function HeaderClass()
 		{
 			super();
-			this.minHeight=0;
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
 		
