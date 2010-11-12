@@ -9,7 +9,7 @@ package commands.cuepointManager
 	{
 		private var VP:VideoPlayerBabelia;
 
-		private var executed:Boolean=false;
+//		private var executed:Boolean=false;
 
 		public function StopRecordingSelectedRoleCommand(VP:VideoPlayerBabelia)
 		{
@@ -18,14 +18,14 @@ package commands.cuepointManager
 
 		public function execute(event:CairngormEvent):void
 		{
-			if (!executed)
-			{
-				executed=true;
+//			if (!executed)
+//			{
+//				executed=true;
 				VP.setSubtitle("");
 				VP.muteVideo(false);
 				VP.muteRecording(true);
 				VP.highlight = false;
-			}
+//			}
 		/*
 		   if(!DataModel.getInstance().soundDetected &&
 		   DataModel.getInstance().gapsWithNoSound > DataModel.GAPS_TO_ABORT_RECORDING){

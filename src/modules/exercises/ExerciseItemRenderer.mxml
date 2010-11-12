@@ -40,8 +40,8 @@
 			  gap="2">
 		<s:Label id="title"
 				 text="{data.title}"
-				 width="100%"/>
-		<mx:HRule width="100%"/>
+				 width="320"/>
+		<mx:HRule width="320"/>
 		<s:HGroup gap="20"
 				  styleName="hvCenteredBox">
 			<s:HGroup gap="2"
@@ -62,13 +62,13 @@
 		</s:HGroup>
 
 
-		<s:Label text="{truncateDescription(data.description)}"
-				 width="100%"
-				 height="100%"
+		<s:Label text="{data.description}"
+				 width="320"
+				 maxDisplayedLines="3"
 				 toolTip="{data.description}"/>
 		<s:HGroup horizontalAlign="right"
 				  verticalAlign="middle"
-				  width="100%">
+				  width="320">
 			<s:Label text="user:"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</s:HGroup>
@@ -88,9 +88,11 @@
 					  height="15"
 					  useHandCursor="true"
 					  buttonMode="true"/>
+			<!--
 			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
-					 visible="{data.reference}"/>
+					 visible="{data.reference}"/>-->
 			<mx:LinkButton id="referenceUrl"
+						   width="240"
 						   label="{data.reference}"
 						   click="referenceClickHandler(event)"/>
 		</s:HGroup>

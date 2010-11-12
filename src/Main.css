@@ -151,6 +151,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_home.png');
 }
 
 .practiceLinkButton{
@@ -161,6 +162,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_pract.png');
 }
 
 .evaluateLinkButton{
@@ -171,6 +173,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_eval.png');
 }
 
 .subtitleLinkButton{
@@ -181,6 +184,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_subt.png');
 }
 
 .configureLinkButton{
@@ -191,6 +195,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_config.png');
 }
 
 .aboutLinkButton{
@@ -201,6 +206,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
+	backgroundImage: Embed('resources/images/button_nav_highlight_about.png');
 }
 
 .searchButton{

@@ -70,6 +70,18 @@ class VideoProcessor{
 		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
 		return $resultsnap;
 	}
+	
+	public function checkAudio(){
+		if(preg_match('/Audio: ((\s+),(\s+),(\s+),(\s+),(\s+))', implode($cmd), $audioinfo)){
+			$codec = $audioinfo[0];
+			$rate = $audioinfo[1];
+			$channels = $audioinfo[2];
+			$bits = $audioinfo[3];
+			$bitrate = $audioinfo[4];
+			if($codec == 'aac' && $channels == '5.1')
+				//Not valid audio
+		}
+	}
 
 	public function deleteVideoFile($filePath) {
 		if(is_file($filePath) && filesize($filePath)>0){
@@ -91,7 +103,7 @@ class VideoProcessor{
 			$width = $this->frameWidth16_9;
 			$height = $this->frameHeight;
 		}
-		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 300 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
+		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
 	}
 
 	public function balancedEncoding($inputFileName, $outputFileName){
@@ -107,7 +119,7 @@ class VideoProcessor{
 			$width = $this->frameWidth16_9;
 			$height = $this->frameHeight;
 		}
-		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 300 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
+		$result = (exec("ffmpeg -y -i ".$inputFileName." -s " . $width . "x" . $height . " -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2  -f flv ".$outputFileName." 2>&1",$output));
 		return $result;
 	}
 

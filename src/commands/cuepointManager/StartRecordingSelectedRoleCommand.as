@@ -12,7 +12,7 @@ package commands.cuepointManager
 		private var role:String;
 		private var time:Number;
 		
-		private var executed:Boolean = false;
+//		private var executed:Boolean = false;
 
 		public function StartRecordingSelectedRoleCommand(text:String, role:String, time:Number, VP:VideoPlayerBabelia)
 		{
@@ -24,8 +24,8 @@ package commands.cuepointManager
 
 		public function execute(event:CairngormEvent):void
 		{
-			if(!executed){
-				executed = true;
+//			if(!executed){
+//				executed = true;
 				VP.setSubtitle(text);
 				//VP.playSpeakNotice();
 				VP.muteVideo(true);
@@ -34,7 +34,7 @@ package commands.cuepointManager
 				VP.highlight = true;
 					//if(!DataModel.getInstance().soundDetected)
 					//	DataModel.getInstance().gapsWithNoSound++;
-			}
+//			}
 		}
 	}
 }
