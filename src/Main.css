@@ -143,6 +143,26 @@ s|TextInput{
 	cornerRadius: 8;
 }
 
+.formLabel{
+	color: #92D3D5;
+	fontSize: 14;
+	fontWeight: bold;
+}
+
+.loginPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.privacyRightsPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
 .homeLinkButton{
 	rollOverColor: #258daa;
 	selectionColor: #20778f;
@@ -315,21 +335,11 @@ s|TextInput{
 }
 
 .bigBlueButton{
-	paddingLeft: 10;
-	paddingRight: 10;
-	paddingTop: 4;
-	paddingBottom: 4;
 	cornerRadius: 10;
-	highlightAlphas: 0, 0;
-	fillAlphas: 1, 1, 1, 1;
-	fillColors: #31b5de, #207791, #ffffff, #f9f9f9;
-	color: #ffffff;
-	textRollOverColor: #31b5de;
-	textSelectedColor: #207791;
-	borderColor: #31b5de;
-	themeColor: #f9f9f9;
 	fontSize: 14;
 	fontWeight: bold;
+	color: #ffffff;
+	skinClass: ClassReference('skins.ActionButtonSkin');
 }
 
 .sectionInfoBox{

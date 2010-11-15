@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 						  xmlns:s="library://ns.adobe.com/flex/spark"
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:common="view.common.*"
-						  showCloseButton="true"
-						  width="355"
-						  height="180"
+						  xmlns:skins="skins.*"
+						  width="360"
+						  height="220"
+						  styleName="privacyRightsPopup"
 						  creationComplete="creationCompleteHandler()"
 						  title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
+	
+	<skins:layout>
+		<s:VerticalLayout paddingLeft="10"
+						  paddingRight="10"
+						  paddingTop="10"
+						  paddingBottom="10"/>
+	</skins:layout>
 
 	<fx:Script>
 
@@ -275,13 +282,18 @@
 							  height="102"/>
 				</s:HGroup>
 				<s:HGroup width="100%"
-						  horizontalAlign="left">
+						  height="100%"
+						  horizontalAlign="left"
+						  verticalAlign="bottom"
+						  paddingTop="8">
 					<s:Button id="privacyRecButton"
 							  label="{resourceManager.getString('myResources','BUTTON_OK')}"
-							  click="okButtonClickHandler(event)"/>
+							  click="okButtonClickHandler(event)"
+							  styleName="bigBlueButton"/>
 					<s:Button id="privacyCancelButton"
 							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-							  click="cancelButtonClickHandler(event)"/>
+							  click="cancelButtonClickHandler(event)"
+							  styleName="bigBlueButton"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
@@ -296,4 +308,4 @@
 	</mx:ViewStack>
 
 
-</common:CustomTitleWindow>
+</skins:CustomTitleWindow>

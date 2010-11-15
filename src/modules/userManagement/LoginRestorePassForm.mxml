@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:common="view.common.*"
-			   keyDown="checkPressedKey(event)"
-			   close="onClose(event)"
-			   resize="onWindowResize(event)"
-			   title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
-			   creationComplete="completeHandler()">
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:skins="skins.*"
+						 keyDown="checkPressedKey(event)"
+						 close="onClose(event)"
+						 resize="onWindowResize(event)"
+						 title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
+						 creationComplete="completeHandler()"
+						 styleName="loginPopup"
+						 minWidth="300">
 
-	<s:layout>
-		<s:VerticalLayout paddingTop="4"
-						  paddingBottom="4"
-						  paddingLeft="4"
-						  paddingRight="4"
-						  verticalAlign="middle"/>
-	</s:layout>
+	<skins:layout>
+		<s:VerticalLayout paddingLeft="10"
+						  paddingRight="10"
+						  paddingTop="10"
+						  paddingBottom="10"/>
+	</skins:layout>
 
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
 			import events.LoginEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
-
+			
+			import skins.ActionButtonSkin;
+			import skins.CustomTitleWindowSkin;
+			
 			import vo.LoginVO;
 			import vo.UserVO;
 
@@ -73,6 +77,7 @@
 					if (DataModel.getInstance().loginErrorMessage == "inactive_user")
 					{
 						resendEmailLink.visible=true;
+						resendEmailLink.includeInLayout=true;
 					}
 					DataModel.getInstance().loginPop.errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
@@ -119,6 +124,7 @@
 				userOrEmail.text='';
 				focusManager.setFocus(username);
 				resendEmailLink.visible=false;
+				resendEmailLink.includeInLayout=false;
 				loginViewStack.selectedChild=loginFormBoxNavContent;
 			}
 
@@ -129,6 +135,7 @@
 				activationUsername.text='';
 				activationEmail.text='';
 				resendEmailLink.visible=false;
+				resendEmailLink.includeInLayout=false;
 				focusManager.setFocus(activationUsername);
 				loginViewStack.selectedChild=resendActivationEmailBoxNavContent;
 			}
@@ -200,17 +207,20 @@
 		<s:NavigatorContent id="loginFormBoxNavContent">
 			<s:VGroup id="loginFormBox"
 					  width="100%">
-				<mx:Form width="100%">
-					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
-						<s:TextInput id="username"
-									 width="100%"/>
-					</mx:FormItem>
-					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_PASSWORD')}">
-						<s:TextInput id="password"
-									 displayAsPassword="true"
-									 width="100%"/>
-					</mx:FormItem>
-				</mx:Form>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="username"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
+				<s:Label text="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="password"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 displayAsPassword="true"
+							 width="100%"/>
 				<s:HGroup width="100%"
 						  verticalAlign="middle"
 						  paddingLeft="12"
@@ -220,17 +230,20 @@
 				</s:HGroup>
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
-						  verticalAlign="middle">
+						  verticalAlign="middle"
+						  paddingTop="8">
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+							  styleName="bigBlueButton"
 							  id="okButton"
 							  click="processLogin(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  styleName="bigBlueButton"
 							  id="cancelButton"
 							  click="cancelButtonClickHandler(event)"/>
 				</s:HGroup>
 				<s:VGroup id="loginProblemTroubleshootingBox"
 						  width="100%"
-						  horizontalAlign="center"
+						  horizontalAlign="right"
 						  paddingTop="10">
 					<mx:LinkButton label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}"
 								   id="restorePassword"
@@ -240,7 +253,8 @@
 								   id="resendEmailLink"
 								   textDecoration="underline"
 								   click="showActivationResend(event)"
-								   visible="false"/>
+								   visible="false"
+								   includeInLayout="false"/>
 				</s:VGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
@@ -249,18 +263,23 @@
 			<s:VGroup id="restorePassFormBox"
 					  width="100%">
 
-				<s:Label text="{resourceManager.getString('myResources','LABEL_USER_OR_EMAIL')}"/>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_USER_OR_EMAIL')}"
+						 styleName="formLabel"/>
 				<s:TextInput id="userOrEmail"
-							 width="100%"/>
+							 width="100%"
+							 styleName="searchTextInput"
+							 fontSize="16"/>
 				<mx:Spacer width="20"/>
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle">
 					<s:Button label="{resourceManager.getString('myResources','LABEL_RESTORE_PASSWORD')}"
 							  id="restoreButton"
+							  styleName="bigBlueButton"
 							  click="processRestorePass(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  id="cancelRestoreButton"
+							  styleName="bigBlueButton"
 							  click="showLogin(event)"/>
 				</s:HGroup>
 			</s:VGroup>
@@ -295,4 +314,4 @@
 		</s:NavigatorContent>
 
 	</mx:ViewStack>
-</s:TitleWindow>
+</skins:CustomTitleWindow>

@@ -177,7 +177,6 @@
 
 				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(parent, NewRolePopUp, true));
 				newRolePopUp.title=resourceManager.getString('myResources','TITLE_INSERT_NEW_ROL');
-				newRolePopUp.showCloseButton=true;
 				PopUpManager.centerPopUp(newRolePopUp);
 
 				newRolePopUp.addEventListener("close", cancelInsert);

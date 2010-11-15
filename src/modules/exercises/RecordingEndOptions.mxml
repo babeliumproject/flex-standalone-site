@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 						  xmlns:s="library://ns.adobe.com/flex/spark"
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:common="view.common.*"
-						  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}"
-						  paddingTop="8"
-						  xmlns:skins="skins.*">
+						  xmlns:skins="skins.*"
+						  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
+	
+	<skins:layout>
+		<s:VerticalLayout paddingTop="8"/>
+	</skins:layout>
+	
 	<s:VGroup horizontalAlign="left"
 			  verticalAlign="middle">
 		<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
@@ -57,4 +60,4 @@
 			import skins.IconButtonSkin;
 		]]>
 	</fx:Script>
-</common:CustomTitleWindow>
+</skins:CustomTitleWindow>

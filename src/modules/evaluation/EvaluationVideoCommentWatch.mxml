@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 						  xmlns:s="library://ns.adobe.com/flex/spark"
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:videoPlayer="modules.videoPlayer.*"
-						  xmlns:common="view.common.*"
+						  xmlns:skins="skins.*"
 						  title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
-						  showCloseButton="true"
-						  horizontalAlign="center"
-						  layout="vertical"
 						  creationComplete="onComplete()">
+	
+	<skins:layout>
+		<s:VerticalLayout   horizontalAlign="center"/>
+	</skins:layout>
 
 	<fx:Script>
 		<![CDATA[
@@ -77,4 +78,4 @@
 	</s:VGroup>
 	<mx:Spacer width="20"/>
 	<s:Button click="closeButtonClickHandler(event)"/>
-</common:CustomTitleWindow>
+</skins:CustomTitleWindow>

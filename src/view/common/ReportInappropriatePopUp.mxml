@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<common:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-				title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
-				xmlns:common="view.common.*"
-				creationComplete="creationCompleteHandler()"
-				showCloseButton="true">
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
+						 xmlns:skins="skins.*"
+						 creationComplete="creationCompleteHandler()"
+						 xmlns:common="view.common.*">
+
+	<skins:layout>
+		<s:VerticalLayout/>
+	</skins:layout>
 
 	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import vo.ExerciseReportVO;
 			import vo.ExerciseVO;
 
 			private var _exercise:ExerciseVO;
-			
+
 			[Bindable]
 			private var _isPrompt:Boolean;
 
@@ -74,8 +78,8 @@
 
 	<s:VGroup>
 		<s:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_INAPPROPRIATE')}"
-				  fontSize="16"
-				  fontWeight="bold"/>
+				 fontSize="16"
+				 fontWeight="bold"/>
 
 		<s:HGroup width="100%">
 			<mx:Spacer/>
@@ -91,15 +95,15 @@
 	</s:VGroup>
 	<mx:HRule width="100%"/>
 	<s:HGroup width="100%"
-			 horizontalAlign="center"
-			 verticalAlign="middle">
+			  horizontalAlign="center"
+			  verticalAlign="middle">
 		<s:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
-				   id="reportButton"
-				   click="reportButtonClickHandler(event)"
-				   enabled="true"/>
+				  id="reportButton"
+				  click="reportButtonClickHandler(event)"
+				  enabled="true"/>
 		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-				   id="cancelButton"
-				   click="cancelButtonClickHandler(event)"/>
+				  id="cancelButton"
+				  click="cancelButtonClickHandler(event)"/>
 	</s:HGroup>
 
-</common:CustomTitleWindow>
+</skins:CustomTitleWindow>
