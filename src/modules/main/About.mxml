@@ -6,6 +6,7 @@
 
 	<s:BorderContainer styleName="sectionInfoBox"
 					   width="100%"
+					   minWidth="1000"
 					   minHeight="0">
 		<s:layout>
 			<s:VerticalLayout paddingBottom="16"
@@ -21,7 +22,8 @@
 	<s:VGroup paddingBottom="10"
 			  paddingTop="10"
 			  paddingLeft="10"
-			  paddingRight="10">
+			  paddingRight="10"
+			  width="100%">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 				 styleName="boldYellowLabel"/>
 		<s:HGroup width="100%"
@@ -32,8 +34,9 @@
 					  width="87"
 					  source="resources/images/ghym_logo_degr_87px.png"/>
 			<s:Label text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
-					 width="100%"
-					 height="100%"/>
+					 width="850"
+					 height="100%"
+					 verticalAlign="middle"/>
 		</s:HGroup>
 		<mx:Spacer height="24"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
@@ -67,40 +70,42 @@
 		<s:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
 				 styleName="boldYellowLabel"/>
 
-		<mx:DataGrid borderStyle="solid"
-					 headerBackgroundSkin="skins.DataGridHeaderGradientSkin"
-					 sortableColumns="false"
-					 selectable="false"
-					 editable="false"
-					 width="80%"
-					 dataProvider="{productData}"
-					 rowCount="{productData.length}">
-			<mx:columns>
-				<mx:DataGridColumn headerText="Product"
-								   dataField="product"
-								   textAlign="center"/>
-				<mx:DataGridColumn headerText="License"
-								   editable="false"
-								   textAlign="center">
-					<mx:itemRenderer>
-						<fx:Component>
-							<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
-										   label="{data.licenseName}"/>
-						</fx:Component>
-					</mx:itemRenderer>
-				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="Website"
-								   editable="false"
-								   textAlign="center">
-					<mx:itemRenderer>
-						<fx:Component>
-							<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
-										   label="{data.productUrl}"/>
-						</fx:Component>
-					</mx:itemRenderer>
-				</mx:DataGridColumn>
-			</mx:columns>
-		</mx:DataGrid>
+		<s:HGroup width="100%" horizontalAlign="center">
+			<mx:DataGrid borderStyle="solid"
+						 headerBackgroundSkin="skins.DataGridHeaderGradientSkin"
+						 sortableColumns="false"
+						 selectable="false"
+						 editable="false"
+						 width="100%"
+						 dataProvider="{productData}"
+						 rowCount="{productData.length}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Product"
+									   dataField="product"
+									   textAlign="center"/>
+					<mx:DataGridColumn headerText="License"
+									   editable="false"
+									   textAlign="center">
+						<mx:itemRenderer>
+							<fx:Component>
+								<mx:LinkButton click="outerDocument.licenseUrlClickHandler(event)"
+											   label="{data.licenseName}"/>
+							</fx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="Website"
+									   editable="false"
+									   textAlign="center">
+						<mx:itemRenderer>
+							<fx:Component>
+								<mx:LinkButton click="outerDocument.productUrlClickHandler(event)"
+											   label="{data.productUrl}"/>
+							</fx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+		</s:HGroup>
 	</s:VGroup>
 
 	<fx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
