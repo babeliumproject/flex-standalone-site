@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ViewStack xmlns:fx="http://ns.adobe.com/mxml/2009"
-			  xmlns:s="library://ns.adobe.com/flex/spark"
-			  xmlns:mx="library://ns.adobe.com/flex/mx"
-			  label="Automatic Evaluation"
-			  width="100%"
-			  height="100%"
-			  creationPolicy="all"
-			  creationComplete="init()">
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					label="{resourceManager.getString('myResources', 'TITLE_MACHINE_EVALUATION')}"
+					width="100%"
+					creationComplete="init()">
 
 	<fx:Script>
 		<![CDATA[
@@ -24,14 +22,17 @@
 				scoreLabel.text="";
 				errorLabel.text="";
 
-				selectedChild=evaluationPanelNavContent;
+				autoevalViewstack.selectedChild=evaluationPanelNavContent;
 			}
 
 			public function setResponseID(responseID:int):void
 			{
-				exerciseTranscriptionLabel.text="";
-				responseTranscriptionLabel.text="";
-				scoreLabel.text="";
+				if (exerciseTranscriptionLabel)
+					exerciseTranscriptionLabel.text="";
+				if (responseTranscriptionLabel)
+					responseTranscriptionLabel.text="";
+				if (scoreLabel)
+					scoreLabel.text="";
 				var requestData:EvaluationVO=new EvaluationVO();
 				requestData.responseId=responseID;
 				new EvaluationEvent(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, requestData).dispatch();
@@ -44,7 +45,7 @@
 					DataModel.getInstance().autoevaluationDone=false;
 
 					if (evaluationPanel != null)
-						selectedChild=evaluationPanelNavContent;
+						autoevalViewstack.selectedChild=evaluationPanelNavContent;
 					//setVisible(true);
 
 					var evaluation:Evaluation=DataModel.getInstance().autoevaluationResults;
@@ -139,7 +140,7 @@
 				{
 
 					if (errorPanel != null)
-						selectedChild=errorPanelNavContent;
+						autoevalViewstack.selectedChild=errorPanelNavContent;
 					//setVisible(true);
 
 					errorLabel.text=DataModel.getInstance().autoevaluationError;
@@ -158,42 +159,46 @@
 	<fx:Binding source="{DataModel.getInstance().autoevaluationError != null}"
 				destination="this.setError"/>
 
-	<s:NavigatorContent id="evaluationPanelNavContent">
-		<s:HGroup id="evaluationPanel"
-				  width="100%"
-				  height="100%"
-				  styleName="padding10AllSidesBox">
-			<s:VGroup width="30%"
+	<mx:ViewStack width="100%"
+				  creationPolicy="all"
+				  id="autoevalViewstack">
+		<s:NavigatorContent id="evaluationPanelNavContent">
+			<s:HGroup id="evaluationPanel"
+					  width="100%"
+					  height="100%"
+					  styleName="padding10AllSidesBox">
+				<s:VGroup width="30%"
+						  height="100%"
+						  styleName="padding10AllSidesBox"
+						  verticalAlign="middle">
+					<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
+					<s:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
+					<s:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
+				</s:VGroup>
+				<s:VGroup width="70%"
+						  height="100%"
+						  styleName="padding10AllSidesBox"
+						  verticalAlign="middle">
+					<mx:Text id="exerciseTranscriptionLabel"/>
+					<mx:Text id="responseTranscriptionLabel"
+							 styleName="errorLabel"/>
+					<mx:Text id="scoreLabel"/>
+				</s:VGroup>
+			</s:HGroup>
+		</s:NavigatorContent>
+
+		<s:NavigatorContent id="errorPanelNavContent">
+			<s:HGroup id="errorPanel"
+					  width="100%"
 					  height="100%"
 					  styleName="padding10AllSidesBox"
+					  horizontalAlign="center"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
-				<s:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
-				<s:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
-			</s:VGroup>
-			<s:VGroup width="70%"
-					  height="100%"
-					  styleName="padding10AllSidesBox"
-					  verticalAlign="middle">
-				<mx:Text id="exerciseTranscriptionLabel"/>
-				<mx:Text id="responseTranscriptionLabel"
-						 styleName="errorLabel"/>
-				<mx:Text id="scoreLabel"/>
-			</s:VGroup>
-		</s:HGroup>
-	</s:NavigatorContent>
-	
-	<s:NavigatorContent id="errorPanelNavContent">
-		<s:HGroup id="errorPanel"
-				  width="100%"
-				  height="100%"
-				  styleName="padding10AllSidesBox"
-				  horizontalAlign="center"
-				  verticalAlign="middle">
-			<s:Label id="errorLabel"
-					 textAlign="center"
-					 text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
-		</s:HGroup>
-	</s:NavigatorContent>
-	
-</mx:ViewStack>
+				<s:Label id="errorLabel"
+						 textAlign="center"
+						 text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
+			</s:HGroup>
+		</s:NavigatorContent>
+
+	</mx:ViewStack>
+</s:NavigatorContent>

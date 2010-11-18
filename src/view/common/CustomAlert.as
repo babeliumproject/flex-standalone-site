@@ -47,24 +47,24 @@ package view.common
 
 		private static function setStyles(alert:Alert):void
 		{
-			alert.setStyle('fontSize', 11);
-			alert.setStyle('backgroundColor', 0xffffff);
-			alert.setStyle('borderColor', 0xE5E8EA);
-			alert.setStyle('borderWeight', 1);
-			alert.setStyle('borderStyle', "solid");
-			alert.setStyle('dropShadowEnabled', true);
-			alert.setStyle('dropShadowColor', 0x000000);
-			alert.setStyle('cornerRadius', 6);
-			alert.setStyle('color', 0x2B333C);
-			alert.setStyle('paddingBottom', 2);
-			alert.setStyle('paddingLeft', 2);
-			alert.setStyle('paddingRight', 2);
-			alert.setStyle('headerHeight', 19);
-			alert.setStyle('headerColors', [0x919191, 0xFFFFFF]);
-			alert.setStyle('footerColors', [0x9db6d9, 0xffffff]);
-			alert.setStyle('borderColor', 0xaaaaaa);
-
-			alert.autoLayout=true;
+//			alert.setStyle('fontSize', 11);
+//			alert.setStyle('backgroundColor', 0xffffff);
+//			alert.setStyle('borderColor', 0xE5E8EA);
+//			alert.setStyle('borderWeight', 1);
+//			alert.setStyle('borderStyle', "solid");
+//			alert.setStyle('dropShadowEnabled', true);
+//			alert.setStyle('dropShadowColor', 0x000000);
+//			alert.setStyle('cornerRadius', 6);
+//			alert.setStyle('color', 0x2B333C);
+//			alert.setStyle('paddingBottom', 2);
+//			alert.setStyle('paddingLeft', 2);
+//			alert.setStyle('paddingRight', 2);
+//			alert.setStyle('headerHeight', 19);
+//			alert.setStyle('headerColors', [0x919191, 0xFFFFFF]);
+//			alert.setStyle('footerColors', [0x9db6d9, 0xffffff]);
+//			alert.setStyle('borderColor', 0xaaaaaa);
+//
+//			alert.autoLayout=true;
 		}
 
 

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:skins="skins.*"
-						  title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}">
-	
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:skins="skins.*"
+						 title="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}"
+						 styleName="genericPopup">
+
 	<skins:layout>
-		<s:VerticalLayout paddingTop="8"/>
+		<s:VerticalLayout paddingTop="8"
+						  paddingLeft="10"
+						  paddingRight="10"
+						  paddingBottom="10"/>
 	</skins:layout>
-	
+
 	<s:VGroup horizontalAlign="left"
 			  verticalAlign="middle">
 		<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_WATCH_EXERCISE_AND_RESPONSE')}"
@@ -54,9 +58,9 @@
 	<fx:Script>
 		<![CDATA[
 			import events.RecordingEndOptionEvent;
-			
+
 			import model.DataModel;
-			
+
 			import skins.IconButtonSkin;
 		]]>
 	</fx:Script>

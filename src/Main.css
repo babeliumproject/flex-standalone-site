@@ -23,6 +23,10 @@ mx|LinkButton{
 	fontWeight: normal;
 }
 
+mx|Alert{
+	buttonStyleName: bigBlueButton;
+}
+
 s|Label{
 	fontWeight: normal;
 }
@@ -138,6 +142,7 @@ s|TextInput{
 }
 
 .searchTextInput{
+	fontSize: 16;
 	borderStyle: "solid";
 	borderColor: #92D3D5;
 	cornerRadius: 8;
@@ -159,6 +164,13 @@ s|TextInput{
 .privacyRightsPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
 	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.genericPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('resources/images/popup_bgr_info.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }
@@ -230,25 +242,19 @@ s|TextInput{
 }
 
 .searchButton{
+	fontWeight: bold;
 	fontSize: 14;
-	fillAlphas: 1.0, 1.0, 1.0, 1.0;
-	fillColors: #FFFFFF, #FFFFFF, #92d377, #92d377;
-	highlightAlphas: 0, 0;
-	paddingLeft: 6;
-	paddingRight: 6;
-	cornerRadius: 8;
+	cornerRadius: 6;
 	color: #92D3D5;
-	borderColor: #92D3D5;
-	
+	skinClass: ClassReference('skins.SearchButtonSkin');
 }
 
 .uploadButton{
 	fontSize: 14;
-	fillAlphas: 1.0, 0.5, 0.5, 0.5;
-	fillColors: #FFC960, #FFEA60, #FF9860, #FFB260;
-	paddingLeft: 6;
-	paddingRight: 6;
-	cornerRadius: 8;
+	fontWeight: bold;
+	cornerRadius: 6;
+	color: #960B0B;
+	skinClass: ClassReference('skins.UploadButtonSkin');
 }
 
 /* Pagination control styles */
@@ -398,20 +404,6 @@ s|TextInput{
 	borderStyle: solid;
 	borderSides: right;
 	borderColor: #92d3d5;
-}
-
-.padding10AllSidesBox{
-	paddingTop: 10;
-	paddingLeft: 10;
-	paddingRight: 10;
-	paddingBottom: 10;
-}
-
-.padding20AllSidesBox{
-	paddingTop: 20;
-	paddingLeft: 20;
-	paddingRight: 20;
-	paddingBottom: 20;
 }
 
 .bwResultLabel{

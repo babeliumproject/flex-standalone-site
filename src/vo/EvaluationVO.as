@@ -24,6 +24,7 @@ package vo
 	   //When the video has video comments this fields are filled up with that video's data
 	   public var evaluationVideoId:int;
 	   public var evaluationVideoFileIdentifier:String;
+	   public var evaluationVideoThumbnailUri:String;	
 	   
 	   //When retrieving the responses that need to be assessed... we also need info about the
 	   //exercise that was followed to record the response that lead to the need of an assessment. 

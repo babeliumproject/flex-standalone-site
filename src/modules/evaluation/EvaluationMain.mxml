@@ -6,9 +6,8 @@
 		  xmlns:common="view.common.*"
 		  xmlns:evaluation="modules.evaluation.*"
 		  xmlns:videoPlayer="modules.videoPlayer.*"
-		  paddingBottom="8"
-		  verticalAlign="top"
 		  width="100%"
+		  minWidth="1000"
 		  creationComplete="completeHandler()">
 
 	<fx:Script>
@@ -17,30 +16,34 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.*;
-
+			
 			import model.DataModel;
-
+			
+			import modules.autoevaluation.AutoevaluationPanel;
 			import modules.search.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-
+			import mx.utils.ObjectUtil;
+			
 			import spark.components.Button;
-
+			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -111,6 +114,8 @@
 			 *  Visual component declaration
 			 */
 
+			private var computerEvaluation:AutoevaluationPanel=new AutoevaluationPanel();
+
 			//Empty while we have mixed visuals and code
 
 			/**
@@ -167,8 +172,19 @@
 			private function set detailsOfAssessmentRetrievedHandler(value:Boolean):void
 			{
 				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
-				assessmentDetailDataGrid.rowCount=doaDataprovider.length;
 				assessmentDetailList=doaDataprovider;
+				buildEvaluationDetailNavigation();
+			}
+
+			private function buildEvaluationDetailNavigation():void
+			{
+				for each (var eval:EvaluationVO in assessmentDetailList)
+				{
+					var evaldataBox:EvaluationDetailBox=new EvaluationDetailBox();
+					evaluationDetailViewStack.addChild(evaldataBox);
+					evaldataBox.evaluationData=eval;
+				}
+				evaluationDetailViewStack.selectedIndex=0;
 			}
 
 			private function set assessmentSavedHandler(value:Boolean):void
@@ -284,14 +300,6 @@
 				showArrows();
 			}
 
-			/*
-			   private function viewGraphicClickHandler():void
-			   {
-			   EvaluationChartPopUp.responseId=_responseId;
-			   var evaluationChartPopUp:EvaluationChartPopUp=EvaluationChartPopUp(PopUpManager.createPopUp(this, EvaluationChartPopUp, true));
-			   PopUpManager.centerPopUp(evaluationChartPopUp);
-			 }*/
-
 			private function allDataReceived():void
 			{
 				if (waitingForAssessmentList != null && assessedByCurrentUserList != null && assessedByCurrentUserList != null)
@@ -338,39 +346,47 @@
 
 			private function assessedToCurrentUserChangeHandler(event:Event):void
 			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				_exerciseId=selectedItem.exerciseId;
-				_exerciseName=selectedItem.exerciseName;
-				_responseCharacterName=selectedItem.responseCharacterName;
-				_responseId=selectedItem.responseId;
-				_responseName=selectedItem.responseFileIdentifier;
-				_responseSubtitleId=selectedItem.responseSubtitleId;
+				if (DataGrid(event.target).selectedItem is EvaluationVO)
+				{
+					var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+					_exerciseId=selectedItem.exerciseId;
+					_exerciseName=selectedItem.exerciseName;
+					_responseCharacterName=selectedItem.responseCharacterName;
+					_responseId=selectedItem.responseId;
+					_responseName=selectedItem.responseFileIdentifier;
+					_responseSubtitleId=selectedItem.responseSubtitleId;
 
-				_exerciseTitle=selectedItem.exerciseTitle;
-				_evaluationSelected=true;
+					_exerciseTitle=selectedItem.exerciseTitle;
+					_evaluationSelected=true;
 
 
 
-				//Retrieve the associated subtitles and prepare the videoplayer
-				prepareEvaluation();
+					//Retrieve the associated subtitles and prepare the videoplayer
+					prepareEvaluation();
 
-				//Visualize the video player component
-				videoPlayerBox.includeInLayout=true;
-				videoPlayerBox.visible=true;
+					//Visualize the video player component
+					videoPlayerBox.includeInLayout=true;
+					videoPlayerBox.visible=true;
 
-				//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
+					//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
 
-				assessmentsOfSelectedResponse.visible=true;
-				assessmentsOfSelectedResponse.includeInLayout=true;
+					assessmentsOfSelectedResponse.visible=true;
+					assessmentsOfSelectedResponse.includeInLayout=true;
 
-				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
+					//Clear the previous assessment detail data, if any
+					evaluationDetailViewStack.removeAllChildren();
 
-				//Get the autoevaluation info if available
-				computerEvaluation.setResponseID(_responseId);
+					new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
 
-				var urlResponseName:String=_responseName.replace("audio/", "");
+					//Get the autoevaluation info if available
+					if (!computerEvaluation.initialized)
+						computerEvaluation.initialize();
+					computerEvaluation.setResponseID(_responseId);
 
-				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
+					var urlResponseName:String=_responseName.replace("audio/", "");
+
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
+				}
 			}
 
 			private function assessedByCurrentUserChangeHandler(event:Event):void
@@ -392,6 +408,10 @@
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
+			
+				assessedByUserDetail.evaluationData = selectedItem;
+				assessedByUserDetailContainer.includeInLayout = true;
+				assessedByUserDetailContainer.visible = true;
 
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
@@ -411,22 +431,15 @@
 					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
 					watchEvaluationVideoComment.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
 					PopUpManager.centerPopUp(watchEvaluationVideoComment);
-					assessmentDetailDataGrid.selectedItem=null;
 				}
 			}
 
 			private function set showAutoevalTab(val:Boolean):void
 			{
-				if (evaluationTypeNavigator != null)
+				if (dataModel.autoevaluationAvailable)
 				{
-					//Show the autoevaluation tab if autoevaluation is available, else hide it
-					evaluationTypeNavigator.getTabAt(1).visible=DataModel.getInstance().autoevaluationAvailable;
-					evaluationTypeNavigator.getTabAt(1).enabled=DataModel.getInstance().autoevaluationAvailable;
-					evaluationTypeNavigator.getTabAt(1).includeInLayout=DataModel.getInstance().autoevaluationAvailable;
-					evaluationTypeNavigator.selectedIndex=0;
+					evaluationDetailViewStack.addChild(computerEvaluation);
 				}
-				else
-					DataModel.getInstance().autoevaluationAvailable=true;
 			}
 
 			private function durationLabelFunction(item:Object, column:DataGridColumn):String
@@ -464,6 +477,8 @@
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
+						assessedByUserDetailContainer.includeInLayout = false;
+						assessedByUserDetailContainer.visible = false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -480,6 +495,8 @@
 						assessedByCurrentUserDataGrid.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
+						assessedByUserDetailContainer.includeInLayout = false;
+						assessedByUserDetailContainer.visible = false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -716,6 +733,7 @@
 
 	<s:BorderContainer styleName="sectionInfoBox"
 					   minHeight="0"
+					   minWidth="1000"
 					   width="100%">
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"
@@ -736,7 +754,10 @@
 			  width="100%"
 			  horizontalAlign="center"
 			  includeInLayout="false"
-			  visible="false">
+			  visible="false"
+			  paddingTop="20"
+			  paddingLeft="16"
+			  paddingRight="16">
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"
 				 width="100%"
@@ -755,17 +776,15 @@
 											height="{Math.floor(VP.width * 9 / 16)}"
 											streamSource="{_streamSource}"
 											controlsEnabled="{_evaluationSelected}"/>
-			<evaluation:EvaluationRatingBox id="evaluationRatingBox"
-											width="100%"/>
 		</s:HGroup>
 	</s:VGroup>
 	<mx:Spacer width="20"/>
 
 	<s:VGroup width="100%"
 			  height="100%"
-			  paddingLeft="4"
-			  paddingRight="4"
-			  paddingBottom="4">
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="16">
 
 		<mx:ViewStack id="evaluationOptionsViewStack"
 					  width="100%"
@@ -780,6 +799,8 @@
 						  horizontalAlign="center"
 						  width="100%"
 						  height="100%">
+					<evaluation:EvaluationRatingBox id="evaluationRatingBox"
+													width="100%"/>
 					<mx:DataGrid id="waitingAssessmentDataGrid"
 								 dataProvider="{waitingForAssessmentList}"
 								 width="100%"
@@ -825,76 +846,21 @@
 				<s:VGroup id="assessedToCurrentUserBox"
 						  width="100%"
 						  height="100%">
-					<s:HGroup id="assessmentsOfSelectedResponse"
+					<s:VGroup id="assessmentsOfSelectedResponse"
 							  width="100%"
-							  height="100%"
-							  visible="false"
-							  includeInLayout="false">
-						<mx:TabNavigator id="evaluationTypeNavigator"
-										 creationPolicy="all"
-										 width="100%"
-										 paddingLeft="8"
-										 paddingRight="8"
-										 paddingTop="8"
-										 paddingBottom="8"
-										 resizeToContent="true">
-							<s:NavigatorContent id="humanEvaluationNavContent"
-												label="Human Evaluation">
-
-
-								<s:VGroup id="humanEvaluation"
+							  horizontalAlign="right"
+							  gap="0">
+						<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
+						<s:BorderContainer width="100%"
+										   minHeight="0"
+										   minWidth="900"
+										   cornerRadius="8"
+										   backgroundAlpha="0">
+							<mx:ViewStack id="evaluationDetailViewStack"
 										  width="100%"
-										  height="100%">
-									<!-- Commented for now
-										 <s:HGroup>
-										 <s:Label id="overallAverageRating"/>
-										 <s:Button id="viewGraphicButton"
-										 label="{resourceManager.getString('myResources', 'DISPLAYGRAPH')}"
-										 click="viewGraphicClickHandler()"/>
-										 </s:HGroup>
-									-->
-
-									<mx:DataGrid id="assessmentDetailDataGrid"
-												 dataProvider="{assessmentDetailList}"
-												 change="assessmentDetailChangeHandler(event)"
-												 verticalAlign="middle"
-												 width="100%">
-										<mx:columns>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JUDGE')}"
-															   dataField="userName"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VALUATION')}"
-															   dataField="overallScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
-															   dataField="intonationScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
-															   dataField="fluencyScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
-															   dataField="rhythmScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
-															   dataField="spontaneityScore"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-															   dataField="addingDate"/>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'COMMENTS')}"
-															   dataField="comment"
-															   width="160">
-												<mx:itemRenderer>
-													<fx:Component>
-														<mx:Text text="{data.comment}"
-																 width="160"/>
-													</fx:Component>
-												</mx:itemRenderer>
-											</mx:DataGridColumn>
-											<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
-															   dataField="evaluationVideoFileIdentifier"/>
-										</mx:columns>
-									</mx:DataGrid>
-								</s:VGroup>
-							</s:NavigatorContent>
-							<s:NavigatorContent id="computerEvaluationNavContent">
-								<autoEvaluation:AutoevaluationPanel id="computerEvaluation"/>
-							</s:NavigatorContent>
-						</mx:TabNavigator>
-					</s:HGroup>
+										  resizeToContent="true"/>
+						</s:BorderContainer>
+					</s:VGroup>
 					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
 														  dataProvider="{assessedToCurrentUserList}"
 														  changeListener="{assessedToCurrentUserChangeHandler}"
@@ -904,7 +870,18 @@
 
 			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"
 								label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
-				<s:VGroup id="assessedByCurrentUserBox">
+				<s:VGroup id="assessedByCurrentUserBox" width="100%">
+					<s:BorderContainer id="assessedByUserDetailContainer"
+									   width="100%"
+									   minHeight="0"
+									   minWidth="900"
+									   cornerRadius="8"
+									   backgroundAlpha="0"
+									   includeInLayout="false"
+									   visible="false">
+						<evaluation:EvaluationDetailBox id="assessedByUserDetail"
+														width="100%"/>
+					</s:BorderContainer>
 					<mx:DataGrid width="100%"
 								 id="assessedByCurrentUserDataGrid"
 								 dataProvider="{assessedByCurrentUserList}"

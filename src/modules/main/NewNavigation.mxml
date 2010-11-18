@@ -107,10 +107,10 @@
 					  styleName="uploadButton"
 					  enabled="{!DataModel.getInstance().recordingExercise}"
 					  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE,event)"/>
+			<mx:Spacer width="30"/>
 			<s:TextInput id="searchField"
 						 styleName="searchTextInput"
 						 width="100%"
-						 height="26"
 						 maxChars="100"
 						 enter="launchSearch(null)"/>
 			<s:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
