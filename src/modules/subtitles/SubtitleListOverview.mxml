@@ -22,7 +22,7 @@
 
 		<s:HGroup horizontalAlign="right"
 				  width="100%">
-			<mx:TabBar dataProvider="{subtitleListOverviewViewStack}"/>
+			<s:TabBar dataProvider="{subtitleListOverviewViewStack}"/>
 		</s:HGroup>
 	</s:BorderContainer>
 

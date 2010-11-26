@@ -3,11 +3,29 @@ package skins
 
 	import mx.core.FlexGlobals;
 	import mx.styles.CSSStyleDeclaration;
-
+	
 	import spark.components.Button;
 	import spark.components.TextInput;
 
 	[Style(name="icon", type="*")]
+	
+	[Style(name="gradientColors", type="Array", arrayType="uint", format="Color")]
+	
+	[Style(name="gradientColorsOver", type="Array", arrayType="uint", format="Color")]
+	
+	[Style(name="gradientColorsDown", type="Array", arrayType="uint", format="Color")]
+	
+	[Style(name="borderColors", type="Array", arrayType="uint", format="Color")]
+	
+	[Style(name="borderWeight", type="uint", format="Length")]
+	
+	[Style(name="colorOver", type="uint", format="Color")]
+	
+	[Style(name="colorDown", type="uint", format="Color")]
+	
+	[Style(name="underlineOver", type="Boolean")]
+	
+	[Style(name="underlineDown", type="Boolean")]
 
 	public class IconButton extends Button
 	{

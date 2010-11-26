@@ -746,7 +746,7 @@
 		<mx:Text text="Enter section description here."/>
 		<s:HGroup horizontalAlign="right"
 				  width="100%">
-			<mx:TabBar dataProvider="{evaluationOptionsViewStack}"/>
+			<s:TabBar dataProvider="{evaluationOptionsViewStack}"/>
 		</s:HGroup>
 	</s:BorderContainer>
 

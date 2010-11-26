@@ -26,6 +26,8 @@ package modules.main
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
+	import skins.IconButton;
+	
 	import spark.components.BorderContainer;
 	import spark.components.HGroup;
 	import spark.components.Label;
@@ -57,10 +59,10 @@ package modules.main
 
 		public var userCPName:PopUpMenuButton;
 		[Bindable] public var uCrds:Label;
-		public var signInButton:LinkButton;
-		public var signUpButton:LinkButton;
-		public var signOutButton:LinkButton;
-		public var helpFAQButton:LinkButton;
+		public var signInButton:IconButton;
+		public var signUpButton:IconButton;
+		public var signOutButton:IconButton;
+		public var helpFAQButton:IconButton;
 		
 		public var localeComboBox:LocalizationComboBox;
 

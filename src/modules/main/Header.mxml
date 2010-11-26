@@ -4,7 +4,13 @@
 				  xmlns:mx="library://ns.adobe.com/flex/mx"
 				  xmlns:main="modules.main.*"
 				  minHeight="0"
-				  minWidth="1000">
+				  minWidth="1000"
+				  xmlns:skins="skins.*">
+	<fx:Script>
+		<![CDATA[
+			import skins.IconLinkSkin;
+		]]>
+	</fx:Script>
 
 	<s:HGroup width="100%"
 			  minWidth="1000"
@@ -20,31 +26,33 @@
 				  verticalAlign="middle"
 				  width="100%">
 
-			<mx:LinkButton id="helpFAQButton"
-						   icon="@Embed(source='../../resources/images/help_icon.png')"
-						   label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
-						   click="helpFAQ_clickHandler(event)"
-						   toolTip="Help/FAQ"/>
+			<skins:IconButton id="helpFAQButton"
+							  styleName="helpLinkButton"
+							  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
+							  click="helpFAQ_clickHandler(event)"
+							  toolTip="Help/FAQ"/>
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"
 					  verticalAlign="middle"
 					  visible="true"
-					  includeInLayout="true">
-				<mx:LinkButton id="signInButton"
-							   styleName="yellowLinkButton"
-							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
-							   click="signInClickHandler()"/>
-				<mx:LinkButton id="signUpButton"
-							   styleName="yellowLinkButton"
-							   label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
-							   click="signUpClickHandler()"/>
+					  includeInLayout="true"
+					  height="100%">
+				<skins:IconButton id="signInButton"
+								  styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
+								  click="signInClickHandler()"/>
+				<skins:IconButton id="signUpButton"
+								  styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
+								  click="signUpClickHandler()"/>
 			</s:HGroup>
 			<s:HGroup id="userCP"
 					  horizontalAlign="right"
 					  verticalAlign="middle"
 					  visible="false"
-					  includeInLayout="false">
+					  includeInLayout="false"
+					  height="100%">
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
 				<s:HGroup verticalAlign="middle"
@@ -57,6 +65,7 @@
 							 text="cr."
 							 styleName="creditLinkButton"
 							 verticalAlign="justify"/>
+					<s:BitmapImage source="@Embed('resources/images/coins_icon.png')"/>
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
@@ -65,10 +74,10 @@
 									labelFunction="userOptionsLabelFunction"
 									dataProvider="{userOptions}"
 									itemClick="userOptionsItemClickHandler(event)"/>
-				<mx:LinkButton id="signOutButton"
-							   icon="@Embed(source='../../resources/images/close_icon.png')"
-							   toolTip="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
-							   click="signOutClickHandler()"/>
+				<skins:IconButton id="signOutButton"
+								  styleName="signOutLinkButton"
+								  toolTip="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
+								  click="signOutClickHandler()"/>
 			</s:HGroup>
 		</s:HGroup>
 

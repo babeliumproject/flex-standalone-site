@@ -43,7 +43,7 @@ package model
 		[Bindable] public var netConnectOngoingAttempt:Boolean;
 		
 		//ViewStack management variables
-		//[Bindable] public var currentContentViewStackIndex:int;
+		[Bindable] public var currentContentViewStackIndex:int;
 		[Bindable] public var currentHomeViewStackIndex:int;
 		[Bindable] public var currentConfigViewStackIndex:int;
 		[Bindable] public var currentExerciseViewStackIndex:int;

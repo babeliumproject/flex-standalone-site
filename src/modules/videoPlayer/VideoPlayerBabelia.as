@@ -1031,30 +1031,32 @@ package modules.videoPlayer
 			/*
 			 * Resize video image
 			 */
-			var w:Number=_videoWidth / 2 - 2;
-			var h:int=w * _video.height / _video.width;
-
-			if (_videoHeight != h) // cause we can call twice to this method
-				_lastVideoHeight=_videoHeight; // store last value
-
-			_videoHeight=h;
-
-			var scaleY:Number=h / _video.height;
-			var scaleX:Number=w / _video.width;
-			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
-
-			_video.y=Math.floor(h / 2 - (_video.height * scaleC) / 2);
-			_video.x=Math.floor(w / 2 - (_video.width * scaleC) / 2);
-			_video.y+=_defaultMargin;
-			_video.x+=_defaultMargin;
-
-			_video.width*=scaleC;
-			_video.height*=scaleC;
+//			var w:Number=_videoWidth / 2 - 2;
+//			var h:int=w * _video.height / _video.width;
+//
+//			if (_videoHeight != h) // cause we can call twice to this method
+//				_lastVideoHeight=_videoHeight; // store last value
+//
+//			_videoHeight=h;
+//
+//			var scaleY:Number=h / _video.height;
+//			var scaleX:Number=w / _video.width;
+//			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
+//
+//			_video.y=Math.floor(h / 2 - (_video.height * scaleC) / 2);
+//			_video.x=Math.floor(w / 2 - (_video.width * scaleC) / 2);
+//			_video.y+=_defaultMargin;
+//			_video.x+=_defaultMargin;
+//
+//			_video.width*=scaleC;
+//			_video.height*=scaleC;
+//			
+			_videoWidth *= 2;
 
 			/*
 			 * Resize cam image
 			 */
-			scaleCamVideo(w, h);
+			scaleCamVideo(_videoWidth,_videoHeight);
 
 			updateDisplayList(0, 0); // repaint
 
@@ -1091,15 +1093,15 @@ package modules.videoPlayer
 			_camVideo.height=_defaultCamHeight * scaleC;
 
 			_camVideo.y=Math.floor(h / 2 - _camVideo.height / 2);
-			_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
+			_camVideo.x=Math.floor(w * 0.75 - _camVideo.width / 2);
 			_camVideo.y+=_defaultMargin;
-			_camVideo.x+=(w + _defaultMargin);
+			//_camVideo.x+=(w + _defaultMargin);
 
 			// 1 black pixel, being smarter
-			_camVideo.y+=1;
-			_camVideo.height-=2;
-			_camVideo.x+=1;
-			_camVideo.width-=2;
+//			_camVideo.y+=1;
+//			_camVideo.height-=2;
+//			_camVideo.x+=1;
+//			_camVideo.width-=2;
 		}
 
 		override protected function scaleVideo():void

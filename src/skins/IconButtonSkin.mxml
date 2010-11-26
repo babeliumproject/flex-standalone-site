@@ -57,6 +57,17 @@
 			 */
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
+				
+				var bis:String = getStyle('icon');
+				
+				if(bis)
+					buttonIcon.includeInLayout = true;
+				
+				if(!hostComponent.label){
+					labelDisplay.includeInLayout = false;
+				}
+				
+				
 				var cr:Number=getStyle("cornerRadius");
 
 				if (cornerRadius != cr)
@@ -284,6 +295,7 @@
 			 height="100%">
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle"
+								horizontalAlign="center"
 								paddingTop="5"
 								paddingBottom="5"
 								paddingLeft="5"
@@ -292,7 +304,7 @@
 		</s:layout>
 
 		<s:BitmapImage id="buttonIcon"
-					   source="{hostComponent.getStyle('icon')}"/>
+					   source="{hostComponent.getStyle('icon')}" includeInLayout="false"/>
 		<s:Label id="labelDisplay"
 				 maxDisplayedLines="1"
 				 height="100%"

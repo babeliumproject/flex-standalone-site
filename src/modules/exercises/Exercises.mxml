@@ -9,7 +9,8 @@
 		  verticalAlign="top"
 		  horizontalAlign="center"
 		  width="100%"
-		  creationComplete="onComplete()">
+		  creationComplete="onComplete()"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -783,7 +784,7 @@
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
 				 styleName="sectionInfoTitleLabel"/>
-		<s:Label  text="Enter section description here."/>
+		<s:Label text="Enter section description here."/>
 	</s:BorderContainer>
 
 
@@ -831,55 +832,71 @@
 		</s:HGroup>
 
 		<!-- Selected Exercise Panel -->
-		<s:Panel id="panelSelectedExercise"
-				 includeInLayout="false"
-				 visible="false"
-				 width="100%"
-				 title="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}">
+		<s:BorderContainer id="panelSelectedExercise"
+						   includeInLayout="false"
+						   visible="false"
+						   width="100%"
+						   backgroundAlpha="0"
+						   cornerRadius="8">
 
 			<s:layout>
-				<s:VerticalLayout paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10"/>
+				<s:VerticalLayout paddingTop="10"
+								  paddingLeft="10"
+								  paddingRight="10"
+								  paddingBottom="10"/>
 			</s:layout>
 
-			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
-				<mx:ComboBox id="availableRoles"
-							 dataProvider="{_characterNames}"
-							 enabled="{!DataModel.getInstance().recordingExercise}"/>
-			</s:HGroup>
+			<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}"/>
 
-			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
-				<common:LanguageComboBox id="availableLocales"
-										 useCustomDataProvider="true"
-										 customDataProvider="{_locales}"
-										 displayPrompt="false"
-										 change="this.onLocaleComboChanged(event)"
-										 enabled="{!DataModel.getInstance().recordingExercise}"/>
-			</s:HGroup>
-			<mx:Spacer height="5"/>
-			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
-				<s:VGroup>
-					<s:RadioButton id="micOnly"
-								   selected="true"
-								   groupName="recMode"
-								   label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
-					<s:RadioButton id="micAndCam"
-								   groupName="recMode"
-								   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
-				</s:VGroup>
-			</s:HGroup>
+			<s:BorderContainer borderWeight="5"
+							   width="100%"
+							   cornerRadius="8"
+							   borderColor="#38babc"
+							   backgroundAlpha="0">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+				</s:layout>
+				<s:HGroup>
+					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
+					<mx:ComboBox id="availableRoles"
+								 dataProvider="{_characterNames}"
+								 enabled="{!DataModel.getInstance().recordingExercise}"/>
+				</s:HGroup>
+
+				<s:HGroup>
+					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
+					<common:LanguageComboBox id="availableLocales"
+											 useCustomDataProvider="true"
+											 customDataProvider="{_locales}"
+											 displayPrompt="false"
+											 change="this.onLocaleComboChanged(event)"
+											 enabled="{!DataModel.getInstance().recordingExercise}"/>
+				</s:HGroup>
+				<mx:Spacer height="5"/>
+				<s:HGroup>
+					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
+					<s:VGroup>
+						<s:RadioButton id="micOnly"
+									   selected="true"
+									   groupName="recMode"
+									   label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
+						<s:RadioButton id="micAndCam"
+									   groupName="recMode"
+									   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
+					</s:VGroup>
+				</s:HGroup>
+			</s:BorderContainer>
 
 			<s:HGroup horizontalAlign="right"
 					  width="100%">
-				<s:Button label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
-						  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady
-						   &amp;&amp; !DataModel.getInstance().recordingExercise}"
-						  click="onStartRecordingClicked(event)"/>
+				<skins:IconButton id="startRecordingButton"
+								  styleName="recStartLinkButton"
+								  toolTip="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady &amp;&amp; !DataModel.getInstance().recordingExercise}"
+								  click="onStartRecordingClicked(event)"/>
 			</s:HGroup>
 
-		</s:Panel>
+		</s:BorderContainer>
 
 	</s:HGroup>
 

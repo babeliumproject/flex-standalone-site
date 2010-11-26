@@ -83,12 +83,34 @@ s|TextInput{
 }
 
 .yellowLinkButton{
-	fontWeight: bold;
-	color: #cc9900;
-	rollOverColor: #cc9900;
-	selectionColor: #cc9900;
-	textRollOverColor: #f9f9f9;
-	textSelectedColor: #f9f9f9;
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	color:#cc9900;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.helpLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('resources/images/help_icon.png');
+	fontWeight:bold;
+	color:#2d89a4;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.signOutLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('resources/images/close_icon.png');
+}
+
+.recStartLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('resources/images/button_rec.png');
 }
 
 .creditLinkButton{

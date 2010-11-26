@@ -3,7 +3,8 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
-		  creationComplete="onComplete()">
+		  creationComplete="onComplete()"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -17,6 +18,8 @@
 			import mx.controls.Label;
 			import mx.controls.Text;
 			import mx.utils.ObjectUtil;
+
+			import skins.IconButtonVerticalSkin;
 
 			import spark.components.NavigatorContent;
 
@@ -164,5 +167,16 @@
 			 </s:HGroup>
 		-->
 	</s:BorderContainer>
+	<skins:IconButton skinClass="skins.IconButtonVerticalSkin"
+					  gradientColors="[#ffffff, #e3bb03]"
+					  gradientColorsOver="[#a2b342, #895472]"
+					  icon="@Embed('resources/images/upload_icon.png')"
+					  color="#b09002"
+					  fontWeight="bold"
+					  borderWeight="1"
+					  borderColors="#FFFFFF"
+					  label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"/>
+	<skins:IconButton skinClass="skins.IconButtonVerticalSkin"
+					  label="Prueba"/>
 
 </s:VGroup>
