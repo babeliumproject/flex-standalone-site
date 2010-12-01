@@ -34,17 +34,11 @@ package commands.exercises
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				
-				if (!(resultCollection[0] is ExerciseVO))
-				{
-					CustomAlert.error("The Result is not a well-formed object.");
-				}
-				else
-				{
-					//Set the data to the application's model
-					DataModel.getInstance().availableRecordableExercises=resultCollection;
-					//Reflect the visual changes
-					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
-				}
+				//Set the data to the application's model
+				DataModel.getInstance().availableRecordableExercises=resultCollection;
+				//Reflect the visual changes
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
+				
 			} else {
 				DataModel.getInstance().availableRecordableExercises.removeAll();
 				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);

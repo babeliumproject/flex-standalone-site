@@ -149,14 +149,13 @@ class EvaluationDAO {
 
 	public function getResponsesAssessedByCurrentUser(){
 		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id,
-		               		A.adding_date, A.source, A.thumbnail_uri, A.duration,
-		               		U.name, C.score_overall, C.score_intonation, C.score_fluency, C.score_rhythm,
-		               		C.score_spontaneity, C.comment, C.adding_date, e.video_identifier, e.thumbnail_uri
-		               		B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source 
+		               			A.adding_date, A.source, A.thumbnail_uri, A.duration,
+		               			U.name, C.score_overall, C.score_intonation, C.score_fluency, C.score_rhythm,
+		               			C.score_spontaneity, C.comment, C.adding_date,
+		               			B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
 			         INNER JOIN users AS U ON U.ID = A.fk_user_id
-				 LEFT OUTER JOIN evaluation_video AS e ON C.id = e.fk_evaluation_id
 			    WHERE (C.fk_user_id = '%d')";
 
 		$searchResults = $this->_listAssessedByCurrentUserQuery ( $sql, $_SESSION['uid'] );
@@ -197,9 +196,6 @@ class EvaluationDAO {
 			$temp->exerciseThumbnailUri = $row[21];
 			$temp->exerciseTitle = $row[22];
 			$temp->exerciseSource = $row[23];
-
-			$temp->evaluationVideoFileIdentifier = $row[24];
-			$temp->evaluationVideoThumbnailUri = $row[25];
 
 			array_push ( $searchResults, $temp );
 		}
@@ -268,19 +264,19 @@ class EvaluationDAO {
 		}
 		return $searchResults;
 	}
-
+	
 	private function _responseNotEvaluatedByUser($responseId){
-		$sql = "SELECT *
+		$sql = "SELECT * 
 				FROM evaluation e INNER JOIN response r ON e.fk_response_id = r.id
 				WHERE (r.id = '%d' AND e.fk_user_id = '%d')";
 		$result = $this->conn->_execute($sql, $responseId, $_SESSION['uid']);
 		$row = $this->conn->_nextRow($result);
 		if($row)
-		return false;
+			return false;
 		else
-		return true;
+			return true;
 	}
-
+	
 	private function _responseRatingCountBelowThreshold($responseId){
 		$sql = "SELECT *
 				FROM response
@@ -288,23 +284,23 @@ class EvaluationDAO {
 		$result = $this->conn->_execute($sql, $responseId);
 		$row = $this->conn->_nextRow($result);
 		if($row)
-		return true;
+			return true;
 		else
-		return false;
+			return false;	
 	}
-
+	
 
 	public function addAssessment($evalData){
-
+		
 		$result = 0;
 		$responseId = $evalData->responseId;
-
+		
 		//Ensure that this user can evaluate this response
 		if(!$this->_responseNotEvaluatedByUser($responseId) || !$this->_responseRatingCountBelowThreshold($responseId))
-		return $result;
-
+			return $result;
+		
 		$this->conn->_startTransaction();
-
+		
 		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -316,8 +312,8 @@ class EvaluationDAO {
 		$sql = $sql . "'%s', NOW() )";
 
 		$evaluationId = $this->_create ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
+										 $evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
+										 $evalData->spontaneityScore, $evalData->comment );
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
@@ -328,7 +324,7 @@ class EvaluationDAO {
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
 		}
-
+		
 		//Update the user's credit count
 		$creditUpdate = $this->_addCreditsForEvaluating();
 		if(!$creditUpdate){
@@ -342,28 +338,28 @@ class EvaluationDAO {
 			$this->conn->_failedTransaction();
 			throw new Exception("Credit history update failed");
 		}
-
+		
 		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
 		}
-
-		return $result;
+		
+		return $result;	
 	}
 
 	public function addVideoAssessment($evalData){
-
+		
 		$result = 0;
 		$responseId = $evalData->responseId;
-
+		
 		//Ensure that this user can evaluate this response
 		if(!$this->_responseNotEvaluatedByUser($responseId) || !$this->_responseRatingCountBelowThreshold($responseId))
-		return $result;
-
+			return $result;
+		
 
 		$this->conn->_startTransaction();
-
+		
 		//Insert the evaluation data
 		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
@@ -376,14 +372,14 @@ class EvaluationDAO {
 		$sql = $sql . "'%s', NOW() )";
 
 		$evaluationId = $this->_create ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
+										 $evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
+										 $evalData->spontaneityScore, $evalData->comment );
 
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
 		}
-
+		
 		//Insert video evaluation data
 		$this->_getResourceDirectories();
 		$duration = $this->calculateVideoDuration($evalData->evaluationVideoFileIdentifier);
@@ -394,21 +390,21 @@ class EvaluationDAO {
 		$sql = $sql . "'%s', ";
 		$sql = $sql . "'Red5', ";
 		$sql = $sql . "'%s')";
-
+		
 		$evaluationVideoId = $this->_create ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
 		if(!$evaluationVideoId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
 		}
-
+		
 		//Update the rating count for this response
-
+	
 		$update = $this->_updateResponseRatingAmount($responseId);
 		if(!$update){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
 		}
-
+		
 		//Update the user's credit count
 		$creditUpdate = $this->_addCreditsForEvaluating();
 		if(!$creditUpdate){
@@ -422,15 +418,15 @@ class EvaluationDAO {
 			$this->conn->_failedTransaction();
 			throw new Exception("Credit history update failed");
 		}
-
+		
 		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
 		}
-
-		return $result;
-
+		
+		return $result;	
+		
 	}
 
 	private function _addCreditsForEvaluating() {

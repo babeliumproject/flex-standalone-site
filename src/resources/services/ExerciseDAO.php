@@ -275,11 +275,33 @@ class ExerciseDAO {
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			 WHERE (e.status = 'Available')
 				 GROUP BY e.id
-				 ORDER BY e.adding_date DESC";
+				 ORDER BY e.adding_date DESC, e.language DESC";
 
 		$searchResults = $this->_exerciseListQuery($sql);
-
-		return $searchResults;
+		
+		try {
+			$verifySession = new SessionHandler(true);
+			$filteredResults = $this->filterRecordableExercises($searchResults);
+			return $filteredResults;
+		} catch (Exception $e) {
+			return $searchResults;
+		}
+		
+	}
+	
+	private function filterRecordableExercises($exerciseList){
+		$filteredList = array();
+		foreach ($exerciseList as $exercise){
+			foreach ($_SESSION['user-languages'] as $userLanguage) {
+				if($userLanguage->purpose == 'practice'){
+					if($exercise->language == $userLanguage->language && $exercise->avgDifficulty <= $userLanguage->level){
+						array_push($filteredList, $exercise);
+						break;
+					}
+				}
+			}
+		}
+		return $filteredList;
 	}
 
 	public function getExerciseLocales($exerciseId) {

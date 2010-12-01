@@ -39,7 +39,8 @@ class LoginDAO{
 			if($result){
 				$userId = $result->id;
 				$userLanguages = $this->_getUserLanguages($userId);
-				$this->_startUserSession($userId);
+				$result->userLanguages = $userLanguages;
+				$this->_startUserSession($result);
 
 				$filteredResult = new UserVO();
 				$filteredResult->name = $result->name;
@@ -149,22 +150,23 @@ class LoginDAO{
 		return $valueObject;
 	}
 
-	private function _startUserSession($userId){
+	private function _startUserSession($userData){
 
-		$this->_setSessionData($userId);
+		$this->_setSessionData($userData);
 
 		$sql = "INSERT INTO user_session (fk_user_id, session_id, session_date, duration, keep_alive)
 				VALUES ('%d', '%s', now(), 0, 1)";
 		return $this->_create($sql, $_SESSION['uid'], session_id());
 	}
 
-	private function _setSessionData($userId){
+	private function _setSessionData($userData){
 		//We are changing the privilege level, so we generate a new session id
 		session_regenerate_id();
 		$_SESSION['logged'] = true;
-		$_SESSION['uid'] = $userId;
+		$_SESSION['uid'] = $userData->id;
 		$_SESSION['user-agent-hash'] = sha1($_SERVER['HTTP_USER_AGENT']);
 		$_SESSION['user-addr'] = $_SERVER['REMOTE_ADDR'];
+		$_SESSION['user-languages'] = $userData->userLanguages;
 	}
 
 	private function _resetSessionData(){
@@ -174,6 +176,7 @@ class LoginDAO{
 		$_SESSION['uid'] = 0;
 		$_SESSION['user-agent-hash'] = '';
 		$_SESSION['user-addr'] = 0;
+		$_SESSION['user-languages'] = null;
 	}
 
 	private function _getUserLanguages($userId){

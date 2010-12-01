@@ -36,7 +36,7 @@
 			public function onComplete():void
 			{
 				thumbURL=DataModel.getInstance().thumbURL;
-				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
 			public function set handleExercisesRetrieve(value:Boolean):void
@@ -50,6 +50,10 @@
 
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
+			}
+			
+			public function set retrieveCustomizedExercises(value:Boolean):void{
+				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
 			public function createPagination():void
@@ -99,6 +103,8 @@
 
 	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="handleExercisesRetrieve"/>
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveCustomizedExercises"/>
 
 	<s:List id="exerciseListDataGroup"
 				 width="100%"
