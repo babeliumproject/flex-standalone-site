@@ -4,7 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*" xmlns:videoPlayer="modules.videoPlayer.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -176,7 +176,4 @@
 					  borderWeight="1"
 					  borderColors="#FFFFFF"
 					  label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"/>
-	<skins:IconButton skinClass="skins.IconButtonVerticalSkin"
-					  label="Prueba"/>
-
 </s:VGroup>

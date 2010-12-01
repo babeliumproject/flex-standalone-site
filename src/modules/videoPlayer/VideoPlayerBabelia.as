@@ -201,13 +201,13 @@ package modules.videoPlayer
 			 * Adds components to player
 			 */
 			removeChild(_videoBarPanel); // order
-			addChild(_subtitlePanel);
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
 			addChild(_camVideo);
 			addChild(_countdownTxt);
 			addChild(_subtitlingControls);
+			addChild(_subtitlePanel);
 			
 
 			/**
@@ -706,27 +706,6 @@ package modules.videoPlayer
 			a1.duration=250;
 			a1.play();
 
-//			var a2:AnimateProperty=new AnimateProperty();
-//			a2.target=_videoBarPanel;
-//			a2.property="y";
-//			a2.toValue=_videoBarPanel.y + _subtitlePanel.height;
-//			a2.duration=250;
-//			a2.play();
-//
-//			var a3:AnimateProperty=new AnimateProperty();
-//			a3.target=_arrowContainer;
-//			a3.property="y";
-//			a3.toValue=_arrowContainer.y + _subtitlePanel.height;
-//			a3.duration=250;
-//			a3.play();
-//
-//			var a4:AnimateProperty=new AnimateProperty();
-//			a4.target=_subtitlingControls;
-//			a4.property="y";
-//			a4.toValue=_subtitlingControls.y + _subtitlePanel.height;
-//			a4.duration=250;
-//			a4.play();
-
 			this.drawBG(); // Repaint bg
 		}
 
@@ -743,28 +722,6 @@ package modules.videoPlayer
 			a1.duration=250;
 			a1.play();
 			a1.addEventListener(EffectEvent.EFFECT_END, onHideSubtitleBar);
-		
-
-//			var a2:AnimateProperty=new AnimateProperty();
-//			a2.target=_videoBarPanel;
-//			a2.property="y";
-//			a2.toValue=_videoBarPanel.y - _subtitlePanel.height;
-//			a2.duration=250;
-//			a2.play();
-//
-//			var a3:AnimateProperty=new AnimateProperty();
-//			a3.target=_arrowContainer;
-//			a3.property="y";
-//			a3.toValue=_arrowContainer.y - _subtitlePanel.height;
-//			a3.duration=250;
-//			a3.play();
-//
-//			var a4:AnimateProperty=new AnimateProperty();
-//			a4.target=_subtitlingControls;
-//			a4.property="y";
-//			a4.toValue=_subtitlingControls.y - _subtitlePanel.height;
-//			a4.duration=250;
-//			a4.play();
 		}
 
 		private function onHideSubtitleBar(e:Event):void
@@ -1031,32 +988,31 @@ package modules.videoPlayer
 			/*
 			 * Resize video image
 			 */
-//			var w:Number=_videoWidth / 2 - 2;
-//			var h:int=w * _video.height / _video.width;
-//
-//			if (_videoHeight != h) // cause we can call twice to this method
-//				_lastVideoHeight=_videoHeight; // store last value
-//
-//			_videoHeight=h;
-//
-//			var scaleY:Number=h / _video.height;
-//			var scaleX:Number=w / _video.width;
-//			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
-//
-//			_video.y=Math.floor(h / 2 - (_video.height * scaleC) / 2);
-//			_video.x=Math.floor(w / 2 - (_video.width * scaleC) / 2);
-//			_video.y+=_defaultMargin;
-//			_video.x+=_defaultMargin;
-//
-//			_video.width*=scaleC;
-//			_video.height*=scaleC;
-//			
-			_videoWidth *= 2;
+			var w:Number=_videoWidth / 2 - 2;
+			var h:int=w * _video.height / _video.width;
+
+			if (_videoHeight != h) // cause we can call twice to this method
+				_lastVideoHeight=_videoHeight; // store last value
+
+			_videoHeight=h;
+
+			var scaleY:Number=h / _video.height;
+			var scaleX:Number=w / _video.width;
+			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
+
+			_video.y=Math.floor(h / 2 - (_video.height * scaleC) / 2);
+			_video.x=Math.floor(w / 2 - (_video.width * scaleC) / 2);
+			_video.y+=_defaultMargin;
+			_video.x+=_defaultMargin;
+
+			_video.width*=scaleC;
+			_video.height*=scaleC;
+			
 
 			/*
 			 * Resize cam image
 			 */
-			scaleCamVideo(_videoWidth,_videoHeight);
+			scaleCamVideo(w,h);
 
 			updateDisplayList(0, 0); // repaint
 
@@ -1093,15 +1049,15 @@ package modules.videoPlayer
 			_camVideo.height=_defaultCamHeight * scaleC;
 
 			_camVideo.y=Math.floor(h / 2 - _camVideo.height / 2);
-			_camVideo.x=Math.floor(w * 0.75 - _camVideo.width / 2);
+			_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
 			_camVideo.y+=_defaultMargin;
-			//_camVideo.x+=(w + _defaultMargin);
+			_camVideo.x+=(w + _defaultMargin);
 
 			// 1 black pixel, being smarter
-//			_camVideo.y+=1;
-//			_camVideo.height-=2;
-//			_camVideo.x+=1;
-//			_camVideo.width-=2;
+			_camVideo.y+=1;
+			_camVideo.height-=2;
+			_camVideo.x+=1;
+			_camVideo.width-=2;
 		}
 
 		override protected function scaleVideo():void

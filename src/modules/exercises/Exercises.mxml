@@ -699,7 +699,7 @@
 			{
 				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
 
-				if (browser.moduleClass != ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
+				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
 					return;
 
 				if (value == null)
@@ -769,7 +769,7 @@
 				destination="this.onRolesRetrieved"/>
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="onURLChange"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
@@ -807,6 +807,7 @@
 					 styleName="sectionTitleLabel"/>
 			<!-- w/h = 16:10 -->
 			<videoPlayer:VideoPlayerBabelia id="VP"
+											layoutDirection="ltr"
 											autoPlay="true"
 											skin="white"
 											seek="true"
@@ -823,13 +824,25 @@
 		</s:VGroup>
 		<mx:Spacer width="20"/>
 
-		<s:HGroup id="guestEditWarningBox"
-				  verticalAlign="middle">
-			<mx:Image source="@Embed(source='resources/images/alertConfirmation.png')"/>
-			<s:Label id="notLoggedWarning"
-					 styleName="guestVersionWarningLabel"
-					 text="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"/>
-		</s:HGroup>
+		<s:BorderContainer id="guestEditWarningBox"
+						   cornerRadius="8"
+						   borderColor="#FFFFFF"
+						   dropShadowVisible="true">
+			<s:BitmapImage source="@Embed('resources/images/popup_bgr_excl.png')"
+						   right="0"
+						   top="0"/>
+			<s:VGroup width="100%"
+					  height="100%"
+					  paddingBottom="16"
+					  paddingLeft="16"
+					  paddingRight="16"
+					  paddingTop="16"
+					  verticalAlign="middle">
+				<s:Label id="notLoggedWarning"
+						 styleName="guestVersionWarningLabel"
+						 text="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"/>
+			</s:VGroup>
+		</s:BorderContainer>
 
 		<!-- Selected Exercise Panel -->
 		<s:BorderContainer id="panelSelectedExercise"
@@ -854,7 +867,10 @@
 							   borderColor="#38babc"
 							   backgroundAlpha="0">
 				<s:layout>
-					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
 				</s:layout>
 				<s:HGroup>
 					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>

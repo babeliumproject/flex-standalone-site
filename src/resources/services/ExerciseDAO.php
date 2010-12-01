@@ -8,6 +8,7 @@ require_once 'vo/ExerciseVO.php';
 require_once 'vo/ExerciseReportVO.php';
 require_once 'vo/ExerciseScoreVO.php';
 require_once 'vo/ExerciseLevelVO.php';
+require_once 'vo/UserVO.php';
 
 class ExerciseDAO {
 
@@ -69,7 +70,7 @@ class ExerciseDAO {
 		try {
 
 			$verifySession = new SessionHandler(true);
-				
+			
 			$result = 0;
 
 			set_time_limit(0);
@@ -81,7 +82,7 @@ class ExerciseDAO {
 			$exerciseLevel = new ExerciseLevelVO();
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-
+				
 			$this->conn->_startTransaction();
 
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
@@ -89,19 +90,19 @@ class ExerciseDAO {
 
 			$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 			$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
-
+				
 			if(!$lastExerciseId){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise save failed.");
 			}
-
+				
 			$exerciseLevel->exerciseId = $lastExerciseId;
 			$insertLevel = $this->addExerciseLevel($exerciseLevel);
 			if(!$insertLevel){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise level save failed.");
 			}
-
+				
 			//Update the user's credit count
 			$creditUpdate = $this->_addCreditsForUploading();
 			if(!$creditUpdate){
@@ -115,12 +116,12 @@ class ExerciseDAO {
 				$this->conn->_failedTransaction();
 				throw new Exception("Credit history update failed");
 			}
-
+				
 			if($lastExerciseId && $insertLevel && $creditUpdate && $creditHistoryInsert){
 				$this->conn->_endTransaction();
 				$result = $this->_getUserInfo();
 			}
-
+				
 			return $result;
 
 		} catch (Exception $e) {
@@ -133,14 +134,14 @@ class ExerciseDAO {
 						 VALUES ('%d', '%d', '%d', NOW()) ";
 		return $this->_create($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
 	}
-
+	
 	private function _addCreditsForUploading() {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
 				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
 		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
 	}
-
+	
 	private function _addUploadingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='uploadExerciseCredits' )";
 		$result = $this->conn->_execute ( $sql );
@@ -238,7 +239,7 @@ class ExerciseDAO {
 
 		return $searchResults;
 	}
-
+	
 	public function getExercisesWithoutSubtitles(){
 		try {
 			$verifySession = new SessionHandler(true);
@@ -429,7 +430,9 @@ class ExerciseDAO {
 		$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
 		($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
 
-		return $exerciseBayesianAvg;
+		$exerciseRatingData->avgRating = $exerciseBayesianAvg;
+		
+		return $exerciseRatingData;
 
 	}
 

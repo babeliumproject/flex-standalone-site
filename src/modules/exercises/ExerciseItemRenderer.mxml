@@ -22,9 +22,7 @@
 				  autoLoad="true"
 				  width="120"
 				  height="90"
-				  toolTip="{data.title}"
-				  useHandCursor="true"
-				  buttonMode="true"/>
+				  toolTip="{data.title}"/>
 		<s:TextInput text="{_timeFormatter.format(data.duration)}"
 					 styleName="videoDurationLabel"
 					 x="88"
@@ -42,8 +40,7 @@
 				 text="{data.title}"
 				 width="320"/>
 		<mx:HRule width="320"/>
-		<s:HGroup gap="20"
-				  styleName="hvCenteredBox">
+		<s:HGroup gap="20">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
 				<mx:Image width="16"
@@ -135,8 +132,6 @@
 
 			private var _creationComplete:Boolean=false;
 
-			private var _useSpecificClickListeners:Boolean=true;
-
 			[Bindable]
 			private var _licenseData:LicenseVO=new LicenseVO();
 
@@ -148,31 +143,7 @@
 				_data=data;
 				_creationComplete=true;
 
-				setupEventListeners();
 				setupReferenceComponent();
-			}
-
-			private function setupEventListeners():void
-			{
-				if (!_useSpecificClickListeners)
-				{
-					thumbnail.removeEventListener(MouseEvent.CLICK, imageClickHandler);
-					title.removeEventListener(MouseEvent.CLICK, titleClickHandler);
-					thumbnail.buttonMode=false;
-				}
-				else
-				{
-					thumbnail.addEventListener(MouseEvent.CLICK, imageClickHandler);
-					title.addEventListener(MouseEvent.CLICK, titleClickHandler);
-					thumbnail.buttonMode=true;
-				}
-			}
-
-			public function set specificClickListeners(value:Boolean):void
-			{
-				_useSpecificClickListeners=value;
-				if (_creationComplete)
-					setupEventListeners();
 			}
 
 			private function setupReferenceComponent():void
@@ -186,16 +157,6 @@
 					referenceUrl.setStyle('skin', null);
 					referenceUrl.useHandCursor=false;
 				}
-			}
-
-			private function imageClickHandler(event:MouseEvent):void
-			{
-				viewExercise();
-			}
-
-			private function titleClickHandler(event:MouseEvent):void
-			{
-				viewExercise();
 			}
 
 			private function licenseClickHandler(event:MouseEvent):void
@@ -224,18 +185,12 @@
 						return 'A2';
 						break;
 					case 3:
-						return 'B1.1';
+						return 'B1';
 						break;
 					case 4:
-						return 'B1.2';
+						return 'B2';
 						break;
 					case 5:
-						return 'B2.1';
-						break;
-					case 6:
-						return 'B2.2';
-						break;
-					case 7:
 						return 'C1';
 						break;
 					default:
@@ -264,35 +219,7 @@
 				_licenseData=LicenseResource.getLicenseData(temp.license);
 				return _licenseData.imageResource;
 			}
-
-			private function truncateDescription(text:String):String
-			{
-				var truncatedText:String=text;
-				if (truncatedText.length > MAX_DESCRIPTION_CHARS)
-				{
-					truncatedText=truncatedText.substr(0, (MAX_DESCRIPTION_CHARS - 6));
-					truncatedText+=' (...)';
-				}
-				return truncatedText;
-			}
-
-			private function viewExercise():void
-			{
-				var temp:Object=data;
-				var tempEx:ExerciseVO=temp as ExerciseVO;
-				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, tempEx.id, '', tempEx.language);
-				var roles:ExerciseRoleVO=new ExerciseRoleVO();
-				roles.exerciseId=tempEx.id;
-
-				CuePointManager.getInstance().reset();
-
-				//If it doesn't work this way, we can chain the events
-				//new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, roles).dispatch();
-				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
-				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
-				new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, tempEx).dispatch();
-			}
-
+			
 			//http://livedocs.adobe.com/flex/3/langref/flash/net/package.html#navigateToURL%28%29
 			private function addHttpIfneeded(url:String):String
 			{
@@ -314,16 +241,6 @@
 					return (false);
 				}
 				return (true);
-			}
-
-			private function trimTitle():void
-			{
-
-			}
-
-			private function trimDescription():void
-			{
-
 			}
 		]]>
 	</fx:Script>

@@ -23,11 +23,8 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			var index:Class = ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX;
-			new CloseConnectionEvent().dispatch();
-			if(DataModel.getInstance().appBody.numElements > 0)
-				DataModel.getInstance().appBody.removeAllElements();
-			DataModel.getInstance().appBody.addElement(new index());
+			var index:uint = ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX;
+			DataModel.getInstance().currentContentViewStackIndex = index;
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(

@@ -32,7 +32,7 @@ class ResponseDAO {
 		}
 	}
 
-	public function saveResponse(ResponseVO $data){
+	public function saveResponse($data){
 		set_time_limit(0);
 		$this->_getResourceDirectories();
 		$thumbnail = $data->thumbnailUri;
@@ -50,7 +50,7 @@ class ResponseDAO {
 
 	}
 
-	public function makePublic(ResponseVO $data)
+	public function makePublic($data)
 	{
 		$result = 0;
 		$responseId = $data->id;

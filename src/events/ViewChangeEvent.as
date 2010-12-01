@@ -59,18 +59,18 @@ package events
 		
 		
 		//Indexes of application's content ViewStack
-		public static const VIEWSTACK_HOME_MODULE_INDEX:Class = HomeMain;
-		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:Class = Exercises;
-		public static const VIEWSTACK_EVALUATION_MODULE_INDEX:Class = EvaluationContainer;
-		public static const VIEWSTACK_REGISTER_MODULE_INDEX:Class = SignUpForm;
-		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:Class = AccountMain;
-		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:Class = UploadContainer;
-		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:Class = SubtitleMain;
-		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:Class = ConfigurationContainer;
-		public static const VIEWSTACK_ABOUT_MODULE_INDEX:Class = About;
-		public static const VIEWSTACK_SEARCH_MODULE_INDEX:Class = Search;
-		public static const VIEWSTACK_HELP_MODULE_INDEX:Class = HelpFAQMain;
-		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:Class = AccountActivation;
+		public static const VIEWSTACK_HOME_MODULE_INDEX:uint = 0;
+		public static const VIEWSTACK_EXERCISE_MODULE_INDEX:uint = 1;
+		public static const VIEWSTACK_EVALUATION_MODULE_INDEX:uint = 2;
+		public static const VIEWSTACK_REGISTER_MODULE_INDEX:uint = 3;
+		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:uint = 4;
+		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:uint = 5;
+		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:uint = 6;
+		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:uint = 7;
+		public static const VIEWSTACK_ABOUT_MODULE_INDEX:uint = 8;
+		public static const VIEWSTACK_SEARCH_MODULE_INDEX:uint = 9;
+		public static const VIEWSTACK_HELP_MODULE_INDEX:uint = 10;
+		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:uint = 11;
 
 		public function ViewChangeEvent(type:String)
 		{

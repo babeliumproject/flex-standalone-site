@@ -43,16 +43,16 @@ package model
 		[Bindable] public var netConnectOngoingAttempt:Boolean;
 		
 		//ViewStack management variables
-		[Bindable] public var currentContentViewStackIndex:int;
-		[Bindable] public var currentHomeViewStackIndex:int;
-		[Bindable] public var currentConfigViewStackIndex:int;
-		[Bindable] public var currentExerciseViewStackIndex:int;
-		[Bindable] public var currentEvaluationViewStackIndex:int;
-		[Bindable] public var currentSubtitleViewStackIndex:int;
-		[Bindable] public var currentUploadViewStackIndex:int;
+		[Bindable] public var currentContentViewStackIndex:uint;
+		[Bindable] public var currentHomeViewStackIndex:uint;
+		[Bindable] public var currentConfigViewStackIndex:uint;
+		[Bindable] public var currentExerciseViewStackIndex:uint;
+		[Bindable] public var currentEvaluationViewStackIndex:uint;
+		[Bindable] public var currentSubtitleViewStackIndex:uint;
+		[Bindable] public var currentUploadViewStackIndex:uint;
 		
-		[Bindable] public var oldContentViewStackIndex:int;
-		[Bindable] public var newContentViewStackIndex:int;
+		[Bindable] public var oldContentViewStackIndex:uint;
+		[Bindable] public var newContentViewStackIndex:uint;
 		
 		//Application preferences value pair
 		[Bindable] public var prefDic:Dictionary;

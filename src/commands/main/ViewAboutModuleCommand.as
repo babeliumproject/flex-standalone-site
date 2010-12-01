@@ -9,22 +9,14 @@ package commands.main
 	import events.ViewChangeEvent;
 	
 	import model.DataModel;
-	
-	import modules.main.About;
-	
-	import spark.components.Group;
-	import spark.components.SkinnableContainer;
 
 	public class ViewAboutModuleCommand implements ICommand
 	{
 
 		public function execute(event:CairngormEvent):void
 		{
-			var index:Class = ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX;
-			new CloseConnectionEvent().dispatch();
-			if(DataModel.getInstance().appBody.numElements > 0)
-				DataModel.getInstance().appBody.removeAllElements();
-			DataModel.getInstance().appBody.addElement(new index());
+			var index:uint = ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX;
+			DataModel.getInstance().currentContentViewStackIndex = index;
 			
 			
 			BabeliaBrowserManager.getInstance().updateURL(
