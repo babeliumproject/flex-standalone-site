@@ -356,6 +356,12 @@ s|TextInput{
 	strokeColor: #268caa;
 }
 
+.exerciseTitleLabel{
+	fontWeight: bold;
+	fontSize: 20;
+	color: #666666;
+}
+
 .sectionLowerTitleLabel{
 	fontWeight: bold;
 	fontSize: 18;

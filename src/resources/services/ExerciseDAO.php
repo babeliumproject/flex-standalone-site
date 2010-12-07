@@ -70,7 +70,7 @@ class ExerciseDAO {
 		try {
 
 			$verifySession = new SessionHandler(true);
-			
+
 			$result = 0;
 
 			set_time_limit(0);
@@ -82,7 +82,7 @@ class ExerciseDAO {
 			$exerciseLevel = new ExerciseLevelVO();
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-				
+
 			$this->conn->_startTransaction();
 
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
@@ -90,19 +90,19 @@ class ExerciseDAO {
 
 			$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 			$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
-				
+
 			if(!$lastExerciseId){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise save failed.");
 			}
-				
+
 			$exerciseLevel->exerciseId = $lastExerciseId;
 			$insertLevel = $this->addExerciseLevel($exerciseLevel);
 			if(!$insertLevel){
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise level save failed.");
 			}
-				
+
 			//Update the user's credit count
 			$creditUpdate = $this->_addCreditsForUploading();
 			if(!$creditUpdate){
@@ -116,12 +116,12 @@ class ExerciseDAO {
 				$this->conn->_failedTransaction();
 				throw new Exception("Credit history update failed");
 			}
-				
+
 			if($lastExerciseId && $insertLevel && $creditUpdate && $creditHistoryInsert){
 				$this->conn->_endTransaction();
 				$result = $this->_getUserInfo();
 			}
-				
+
 			return $result;
 
 		} catch (Exception $e) {
@@ -134,14 +134,14 @@ class ExerciseDAO {
 						 VALUES ('%d', '%d', '%d', NOW()) ";
 		return $this->_create($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
 	}
-	
+
 	private function _addCreditsForUploading() {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
 				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
 		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
 	}
-	
+
 	private function _addUploadingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='uploadExerciseCredits' )";
 		$result = $this->conn->_execute ( $sql );
@@ -239,24 +239,51 @@ class ExerciseDAO {
 
 		return $searchResults;
 	}
-	
+
 	public function getExercisesWithoutSubtitles(){
 		try {
 			$verifySession = new SessionHandler(true);
-			
+
 			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
        					   e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
 					FROM exercise e 
 					 	 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 	 	 WHERE e.status = 'Available' AND 
-					 	   	   e.id NOT IN (SELECT fk_exercise_id FROM subtitle) AND
-					 	   	   e.language IN (SELECT language FROM user_languages WHERE fk_user_id= '%d' AND purpose = 'evaluate')
+       				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
+       			 	 	 WHERE e.status = 'Available' AND a.id IS NULL
 				 	GROUP BY e.id
 				 	ORDER BY e.adding_date DESC";
 
 			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+			//Filter searchResults to include only the "evaluate" languages of the user
+			//$this->filterResults($searchResults, $languagePurpose);
+
+			return $searchResults;
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
+
+	public function getExercisesToReviewSubtitles(){
+		try {
+			$verifySession = new SessionHandler(true);
+
+			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+       					   e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
+					FROM exercise e 
+					 	 INNER JOIN users u ON e.fk_user_id= u.ID
+	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       				 	 INNER JOIN subtitle a ON a.fk_exercise_id=e.id
+       			 	 	 WHERE e.status = 'Available'
+				 	GROUP BY e.id
+				 	ORDER BY e.adding_date DESC";
+
+			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+			
+			//Filter searchResults to include only the "evaluate" languages of the user
+			//$this->filterResults($searchResults, $languagePurpose);
 
 			return $searchResults;
 		} catch (Exception $e){
@@ -278,7 +305,7 @@ class ExerciseDAO {
 				 ORDER BY e.adding_date DESC, e.language DESC";
 
 		$searchResults = $this->_exerciseListQuery($sql);
-		
+
 		try {
 			$verifySession = new SessionHandler(true);
 			$filteredResults = $this->filterRecordableExercises($searchResults);
@@ -286,22 +313,26 @@ class ExerciseDAO {
 		} catch (Exception $e) {
 			return $searchResults;
 		}
-		
+
 	}
-	
+
 	private function filterRecordableExercises($exerciseList){
-		$filteredList = array();
-		foreach ($exerciseList as $exercise){
-			foreach ($_SESSION['user-languages'] as $userLanguage) {
-				if($userLanguage->purpose == 'practice'){
-					if($exercise->language == $userLanguage->language && $exercise->avgDifficulty <= $userLanguage->level){
-						array_push($filteredList, $exercise);
-						break;
+		if($_SESSION['user-languages'].length < 1)
+			return $exerciseList;
+		else{
+			$filteredList = array();
+			foreach ($exerciseList as $exercise){
+				foreach ($_SESSION['user-languages'] as $userLanguage) {
+					if($userLanguage->purpose == 'practice'){
+						if($exercise->language == $userLanguage->language && $exercise->avgDifficulty <= $userLanguage->level){
+							array_push($filteredList, $exercise);
+							break;
+						}
 					}
 				}
 			}
+			return $filteredList;
 		}
-		return $filteredList;
 	}
 
 	public function getExerciseLocales($exerciseId) {
@@ -453,7 +484,7 @@ class ExerciseDAO {
 		($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
 
 		$exerciseRatingData->avgRating = $exerciseBayesianAvg;
-		
+
 		return $exerciseRatingData;
 
 	}

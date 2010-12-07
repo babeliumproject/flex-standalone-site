@@ -142,6 +142,7 @@ package control {
 			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
+			addCommand(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW, GetExercisesReviewSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);
 			
 			// Video stop after tab changing

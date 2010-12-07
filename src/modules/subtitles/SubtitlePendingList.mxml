@@ -2,104 +2,59 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%"
-		  creationComplete="onComplete(event)"
-		  resize="onResize(event)"
-		  xmlns:main="modules.main.*">
+		  xmlns:main="modules.main.*"
+		  width="100%">
 
 	<fx:Script>
 		<![CDATA[
-			import events.SubtitleListEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.search.VideoPaginator;
-
+			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Button;
-			import mx.core.Application;
-			import mx.events.FlexEvent;
-			import mx.events.ResizeEvent;
-
-			private const REFRESH_INTERVAL_MILLISECONDS:uint=600000; // 10 minutes
-
-			[Bindable]
-			private var dataModel:DataModel=DataModel.getInstance();
+			import mx.events.ListEvent;
+			
+			import spark.components.Button;
 
 			[Bindable]
 			private var _currentPage:int=1;
-
-			private var _refreshTimer:Timer;
-
-			private var _exerciseId:uint;
-
+			
 			[Bindable]
 			private var _exercisesWithoutSubtitlesList:ArrayCollection;
-
-			protected function onComplete(event:FlexEvent):void
-			{
-				refreshSubtitlePendingList();
+			
+			public function set currentPaginationPage(value:uint):void{
+				_currentPage = value;
+				createPagination();
 			}
-
-			protected function onResize(event:ResizeEvent):void
+			
+			public function set dataProvider(exercisesToSubtitle:ArrayCollection):void
 			{
-				//if (Application.application.width && exercisesWithoutSubtitlesTile.columnWidth)
-				//{
-				//	exercisesWithoutSubtitlesTile.columnCount=Application.application.width / exercisesWithoutSubtitlesTile.columnWidth;
-				//	exercisesWithoutSubtitlesTile.validateNow();
-				//}
-			}
-
-			public function refreshSubtitlePendingList():void
-			{
-
-				if (dataModel.isLoggedIn)
+				_exercisesWithoutSubtitlesList=exercisesToSubtitle;
+				if (_exercisesWithoutSubtitlesList.length > 0)
 				{
-					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES).dispatch();
+					exercisesWithoutSubtitlesTile.includeInLayout=true;
+					exercisesWithoutSubtitlesTile.visible=true;
+					createPagination();
 				}
 				else
 				{
-					_exercisesWithoutSubtitlesList=new ArrayCollection();
-					createPagination();
+					exercisesWithoutSubtitlesTile.includeInLayout=false;
+					exercisesWithoutSubtitlesTile.visible=false;
 				}
 			}
-
-			public function set onListRetrieved(value:Boolean):void
+			
+			public function set changeListener(changeFunction:Function):void
 			{
-				_exercisesWithoutSubtitlesList=dataModel.exercisesWithoutSubtitles;
-				createPagination();
+				exercisesWithoutSubtitlesTile.addEventListener(ListEvent.CHANGE, changeFunction);
 			}
-
-			private function set userAuthenticationHandler(value:Boolean):void
-			{
-				refreshSubtitlePendingList();
-				dispatchEvent(new ResizeEvent(ResizeEvent.RESIZE));
-			}
-
-			private function startRefreshScheduler():void
-			{
-				_refreshTimer=new Timer(REFRESH_INTERVAL_MILLISECONDS, 0);
-				_refreshTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
-				_refreshTimer.start();
-			}
-
-			private function stopRefreshScheduler():void
-			{
-				_refreshTimer.stop();
-				_refreshTimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
-			}
-
-			private function onTimerTick(tick:TimerEvent):void
-			{
-				refreshSubtitlePendingList();
-			}
-
+			
 			public function createPagination():void
 			{
-				VideoPaginator.createPaginationMenu(_exercisesWithoutSubtitlesList.length, dataModel.pageSize, _currentPage, dataModel.numberOfPagesNav, paginationBox, navigateToPage);
+				VideoPaginator.createPaginationMenu(_exercisesWithoutSubtitlesList.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
-
+			
 			private function navigateToPage(event:MouseEvent):void
 			{
 				//Go to the page
@@ -107,37 +62,31 @@
 				//Refresh the pagination controls
 				createPagination();
 			}
-
-			private function refreshDataProvider():void
+			
+			public function refreshDataProvider():void
 			{
 				var current:int=_currentPage - 1;
-				var pageSize:int=dataModel.pageSize;
+				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_exercisesWithoutSubtitlesList.source.slice((current * pageSize), (current * pageSize) + pageSize));
 				exercisesWithoutSubtitlesTile.dataProvider=dataTemp;
 			}
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{dataModel.isLoggedIn}"
-				destination="userAuthenticationHandler"/>
-	<fx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
-				destination="onListRetrieved"/>
-
-	<mx:TileList id="exercisesWithoutSubtitlesTile"
-				 horizontalScrollPolicy="off"
-				 dataProvider="{_exercisesWithoutSubtitlesList}"
-				 borderStyle="none"
-				 contentBackgroundAlpha="0"
-				 columnWidth="500"
-				 columnCount="2"
-				 selectable="false"
-				 verticalAlign="middle">
-		<mx:itemRenderer>
-			<fx:Component>
-				<main:ExerciseListItem/>
-			</fx:Component>
-		</mx:itemRenderer>
-	</mx:TileList>
+	<s:List id="exercisesWithoutSubtitlesTile"
+			width="100%"
+			minHeight="0"
+			borderVisible="false"
+			skinClass="skins.TransparentBgListSkin"
+			itemRenderer="modules.exercises.ExerciseItemRenderer"
+			dataProvider="{_exercisesWithoutSubtitlesList}">
+		<s:layout>
+			<s:TileLayout horizontalAlign="justify"
+						  verticalAlign="middle"
+						  columnAlign="justifyUsingWidth"
+						  columnWidth="500"/>
+		</s:layout>
+	</s:List>
 
 	<s:HGroup id="paginationBox"
 			  width="100%"

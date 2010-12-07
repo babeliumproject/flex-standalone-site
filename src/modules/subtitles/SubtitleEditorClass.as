@@ -135,7 +135,7 @@ package modules.subtitles
 			BindingUtils.bindSetter(onTabChange, _dataModel, "stopVideoFlag");
 			BindingUtils.bindSetter(onLogout, _dataModel, "isLoggedIn");
 
-			BindingUtils.bindSetter(onURLChange, _browser, "targetFragment");
+			//BindingUtils.bindSetter(onURLChange, _browser, "targetFragment");
 
 			BindingUtils.bindProperty(saveSubtitleButton, "enabled", _dataModel, "isLoggedIn");
 			BindingUtils.bindProperty(saveSubtitleButton, "includeInLayout", _dataModel, "isLoggedIn");
@@ -237,6 +237,11 @@ package modules.subtitles
 				subtitleVersionBox.includeInLayout=true;
 				subtitleVersionBox.visible=true;
 				availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
+			} else {
+				subtitleVersionBox.includeInLayout=false;
+				subtitleVersionBox.visible=false;
+				availableSubtitleVersions.removeAll();
+				availableSubtitleVersions = new ArrayCollection();
 			}
 		}
 
@@ -530,7 +535,7 @@ package modules.subtitles
 				if (_browser.targetFragment != '')
 				{
 					var tempEx:ExerciseVO=null;
-					var exercises:ArrayCollection=DataModel.getInstance().availableExercises;
+					var exercises:ArrayCollection=DataModel.getInstance().exercisesWithoutSubtitles;
 
 					for (var i:int=0; i < exercises.length; i++)
 					{
@@ -574,7 +579,10 @@ package modules.subtitles
 
 		public function subtitleVersionComboLabelFunction(item:Object):String
 		{
-			return "[" + item.addingDate + "]  " + item.userName;
+			if(item != null)
+				return "[" + item.addingDate + "]  " + item.userName;
+			else
+				return "";
 		}
 
 		public function onSubtitleVersionChange(event:Event):void

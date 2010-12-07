@@ -102,7 +102,7 @@ package model
 		[Bindable] public var videoSearchesRetrieved:Boolean = false;
 		[Bindable] public var searchField:String = "";
 		[Bindable] public var currentPage:int = 1;
-		[Bindable] public var pageSize:int = 7;          		 //Number of results displayed per page
+		[Bindable] public var pageSize:int = 8;          		 //Number of results displayed per page
 		[Bindable] public var numberOfPagesNav:int = 7;			 //This number must be odd and greater than three
 		
 		//The info of the current video
@@ -166,8 +166,10 @@ package model
 	
 		[Bindable] public var videoPlayerControlsViewStack:int;
 		
-		[Bindable] public var exercisesWithoutSubtitles:ArrayCollection = new ArrayCollection();
+		[Bindable] public var exercisesWithoutSubtitles:ArrayCollection;
 		[Bindable] public var exercisesWithoutSubtitlesRetrieved:Boolean = false;
+		[Bindable] public var exercisesWithSubtitlesToReview:ArrayCollection;
+		[Bindable] public var exercisesWithSubtitlesToReviewRetrieved:Boolean = false;
 				
 		//Used to store exercise's roles added by the user  
 		[Bindable] public var availableExerciseRoles:ArrayCollection = new ArrayCollection(new Array(null, null));
