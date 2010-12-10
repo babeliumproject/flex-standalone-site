@@ -844,14 +844,13 @@
 			</s:VGroup>
 		</s:BorderContainer>
 
-		<!-- Selected Exercise Panel -->
+		<!-- Selected Exercise Panel -->	
 		<s:BorderContainer id="panelSelectedExercise"
 						   includeInLayout="false"
 						   visible="false"
 						   width="100%"
 						   backgroundAlpha="0"
 						   cornerRadius="8">
-
 			<s:layout>
 				<s:VerticalLayout paddingTop="10"
 								  paddingLeft="10"

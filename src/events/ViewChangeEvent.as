@@ -57,6 +57,10 @@ package events
 		public static const VIEW_SUBTITLES_SIGNED_IN:String="viewSubtitlesSignedIn";
 		public static const VIEW_SUBTITLE_EDITOR:String="viewSubtitleEditor";
 		
+		//User account related views
+		public static const VIEW_ACCOUNT_UNSIGNED:String="viewAccountUnsigned";
+		public static const VIEW_ACCOUNT_SIGNED:String="viewAccountSigned";
+		
 		
 		//Indexes of application's content ViewStack
 		public static const VIEWSTACK_HOME_MODULE_INDEX:uint = 0;

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  xmlns:userManagement="modules.userManagement.*"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16">
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+
+			import skins.IconLinkSkin;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<s:Label text="My Profile"
+			 styleName="sectionTitleLabel"/>
+	<s:Label text="Short description of what this is about"/>
+
+
+	<skins:CustomViewStack>
+
+		<!-- Overwiew of the profile of the user -->
+		<s:VGroup paddingTop="20" paddingLeft="16" paddingRight="16">
+			<s:HGroup paddingTop="16">
+				<s:Label text="Personal Information"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="edit personal information"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+			<s:HGroup>
+				<s:Label text="Name"
+						 styleName="boldLabel"/>
+				<s:Label id="userName"
+						 text="{dataModel.loggedUser.realName}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="Surname"
+						 styleName="boldLabel"/>
+				<s:Label id="userSurname"
+						 text="{dataModel.loggedUser.realSurname}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="Email Address"
+						 styleName="boldLabel"/>
+				<s:Label id="userEmail"
+						 text="{dataModel.loggedUser.email}"/>
+			</s:HGroup>
+
+			<s:HGroup paddingTop="16">
+				<s:Label text="Security"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="Modify password"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+
+			<s:HGroup paddingTop="16">
+				<s:Label text="Languages"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="edit my languages"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+			<s:Label text="Languages I know"/>
+			<s:HGroup>
+				<mx:Image id="flag"
+						  source="resources/images/flags/en_US.png"/>
+				<s:Label text="American English"/>
+				<s:Label text="B1"/>
+			</s:HGroup>
+			<s:Label text="Languages I'm practicing"/>
+			<s:HGroup>
+				<mx:Image source="resources/images/flags/en_US.png"/>
+				<s:Label text="American English"/>
+				<s:Label text="B1"/>
+			</s:HGroup>
+		</s:VGroup>
+
+		<!-- Edit personal information -->
+		<s:VGroup>
+
+		</s:VGroup>
+
+		<!-- Modify password -->
+		<userManagement:ChangePassword/>
+
+		<!-- Modify languages -->
+
+
+	</skins:CustomViewStack>
+
+</s:VGroup>

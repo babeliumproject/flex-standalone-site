@@ -118,8 +118,12 @@ class SubtitleDAO {
 		$subtitleLines = $subtitles->subtitleLines;
 		$exerciseId = $subtitles->exerciseId;
 		
-		if(!$this->_subtitlesWereModified($subtitleLines) || $this->_checkSubtitleErrors($subtitleLines) == "")
-			return $result;
+		if(!$this->_subtitlesWereModified($subtitleLines))
+ 			return "Provided subtitles have no modifications";
+ 
+ 		if(($errors = $this->_checkSubtitleErrors($subtitleLines)) != "")
+ 			return $errors;
+			
 
 		$this->conn->_startTransaction();
 
@@ -273,7 +277,7 @@ class SubtitleDAO {
 		$modified=true;
 		else
 		{
-			for ($i=0; $i < count(unmodifiedSubtitlesLines); $i++)
+			for ($i=0; $i < count($unmodifiedSubtitlesLines); $i++)
 			{
 				$unmodifiedItem = $unmodifiedSubtitlesLines[$i];
 				$compareItem = $compareSubject[$i];
@@ -294,16 +298,16 @@ class SubtitleDAO {
 		//Check empty roles, time overlappings and empty texts
 		for ($i=0; $i < count($subtitleCollection); $i++)
 		{
-			if ($subtitleCollection[$i]->roleId < 1)
-			$errorMessage.="The role on the line " . ($i + 1) . " is empty.\n";
+			if ($subtitleCollection[$i]->exerciseRoleId < 1)
+				$errorMessage.="The role on the line " . ($i + 1) . " is empty.\n";
 			$lineText = $subtitleCollection[$i]->text;
 			$lineText = preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $lineText);
 			if (count($lineText) < 1)
-			$errorMessage.="The text on the line " . ($i + 1) . " is empty.\n";
+				$errorMessage.="The text on the line " . ($i + 1) . " is empty.\n";
 			if ($i > 0)
 			{
 				if ($subtitleCollection[($i-1)]->hideTime >= $subtitleCollection[$i]->showTime)
-				$errorMessage.="The subtitle on the line " . $i . " overlaps with the next subtitle.\n";
+					$errorMessage.="The subtitle on the line " . $i . " overlaps with the next subtitle.\n";
 			}
 		}
 		return $errorMessage;

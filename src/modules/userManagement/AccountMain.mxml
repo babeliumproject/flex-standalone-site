@@ -76,6 +76,10 @@
 				</userManagement:TopCollaborators>
 			</s:VGroup>
 		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="userProfile" label="My Profile">
+			<userManagement:ChangeUserInfo/>
+		</s:NavigatorContent>
 
 	</mx:ViewStack>
 </s:VGroup>

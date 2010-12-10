@@ -50,6 +50,7 @@ package model
 		[Bindable] public var currentEvaluationViewStackIndex:uint;
 		[Bindable] public var currentSubtitleViewStackIndex:uint;
 		[Bindable] public var currentUploadViewStackIndex:uint;
+		[Bindable] public var currentAccountViewStackIndex:uint;
 		
 		[Bindable] public var oldContentViewStackIndex:uint;
 		[Bindable] public var newContentViewStackIndex:uint;
@@ -166,9 +167,9 @@ package model
 	
 		[Bindable] public var videoPlayerControlsViewStack:int;
 		
-		[Bindable] public var exercisesWithoutSubtitles:ArrayCollection;
+		[Bindable] public var exercisesWithoutSubtitles:ArrayCollection = new ArrayCollection();
 		[Bindable] public var exercisesWithoutSubtitlesRetrieved:Boolean = false;
-		[Bindable] public var exercisesWithSubtitlesToReview:ArrayCollection;
+		[Bindable] public var exercisesWithSubtitlesToReview:ArrayCollection = new ArrayCollection();
 		[Bindable] public var exercisesWithSubtitlesToReviewRetrieved:Boolean = false;
 				
 		//Used to store exercise's roles added by the user  
@@ -261,12 +262,6 @@ package model
 		}
 		
 		private function initialize():void{
-//			currentContentViewStackIndex = 0;
-			currentExerciseViewStackIndex = 0;
-			
-			oldContentViewStackIndex = 0;
-			newContentViewStackIndex = 0;
-			
 			localesAndFlags = new LocalesAndFlags();
 		}
 

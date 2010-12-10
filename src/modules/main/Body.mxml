@@ -32,7 +32,7 @@
 
 		<userManagement:SignUpForm id="registerModule"/>
 
-		<userManagement:AccountMain id="accountModule"/>
+		<userManagement:AccountContainer id="accountModule"/>
 
 		<videoUpload:UploadContainer id="uploadModule"/>
 
