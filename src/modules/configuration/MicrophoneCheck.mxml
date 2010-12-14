@@ -290,7 +290,6 @@
 	</s:HGroup>
 
 	<s:HGroup id="notConect"
-			  styleName="hvCenteredBox"
 			  width="100%"
 			  height="100%"
 			  visible="false">

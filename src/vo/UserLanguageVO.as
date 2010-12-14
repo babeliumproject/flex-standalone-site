@@ -5,8 +5,8 @@ package vo
 	[Bindable]
 	public class UserLanguageVO
 	{
-		public static const PURPOSE_EVALUATE:String = 'evaluate';
-		public static const PURPOSE_PRACTICE:String = 'practice';
+		//public static const PURPOSE_EVALUATE:String = 'evaluate';
+		//public static const PURPOSE_PRACTICE:String = 'practice';
 		
 		public var id:int;
 		public var language:String; //Use the language's two digit code: ES, EU, FR, EN...

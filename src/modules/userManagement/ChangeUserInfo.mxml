@@ -4,100 +4,183 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*"
 		  xmlns:userManagement="modules.userManagement.*"
+		  width="100%"
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  paddingTop="16">
+		  paddingTop="16"
+		  creationComplete="completeHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-
+			
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.events.FlexEvent;
+			
 			import skins.IconLinkSkin;
+			
+			import view.common.LocaleFlagResource;
+			
+			import vo.UserLanguageVO;
 
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				displayMyLanguages();
+			}
+
+			public function displayMyLanguages():void
+			{
+				for each (var lang:UserLanguageVO in dataModel.loggedUser.userLanguages)
+				{
+					if (lang.purpose == 'practice')
+					{
+						practiceLanguages.addElement(generateLanguageInfo(lang));
+					}
+					else if (lang.purpose == 'evaluate')
+					{
+						evaluateLanguages.addElement(generateLanguageInfo(lang));
+					}
+				}
+			}
+
+			private function generateLanguageInfo(lang:UserLanguageVO):HGroup
+			{
+				var data:Object=dataModel.localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+
+				var flag:Image=new Image();
+				flag.source=data.icon;
+
+				var langName:Label=new Label();
+				langName.text=resourceManager.getString('myResources', 'LOCALE_' + String(data.code).toUpperCase());
+
+				var langLevel:Label=new Label();
+				langLevel.text=dataModel.localesAndFlags.getLevelCorrespondence(lang.level);
+				langLevel.styleName='boldYellowLabel';
+
+				var lHGroup:HGroup=new HGroup();
+				lHGroup.addElement(flag);
+				lHGroup.addElement(langName);
+				lHGroup.addElement(langLevel);
+
+				return lHGroup;
+			}
+			
+			private function editCancelHandler(event:MouseEvent):void{
+				profileOverview.visible=true;
+				profileOverview.includeInLayout=true;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
+				modifyPassword.resetToolTips();
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+			}
+			
+			protected function modifyLanguagesClickHandler(event:MouseEvent):void{
+				modifyLanguages.visible=true;
+				modifyLanguages.includeInLayout=true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
+			}
+
+			protected function modifyPasswordClickHandler(event:MouseEvent):void
+			{
+				modifyPassword.visible = true;
+				modifyPassword.includeInLayout = true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 
-	<s:Label text="My Profile"
+	<s:Label text="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}"
 			 styleName="sectionTitleLabel"/>
 	<s:Label text="Short description of what this is about"/>
 
-
-	<skins:CustomViewStack>
-
+	<s:HGroup width="100%">
 		<!-- Overwiew of the profile of the user -->
-		<s:VGroup paddingTop="20" paddingLeft="16" paddingRight="16">
-			<s:HGroup paddingTop="16">
-				<s:Label text="Personal Information"
+		<s:VGroup id="profileOverview"
+				  paddingTop="16"
+				  paddingLeft="16"
+				  paddingRight="16">
+			<s:HGroup paddingTop="10">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_PERSONAL_INFO')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="edit personal information"/>
+								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase()+' '+resourceManager.getString('myResources','LABEL_PERSONAL_INFO').toLowerCase()}"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 			<s:HGroup>
-				<s:Label text="Name"
+				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userName"
 						 text="{dataModel.loggedUser.realName}"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="Surname"
+				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userSurname"
 						 text="{dataModel.loggedUser.realSurname}"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="Email Address"
+				<s:Label text="{resourceManager.getString('myResources','LABEL_EMAIL')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userEmail"
 						 text="{dataModel.loggedUser.email}"/>
 			</s:HGroup>
 
 			<s:HGroup paddingTop="16">
-				<s:Label text="Security"
+				<s:Label text="{resourceManager.getString('myResources','LABEL_SECURITY')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="Modify password"/>
+								  label="{resourceManager.getString('myResources','LABEL_MODIFY_PASSWORD').toLowerCase()}"
+								  click="modifyPasswordClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 
 			<s:HGroup paddingTop="16">
-				<s:Label text="Languages"
+				<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGES')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="edit my languages"/>
+								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase() +' '+resourceManager.getString('myResources','LABEL_LANGUAGES').toLowerCase()}"
+								  click="modifyLanguagesClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
-			<s:Label text="Languages I know"/>
-			<s:HGroup>
-				<mx:Image id="flag"
-						  source="resources/images/flags/en_US.png"/>
-				<s:Label text="American English"/>
-				<s:Label text="B1"/>
-			</s:HGroup>
-			<s:Label text="Languages I'm practicing"/>
-			<s:HGroup>
-				<mx:Image source="resources/images/flags/en_US.png"/>
-				<s:Label text="American English"/>
-				<s:Label text="B1"/>
-			</s:HGroup>
+			<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATE_LANGUAGE')}"
+					 styleName="boldLabel"/>
+			<s:VGroup id="evaluateLanguages"
+					  paddingLeft="16"/>
+			<s:Label text="{resourceManager.getString('myResources','LABEL_PRACTICE_LANGUAGE')}"
+					 styleName="boldLabel"/>
+			<s:VGroup id="practiceLanguages"
+					  paddingLeft="16"/>
 		</s:VGroup>
 
 		<!-- Edit personal information -->
-		<s:VGroup>
-
-		</s:VGroup>
 
 		<!-- Modify password -->
-		<userManagement:ChangePassword/>
+		<userManagement:ModifyPassword id="modifyPassword"
+									   includeInLayout="false"
+									   visible="false"
+									   paddingTop="16"
+									   cancelClickHandler="{editCancelHandler}"/>
 
 		<!-- Modify languages -->
+		<userManagement:ModifyLanguages id="modifyLanguages"
+										includeInLayout="false"
+										visible="false"
+										cancelClickHandler="{editCancelHandler}"/>
 
-
-	</skins:CustomViewStack>
+	</s:HGroup>
 
 </s:VGroup>

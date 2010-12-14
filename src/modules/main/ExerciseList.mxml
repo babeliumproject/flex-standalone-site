@@ -14,7 +14,6 @@
 			
 			import model.DataModel;
 			
-			import modules.search.VideoPaginator;
 			import modules.userManagement.TopCollaborators;
 			
 			import mx.collections.ArrayCollection;

@@ -1,4 +1,4 @@
-package modules.search
+package modules.main
 {
 	import flash.events.MouseEvent;
 	

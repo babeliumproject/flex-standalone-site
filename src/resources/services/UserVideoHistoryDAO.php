@@ -57,7 +57,7 @@ class UserVideoHistoryDAO{
 
 	private function _currentSessionData(){
 		//Initialize session
-		session_start();
+		//session_start();
 		$sessionId = session_id();
 
 		$sql = "SELECT id, session_id FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";

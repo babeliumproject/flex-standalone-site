@@ -2,6 +2,7 @@
 
 class Datasource
 {
+	
 	private $dbLink;
 
 	public function Datasource($dbHost, $dbName, $dbuser, $dbpasswd)
@@ -72,6 +73,20 @@ class Datasource
 	{
 		$row = mysqli_fetch_array($result);
 		return $row;
+	}
+	
+	public function _insert (){
+		$this->_execute ( func_get_args() );
+
+		$sql = "SELECT last_insert_id()";
+		$result = $this->_execute ( $sql );
+
+		$row = $this->_nextRow ( $result );
+		if ($row) {
+			return $row [0];
+		} else {
+			return false;
+		}
 	}
 
 	private function _checkConnectionErrors(){

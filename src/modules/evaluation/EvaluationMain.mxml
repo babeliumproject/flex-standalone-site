@@ -25,7 +25,7 @@
 			import model.DataModel;
 			
 			import modules.autoevaluation.AutoevaluationPanel;
-			import modules.search.VideoPaginator;
+			import modules.main.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;

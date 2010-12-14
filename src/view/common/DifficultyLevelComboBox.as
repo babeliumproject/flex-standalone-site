@@ -8,7 +8,7 @@ package view.common
 	{
 		
 		[Bindable]
-		private var difficultyLevels:Array=new Array('LEVEL_A1', 'LEVEL_A2', 'LEVEL_B11', 'LEVEL_B12', 'LEVEL_B21', 'LEVEL_B22', 'LEVEL_C1');
+		private var difficultyLevels:Array=new Array('LEVEL_A1', 'LEVEL_A2', 'LEVEL_B1', 'LEVEL_B2', 'LEVEL_C1');
 		
 		public function DifficultyLevelComboBox()
 		{

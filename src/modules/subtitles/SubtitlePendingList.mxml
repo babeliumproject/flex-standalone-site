@@ -10,7 +10,7 @@
 			
 			import model.DataModel;
 			
-			import modules.search.VideoPaginator;
+			import modules.main.VideoPaginator;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;

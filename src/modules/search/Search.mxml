@@ -25,6 +25,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import modules.main.VideoPaginator;
 			import model.DataModel;
 
 			import mx.collections.ArrayCollection;

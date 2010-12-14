@@ -18,7 +18,7 @@
 
 			public function set onTabChange(flag:Boolean):void
 			{
-				changePass.resetToolTips();
+				//changePass.resetToolTips();
 			}
 		]]>
 	</fx:Script>
@@ -45,7 +45,9 @@
 				  verticalAlign="bottom"
 				  gap="0">
 			<skins:HorizontalSeparatorLine width="100%"/>
-			<s:TabBar dataProvider="{accountOptionsViewStack}" skinClass="skins.AccountTabBarSkin" cornerRadius="8"/>
+			<s:TabBar dataProvider="{accountOptionsViewStack}"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
 			<skins:HorizontalSeparatorLine width="16"/>
 		</s:HGroup>
 	</s:BorderContainer>
@@ -54,30 +56,17 @@
 				  width="100%"
 				  resizeToContent="true">
 		<s:NavigatorContent id="creditHistoryContainerNavContent"
-							label="Credit History">
-			<userManagement:CreditHistoryPanel id="creditHistoryContainer"
-											   width="100%"
-											   height="100%"/>
+							label="{resourceManager.getString('myResources','LABEL_CREDIT_HISTORY')}">
+			<userManagement:CreditHistoryPanel id="creditHistoryContainer"/>
 		</s:NavigatorContent>
 
-		<s:NavigatorContent id="changePassNavContent"
-							label="Change Password">
-			<userManagement:ChangePassword id="changePass"
-										   width="80%"
-										   horizontalAlign="center"/>
+		<s:NavigatorContent id="topCollaboratorsNavContent"
+							label="{resourceManager.getString('myResources','LABEL_TOP_COLLABORATORS')}">
+			<userManagement:TopCollaborators id="topCollaborators"/>
 		</s:NavigatorContent>
 
-		<s:NavigatorContent id="topCollaboratorNavContent"
-							label="Top Collaborators">
-			<s:VGroup id="topCollaborators"
-					  horizontalAlign="center">
-				<userManagement:TopCollaborators width="30%"
-												 id="topCollab">
-				</userManagement:TopCollaborators>
-			</s:VGroup>
-		</s:NavigatorContent>
-		
-		<s:NavigatorContent id="userProfile" label="My Profile">
+		<s:NavigatorContent id="userProfile"
+							label="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}">
 			<userManagement:ChangeUserInfo/>
 		</s:NavigatorContent>
 

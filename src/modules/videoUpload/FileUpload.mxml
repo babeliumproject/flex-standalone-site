@@ -613,7 +613,7 @@
 					  visible="false">
 				<s:HGroup width="100%"
 						  height="60"
-						  styleName="hvCenteredBox">
+						  horizontalAlign="center" verticalAlign="middle">
 					<mx:DataGrid id="listFiles"
 								 allowMultipleSelection="false"
 								 rowCount="1"

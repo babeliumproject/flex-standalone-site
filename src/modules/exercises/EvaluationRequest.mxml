@@ -14,10 +14,8 @@
 			 visible="{ !DataModel.getInstance().isLoggedIn}"/>
 	<s:VGroup id="evaluationOptions"
 			  visible="{ DataModel.getInstance().isLoggedIn}"
-			  styleName="hvCenteredBox"
 			  width="100%">
 		<s:HGroup width="100%"
-				  styleName="hvCenteredBox"
 				  visible="{!DataModel.getInstance().isLoggedIn}">
 			<s:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
 			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
@@ -30,14 +28,12 @@
 		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
 		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
 		<s:HGroup width="100%"
-				  styleName="hvCenteredBox"
 				  visible="{DataModel.getInstance().isAutoevaluable}">
 			<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"/>
 			<s:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
 						 id="autoevaluateCheckbox"/>
 		</s:HGroup>
-		<s:HGroup width="100%"
-				  styleName="hvCenteredBox">
+		<s:HGroup width="100%">
 			<s:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
 					  click="evaluationRequestedClickHandler()"/>
 			<s:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"

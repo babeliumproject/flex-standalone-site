@@ -9,6 +9,7 @@ require_once 'vo/ExerciseReportVO.php';
 require_once 'vo/ExerciseScoreVO.php';
 require_once 'vo/ExerciseLevelVO.php';
 require_once 'vo/UserVO.php';
+require_once 'vo/UserLanguageVO.php';
 
 class ExerciseDAO {
 
@@ -317,7 +318,7 @@ class ExerciseDAO {
 	}
 
 	private function filterRecordableExercises($exerciseList){
-		if($_SESSION['user-languages'].length < 1)
+		if(count($_SESSION['user-languages']) < 1)
 			return $exerciseList;
 		else{
 			$filteredList = array();
@@ -538,7 +539,7 @@ class ExerciseDAO {
 			$temp->license = $row[13];
 			$temp->reference = $row[14];
 
-			$temp->avgRating = $this->getExerciseAvgBayesianScore($temp->id);
+			$temp->avgRating = $this->getExerciseAvgBayesianScore($temp->id)->avgRating;
 
 			array_push ( $searchResults, $temp );
 		}

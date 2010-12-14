@@ -4,6 +4,8 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:userManagement="modules.userManagement.*"
 		  xmlns:common="view.common.*"
+		  width="100%"
+		  height="100%"
 		  paddingBottom="20"
 		  paddingLeft="20"
 		  paddingRight="20"

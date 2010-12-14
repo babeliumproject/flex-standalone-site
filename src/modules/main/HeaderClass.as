@@ -77,18 +77,6 @@ package modules.main
 
 			//Set the data bindings for this class
 			setBindings();
-
-			//First, check if any user cookie is present and if so, make the login
-			rememberSO=SharedObject.getLocal("babeliaData");
-			if (rememberSO.data.username != undefined && rememberSO.data.hash != undefined)
-			{
-				cachedAuthentication();
-			}
-			else
-			{
-				//Since our user isn't signed in we hide the users cp
-				userCP.visible=false;
-			}
 		}
 
 		public function setBindings():void
@@ -111,12 +99,6 @@ package modules.main
 		{
 			DataModel.getInstance().loginPop = PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginRestorePassForm, true) as LoginRestorePassForm;
 			PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
-		}
-
-		private function cachedAuthentication():void
-		{
-			var cachedUser:LoginVO=new LoginVO(rememberSO.data.username, rememberSO.data.hash);
-			new LoginEvent(LoginEvent.PROCESS_LOGIN, cachedUser).dispatch();
 		}
 
 		public function signUpClickHandler():void
@@ -146,7 +128,6 @@ package modules.main
 			anonymousCP.visible=true;
 			userCP.includeInLayout=false;
 			userCP.visible=false;
-			rememberSO.clear();
 		}
 
 		private function onUserAuthenticated(upd:Boolean):void

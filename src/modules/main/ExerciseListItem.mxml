@@ -43,7 +43,7 @@
 				 width="100%"/>
 		<mx:HRule width="100%"/>
 		<s:HGroup gap="20"
-				  styleName="hvCenteredBox">
+				  horizontalAlign="center" verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
 				<mx:Image width="16"

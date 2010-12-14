@@ -20,15 +20,16 @@
 	<fx:Script>
 		<![CDATA[
 			import control.*;
-
+			
+			import events.LoginEvent;
 			import events.PreferenceEvent;
 			import events.SetupConnectionEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
-
+			
 			import skins.ApplicationCustomSkin;
 
 			private var mainSO:SharedObject;
@@ -47,6 +48,7 @@
 				cuePointManager=CuePointManager.getInstance();
 
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
+				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
 				new SetupConnectionEvent().dispatch();
 
 				Security.allowDomain(appModelLocator.uploadDomain);
@@ -79,7 +81,7 @@
 				  clipAndEnableScrolling="true"
 				  gap="0">
 			<main:Header id="header"/>
-			<main:NewNavigation id="navigation"/>
+			<main:Navigation id="navigation"/>
 			<main:Body id="content"/>
 		</s:VGroup>
 	</s:Scroller>

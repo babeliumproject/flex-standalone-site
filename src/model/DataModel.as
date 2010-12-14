@@ -32,9 +32,12 @@ package model
 		public var localesAndFlags:LocalesAndFlags;
 		public var currentlyActiveLocale:String = 'en_US';
 		
-		[Bindable] public static var SUBTITLE_MODULE:int = 0;
-		[Bindable] public static var RECORDING_MODULE:int = 1;
-		[Bindable] public static var GAPS_TO_ABORT_RECORDING:int = 3;
+		public static const SUBTITLE_MODULE:int = 0;
+		public static const RECORDING_MODULE:int = 1;
+		public static const GAPS_TO_ABORT_RECORDING:int = 3;
+		
+		public static const PURPOSE_EVALUATE:String = 'evaluate';
+		public static const PURPOSE_PRACTICE:String = 'practice';
 		
 		//NetConnection management variables
 		[Bindable] public var netConnectionDelegate:NetConnectionDelegate;

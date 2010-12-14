@@ -24,36 +24,59 @@ class LoginDAO{
 	}
 
 	public function processLogin($user){
-		//Check if the given username exists
-		if($this->getUserInfo($user->name)==false){
-			return "wrong_user";
-		} else {
-			//Check whether the user is active or not
-			$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
-			$result = $this->_singleQuery($sql, $user->name);
-			if ( $result )
-			return "inactive_user";
-			//Check if the user provided correct authentication data
-			$sql = "SELECT id, name, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
-			$result = $this->_singleQuery($sql, $user->name, $user->pass);
-			if($result){
-				$userId = $result->id;
-				$userLanguages = $this->_getUserLanguages($userId);
-				$result->userLanguages = $userLanguages;
-				$this->_startUserSession($result);
-
-				$filteredResult = new UserVO();
-				$filteredResult->name = $result->name;
-				$filteredResult->creditCount = $result->creditCount;
-				$filteredResult->joiningDate = $result->joiningDate;
-				$filteredResult->isAdmin = $result->isAdmin;
-				$filteredResult->userLanguages = $userLanguages;
-
-				return $filteredResult;
+		if($user != null){
+			//Check if the given username exists
+			if($this->getUserInfo($user->name)==false){
+				return "wrong_user";
 			} else {
-				return "wrong_password";
+				//Check whether the user is active or not
+				$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
+				$result = $this->_singleQuery($sql, $user->name);
+				if ( $result )
+				return "inactive_user";
+				//Check if the user provided correct authentication data
+				$sql = "SELECT id, name, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
+				$result = $this->_singleQuery($sql, $user->name, $user->pass);
+				if($result){
+					$userId = $result->id;
+					$userLanguages = $this->_getUserLanguages($userId);
+					$result->userLanguages = $userLanguages;
+					$this->_startUserSession($result);
+
+					$filteredResult = new UserVO();
+					$filteredResult->name = $result->name;
+					$filteredResult->creditCount = $result->creditCount;
+					$filteredResult->joiningDate = $result->joiningDate;
+					$filteredResult->isAdmin = $result->isAdmin;
+					$filteredResult->userLanguages = $userLanguages;
+
+					return $filteredResult;
+				} else {
+					return "wrong_password";
+				}
+			}
+		} else {
+			if( $this->checkSessionLogin() && isset($_SESSION['user-data']) && !empty($_SESSION['user-data']) ){
+				$loggedUser = $_SESSION['user-data'];
+				$loggedUser->id = 0;
+				return $loggedUser;
+			} else {
+				return "unauthorized";
 			}
 		}
+	}
+
+	private function checkSessionLogin(){
+
+		$isUserLogged = false;
+
+		//The user authenticated on this session and still hasn't asked for logout
+		if(isset($_COOKIE['PHPSESSID']) &&  $_COOKIE['PHPSESSID'] == session_id() && $_SESSION['logged'] == true){
+			$isUserLogged = true;
+		}
+		//The user has a cookie with a valid expiry date and there's a record on the database that remembers this user token
+		//if($_COOKIE['usrtkn'] != '' $_COOKIE['usrtkn'][])
+		return $isUserLogged;
 	}
 
 	private function getUserInfo($username){
@@ -166,6 +189,7 @@ class LoginDAO{
 		$_SESSION['uid'] = $userData->id;
 		$_SESSION['user-agent-hash'] = sha1($_SERVER['HTTP_USER_AGENT']);
 		$_SESSION['user-addr'] = $_SERVER['REMOTE_ADDR'];
+		$_SESSION['user-data'] = $userData;
 		$_SESSION['user-languages'] = $userData->userLanguages;
 	}
 
@@ -176,6 +200,7 @@ class LoginDAO{
 		$_SESSION['uid'] = 0;
 		$_SESSION['user-agent-hash'] = '';
 		$_SESSION['user-addr'] = 0;
+		$_SESSION['user-data'] = null;
 		$_SESSION['user-languages'] = null;
 	}
 
