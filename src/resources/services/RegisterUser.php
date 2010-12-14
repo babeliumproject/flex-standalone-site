@@ -117,7 +117,7 @@ class RegisterUser{
 		{
 			$sql = "UPDATE users SET active = 1, activation_hash = ''
 			        WHERE (name = '%s' AND activation_hash = '%s')";
-			$update = $this->_databaseUpdate($sql, $user->name, $user->activationHash);
+			$update = $this->conn->_execute($sql, $user->name, $user->activationHash);
 		}
 
 		return ($row && $update)? $row[0] : NULL ;
@@ -245,12 +245,6 @@ class RegisterUser{
 		return $row[0];
 		else
 		throw new Exception("Unexpected error while trying to retrieve preference data");
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
 	}
 }
 ?>

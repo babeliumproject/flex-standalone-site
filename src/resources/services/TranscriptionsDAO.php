@@ -80,10 +80,10 @@ class TranscriptionsDAO {
 			$row = $this->conn->_nextRow($result);
 			if ($row == null) {
 				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '%s')";
-				$i = $this->_create($insert, strtolower($transcriptionSystem));
+				$i = $this->conn->_insert($insert, strtolower($transcriptionSystem));
 				if ($i > 0) {
 					$update = "UPDATE exercise SET fk_transcription_id = LAST_INSERT_ID() WHERE id = %d";
-					if ($this->_databaseUpdate($update, $exerciseId) > 0)
+					if ($this->conn->_execute($update, $exerciseId) > 0)
 					return $i;
 					else
 					return "error";
@@ -106,10 +106,10 @@ class TranscriptionsDAO {
 			$row = $this->conn->_nextRow($result);
 			if ($row == null) {
 				$insert = "INSERT INTO transcription (id, adding_date, status, transcription, transcription_date, system) VALUES (null, now(), 'pending' , null, null, '%s')";
-				$i = $this->_create($insert, strtolower($transcriptionSystem));
+				$i = $this->conn->_insert($insert, strtolower($transcriptionSystem));
 				if ($i > 0) {
 					$update = "UPDATE response SET fk_transcription_id = LAST_INSERT_ID() WHERE id = %d";
-					if ($this->_databaseUpdate($update, $responseId) > 0)
+					if ($this->conn->_execute($update, $responseId) > 0)
 					return $i;
 					else
 					return "error";
@@ -203,25 +203,5 @@ class TranscriptionsDAO {
 		return false;
 	}
 
-	private function _create() {
-
-		$this->conn->_execute(func_get_args());
-
-		$sql = "SELECT LAST_INSERT_ID()";
-		$result = $this->_databaseUpdate($sql);
-
-		$row = $this->conn->_nextRow($result);
-		if ($row) {
-			return $row[0];
-		} else {
-			return false;
-		}
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute(func_get_args());
-
-		return $result;
-	}
 }
 ?>

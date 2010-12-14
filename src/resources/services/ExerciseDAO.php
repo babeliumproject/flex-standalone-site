@@ -52,7 +52,7 @@ class ExerciseDAO {
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference) ";
 			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s') ";
 
-			$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+			$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 			$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference );
 			if($lastExerciseId){
 				$exerciseLevel->exerciseId = $lastExerciseId;
@@ -89,7 +89,7 @@ class ExerciseDAO {
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
 			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
 
-			$lastExerciseId = $this->_create( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+			$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
 			$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
 
 			if(!$lastExerciseId){
@@ -133,14 +133,14 @@ class ExerciseDAO {
 	private function addExerciseLevel($exerciseLevel){
 		$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level, suggest_date)
 						 VALUES ('%d', '%d', '%d', NOW()) ";
-		return $this->_create($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
+		return $this->conn->_insert($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
 	}
 
 	private function _addCreditsForUploading() {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
 				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
-		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
+		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addUploadingToCreditHistory($exerciseId){
@@ -150,7 +150,7 @@ class ExerciseDAO {
 		if($row){
 			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
 			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
-			return $this->_create($sql, $_SESSION['uid'], $exerciseId, 'exercise_upload', $row[0]);
+			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'exercise_upload', $row[0]);
 		} else {
 			return false;
 		}
@@ -360,7 +360,7 @@ class ExerciseDAO {
 				$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date)
 				    VALUES ('%d', '%d', '%s', NOW() )";
 
-				return $this->_create($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
+				return $this->conn->_insert($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
 
 			} else {
 				return 0;
@@ -381,7 +381,7 @@ class ExerciseDAO {
 				$sql = "INSERT INTO exercise_score (fk_exercise_id, fk_user_id, suggested_score, suggestion_date)
 			        VALUES ( '%d', '%d', '%d', NOW() )";
 
-				$insert_result = $this->_create($sql, $score->exerciseId, $_SESSION['uid'], $score->suggestedScore);
+				$insert_result = $this->conn->_insert($sql, $score->exerciseId, $_SESSION['uid'], $score->suggestedScore);
 
 				//return $this->getExerciseAvgScore($score->exerciseId);
 				return $this->getExerciseAvgBayesianScore($score->exerciseId);
@@ -545,27 +545,6 @@ class ExerciseDAO {
 		}
 
 		return $searchResults;
-	}
-
-	private function _create() {
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->_databaseUpdate ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
 	}
 
 }

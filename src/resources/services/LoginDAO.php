@@ -179,7 +179,7 @@ class LoginDAO{
 
 		$sql = "INSERT INTO user_session (fk_user_id, session_id, session_date, duration, keep_alive)
 				VALUES ('%d', '%s', now(), 0, 1)";
-		return $this->_create($sql, $_SESSION['uid'], session_id());
+		return $this->conn->_insert($sql, $_SESSION['uid'], session_id());
 	}
 
 	private function _setSessionData($userData){
@@ -226,21 +226,6 @@ class LoginDAO{
 			array_push($searchResults, $temp);
 		}
 		return $searchResults;
-	}
-
-	private function _create() {
-
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
 	}
 
 }

@@ -212,17 +212,17 @@ class UploadExerciseDAO{
 
 		$sql = "UPDATE exercise SET name='%s', thumbnail_uri='%s', duration='%s', filehash='%s', status='Available'
             WHERE (id=%d) ";
-		return $this->_databaseUpdate ( $sql, $newName, $newThumbnail, $newDuration, $fileHash, $exerciseId );
+		return $this->conn->_execute ( $sql, $newName, $newThumbnail, $newDuration, $fileHash, $exerciseId );
 	}
 
 	private function setExerciseProcessing($exerciseId){
 		$sql = "UPDATE exercise SET status='Processing' WHERE (id=%d) ";
-		return $this->_databaseUpdate($sql, $exerciseId);
+		return $this->conn->_execute($sql, $exerciseId);
 	}
 
 	private function setExerciseRejected($exerciseId){
 		$sql = "UPDATE exercise SET status='Rejected' WHERE (id=%d) ";
-		return $this->_databaseUpdate($sql, $exerciseId);
+		return $this->conn->_execute($sql, $exerciseId);
 	}
 
 	private function updateCreditCount($exerciseId){
@@ -267,13 +267,6 @@ class UploadExerciseDAO{
 			array_push($searchResults, $row[0]);
 		}
 		return $searchResults;
-	}
-
-	private function _databaseUpdate()
-	{
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
 	}
 
 	private function checkIfFileExists($path){

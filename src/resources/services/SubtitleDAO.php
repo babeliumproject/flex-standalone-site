@@ -130,7 +130,7 @@ class SubtitleDAO {
 		//Insert the new subtitle on the database
 		$s_sql = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, adding_date) ";
 		$s_sql .= "VALUES ('%d', '%d', '%s', NOW() ) ";
-		$subtitleId = $this->_create($s_sql, $subtitles->exerciseId, $_SESSION['uid'], $subtitles->language );
+		$subtitleId = $this->conn->_insert($s_sql, $subtitles->exerciseId, $_SESSION['uid'], $subtitles->language );
 		if(!$subtitleId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Subtitle save failed");
@@ -226,7 +226,7 @@ class SubtitleDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue 
 				WHERE (u.ID=%d AND p.prefName='subtitleAdditionCredits') ";
-		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
+		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addSubtitlingToCreditHistory($exerciseId){
@@ -237,7 +237,7 @@ class SubtitleDAO {
 
 			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
 			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
-			return $this->_create($sql, $_SESSION['uid'], $exerciseId, 'subtitling', $row[0]);
+			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'subtitling', $row[0]);
 		} else {
 			return false;
 		}
@@ -313,6 +313,19 @@ class SubtitleDAO {
 		return $errorMessage;
 	}
 
+	private function _modificationRate($compareSubject){
+		$unmodifiedSubtitlesLines = $_SESSION['unmodified-subtitles'];
+		$currentText = '';
+		$unmodifiedText = '';
+		
+		foreach ($compareSubject as $cline)
+			$currentText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $cline->text)."\n";
+		foreach ($unmodifiedSubtitlesLines as $uline)
+			$unmodifiedText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $uline->text)."\n"; 
+		$modificationRate = (strlen($unmodifiedText) - similar_text($unmodifiedText, $currentText)) * (strlen($unmodifiedText)/100);
+		
+	}
+	
 
 	public function getExerciseSubtitles($exerciseId){
 		$sql = "SELECT s.id, s.fk_exercise_id, u.name, s.language, s.translation, s.adding_date
@@ -335,18 +348,18 @@ class SubtitleDAO {
 		if($subtitleIdToDelete){
 			//Delete the subtitle_line entries ->
 			$sl_delete = "DELETE FROM subtitle_line WHERE (fk_subtitle_id = '%d')";
-			$this->_databaseUpdate($sl_delete, $subtitleIdToDelete);
+			$this->conn->_execute($sl_delete, $subtitleIdToDelete);
 
 			//The first query should suffice to delete all due to ON DELETE CASCADE clauses but
 			//as it seems this doesn't work we delete the rest manually.
 
 			//Delete the exercise_role entries
 			$er_delete = "DELETE FROM exercise_role WHERE (fk_exercise_id = '%d')";
-			$this->_databaseUpdate($er_delete, $exerciseId);
+			$this->conn->_execute($er_delete, $exerciseId);
 
 			//Delete the subtitle entry
 			$s_delete = "DELETE FROM subtitle WHERE (id ='%d')";
-			$this->_databaseUpdate($s_delete, $subtitleIdToDelete);
+			$this->conn->_execute($s_delete, $subtitleIdToDelete);
 		}
 	}
 
@@ -414,21 +427,6 @@ class SubtitleDAO {
 		return $searchResults;
 	}
 
-	private function _create() {
-
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
-	}
-
 	private function _vcreate($params) {
 
 		$this->conn->_execute ( $params );
@@ -443,13 +441,6 @@ class SubtitleDAO {
 			return false;
 		}
 	}
-
-	private function _databaseUpdate($sql) {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
-	}
-
 }
 
 ?>

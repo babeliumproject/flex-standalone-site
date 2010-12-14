@@ -50,7 +50,7 @@ function check_duration($path, $maxDuration){
 switch ($_REQUEST ['action']) {
 	
 	case "upload" :
-		include_once $_SERVER ['DOCUMENT_ROOT'] ."/amfphp/services/babelia/Config.php";
+		include_once $_SERVER ['DOCUMENT_ROOT'] ."/amfphp/services/babelia/utils/Config.php";
 
 		$settings = new Config();
 		

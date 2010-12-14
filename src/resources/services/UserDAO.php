@@ -51,7 +51,7 @@ class UserDAO {
 			if($row){
 				$sql = "UPDATE user_session SET keep_alive = 1 WHERE fk_user_id = '%d' AND closed=0";
 
-				return $this->_databaseUpdate($sql, $_SESSION['uid']);
+				return $this->conn->_execute($sql, $_SESSION['uid']);
 			}
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -160,12 +160,6 @@ class UserDAO {
 		$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $pass;
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
 	}
 
 }

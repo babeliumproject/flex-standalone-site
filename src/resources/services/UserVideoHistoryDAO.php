@@ -27,7 +27,7 @@ class UserVideoHistoryDAO{
 
 			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, subtitles_are_used, fk_subtitle_id)
 			    	VALUES ('%d','%d','%d','%d','%d')";
-			return $this->_create($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId);
+			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId);
 		} else {
 			return false;
 		}
@@ -37,7 +37,7 @@ class UserVideoHistoryDAO{
 		if($sessionId = $this->_currentSessionData($_SESSION['uid'])){
 			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, response_attempt, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id)
 					VALUES ('%d', '%d', '%d', 1, '%d', '%d', '%d')";
-			return $this->_create($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId,
+			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId,
 			$videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId);
 		} else {
 			return false;
@@ -48,7 +48,7 @@ class UserVideoHistoryDAO{
 		if($sessionId = $this->_currentSessionData()){
 			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, fk_response_id, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id)
 					VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d')";
-			return $this->_create($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->responseId,
+			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->responseId,
 			$videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId);
 		} else {
 			return false;
@@ -65,23 +65,6 @@ class UserVideoHistoryDAO{
 		$row = $this->conn->_nextRow($result);
 		if($row){
 			return $row[0];
-		} else {
-			return false;
-		}
-	}
-
-
-
-	private function _create() {
-
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
 		} else {
 			return false;
 		}

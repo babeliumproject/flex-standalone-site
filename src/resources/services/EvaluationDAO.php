@@ -311,7 +311,7 @@ class EvaluationDAO {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%s', NOW() )";
 
-		$evaluationId = $this->_create ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
+		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
 										 $evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
 										 $evalData->spontaneityScore, $evalData->comment );
 		if(!$evaluationId){
@@ -371,7 +371,7 @@ class EvaluationDAO {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%s', NOW() )";
 
-		$evaluationId = $this->_create ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
+		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
 										 $evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
 										 $evalData->spontaneityScore, $evalData->comment );
 
@@ -391,7 +391,7 @@ class EvaluationDAO {
 		$sql = $sql . "'Red5', ";
 		$sql = $sql . "'%s')";
 		
-		$evaluationVideoId = $this->_create ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
+		$evaluationVideoId = $this->conn->_insert ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
 		if(!$evaluationVideoId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
@@ -433,7 +433,7 @@ class EvaluationDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount+p.prefValue
 			WHERE (u.ID=%d AND p.prefName='evaluatedWithVideoCredits') ";
-		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
+		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addEvaluatingToCreditHistory($responseId, $evaluationId){
@@ -449,7 +449,7 @@ class EvaluationDAO {
 				$exerciseId = $row[0];
 				$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, fk_eval_id, changeDate, changeType, changeAmount) ";
 				$sql = $sql . "VALUES ('%d', '%d', '%d', '%d', NOW(), '%s', '%d') ";
-				return $this->_create($sql, $_SESSION['uid'], $exerciseId, $responseId, $evaluationId, 'evaluation', $changeAmount);
+				return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, $responseId, $evaluationId, 'evaluation', $changeAmount);
 			} else {
 				return false;
 			}
@@ -561,28 +561,7 @@ class EvaluationDAO {
 		$sql = "UPDATE response SET rating_amount = (rating_amount + 1)
 		        WHERE (id = '%d')";
 
-		return $result = $this->_databaseUpdate ( $sql, $responseId );
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
-	}
-
-	private function _create() {
-
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
+		return $result = $this->conn->_execute ( $sql, $responseId );
 	}
 
 }

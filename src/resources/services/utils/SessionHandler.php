@@ -6,6 +6,7 @@
  */
  require_once dirname(__FILE__).'/../vo/UserVO.php';
  require_once dirname(__FILE__).'/../vo/UserLanguageVO.php';
+ require_once dirname(__FILE__).'/../vo/SubtitleLineVO.php';
 
 
 

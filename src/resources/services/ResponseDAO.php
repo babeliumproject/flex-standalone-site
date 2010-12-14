@@ -45,7 +45,7 @@ class ResponseDAO {
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
 		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
 
-		return $this->_create($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier,
+		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier,
 		$thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId );
 
 	}
@@ -59,7 +59,7 @@ class ResponseDAO {
 		
 		$sql = "UPDATE response SET is_private = 0 WHERE (id = '%d' ) ";
 
-		$update = $this->_databaseUpdate ( $sql, $responseId );
+		$update = $this->conn->_execute ( $sql, $responseId );
 		if(!$update){
 			$this->conn->_failedTransaction();
 			throw new Exception("Response publication failed");
@@ -93,7 +93,7 @@ class ResponseDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount-p.prefValue 
 			WHERE (u.ID=%d AND p.prefName='evaluationRequestCredits') ";
-		return $this->_databaseUpdate ( $sql, $_SESSION['uid'] );
+		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addEvalRequestToCreditHistory($responseId){
@@ -109,7 +109,7 @@ class ResponseDAO {
 				$exerciseId = $row[0];
 				$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, changeDate, changeType, changeAmount) ";
 				$sql = $sql . "VALUES ('%d', '%d', '%d', NOW(), '%s', '%d') ";
-				return $this->_create($sql, $_SESSION['uid'], $exerciseId, $responseId, 'eval_request', $changeAmount);
+				return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, $responseId, 'eval_request', $changeAmount);
 			} else {
 				return false;
 			}
@@ -196,27 +196,6 @@ class ResponseDAO {
 			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
 		}
 		return $total;
-	}
-
-	private function _create() {
-		$this->conn->_execute ( func_get_args() );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->_databaseUpdate ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
-	}
-
-	private function _databaseUpdate() {
-		$result = $this->conn->_execute ( func_get_args() );
-
-		return $result;
 	}
 
 }
