@@ -103,6 +103,28 @@ s|TextInput{
 	underlineDown:false;
 }
 
+.addLanguageLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('resources/images/add.png');
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.removeLanguageLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('resources/images/delete.png');
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
 .signOutLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
 	icon:Embed('resources/images/close_icon.png');

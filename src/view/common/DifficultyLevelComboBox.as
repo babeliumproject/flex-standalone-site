@@ -10,6 +10,8 @@ package view.common
 		[Bindable]
 		private var difficultyLevels:Array=new Array('LEVEL_A1', 'LEVEL_A2', 'LEVEL_B1', 'LEVEL_B2', 'LEVEL_C1');
 		
+		private var _prefixedLevel:uint;
+		
 		public function DifficultyLevelComboBox()
 		{
 			super();
@@ -42,5 +44,14 @@ package view.common
 			this.dataProvider=difficultyLevels;
 			this.selectedItem=oldSelectedItem;
 		}
+		
+		public function set prefixedLevel(level:uint):void{
+			_prefixedLevel = level;
+		}
+		
+		public function get prefixedLevel():uint{
+			return _prefixedLevel;
+		}
+		
 	}
 }

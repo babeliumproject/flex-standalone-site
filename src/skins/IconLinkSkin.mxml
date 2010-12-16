@@ -56,7 +56,7 @@
 				if(bis)
 					buttonIcon.includeInLayout = true;
 				
-				if(!hostComponent.label){
+				if(!hostComponent || !hostComponent.label){
 					labelDisplay.includeInLayout = false;
 				}
 				

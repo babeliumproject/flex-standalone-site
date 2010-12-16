@@ -11,14 +11,32 @@
 			import model.DataModel;
 
 			import mx.collections.ArrayCollection;
-
-			public static const CREDIT_HISTORY_VIEWSTACK_INDEX:int=0;
-			public static const CHANGE_PASSWORD_VIEWSTACK_INDEX:int=1;
-			public static const TOP_COLLABORATORS_VIEWSTACK_INDEX:int=2;
+			import mx.events.IndexChangedEvent;
 
 			public function set onTabChange(flag:Boolean):void
 			{
-				//changePass.resetToolTips();
+				accountOptionsViewStack.selectedIndex=0;
+			}
+
+			public function onAccountTabChange(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+				switch (newIndex)
+				{
+					case accountOptionsViewStack.getChildIndex(creditHistoryContainerNavContent):
+						creditHistoryContainer.resetComponent();
+						break;
+					case accountOptionsViewStack.getChildIndex(topCollaboratorsNavContent):
+						topCollaborators.resetComponent();
+						break;
+					case accountOptionsViewStack.getChildIndex(userProfileNavContent):
+						userProfile.resetComponent();
+					default:
+						creditHistoryContainer.resetComponent();
+						topCollaborators.resetComponent();
+						userProfile.resetComponent();
+						break;
+				}
 			}
 		]]>
 	</fx:Script>
@@ -54,7 +72,8 @@
 	<mx:ViewStack id="accountOptionsViewStack"
 				  height="100%"
 				  width="100%"
-				  resizeToContent="true">
+				  resizeToContent="true"
+				  change="onAccountTabChange(event)">
 		<s:NavigatorContent id="creditHistoryContainerNavContent"
 							label="{resourceManager.getString('myResources','LABEL_CREDIT_HISTORY')}">
 			<userManagement:CreditHistoryPanel id="creditHistoryContainer"/>
@@ -65,9 +84,9 @@
 			<userManagement:TopCollaborators id="topCollaborators"/>
 		</s:NavigatorContent>
 
-		<s:NavigatorContent id="userProfile"
+		<s:NavigatorContent id="userProfileNavContent"
 							label="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}">
-			<userManagement:ChangeUserInfo/>
+			<userManagement:ChangeUserInfo id="userProfile"/>
 		</s:NavigatorContent>
 
 	</mx:ViewStack>

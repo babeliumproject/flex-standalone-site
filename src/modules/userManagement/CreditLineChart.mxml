@@ -13,7 +13,7 @@
 			import model.DataModel;
 
 			[Bindable]
-			private var chartData:ArrayCollection;
+			public var chartData:ArrayCollection;
 
 			[Bindable] private var chartMaxDate:Date;
 			[Bindable] private var chartMinDate:Date;

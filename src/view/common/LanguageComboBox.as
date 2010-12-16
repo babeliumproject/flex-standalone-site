@@ -24,6 +24,8 @@ package view.common
 		private var _useCustomDataProvider:Boolean=false;
 
 		private var _currentDataProvider:Array = new Array();
+		
+		private var _prefixedValue:Object;
 
 		public function LanguageComboBox()
 		{
@@ -108,6 +110,14 @@ package view.common
 				this.dataProvider=_currentDataProvider;
 				this.selectedItem=oldSelectedItem;
 			}
+		}
+		
+		public function set prefixedValue(value:Object):void{
+			_prefixedValue = value;
+		}
+		
+		public function get prefixedValue():Object{
+			return _prefixedValue;
 		}
 
 	}

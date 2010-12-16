@@ -25,7 +25,7 @@
 			private function onComplete():void
 			{
 				refreshTableData(null);
-			/* Disabled for now. May be useful when more others come up
+			/* Disabled for now. May be useful when more users come up
 			   tableRefreshTimer = new Timer(120000,0);
 			   tableRefreshTimer.addEventListener(TimerEvent.TIMER, refreshTableData);
 			   tableRefreshTimer.start();
@@ -56,6 +56,11 @@
 					return "0";
 				}
 			}
+			
+			public function resetComponent():void{
+				refreshTableData(null);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Binding source="{DataModel.getInstance().isTopTenRetrieved}"

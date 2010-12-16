@@ -13,14 +13,18 @@
 
 	<fx:Script>
 		<![CDATA[
-			import view.common.CustomAlert;
-			import mx.formatters.DateFormatter;
-			import vo.CreditHistoryVO;
-			import mx.controls.Alert;
 			import events.CreditEvent;
-			import mx.controls.dataGridClasses.DataGridColumn;
-			import mx.collections.ArrayCollection;
+
 			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.formatters.DateFormatter;
+
+			import view.common.CustomAlert;
+
+			import vo.CreditHistoryVO;
 
 			[Bindable]
 			private var historicDataProvider:ArrayCollection;
@@ -108,6 +112,20 @@
 			public function exerciseNameClickHandler():void
 			{
 				CustomAlert.info("WIP: Watch the selected exercise.");
+			}
+
+			public function resetComponent():void
+			{
+				if (historicDataProvider)
+				{
+					historicDataProvider.removeAll();
+					historicDataProvider=new ArrayCollection();
+				}
+				if (lineChartContainer.chartData)
+				{
+					lineChartContainer.chartData.removeAll();
+					lineChartContainer.chartData=new ArrayCollection();
+				}
 			}
 		]]>
 	</fx:Script>

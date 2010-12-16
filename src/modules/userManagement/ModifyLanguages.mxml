@@ -11,18 +11,22 @@
 
 	<fx:Script>
 		<![CDATA[
+			import flash.utils.getQualifiedClassName;
+			
 			import model.DataModel;
 			import model.LocalesAndFlags;
-
+			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
-
+			
+			import spark.components.Button;
 			import spark.components.Group;
-
+			
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-
+			
 			import vo.UserLanguageVO;
 
 			[Bindable]
@@ -37,7 +41,7 @@
 			private var knownLanguagesArray:ArrayCollection=new ArrayCollection();
 			private var interestLanguagesArray:ArrayCollection=new ArrayCollection();
 
-			private var motherTongue:LanguageComboBox;
+			private var motherTongue:MotherLanguageBox;
 			private var knownLanguage:LanguageKnowledgeBox;
 			private var interestLanguage:LanguageKnowledgeBox;
 
@@ -54,19 +58,34 @@
 				{
 					if (lang.purpose == 'practice')
 					{
-						
+						interestLanguage=new LanguageKnowledgeBox();
+						interestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+						interestLanguagesBox.addElement(interestLanguage);
+						interestLanguagesArray.addItem(interestLanguage);
+						interestLanguage.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+						interestLanguage.levelCombo.prefixedLevel=lang.level - 1;
 					}
 					else if (lang.purpose == 'evaluate')
 					{
 						//Known languages
 						if (lang.level < 5)
 						{
-							
+							knownLanguage=new LanguageKnowledgeBox();
+							knownLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedKnown);
+							knownLanguagesBox.addElement(knownLanguage);
+							knownLanguagesArray.addItem(knownLanguage);
+							knownLanguage.deleteButtonClickHandler = deleteLanguageKnowledgeComboBox;
+							knownLanguage.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+							knownLanguage.levelCombo.prefixedLevel=lang.level - 1;
 						}
 						//Mother tongue
 						else
 						{
-
+							motherTongue=new MotherLanguageBox();
+							motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+							motherLanguagesBox.addElement(motherTongue);
+							motherLanguagesArray.addItem(motherTongue);
+							motherTongue.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
 						}
 					}
 				}
@@ -74,8 +93,8 @@
 
 			public function addInitialComboboxes():void
 			{
-				motherTongue=new LanguageComboBox();
-				motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, languageComboBoxCreated);
+				motherTongue=new MotherLanguageBox();
+				motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 				motherLanguagesBox.addElement(motherTongue);
 				motherLanguagesArray.addItem(motherTongue);
 
@@ -90,27 +109,53 @@
 				interestLanguagesArray.addItem(interestLanguage);
 			}
 
-			private function languageComboBoxCreated(event:FlexEvent):void
+			private function motherLanguageBoxCreated(event:FlexEvent):void
 			{
-				(event.currentTarget as LanguageComboBox).dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageComboBox).selectedIndex=-1;
-				(event.currentTarget as LanguageComboBox).name="motherLangs";
-				(event.currentTarget as LanguageComboBox).addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				(event.currentTarget as MotherLanguageBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+				(event.currentTarget as MotherLanguageBox).languageCombo.name="motherLangs";
+
+				if ((event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue)
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedItem=(event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue;
+				else
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedIndex=-1;
+
+				(event.currentTarget as MotherLanguageBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
 
 			private function languageKnowledgeBoxCreatedKnown(event:FlexEvent):void
 			{
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="knowLangs";
+
+				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedItem=(event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue;
+					(event.currentTarget as LanguageKnowledgeBox).levelCombo.selectedIndex=(event.currentTarget as LanguageKnowledgeBox).levelCombo.prefixedLevel;
+				}
+				else
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				}
+
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
 
 			private function languageKnowledgeBoxCreatedInterest(event:FlexEvent):void
 			{
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="interestLangs";
+
+				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedItem=(event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue;
+					(event.currentTarget as LanguageKnowledgeBox).levelCombo.selectedIndex=(event.currentTarget as LanguageKnowledgeBox).levelCombo.prefixedLevel;
+				}
+				else
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				}
+
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
 
@@ -160,11 +205,11 @@
 							}
 							break;
 					}
-					for each (var mlcb:LanguageComboBox in motherLanguagesArray)
+					for each (var mlcb:MotherLanguageBox in motherLanguagesArray)
 					{
-						if (mlcb.selectedIndex != -1 && mlcb != dispatchingItem && mlcb.selectedItem.code == dispatchingItem.selectedItem.code)
+						if (mlcb.languageCombo.selectedIndex != -1 && mlcb.languageCombo != dispatchingItem && mlcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 						{
-							mlcb.selectedIndex=-1;
+							mlcb.languageCombo.selectedIndex=-1;
 						}
 					}
 				}
@@ -175,6 +220,7 @@
 				if (knownLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
 					var otherKnownLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherKnownLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 					otherKnownLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedKnown);
 					knownLanguagesBox.addElement(otherKnownLanguage);
 					knownLanguagesArray.addItem(otherKnownLanguage);
@@ -186,6 +232,7 @@
 				if (interestLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
 					var otherInterestLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherInterestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 					otherInterestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
 					interestLanguagesBox.addElement(otherInterestLanguage);
 					interestLanguagesArray.addItem(otherInterestLanguage);
@@ -196,30 +243,45 @@
 			{
 				if (motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
-					var otherMotherLanguage:LanguageComboBox=new LanguageComboBox();
-					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageComboBoxCreated);
+					var otherMotherLanguage:MotherLanguageBox = new MotherLanguageBox();
+					otherMotherLanguage.deleteButtonClickHandler = deleteMotherLanguageBox;
+					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 					motherLanguagesBox.addElement(otherMotherLanguage);
 					motherLanguagesArray.addItem(otherMotherLanguage);
 				}
 			}
 
-			protected function resetToInitialStatus():void
+			private function deleteLanguageKnowledgeComboBox(event:MouseEvent):void
 			{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as LanguageKnowledgeBox));
+				var index:uint = 0;
+				if( (index = interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1){
+					interestLanguagesArray.removeItemAt(index);
+				} else if ( (index = knownLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1){
+					knownLanguagesArray.removeItemAt(index);
+				}
+			}
+			
+			private function deleteMotherLanguageBox(event:MouseEvent):void{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as MotherLanguageBox));
+				var index:uint = 0;
+				if( (index = motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1) {
+					motherLanguagesArray.removeItemAt(index);
+				}
+			}
 
-				removeAllChildrenFromComponent(motherLanguagesBox);
-				removeAllChildrenFromComponent(knownLanguagesBox);
-				removeAllChildrenFromComponent(interestLanguagesBox);
+			public function resetToInitialStatus():void
+			{
+				motherLanguagesBox.removeAllElements();
+				knownLanguagesBox.removeAllElements();
+				interestLanguagesBox.removeAllElements();
 				motherLanguagesArray.removeAll();
 				knownLanguagesArray.removeAll();
 				interestLanguagesArray.removeAll();
 
-				addInitialComboboxes();
-			}
-
-			protected function removeAllChildrenFromComponent(component:Group):void
-			{
-				for (var i:uint=0; i < component.numElements; i++)
-					component.removeElementAt(i);
+				currentLanguages();
 			}
 
 			protected function set onTabChange(value:Boolean):void
@@ -239,47 +301,42 @@
 		]]>
 	</fx:Script>
 
-	<s:HGroup>
-		<s:VGroup id="motherLanguagesBox">
-		</s:VGroup>
-		<mx:LinkButton id="addAnotherMotherLang"
-					   click="addAnotherMotherLang_clickHandler(event)"
-					   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-					   textDecoration="underline"
-					   paddingLeft="6"
-					   paddingRight="6"
-					   icon="@Embed(source='../../resources/images/add.png')"/>
+	
+	<s:HGroup verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
+				 styleName="boldLabel"/>
+		<skins:IconButton id="addAnotherMotherLang"
+						  click="addAnotherMotherLang_clickHandler(event)"
+						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
+	<s:VGroup id="motherLanguagesBox" paddingLeft="16"/>
 
-	<s:HGroup>
-		<s:VGroup id="knownLanguagesBox">
-		</s:VGroup>
-		<mx:LinkButton id="addAnotherKnownLang"
-					   click="addAnotherKnownLang_clickHandler(event)"
-					   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-					   textDecoration="underline"
-					   paddingLeft="6"
-					   paddingRight="6"
-					   icon="@Embed(source='../../resources/images/add.png')"/>
+	<s:HGroup verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
+				 styleName="boldLabel"/>
+		<skins:IconButton id="addAnotherKnownLang"
+						  click="addAnotherKnownLang_clickHandler(event)"
+						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
+	<s:VGroup id="knownLanguagesBox" paddingLeft="16"/>
 
-	<s:HGroup>
-		<s:VGroup id="interestLanguagesBox">
-		</s:VGroup>
-		<mx:LinkButton id="addAnotherInterestLang"
-					   click="addAnotherInterestLang_clickHandler(event)"
-					   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-					   textDecoration="underline"
-					   paddingLeft="6"
-					   paddingRight="6"
-					   icon="@Embed(source='../../resources/images/add.png')"/>
+	<s:HGroup verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
+				 styleName="boldLabel"/>
+		<skins:IconButton id="addAnotherInterestLang"
+						  click="addAnotherInterestLang_clickHandler(event)"
+						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
+	<s:VGroup id="interestLanguagesBox" paddingLeft="16"/>
 
 	<s:HGroup width="100%"
 			  horizontalAlign="center"
 			  verticalAlign="middle">
 		<skins:IconButton id="saveButton"
-						  label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
+						  label="{resourceManager.getString('myResources','BUTTON_SAVE_NEWPASS')}"
 						  click="saveChangesClickHandler(event)"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('resources/images/save.png')"/>
