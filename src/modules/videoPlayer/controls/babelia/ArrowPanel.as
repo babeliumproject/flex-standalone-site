@@ -5,6 +5,7 @@ package modules.videoPlayer.controls.babelia
 	import modules.videoPlayer.controls.SkinableComponent;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.core.UIComponent;
 
@@ -17,6 +18,9 @@ package modules.videoPlayer.controls.babelia
 		public static const BORDER_COLOR:String="borderColor";
 		public static const BG_COLOR:String="bgColor";
 		public static const HL_COLOR:String="hlColor";
+		public static const BORDER_WEIGHT:String="borderWeight";
+		public static const CORNER_RADIUS:String="cornerRadius";
+		public static const BG_ALPHA:String="bgAlpha";
 
 		private var _bg:Sprite;
 		private var _arrows:ArrayCollection;
@@ -83,15 +87,13 @@ package modules.videoPlayer.controls.babelia
 		private function CreateBG(bgWidth:Number, bgHeight:Number):void
 		{
 			_bg.graphics.clear();
-
-			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
-			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
-			_bg.graphics.endFill();
+			
 			if ( !_highlight )
-				_bg.graphics.beginFill(getSkinColor(BG_COLOR));
+				_bg.graphics.beginFill(getSkinColor(BG_COLOR), getSkinColor(BG_ALPHA)/100);
 			else
-				_bg.graphics.beginFill(getSkinColor(HL_COLOR));
-			_bg.graphics.drawRoundRect(2, 2, width - 4, height - 4, 10, 10);
+				_bg.graphics.beginFill(getSkinColor(HL_COLOR), getSkinColor(BG_ALPHA)/100);
+			_bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT), getSkinColor(BORDER_COLOR), 1);
+			_bg.graphics.drawRoundRect(0, 0, width, height, getSkinColor(CORNER_RADIUS));
 			_bg.graphics.endFill();
 		}
 		

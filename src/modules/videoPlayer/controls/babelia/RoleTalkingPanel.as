@@ -22,6 +22,8 @@ package modules.videoPlayer.controls.babelia
 		public static const BORDER_COLOR:String = "borderColor";
 		public static const BG_COLOR:String = "bgColor";
 		public static const HL_COLOR:String="hlColor";
+		public static const BORDER_WEIGHT:String="borderWeight";
+		public static const CORNER_RADIUS:String="cornerRadius";
 		
 		private var _bg:Sprite;
 		private var _textBox:Text;
@@ -167,14 +169,15 @@ package modules.videoPlayer.controls.babelia
 		private function CreateBG( bgWidth:Number, bgHeight:Number ):void
 		{
 			_bg.graphics.clear();
-			_bg.graphics.beginFill( getSkinColor(BORDER_COLOR) );
-			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
+			
+			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
+			_bg.graphics.drawRoundRect(0, 0, width, height, getSkinColor(CORNER_RADIUS), getSkinColor(CORNER_RADIUS));
 			_bg.graphics.endFill();
 			if ( !_highlight )
 				_bg.graphics.beginFill(getSkinColor(BG_COLOR));
 			else
 				_bg.graphics.beginFill(getSkinColor(HL_COLOR));
-			_bg.graphics.drawRoundRect(2, 2, width-4, height-4, 10, 10);
+			_bg.graphics.drawRoundRect(getSkinColor(BORDER_WEIGHT), getSkinColor(BORDER_WEIGHT), width - (2*getSkinColor(BORDER_WEIGHT)), height - (2*getSkinColor(BORDER_WEIGHT)), getSkinColor(CORNER_RADIUS), getSkinColor(CORNER_RADIUS));
 			_bg.graphics.endFill();
 		}
 		

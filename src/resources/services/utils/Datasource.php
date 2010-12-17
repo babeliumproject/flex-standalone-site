@@ -88,6 +88,10 @@ class Datasource
 			return false;
 		}
 	}
+	
+	public function _affectedRows() {
+		mysqli_affected_rows($this->dbLink);
+	}
 
 	private function _checkConnectionErrors(){
 		$errno = mysqli_connect_errno();

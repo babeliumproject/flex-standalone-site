@@ -2,21 +2,28 @@
 <VideoPlayerSkin>
 	<Component name="VideoPlayerBabelia">
 		<Property name="bgColor">0xFFFFFF</Property>
-		<Property name="roleBgColor">0xCECECE</Property>
+		<Property name="roleBgColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="ArrowPanel">
-		<Property name="bgColor">0xFFFFFF</Property>
+		<Property name="bgColor">0xdbd7bf</Property>
 		<Property name="hlColor">0xFFCB99</Property>
+		<Property name="borderColor">0xa8a592</Property>
+		<Property name="borderWeight">1</Property>
+		<Property name="cornerRadius">0</Property>
+		<Property name="bgAlpha">65</Property>
 	</Component>
 	<Component name="LocaleComboBox">
 		<Property name="bgColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="RoleTalkingPanel">
-		<Property name="bgColor">0xFFFFFF</Property>
-		<Property name="textColor">0x000088</Property>
-		<Property name="roleColor">0x880000</Property>
-		<Property name="barColor">0x000088</Property>
+		<Property name="bgColor">0xdf5c02</Property>
+		<Property name="textColor">0xfcfaeb</Property>
+		<Property name="roleColor">0x783101</Property>
+		<Property name="barColor">0xdf5c02</Property>
 		<Property name="hlColor">0xFFCB99</Property>
+		<Property name="borderColor">0x913b01</Property>
+		<Property name="borderWeight">1</Property>
+		<Property name="cornerRadius">0</Property>
 	</Component>
 	<Component name="SubtitleButton">
 		<Property name="bgColor">0xFFFFFF</Property>
@@ -34,7 +41,7 @@
 	</Component>
 	<Component name="ElapsedTime">
 		<Property name="bgColor">0xFFFFFF</Property>
-		<Property name="textColor">0x000000</Property>
+		<Property name="textColor">0x7B970A</Property>
 	</Component>
 	<Component name="ScrubberBar">
 		<Property name="bgColor">0xFFFFFF</Property>
