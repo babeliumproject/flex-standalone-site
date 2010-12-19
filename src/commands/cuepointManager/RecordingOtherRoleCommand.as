@@ -4,26 +4,25 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import modules.videoPlayer.VideoPlayerBabelia;
+	
+	import vo.CueObject;
 
 	public class RecordingOtherRoleCommand implements ICommand
 	{
 		private var VP:VideoPlayerBabelia;
-		private var text:String;
-		private var role:String;
-		private var time:Number;
+		private var cue:CueObject;
 		
-		public function RecordingOtherRoleCommand(text:String, role:String, time:Number, VP:VideoPlayerBabelia)
+		public function RecordingOtherRoleCommand(cue:CueObject, VP:VideoPlayerBabelia)
 		{
 			this.VP = VP;
-			this.text = text;
-			this.role = role;
-			this.time = time;
+			this.cue = cue;
 		}
 
 		public function execute(event:CairngormEvent):void
 		{
-			VP.setSubtitle(text);
-			VP.startTalking(role, time);
+			VP.setSubtitle(cue.text, cue.textColor);
+			var time:Number = cue.endTime - cue.startTime as Number;
+			VP.startTalking(cue.role, time);
 			VP.highlight = false;
 		}	
 	}

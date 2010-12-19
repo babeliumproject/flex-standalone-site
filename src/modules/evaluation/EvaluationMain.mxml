@@ -266,15 +266,15 @@
 
 				for each (var cueobj:CueObject in auxList)
 				{
-					if (cueobj.getRole() != _responseCharacterName)
+					if (cueobj.role != _responseCharacterName)
 					{
-						cueobj.setStartCommand(new RecordingOtherRoleCommand(cueobj.getText(), cueobj.getRole(), cueobj.getEndTime() - cueobj.getStartTime(), VP));
+						cueobj.setStartCommand(new RecordingOtherRoleCommand(cueobj, VP));
 
 						cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
 					}
 					else
 					{
-						cueobj.setStartCommand(new StartRecordingSelectedRoleCommand(cueobj.getText(), _responseCharacterName, cueobj.getEndTime() - cueobj.getStartTime(), VP));
+						cueobj.setStartCommand(new StartRecordingSelectedRoleCommand(cueobj, VP));
 
 						cueobj.setEndCommand(new StopRecordingSelectedRoleCommand(VP));
 					}

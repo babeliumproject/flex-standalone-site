@@ -67,7 +67,7 @@ package modules.videoPlayer.controls.babelia
 			_dataProvider=data;
 
 			for each (var obj:Object in _dataProvider)
-				doShowArrow(obj.time, duration, obj.role == role);
+				doShowArrow(obj.startTime, duration, obj.role == role);
 		}
 
 		public function removeArrows():void

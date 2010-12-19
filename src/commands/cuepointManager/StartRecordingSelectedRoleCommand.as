@@ -4,33 +4,32 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import modules.videoPlayer.VideoPlayerBabelia;
+	
+	import vo.CueObject;
 
 	public class StartRecordingSelectedRoleCommand implements ICommand
 	{
 		private var VP:VideoPlayerBabelia;
-		private var text:String;
-		private var role:String;
-		private var time:Number;
+		private var cue:CueObject;
 		
 //		private var executed:Boolean = false;
 
-		public function StartRecordingSelectedRoleCommand(text:String, role:String, time:Number, VP:VideoPlayerBabelia)
+		public function StartRecordingSelectedRoleCommand(cue:CueObject, VP:VideoPlayerBabelia)
 		{
 			this.VP=VP;
-			this.text=text;
-			this.role=role;
-			this.time=time;
+			this.cue = cue;
 		}
 
 		public function execute(event:CairngormEvent):void
 		{
 //			if(!executed){
 //				executed = true;
-				VP.setSubtitle(text);
+				VP.setSubtitle(cue.text, cue.textColor);
 				//VP.playSpeakNotice();
 				VP.muteVideo(true);
 				VP.muteRecording(false);
-				VP.startTalking(role, time);
+				var time:Number = cue.endTime - cue.startTime as Number;
+				VP.startTalking(cue.role, time);
 				VP.highlight = true;
 					//if(!DataModel.getInstance().soundDetected)
 					//	DataModel.getInstance().gapsWithNoSound++;

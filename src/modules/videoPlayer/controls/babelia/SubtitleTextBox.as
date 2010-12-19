@@ -2,9 +2,9 @@ package modules.videoPlayer.controls.babelia
 {
 	import flash.display.Sprite;
 	import flash.text.FontStyle;
-
+	
 	import modules.videoPlayer.controls.SkinableComponent;
-
+	
 	import mx.controls.Text;
 
 	public class SubtitleTextBox extends SkinableComponent
@@ -68,8 +68,9 @@ package modules.videoPlayer.controls.babelia
 			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));
 		}
 
-		public function setText(text:String):void
+		public function setText(text:String,textColor:uint=0xffffff):void
 		{
+			_textBox.setStyle("color", textColor);
 			_textBox.text=text;
 		}
 

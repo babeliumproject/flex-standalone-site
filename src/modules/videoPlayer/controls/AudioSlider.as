@@ -1,11 +1,13 @@
 package modules.videoPlayer.controls
 {
-	import modules.videoPlayer.events.VolumeEvent;
-	
+	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	
+	import modules.videoPlayer.events.VolumeEvent;
 	
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
@@ -23,6 +25,16 @@ package modules.videoPlayer.controls
 		public static const SCRUBBERBORDER_COLOR:String = "scrubberBorderColor";
 		public static const MUTEOVERBG_COLOR:String = "muteOverBgColor";
 		public static const MUTE_COLOR:String = "muteColor";
+		
+		public static const BG_GRADIENT_ANGLE:String = "bgGradientAngle";
+		public static const BG_GRADIENT_START_COLOR:String = "bgGradientStartColor";
+		public static const BG_GRADIENT_END_COLOR:String = "bgGradientEndColor";
+		public static const BG_GRADIENT_START_ALPHA:String = "bgGradientStartAlpha";
+		public static const BG_GRADIENT_END_ALPHA:String = "bgGradientEndAlpha";
+		public static const BG_GRADIENT_START_RATIO:String = "bgGradientStartRatio";
+		public static const BG_GRADIENT_END_RATIO:String = "bgGradientEndRatio";
+		public static const BORDER_COLOR:String = "borderColor";
+		public static const BORDER_WEIGHT:String = "borderWeight";
 		
 		/**
 		 * Variables
@@ -185,10 +197,19 @@ package modules.videoPlayer.controls
 			if( height == 0 ) height = _defaultHeight;
 			
 			// Create Background
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox(height, height, getSkinColor(BG_GRADIENT_ANGLE)*Math.PI/180, 0, 0);
+			
+			var colors:Array = [getSkinColor(BG_GRADIENT_START_COLOR), getSkinColor(BG_GRADIENT_END_COLOR)];
+			var alphas:Array = [getSkinColor(BG_GRADIENT_START_ALPHA), getSkinColor(BG_GRADIENT_END_ALPHA)];
+			var ratios:Array = [getSkinColor(BG_GRADIENT_START_RATIO), getSkinColor(BG_GRADIENT_END_RATIO)];
+			
 			_bg.graphics.clear();
-			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
+			_bg.graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr);
+			if(getSkinColor(BORDER_WEIGHT) > 0)
+				_bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT),getSkinColor(BORDER_COLOR));
 			_bg.graphics.drawRect( 0, 0, width, height );
-			_bg.graphics.endFill();			
+			_bg.graphics.endFill();		
 			
 			// mute button
 			_mutOverBg.graphics.clear();

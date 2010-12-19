@@ -1,6 +1,8 @@
 package modules.videoPlayer.controls
 {
+	import flash.display.GradientType;
 	import flash.display.Sprite;
+	import flash.geom.Matrix;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -14,6 +16,16 @@ package modules.videoPlayer.controls
 		 */
 		public static const BG_COLOR:String = "bgColor";
 		public static const TEXT_COLOR:String = "textColor";
+		
+		public static const BG_GRADIENT_ANGLE:String = "bgGradientAngle";
+		public static const BG_GRADIENT_START_COLOR:String = "bgGradientStartColor";
+		public static const BG_GRADIENT_END_COLOR:String = "bgGradientEndColor";
+		public static const BG_GRADIENT_START_ALPHA:String = "bgGradientStartAlpha";
+		public static const BG_GRADIENT_END_ALPHA:String = "bgGradientEndAlpha";
+		public static const BG_GRADIENT_START_RATIO:String = "bgGradientStartRatio";
+		public static const BG_GRADIENT_END_RATIO:String = "bgGradientEndRatio";
+		public static const BORDER_COLOR:String = "borderColor";
+		public static const BORDER_WEIGHT:String = "borderWeight";
 
 		/** 
 		 * Variables
@@ -85,6 +97,21 @@ package modules.videoPlayer.controls
 			_bg.graphics.beginFill( getSkinColor(BG_COLOR) );
 			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
 			_bg.graphics.endFill();
+			
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox(bgHeight, bgHeight, getSkinColor(BG_GRADIENT_ANGLE)*Math.PI/180, 0, 0);
+			
+			var colors:Array = [getSkinColor(BG_GRADIENT_START_COLOR), getSkinColor(BG_GRADIENT_END_COLOR)];
+			var alphas:Array = [getSkinColor(BG_GRADIENT_START_ALPHA), getSkinColor(BG_GRADIENT_END_ALPHA)];
+			var ratios:Array = [getSkinColor(BG_GRADIENT_START_RATIO), getSkinColor(BG_GRADIENT_END_RATIO)];
+			
+			_bg.graphics.clear();
+			_bg.graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr);
+			if(getSkinColor(BORDER_WEIGHT) > 0)
+				_bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT),getSkinColor(BORDER_COLOR));
+			_bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
+			_bg.graphics.endFill();
+			
 		}
 		
 		

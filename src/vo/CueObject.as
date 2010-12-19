@@ -11,12 +11,13 @@ package vo
 		public var roleId:int;
 		public var role:String;
 		public var text:String;
+		public var textColor:uint;
 		
 		private var startCommand:ICommand;
 		private var endCommand:ICommand;
 
 
-		public function CueObject(subtitleId:uint, startTime:Number, endTime:Number=-1, text:String=null, roleId:int=0, role:String=null, startCommand:ICommand=null, endCommand:ICommand=null)
+		public function CueObject(subtitleId:uint, startTime:Number, endTime:Number=-1, text:String=null, roleId:int=0, role:String=null, startCommand:ICommand=null, endCommand:ICommand=null, textColor:uint=0xffffff)
 		{
 			this.subtitleId=subtitleId;
 			this.startTime=startTime;
@@ -26,6 +27,7 @@ package vo
 			this.role=role;
 			this.startCommand=startCommand;
 			this.endCommand=endCommand;
+			this.textColor=textColor;
 		}
 
 		public function executeStartCommand():void
@@ -36,59 +38,6 @@ package vo
 		public function executeEndCommand():void
 		{
 			endCommand.execute(null);
-		}
-
-		/*
-		 * GETTERS & SETTERS
-		 */
-		public function getStartTime():Number
-		{
-			return this.startTime;
-		}
-
-		public function getEndTime():Number
-		{
-			return this.endTime;
-		}
-
-		public function getText():String
-		{
-			return this.text;
-		}
-
-		public function getRoleId():int
-		{
-			return this.roleId;
-		}
-
-		public function getRole():String
-		{
-			return this.role;
-		}
-
-		public function setStartTime(time:Number):void
-		{
-			this.startTime=time;
-		}
-
-		public function setEndTime(time:Number):void
-		{
-			this.endTime=time;
-		}
-
-		public function setText(text:String):void
-		{
-			this.text=text;
-		}
-
-		public function setRoleId(roleId:int):void
-		{
-			this.roleId=roleId;
-		}
-
-		public function setRole(role:String):void
-		{
-			this.role=role;
 		}
 
 		public function setStartCommand(command:ICommand):void

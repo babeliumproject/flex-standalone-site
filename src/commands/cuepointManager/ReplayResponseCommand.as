@@ -22,8 +22,8 @@ package commands.cuepointManager
 		{
 			if(cue)
 			{
-				VP.setSubtitle(cue.text);
-				var time:Number = cue.getEndTime() - cue.getStartTime() as Number;
+				VP.setSubtitle(cue.text, cue.textColor);
+				var time:Number = cue.endTime - cue.startTime as Number;
 				VP.startTalking(cue.role, time);
 			}
 			else

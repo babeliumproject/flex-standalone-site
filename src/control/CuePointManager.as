@@ -40,6 +40,9 @@ package control
 		private var exerciseId:int;
 		private var subtitleId:int;
 		public var cached:Boolean=false;
+		
+		private var roleColors:Array = [0xffffff, 0xfffd22, 0x69fc00, 0xfd7200, 0x056cf9, 0xff0f0b, 0xc314c9, 0xff6be5];
+		private var colorDictionary:Array = new Array();
 
 		/**
 		 * Constructor - Singleton Pattern
@@ -252,10 +255,24 @@ package control
 
 		public function addCueFromSubtitleLine(subline:SubtitleLineVO):void
 		{
-			var cueObj:CueObject=new CueObject(subline.subtitleId, subline.showTime, subline.hideTime, subline.text, subline.exerciseRoleId, subline.exerciseRoleName);
+			var found:Boolean = false;
+			var color:uint = roleColors[0];
+			for(var i:uint =0; i < colorDictionary.length; i++){
+				if(colorDictionary[i] == subline.exerciseRoleId){
+					found = true;
+					color = roleColors[i];
+					break;
+				}
+			}
+			if(!found){
+				colorDictionary.push(subline.exerciseRoleId);
+				color = roleColors[colorDictionary.length-1];
+			}
+			//trace("roleId: "+subline.exerciseRoleId+" length: "+colorDictionary.length+" color: "+color);
+			
+			var cueObj:CueObject=new CueObject(subline.subtitleId, subline.showTime, subline.hideTime, subline.text, subline.exerciseRoleId, subline.exerciseRoleName,null,null,color);
 			this.addCue(cueObj);
 		}
-
 
 		/**
 		 * Getting cuelists for set their commands
@@ -273,7 +290,7 @@ package control
 			var arrows:ArrayCollection=new ArrayCollection();
 
 			for each (var cue:CueObject in getCuelist())
-				arrows.addItem({time: cue.getStartTime(), role: cue.getRole()});
+				arrows.addItem({startTime: cue.startTime, endTime: cue.endTime, role: cue.role});
 
 			return arrows;
 		}
@@ -292,6 +309,7 @@ package control
 
 				if (resultCollection.length > 0 && resultCollection.getItemAt(0) is SubtitleLineVO)
 				{
+					colorDictionary = new Array();
 					for (var i:int=0; i < resultCollection.length; i++)
 					{
 						addCueFromSubtitleLine(resultCollection.getItemAt(i) as SubtitleLineVO);

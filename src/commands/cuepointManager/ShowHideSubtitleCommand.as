@@ -28,7 +28,7 @@ package commands.cuepointManager
 		{
 			if (cue)
 			{
-				VP.setSubtitle(cue.text);
+				VP.setSubtitle(cue.text,cue.textColor);
 				var index:int = CuePointManager.getInstance().getCueIndex(cue);
 				if(dg != null && dg.rowCount > index)
 					dg.selectedIndex = index;

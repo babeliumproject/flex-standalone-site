@@ -7,6 +7,7 @@ package modules.videoPlayer
 {
 	import flash.display.*;
 	import flash.events.*;
+	import flash.geom.Matrix;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
@@ -232,9 +233,9 @@ package modules.videoPlayer
 		 * Setters and Getters
 		 *
 		 */
-		public function setSubtitle(text:String):void
+		public function setSubtitle(text:String, textColor:uint=0xffffff):void
 		{
-			_subtitleBox.setText(text);
+			_subtitleBox.setText(text, textColor);
 		}
 
 		public function set subtitles(flag:Boolean):void
@@ -448,14 +449,27 @@ package modules.videoPlayer
 			_arrowContainer.width=_videoBarPanel.width;
 			_arrowContainer.height=50;
 			_arrowContainer.x=_defaultMargin;
-
+			
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox( _arrowContainer.height,  _arrowContainer.height, 270*Math.PI/180, 0, 0);
+			
+			var colors:Array = [0xffffff, 0xd8d8d8];
+			var alphas:Array = [1, 1];
+			var ratios:Array = [0, 255];
+			
 			_bgArrow.graphics.clear();
-			_bgArrow.graphics.beginFill(getSkinColor(ROLEBORDER_COLOR));
-			_bgArrow.graphics.drawRect(0, 0, _arrowContainer.width, _arrowContainer.height);
+			_bgArrow.graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr);
+			_bgArrow.graphics.lineStyle(1,0xa7a7a7);
+			_bgArrow.graphics.drawRect( 0, 0, _arrowContainer.width,  _arrowContainer.height );
 			_bgArrow.graphics.endFill();
-			_bgArrow.graphics.beginFill(getSkinColor(ROLEBG_COLOR));
-			_bgArrow.graphics.drawRect(1, 1, _arrowContainer.width - 2, _arrowContainer.height - 2);
-			_bgArrow.graphics.endFill();
+
+//			_bgArrow.graphics.clear();
+//			_bgArrow.graphics.beginFill(getSkinColor(ROLEBORDER_COLOR));
+//			_bgArrow.graphics.drawRect(0, 0, _arrowContainer.width, _arrowContainer.height);
+//			_bgArrow.graphics.endFill();
+//			_bgArrow.graphics.beginFill(getSkinColor(ROLEBG_COLOR));
+//			_bgArrow.graphics.drawRect(1, 1, _arrowContainer.width - 2, _arrowContainer.height - 1);
+//			_bgArrow.graphics.endFill();
 
 			_subtitleButton.resize(45, 20);
 			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - 45;
@@ -687,7 +701,7 @@ package modules.videoPlayer
 		private function onSubtitleButtonClicked(e:SubtitleButtonEvent):void
 		{
 			
-			if (e.state == SubtitleButton.SUBTITLES_ENABLED)
+			if (e.state)
 				doShowSubtitlePanel();
 			else
 				doHideSubtitlePanel();

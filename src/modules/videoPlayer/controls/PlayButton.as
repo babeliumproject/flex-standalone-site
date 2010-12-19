@@ -85,9 +85,9 @@ package modules.videoPlayer.controls
 			var g:Sprite = btn;
 			g.graphics.clear();
 			g.graphics.beginFill( getSkinColor(ICON_COLOR) );
-			g.graphics.lineTo( 6, 6 );
+			g.graphics.lineTo( 10, 5 );
 			g.graphics.lineTo( 0, 10 );
-			g.graphics.lineTo( 0,0 );
+			g.graphics.lineTo( 0, 0 );
 			g.graphics.endFill();
 		}
 		

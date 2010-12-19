@@ -34,7 +34,7 @@ package modules.videoPlayer.controls
 			var g:Sprite = btn;
 			g.graphics.clear();
 			g.graphics.beginFill( getSkinColor(ICON_COLOR) );
-			g.graphics.drawRect( 0, 0, 8, 8 );
+			g.graphics.drawRect( 0, 0, 10, 10 );
 			g.graphics.endFill();
 		}
 				
