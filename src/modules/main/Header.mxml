@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<main:HeaderClass xmlns:fx="http://ns.adobe.com/mxml/2009"
-				  xmlns:s="library://ns.adobe.com/flex/spark"
-				  xmlns:mx="library://ns.adobe.com/flex/mx"
-				  xmlns:main="modules.main.*"
-				  minHeight="0"
-				  minWidth="1000"
-				  xmlns:skins="skins.*">
-	<fx:Script>
-		<![CDATA[
-			import skins.IconLinkSkin;
-		]]>
-	</fx:Script>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:main="modules.main.*"
+		 xmlns:skins="skins.*"
+		 width="100%"
+		 creationComplete="completeHandler(event)">
 
-	<s:HGroup width="100%"
+	<s:VGroup width="100%"
 			  minWidth="1000"
-			  paddingTop="4"
-			  paddingBottom="4"
-			  paddingLeft="4"
-			  paddingRight="4"
-			  verticalAlign="middle">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
-		<main:LocalizationComboBox id="localeComboBox"/>
+			  height="100%"
+			  gap="0">
 
-		<s:HGroup horizontalAlign="right"
-				  verticalAlign="middle"
-				  width="100%">
+		<s:BorderContainer id="headerBorderContainer"
+						   styleName="headerBorderContainer"
+						   minHeight="0"
+						   width="100%"
+						   minWidth="1000">
+
+			<s:layout>
+				<s:HorizontalLayout paddingTop="4"
+									paddingBottom="4"
+									paddingLeft="4"
+									paddingRight="4"
+									verticalAlign="middle"/>
+			</s:layout>
+
+
+			<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
+
+			<main:LocalizationComboBox id="localeComboBox"/>
+
+			<s:HGroup horizontalAlign="right"
+					  verticalAlign="middle"
+					  width="100%"/>
 
 			<skins:IconButton id="helpFAQButton"
 							  styleName="helpLinkButton"
@@ -69,17 +78,157 @@
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-				<mx:PopUpMenuButton id="userCPName"
-									label="UserName"
-									labelFunction="userOptionsLabelFunction"
-									dataProvider="{userOptions}"
-									itemClick="userOptionsItemClickHandler(event)"/>
+
+				<s:Label text="{resourceManager.getString('myResources', 'HELLO')+','}"
+						 styleName="boldDarkerGreyLabel"/>
+				<s:HGroup gap="0"
+						  verticalAlign="middle"
+						  height="100%">
+					<s:Label text="("
+							 styleName="boldDarkerGreyLabel"/>
+					<skins:IconButton id="userCPName"
+									  styleName="orangeLinkButton"
+									  label="UserName"
+									  click="userOptionsItemClickHandler(event)"/>
+					<s:Label text=")"
+							 styleName="boldDarkerGreyLabel"/>
+				</s:HGroup>
 				<skins:IconButton id="signOutButton"
 								  styleName="signOutLinkButton"
 								  toolTip="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
 								  click="signOutClickHandler()"/>
 			</s:HGroup>
-		</s:HGroup>
 
-	</s:HGroup>
-</main:HeaderClass>
+		</s:BorderContainer>
+
+	</s:VGroup>
+
+	<fx:Script>
+		<![CDATA[
+			import events.LoginEvent;
+			import events.ViewChangeEvent;
+
+			import model.DataModel;
+
+			import modules.userManagement.LoginRestorePassForm;
+
+			import mx.binding.utils.BindingUtils;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			import spark.effects.Animate;
+			import spark.effects.animation.MotionPath;
+			import spark.effects.animation.RepeatBehavior;
+			import spark.effects.animation.SimpleMotionPath;
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				var model:DataModel=DataModel.getInstance();
+
+				BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
+				BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
+				BindingUtils.bindSetter(exerciseRecording, model, "recordingExercise");
+				BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
+			}
+
+			public function signInClickHandler():void
+			{
+				//Create and show login popup
+				showLogin();
+			}
+
+			public function showLogin():void
+			{
+				DataModel.getInstance().loginPop=PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginRestorePassForm, true) as LoginRestorePassForm;
+				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
+			}
+
+			public function signUpClickHandler():void
+			{
+				//Change contentViewStack to sign up page
+				new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
+			}
+
+			public function userOptionsItemClickHandler(event:MouseEvent):void
+			{
+				new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
+			}
+
+			public function signOutClickHandler():void
+			{
+				//Since our user isn't signed in we hide the users cp
+				new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
+				// Redirecting to home
+				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				anonymousCP.includeInLayout=true;
+				anonymousCP.visible=true;
+				userCP.includeInLayout=false;
+				userCP.visible=false;
+			}
+
+			private function onUserAuthenticated(upd:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					anonymousCP.visible=false;
+					anonymousCP.includeInLayout=false;
+					userCPName.label=DataModel.getInstance().loggedUser.name;
+					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					userCP.includeInLayout=true;
+					userCP.visible=true;
+					callLater(localeComboBox.updateSelectedIndex);
+
+				}
+			}
+
+			private function blinkCredits():void
+			{
+				var motion:SimpleMotionPath=new SimpleMotionPath();
+				motion.property="alpha";
+				motion.valueFrom=1.0;
+				motion.valueTo=0.0;
+				var motionVector:Vector.<MotionPath>=new Vector.<MotionPath>();
+				motionVector.push(motion);
+
+				var anim:Animate=new Animate();
+				anim.repeatBehavior=RepeatBehavior.REVERSE;
+				anim.repeatCount=20;
+				anim.duration=300;
+				anim.target=uCrds;
+				anim.motionPaths=motionVector;
+				anim.play();
+			}
+
+			private function creditsUpdated(retr:Boolean):void
+			{
+				if (DataModel.getInstance().loggedUser && DataModel.getInstance().creditUpdateRetrieved)
+				{
+					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					blinkCredits();
+					DataModel.getInstance().creditUpdateRetrieved=false;
+				}
+			}
+
+			private function exerciseRecording(value:Boolean):void
+			{
+				var status:Boolean=!DataModel.getInstance().recordingExercise;
+				signInButton.enabled=status;
+				signUpButton.enabled=status;
+				signOutButton.enabled=status;
+			}
+
+			public function helpFAQ_clickHandler(event:MouseEvent):void
+			{
+				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
+			}
+
+			private function onAccountActivation(flag:Boolean):void
+			{
+				if (flag == true)
+					localeComboBox.updateSelectedIndex();
+			}
+		]]>
+	</fx:Script>
+
+</s:Group>

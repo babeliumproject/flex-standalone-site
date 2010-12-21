@@ -778,13 +778,17 @@
 					   width="100%"
 					   minHeight="0">
 		<s:layout>
-			<s:VerticalLayout paddingTop="16"
-							  paddingLeft="16"
-							  paddingRight="16"/>
+			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+				 paddingLeft="16"
+				 paddingRight="16"
 				 styleName="sectionInfoTitleLabel"/>
-		<s:Label text="Enter section description here."/>
+		<s:Label text="Enter section description here."
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
 	</s:BorderContainer>
 
 
@@ -844,7 +848,7 @@
 			</s:VGroup>
 		</s:BorderContainer>
 
-		<!-- Selected Exercise Panel -->	
+		<!-- Selected Exercise Panel -->
 		<s:BorderContainer id="panelSelectedExercise"
 						   includeInLayout="false"
 						   visible="false"

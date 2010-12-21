@@ -83,39 +83,79 @@ class UserDAO {
 
 		try {
 			$verifySession = new SessionHandler(true);
-				
+
 			$sql = "SELECT prefValue FROM preferences WHERE ( prefName='positives_to_next_level' )";
 			$positivesToNextLevel = $this->_getPositivesToNextLevel($sql);
-				
+
 			$currentLanguages = $_SESSION['user-languages'];
-				
+
+			$this->conn->_startTransaction();
+
 			//Delete the languages that have changed
 			$sql = "DELETE FROM user_languages WHERE fk_user_id = '%d'";
 			$result = $this->conn->_execute($sql, $_SESSION['uid']);
-			if($result && $this->conn->_affectedRows > 0){
-					
-				//Insert the new languages
-					
-				$params = array();
 
-
-				$sql = "INSERT INTO user_languages (fk_user_id, language, level, purpose, positives_to_next_level) VALUES ";
-				foreach($languages as $language) {
-					$sql .= " ('%d', '%s', '%d', '%s', '%d'),";
-					array_push($params, $_SESSION['uid'], $language->language, $language->level, $language->purpose, $positivesToNextLevel);
-				}
-				unset($language);
-				$sql = substr($sql,0,-1);
-				// put sql query and all params in one array
-				$merge = array_merge((array)$sql, $params);
-
-				$result = $this->conn->_insert($merge);
-				return $result;
+			if(!$result || $this->conn->_affectedRows > 0){
+				$this->conn->_failedTransaction();
+				throw new Exception("Language modify failed");
 			}
+
+			//Insert the new languages
+			$params = array();
+
+			$sql = "INSERT INTO user_languages (fk_user_id, language, level, purpose, positives_to_next_level) VALUES ";
+			foreach($languages as $language) {
+				$sql .= " ('%d', '%s', '%d', '%s', '%d'),";
+				array_push($params, $_SESSION['uid'], $language->language, $language->level, $language->purpose, $positivesToNextLevel);
+			}
+			unset($language);
+			$sql = substr($sql,0,-1);
+			// put sql query and all params in one array
+			$merge = array_merge((array)$sql, $params);
+
+			$result = $this->conn->_insert($merge);
+
+			if (!$result){
+				$this->conn->_failedTransaction();
+				throw new Exception("Language modify failed");
+			} else {
+				$this->conn->_endTransaction();
+			}
+
+			$result = $this->_getUserLanguages();
+			if($result){
+				$_SESSION['user-languages'];
+			}
+			return $result;
+			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 
+	}
+
+	private function _getUserLanguages(){
+		$sql = "SELECT language, level, positives_to_next_level, purpose
+				FROM user_languages WHERE (fk_user_id='%d')";
+		return $this->_listUserLanguagesQuery($sql, $_SESSION['uid']);
+	}
+
+
+
+	private function _listUserLanguagesQuery(){
+		$searchResults = array();
+
+		$result = $this->conn->_execute(func_get_args());
+		while($row = $this->conn->_nextRow($result)){
+			$temp = new UserLanguageVO();
+			$temp->language = $row[0];
+			$temp->level = $row[1];
+			$temp->positivesToNextLevel = $row[2];
+			$temp->purpose = $row[3];
+
+			array_push($searchResults, $temp);
+		}
+		return $searchResults;
 	}
 
 	public function restorePass($username)

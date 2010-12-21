@@ -156,7 +156,8 @@ class EvaluationDAO {
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
 			         INNER JOIN users AS U ON U.ID = A.fk_user_id
-			    WHERE (C.fk_user_id = '%d')";
+			    WHERE (C.fk_user_id = '%d')
+			    ORDER BY A.adding_date DESC";
 
 		$searchResults = $this->_listAssessedByCurrentUserQuery ( $sql, $_SESSION['uid'] );
 

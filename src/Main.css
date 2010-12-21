@@ -49,7 +49,16 @@ s|Panel{
 	roundedBottomCorners: true;
 }
 
+/*
 main|HeaderClass{
+	backgroundImage: Embed('resources/images/header_bgr_pttr.png');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 1.0;
+	borderVisible: false;
+	borderWeight: 0;
+}*/
+
+.headerBorderContainer{
 	backgroundImage: Embed('resources/images/header_bgr_pttr.png');
 	backgroundImageFillMode: repeat;
 	backgroundAlpha: 1.0;
@@ -86,6 +95,16 @@ s|TextInput{
 	skinClass:ClassReference("skins.IconLinkSkin");
 	fontWeight:bold;
 	color:#cc9900;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.orangeLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	color:#df5c02;
 	colorOver:#666666;
 	colorDown:#666666;
 	underlineOver:true;

@@ -83,6 +83,7 @@
 			<main:Header id="header"/>
 			<main:Navigation id="navigation"/>
 			<main:Body id="content"/>
+			<main:Footer id="footer"/>
 		</s:VGroup>
 	</s:Scroller>
 

@@ -40,7 +40,7 @@ package modules.main
 	
 	import vo.LoginVO;
 
-	public class HeaderClass extends BorderContainer
+	public class HeaderClass extends HGroup
 	{
 		private var interval:uint;
 		private var intervalLoops:int;
@@ -49,16 +49,13 @@ package modules.main
 
 		//The keyCode for ENTER key
 		public static const ENTER_KEY:int=13;
-		
-		[Bindable]
-		public var userOptions:Array= new Array({code: 'LABEL_USER_ACCOUNT', action: ViewChangeEvent.VIEW_ACCOUNT_MODULE});
 
 		//Visual components declaration
 		public var userCP:HGroup;
 		public var anonymousCP:HGroup;
 
-		public var userCPName:PopUpMenuButton;
 		[Bindable] public var uCrds:Label;
+		public var userCPName:IconButton;
 		public var signInButton:IconButton;
 		public var signUpButton:IconButton;
 		public var signOutButton:IconButton;
@@ -74,7 +71,9 @@ package modules.main
 		
 		public function onCreationComplete(event:FlexEvent):void
 		{
-
+			this.percentWidth = 100;
+			this.minWidth = 1000;
+			
 			//Set the data bindings for this class
 			setBindings();
 		}
@@ -111,11 +110,9 @@ package modules.main
 			return resourceManager.getString('myResources', item.code.toString());
 		}
 
-		public function userOptionsItemClickHandler(event:MenuEvent):void
+		public function userOptionsItemClickHandler(event:MouseEvent):void
 		{
-			var whereToGo:String = event.item.action;
-			//Change contentViewStack to account page
-			new ViewChangeEvent(whereToGo).dispatch();
+			new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
 		}
 
 		public function signOutClickHandler():void

@@ -150,7 +150,8 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"
 							  paddingLeft="16"
-							  paddingRight="16"/>
+							  paddingRight="16"
+							  paddingBottom="16"/>
 		</s:layout>
 		<s:HGroup id="descriptionPaginationUnsigned"/>
 		<mx:ViewStack id="appDescriptionViewStack"

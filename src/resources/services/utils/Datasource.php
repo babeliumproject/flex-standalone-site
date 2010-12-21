@@ -90,7 +90,7 @@ class Datasource
 	}
 	
 	public function _affectedRows() {
-		mysqli_affected_rows($this->dbLink);
+		return mysqli_affected_rows($this->dbLink);
 	}
 
 	private function _checkConnectionErrors(){

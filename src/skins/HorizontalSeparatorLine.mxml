@@ -5,11 +5,14 @@
 		xmlns:mx="library://ns.adobe.com/flex/mx"
 		width="100%">
 	<s:stroke>
+		<!--
 		<mx:LinearGradientStroke weight="1" rotation="90">
 			<mx:entries>
 				<mx:GradientEntry color="#38babc"/>
 				<mx:GradientEntry color="#f9f9f9"/>
 			</mx:entries>
 		</mx:LinearGradientStroke>
+		-->
+		<mx:SolidColorStroke weight="1" color="#38babc"/>
 	</s:stroke>
 </s:Line>

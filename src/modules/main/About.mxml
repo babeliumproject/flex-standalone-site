@@ -2,27 +2,30 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%">
+		  width="100%" xmlns:skins="skins.*">
 
 	<s:BorderContainer styleName="sectionInfoBox"
 					   width="100%"
 					   minWidth="1000"
 					   minHeight="0">
 		<s:layout>
-			<s:VerticalLayout paddingBottom="16"
-							  paddingLeft="16"
-							  paddingRight="16"
-							  paddingTop="16"/>
+			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
-				 styleName="sectionInfoTitleLabel"/>
-		<s:Label text="Enter section description here."/>
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<s:Label text="Enter section description here."
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
 	</s:BorderContainer>
 
-	<s:VGroup paddingBottom="10"
-			  paddingTop="10"
-			  paddingLeft="10"
-			  paddingRight="10"
+	<s:VGroup paddingBottom="16"
+			  paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16"
 			  width="100%">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
 				 styleName="boldYellowLabel"/>

@@ -10,27 +10,27 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-			
+
 			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
 			import model.LocalesAndFlags;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
-			
+
 			import skins.IconButtonSkin;
-			
+
 			import spark.components.Group;
-			
+
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-			
+
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
 
@@ -295,24 +295,32 @@
 					   width="100%"
 					   minHeight="0">
 		<s:layout>
-			<s:VerticalLayout paddingTop="16"
-							  paddingBottom="16"
-							  paddingLeft="16"
-							  paddingRight="16"/>
+			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','MESSAGE_SIGN_UP')}"
-				 styleName="sectionInfoTitleLabel"/>
-		<mx:Text text="Enter section description here."/>
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<s:Label text="Enter section description here."
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
 	</s:BorderContainer>
 
 
 	<s:Label id="errorInfo"
 			 styleName="errorLabel"
 			 width="100%"
-			 text="{DataModel.getInstance().registrationErrorMessage}"/>
+			 text="{DataModel.getInstance().registrationErrorMessage}"
+			 paddingBottom="16"
+			 paddingLeft="16"
+			 paddingRight="16"/>
 	<s:VGroup width="100%"
 			  horizontalAlign="center"
-			  styleName="padding20AllSidesBox">
+			  paddingBottom="16"
+			  paddingLeft="16"
+			  paddingRight="16">
 
 		<mx:Form styleName="roundedBlueBorderBox"
 				 width="100%"
