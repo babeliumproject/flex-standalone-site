@@ -211,6 +211,8 @@ package model
 		[Bindable] public var userLatestReceivedAssessments:ArrayCollection = new ArrayCollection();
 		[Bindable] public var userLatestDoneAssessmentsRetrieved:Boolean;
 		[Bindable] public var userLatestDoneAssessments:ArrayCollection = new ArrayCollection();
+		[Bindable] public var userLatestUploadedVideos:ArrayCollection = new ArrayCollection();
+		[Bindable] public var userLatestUploadedVideosRetrieved:Boolean;
 
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;

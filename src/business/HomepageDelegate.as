@@ -1,7 +1,7 @@
 package business
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
-
+	
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
@@ -31,23 +31,33 @@ package business
 		}
 		
 		public function usersLatestReceivedAssessments():void{
-			
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
+			var pendingCall:AsyncToken=service.usersLatestReceivedAssessment();
+			pendingCall.addResponder(responder);
 		}
 		
 		public function usersLatestGivenAssessments():void{
-			
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
+			var pendingCall:AsyncToken=service.usersLatestGivenAssessments();
+			pendingCall.addResponder(responder);
 		}
 		
 		public function usersLatestUploadedVideos():void{
-			
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
+			var pendingCall:AsyncToken=service.usersLatestUploadedVideos();
+			pendingCall.addResponder(responder);
 		}
 		
 		public function topScoreMostViewedVideos():void{
-			
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
+			var pendingCall:AsyncToken=service.topScoreMostViewedVideos();
+			pendingCall.addResponder(responder);
 		}
 		
 		public function latestAvailableVideos():void{
-			
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
+			var pendingCall:AsyncToken=service.latestAvailableVideos();
+			pendingCall.addResponder(responder);
 		}
 
 	}
