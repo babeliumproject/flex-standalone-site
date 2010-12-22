@@ -1,7 +1,7 @@
 package commands.home
 {
 	
-	import business.MessageOfTheDayDelegate;
+	import business.HomepageDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
@@ -25,7 +25,7 @@ package commands.home
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new MessageOfTheDayDelegate(this).signedMessagesOfTheDay((event as MessageOfTheDayEvent).messageLocale);
+			new HomepageDelegate(this).signedMessagesOfTheDay((event as MessageOfTheDayEvent).messageLocale);
 		}
 		
 		public function result(data:Object):void

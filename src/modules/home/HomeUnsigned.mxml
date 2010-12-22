@@ -168,13 +168,4 @@
 			 </s:HGroup>
 		-->
 	</s:BorderContainer>
-	<skins:IconButton skinClass="skins.IconButtonVerticalSkin"
-					  gradientColors="[#ffffff, #e3bb03]"
-					  gradientColorsOver="[#a2b342, #895472]"
-					  icon="@Embed('resources/images/upload_icon.png')"
-					  color="#b09002"
-					  fontWeight="bold"
-					  borderWeight="1"
-					  borderColors="#FFFFFF"
-					  label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"/>
 </s:VGroup>

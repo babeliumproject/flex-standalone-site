@@ -31,9 +31,11 @@
 	<!-- host component -->
 	<fx:Script fb:purpose="styling">
 		<![CDATA[
+			
 			import mx.collections.ArrayCollection;
 			import mx.graphics.GradientEntry;
 			import mx.graphics.LinearGradient;
+			import mx.utils.ArrayUtil;
 			/* Define the skin elements that should not be colorized.
 			 For button, the graphics are colorized but the label is not. */
 			static private const exclusions:Array=["labelDisplay"];
@@ -67,9 +69,9 @@
 			 */
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
-				var gc:Array = getStyle('gradientColors');
-				var gco:Array = getStyle('gradientColorsOver');
-				var gcd:Array = getStyle('gradientColorsDown');
+				var gc:Array = ArrayUtil.toArray(getStyle('gradientColors'));
+				var gco:Array = ArrayUtil.toArray(getStyle('gradientColorsOver'));
+				var gcd:Array = ArrayUtil.toArray(getStyle('gradientColorsDown'));
 				
 				if(gc && !equalArrays(gradientColors,gc)){
 					gradientColors=gc;
@@ -105,7 +107,7 @@
 					borderStroke.weight = borderWeight;
 				}
 				
-				var bgc:Array = getStyle('borderColors');
+				var bgc:Array = ArrayUtil.toArray(getStyle('borderColors'));
 				
 				if(bgc && !equalArrays(borderGradientColors, bgc)){
 					borderGradientColors = bgc;

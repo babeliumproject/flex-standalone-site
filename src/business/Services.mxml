@@ -77,15 +77,16 @@
 						 destination="empService"
 						 showBusyCursor="true"
 						 source="ResponseDAO"/>
+		
 		<mx:RemoteObject id="videoHistoryRO"
 						 destination="empService"
 						 showBusyCursor="false"
 						 source="UserVideoHistoryDAO"/>
 
-		<mx:RemoteObject id="motdRO"
+		<mx:RemoteObject id="homepageRO"
 						 destination="empService"
 						 showBusyCursor="true"
-						 source="MessageOfTheDayDAO"/>
+						 source="HomepageDAO"/>
 
 	</fx:Declarations>
 

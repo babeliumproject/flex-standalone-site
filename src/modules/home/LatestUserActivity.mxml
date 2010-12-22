@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*">
+	<fx:Script>
+		<![CDATA[
+			import events.HomepageEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+
+			[Bindable]
+			private var latestReceivedAssessmentsList:ArrayCollection;
+			[Bindable]
+			private var latestDoneAssessmentsList:ArrayCollection;
+
+			protected function latestReceivedAssessmentsDatagrid_changeHandler(event:ListEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function latestDoneAssessmentsDatagrid_changeHandler(event:ListEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function latestUploadedVideosDatagrid_changeHandler(event:ListEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+			protected function set retrieveUserActivity(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+				{
+					new HomepageEvent(HomepageEvent.LATEST_RECEIVED_ASSESSMENTS).dispatch();
+					new HomepageEvent(HomepageEvent.LATEST_DONE_ASSESSMENTS).dispatch()
+				}
+			}
+
+			protected function set handleLatestReceivedAssessments(value:Boolean):void
+			{
+				var lrDataprovider:ArrayCollection=DataModel.getInstance().userLatestReceivedAssessments;
+				latestReceivedAssessmentsDatagrid.rowCount=lrDataprovider.length;
+				latestReceivedAssessmentsList=lrDataprovider;
+			}
+
+			protected function set handleLatestDoneAssessments(value:Boolean):void
+			{
+				var ldDataprovider:ArrayCollection=DataModel.getInstance().userLatestDoneAssessments;
+				latestReceivedAssessmentsDatagrid.rowCount=ldDataprovider.length;
+				latestDoneAssessmentsList=ldDataprovider;
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveUserActivity"/>
+	<fx:Binding source="{DataModel.getInstance().userLatestReceivedAssessmentsRetrieved}"
+				destination="handleLatestReceivedAssessments"/>
+	<fx:Binding source="{DataModel.getInstance().userLatestDoneAssessmentsRetrieved}"
+				destination="handleLatestDoneAssessments"/>
+
+	<skins:HorizontalSeparatorLine width="100%"/>
+
+	<s:Label id="latestReceivedAssessmentsTitle"
+			 text="{resourceManager.getString('myResources','USER_LATEST_RECEIVED_ASSESSMENTS')}"/>
+	<skins:HorizontalSeparatorLine width="{latestReceivedAssessmentsTitle.width}"
+								   height="2"/>
+	<s:Label text="Explanation"/>
+	<mx:DataGrid id="latestReceivedAssessmentsDatagrid"
+				 width="100%"
+				 change="latestReceivedAssessmentsDatagrid_changeHandler(event)"
+				 dataProvider="{latestReceivedAssessmentsList}"
+				 horizontalScrollPolicy="off"
+				 verticalAlign="middle">
+		<mx:columns>
+			<mx:DataGridColumn headerText=""/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<skins:HorizontalSeparatorLine width="100%"/>
+
+	<s:Label id="latestDoneAssessmentsTitle"
+			 text="{resourceManager.getString('myResources','USER_LATEST_DONE_ASSESSMENTS')}"/>
+	<skins:HorizontalSeparatorLine width="{latestDoneAssessmentsTitle.width}"
+								   height="2"/>
+	<s:Label text="Explanation"/>
+	<mx:DataGrid id="latestDoneAssessmentsDatagrid"
+				 width="100%"
+				 change="latestDoneAssessmentsDatagrid_changeHandler(event)"
+				 dataProvider="{latestDoneAssessmentsList}"
+				 horizontalScrollPolicy="off"
+				 verticalAlign="middle">
+		<mx:columns>
+			<mx:DataGridColumn headerText=""/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<!-- This functionality is not visible for now
+	<skins:HorizontalSeparatorLine width="100%"/>
+
+	<s:Label id="latestUploadedVideosTitle"
+			 text="{resourceManager.getString('myResources','USER_LATEST_UPLOADED_VIDEOS')}"/>
+	<skins:HorizontalSeparatorLine width="{latestUploadedVideosTitle.width}"
+								   height="2"/>
+	<s:Label text="Explanation"/>
+	<mx:DataGrid id="latestUploadedVideosDatagrid"
+				 width="100%"
+				 change="latestUploadedVideosDatagrid_changeHandler(event)">
+	</mx:DataGrid>
+	-->
+
+</s:VGroup>

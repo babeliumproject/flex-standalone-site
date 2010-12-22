@@ -5,6 +5,34 @@
 		 xmlns:skins="skins.*"
 		 width="100%"
 		 height="45">
+
+	<fx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+			
+			protected function footerFAQ_clickHandler(event:MouseEvent):void
+			{
+				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
+			}
+
+			protected function footerAboutUs_clickHandler(event:MouseEvent):void
+			{
+				new ViewChangeEvent(ViewChangeEvent.VIEW_ABOUT_MODULE).dispatch();
+			}
+
+
+			protected function footerTermsOfUse_clickHandler(event:MouseEvent):void
+			{
+				
+			}
+
+			protected function footerCopyleft_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest('http://www.gnu.org/licenses/gpl-2.0.html'), '_blank');
+			}
+		]]>
+	</fx:Script>
+
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -35,8 +63,28 @@
 					<s:HorizontalLayout paddingTop="16"
 										paddingLeft="16"/>
 				</s:layout>
-
-				<s:Label text="Copyright 2010 Babelium | Términos de uso"/>
+				
+				<s:HGroup verticalAlign="middle">
+					<skins:IconButton id="footerFAQ"
+									  label="FAQ"
+									  click="footerFAQ_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="footerAboutUs"
+									  label="{resourceManager.getString('myResources','ABOUT_US')}"
+									  click="footerAboutUs_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="footerTermsOfUse"
+									  label="{resourceManager.getString('myResources','TERMS_OF_USE')}"
+									  click="footerTermsOfUse_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="footerCopyleft"
+									  label="Copyleft 2010 Babelium"
+									  click="footerCopyleft_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+				</s:HGroup>
 
 			</s:BorderContainer>
 		</s:HGroup>

@@ -111,6 +111,16 @@ s|TextInput{
 	underlineDown:false;
 }
 
+.footerLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
 .helpLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
 	icon:Embed('resources/images/help_icon.png');
@@ -352,6 +362,29 @@ s|TextInput{
 	themeColor: #d5ac32;
 	fontSize: 14;
 	fontWeight: bold;
+}
+
+.homeUploadButton{
+	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+	gradientColors: #ffffff, #e3bb03;
+	gradientColorsOver: #a2b342, #895472;
+	icon: Embed('resources/images/upload_icon.png');
+	color: #b09002;
+	fontWeight: bold;
+	borderWeight: 1;
+	borderColors: #FFFFFF;
+}
+
+.homeSubtitleButton{
+
+}
+
+.homeEvaluateButton{
+
+}
+
+.homePracticeButton{
+	
 }
 
 /* Exercise info box styles */

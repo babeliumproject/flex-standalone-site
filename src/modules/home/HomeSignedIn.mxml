@@ -3,20 +3,21 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
-		  creationComplete="onComplete()">
+		  creationComplete="onComplete()" xmlns:home="modules.home.*">
 
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
-
+			
+			import spark.components.Button;
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -68,8 +69,8 @@
 					}
 					else
 					{
-						signedMotdBox.includeInLayout=false;
-						signedMotdBox.visible=false;
+						//signedMotdBox.includeInLayout=false;
+						//signedMotdBox.visible=false;
 					}
 				}
 			}
@@ -121,6 +122,12 @@
 
 				return motdBox;
 			}
+			
+			public function buildAvailableActionsPanel():void{
+				var homeUploadButton:Button = new Button();
+				homeUploadButton.label = resourceManager.getString('myResources','LABEL_UPLOAD');
+				homeUploadButton.styleName = "homeUploadButton";
+			}
 
 			public function set onLanguageChanged(value:Boolean):void
 			{
@@ -139,8 +146,8 @@
 					   styleName="sectionInfoBox"
 					   width="100%"
 					   minHeight="0"
-					   includeInLayout="false"
-					   visible="false">
+					   includeInLayout="true"
+					   visible="true">
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"
 							  paddingLeft="16"
@@ -160,6 +167,15 @@
 	</s:BorderContainer>
 
 	<mx:ViewStack id="myHomeViewStack">
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}">
+			<home:LatestUploadedVideos />
+		</s:NavigatorContent>
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}">
+			<home:LatestBestRatedVideos />
+		</s:NavigatorContent>
+		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_ACTIVITY')}">
+			<home:LatestUserActivity />
+		</s:NavigatorContent>
 
 	</mx:ViewStack>
 

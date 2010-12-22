@@ -160,9 +160,7 @@ package model
 		
 		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
-		//Message of the day related data
-		[Bindable] public var messagesOfTheDayRetrieved:Boolean;
-		[Bindable] public var messagesOfTheDayData:ArrayCollection = new ArrayCollection();
+
 		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;
@@ -203,6 +201,16 @@ package model
 		[Bindable] public var detailsOfAssessedResponseDataRetrieved:Boolean = false;
 		
 		[Bindable] public var addAssessmentRetrieved:Boolean = false;
+		
+		
+		//Homepage module data
+		[Bindable] public var messagesOfTheDayRetrieved:Boolean;
+		[Bindable] public var messagesOfTheDayData:ArrayCollection = new ArrayCollection();
+		
+		[Bindable] public var userLatestReceivedAssessmentsRetrieved:Boolean;
+		[Bindable] public var userLatestReceivedAssessments:ArrayCollection = new ArrayCollection();
+		[Bindable] public var userLatestDoneAssessmentsRetrieved:Boolean;
+		[Bindable] public var userLatestDoneAssessments:ArrayCollection = new ArrayCollection();
 
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;
