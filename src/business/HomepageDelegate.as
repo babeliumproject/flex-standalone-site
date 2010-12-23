@@ -32,7 +32,7 @@ package business
 		
 		public function usersLatestReceivedAssessments():void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("homepageRO");
-			var pendingCall:AsyncToken=service.usersLatestReceivedAssessment();
+			var pendingCall:AsyncToken=service.usersLatestReceivedAssessments();
 			pendingCall.addResponder(responder);
 		}
 		

@@ -3,20 +3,22 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
-		  creationComplete="onComplete()" xmlns:home="modules.home.*" xmlns:skins="skins.*">
+		  creationComplete="onComplete()"
+		  xmlns:home="modules.home.*"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
-			
+
 			import spark.components.Button;
 			import spark.components.NavigatorContent;
 
@@ -118,11 +120,12 @@
 
 				return motdBox;
 			}
-			
-			public function buildAvailableActionsPanel():void{
-				var homeUploadButton:Button = new Button();
-				homeUploadButton.label = resourceManager.getString('myResources','LABEL_UPLOAD');
-				homeUploadButton.styleName = "homeUploadButton";
+
+			public function buildAvailableActionsPanel():void
+			{
+				var homeUploadButton:Button=new Button();
+				homeUploadButton.label=resourceManager.getString('myResources', 'LABEL_UPLOAD');
+				homeUploadButton.styleName="homeUploadButton";
 			}
 
 			public function set onLanguageChanged(value:Boolean):void
@@ -155,7 +158,7 @@
 					  paddingLeft="16"
 					  paddingRight="16">
 		</mx:ViewStack>
-		
+
 		<s:HGroup horizontalAlign="right"
 				  width="100%"
 				  verticalAlign="bottom"
@@ -168,15 +171,18 @@
 		</s:HGroup>
 	</s:BorderContainer>
 
-	<mx:ViewStack id="myHomeViewStack" width="100%">
+	<mx:ViewStack id="myHomeViewStack"
+				  width="100%"
+				  height="100%"
+				  resizeToContent="true">
 		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}">
-			<home:LatestUploadedVideos />
+			<home:LatestUploadedVideos/>
 		</s:NavigatorContent>
 		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}">
-			<home:LatestBestRatedVideos />
+			<home:LatestBestRatedVideos/>
 		</s:NavigatorContent>
 		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_ACTIVITY')}">
-			<home:LatestUserActivity />
+			<home:LatestUserActivity/>
 		</s:NavigatorContent>
 
 	</mx:ViewStack>

@@ -213,6 +213,12 @@ package model
 		[Bindable] public var userLatestDoneAssessments:ArrayCollection = new ArrayCollection();
 		[Bindable] public var userLatestUploadedVideos:ArrayCollection = new ArrayCollection();
 		[Bindable] public var userLatestUploadedVideosRetrieved:Boolean;
+		[Bindable] public var signedInBestRatedVideos:ArrayCollection = new ArrayCollection();
+		[Bindable] public var signedInBestRatedVideosRetrieved:Boolean;
+		[Bindable] public var signedInLatestUploadedVideos:ArrayCollection = new ArrayCollection();
+		[Bindable] public var signedInLatestUploadedVideosRetrieved:Boolean;
+		[Bindable] public var unsignedBestRatedVideos:ArrayCollection = new ArrayCollection();
+		[Bindable] public var unsignedBestRatedVideosRetrieved:Boolean;
 
 		//Autoevaluation data
 		[Bindable] public var autoevaluationResults:Evaluation = null;

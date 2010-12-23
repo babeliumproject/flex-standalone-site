@@ -3,7 +3,63 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import events.HomepageEvent;
+			import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import vo.ExerciseVO;
+			
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+
+			protected function latestBestRatedDataGroup_changeHandler(event:IndexChangeEvent):void
+			{
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
+				BabeliaBrowserManager.getInstance().parseURL(null);
+			}
+			
+			protected function set handleSignedInBestRatedVideos(value:Boolean):void{
+				var sibrvDataprovider:ArrayCollection=DataModel.getInstance().signedInBestRatedVideos;
+				_dataProvider=sibrvDataprovider;
+			}
+			
+			protected function set retrieveBestRatedVideos(value:Boolean):void{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new HomepageEvent(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN).dispatch();
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Binding source="{DataModel.getInstance().signedInBestRatedVideosRetrieved}"
+				destination="handleSignedInBestRatedVideos"/>
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveBestRatedVideos"/>
+	
+	<s:List id="latestBestRatedDataGroup"
+			width="100%"
+			minHeight="0"
+			change="latestBestRatedDataGroup_changeHandler(event)"
+			borderVisible="false"
+			skinClass="skins.TransparentBgListSkin"
+			itemRenderer="modules.exercises.ExerciseItemRenderer"
+			dataProvider="{_dataProvider}">
+		<s:layout>
+			<s:TileLayout horizontalAlign="justify"
+						  verticalAlign="middle"
+						  columnAlign="justifyUsingWidth"
+						  columnWidth="500"/>
+		</s:layout>
+	</s:List>
+	
 </s:VGroup>

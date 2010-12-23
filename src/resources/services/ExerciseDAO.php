@@ -309,7 +309,7 @@ class ExerciseDAO {
 
 		try {
 			$verifySession = new SessionHandler(true);
-			$filteredResults = $this->filterRecordableExercises($searchResults);
+			$filteredResults = $this->filterPracticeExercises($searchResults);
 			return $filteredResults;
 		} catch (Exception $e) {
 			return $searchResults;
@@ -317,7 +317,7 @@ class ExerciseDAO {
 
 	}
 
-	private function filterRecordableExercises($exerciseList){
+	public function filterPracticeExercises($exerciseList){
 		if(count($_SESSION['user-languages']) < 1)
 			return $exerciseList;
 		else{
@@ -455,7 +455,7 @@ class ExerciseDAO {
 	 * The average score is not accurate information in statistical terms, so we use a weighted value
 	 * @param int $exerciseId
 	 */
-	private function getExerciseAvgBayesianScore($exerciseId){
+	public function getExerciseAvgBayesianScore($exerciseId){
 
 		if(!isset($this->exerciseMinRatingCount)){
 			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";

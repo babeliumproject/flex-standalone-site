@@ -28,6 +28,8 @@ package vo
 		
 		public var avgDifficulty:Number;
 		
+		public var isSubtitled:uint;
+		
 		public var score:Number; //is used to sort the searches
 		public var idIndex:int; //is used to delete exercises
 

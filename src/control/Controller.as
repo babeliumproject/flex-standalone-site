@@ -74,7 +74,7 @@ package control {
 			addCommand(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, SignedMessageOfTheDayCommand);
 			addCommand(HomepageEvent.LATEST_RECEIVED_ASSESSMENTS, UsersLatestReceivedAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_DONE_ASSESSMENTS, UsersLatestGivenAssessmentsCommand);
-			addCommand(HomepageEvent.LATEST_UPLOADED_VIDEOS, UsersLatestUploadedVideosCommand);
+			addCommand(HomepageEvent.LATEST_USER_UPLOADED_VIDEOS, UsersLatestUploadedVideosCommand);
 			
 			
 			//Video history management commands
