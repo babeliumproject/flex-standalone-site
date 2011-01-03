@@ -12,17 +12,17 @@
 	<fx:Script>
 		<![CDATA[
 			import flash.sampler.getInvocationCount;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import skins.IconButtonSkin;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 
@@ -250,13 +250,17 @@
 
 	<mx:Spacer height="20"/>
 
-	<s:HGroup styleName="roundedBlueBorderBox">
+	<s:BorderContainer cornerRadius="8">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="16" paddingBottom="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
 		<skins:IconButton id="recButton"
 						  click="recStart()"
 						  horizontalCenter="true"
 						  enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording &amp;&amp; DataModel.getInstance().permissions}"
 						  skinClass="skins.IconButtonSkin"
 						  minWidth="0"
+						  width="30"
 						  icon="@Embed('resources/images/playerRecIcon.png')"/>
 		<skins:IconButton id="playButton"
 						  click="playStart()"
@@ -264,6 +268,7 @@
 						  enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording &amp;&amp; DataModel.getInstance().permissions}"
 						  skinClass="skins.IconButtonSkin"
 						  minWidth="0"
+						  width="30"
 						  icon="@Embed('resources/images/playerPlayIcon.png')"/>
 		<s:VGroup>
 			<s:HGroup horizontalAlign="right"
@@ -287,7 +292,7 @@
 			</s:HGroup>
 
 		</s:VGroup>
-	</s:HGroup>
+	</s:BorderContainer>
 
 	<s:HGroup id="notConect"
 			  width="100%"

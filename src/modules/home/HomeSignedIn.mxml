@@ -62,9 +62,7 @@
 			{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					var navc:NavigatorContent=new NavigatorContent();
-					navc.addElement(new StaticUnsignedMotd());
-					appDescriptionViewStack.addChild(navc);
+
 					messageArray=DataModel.getInstance().messagesOfTheDayData;
 					if (messageArray.length > 0)
 					{
@@ -72,11 +70,20 @@
 						appDescriptionViewStack.removeAllChildren();
 						callLater(addMessagesToContainer);
 					}
+					else
+					{
+						var navc:NavigatorContent=new NavigatorContent();
+						navc.addElement(new StaticSignedInMotd());
+						appDescriptionViewStack.addChild(navc);
+					}
 				}
 			}
 
 			protected function addMessagesToContainer():void
 			{
+				var navcs:NavigatorContent=new NavigatorContent();
+				navcs.addElement(new StaticSignedInMotd());
+				appDescriptionViewStack.addChild(navcs);
 				for each (var messageData:Object in messageArray)
 				{
 					var navc:NavigatorContent=new NavigatorContent();

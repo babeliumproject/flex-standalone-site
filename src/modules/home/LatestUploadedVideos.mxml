@@ -1,9 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+
+			import events.HomepageEvent;
+			import events.ViewChangeEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+
+			import spark.events.IndexChangeEvent;
+
+			import vo.ExerciseVO;
+
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+
+			protected function set retrieveLatestUploadedVideos(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+				{
+					new HomepageEvent(HomepageEvent.LATEST_UPLOADED_VIDEOS).dispatch();
+				}
+			}
+
+			protected function set handleSignedInLatestUploadedVideos(value:Boolean):void
+			{
+				var siluvDataprovider:ArrayCollection=DataModel.getInstance().signedInLatestUploadedVideos;
+				_dataProvider=siluvDataprovider;
+			}
+
+			protected function latestUploadedVideosDataGroup_changeHandler(event:IndexChangeEvent):void
+			{
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				if (obj.isSubtitled)
+				{
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
+				}
+				else
+				{
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
+				}
+				BabeliaBrowserManager.getInstance().parseURL(null);
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveLatestUploadedVideos"/>
+	<fx:Binding source="{DataModel.getInstance().signedInLatestUploadedVideosRetrieved}"
+				destination="handleSignedInLatestUploadedVideos"/>
+
+	<s:VGroup width="100%"
+			  paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="16">
+		<s:Label id="latestUploadedVideosTitle"
+				 text="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}"
+				 styleName="sectionTitleLabel"/>
+		<s:Line width="{latestUploadedVideosTitle.width}">
+			<s:stroke>
+				<mx:SolidColorStroke weight="3"
+									 color="#268caa"/>
+			</s:stroke>
+		</s:Line>
+		<s:List id="latestUploadedVideosDataGroup"
+				width="100%"
+				minHeight="0"
+				change="latestUploadedVideosDataGroup_changeHandler(event)"
+				borderVisible="false"
+				skinClass="skins.TransparentBgListSkin"
+				itemRenderer="modules.exercises.ExerciseItemRenderer"
+				dataProvider="{_dataProvider}">
+			<s:layout>
+				<s:TileLayout horizontalAlign="justify"
+							  verticalAlign="middle"
+							  columnAlign="justifyUsingWidth"
+							  columnWidth="500"/>
+			</s:layout>
+		</s:List>
+	</s:VGroup>
 </s:VGroup>

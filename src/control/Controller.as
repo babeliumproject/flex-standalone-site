@@ -75,7 +75,9 @@ package control {
 			addCommand(HomepageEvent.LATEST_RECEIVED_ASSESSMENTS, UsersLatestReceivedAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_DONE_ASSESSMENTS, UsersLatestGivenAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_USER_UPLOADED_VIDEOS, UsersLatestUploadedVideosCommand);
-			
+			addCommand(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN, SignedBestRatedVideosCommand);
+			addCommand(HomepageEvent.BEST_RATED_VIDEOS_UNSIGNED, UnsignedBestRatedVideosCommand);
+			addCommand(HomepageEvent.LATEST_UPLOADED_VIDEOS, LatestUploadedVideosCommand);	
 			
 			//Video history management commands
 			addCommand(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, VideoHistoryWatchCommand);

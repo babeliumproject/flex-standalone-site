@@ -144,7 +144,7 @@ class HomepageDAO{
 		$results = array();
 		
 		if( count($searchResults) > $length )
-			$results = array_slice($givenAssessments, 0, $length);
+			$results = array_slice($searchResults, 0, $length);
 		else
 			$results = $searchResults;
 
@@ -181,11 +181,13 @@ class HomepageDAO{
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 
-		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+		$searchResults = $this->_exerciseListQuery($sql);
 		$exercise = new ExerciseDAO();
 		$filteredResults = $exercise->filterPracticeExercises($searchResults);
-		usort($filteredResults, "sortResultsByScore");
+		
+		usort($filteredResults, array($this, 'sortResultsByScore'));
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
+		
 		return $slicedResults;
 	}
 	
@@ -212,14 +214,14 @@ class HomepageDAO{
 			$temp->status = $row[12];
 			$temp->license = $row[13];
 			$temp->reference = $row[14];
-			$temp->isSubtitled = $row[15] ? 1 : 0;
+			$temp->isSubtitled = $row[15] ? true : false;
 
 			$temp->avgRating = $exercise->getExerciseAvgBayesianScore($temp->id)->avgRating;
 
 			array_push ( $searchResults, $temp );
 		}
 
-		return $slicedResults;
+		return $searchResults;
 	}
 	
 	private function sortResultsByScore($exerciseA, $exerciseB){
