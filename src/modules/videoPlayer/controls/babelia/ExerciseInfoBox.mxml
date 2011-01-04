@@ -167,7 +167,7 @@
 			<mx:LinkButton id="reportVideo"
 						   label="Report"
 						   toolTip="Report innapropriate video."
-						   icon="@Embed(source='../../../../resources/images/shield.png')"
+						   icon="@Embed(source='resources/images/shield_icon.png')"
 						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
 						   click="reportVideoClickHandler(event)"/>
 		</s:HGroup>

@@ -7,11 +7,9 @@ package skins
 	
 	[Style(name="icon", type="*")]
 	
-	[Style(name="isCorrectAnimate", type="Boolean")]
+	[Style(name="isContentCorrect", type="Boolean")]
 	
-	[Style(name="isWrongAnimate", type="Boolean")]
-	
-	[Style(name="resetCorrectWrongStatus", type="Boolean")]
+	[Style(name="removeContentStatusFlag", type="Boolean")]
 	
 	public class IconButtonBarButton extends ButtonBarButton
 	{
