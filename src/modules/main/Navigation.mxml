@@ -30,6 +30,7 @@
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_HOME_MODULE,event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EXERCISES')}"
@@ -38,6 +39,7 @@
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_EXERCISE_MODULE,event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
@@ -47,6 +49,7 @@
 						   							!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_EVALUATION_MODULE,event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_SUBTITLE')}"
@@ -56,6 +59,7 @@
 						   							!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_SUBTITLE_MODULE,event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
@@ -66,6 +70,7 @@
 						   							!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE,event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_ABOUT')}"
@@ -74,6 +79,7 @@
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE,event)"/>
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.50"/>
@@ -143,8 +149,8 @@
 
 			private function changeView(destination:String,event:MouseEvent):void
 			{
-				if(event != null)
-					unselectNavButtons(event);
+//				if(event != null)
+//					unselectNavButtons(event);
 				new ViewChangeEvent(destination).dispatch();
 			}
 			
