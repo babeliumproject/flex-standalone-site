@@ -123,7 +123,8 @@ package modules.videoPlayer
 		public static const SECONDSTREAM_STOPPED_STATE:int=2;
 		public static const SECONDSTREAM_FINISHED_STATE:int=3;
 		public static const SECONDSTREAM_PAUSED_STATE:int=4;
-		public static const SECONDSTREAM_BUFFERING_STATE:int=5;
+		public static const SECONDSTREAM_UNPAUSED_STATE:int=5;
+		public static const SECONDSTREAM_BUFFERING_STATE:int=6;
 
 		[Bindable]
 		public var secondStreamState:int;
@@ -579,8 +580,9 @@ package modules.videoPlayer
 		 */
 		override public function playVideo():void
 		{
-			
 			super.playVideo();
+			if(state == PLAY_BOTH_STATE)
+				playSecondStream();
 
 			if (!_cuePointTimer)
 			{
@@ -662,8 +664,9 @@ package modules.videoPlayer
 			{
 				if (_inNs != null)
 				{
-					_inNs.pause();
-					_inNs.seek(0);
+					_inNs.play(false);
+					//_inNs.pause();
+					//_inNs.seek(0);
 				}
 			}
 
@@ -833,7 +836,7 @@ package modules.videoPlayer
 
 				startRecording();
 			}
-			else
+			else if(state != PLAY_STATE)
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
 		}
 
@@ -965,9 +968,10 @@ package modules.videoPlayer
 			_fileName="resp-" + d.getTime().toString();
 			var responseFilename:String=RESPONSE_FOLDER + "/" + _fileName;
 
-			if (_started)
-				resumeVideo();
-			else
+			//This was deleted to prevent a bug of Red5 rev4176
+			//if (_started)
+			//	resumeVideo();
+			//else
 				playVideo();
 
 			if (state & RECORD_FLAG)
@@ -1129,13 +1133,7 @@ package modules.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				if (_outNs)
-				{
-					_outNs.attachCamera(null);
-					_outNs.attachAudio(null);
-					_camVideo.clear();
-					_camVideo.attachCamera(null);
-				}
+				unattachUserDevices();
 
 				trace("Recording of " + _fileName + " has been finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
@@ -1143,6 +1141,16 @@ package modules.videoPlayer
 			}
 			else
 				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
+		}
+		
+		public function unattachUserDevices():void{
+			if (_outNs)
+			{
+				_outNs.attachCamera(null);
+				_outNs.attachAudio(null);
+				_camVideo.clear();
+				_camVideo.attachCamera(null);
+			}
 		}
 
 		/**
@@ -1185,7 +1193,8 @@ package modules.videoPlayer
 				muteRecording(true);
 
 				if (_ns != null)
-					_ns.resume();
+					//_ns.resume();
+					_ns.play(super.videoSource);
 				_ppBtn.State=PlayButton.PAUSE_STATE;
 			}
 		}
@@ -1224,9 +1233,12 @@ package modules.videoPlayer
 					break;
 				case "NetStream.Buffer.Full":
 					if (secondStreamState == SECONDSTREAM_READY_STATE)
-						playbackState=SECONDSTREAM_STARTED_STATE;
-					break;
-				case "NetStream.Buffer.Flush":
+						secondStreamState=SECONDSTREAM_STARTED_STATE;
+					if (secondStreamState == SECONDSTREAM_BUFFERING_STATE)
+						secondStreamState=SECONDSTREAM_STARTED_STATE;
+					if (secondStreamState == SECONDSTREAM_UNPAUSED_STATE)
+						secondStreamState=SECONDSTREAM_STARTED_STATE;			
+					
 					break;
 				case "NetStream.Publish.Start":
 					break;
@@ -1247,8 +1259,10 @@ package modules.videoPlayer
 				case "NetStream.Play.UnpublishNotify":
 					break;
 				case "NetStream.Pause.Notify":
+					secondStreamState = SECONDSTREAM_PAUSED_STATE;
 					break;
 				case "NetStream.Unpause.Notify":
+					secondStreamState = SECONDSTREAM_UNPAUSED_STATE;
 					break;
 				case "NetStream.Record.Start":
 					break;
@@ -1265,6 +1279,8 @@ package modules.videoPlayer
 					//CustomAlert.error("Error while transferring data from the streaming server. Please try again later.");
 					break;
 			}
+			
+			trace("Response status: " + event.info.code);
 		}
 
 	}

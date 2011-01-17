@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   xmlns:rating="com.asfusion.controls.*"
-				   borderStyle="solid"
-				   cornerRadius="6"
-				   minHeight="0"
-				   xmlns:hulstkamp="com.hulstkamp.*">
+				   xmlns:hulstkamp="com.hulstkamp.*"
+				   xmlns:skins="skins.*">
 
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="left"
@@ -27,6 +24,7 @@
 			
 			import model.DataModel;
 			
+			import mx.controls.LinkButton;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
@@ -105,14 +103,16 @@
 					var linkTag:LinkButton=new LinkButton();
 					linkTag.label=StringUtil.trim(tag);
 					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
-					exerciseTagsBox.addChild(linkTag);
+					//exerciseTagsBox.addChild(linkTag);
+					exerciseTagsBox.addElement(linkTag);
 				}
 			}
 
 			private function removeTagLinkButtons():void
 			{
 				tagBoxSeparator.height=0;
-				exerciseTagsBox.removeAllChildren();
+				//exerciseTagsBox.removeAllChildren();
+				exerciseTagsBox.removeAllElements();
 				_tags=null;
 			}
 
@@ -155,21 +155,22 @@
 										   rating="{_exerciseRating}"
 										   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
 										   click="ratingClickHandler(event)"
-										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
+										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+										   scaleX="1.5"
+										   scaleY="1.5"/>
 		</s:HGroup>
-		<mx:VRule height="24"/>
 		<s:HGroup horizontalAlign="right"
 				  paddingBottom="0"
 				  paddingTop="0"
 				  paddingLeft="0"
 				  paddingRight="0"
 				  width="100%">
-			<mx:LinkButton id="reportVideo"
-						   label="Report"
-						   toolTip="Report innapropriate video."
-						   icon="@Embed(source='resources/images/shield_icon.png')"
-						   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
-						   click="reportVideoClickHandler(event)"/>
+			<skins:IconButton id="reportVideo"
+							  label="{resourceManager.getString('myResources','REPORT')}"
+							  toolTip="{resourceManager.getString('myResources','REPORT_INNAPROPRIATE_VIDEO')}"
+							  styleName="reportLinkButton"
+							  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
+							  click="reportVideoClickHandler(event)"/>
 		</s:HGroup>
 	</s:HGroup>
 	<s:VGroup horizontalAlign="center"
@@ -177,12 +178,14 @@
 		<mx:HRule id="tagBoxSeparator"
 				  width="100%"
 				  height="0"/>
+		<s:TileGroup id="exerciseTagsBox" width="100%"/>
+		<!--
 		<mx:Tile id="exerciseTagsBox"
 				 width="100%"
 				 horizontalGap="1"
 				 verticalGap="1"
 				 autoLayout="true">
-		</mx:Tile>
+		</mx:Tile>-->
 	</s:VGroup>
 
-</s:BorderContainer>
+</s:Group>

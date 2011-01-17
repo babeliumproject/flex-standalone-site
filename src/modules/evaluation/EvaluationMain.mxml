@@ -458,7 +458,7 @@
 
 				hideArrows(); // Hide arrows
 
-				VP.state=VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
+				//VP.state=VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
 
 				resetCueManager();
 

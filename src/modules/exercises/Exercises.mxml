@@ -19,10 +19,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -30,18 +30,18 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -104,6 +104,12 @@
 			private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 
 			public var _videoPlayerReady:Boolean=false;
+			
+			[Embed('resources/images/button_abort.png')]
+			[Bindable] private var abortIcon:Class;
+			
+			[Embed('resources/images/button_rec.png')]
+			[Bindable] private var recIcon:Class;
 
 			/**
 			 * On creation complete
@@ -386,24 +392,42 @@
 			 **/
 			private function onStartRecordingClicked(e:MouseEvent):void
 			{
-				// Commands with selected role
-				_selectedRole=availableRoles.selectedItem.toString();
-				setupRecordingCommands();
+				if (!DataModel.getInstance().recordingExercise)
+				{
+					// Commands with selected role
+					_selectedRole=availableRoles.selectedItem.toString();
+					setupRecordingCommands();
 
-				// Recording mode
-				if (micOnly.selected)
-					VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
+					// Recording mode
+					if (micOnly.selected)
+						VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
+					else
+						VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
+
+					// Prepare arrows
+					showArrows();
+
+					// Disable events and tabs
+					DataModel.getInstance().recordingExercise=true;
+
+					//Save statistical data
+					statisticRecAttempt();
+					
+					
+			
+				}
 				else
-					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
+				{
+					abortRecordingClicked(null);
+				}
+			}
 
-				// Prepare arrows
-				showArrows();
-
-				// Disable events and tabs
-				DataModel.getInstance().recordingExercise=true;
-
-				//Save statistical data
-				statisticRecAttempt();
+			private function abortRecordingClicked(e:MouseEvent):void
+			{
+				recordingError();
+				prepareExercise();
+				resetCueManager();
+				
 			}
 
 			private function statisticRecAttempt():void
@@ -474,8 +498,10 @@
 			{
 				DataModel.getInstance().recordingExercise=false;
 				hideArrows();
+				VP.unattachUserDevices();
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+
 			}
 
 			/**
@@ -560,6 +586,7 @@
 			{
 				showArrows();
 				setupRecordingCommands();
+				DataModel.getInstance().recordingExercise=false;
 
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
@@ -574,6 +601,7 @@
 			{
 				showArrows();
 				setupReplayCommands();
+				DataModel.getInstance().recordingExercise=false;
 
 				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
@@ -589,6 +617,7 @@
 				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 				setupRecordingCommands();
 				showArrows();
+				DataModel.getInstance().recordingExercise=true;
 
 				// Recording mode
 				if (micOnly.selected)
@@ -670,7 +699,8 @@
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 					var subtitleId:int=_cueManager.currentSubtitle;
 					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, 0, '', subtitlesAreUsed, subtitleId, 0);
-					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
+					if (_exerciseId > 0 && subtitleId > 0)
+						new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
 				}
 			}
 
@@ -910,8 +940,9 @@
 					  width="100%">
 				<skins:IconButton id="startRecordingButton"
 								  styleName="recStartLinkButton"
-								  toolTip="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
-								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady &amp;&amp; !DataModel.getInstance().recordingExercise}"
+								  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
+								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'BUTTON_START_RECORDING') }"
+								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
 								  click="onStartRecordingClicked(event)"/>
 			</s:HGroup>
 

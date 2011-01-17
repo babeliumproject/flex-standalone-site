@@ -132,6 +132,17 @@ s|TextInput{
 	underlineDown:false;
 }
 
+.reportLinkButton{
+	skinClass: ClassReference("skins.IconLinkSkin");
+	icon: Embed('resources/images/shield_icon.png');
+	fontWeight:bold;
+	color:#d5ac32;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
 .addLanguageLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
 	icon:Embed('resources/images/add.png');
@@ -237,6 +248,13 @@ s|TextInput{
 .privacyRightsPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
 	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.reportPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('resources/images/popup_bgr_shield.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }

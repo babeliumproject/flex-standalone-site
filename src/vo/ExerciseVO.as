@@ -14,6 +14,7 @@ package vo
 		public var source:String; //Youtube or Red5
 
 		public var userName:String;
+		public var userId:uint;
 
 		public var thumbnailUri:String;
 		public var addingDate:String;

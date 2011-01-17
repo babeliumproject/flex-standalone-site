@@ -50,7 +50,9 @@ class EvaluationDAO {
 				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
 				AND NOT EXISTS (SELECT *
                                 FROM evaluation AS D INNER JOIN response AS E on D.fk_response_id = E.id
-                                WHERE E.id = A.id AND D.fk_user_id = %d)";
+                                WHERE E.id = A.id AND D.fk_user_id = %d)
+                GROUP BY A.id
+                ORDER BY A.priority_date DESC, A.adding_date DESC";
 
 		$searchResults = $this->_listWaitingAssessmentQuery($sql, $evaluationThreshold, $_SESSION['uid'], $_SESSION['uid']);
 
@@ -340,7 +342,14 @@ class EvaluationDAO {
 			throw new Exception("Credit history update failed");
 		}
 		
-		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert){
+		//Update the priority of the pending assessments of this user
+		$pendingAssessmentsPriority = $this->_updatePendingAssessmentsPriority();
+		if($pendingAssessmentsPriority){
+			$this->conn->_failedTransaction();
+			throw  new Exception("Pending assessment priority update failed");
+		}
+		
+		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert && $pendingAssessmentsPriority){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
@@ -457,6 +466,12 @@ class EvaluationDAO {
 		} else {
 			return false;
 		}
+	}
+	
+	private function _updatePendingAssessmentsPriority(){
+		$sql = "UPDATE response SET priority_date = NOW() WHERE fk_user_id = '%d' ";
+	
+		return $result = $this->conn->_execute ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _getUserInfo(){

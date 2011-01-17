@@ -8,7 +8,7 @@ package modules.videoPlayer
 {
 	import events.CloseConnectionEvent;
 	import events.StartConnectionEvent;
-
+	
 	import flash.display.Sprite;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
@@ -24,9 +24,9 @@ package modules.videoPlayer
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
-
+	
 	import model.DataModel;
-
+	
 	import modules.videoPlayer.controls.AudioSlider;
 	import modules.videoPlayer.controls.ElapsedTime;
 	import modules.videoPlayer.controls.PlayButton;
@@ -38,12 +38,13 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
-
+	
 	import mx.binding.utils.BindingUtils;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.utils.ObjectUtil;
-
+	
 	import view.common.CustomAlert;
 
 	public class VideoPlayer extends SkinableComponent
@@ -540,6 +541,8 @@ package modules.videoPlayer
 
 		private function netStatus(e:NetStatusEvent):void
 		{
+			trace("Exercise status: " + e.info.code);
+	
 			switch (e.info.code)
 			{
 				case "NetStream.Play.StreamNotFound":
@@ -559,6 +562,8 @@ package modules.videoPlayer
 						playbackState=PLAYBACK_STARTED_STATE;
 						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_STARTED_PLAYING));
 					}
+					if(playbackState == PLAYBACK_BUFFERING_STATE)
+						playbackState = PLAYBACK_STARTED_STATE;
 					break;
 				case "NetStream.Buffer.Empty":
 					if (playbackState == PLAYBACK_STOPPED_STATE)
@@ -578,9 +583,6 @@ package modules.videoPlayer
 				default:
 					break;
 			}
-
-			//trace("code: " + e.info.code, "level: " + e.info.level);
-
 		}
 
 		protected function asyncErrorHandler(event:AsyncErrorEvent):void
@@ -649,11 +651,11 @@ package modules.videoPlayer
 
 		public function stopVideo():void
 		{
-			
 			if (_ns)
 			{
-				_ns.pause();
-				_ns.seek(0);
+				_ns.play(false);
+				//_ns.pause();
+				//_ns.seek(0);
 			}
 
 			_ppBtn.State=PlayButton.PLAY_STATE;
@@ -753,7 +755,7 @@ package modules.videoPlayer
 			
 			if (_ppBtn.getState() == PlayButton.PAUSE_STATE)
 			{
-				if (_ns)
+				if (_ns.time != 0)
 				{
 					resumeVideo();
 				}
@@ -840,6 +842,7 @@ package modules.videoPlayer
 		 */
 		protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
+			trace("onVideoFinishedPlaying");
 			stopVideo();
 		}
 
