@@ -38,9 +38,15 @@
 			  gap="2">
 		<s:Label id="title"
 				 text="{data.title}"
-				 width="320"/>
-		<mx:HRule width="320"/>
-		<s:HGroup gap="20">
+				 width="320"
+				 styleName="boldLabel"/>
+		<s:Line width="320" alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="2"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+		<s:HGroup gap="20" verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
 				<mx:Image width="16"
@@ -53,7 +59,9 @@
 			</s:HGroup>
 			<hulstkamp:AhFxRatingComponent rating="{data.avgRating}"
 										   enabled="false"
-										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
+										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+										   scaleX="1.2"
+										   scaleY="1.2"/>
 			<s:Label text="{dateFormatter.format(data.addingDate)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
