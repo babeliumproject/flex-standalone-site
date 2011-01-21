@@ -146,22 +146,23 @@ package modules.subtitles
 
 		public function setupVideoPlayer():void
 		{
-			VPSubtitle.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+			//VPSubtitle.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
 			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
 			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
 		}
 
+		/*
 		public function onVideoPlayerReady(e:VideoPlayerEvent):void
 		{
 			videoPlayerReady=true;
 			VPSubtitle.stopVideo();
 
 			onExerciseSelected(true);
-		}
+		}*/
 
 		public function onExerciseSelected(value:Boolean):void
 		{
-			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) && videoPlayerReady)
+			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) /*&& videoPlayerReady*/)
 			{
 				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
 				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;

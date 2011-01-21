@@ -12,6 +12,7 @@ package commands.userManagement
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.formatters.DateFormatter;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -45,7 +46,7 @@ package commands.userManagement
 
 				if (!(resultCollection[0] is CreditHistoryVO))
 				{
-					CustomAlert.error("The Result is not a well-formed object.");
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CREDIT_HISTORY'));
 				}
 				else
 				{
@@ -67,7 +68,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while retrieving your credit history.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CREDIT_HISTORY'));
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -72,7 +72,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while authenticating you in the system.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_LOGGING_IN'));
 			trace(ObjectUtil.toString(info));
 		}
 

@@ -241,7 +241,60 @@ class ExerciseDAO {
 		return $searchResults;
 	}
 
-	public function getExercisesWithoutSubtitles(){
+	/*
+	 public function getExercisesWithoutSubtitles(){
+		try {
+		$verifySession = new SessionHandler(true);
+
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+		e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
+		FROM exercise e
+		INNER JOIN users u ON e.fk_user_id= u.ID
+		LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+		LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+		LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
+		WHERE e.status = 'Available' AND a.id IS NULL
+		GROUP BY e.id
+		ORDER BY e.adding_date DESC";
+
+		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+		//Filter searchResults to include only the "evaluate" languages of the user
+		//$this->filterResults($searchResults, $languagePurpose);
+
+		return $searchResults;
+		} catch (Exception $e){
+		throw new Exception($e->getMessage());
+		}
+		}
+
+		public function getExercisesToReviewSubtitles(){
+		try {
+		$verifySession = new SessionHandler(true);
+
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
+		e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
+		FROM exercise e
+		INNER JOIN users u ON e.fk_user_id= u.ID
+		LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+		LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+		INNER JOIN subtitle a ON a.fk_exercise_id=e.id
+		WHERE e.status = 'Available'
+		GROUP BY e.id
+		ORDER BY e.adding_date DESC";
+
+		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+			
+		//Filter searchResults to include only the "evaluate" languages of the user
+		//$this->filterResults($searchResults, $languagePurpose);
+
+		return $searchResults;
+		} catch (Exception $e){
+		throw new Exception($e->getMessage());
+		}
+		}
+		*/
+
+	public function getExercisesUnfinishedSubtitling(){
 		try {
 			$verifySession = new SessionHandler(true);
 
@@ -252,41 +305,15 @@ class ExerciseDAO {
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			 	 	 WHERE e.status = 'Available' AND a.id IS NULL
-				 	GROUP BY e.id
-				 	ORDER BY e.adding_date DESC";
-
-			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
-			//Filter searchResults to include only the "evaluate" languages of the user
-			//$this->filterResults($searchResults, $languagePurpose);
-
-			return $searchResults;
-		} catch (Exception $e){
-			throw new Exception($e->getMessage());
-		}
-	}
-
-	public function getExercisesToReviewSubtitles(){
-		try {
-			$verifySession = new SessionHandler(true);
-
-			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					   e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
-					FROM exercise e 
-					 	 INNER JOIN users u ON e.fk_user_id= u.ID
-	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 	 INNER JOIN subtitle a ON a.fk_exercise_id=e.id
        			 	 	 WHERE e.status = 'Available'
 				 	GROUP BY e.id
 				 	ORDER BY e.adding_date DESC";
 
 			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
-			
-			//Filter searchResults to include only the "evaluate" languages of the user
-			//$this->filterResults($searchResults, $languagePurpose);
 
-			return $searchResults;
+			//Filter searchResults to include only the "evaluate" languages of the user
+			$filteredResults = $this->filterByLanguage($searchResults, 'evaluate');
+			return $filteredResults;
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
@@ -309,7 +336,7 @@ class ExerciseDAO {
 
 		try {
 			$verifySession = new SessionHandler(true);
-			$filteredResults = $this->filterPracticeExercises($searchResults);
+			$filteredResults = $this->filterByLanguage($searchResults, 'practice');
 			return $filteredResults;
 		} catch (Exception $e) {
 			return $searchResults;
@@ -317,23 +344,25 @@ class ExerciseDAO {
 
 	}
 
-	public function filterPracticeExercises($exerciseList){
+	public function filterByLanguage($searchList, $languagePurpose){
 		if(count($_SESSION['user-languages']) < 1)
-			return $exerciseList;
-		else{
-			$filteredList = array();
-			foreach ($exerciseList as $exercise){
-				foreach ($_SESSION['user-languages'] as $userLanguage) {
-					if($userLanguage->purpose == 'practice'){
-						if($exercise->language == $userLanguage->language && $exercise->avgDifficulty <= $userLanguage->level){
-							array_push($filteredList, $exercise);
-							break;
-						}
+			return $searchList;
+		if($languagePurpose != 'evaluate' && $languagePurpose != 'practice')
+			return $searchList;
+
+		$filteredList = array();
+		foreach ($searchList as $listItem){
+			foreach ($_SESSION['user-languages'] as $userLanguage) {
+				if ($userLanguage->purpose == $languagePurpose){
+					if($listItem->language == $userLanguage->language && $listItem->avgDifficulty <= $userLanguage->level){
+						array_push($filteredList, $listItem);
+						break;
 					}
 				}
 			}
-			return $filteredList;
 		}
+		return $filteredList;
+
 	}
 
 	public function getExerciseLocales($exerciseId) {

@@ -1,20 +1,21 @@
 package commands.videoUpload
 {
 	import business.UploadDelegate;
-
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-
+	
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.ProgressEvent;
-
+	
 	import model.DataModel;
-
+	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
-
+	
 	import view.common.CustomAlert;
 
 	public class UploadStartCommand implements ICommand, IResponder
@@ -54,9 +55,9 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			if (info is HTTPStatusEvent)
-				CustomAlert.error("Error while uploading file.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_UPLOADING_FILE'));
 			else
-				CustomAlert.error("Error while uploading file.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_UPLOADING_FILE'));
 			trace(ObjectUtil.toString(info));
 		}
 

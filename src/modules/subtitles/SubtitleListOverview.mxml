@@ -20,10 +20,11 @@
 				 paddingRight="16"
 				 text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
 
-		<s:Label text="{resourceManager.getString('myResources','TEXT_MODULE_INFO_SUBTITLE')}"
+		<s:Label text="{resourceManager.getString('myResources','SUBTITLE_SECTION_DESCRIPTION')}"
 				 paddingLeft="16"
 				 paddingRight="16"/>
 
+		<!--
 		<s:HGroup horizontalAlign="right"
 				  width="100%"
 				  verticalAlign="bottom"
@@ -34,6 +35,8 @@
 					  cornerRadius="8"/>
 			<skins:HorizontalSeparatorLine width="16"/>
 		</s:HGroup>
+		-->
+		<skins:HorizontalSeparatorLine width="100%"/>
 	</s:BorderContainer>
 
 	<subtitles:SubtitleEditor id="subtitleEditor"
@@ -43,6 +46,7 @@
 
 	<mx:Spacer height="20"/>
 
+	<!--
 	<mx:ViewStack id="subtitleListOverviewViewStack"
 				  creationPolicy="all"
 				  resizeToContent="true"
@@ -51,10 +55,12 @@
 
 		<s:NavigatorContent id="subtitlePendingListNavContent"
 							label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}">
+	-->
 			<subtitles:SubtitlePendingList id="subtitlePendingList"
 										   dataProvider="{emptySubtitleList}"
 										   changeListener="{emptySubtitleChangeHandler}"
 										   width="100%"/>
+	<!--	
 		</s:NavigatorContent>
 
 		<s:NavigatorContent id="subtitleReviewListNavContent"
@@ -66,14 +72,17 @@
 		</s:NavigatorContent>
 
 	</mx:ViewStack>
-
+	-->
+	
 	<fx:Binding source="{dataModel.isLoggedIn}"
 				destination="userAuthenticationHandler"/>
 
 	<fx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
 				destination="exercisesWithoutSubtitlesRetrievedHandler"/>
+	<!--
 	<fx:Binding source="{dataModel.exercisesWithSubtitlesToReviewRetrieved}"
 				destination="exercisesWithSubtitlesToReviewRetrievedHandler"/>
+	-->
 
 	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
@@ -107,7 +116,7 @@
 			private var currentExercise:ExerciseVO;
 
 			private var currentPageEmptySubtitle:uint=1;
-			private var currentPageReviewSubtitle:uint=1;
+			/* private var currentPageReviewSubtitle:uint=1; */
 
 			[Bindable]
 			private var emptySubtitleList:ArrayCollection;
@@ -124,12 +133,12 @@
 				if (dataModel.isLoggedIn)
 				{
 					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES).dispatch();
-					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW).dispatch();
+					//new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW).dispatch();
 				}
 				else
 				{
 					emptySubtitleList=new ArrayCollection();
-					reviewSubtitleList=new ArrayCollection();
+					//reviewSubtitleList=new ArrayCollection();
 				}
 			}
 
@@ -140,12 +149,14 @@
 				allDataReceived();
 			}
 
+			/*
 			private function set exercisesWithSubtitlesToReviewRetrievedHandler(value:Boolean):void
 			{
 				var ewstrDataprovider:ArrayCollection=dataModel.exercisesWithSubtitlesToReview;
 				reviewSubtitleList=ewstrDataprovider;
 				allDataReceived();
 			}
+			*/
 
 			private function emptySubtitleChangeHandler(event:Event):void
 			{
@@ -163,6 +174,7 @@
 
 			}
 
+			/*
 			private function reviewSubtitleChangeHandler(event:Event):void
 			{
 				var selectedItem:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
@@ -178,6 +190,7 @@
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, currentExercise.name);
 
 			}
+			*/
 
 			private function prepareExercise():void
 			{
@@ -197,7 +210,7 @@
 
 			private function allDataReceived():void
 			{
-				if (emptySubtitleList != null && reviewSubtitleList != null)
+				if (emptySubtitleList != null /*&& reviewSubtitleList != null*/)
 				{
 					onURLChange="Data";
 				}
@@ -209,12 +222,12 @@
 
 				//Reset the state of the lists of the module
 				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
-				subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;
+				/*subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;*/
 
 				currentPageEmptySubtitle=1;
-				currentPageReviewSubtitle=1;
+				/*currentPageReviewSubtitle=1;*/
 				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
-				subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;
+				/*subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;*/
 
 				//Hide and reset the subtitle editor and its videoplayer on tab change
 				subtitleEditor.visible=false;
@@ -226,15 +239,15 @@
 			{
 				//Reset the state of the lists of the module
 				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
-				subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;
+				/*subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;*/
 
 				currentPageEmptySubtitle=1;
-				currentPageReviewSubtitle=1;
+				/*currentPageReviewSubtitle=1;*/
 				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
-				subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;
+				/*subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;*/
 				
 				//Put the viewstack on the first position
-				subtitleListOverviewViewStack.selectedChild = subtitlePendingListNavContent;
+				/*subtitleListOverviewViewStack.selectedChild = subtitlePendingListNavContent;*/
 
 				//Hide and reset the subtitle editor and its videoplayer on tab change
 				subtitleEditor.visible=false;

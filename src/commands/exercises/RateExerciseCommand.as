@@ -10,6 +10,7 @@ package commands.exercises
 	import model.DataModel;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -31,11 +32,11 @@ package commands.exercises
 			//Should be the id of the added rate
 			if (!data.result is ExerciseVO)
 			{
-				CustomAlert.error("Your score couldn't be saved.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_SCORE_COULDNT_BE_SAVED'));
 			}
 			else
 			{
-				CustomAlert.info("Your score has been successfully saved. Thank you.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','INFO_SCORE_SUCCESSFULLY_SAVED'));
 				//Update the exercise with the new information.
 				DataModel.getInstance().userRatedExercise=true;
 				//Retrieve the new avg score and push it in the exercise list
@@ -73,7 +74,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while rating the exercise.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RATING'));
 			trace(ObjectUtil.toString(faultEvent));
 		}
 	}

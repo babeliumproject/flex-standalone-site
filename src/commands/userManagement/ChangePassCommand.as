@@ -11,6 +11,7 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -28,18 +29,18 @@ package commands.userManagement
 		{
 			var successfulUpdate:Boolean = data.result as Boolean;
 			if(!successfulUpdate)
-				CustomAlert.error("Old password is wrong"); // TODO
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','OLD_PASSWORD_WRONG')); // TODO
 			else
 			{
 				
-				CustomAlert.info("Password changed"); // TODO
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','PASSWORD_SUCCESSFULLY_CHANGED')); // TODO
 				DataModel.getInstance().passwordChanged = true;
 			}
 		}
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while changing your password, try again later.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_CHANGING_PASSWORD'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

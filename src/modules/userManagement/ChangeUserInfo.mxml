@@ -111,7 +111,7 @@
 
 	<s:Label text="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}"
 			 styleName="sectionTitleLabel"/>
-	<s:Label text="Short description of what this is about"/>
+	<s:Label text="{resourceManager.getString('myResources','MODIFY_USER_INFO_DESCRIPTION')}"/>
 
 	<s:HGroup width="100%">
 		<!-- Overwiew of the profile of the user -->

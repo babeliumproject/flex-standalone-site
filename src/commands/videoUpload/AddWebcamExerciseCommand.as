@@ -31,7 +31,7 @@ package commands.videoUpload
 			var result:Object=data.result;
 			if (!result is UserVO)
 			{
-				CustomAlert.error("Your exercise data could not be saved successfully.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_EXERCISE_DATA'));
 			}
 			else
 			{
@@ -46,7 +46,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while saving your exercise.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_EXERCISE_DATA'));
 			trace(faultEvent.toString());
 		}
 	}

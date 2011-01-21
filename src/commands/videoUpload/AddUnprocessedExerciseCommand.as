@@ -30,7 +30,7 @@ package commands.videoUpload
 		{
 			//Should be the id of the added exercise
 			if (!data.result is int){
-				CustomAlert.error("Your exercise data could not be saved successfully.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_EXERCISE_DATA'));
 			} else {
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ALERT_SUCCESSFUL_FILE_UPLOAD_RED5'));
 				//Add this to the DataModel
@@ -49,7 +49,7 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			var faultEvent: FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while saving exercise data.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_EXERCISE_DATA'));
 			trace(ObjectUtil.toString(info));
 		}
 		

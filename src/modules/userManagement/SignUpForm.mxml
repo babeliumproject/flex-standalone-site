@@ -195,12 +195,12 @@
 					}
 					else
 					{
-						CustomAlert.error("You have errors in your form.");
+						CustomAlert.error(resourceManager.getString('myResources','WRONG_FIELDS_IN_FORM'));
 					}
 				}
 				else
 				{
-					CustomAlert.error("You must choose your mother tongue and the language you want to practice.");
+					CustomAlert.error(resourceManager.getString('myResources','MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
 				}
 			}
 
@@ -301,7 +301,7 @@
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
-		<s:Label text="Enter section description here."
+		<s:Label text="{resourceManager.getString('myResources','SIGNUP_SECTION_DESCRIPTION')}"
 				 paddingBottom="16"
 				 paddingLeft="16"
 				 paddingRight="16"/>

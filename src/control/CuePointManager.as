@@ -15,6 +15,7 @@ package control
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -325,7 +326,7 @@ package control
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=info as FaultEvent;
-			CustomAlert.error("Error while getting the subtitle lines.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBTITLE_LINES'));
 		}
 	}
 }

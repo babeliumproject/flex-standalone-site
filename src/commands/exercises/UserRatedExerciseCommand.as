@@ -9,6 +9,7 @@ package commands.exercises
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -35,7 +36,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var fault:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while checking if you've rated this exercise.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_CHECKING_ALREADY_RATED'));
 			trace(ObjectUtil.toString(fault));
 		}
 	}

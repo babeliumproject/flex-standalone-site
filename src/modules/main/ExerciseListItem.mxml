@@ -70,11 +70,11 @@
 		<s:HGroup horizontalAlign="right"
 				  verticalAlign="middle"
 				  width="100%">
-			<s:Label text="user:"/>
+			<s:Label text="{resourceManager.getString('myResources','USER')+':'}"/>
 			<mx:LinkButton label="{data.userName}"/>
 		</s:HGroup>
 		<s:HGroup>
-			<s:Label text="Tags:"/>
+			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
 			<s:HGroup id="tagRow"/>
 		</s:HGroup>
 		<s:HGroup verticalAlign="middle"

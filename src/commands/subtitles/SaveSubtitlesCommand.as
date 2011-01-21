@@ -11,6 +11,7 @@ package commands.subtitles
 	import model.DataModel;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -32,7 +33,7 @@ package commands.subtitles
 			var result:Object=data.result;
 			if (!result is UserVO)
 			{
-				CustomAlert.error("Your subtitles couldn't be properly saved.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_SUBTITLES'));
 			}
 			else
 			{
@@ -46,7 +47,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while saving your subtitles. Try again later.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_SUBTITLES'));
 			trace(ObjectUtil.toString(info));
 		}
 

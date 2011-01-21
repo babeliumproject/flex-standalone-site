@@ -11,6 +11,7 @@ package commands.videoUpload
 	import model.DataModel;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -32,11 +33,11 @@ package commands.videoUpload
 		public function fault(info:Object):void
 		{
 			if (info is HTTPStatusEvent)
-				CustomAlert.error("Error while uploading file.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_UPLOADING_FILE'));
 			if(info is IOErrorEvent)
-				CustomAlert.error("The file you selected exceeds the maximum allowed file size.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','MAXIMUM_FILESIZE_EXCEEDED'));
 			else
-				CustomAlert.error("Error while uploading file.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_UPLOADING_FILE'));
 			trace(ObjectUtil.toString(info));
 		}
 		

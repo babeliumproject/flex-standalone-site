@@ -7,6 +7,7 @@ package commands.userManagement
 	
 	import events.UserEvent;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -27,7 +28,7 @@ package commands.userManagement
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while trying to keep the session active");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

@@ -10,6 +10,7 @@ package commands.evaluation
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
@@ -45,7 +46,7 @@ package commands.evaluation
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error("Error while trying to get the chart data. Please try again later.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CHART_DATA'));
 		}
 	}
 }

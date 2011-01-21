@@ -244,6 +244,17 @@
 			<!--- @private -->
 			<s:Group id="topGroup"
 					 mask="{topGroupMask}">
+				
+				<!-- layer 3: text -->
+				<!--- @copy spark.components.Panel#titleDisplay -->
+				<s:Label id="titleDisplay" maxDisplayedLines="1"
+						 left="31" right="36" top="1" bottom="0" minHeight="30"
+						 verticalAlign="middle" fontWeight="bold" />
+				
+				<!-- layer 4: moveArea -->
+				<!--- @copy spark.components.TitleWindow#moveArea -->
+				<s:Group id="moveArea" left="0" right="0" top="0" bottom="0" />
+				
 				<!--- @copy spark.components.TitleWindow#closeButton -->
 				<s:Button id="closeButton"
 						  skinClass="spark.skins.spark.TitleWindowCloseButtonSkin"

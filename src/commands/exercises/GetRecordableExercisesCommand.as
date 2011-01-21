@@ -9,6 +9,7 @@ package commands.exercises
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
@@ -47,7 +48,7 @@ package commands.exercises
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while retreiving the exercises.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_EXERCISES'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

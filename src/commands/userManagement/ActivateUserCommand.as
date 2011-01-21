@@ -42,7 +42,7 @@ package commands.userManagement
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while activating your account.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_ACTIVATING_ACCOUNT'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

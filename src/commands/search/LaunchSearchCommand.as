@@ -8,6 +8,7 @@ package commands.search{
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -32,7 +33,7 @@ package commands.search{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				try{
 					if (!(resultCollection[0] is ExerciseVO)){
-						CustomAlert.error("The Result is not a well-formed object.");
+						CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PERFORMING_SEARCH'));
 					}else{
 						//Matches found
 						//Set the data to the application's model
@@ -52,7 +53,7 @@ package commands.search{
 		
 		public function fault(info:Object):void{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while retrieving the search.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PERFORMING_SEARCH'));
 			trace(ObjectUtil.toString(info));
 		}
 		

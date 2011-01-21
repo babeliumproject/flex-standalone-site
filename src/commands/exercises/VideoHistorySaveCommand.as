@@ -7,6 +7,7 @@ package commands.exercises
 	
 	import events.UserVideoHistoryEvent;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -26,7 +27,7 @@ package commands.exercises
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while adding item to your video history.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_ADDING_VIDEOHISTORY_ITEM'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

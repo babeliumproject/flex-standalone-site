@@ -522,7 +522,7 @@
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
-		<s:Label text="Enter section description here."
+		<s:Label text="{resourceManager.getString('myResources','UPLOAD_SECTION_DESCRIPTION')}"
 				 paddingBottom="16"
 				 paddingLeft="16"
 				 paddingRight="16"/>
@@ -554,7 +554,7 @@
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 							 width="100%"
 							 styleName="boldLabel"
-							 toolTip="Comma separated words"
+							 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
 							 required="true">
 					<mx:TextArea width="100%"
 								 id="videoTags"/>

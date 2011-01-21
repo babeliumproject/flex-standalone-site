@@ -28,7 +28,7 @@ package commands.userManagement
 			if(data.result as Boolean == true){
 				//Activation email successfully resent
 				DataModel.getInstance().activationEmailResent = !DataModel.getInstance().activationEmailResent;
-				CustomAlert.info("The activation data has been resent to the email address you specified.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else if (data.result == "user_active_wrong_email"){
 				//Error message incorrect data
 				DataModel.getInstance().activationEmailResentErrorMessage = ResourceManager.getInstance().getString('myResources','LABEL_ERROR_WRONG_ACTIVATION_RESEND_DATA');
@@ -37,7 +37,7 @@ package commands.userManagement
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error("Error while trying to send the activation email.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SENDING_ACTIVATION_MAIL'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

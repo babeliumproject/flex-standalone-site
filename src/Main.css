@@ -261,7 +261,6 @@ s|TextInput{
 
 .genericPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
-	backgroundImage: Embed('resources/images/popup_bgr_info.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }

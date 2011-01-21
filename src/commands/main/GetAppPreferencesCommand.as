@@ -10,6 +10,7 @@ package commands.main
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -47,7 +48,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent : FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while retrieving application's preference data.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_PREFERENCES'));
 			trace(ObjectUtil.toString(info));
 		}
 		

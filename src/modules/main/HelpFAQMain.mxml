@@ -21,11 +21,11 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="Babelium Project Help/FAQ"
+		<s:Label text="{resourceManager.getString('myResources','HELP_FAQ')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
-		<s:Label text="Enter section description here."
+		<s:Label text="{resourceManager.getString('myResources','HELP_FAQ_SECTION_DESCRIPTION')}"
 				 paddingBottom="16"
 				 paddingLeft="16"
 				 paddingRight="16"/>
@@ -38,18 +38,18 @@
 			  paddingLeft="16"
 			  paddingRight="16"
 			  paddingTop="16">
-		<s:Label text="Video tutorials"
+		<s:Label text="{resourceManager.getString('myResources','VIDEO_TUTORIALS')}"
 				 styleName="sectionTitleLabel"/>
-		<s:Label text="The following videos explain how to use some of the features of Babelium Project (in English)."/>
+		<s:Label text="{resourceManager.getString('myResources','VIDEO_TUTORIALS_DESCRIPTION')}"/>
 		<s:HGroup>
 			<mx:Spacer/>
-			<mx:LinkButton label="How to add subtitles and roles"
+			<mx:LinkButton label="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
 						   textDecoration="underline"
 						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"/>
 		</s:HGroup>
 		<s:HGroup>
 			<mx:Spacer/>
-			<mx:LinkButton label="How to record a response following an exercise"
+			<mx:LinkButton label="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
 						   textDecoration="underline"
 						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=VstggUIIMlY')"/>
 		</s:HGroup>

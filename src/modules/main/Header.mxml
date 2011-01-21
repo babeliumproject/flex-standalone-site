@@ -39,7 +39,7 @@
 							  styleName="helpLinkButton"
 							  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
 							  click="helpFAQ_clickHandler(event)"
-							  toolTip="Help/FAQ"/>
+							  toolTip="{resourceManager.getString('myResources','HELP_FAQ')}"/>
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"

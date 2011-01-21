@@ -10,6 +10,7 @@ package commands.exercises
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -30,7 +31,7 @@ package commands.exercises
 		{
 			//Should be the id of the added response
 			if (!data.result is int){
-				CustomAlert.error("Your response data could not be saved successfully.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_RESPONSE'));
 			} else {
 				var responseId:int = data.result.toString();
 				//The response has been successfully saved, so we must store it's id in the model
@@ -46,7 +47,7 @@ package commands.exercises
 		public function fault(info:Object):void
 		{
 			var faultEvent : FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while saving your Response.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_RESPONSE'));
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -9,6 +9,7 @@ package commands.main
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -39,7 +40,7 @@ package commands.main
 				//Check wheter the VO object is properly returned
 				if (!(resultCollection[0] is UserVO))
 				{
-					CustomAlert.error("Unexpected data recieved while trying to get the top users.");
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_TOP_USERS'));
 				}
 				else
 				{
@@ -55,7 +56,7 @@ package commands.main
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while trying to retrieve the top users list.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_TOP_USERS'));
 			trace(ObjectUtil.toString(info));
 		}
 

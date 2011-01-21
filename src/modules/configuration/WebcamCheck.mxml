@@ -189,7 +189,7 @@
 				}
 				else
 				{
-					CustomAlert.error("In order to record something you must 'Allow' the access to your devices.");
+					CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_ALLOWED_ERROR'));
 				}
 			}
 		]]>

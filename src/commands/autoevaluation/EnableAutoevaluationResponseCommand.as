@@ -6,6 +6,7 @@ package commands.autoevaluation {
 	
 	import events.EvaluationEvent;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -24,7 +25,7 @@ package commands.autoevaluation {
 
 		public function fault(info:Object):void {
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while enabling the autoevaluation on this video.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_ENABLING_AUTOEVALUATION'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

@@ -10,6 +10,7 @@ package commands.userManagement
 	import model.DataModel;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -32,7 +33,7 @@ package commands.userManagement
 			{
 				DataModel.getInstance().passRecoveryDone = !DataModel.getInstance().passRecoveryDone;
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				CustomAlert.info("The new password has been sent to your email.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','NEW_PASSWORD_SENT'));
 			}
 			else
 			{
@@ -43,7 +44,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while trying to restore your password.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RESTORING_PASSWORD'));
 			trace(ObjectUtil.toString(info));
 		}
 		

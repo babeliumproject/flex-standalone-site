@@ -15,7 +15,7 @@
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
-		<s:Label text="Enter section description here."
+		<s:Label text="{resourceManager.getString('myResources','ABOUT_SECTION_DESCRIPTION')}"
 				 paddingBottom="16"
 				 paddingLeft="16"
 				 paddingRight="16"/>

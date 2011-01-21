@@ -8,6 +8,7 @@ package commands.autoevaluation {
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -26,7 +27,7 @@ package commands.autoevaluation {
 		public function fault(info:Object):void {
 			DataModel.getInstance().isAutoevaluable = false;
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while checking for autoevaluation support.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_CHECKING_AUTOEVALUATION_SUPPORT'));
 			trace(ObjectUtil.toString(info));
 		}
 

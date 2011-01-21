@@ -9,6 +9,7 @@ package commands.search
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -31,7 +32,7 @@ package commands.search
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				try{
 					if (!(resultCollection[0] is TagVO)){
-						CustomAlert.error("The Result is not a well-formed object.");
+						CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_TAG_CLOUD'));
 					}else{
 						//Matches found
 						//Set the data to the application's model
@@ -50,7 +51,7 @@ package commands.search
 		}
 		public function fault(info:Object):void{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while retrieving the cloud of tags.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_TAG_CLOUD'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

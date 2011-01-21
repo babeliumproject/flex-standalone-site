@@ -108,7 +108,9 @@
 									 color="#268caa"/>
 			</s:stroke>
 		</s:Line>
+		<!--
 		<s:Label text="Explanation"/>
+		-->
 		<mx:DataGrid id="latestReceivedAssessmentsDatagrid"
 					 width="100%"
 					 change="latestReceivedAssessmentsDatagrid_changeHandler(event)"
@@ -270,7 +272,9 @@
 									 color="#268caa"/>
 			</s:stroke>
 		</s:Line>
+		<!--
 		<s:Label text="Explanation"/>
+		-->
 		<mx:DataGrid id="latestDoneAssessmentsDatagrid"
 					 width="100%"
 					 change="latestDoneAssessmentsDatagrid_changeHandler(event)"

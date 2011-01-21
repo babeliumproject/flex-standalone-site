@@ -472,7 +472,7 @@
 			 **/
 			private function onRecordingAborted(e:RecordingEvent):void
 			{
-				CustomAlert.error("Your devices are not working properly. The recording has been aborted.");
+				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -481,7 +481,7 @@
 			 **/
 			private function onCamAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error("Cam denied.");
+				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -490,7 +490,7 @@
 			 **/
 			private function onMicAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error("Mic denied.");
+				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -814,7 +814,7 @@
 				 paddingLeft="16"
 				 paddingRight="16"
 				 styleName="sectionInfoTitleLabel"/>
-		<s:Label text="Enter section description here."
+		<s:Label text="{resourceManager.getString('myResources','EXERCISE_SECTION_DESCRIPTION')}"
 				 paddingBottom="16"
 				 paddingLeft="16"
 				 paddingRight="16"/>

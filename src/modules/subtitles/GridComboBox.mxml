@@ -9,6 +9,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.controls.dataGridClasses.DataGridListData;
+			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			
@@ -175,9 +176,8 @@
 			private function showNewRolePopUp():void
 			{
 
-				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(parent, NewRolePopUp, true));
-				newRolePopUp.title=resourceManager.getString('myResources','TITLE_INSERT_NEW_ROL');
-				PopUpManager.centerPopUp(newRolePopUp);
+				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, NewRolePopUp, true));
+				PopUpManager.centerPopUp(newRolePopUp);	
 
 				newRolePopUp.addEventListener("close", cancelInsert);
 				newRolePopUp["cancelButton"].addEventListener("click", cancelInsert);

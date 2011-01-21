@@ -9,6 +9,7 @@ package commands.exercises
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -27,20 +28,20 @@ package commands.exercises
 		{
 			//Should be the id of the added rate
 			if (!data.result is int){
-				CustomAlert.error("Error while reporting inappropriate exercise.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_REPORTING_EXERCISE'));
 			} else if (data.result > 0){
-				CustomAlert.info("Your report has been successfully saved. Thank you.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','EXERCISE_SUCCESSFULLY_REPORTED'));
 				//Update the exercise with the new information.
 				DataModel.getInstance().userReportedExercise = true;
 			} else {
-				CustomAlert.error("You already reported about this exercise.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','EXERCISE_ALREADY_REPORTED'));
 			}
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while reporting inappropriate exercise.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_REPORTING_EXERCISE'));
 			trace(ObjectUtil.toString(faultEvent));
 		}
 	}

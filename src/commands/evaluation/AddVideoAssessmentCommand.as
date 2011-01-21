@@ -10,6 +10,7 @@ package commands.evaluation
 	
 	import model.DataModel;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -31,13 +32,13 @@ package commands.evaluation
 			var result:Object=data.result;
 			if (!result is UserVO)
 			{
-				CustomAlert.error("Your assessment couldn't be properly saved.");
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','YOUR_ASSESSMENT_COULDNT_BE_SAVE'));
 			}
 			else
 			{
 				var userData:UserVO=result as UserVO;
 				dataModel.loggedUser.creditCount=userData.creditCount;
-				CustomAlert.info("Your assessment has been saved. Thanks for your collaboration.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','YOUR_ASSESSMENT_HAS_BEEN_SAVED'));
 				dataModel.addAssessmentRetrieved=!dataModel.addAssessmentRetrieved;
 				dataModel.creditUpdateRetrieved=true;
 			}
@@ -46,7 +47,7 @@ package commands.evaluation
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error("Error while trying to save your assessment.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_SAVING_YOUR_ASSESSMENT'));
 		}
 	}
 }

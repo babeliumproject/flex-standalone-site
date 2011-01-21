@@ -12,6 +12,7 @@ package commands.autoevaluation {
 	import modules.autoevaluation.AutoevaluatorManager;
 	import modules.autoevaluation.Evaluation;
 	
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -33,18 +34,18 @@ package commands.autoevaluation {
 				var transcriptions:TranscriptionsVO = result as TranscriptionsVO;
 				if(transcriptions.exerciseTranscriptionStatus.toLowerCase() != "converted") {
 					if(transcriptions.exerciseTranscriptionStatus.toLowerCase() == "pending")
-						error = "Your autoevaluation request is pending";
+						error = ResourceManager.getInstance().getString('myResources','YOUR_AUTOEVALUATION_REQUEST_IS_PENDING');
 					else if(transcriptions.exerciseTranscriptionStatus.toLocaleLowerCase() == "processing")
-						error = "Your autoevaluation request is being processed";
+						error = ResourceManager.getInstance().getString('myResources','YOUR_AUTOEVALUATION_REQUEST_IS_BEING_PROCESSED');
 					else
-						error = "Autoevaluation not available";
+						error = ResourceManager.getInstance().getString('myResources','AUTOEVALUATION_NOT_AVAILABLE');
 				} else if(transcriptions.responseTranscriptionStatus.toLocaleLowerCase() != "converted") {
 					if(transcriptions.responseTranscriptionStatus.toLowerCase() == "pending")
-						error = "Your autoevaluation request is pending";
+						error = ResourceManager.getInstance().getString('myResources','YOUR_AUTOEVALUATION_REQUEST_IS_PENDING');
 					else if(transcriptions.responseTranscriptionStatus.toLocaleLowerCase() == "processing")
-						error = "Your autoevaluation request is being processed";
+						error = ResourceManager.getInstance().getString('myResources','YOUR_AUTOEVALUATION_REQUEST_IS_BEING_PROCESSED');
 					else
-						error = "Autoevaluation not available";
+						error = ResourceManager.getInstance().getString('myResources','AUTOEVALUATION_NOT_AVAILABLE');
 				} else
 					evaluate(transcriptions.responseTranscriptionSystem.toLowerCase(), transcriptions.exerciseTranscription, transcriptions.responseTranscription);
 				DataModel.getInstance().autoevaluationAvailable = true;
@@ -58,7 +59,7 @@ package commands.autoevaluation {
 		public function fault(info:Object):void {
 			DataModel.getInstance().autoevaluationAvailable = false;
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while processing autoevaluation request.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PROCESSING_AUTOEVALUATION_REQUEST'));
 			trace(ObjectUtil.toString(info));
 		}
 
@@ -71,7 +72,7 @@ package commands.autoevaluation {
 				DataModel.getInstance().autoevaluationDone = true;
 			}catch (e:Error){
 				DataModel.getInstance().autoevaluationDone = false;
-				DataModel.getInstance().autoevaluationError = "Autoevaluation not available";
+				DataModel.getInstance().autoevaluationError = ResourceManager.getInstance().getString('myResources','AUTOEVALUATION_NOT_AVAILABLE');;
 			}
 		}
 	}

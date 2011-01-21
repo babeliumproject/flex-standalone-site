@@ -10,6 +10,7 @@ package commands.userManagement
 	import model.DataModel;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
@@ -35,7 +36,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged = false;
 				DataModel.getInstance().isLoggedIn = false;
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				CustomAlert.info("An activation email has been sent to the email you specified.");
+				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else {
 				//Inform about the error
 				var error:String = result.toString();
@@ -48,7 +49,7 @@ package commands.userManagement
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error("Error while registering.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_REGISTERING'));
 			trace(ObjectUtil.toString(info));
 		}
 		

@@ -227,7 +227,7 @@
 				}
 				else
 				{
-					CustomAlert.error("In order to record something you must 'Allow' the access to your devices.");
+					CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_ALLOWED_ERROR'));
 				}
 			}
 		]]>
@@ -287,7 +287,7 @@
 					 text="{resourceManager.getString('myResources','CONFIGURATION_NO_MIC_SIGNAL')}"
 					 visible="false"/>
 			<s:HGroup verticalAlign="middle">
-				<s:Label text="Level: "/>
+				<s:Label text="{resourceManager.getString('myResources','VOLUME')}"/>
 				<configuration:SoundLevelMeasurer id="barraSonido"/>
 			</s:HGroup>
 

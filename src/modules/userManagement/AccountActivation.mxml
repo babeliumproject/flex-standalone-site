@@ -92,7 +92,7 @@
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
 
-	<s:Label text="Account Activation"
+	<s:Label text="{resourceManager.getString('myResources','ACCOUNT_ACTIVATION')}"
 			  styleName="sectionTitleLabel"/>
 	<mx:HRule width="100%"/>
 	<s:Label id="activating"

@@ -10,6 +10,7 @@ package commands.subtitles
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ArrayUtil;
@@ -42,7 +43,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error("Error while retrieving this exercise's subtitles.");
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_EXERCISE_SUBTITLES'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

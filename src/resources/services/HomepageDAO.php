@@ -183,7 +183,7 @@ class HomepageDAO{
 
 		$searchResults = $this->_exerciseListQuery($sql);
 		$exercise = new ExerciseDAO();
-		$filteredResults = $exercise->filterPracticeExercises($searchResults);
+		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
 		
 		usort($filteredResults, array($this, 'sortResultsByScore'));
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
@@ -245,7 +245,7 @@ class HomepageDAO{
 
 		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
 		$exercise = new ExerciseDAO();
-		$filteredResults = $exercise->filterPracticeExercises($searchResults);
+		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
 		return $slicedResults;
 	}
