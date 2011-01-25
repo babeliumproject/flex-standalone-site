@@ -34,6 +34,8 @@
 
 			public function displayMyLanguages():void
 			{
+				practiceLanguages.removeAllElements();
+				evaluateLanguages.removeAllElements();
 				for each (var lang:UserLanguageVO in dataModel.loggedUser.userLanguages)
 				{
 					if (lang.purpose == 'practice')
@@ -78,6 +80,7 @@
 				modifyLanguages.visible=false;
 				modifyLanguages.includeInLayout=false;
 				modifyLanguages.resetToInitialStatus();
+				displayMyLanguages();
 			}
 			
 			protected function modifyLanguagesClickHandler(event:MouseEvent):void{

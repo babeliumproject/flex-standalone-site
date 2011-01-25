@@ -79,7 +79,7 @@ class UserDAO {
 	}
 
 	//The parameter should be an array of UserLanguageVO
-	public function mofifyUserLanguages($languages) {
+	public function modifyUserLanguages($languages) {
 
 		try {
 			$verifySession = new SessionHandler(true);
@@ -95,7 +95,7 @@ class UserDAO {
 			$sql = "DELETE FROM user_languages WHERE fk_user_id = '%d'";
 			$result = $this->conn->_execute($sql, $_SESSION['uid']);
 
-			if(!$result || $this->conn->_affectedRows > 0){
+			if(!$result || !$this->conn->_affectedRows()){
 				$this->conn->_failedTransaction();
 				throw new Exception("Language modify failed");
 			}
@@ -113,7 +113,7 @@ class UserDAO {
 			// put sql query and all params in one array
 			$merge = array_merge((array)$sql, $params);
 
-			$result = $this->conn->_insert($merge);
+			$result = $this->_vcreate($merge);
 
 			if (!$result){
 				$this->conn->_failedTransaction();
@@ -124,14 +124,22 @@ class UserDAO {
 
 			$result = $this->_getUserLanguages();
 			if($result){
-				$_SESSION['user-languages'];
+				$_SESSION['user-languages'] = $result;
 			}
 			return $result;
-			
+				
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 
+	}
+
+	private function _getPositivesToNextLevel(){
+		$result = $this->conn->_execute(func_get_args());
+		if($row = $this->conn->_nextRow($result))
+		return $row[0];
+		else
+		return 0;
 	}
 
 	private function _getUserLanguages(){
@@ -240,6 +248,21 @@ class UserDAO {
 		$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $pass;
+	}
+
+	private function _vcreate($params) {
+
+		$this->conn->_execute ( $params );
+
+		$sql = "SELECT last_insert_id()";
+		$result = $this->conn->_execute ( $sql );
+
+		$row = $this->conn->_nextRow ( $result );
+		if ($row) {
+			return $row [0];
+		} else {
+			return false;
+		}
 	}
 
 }

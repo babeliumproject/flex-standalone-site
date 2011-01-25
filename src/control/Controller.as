@@ -90,6 +90,7 @@ package control {
 			//User management commands
 			addCommand(UserEvent.GET_TOP_TEN_CREDITED, GetTopTenCreditedCommand);
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
+			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);

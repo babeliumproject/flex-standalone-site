@@ -51,5 +51,11 @@ package business
 			var pendingCall:AsyncToken = service.keepAlive();
 			pendingCall.addResponder(responder);
 		}
+		
+		public function modifyUserLanguages(languages:Array):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.modifyUserLanguages(languages);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

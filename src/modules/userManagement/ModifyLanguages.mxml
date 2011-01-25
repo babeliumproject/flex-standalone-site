@@ -11,6 +11,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import events.UserEvent;
+			
 			import flash.utils.getQualifiedClassName;
 			
 			import model.DataModel;
@@ -24,6 +26,7 @@
 			import spark.components.Button;
 			import spark.components.Group;
 			
+			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
 			
@@ -64,6 +67,8 @@
 						interestLanguagesArray.addItem(interestLanguage);
 						interestLanguage.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
 						interestLanguage.levelCombo.prefixedLevel=lang.level - 1;
+						if(interestLanguagesArray.length > 1)
+							interestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 					}
 					else if (lang.purpose == 'evaluate')
 					{
@@ -74,7 +79,7 @@
 							knownLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedKnown);
 							knownLanguagesBox.addElement(knownLanguage);
 							knownLanguagesArray.addItem(knownLanguage);
-							knownLanguage.deleteButtonClickHandler = deleteLanguageKnowledgeComboBox;
+							knownLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 							knownLanguage.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
 							knownLanguage.levelCombo.prefixedLevel=lang.level - 1;
 						}
@@ -86,6 +91,8 @@
 							motherLanguagesBox.addElement(motherTongue);
 							motherLanguagesArray.addItem(motherTongue);
 							motherTongue.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+							if(motherLanguagesArray.length > 1)
+								motherTongue.deleteButtonClickHandler=deleteMotherLanguageBox;
 						}
 					}
 				}
@@ -243,8 +250,8 @@
 			{
 				if (motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
-					var otherMotherLanguage:MotherLanguageBox = new MotherLanguageBox();
-					otherMotherLanguage.deleteButtonClickHandler = deleteMotherLanguageBox;
+					var otherMotherLanguage:MotherLanguageBox=new MotherLanguageBox();
+					otherMotherLanguage.deleteButtonClickHandler=deleteMotherLanguageBox;
 					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 					motherLanguagesBox.addElement(otherMotherLanguage);
 					motherLanguagesArray.addItem(otherMotherLanguage);
@@ -255,19 +262,24 @@
 			{
 				var container:Group=((event.currentTarget).parent).parent;
 				container.removeElement(((event.currentTarget).parent as LanguageKnowledgeBox));
-				var index:uint = 0;
-				if( (index = interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1){
+				var index:uint=0;
+				if ((index=interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				{
 					interestLanguagesArray.removeItemAt(index);
-				} else if ( (index = knownLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1){
+				}
+				else if ((index=knownLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				{
 					knownLanguagesArray.removeItemAt(index);
 				}
 			}
-			
-			private function deleteMotherLanguageBox(event:MouseEvent):void{
+
+			private function deleteMotherLanguageBox(event:MouseEvent):void
+			{
 				var container:Group=((event.currentTarget).parent).parent;
 				container.removeElement(((event.currentTarget).parent as MotherLanguageBox));
-				var index:uint = 0;
-				if( (index = motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1) {
+				var index:uint=0;
+				if ((index=motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1)
+				{
 					motherLanguagesArray.removeItemAt(index);
 				}
 			}
@@ -291,17 +303,63 @@
 
 			protected function saveChangesClickHandler(event:MouseEvent):void
 			{
+				var mLangCollection:ArrayCollection=new ArrayCollection();
+				var kLangCollection:ArrayCollection=new ArrayCollection();
+				var iLangCollection:ArrayCollection=new ArrayCollection();
 
+				for each (var mLang:MotherLanguageBox in motherLanguagesArray)
+				{
+					if (mLang.languageCombo.selectedIndex != -1)
+						mLangCollection.addItem(new UserLanguageVO(0, mLang.languageCombo.selectedItem.code, 7, DataModel.PURPOSE_EVALUATE, 0));
+				}
+				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
+				{
+					if (kLang.languageCombo.selectedIndex != -1)
+						kLangCollection.addItem(new UserLanguageVO(0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_EVALUATE, 0));
+				}
+				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
+				{
+					if (iLang.languageCombo.selectedIndex != -1)
+						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
+				}
+
+				var mLangArray:Array=mLangCollection.toArray();
+				var kLangArray:Array=kLangCollection.toArray();
+				var iLangArray:Array=iLangCollection.toArray();
+				if (mLangArray.length > 0 && iLangArray.length > 0)
+				{
+					var languages:Array=mLangArray.concat(kLangArray, iLangArray);
+
+					new UserEvent(UserEvent.MODIFY_PREFERRED_LANGUAGES, languages).dispatch();
+
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources', 'MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
+				}
 			}
 
 			public function set cancelClickHandler(cancelFunction:Function):void
 			{
 				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
 			}
+
+			public function set onLanguagesModified(value:Boolean):void
+			{
+				if (dataModel.userPreferredLanguagesModified == true)
+				{
+					CustomAlert.info(resourceManager.getString('myResources', 'LANGUAGES_SUCCESSFULLY_MODIFIED'));
+					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					dataModel.userPreferredLanguagesModified = false;
+				}
+			}
 		]]>
 	</fx:Script>
 
-	
+	<fx:Binding source="{dataModel.userPreferredLanguagesModified}"
+				destination="onLanguagesModified"/>
+
+
 	<s:HGroup verticalAlign="middle">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
 				 styleName="boldLabel"/>
@@ -310,7 +368,8 @@
 						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
-	<s:VGroup id="motherLanguagesBox" paddingLeft="16"/>
+	<s:VGroup id="motherLanguagesBox"
+			  paddingLeft="16"/>
 
 	<s:HGroup verticalAlign="middle">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
@@ -320,7 +379,8 @@
 						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
-	<s:VGroup id="knownLanguagesBox" paddingLeft="16"/>
+	<s:VGroup id="knownLanguagesBox"
+			  paddingLeft="16"/>
 
 	<s:HGroup verticalAlign="middle">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
@@ -330,7 +390,8 @@
 						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
-	<s:VGroup id="interestLanguagesBox" paddingLeft="16"/>
+	<s:VGroup id="interestLanguagesBox"
+			  paddingLeft="16"/>
 
 	<s:HGroup width="100%"
 			  horizontalAlign="center"
