@@ -22,7 +22,8 @@
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label text="{resourceManager.getString('myResources','LABEL_NEW_ROLE')+':'}"/>
 		<s:TextInput id="newrole"
-					 width="100%"/>
+					 width="100%"
+					 maxChars="20"/>
 	</s:HGroup>
 
 	<s:HGroup width="100%"

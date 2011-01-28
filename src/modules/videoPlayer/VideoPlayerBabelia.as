@@ -173,19 +173,19 @@ package modules.videoPlayer
 			_camVideo=new Video();
 			_camVideo.visible=false;
 
-			_subtitlingControls=new UIComponent();
-			_subtitlingText=new Text();
-			_subtitlingText.setStyle("fontWeight", "bold");
-			_subtitlingText.selectable=false;
-			_subtitlingText.text=ResourceManager.getInstance().getString('myResources', 'MESSAGE_SUBTITLING_CONTROLS');
-			//_subtitleStart=new SubtitleStartButton();
-			//_subtitleEnd=new SubtitleEndButton();
+//			_subtitlingControls=new UIComponent();
+//			_subtitlingText=new Text();
+//			_subtitlingText.setStyle("fontWeight", "bold");
+//			_subtitlingText.selectable=false;
+//			_subtitlingText.text=ResourceManager.getInstance().getString('myResources', 'MESSAGE_SUBTITLING_CONTROLS');
+	
 			_subtitleStartEnd=new SubtitleStartEndButton();
-			_subtitlingControls.addChild(_subtitlingText);
-			//_subtitlingControls.addChild(_subtitleStart);
-			//_subtitlingControls.addChild(_subtitleEnd);
-			_subtitlingControls.addChild(_subtitleStartEnd);
-			_subtitlingControls.visible=false;
+			
+//			_subtitlingControls.addChild(_subtitlingText);
+//			_subtitlingControls.addChild(_subtitleStartEnd);
+//			_subtitlingControls.visible=false;
+			
+			_videoBarPanel.addChild(_subtitleStartEnd);
 
 			_micActivityBar=new MicActivityBar();
 			_micActivityBar.visible=false;
@@ -208,7 +208,7 @@ package modules.videoPlayer
 			addChild(_videoBarPanel);
 			addChild(_camVideo);
 			addChild(_countdownTxt);
-			addChild(_subtitlingControls);
+			//addChild(_subtitlingControls);
 			addChild(_subtitlePanel);
 			
 
@@ -299,9 +299,10 @@ package modules.videoPlayer
 		 */
 		public function set subtitlingControls(flag:Boolean):void
 		{
-			_subtitlingControls.visible=flag;
+			_subtitleStartEnd.visible=flag;
+			//_subtitlingControls.visible=flag;
 			//enableSubtitlingEndButton=false;
-			drawBG(); // repaint bg
+			this.updateDisplayList(0,0); // repaint bg
 		}
 
 		public function get subtitlingControls():Boolean
@@ -523,23 +524,76 @@ package modules.videoPlayer
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
 			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
+			
+			
+			if(_subtitleStartEnd.visible){
+				_ppBtn.x=0;
+				_ppBtn.refresh();
+				
+				_stopBtn.x=_ppBtn.x + _ppBtn.width;
+				_stopBtn.refresh();
+				
+				_subtitleStartEnd.x = _stopBtn.x + _stopBtn.width;
+				_subtitleStartEnd.refresh();
+				
+				_sBar.x=_subtitleStartEnd.x + _subtitleStartEnd.width;
+				_sBar.refresh();
+				
+				_eTime.refresh();
+				
+				_audioSlider.refresh();
+				
+				_subtitleButton.includeInLayout = false;
+				_subtitleButton.visible = false;
+				
+				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
+				
+				_eTime.x=_sBar.x + _sBar.width;
+				_audioSlider.x=_eTime.x + _eTime.width;
+				
+			} else {
+				_ppBtn.x=0;
+				_ppBtn.refresh();
+				
+				_stopBtn.x=_ppBtn.x + _ppBtn.width;
+				_stopBtn.refresh();
+				
+				_sBar.x=_stopBtn.x + _stopBtn.width;
+				_sBar.refresh();
+				
+				_eTime.refresh();
+				
+				_audioSlider.refresh();
+				
+				_subtitleButton.includeInLayout = true;
+				_subtitleButton.visible = true;
+				
+				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
+				
+				_eTime.x=_sBar.x + _sBar.width;
+				_audioSlider.x=_eTime.x + _eTime.width;
+				
+			}
 
+			
 			// Subtitling controls
-			_subtitlingControls.x=0;
-			_subtitlingControls.y=_videoBarPanel.y + _videoBarPanel.height;
-			_subtitlingControls.width=_videoWidth;
-			_subtitlingControls.height=20;
-
-			_subtitlingText.x=_defaultMargin * 2;
-			_subtitlingText.width=115;
-			_subtitlingText.height=20;
-
-			//_subtitleStart.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin * 2;
-			//_subtitleStart.refresh();
-			//_subtitleEnd.x=_subtitleStart.x + _subtitleStart.width + _defaultMargin;
-			//_subtitleEnd.refresh();
-			_subtitleStartEnd.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin + 2;
-			_subtitleStartEnd.refresh();
+		//	_videoBarPanel.addChild(_subtitlingControls);
+			
+//			_subtitlingControls.x=0;
+//			_subtitlingControls.y=_videoBarPanel.y + _videoBarPanel.height;
+//			_subtitlingControls.width=_videoWidth;
+//			_subtitlingControls.height=20;
+//
+//			_subtitlingText.x=_defaultMargin * 2;
+//			_subtitlingText.width=115;
+//			_subtitlingText.height=20;
+//
+//			//_subtitleStart.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin * 2;
+//			//_subtitleStart.refresh();
+//			//_subtitleEnd.x=_subtitleStart.x + _subtitleStart.width + _defaultMargin;
+//			//_subtitleEnd.refresh();
+//			_subtitleStartEnd.x=_subtitlingText.x + _subtitlingText.width + _defaultMargin + 2;
+//			_subtitleStartEnd.refresh();
 			
 			// Mic gain bar
 			//_micActivityBar.y=_defaultMargin + _videoHeight - 30;
@@ -558,11 +612,11 @@ package modules.videoPlayer
 			
 			//var h1:Number=_subtitlePanel.visible ? _subtitlePanel.height : 0;
 			var h2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
-			var h3:Number=_subtitlingControls.visible ? _subtitlingControls.height : 0;
+			//var h3:Number=_subtitlingControls.visible ? _subtitlingControls.height : 0;
 			var h4:Number=_micActivityBar.visible ? _micActivityBar.height: 0;
 
 			//totalHeight= _videoHeight + h1 + h2 + h3 + _videoBarPanel.height;
-			totalHeight= _videoHeight + h2 + h3 + h4 + _videoBarPanel.height;
+			totalHeight= _videoHeight + h2 + /*h3 +*/ h4 + _videoBarPanel.height;
 
 			_bg.graphics.clear();
 

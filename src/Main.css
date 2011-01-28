@@ -554,19 +554,12 @@ s|TextInput{
 
 .watchRecordedButton{
 	fontSize: 12;
-	fillAlphas: 0.9, 0.9, 0.9, 0.9;
-	fillColors: #eefee6, #eefee6, #b7f39b, #b7f39b;
-	borderColor: #666666;
-	themeColor: #999999;
 	cornerRadius: 8;
+	horizontalAlign: left;
 }
 
 .recordAgainButton{
 	fontSize: 12;
-	fillAlphas: 0.9, 0.9, 0.9, 0.9;
-	fillColors: #eefee6, #eefee6, #95C9FC, #95C9FC;
-	borderColor: #666666;
-	themeColor: #999999;
 	cornerRadius: 8;
 }
 

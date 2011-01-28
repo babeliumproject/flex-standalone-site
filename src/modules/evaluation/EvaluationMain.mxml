@@ -770,7 +770,7 @@
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"
 				 width="100%"
-				 styleName="sectionTitleLabel"/>
+				 styleName="exerciseTitleLabel"/>
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<videoPlayer:VideoPlayerBabelia id="VP"
@@ -861,7 +861,9 @@
 							  width="100%"
 							  horizontalAlign="right"
 							  gap="0">
-						<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
+						<s:HGroup width="100%" horizontalAlign="right" paddingRight="16">
+							<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
+						</s:HGroup>
 						<s:BorderContainer width="100%"
 										   minHeight="0"
 										   minWidth="900"

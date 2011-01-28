@@ -188,15 +188,17 @@
 		<s:VerticalLayout paddingTop="16" paddingBottom="16" paddingLeft="16" paddingRight="16"/>
 	</s:layout>
 
-	<s:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"/>
+	<s:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
+			 styleName="sectionTitleLabel"/>
 	<s:VGroup id="ratingContainer"
 			  width="100%"
 			  height="100%">
-		<s:HGroup width="100%" gap="20">
+		<s:HGroup width="100%" gap="20" paddingTop="10">
 			
 			<!-- Score section -->
 			<s:VGroup width="50%">
-				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"/>
+				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"
+						 styleName="boldLabel"/>
 				<evaluation:ScoreParameterBox id="userIntonationScore"
 											  parameter="MESSAGE_RATE_USER_INTONATION"/>
 				<evaluation:ScoreParameterBox id="userFluencyScore"
@@ -211,7 +213,8 @@
 
 			<!-- Comment section -->
 			<s:VGroup width="50%">
-				<s:Label text="{resourceManager.getString('myResources','MESSAGE_OPTIONAL_EVALUATION_DATA') + ':'}"/>
+				<s:Label text="{resourceManager.getString('myResources','MESSAGE_OPTIONAL_EVALUATION_DATA') + ':'}"
+						 styleName="boldLabel"/>
 				<s:CheckBox id="includeTextCheck"
 							label="{resourceManager.getString('myResources','LABEL_INCLUDE_TEXT_COMMENT')}"
 							click="includeTextVideoCommentClickHandler(event)"/>

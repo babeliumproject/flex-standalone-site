@@ -76,8 +76,9 @@
 						  paddingRight="16"
 						  paddingTop="16"/>
 	</s:layout>
-	<s:Label text="{resourceManager.getString('myResources','TITLE_USER_EVALUATION')}"/>
-	<s:HGroup width="100%">
+	<s:Label text="{resourceManager.getString('myResources','TITLE_USER_EVALUATION')}"
+			 styleName="sectionTitleLabel"/>
+	<s:HGroup width="100%" paddingTop="10">
 		<s:VGroup id="scoresGroup"
 				  width="50%">
 			<s:HGroup id="intonationGroup"

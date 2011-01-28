@@ -191,6 +191,27 @@ package modules.videoPlayer.controls
 				inner,
 				knockout);
 		}
+		
+		//----------------------------------
+		//  toolTip
+		//----------------------------------
+		
+		[Inspectable(category="General", defaultValue="null")]
+		
+		/**
+		 *  @private
+		 */
+		private var _explicitToolTip:Boolean = false;
+		
+		/**
+		 *  @private
+		 */
+		override public function set toolTip(value:String):void
+		{
+			super.toolTip = value;
+			
+			_explicitToolTip = value != null;
+		}
 
 		
 	}
