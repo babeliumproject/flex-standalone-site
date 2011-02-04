@@ -14,16 +14,16 @@ package modules.main
 	{
 
 		[Bindable]
-		[Embed(source="resources/images/first.png")]
+		[Embed("../../resources/images/first.png")]
 		public static var firstI:Class;
 		[Bindable]
-		[Embed(source="resources/images/previous.png")]
+		[Embed("../../resources/images/previous.png")]
 		public static var previousI:Class;
 		[Bindable]
-		[Embed(source="resources/images/next.png")]
+		[Embed("../../resources/images/next.png")]
 		public static var nextI:Class;
 		[Bindable]
-		[Embed(source="resources/images/last.png")]
+		[Embed("../../resources/images/last.png")]
 		public static var lastI:Class;
 
 		public static function createPaginationMenu(totalItemCount:int, itemsPerPage:int, currentPageNumber:int, displayedPageCount:int, container:HGroup, buttonClickHandler:Function):void

@@ -444,13 +444,13 @@
 							  label="{resourceManager.getString('myResources','LABEL_SIGN_UP')}"
 							  click="processNewUser()"
 							  skinClass="skins.IconButtonSkin"
-							  icon="@Embed('resources/images/save.png')"/>
+							  icon="@Embed('/resources/images/save.png')"/>
 
 			<skins:IconButton id="cancelButton"
 							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  click="cancelButton_clickHandler(event)"
 							  skinClass="skins.IconButtonSkin"
-							  icon="@Embed('resources/images/cancel.png')"/>
+							  icon="@Embed('/resources/images/cancel.png')"/>
 
 		</s:HGroup>
 	</s:VGroup>

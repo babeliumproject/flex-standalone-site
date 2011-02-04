@@ -171,7 +171,7 @@
 	<s:HGroup paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16">
-		<s:BitmapImage source="@Embed('resources/images/icon_foot.png')"/>
+		<s:BitmapImage source="@Embed('/resources/images/icon_foot.png')"/>
 		<s:VGroup>
 			<s:Label id="stepByStepTitle"
 					 text="{resourceManager.getString('myResources','STEP_BY_STEP')}"

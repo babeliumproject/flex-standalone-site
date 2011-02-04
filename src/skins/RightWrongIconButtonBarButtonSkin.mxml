@@ -382,11 +382,11 @@
 					   source="{hostComponent.getStyle('icon')}"
 					   includeInLayout="false"/>
 		<s:BitmapImage id="errorIcon"
-					   source="@Embed('resources/images/config_tab_error.png')"
+					   source="@Embed('/resources/images/config_tab_error.png')"
 					   includeInLayout="false">
 		</s:BitmapImage>
 		<s:BitmapImage id="okIcon"
-					   source="@Embed('resources/images/config_tab_ok.png')"
+					   source="@Embed('/resources/images/config_tab_ok.png')"
 					   includeInLayout="false"/>
 	</s:Group>
 

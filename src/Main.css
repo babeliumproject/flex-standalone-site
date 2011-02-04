@@ -51,7 +51,7 @@ s|Panel{
 
 /*
 main|HeaderClass{
-	backgroundImage: Embed('resources/images/header_bgr_pttr.png');
+	backgroundImage: Embed('/resources/images/header_bgr_pttr.png');
 	backgroundImageFillMode: repeat;
 	backgroundAlpha: 1.0;
 	borderVisible: false;
@@ -59,7 +59,7 @@ main|HeaderClass{
 }*/
 
 .headerBorderContainer{
-	backgroundImage: Embed('resources/images/header_bgr_pttr.png');
+	backgroundImage: Embed('/resources/images/header_bgr_pttr.png');
 	backgroundImageFillMode: repeat;
 	backgroundAlpha: 1.0;
 	borderVisible: false;
@@ -123,7 +123,7 @@ s|TextInput{
 
 .helpLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
-	icon:Embed('resources/images/help_icon.png');
+	icon:Embed('/resources/images/help_icon.png');
 	fontWeight:bold;
 	color:#2d89a4;
 	colorOver:#666666;
@@ -134,7 +134,7 @@ s|TextInput{
 
 .reportLinkButton{
 	skinClass: ClassReference("skins.IconLinkSkin");
-	icon: Embed('resources/images/shield_icon.png');
+	icon: Embed('/resources/images/shield_icon.png');
 	fontWeight:bold;
 	color:#d5ac32;
 	colorOver:#666666;
@@ -145,7 +145,7 @@ s|TextInput{
 
 .addLanguageLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
-	icon:Embed('resources/images/add.png');
+	icon:Embed('/resources/images/add.png');
 	fontWeight:normal;
 	color:#666666;
 	colorOver:#000000;
@@ -156,7 +156,7 @@ s|TextInput{
 
 .removeLanguageLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
-	icon:Embed('resources/images/delete.png');
+	icon:Embed('/resources/images/delete.png');
 	fontWeight:normal;
 	color:#666666;
 	colorOver:#000000;
@@ -167,12 +167,12 @@ s|TextInput{
 
 .signOutLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
-	icon:Embed('resources/images/close_icon.png');
+	icon:Embed('/resources/images/close_icon.png');
 }
 
 .recStartLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");
-	icon:Embed('resources/images/button_rec.png');
+	icon:Embed('/resources/images/button_rec.png');
 }
 
 .creditLinkButton{
@@ -240,21 +240,21 @@ s|TextInput{
 
 .loginPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
-	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }
 
 .privacyRightsPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
-	backgroundImage: Embed('resources/images/popup_bgr_unlock.png');
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }
 
 .reportPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
-	backgroundImage: Embed('resources/images/popup_bgr_shield.png');
+	backgroundImage: Embed('/resources/images/popup_bgr_shield.png');
 	cornerRadius: 8;
 	borderColor: #FFFFFF;
 }
@@ -273,7 +273,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_home.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_home.png');
 }
 
 .practiceLinkButton{
@@ -284,7 +284,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_pract.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_pract.png');
 }
 
 .evaluateLinkButton{
@@ -295,7 +295,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_eval.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_eval.png');
 }
 
 .subtitleLinkButton{
@@ -306,7 +306,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_subt.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_subt.png');
 }
 
 .configureLinkButton{
@@ -317,7 +317,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_config.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_config.png');
 }
 
 .aboutLinkButton{
@@ -328,7 +328,7 @@ s|TextInput{
 	textSelectedColor: #ffffff;
 	fontSize: 18;
 	fontWeight: bold;
-	backgroundImage: Embed('resources/images/button_nav_highlight_about.png');
+	backgroundImage: Embed('/resources/images/button_nav_highlight_about.png');
 }
 
 .searchButton{
@@ -385,7 +385,7 @@ s|TextInput{
 	skinClass: ClassReference('skins.IconButtonVerticalSkin');
 	gradientColors: #ffffff, #e3bb03;
 	gradientColorsOver: #f3f3f3, #333333;
-	icon: Embed('resources/images/upload_icon.png');
+	icon: Embed('/resources/images/upload_icon.png');
 	color: #b09002;
 	fontWeight: bold;
 	borderWeight: 1;
@@ -396,7 +396,7 @@ s|TextInput{
 	skinClass: ClassReference('skins.IconButtonVerticalSkin');
 	gradientColors: #ffffff, #972c0a;
 	gradientColorsOver: #f3f3f3, #333333;
-	icon: Embed('resources/images/subtitle_icon.png');
+	icon: Embed('/resources/images/subtitle_icon.png');
 	color: #6b2712;
 	fontWeight: bold;
 	borderWeight: 1;
@@ -407,7 +407,7 @@ s|TextInput{
 	skinClass: ClassReference('skins.IconButtonVerticalSkin');
 	gradientColors: #ffffff, #7b970a;
 	gradientColorsOver: #f3f3f3, #333333;
-	icon: Embed('resources/images/evaluate_icon.png');
+	icon: Embed('/resources/images/evaluate_icon.png');
 	color: #516307;
 	fontWeight: bold;
 	borderWeight: 1;
@@ -418,7 +418,7 @@ s|TextInput{
 	skinClass: ClassReference('skins.IconButtonVerticalSkin');
 	gradientColors: #ffffff, #38babc;
 	gradientColorsOver: #f3f3f3, #333333;
-	icon: Embed('resources/images/practice_icon.png');
+	icon: Embed('/resources/images/practice_icon.png');
 	color: #29888a;
 	fontWeight: bold;
 	borderWeight: 1;
@@ -489,7 +489,7 @@ s|TextInput{
 }
 
 .sectionInfoBox{
-	backgroundImage: Embed('resources/images/pattern.jpg');
+	backgroundImage: Embed('/resources/images/pattern.jpg');
 	backgroundImageFillMode: repeat;
 	backgroundAlpha: 0.25;
 	borderWeight: 0;

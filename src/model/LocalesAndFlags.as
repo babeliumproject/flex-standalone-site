@@ -7,31 +7,31 @@ package model
 	{
 
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_united_states.png")]
+		[Embed("../resources/images/flags/flag_united_states.png")]
 		private var FlagUnitedStates:Class;
 		
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_new_zealand.png")]
+		[Embed("../resources/images/flags/flag_new_zealand.png")]
 		private var FlagNewZealand:Class;
 
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_spain.png")]
+		[Embed("../resources/images/flags/flag_spain.png")]
 		public var FlagSpain:Class;
 
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_basque_country.png")]
+		[Embed("../resources/images/flags/flag_basque_country.png")]
 		public var FlagBasqueCountry:Class;
 
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_france.png")]
+		[Embed("../resources/images/flags/flag_france.png")]
 		public var FlagFrance:Class;
 		
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_morocco.png")]
+		[Embed("../resources/images/flags/flag_morocco.png")]
 		public var FlagMorocco:Class;
 		
 		[Bindable]
-		[Embed(source="resources/images/flags/flag_germany.png")]
+		[Embed("../resources/images/flags/flag_germany.png")]
 		public var FlagGermany:Class;
 		
 		

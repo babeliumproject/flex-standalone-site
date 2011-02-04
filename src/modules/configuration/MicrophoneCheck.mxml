@@ -261,7 +261,7 @@
 						  skinClass="skins.IconButtonSkin"
 						  minWidth="0"
 						  width="30"
-						  icon="@Embed('resources/images/playerRecIcon.png')"/>
+						  icon="@Embed('/resources/images/playerRecIcon.png')"/>
 		<skins:IconButton id="playButton"
 						  click="playStart()"
 						  horizontalCenter="true"
@@ -269,7 +269,7 @@
 						  skinClass="skins.IconButtonSkin"
 						  minWidth="0"
 						  width="30"
-						  icon="@Embed('resources/images/playerPlayIcon.png')"/>
+						  icon="@Embed('/resources/images/playerPlayIcon.png')"/>
 		<s:VGroup>
 			<s:HGroup horizontalAlign="right"
 					  width="100%">

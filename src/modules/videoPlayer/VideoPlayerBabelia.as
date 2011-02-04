@@ -180,6 +180,7 @@ package modules.videoPlayer
 //			_subtitlingText.text=ResourceManager.getInstance().getString('myResources', 'MESSAGE_SUBTITLING_CONTROLS');
 	
 			_subtitleStartEnd=new SubtitleStartEndButton();
+			_subtitleStartEnd.visible=false;
 			
 //			_subtitlingControls.addChild(_subtitlingText);
 //			_subtitlingControls.addChild(_subtitleStartEnd);

@@ -105,10 +105,10 @@
 
 			public var _videoPlayerReady:Boolean=false;
 			
-			[Embed('resources/images/button_abort.png')]
+			[Embed('/resources/images/button_abort.png')]
 			[Bindable] private var abortIcon:Class;
 			
-			[Embed('resources/images/button_rec.png')]
+			[Embed('/resources/images/button_rec.png')]
 			[Bindable] private var recIcon:Class;
 
 			/**
@@ -862,7 +862,7 @@
 						   cornerRadius="8"
 						   borderColor="#FFFFFF"
 						   dropShadowVisible="true">
-			<s:BitmapImage source="@Embed('resources/images/popup_bgr_excl.png')"
+			<s:BitmapImage source="@Embed('/resources/images/popup_bgr_excl.png')"
 						   right="0"
 						   top="0"/>
 			<s:VGroup width="100%"

@@ -56,7 +56,7 @@
 
 				<s:HGroup id="guestEditWarningBox"
 						  verticalAlign="middle">
-					<mx:Image source="@Embed(source='resources/images/alertConfirmation.png')"/>
+					<mx:Image source="@Embed(source='/resources/images/alertConfirmation.png')"/>
 					<s:Label id="notLoggedWarning"
 							 styleName="guestVersionWarningLabel"
 							 text="{resourceManager.getString('myResources','LABEL_GUEST_EDIT_WARNING')}"/>
@@ -148,25 +148,25 @@
 									  click="{subtitleInsertHandler(event)}"
 									  id="addSubtitleLine"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/add.png')"/>
+									  icon="@Embed('/resources/images/add.png')"/>
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
 									  enabled="{subtitleCollection.length > 0}"
 									  click="subtitleRemoveHandler()"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/delete.png')"/>
+									  icon="@Embed('/resources/images/delete.png')"/>
 
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
 									  enabled="{subtitleCollection.length > 0}"
 									  click="subtitleClearHandler()"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/cancel.png')"/>
+									  icon="@Embed('/resources/images/cancel.png')"/>
 					<mx:VRule id="saveSubtitleSeparator"
 							  height="30"/>
 					<skins:IconButton id="saveSubtitleButton"
 									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
 									  click="saveSubtitlesHandler()"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/save.png')"/>
+									  icon="@Embed('/resources/images/save.png')"/>
 				</s:HGroup>
 
 			</s:BorderContainer>

@@ -646,7 +646,7 @@
 										  click="addFiles()"
 										  label="{resourceManager.getString('myResources','BUTTON_BROWSE')}"
 										  skinClass="skins.IconButtonSkin"
-										  icon="@Embed('resources/images/add.png')"/>
+										  icon="@Embed('/resources/images/add.png')"/>
 					</s:HGroup>
 				</s:HGroup>
 				<s:Label paddingLeft="12"
@@ -668,14 +668,14 @@
 									  width="26"
 									  click="onUploadCanceled()"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/cancel.png')"/>
+									  icon="@Embed('/resources/images/cancel.png')"/>
 					<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
 									  toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
 									  id="btnUpload"
 									  click="startUpload()"
 									  enabled="{formIsValid}"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('resources/images/bullet_go.png')"/>
+									  icon="@Embed('/resources/images/bullet_go.png')"/>
 				</mx:ControlBar>
 			</s:VGroup>
 		</s:VGroup>

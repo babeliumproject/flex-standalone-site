@@ -38,7 +38,7 @@
 	<s:BorderContainer cornerRadius="8"
 					   borderColor="#FFFFFF"
 					   dropShadowVisible="true">
-		<s:BitmapImage source="@Embed('resources/images/popup_bgr_wrong.png')"
+		<s:BitmapImage source="@Embed('/resources/images/popup_bgr_wrong.png')"
 					   right="0"
 					   top="0"/>
 		<s:VGroup width="100%"

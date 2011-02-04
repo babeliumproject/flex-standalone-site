@@ -74,7 +74,7 @@
 							 text="cr."
 							 styleName="creditLinkButton"
 							 verticalAlign="justify"/>
-					<s:BitmapImage source="@Embed('resources/images/coins_icon.png')"/>
+					<s:BitmapImage source="@Embed('/resources/images/coins_icon.png')"/>
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
