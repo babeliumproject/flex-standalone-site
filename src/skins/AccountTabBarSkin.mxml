@@ -80,7 +80,7 @@ created by the TabBarSkin use the TabBarButtonSkin class.
         </s:layout>
         <s:itemRenderer>
             <fx:Component>
-                <s:ButtonBarButton skinClass="skins.AccountTabBarButtonSkin" />
+                <s:ButtonBarButton skinClass="skins.AccountTabBarButtonSkin" buttonMode="true"/>
             </fx:Component>
         </s:itemRenderer>
     </s:DataGroup>

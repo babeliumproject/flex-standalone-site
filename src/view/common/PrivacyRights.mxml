@@ -230,11 +230,13 @@
 				<s:HGroup>
 					<s:Button id="micNotFoundErrorRetryButton"
 							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
-							  click="initDevices()"/>
+							  click="initDevices()"
+							  buttonMode="true"/>
 
 					<s:Button id="micNotFoundErrorCancelButton"
 							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-							  click="cancelButtonClickHandler(event)"/>
+							  click="cancelButtonClickHandler(event)"
+							  buttonMode="true"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
@@ -251,10 +253,12 @@
 				<s:HGroup>
 					<s:Button id="camNotFoundErrorRetryButton"
 							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
-							  click="initDevices()"/>
+							  click="initDevices()"
+							  buttonMode="true"/>
 					<s:Button id="camNotFoundErrorCancelButton"
 							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-							  click="cancelButtonClickHandler(event)"/>
+							  click="cancelButtonClickHandler(event)"
+							  buttonMode="true"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
@@ -266,7 +270,8 @@
 						 text="{resourceManager.getString('myResources','TEXT_ADMINISTRATIVELY_DISABLED')}"/>
 				<s:Button id="adminErrorButton"
 						  label="{resourceManager.getString('myResources','BUTTON_OK')}"
-						  click="cancelButtonClickHandler(event)"/>
+						  click="cancelButtonClickHandler(event)"
+						  buttonMode="true"/>
 			</s:VGroup>
 		</s:NavigatorContent>
 
@@ -289,11 +294,13 @@
 					<s:Button id="privacyRecButton"
 							  label="{resourceManager.getString('myResources','BUTTON_OK')}"
 							  click="okButtonClickHandler(event)"
-							  styleName="bigBlueButton"/>
+							  styleName="bigBlueButton"
+							  buttonMode="true"/>
 					<s:Button id="privacyCancelButton"
 							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  click="cancelButtonClickHandler(event)"
-							  styleName="bigBlueButton"/>
+							  styleName="bigBlueButton"
+							  buttonMode="true"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>

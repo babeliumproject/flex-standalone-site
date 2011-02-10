@@ -3,11 +3,10 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:configuration="modules.configuration.*"
-		  styleName="padding10AllSidesBox"
+		  xmlns:skins="skins.*"
 		  width="100%"
 		  height="100%"
-		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*">
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
@@ -238,17 +237,20 @@
 	<s:Label id="labelMicrophoneCheck"
 			 text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
 			 styleName="sectionTitleLabel"/>
-	<mx:HRule styleName="sectionTitleHRule"
-			  width="{labelMicrophoneCheck.width}"/>
+	<s:Line width="{labelMicrophoneCheck.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{labelMicrophoneCheck.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
 	<s:VGroup width="100%"
-			  height="100%">
+			  height="100%"
+			  paddingBottom="20">
 		<mx:Spacer/>
 		<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE1') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE2')}"/>
 		<mx:Spacer/>
 		<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE3') + ' ' + resourceManager.getString('myResources', 'CONFIGURATION_MIC_MESSAGE4')}"/>
 	</s:VGroup>
-
-	<mx:Spacer height="20"/>
 
 	<s:BorderContainer cornerRadius="8">
 		<s:layout>
@@ -293,15 +295,4 @@
 
 		</s:VGroup>
 	</s:BorderContainer>
-
-	<s:HGroup id="notConect"
-			  width="100%"
-			  height="100%"
-			  visible="false">
-		<s:VGroup horizontalAlign="center"
-				  verticalAlign="middle">
-			<s:Label styleName="errorLabel"
-					 text="{resourceManager.getString('myResources', 'CONFIGURATION_NOT_MIC_TEXT')}"/>
-		</s:VGroup>
-	</s:HGroup>
 </s:VGroup>

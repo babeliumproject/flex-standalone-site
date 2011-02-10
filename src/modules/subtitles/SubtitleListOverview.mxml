@@ -83,7 +83,9 @@
 	<fx:Binding source="{dataModel.exercisesWithSubtitlesToReviewRetrieved}"
 				destination="exercisesWithSubtitlesToReviewRetrievedHandler"/>
 	-->
-
+	
+	<fx:Binding source="{dataModel.stopVideoFlag}"
+				destination="onTabChange"/>
 	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 

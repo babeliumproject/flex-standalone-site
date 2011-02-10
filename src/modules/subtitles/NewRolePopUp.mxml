@@ -32,9 +32,11 @@
 			  paddingTop="10">
 		<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
 				  id="okButton"
+				  buttonMode="true"
 				  styleName="bigBlueButton"/>
 		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				  id="cancelButton"
+				  buttonMode="true"
 				  styleName="bigBlueButton"/>
 	</s:HGroup>
 

@@ -18,6 +18,7 @@ package skins
 		public function NavigationToggleButton()
 		{
 			super();
+			this.buttonMode=true;
 		}
 
 		// Define a static method.

@@ -235,10 +235,12 @@
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
 							  styleName="bigBlueButton"
 							  id="okButton"
+							  buttonMode="true"
 							  click="processLogin(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  styleName="bigBlueButton"
 							  id="cancelButton"
+							  buttonMode="true"
 							  click="cancelButtonClickHandler(event)"/>
 				</s:HGroup>
 				<s:VGroup id="loginProblemTroubleshootingBox"
@@ -275,10 +277,12 @@
 						  verticalAlign="middle">
 					<s:Button label="{resourceManager.getString('myResources','LABEL_RESTORE_PASSWORD')}"
 							  id="restoreButton"
+							  buttonMode="true"
 							  styleName="bigBlueButton"
 							  click="processRestorePass(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  id="cancelRestoreButton"
+							  buttonMode="true"
 							  styleName="bigBlueButton"
 							  click="showLogin(event)"/>
 				</s:HGroup>
@@ -304,9 +308,11 @@
 						  horizontalAlign="center"
 						  verticalAlign="middle">
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+							  buttonMode="true"
 							  id="activationOkButton"
 							  click="resendActivationEmail(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  buttonMode="true"
 							  id="activationCancelButton"
 							  click="cancelButtonClickHandler(event)"/>
 				</s:HGroup>

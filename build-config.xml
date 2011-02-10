@@ -1,0 +1,35 @@
+<flex-config>
+	<compiler>
+		<!-- Compile a release build with no debugging capabilites -->
+		<debug>false</debug>
+
+		<show-shadowed-device-font-warnings>false</show-shadowed-device-font-warnings>
+
+		<!-- compiler.use-resource-bundle-metadata: determina si se incluyen los paquetes de recursos en la aplicación. -->
+		<use-resource-bundle-metadata>true</use-resource-bundle-metadata>
+	</compiler>
+
+	<!-- default-background-color: color de fondo predeterminado (el código de la aplicación lo puede sobrescribir) -->
+	<default-background-color>0xFFFFFF</default-background-color>
+
+	<!-- default-frame-rate: velocidad de fotograma predeterminada que se va a usar en el SWF. -->
+	<default-frame-rate>24</default-frame-rate>
+
+	<!-- default-script-limits: límites de ejecución del script predeterminado (los atributos raíz los pueden sobrescribir) -->
+	<default-script-limits>
+		<max-recursion-depth>1000</max-recursion-depth>
+		<max-execution-time>60</max-execution-time>
+	</default-script-limits>
+
+	<!-- default-size: tamaño de aplicación predeterminado (los atributos raíz de la aplicación lo pueden sobrescribir) -->
+	<default-size>
+		<width>1024</width>
+		<height>768</height>
+	</default-size>
+
+	<framework>halo</framework>
+
+	<!-- verify-digests: verifica si las bibliotecas cargadas en el tiempo de ejecución son correctas. -->
+	<verify-digests>false</verify-digests>
+
+</flex-config>

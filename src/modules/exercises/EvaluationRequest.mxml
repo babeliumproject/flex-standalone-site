@@ -35,8 +35,10 @@
 		</s:HGroup>
 		<s:HGroup width="100%">
 			<s:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
+					  buttonMode="true"
 					  click="evaluationRequestedClickHandler()"/>
 			<s:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
+					  buttonMode="true"
 					  click="returnToMainClickHandler()"/>
 		</s:HGroup>
 	</s:VGroup>

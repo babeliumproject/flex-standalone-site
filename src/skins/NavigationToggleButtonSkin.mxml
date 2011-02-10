@@ -113,7 +113,8 @@
 			 left="10"
 			 right="10"
 			 top="2"
-			 bottom="2">
+			 bottom="2"
+			 color.disabledStates="#666666">
 	</s:Label>
 
 </s:SparkSkin>

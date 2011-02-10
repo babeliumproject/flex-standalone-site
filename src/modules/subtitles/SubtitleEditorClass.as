@@ -493,15 +493,16 @@ package modules.subtitles
 
 		public function onTabChange(value:Boolean):void
 		{
-			if (_dataModel.currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
-			{
-				if (videoPlayerReady)
+			//if (_dataModel.currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+			//{
+				//if (videoPlayerReady)
 					VPSubtitle.endVideo();
 				VPSubtitle.setSubtitle(""); // Clear subtitles if any
 				VPSubtitle.videoSource=""; // Reset video source
 				VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				_cueManager.reset();
-			}
+				
+			//}
 			subtitleVersionBox.includeInLayout = false;
 			subtitleVersionBox.visible = false;
 			availableSubtitleVersions = new ArrayCollection();

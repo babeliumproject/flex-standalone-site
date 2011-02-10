@@ -77,5 +77,6 @@
 										controlsEnabled="true"/>
 	</s:VGroup>
 	<mx:Spacer width="20"/>
-	<s:Button click="closeButtonClickHandler(event)"/>
+	<s:Button click="closeButtonClickHandler(event)"
+			  buttonMode="true"/>
 </skins:CustomTitleWindow>

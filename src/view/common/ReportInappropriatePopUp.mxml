@@ -96,11 +96,13 @@
 				  id="reportButton"
 				  styleName="bigBlueButton"
 				  click="reportButtonClickHandler(event)"
-				  enabled="true"/>
+				  enabled="true"
+				  buttonMode="true"/>
 		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 				  id="cancelButton"
 				  styleName="bigBlueButton"
-				  click="cancelButtonClickHandler(event)"/>
+				  click="cancelButtonClickHandler(event)"
+				  buttonMode="true"/>
 	</s:HGroup>
 
 </skins:CustomTitleWindow>

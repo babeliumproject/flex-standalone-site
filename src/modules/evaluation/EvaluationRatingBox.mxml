@@ -185,7 +185,10 @@
 	</fx:Script>
 
 	<s:layout>
-		<s:VerticalLayout paddingTop="16" paddingBottom="16" paddingLeft="16" paddingRight="16"/>
+		<s:VerticalLayout paddingTop="16"
+						  paddingBottom="16"
+						  paddingLeft="16"
+						  paddingRight="16"/>
 	</s:layout>
 
 	<s:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
@@ -193,8 +196,10 @@
 	<s:VGroup id="ratingContainer"
 			  width="100%"
 			  height="100%">
-		<s:HGroup width="100%" gap="20" paddingTop="10">
-			
+		<s:HGroup width="100%"
+				  gap="20"
+				  paddingTop="10">
+
 			<!-- Score section -->
 			<s:VGroup width="50%">
 				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"
@@ -229,7 +234,10 @@
 								 resizeToContent="true"
 								 horizontalAlign="right"
 								 backgroundAlpha="0"
-								 paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8">
+								 paddingTop="8"
+								 paddingBottom="8"
+								 paddingLeft="8"
+								 paddingRight="8">
 					<s:NavigatorContent id="textCommentBoxNavContent"
 										label="{resourceManager.getString('myResources','LABEL_TEXT_COMMENT')}">
 						<s:VGroup id="textCommentBox"
@@ -244,7 +252,7 @@
 					<s:NavigatorContent id="videoCommentBoxNavContent"
 										label="{resourceManager.getString('myResources','LABEL_VIDEO_COMMENT')}">
 						<s:VGroup id="videoCommentBox"
-								  width="100%" 
+								  width="100%"
 								  horizontalAlign="center">
 							<videoUpload:TempVideoRecording id="videoComment"
 															streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
@@ -265,10 +273,12 @@
 				  verticalAlign="middle">
 			<s:Button id="sendEvaluationButton"
 					  label="{resourceManager.getString('myResources','LABEL_SEND_EVALUATION')}"
+					  buttonMode="true"
 					  click="sendEvaluationButtonClickHandler(event)"
 					  styleName="bigBlueButton"/>
 			<s:Button id="resetEvaluationButton"
 					  label="{resourceManager.getString('myResources','LABEL_RESET_EVALUATION')}"
+					  buttonMode="true"
 					  click="resetEvaluationButtonClickHandler(event)"
 					  styleName="bigBlueButton"/>
 		</s:HGroup>

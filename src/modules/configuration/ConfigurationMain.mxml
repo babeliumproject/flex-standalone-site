@@ -3,11 +3,12 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:common="view.common.*"
+		  xmlns:skins="skins.*"
 		  xmlns:configuration="modules.configuration.*"
 		  xmlns:mod3="modules.configuration.bandwidth.*"
 		  width="100%"
-		  height="100%"
-		  creationComplete="init()" xmlns:skins="skins.*">
+		  minWidth="1000"
+		  creationComplete="init()">
 
 	<fx:Script>
 		<![CDATA[
@@ -42,14 +43,9 @@
 					webCamCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT, webcamResult);
 					webCamCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT, microphoneResult);
 					webCamCheck.addEventListener(ShowStatusMessage.MIC_MESSAGE, micStatusMessage);
-					webCamCheck.allMenu.visible=true;
-					webCamCheck.notConect.visible=false;
 				}
 				else
 				{ //El usuario no dispone de webcam
-					refreshCamButton.visible=true;
-					webCamCheck.allMenu.visible=false;
-					webCamCheck.notConect.visible=true;
 					correctIncorrectIcon(webCamStatusIcon, false);
 				}
 			}
@@ -70,12 +66,9 @@
 						micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT, microphoneResult);
 						micCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT, webcamResult);
 						micCheck.addEventListener(ShowStatusMessage.CAM_MESSAGE, webCamStatusMessage);
-						micCheck.notConect.visible=false;
 					}
 					else
 					{ //El usuario no dispone de microfono
-						refreshMicButton.visible=true;
-						micCheck.notConect.visible=true;
 						correctIncorrectIcon(microphoneStatusIcon, false);
 					}
 				}
@@ -156,8 +149,6 @@
 				if (Microphone.names.length > 0)
 				{ //El usuario ha conectado su microfono
 					micCheck.addEventListener(ConfigurationResultEvent.MICROPHONE_RESULT, microphoneResult);
-					micCheck.notConect.visible=false;
-					refreshMicButton.visible=false;
 				}
 			}
 
@@ -166,9 +157,6 @@
 				if (Camera.names.length > 0)
 				{ //El usuario ha conectado su webcam
 					webCamCheck.addEventListener(ConfigurationResultEvent.WEBCAM_RESULT, webcamResult);
-					webCamCheck.allMenu.visible=true;
-					webCamCheck.notConect.visible=false;
-					refreshCamButton.visible=false;
 				}
 			}
 
@@ -190,8 +178,8 @@
 			}
 		]]>
 	</fx:Script>
-	
-	
+
+
 	<s:BorderContainer styleName="sectionInfoBox"
 					   minHeight="0"
 					   minWidth="1000"
@@ -205,7 +193,8 @@
 				 paddingRight="16"/>
 		<s:Label text="{resourceManager.getString('myResources','CONFIGURATION_SECTION_DESCRIPTION')}"
 				 paddingLeft="16"
-				 paddingRight="16"/>
+				 paddingRight="16"
+				 width="950"/>
 		<s:HGroup horizontalAlign="right"
 				  width="100%"
 				  verticalAlign="bottom"
@@ -218,74 +207,63 @@
 		</s:HGroup>
 	</s:BorderContainer>
 
-	<s:HGroup width="100%"
-			  height="100%"
+	<s:HGroup id="checkResultBox"
+			  styleName="configResultBox"
+			  includeInLayout="false"
+			  visible="false"
+			  width="100%"
+			  horizontalAlign="right"
+			  paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16">
-		<s:VGroup id="checkResultBox"
-				  styleName="configResultBox"
-				  height="100%"
-				  includeInLayout="false"
-				  visible="false">
-			<s:Label styleName="sectionLowerTitleLabel"
-					 text="{resourceManager.getString('myResources','RESULTS')}"/>
-			<s:HGroup id="webCamStatus"
-					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources', 'WEBCAM')+':'}"
-						 id="webCamStatusText"
-						 visible="true"/>
-				<mx:Image id="webCamStatusIcon"/>
-			</s:HGroup>
-			<s:HGroup id="microphoneStatus"
-					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}"
-						 id="microphoneStatusText"/>
-				<mx:Image id="microphoneStatusIcon"/>
-			</s:HGroup>
+		<s:HGroup id="webCamStatus"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources', 'WEBCAM')+':'}"
+					 id="webCamStatusText"
+					 visible="true"/>
+			<mx:Image id="webCamStatusIcon"/>
+		</s:HGroup>
+		<s:HGroup id="microphoneStatus"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources', 'MICROPHONE')+':'}"
+					 id="microphoneStatusText"/>
+			<mx:Image id="microphoneStatusIcon"/>
+		</s:HGroup>
 
-			<s:HGroup id="bandwidthStatus"
-					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources', 'BANDWIDTH')+':'}"
-						 id="bandwidthStatusText"/>
-				<mx:Image id="bandwidthStatusIcon"/>
-			</s:HGroup>
-		</s:VGroup>
+		<s:HGroup id="bandwidthStatus"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources', 'BANDWIDTH')+':'}"
+					 id="bandwidthStatusText"/>
+			<mx:Image id="bandwidthStatusIcon"/>
+		</s:HGroup>
+	</s:HGroup>
+
+	<s:VGroup width="100%"
+			  height="100%"
+			  paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="16">
 
 		<mx:ViewStack id="configurationViewStack"
 					  width="100%"
+					  height="100%"
 					  creationPolicy="all"
 					  resizeToContent="true">
 
 			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_WEBCAM_SETUP')}">
-				<s:VGroup width="100%"
-						  height="100%">
-					<configuration:WebcamCheck id="webCamCheck"/>
-					<mx:LinkButton id="refreshCamButton"
-								   visible="false"
-								   styleName="errorLabel"
-								   label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}"
-								   click="refreshWebCam()"/>
-				</s:VGroup>
+				<configuration:WebcamCheck id="webCamCheck"/>
 			</s:NavigatorContent>
 
 			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}">
-				<s:VGroup>
-					<configuration:MicrophoneCheck id="micCheck"/>
-					<mx:LinkButton id="refreshMicButton"
-								   visible="false"
-								   styleName="errorLabel"
-								   label="{resourceManager.getString('myResources','CONNECTITANDCLICKHERETORELOADPAGE')}"
-								   click="refreshMic()"/>
-				</s:VGroup>
-
+				<configuration:MicrophoneCheck id="micCheck"/>
 			</s:NavigatorContent>
 
 			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_BANDWIDTH_CHECK')}">
-				<s:VGroup>
-					<mod3:connectionCheck id="bandwidthCheck"/>
-				</s:VGroup>
+				<mod3:connectionCheck id="bandwidthCheck"/>
 			</s:NavigatorContent>
 		</mx:ViewStack>
 
-	</s:HGroup>
+	</s:VGroup>
+
 </s:VGroup>

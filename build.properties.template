@@ -1,0 +1,61 @@
+# ant script for Babelium Project
+# @author: Juanan Pereira
+# GPL (2011)
+
+dir.lib=/path/to/ant/lib
+FLEX_HOME=/path/to/flex/4/sdk
+ 
+BASE=/path/to/flex/project
+APP_ROOT=${BASE}/src
+DEPLOY_DIR=${BASE}/bin-test
+APP_LIB=${BASE}/libs
+MXMLC_CUSTOM_CONFIG_FILE=build-config.xml
+
+#Flex build tool paths
+flexTasks.jar =	${FLEX_HOME}/ant/lib/flexTasks.jar
+tools.dir = ${FLEX_HOME}/lib
+
+#Remote host data
+server.username=
+server.password=
+server.host= #Host name
+server.home= #SSH home
+server.path= #Webroot path
+
+#Local host data
+local.server.path= #Webroot path
+
+#Repository data
+svn.username=
+svn.password=
+svn.url= 
+svn.dir= #Where to place the checked-out files
+
+#Database data
+sql.driver = #Java connector driver for your DBMS
+sql.dbms = 
+sql.dbname = 
+sql.host   = 
+sql.port = 
+sql.url    = jdbc\:${sql.dbms}\://${sql.host}:${sql.port}/${sql.dbname}
+sql.user= 
+sql.pass= 
+sql.base   = /path/to/database/scripts
+sql.all   = /path/to/full/database/script/(non-incremental)
+sql.backup = /path/to/store/database/dump/backups
+
+#Service data
+services.srcdir = /path/to/services/inside/flex/project
+services.dstdir = /path/to/webroot
+
+#Image resource data
+images.srcdir = ${APP_ROOT}/resources/images
+images.dstdir = ${DEPLOY_DIR}/resources/images
+
+#Red5 server data
+red5.path = /path/to/red5/instance
+
+#Video content data
+videos.dstdir = ${red5.path}/path/to/video/streaming/app
+videos.srcdir = /path/to/video/resources
+

@@ -737,7 +737,6 @@
 					   width="100%">
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"
-							  
 							  paddingBottom="0"/>
 		</s:layout>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"

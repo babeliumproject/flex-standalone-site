@@ -49,6 +49,7 @@ package modules.videoPlayer.controls.babelia
 			addChild(_bg);
 			
 			_button = new ToggleButton();
+			_button.buttonMode = true;
 			_button.label = "SUB";
 			_button.setStyle("fontSize",8);
 			_button.setStyle("fontWeight", "bold");

@@ -111,6 +111,7 @@
 			</s:layout>
 			<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 					  styleName="uploadButton"
+					  buttonMode="true"
 					  enabled="{!DataModel.getInstance().recordingExercise}"
 					  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE,event)"/>
 			<mx:Spacer width="30"/>
@@ -121,6 +122,7 @@
 						 enter="launchSearch(null)"/>
 			<s:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
 					  styleName="searchButton"
+					  buttonMode="true"
 					  enabled="true"
 					  click="launchSearch(event)"/>
 		</s:BorderContainer>

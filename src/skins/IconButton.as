@@ -36,6 +36,7 @@ package skins
 		public function IconButton()
 		{
 			super();
+			this.buttonMode=true;
 		}
 
 

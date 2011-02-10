@@ -258,6 +258,7 @@
 				<!--- @copy spark.components.TitleWindow#closeButton -->
 				<s:Button id="closeButton"
 						  skinClass="spark.skins.spark.TitleWindowCloseButtonSkin"
+						  buttonMode="true"
 						  width="15"
 						  height="15"
 						  left="7"

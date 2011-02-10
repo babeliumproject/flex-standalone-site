@@ -13,7 +13,6 @@
 
 			import model.DataModel;
 
-
 			private function set onUserAuthenticationStatus(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == true)

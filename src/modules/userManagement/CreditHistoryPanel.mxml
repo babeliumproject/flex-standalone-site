@@ -146,13 +146,17 @@
 								horizontalAlign="center"/>
 		</s:layout>
 		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
-				  click="todayClickHandler()"/>
+				  click="todayClickHandler()"
+				  buttonMode="true"/>
 		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_WEEK_CREDITS')}"
-				  click="lastWeekClickHandler()"/>
+				  click="lastWeekClickHandler()"
+				  buttonMode="true"/>
 		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_MONTH_CREDITS')}"
-				  click="lastMonthClickHandler()"/>
+				  click="lastMonthClickHandler()"
+				  buttonMode="true"/>
 		<s:Button label="{resourceManager.getString('myResources','LABEL_ALL_TIME_CREDITS')}"
-				  click="allTimeClickHandler()"/>
+				  click="allTimeClickHandler()"
+				  buttonMode="true"/>
 	</s:BorderContainer>
 	<userManagement:CreditLineChart id="lineChartContainer"
 									height="300"

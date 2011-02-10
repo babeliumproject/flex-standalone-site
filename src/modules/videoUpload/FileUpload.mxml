@@ -697,6 +697,7 @@
 				<s:Button id="saveWebcamRecord"
 						  label="{resourceManager.getString('myResources','BUTTON_SAVE_STREAMING_UPLOAD')}"
 						  enabled="{recFromWebcamBox.recordingFileName != null  &amp;&amp; !recFromWebcamBox.isRecording}"
+						  buttonMode="true"
 						  click="saveRecordedExercise()"/>
 			</s:VGroup>
 

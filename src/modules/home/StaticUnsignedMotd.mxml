@@ -47,6 +47,7 @@
 				  horizontalAlign="center">
 			<s:Button id="registerButton"
 					  styleName="bigBlueButton"
+					  buttonMode="true"
 					  label="{resourceManager.getString('myResources','JOIN_US')}"
 					  click="registerButton_clickHandler(event)"/>
 		</s:HGroup>
