@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="babelia" default="svn-checkout">
+<project name="babelia" default="app-deploy">
 
 	<property file="build.properties" />
 	<path id="project.classpath">
@@ -79,7 +79,7 @@
 		</copy>
 	</target>
 	
-	<target name="app-deploy">
+	<target name="app-deploy" depends="app-fix-domains,flex-deploy" >
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources" includes="**.*"/> 
 		</copy>
@@ -98,6 +98,12 @@
 		<chmod dir="${DEPLOY_DIR}/resources/uploads" perm="777"/>
 		<mkdir dir="${DEPLOY_DIR}/resources/searchIndexes"/>
 		<chmod dir="${DEPLOY_DIR}/resources/searchIndexes" perm="777"/>
+	</target>
+	
+	<target name="app-fix-domains">
+		<replace file="${APP_ROOT}/service-config.xml" token='/${REPOSITORY_DOMAIN}' value="/${SERVER_DOMAIN}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
+		<replace file="${APP_ROOT}/services/crossdomain.xml" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
 	</target>
 
 	<target name="LH_SyncDB" description="sync local de la BD">

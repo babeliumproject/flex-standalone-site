@@ -91,6 +91,7 @@ package control {
 			addCommand(UserEvent.GET_TOP_TEN_CREDITED, GetTopTenCreditedCommand);
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
+			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);

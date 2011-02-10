@@ -35,7 +35,7 @@ class LoginDAO{
 				if ( $result )
 				return "inactive_user";
 				//Check if the user provided correct authentication data
-				$sql = "SELECT id, name, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
+				$sql = "SELECT id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
 				$result = $this->_singleQuery($sql, $user->name, $user->pass);
 				if($result){
 					$userId = $result->id;
@@ -45,6 +45,9 @@ class LoginDAO{
 
 					$filteredResult = new UserVO();
 					$filteredResult->name = $result->name;
+					$filteredResult->realName = $result->realName;
+					$filteredResult->realSurname = $result->realSurname;
+					$filteredResult->email = $result->email;
 					$filteredResult->creditCount = $result->creditCount;
 					$filteredResult->joiningDate = $result->joiningDate;
 					$filteredResult->isAdmin = $result->isAdmin;
@@ -85,7 +88,7 @@ class LoginDAO{
 			return false;
 		}
 
-		$sql = "SELECT id, name, creditCount FROM users WHERE (name = '%s') ";
+		$sql = "SELECT id, name, realName, realSurname, email, creditCount FROM users WHERE (name = '%s') ";
 
 		return $this->_singleQuery($sql, $username);
 	}
@@ -99,9 +102,12 @@ class LoginDAO{
 		{
 			$valueObject->id = $row[0];
 			$valueObject->name = $row[1];
-			$valueObject->creditCount = $row[2];
-			$valueObject->joiningDate = $row[3];
-			$valueObject->isAdmin = $row[4] == 1;
+			$valueObject->realName = $row[2];
+			$valueObject->realSurname = $row[3];
+			$valueObject->email = $row[4];
+			$valueObject->creditCount = $row[5];
+			$valueObject->joiningDate = $row[6];
+			$valueObject->isAdmin = $row[7] == 1;
 		}
 		else
 		{

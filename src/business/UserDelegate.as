@@ -10,6 +10,7 @@ package business
 	
 	import vo.ChangePassVO;
 	import vo.LoginVO;
+	import vo.UserVO;
 	
 	public class UserDelegate
 	{
@@ -55,6 +56,12 @@ package business
 		public function modifyUserLanguages(languages:Array):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
 			var pendingCall:AsyncToken = service.modifyUserLanguages(languages);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function modifyUserPersonalData(personalData:UserVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.modifyUserPersonalData(personalData);
 			pendingCall.addResponder(responder);
 		}
 	}

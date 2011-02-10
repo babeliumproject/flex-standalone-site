@@ -86,7 +86,7 @@
 
 		<s:NavigatorContent id="userProfileNavContent"
 							label="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}">
-			<userManagement:ChangeUserInfo id="userProfile"/>
+			<userManagement:UserProfile id="userProfile"/>
 		</s:NavigatorContent>
 
 	</mx:ViewStack>

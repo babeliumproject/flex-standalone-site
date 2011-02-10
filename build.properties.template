@@ -10,6 +10,8 @@ APP_ROOT=${BASE}/src
 DEPLOY_DIR=${BASE}/bin-test
 APP_LIB=${BASE}/libs
 MXMLC_CUSTOM_CONFIG_FILE=build-config.xml
+REPOSITORY_DOMAIN=babelia
+SERVER_DOMAIN=your_domain
 
 #Flex build tool paths
 flexTasks.jar =	${FLEX_HOME}/ant/lib/flexTasks.jar

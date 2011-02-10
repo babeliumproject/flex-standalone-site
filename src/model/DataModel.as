@@ -79,6 +79,7 @@ package model
 		[Bindable] public var loginPop:LoginRestorePassForm;
 		[Bindable] public var passwordChanged:Boolean = false;
 		[Bindable] public var userPreferredLanguagesModified:Boolean = false;
+		[Bindable] public var userPersonalDataModified:Boolean = false;
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

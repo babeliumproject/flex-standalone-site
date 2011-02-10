@@ -133,6 +133,28 @@ class UserDAO {
 		}
 
 	}
+	
+	public modifyUserPersonalData($personalData){
+		try {
+			$verifySession = new SessionHandler(true);
+			
+			$currentPersonalData = $_SESSION['user-data'];
+			
+			$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'");
+			
+			$updateData = $this->conn->_execute($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
+			if($updateData){
+				$currentPersonalData->realName = $personalData->realName;
+				$currentPersonalData->realSurname = $personalData->realSurname;
+				$currentPersonalData->email = $personalData->email;
+				$_SESSION['user-data'] = $currentPersonalData;
+				return $personalData;
+			}
+			
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}	
+	}
 
 	private function _getPositivesToNextLevel(){
 		$result = $this->conn->_execute(func_get_args());

@@ -30,6 +30,7 @@
 			public function completeHandler(event:FlexEvent):void
 			{
 				displayMyLanguages();
+				displayMyPersonalData();
 			}
 
 			public function displayMyLanguages():void
@@ -47,6 +48,12 @@
 						evaluateLanguages.addElement(generateLanguageInfo(lang));
 					}
 				}
+			}
+			
+			public function displayMyPersonalData():void{
+				userName.text = dataModel.loggedUser.realName;
+				userSurname.text = dataModel.loggedUser.realSurname;
+				userEmail.text = dataModel.loggedUser.email;
 			}
 
 			private function generateLanguageInfo(lang:UserLanguageVO):HGroup
@@ -80,7 +87,12 @@
 				modifyLanguages.visible=false;
 				modifyLanguages.includeInLayout=false;
 				modifyLanguages.resetToInitialStatus();
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
+				modifyPersonalData.resetToInitialStatus();
+				
 				displayMyLanguages();
+				displayMyPersonalData();
 			}
 			
 			protected function modifyLanguagesClickHandler(event:MouseEvent):void{
@@ -90,6 +102,8 @@
 				profileOverview.includeInLayout=false;
 				modifyPassword.visible = false;
 				modifyPassword.includeInLayout = false;
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
 			}
 
 			protected function modifyPasswordClickHandler(event:MouseEvent):void
@@ -98,6 +112,19 @@
 				modifyPassword.includeInLayout = true;
 				profileOverview.visible=false;
 				profileOverview.includeInLayout=false;
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
+			}
+			
+			protected function modifyPersonalDataClickHandler(event:MouseEvent):void{
+				modifyPersonalData.visible=true;
+				modifyPersonalData.includeInLayout=true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
 				modifyLanguages.visible=false;
 				modifyLanguages.includeInLayout=false;
 			}
@@ -126,7 +153,8 @@
 				<s:Label text="{resourceManager.getString('myResources','LABEL_PERSONAL_INFO')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase()+' '+resourceManager.getString('myResources','LABEL_PERSONAL_INFO').toLowerCase()}"/>
+								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase()+' '+resourceManager.getString('myResources','LABEL_PERSONAL_INFO').toLowerCase()}"
+								  click="modifyPersonalDataClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 			<s:HGroup>
@@ -189,6 +217,12 @@
 										includeInLayout="false"
 										visible="false"
 										cancelClickHandler="{editCancelHandler}"/>
+		
+		<userManagement:ModifyPersonalData id="modifyPersonalData"
+										   includeInLayout="false"
+										   visible="false"
+										   paddingTop="16"
+										   cancelClickHandler="{editCancelHandler}"/>
 
 	</s:HGroup>
 
