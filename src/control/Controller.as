@@ -92,6 +92,7 @@ package control {
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
+			addCommand(UserEvent.RETRIEVE_USER_VIDEOS, RetrieveUserVideosCommand);
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
+		  creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import events.UserEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			[Bindable]
+			private var userVideoList:ArrayCollection;
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				retrieveVideos();
+			}
+
+			private function retrieveVideos():void
+			{
+				new UserEvent(UserEvent.RETRIEVE_USER_VIDEOS).dispatch();
+			}
+
+			private function set userVideoListRetrieved(value:Boolean):void
+			{
+				var dataProvider:ArrayCollection=dataModel.userVideoList;
+				userVideoList=dataProvider;
+				userVideoTable.rowCount=userVideoList.length;
+			}
+
+			protected function deleteSelectedVideos_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+			public function resetComponent():void
+			{
+
+			}
+
+
+			protected function searchButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{dataModel.userVideoListRetrieved}"
+				destination="userVideoListRetrieved"/>
+
+	<s:Label id="myVideosTitle"
+			 text="{resourceManager.getString('myResources','MY_VIDEOS')}"
+			 styleName="sectionTitleLabel"/>
+	<s:Line width="{myVideosTitle.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{myVideosTitle.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+	<s:Label text="{resourceManager.getString('myResources','MY_VIDEOS_DESCRIPTION')}"
+			 paddingTop="10"
+			 paddingBottom="10"/>
+
+
+	<s:HGroup id="controlBar"
+			  width="100%"
+			  verticalAlign="middle">
+		<s:Button id="deleteSelectedVideos"
+				  click="deleteSelectedVideos_clickHandler(event)"
+				  label="{resourceManager.getString('myResources','DELETE')}"/>
+		<s:Label id="videoCount"
+				 text="Z videos"/>
+		<mx:VRule height="20"/>
+		<s:Label text="{resourceManager.getString('myResources','SORT_BY')+':'}"/>
+		<s:DropDownList id="sortOptions"/>
+		<s:HGroup width="100%" horizontalAlign="right">
+			<s:TextInput id="searchMyVideos"/>
+			<s:Button id="searchButton"
+					  click="searchButton_clickHandler(event)"
+					  label="{resourceManager.getString('myResources','SEARCH')}"/>
+		</s:HGroup>
+	</s:HGroup>
+
+	<!--
+
+	<mx:DataGridColumn rendererIsEditor="true" width="60">
+	<mx:itemRenderer>
+	<fx:Component>
+	<s:CheckBox/>
+	</fx:Component>
+	</mx:itemRenderer>
+	</mx:DataGridColumn>
+
+	-->
+
+	<mx:DataGrid id="userVideoTable"
+				 dataProvider="{userVideoList}"
+				 width="100%"
+				 horizontalScrollPolicy="off"
+				 verticalScrollPolicy="off"
+				 headerHeight="0"
+				 variableRowHeight="true"
+				 borderVisible="false">
+		<mx:columns>
+
+			<mx:DataGridColumn itemRenderer="modules.userManagement.UserVideoItemRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</s:VGroup>

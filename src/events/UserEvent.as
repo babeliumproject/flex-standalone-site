@@ -10,6 +10,7 @@ package events
 		public static const KEEP_SESSION_ALIVE:String = "keepSessionAlive";
 		public static const MODIFY_PREFERRED_LANGUAGES:String = "modifyPreferredLanguages";
 		public static const MODIFY_PERSONAL_DATA:String = "modifyPersonalData";
+		public static const RETRIEVE_USER_VIDEOS:String = "retrieveUserVideos";
 		
 		public var languages:Array;
 		public var personalData:UserVO;

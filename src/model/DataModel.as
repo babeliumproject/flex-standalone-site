@@ -66,7 +66,7 @@ package model
 		[Bindable] public var topTenUsers:ArrayCollection;
 		[Bindable] public var isTopTenRetrieved:Boolean = false;
 		
-		//Login data and service state
+		//User related values
 		[Bindable] public var loggedUser:UserVO = null;
 		[Bindable] public var isSuccessfullyLogged:Boolean = false;
 		[Bindable] public var isLoggedIn:Boolean = false;
@@ -80,6 +80,8 @@ package model
 		[Bindable] public var passwordChanged:Boolean = false;
 		[Bindable] public var userPreferredLanguagesModified:Boolean = false;
 		[Bindable] public var userPersonalDataModified:Boolean = false;
+		[Bindable] public var userVideoListRetrieved:Boolean = false;
+		[Bindable] public var userVideoList:ArrayCollection = new ArrayCollection();
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

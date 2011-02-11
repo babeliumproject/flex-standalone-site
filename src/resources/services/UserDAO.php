@@ -3,7 +3,9 @@
 require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
 require_once 'utils/SessionHandler.php';
+require_once 'utils/EmailAddressValidator.php';
 require_once 'vo/UserVO.php';
+require_once 'vo/ExerciseVO.php';
 
 
 /**
@@ -134,26 +136,89 @@ class UserDAO {
 
 	}
 	
-	public modifyUserPersonalData($personalData){
+	public function modifyUserPersonalData($personalData){
 		try {
 			$verifySession = new SessionHandler(true);
 			
-			$currentPersonalData = $_SESSION['user-data'];
+			$validator = new EmailAddressValidator();
+			if(!$validator->check_email_address($personalData->email)){
+				return 'wrong_email';
+			} else {
 			
-			$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'");
+				$currentPersonalData = $_SESSION['user-data'];
 			
-			$updateData = $this->conn->_execute($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
-			if($updateData){
-				$currentPersonalData->realName = $personalData->realName;
-				$currentPersonalData->realSurname = $personalData->realSurname;
-				$currentPersonalData->email = $personalData->email;
-				$_SESSION['user-data'] = $currentPersonalData;
-				return $personalData;
+				$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'";
+			
+				$updateData = $this->conn->_execute($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
+				if($updateData){
+					$currentPersonalData->realName = $personalData->realName;
+					$currentPersonalData->realSurname = $personalData->realSurname;
+					$currentPersonalData->email = $personalData->email;
+					$_SESSION['user-data'] = $currentPersonalData;
+					return $personalData;
+				} else {
+					return 'wrong_data';
+				}
 			}
 			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}	
+	}
+	
+	public function retrieveUserVideos(){
+		try {
+			$verifySession = new SessionHandler(true);
+			
+			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
+		               e.duration, avg (suggested_level) as avgLevel, e.status, license, reference, a.id
+				FROM exercise e 
+	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
+     			WHERE e.fk_user_id = %d
+				GROUP BY e.id
+				ORDER BY e.adding_date DESC";
+			
+			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+			
+			return $searchResults;
+			
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}	
+	}
+	
+	private function _exerciseListQuery() {
+		$exercise = new ExerciseDAO();
+		$searchResults = array ();
+		$result = $this->conn->_execute ( func_get_args() );
+
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$temp = new ExerciseVO ( );
+
+			$temp->id = $row[0];
+			$temp->title = $row[1];
+			$temp->description = $row[2];
+			$temp->language = $row[3];
+			$temp->tags = $row[4];
+			$temp->source = $row[5];
+			$temp->name = $row[6];
+			$temp->thumbnailUri = $row[7];
+			$temp->addingDate = $row[8];
+			$temp->duration = $row[9];
+			$temp->avgDifficulty = $row[10];
+			$temp->status = $row[11];
+			$temp->license = $row[12];
+			$temp->reference = $row[13];
+			$temp->isSubtitled = $row[14] ? true : false;
+
+			$temp->avgRating = $exercise->getExerciseAvgBayesianScore($temp->id)->avgRating;
+
+			array_push ( $searchResults, $temp );
+		}
+
+		return $searchResults;
 	}
 
 	private function _getPositivesToNextLevel(){

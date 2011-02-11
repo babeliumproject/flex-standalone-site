@@ -35,6 +35,8 @@ package commands.userManagement
 				DataModel.getInstance().loggedUser.realSurname = (result as UserVO).realSurname;
 				DataModel.getInstance().loggedUser.email = (result as UserVO).email;
 				DataModel.getInstance().userPersonalDataModified = true;
+			} else if (result is String) {
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources',(result as String).toUpperCase()));
 			}
 		}
 		

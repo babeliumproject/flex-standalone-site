@@ -64,5 +64,11 @@ package business
 			var pendingCall:AsyncToken = service.modifyUserPersonalData(personalData);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function retrieveUserVideos():void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.retrieveUserVideos();
+			pendingCall.addResponder(responder);
+		}
 	}
 }

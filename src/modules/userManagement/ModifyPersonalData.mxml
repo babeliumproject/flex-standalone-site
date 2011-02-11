@@ -30,6 +30,7 @@
 			{
 				creationCompleted=true;
 				resetToInitialStatus();
+				focusManager.setFocus(realName);
 			}
 
 			private function modifyPersonalData(event:MouseEvent):void
@@ -89,7 +90,7 @@
 
 			public function set onPersonalDataModified(value:Boolean):void
 			{
-				if (dataModel.userPreferredLanguagesModified == true)
+				if (dataModel.userPersonalDataModified == true)
 				{
 					CustomAlert.info(resourceManager.getString('myResources', 'PERSONAL_DATA_SUCCESSFULLY_MODIFIED'));
 					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
@@ -104,7 +105,7 @@
 
 	<mx:Form width="100%"
 			 styleName="roundedBlueBorderBox"
-			 labelWidth="200">
+			 labelWidth="300">
 		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
 					 styleName="boldLabel"
 					 required="true">
@@ -121,11 +122,11 @@
 							 width="100%"/>
 			</s:HGroup>
 		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','CURRENT_EMAIL')}"
+		<mx:FormItem label="{resourceManager.getString('myResources','CURRENT_EMAIL')+':'}"
 					 styleName="boldLabel">
 			<s:Label text="{DataModel.getInstance().loggedUser.email}"/>
 		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','NEW_MAIL')}"
+		<mx:FormItem label="{resourceManager.getString('myResources','NEW_MAIL')+':'}"
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
@@ -135,7 +136,7 @@
 							 focusOut="FieldValidator.validateTextInput(errorMessageTooltips, newEmail,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
 			</s:HGroup>
 		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','REPEAT_NEW_EMAIL')}"
+		<mx:FormItem label="{resourceManager.getString('myResources','REPEAT_NEW_EMAIL')+':'}"
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
