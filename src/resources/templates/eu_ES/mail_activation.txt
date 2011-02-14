@@ -1,0 +1,20 @@
+Ongietorri {PROJECT_NAME}era.
+
+Mesedez gorde mezu hau etorkizunean erreferentzia gisa erabiltzeko. Zure kontuaren informazioa:
+
+----------------------------
+Erabiltzaile Izena: {USERNAME}
+			
+Webgunea: {PROJECT_SITE}
+----------------------------
+
+Mesedez, hurrengo esteka bisita ezazu zure kontua aktibatzeko:
+
+{ACTIVATION_LINK}
+
+Zure pasahitza gure datu basean era seguruan gorde da eta ezin da berreskuratu. Ahazten baldin bazaizu beste bat sortzeko aukera izango duzu zure kontuarekin lotuta dagoen posta helbide elektronikoaz baliatuz.
+
+
+Eskerrikasko izena emateagatik,
+
+{SIGNATURE}

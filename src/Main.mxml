@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:control="control.*"
+			   xmlns:business="business.*"
+			   xmlns:main="modules.main.*"
+			   preinitialize="init()"
+			   height="100%"
+			   width="100%"
+			   pageTitle="Babelium Project"
+			   creationComplete="onComplete()">
+
+	<fx:Style source="Main.css"/>
+
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import control.*;
+			
+			import events.LoginEvent;
+			import events.PreferenceEvent;
+			import events.SetupConnectionEvent;
+			
+			import model.DataModel;
+			
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			import skins.ApplicationCustomSkin;
+
+			private var mainSO:SharedObject;
+
+			[Bindable]
+			public var appModelLocator:DataModel;
+			[Bindable]
+			public var cuePointManager:CuePointManager;
+			[Bindable]
+			public var browserManager:BabeliaBrowserManager;
+
+			//Initialization method
+			private function init():void
+			{
+				appModelLocator=DataModel.getInstance();
+				cuePointManager=CuePointManager.getInstance();
+
+				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
+				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
+				new SetupConnectionEvent().dispatch();
+
+				Security.allowDomain(appModelLocator.uploadDomain);
+
+			}
+
+			private function onComplete():void
+			{
+				appModelLocator.appBody=content;
+				browserManager=BabeliaBrowserManager.getInstance();
+				browserManager.parseURL();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!--This defines the reachable remote services -->
+		<business:Services/>
+
+		<!--This defines all the actions available -->
+		<control:Controller/>
+	</fx:Declarations>
+
+	<s:Scroller id="appScroller"
+				width="100%"
+				height="100%" >
+		<s:VGroup id="appContainer"
+				  width="100%"
+				  height="100%"
+				  clipAndEnableScrolling="true"
+				  gap="0">
+			<main:Header id="header"/>
+			<main:Navigation id="navigation"/>
+			<main:Body id="content"/>
+			<main:Footer id="footer"/>
+		</s:VGroup>
+	</s:Scroller>
+
+
+</s:Application>

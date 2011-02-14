@@ -1,0 +1,575 @@
+/* Application main stylesheet */
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace common "view.common.*";
+@namespace main "modules.main.*";
+
+/* Styles applied by default on specified components */
+
+s|Application{
+	verticalAlign: top;
+	verticalGap: 0;
+	horizontalAlign: center;
+	paddingTop: 0;
+	paddingBottom: 5;
+	fontFamily: Arial;
+	fontSize: 12;
+	fontWeight: normal;
+	color: #000000;
+	skinClass: ClassReference('skins.ApplicationCustomSkin');
+}	
+
+mx|LinkButton{
+	fontWeight: normal;
+}
+
+mx|Alert{
+	buttonStyleName: bigBlueButton;
+}
+
+s|Label{
+	fontWeight: normal;
+}
+
+s|Panel{
+	backgroundColor: #FFFFFF;
+	borderWeight: 1;
+	borderStyle: solid;
+	borderColor: #AAAAAA;
+	dropShadowEnabled: false;
+	cornerRadius: 6;
+	color: #2B333C;
+	fontSize: 12;
+	paddingBottom: 2;
+	paddingLeft: 2;
+	paddingRight: 2;
+	headerHeight: 19;
+	headerColors: #919191, #FFFFFF;
+	footerColors: #9DB6D9, #FFFFFF;
+	roundedBottomCorners: true;
+}
+
+/*
+main|HeaderClass{
+	backgroundImage: Embed('/resources/images/header_bgr_pttr.png');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 1.0;
+	borderVisible: false;
+	borderWeight: 0;
+}*/
+
+.headerBorderContainer{
+	backgroundImage: Embed('/resources/images/header_bgr_pttr.png');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 1.0;
+	borderVisible: false;
+	borderWeight: 0;
+}
+
+
+s|Button{
+	paddingLeft: 6;
+	paddingRight: 6;
+	cornerRadius: 8;
+}
+
+s|TextInput{
+	fontWeight: normal;
+}
+
+/* Commonly used component style variants */
+
+.boldLinkButton{
+	fontWeight: bold;
+}
+
+.commonLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	colorOver:#2d89a4;
+	colorDown:#2d89a4;
+	color:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.blueLinkButton{
+	rollOverColor: #268caa;
+	selectionColor: #268caa;
+	color: #268caa;
+	textRollOverColor: #f9f9f9;
+	textSelectedColor: #f9f9f9;
+}
+
+.yellowLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	color:#cc9900;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.orangeLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	color:#df5c02;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.footerLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.helpLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('/resources/images/help_icon.png');
+	fontWeight:bold;
+	color:#2d89a4;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.reportLinkButton{
+	skinClass: ClassReference("skins.IconLinkSkin");
+	icon: Embed('/resources/images/shield_icon.png');
+	fontWeight:bold;
+	color:#d5ac32;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.addLanguageLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('/resources/images/add.png');
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.removeLanguageLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('/resources/images/delete.png');
+	fontWeight:normal;
+	color:#666666;
+	colorOver:#000000;
+	colorDown:#000000;
+	underlineOver:true;
+	underlineDown:false;
+}
+
+.signOutLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('/resources/images/close_icon.png');
+}
+
+.recStartLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	icon:Embed('/resources/images/button_rec.png');
+}
+
+.creditLinkButton{
+	fontWeight: bold;
+	color: #e3bb03;
+	rollOverColor: #e3bb03;
+	selectionColor: #e3bb03;
+	textRollOverColor: #f9f9f9;
+	textSelectedColor: #f9f9f9;
+	fontSize: 14;
+}
+
+.boldLabel{
+	fontWeight: bold;
+}
+
+.boldYellowLabel{
+	fontWeight: bold;
+	fontSize: 14;
+	color: #d5ac32;
+}
+
+.lightGreyLabel{
+	color: #797977;
+}
+
+.boldDarkGreyLabel{
+	fontWeight: bold;
+	color: #454543;
+}
+
+.boldDarkerGreyLabel{
+	fontWeight: bold;
+	color: #999999;
+}
+
+/* Navigation menu style properties */
+
+.uploadSearchBox{
+	borderStyle: "solid";
+	borderSides: "top bottom";
+	borderWeight: 1;
+	borderColor: #92d3d5;
+	backgroundColor: #dae9ed;
+	horizontalAlign: "right";
+	verticalAlign: "middle";
+	paddingTop: 4;
+	paddingBottom: 4;
+	paddingLeft: 250;
+	paddingRight: 8;
+}
+
+.searchTextInput{
+	fontSize: 16;
+	borderStyle: "solid";
+	borderColor: #92D3D5;
+	cornerRadius: 8;
+}
+
+.formLabel{
+	color: #92D3D5;
+	fontSize: 14;
+	fontWeight: bold;
+}
+
+.loginPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.privacyRightsPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.reportPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	backgroundImage: Embed('/resources/images/popup_bgr_shield.png');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.genericPopup{
+	skinClass: ClassReference('skins.CustomTitleWindowSkin');
+	cornerRadius: 8;
+	borderColor: #FFFFFF;
+}
+
+.homeLinkButton{
+	rollOverColor: #258daa;
+	selectionColor: #20778f;
+	color: #258daa;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_home.png');
+}
+
+.practiceLinkButton{
+	rollOverColor: #38bcbe;
+	selectionColor: #2d9a9b;
+	color: #38bcbe;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_pract.png');
+}
+
+.evaluateLinkButton{
+	rollOverColor: #7b980a;
+	selectionColor: #607707;
+	color: #7b980a;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_eval.png');
+}
+
+.subtitleLinkButton{
+	rollOverColor: #962b07;
+	selectionColor: #752105;
+	color: #962b07;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_subt.png');
+}
+
+.configureLinkButton{
+	rollOverColor: #de5c04;
+	selectionColor: #bf4f04;
+	color: #de5c04;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_config.png');
+}
+
+.aboutLinkButton{
+	rollOverColor: #e6ce56;
+	selectionColor: #c0ac47;
+	color: #e6ce56;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+	fontSize: 18;
+	fontWeight: bold;
+	backgroundImage: Embed('/resources/images/button_nav_highlight_about.png');
+}
+
+.searchButton{
+	fontWeight: bold;
+	fontSize: 14;
+	cornerRadius: 6;
+	color: #92D3D5;
+	skinClass: ClassReference('skins.SearchButtonSkin');
+}
+
+.uploadButton{
+	fontSize: 14;
+	fontWeight: bold;
+	cornerRadius: 6;
+	color: #960B0B;
+	skinClass: ClassReference('skins.UploadButtonSkin');
+}
+
+/* Pagination control styles */
+
+.paginationButton{
+	cornerRadius: 20;
+	paddingLeft: 0;
+	paddingRight: 0;
+	highlightAlphas: 0.52, 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #ffffff, #ffffff, #fccb39, #d5ac32;
+	color: #d5ac32;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #fccb39;
+	borderColor: #e1ded8;
+	themeColor: #d5ac32;
+	fontSize: 14;
+	fontWeight: bold;
+}
+
+.paginationControlButton{
+	cornerRadius: 20;
+	paddingLeft: 1;
+	paddingRight: 1;
+	highlightAlphas: 0.52, 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #ffffff, #ffffff, #fccb39, #d5ac32;
+	color: #d5ac32;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #fccb39;
+	borderColor: #e1ded8;
+	themeColor: #d5ac32;
+	fontSize: 14;
+	fontWeight: bold;
+}
+
+.homeUploadButton{
+	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+	gradientColors: #ffffff, #e3bb03;
+	gradientColorsOver: #f3f3f3, #333333;
+	icon: Embed('/resources/images/upload_icon.png');
+	color: #b09002;
+	fontWeight: bold;
+	borderWeight: 1;
+	borderColors: #FFFFFF;
+}
+
+.homeSubtitleButton{
+	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+	gradientColors: #ffffff, #972c0a;
+	gradientColorsOver: #f3f3f3, #333333;
+	icon: Embed('/resources/images/subtitle_icon.png');
+	color: #6b2712;
+	fontWeight: bold;
+	borderWeight: 1;
+	borderColors: #FFFFFF;
+}
+
+.homeEvaluateButton{
+	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+	gradientColors: #ffffff, #7b970a;
+	gradientColorsOver: #f3f3f3, #333333;
+	icon: Embed('/resources/images/evaluate_icon.png');
+	color: #516307;
+	fontWeight: bold;
+	borderWeight: 1;
+	borderColors: #FFFFFF;
+}
+
+.homePracticeButton{
+	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+	gradientColors: #ffffff, #38babc;
+	gradientColorsOver: #f3f3f3, #333333;
+	icon: Embed('/resources/images/practice_icon.png');
+	color: #29888a;
+	fontWeight: bold;
+	borderWeight: 1;
+	borderColors: #FFFFFF;
+}
+
+/* Exercise info box styles */
+
+.videoDurationLabel{
+	borderVisible: false;
+	fontSize: 10;
+	contentBackgroundColor: #000000;
+	contentBackgroundAlpha: 1.0;
+	color: #FFFFFF;
+	inactiveTextSelectionColor: #FFFFFF;
+}
+
+.errorLabel{
+	fontWeight: bold;
+	color: red;
+}
+
+.roundedBlueBorderBox{
+	cornerRadius: 8;
+	borderStyle: solid;
+	borderColor: #92d3d5;
+	paddingTop: 10;
+	paddingBottom: 10;
+	paddingLeft: 10;
+	paddingRight: 10;
+}
+
+.sectionInfoTitleLabel{
+	fontWeight: bold;
+	fontSize: 24;
+	color: #972c0a;	
+}
+
+.sectionTitleLabel{
+	fontWeight: bold;
+	fontSize: 20;
+	color: #268caa;
+}
+
+.sectionTitleHRule{
+	strokeWidht: 4;
+	strokeColor: #268caa;
+}
+
+.exerciseTitleLabel{
+	fontWeight: bold;
+	fontSize: 20;
+	color: #666666;
+}
+
+.sectionLowerTitleLabel{
+	fontWeight: bold;
+	fontSize: 18;
+	color: #aaaaaa;
+}
+
+.bigBlueButton{
+	cornerRadius: 10;
+	fontSize: 14;
+	fontWeight: bold;
+	color: #ffffff;
+	skinClass: ClassReference('skins.ActionButtonSkin');
+}
+
+.sectionInfoBox{
+	backgroundImage: Embed('/resources/images/pattern.jpg');
+	backgroundImageFillMode: repeat;
+	backgroundAlpha: 0.25;
+	borderWeight: 0;
+	borderVisible: false;
+}
+
+.roundedPurpleBox{
+	cornerRadius: 4;
+	borderStyle: solid;
+	backgroundColor: #9AA3B9;
+	borderColor: #FFFFFF;
+	alpha: 1.0;
+	borderWeight: 0;
+	horizontalAlign: center;
+	verticalAlign: middle;
+	paddingLeft: 6;
+	paddingRight: 6;
+}
+
+.roundedBorderGreyBox{
+	borderStyle: solid;
+	cornerRadius: 8;
+	backgroundColor: #DDDDDD;
+	verticalAlign: middle;
+	horizontalAlign: center;
+}
+
+.roundedBorderWhiteBox{
+	fontSize: 10;
+	borderStyle: solid;
+	borderWeight: 1;
+	cornerRadius: 4;
+	borderColor: #cccccc;
+	backgroundColor: #ffffff;
+	horizontalAlign: center;
+	verticalAlign: middle;
+	paddingTop: 0;
+	paddingBottom: 0;
+}
+
+.creditHighlightLink{
+	fontSize: 14;
+	fontWeight: bold;
+	color: #FFFFFF;
+	themeColor: #FFFFFF;
+}
+
+.configResultBox{
+	paddingTop: 12;
+	paddingLeft: 16;
+	paddingRight: 16;
+	borderStyle: solid;
+	borderSides: right;
+	borderColor: #92d3d5;
+}
+
+.bwResultLabel{
+	color: #425fd9;
+	fontSize: 25;
+	fontWeight: bold;
+}
+
+.watchRecordedButton{
+	fontSize: 12;
+	cornerRadius: 8;
+	horizontalAlign: left;
+}
+
+.recordAgainButton{
+	fontSize: 12;
+	cornerRadius: 8;
+}
+

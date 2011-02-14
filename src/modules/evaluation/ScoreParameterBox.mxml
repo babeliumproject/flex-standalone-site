@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:hulstkamp="com.hulstkamp.*"
+		  width="100%"
+		  verticalAlign="middle">
+	<s:Label id="parameterText"
+			 text="{resourceManager.getString('myResources',text)}"
+			 width="270"/>
+	<hulstkamp:AhFxRatingComponent id="ratingComponent"
+								   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+								   scaleX="1.5"
+								   scaleY="1.5"/>
+
+
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			private var text:String='';
+
+			public function set parameter(text:String):void
+			{
+				this.text=text;
+			}
+		]]>
+	</fx:Script>
+</s:HGroup>

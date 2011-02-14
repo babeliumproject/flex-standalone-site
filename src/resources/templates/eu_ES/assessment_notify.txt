@@ -1,0 +1,11 @@
+Ebaluaketa berria jaso duzu!
+
+{EXERCISE_TITLE} ariketa jarraituz {DATE} datan grabatu zenuen erantzuna {EVALUATOR_NAME} erabiltzaileak ebaluatu dizu.
+
+Mesedez hurrengo esteka bisita ezazu zure ebaluaketa ikusteko:
+
+{ASSESSMENT_LINK}
+
+
+
+{SIGNATURE}

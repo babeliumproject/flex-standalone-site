@@ -1,0 +1,190 @@
+<?xml version="1.0" ?>
+<project name="babelia" default="app-deploy">
+
+	<property file="build.properties" />
+	<path id="project.classpath">
+		<fileset dir="${tools.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<tstamp>
+			<format property="TODAY" pattern="yyMMdd-HHmm" />
+		</tstamp>
+	</target>
+
+	<target name="svn-checkout" description="checkout desde Subversion (XP-dev)">
+		<svn username="${svn.username}" password="${svn.password}">
+			<checkout url="${svn.url}" destPath="${svn.dir}" />
+		</svn>
+	</target>
+	
+	<taskdef resource="flexTasks.tasks" classpath="${flexTasks.jar}" classpathref="project.classpath" />
+	
+	<target name="flex-deploy" depends="flex-compile,flex-copy-html-template,flex-generate-wrapper,flex-copy-video-player-skins"/>
+
+	<target name="flex-compile" description="Compile the main SWF file">
+		<mxmlc file="${APP_ROOT}/Main.mxml" 
+			   output="${DEPLOY_DIR}/Main.swf"
+			   services="${APP_ROOT}/service-config.xml"
+			   locale="en_US,es_ES,eu_ES,fr_FR">
+			
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+			
+			<define name="CONFIG::restricted" value="false"/>
+			
+			<compiler.library-path dir="${BASE}" append="true">
+				<include name="libs"/>
+			</compiler.library-path>
+			
+			<source-path path-element="${BASE}/src"/>
+			<source-path path-element="${BASE}/locale/{locale}"/>
+			
+			<load-config filename="${MXMLC_CUSTOM_CONFIG_FILE}" />
+		</mxmlc>
+	</target>
+
+	<!-- Should check if there's an html-template folder inside our project's root folder an if not copy it -->
+	<target name="flex-copy-html-template" description="Copies the default Flex SDK html-template files to the project's root folder">
+		<copy todir="${BASE}/html-template" overwrite="true">
+			<fileset dir="${FLEX_HOME}/templates/swfobject" />
+		</copy>
+	</target>
+
+	<target name="flex-generate-wrapper" description="Generate the HTML wrapper for the main SWF file">
+		<html-wrapper title="Babelium Project" 
+					  file="Main.html" 
+					  bgcolor="#ffffff" 
+		 			  height="100%" 
+					  width="100%" 
+					  application="Main" 
+					  swf="Main" 
+					  history="true" 
+					  version-detection="true" 
+					  express-install="true" 
+					  output="${DEPLOY_DIR}" />
+	</target>
+
+	<!-- framework_4.x.x.swf is renamed to framework_3.5.x.swf. This is only used when we want to store the RSLs on our own server instead of retrieving them from Adobe's servers. -->
+	<target name="flex-copy-rsls" description="Copies the SDK's common RSLs to the deploy folder">
+		<copy todir="${DEPLOY_DIR}" overwrite="true">
+			<fileset dir="${FLEX_HOME}/frameworks/rsls" includes="*.swf" />
+		</copy>
+	</target>
+
+	<target name="flex-copy-video-player-skins" description="Copies the video player's skin files to the deploy folder's resources folder">
+		<copy todir="${DEPLOY_DIR}/resources/videoPlayer" overwrite="true">
+			<fileset dir="${APP_ROOT}/resources/videoPlayer" />
+		</copy>
+	</target>
+	
+	<target name="app-deploy" depends="app-fix-domains,flex-deploy" >
+		<copy todir="${DEPLOY_DIR}">
+			<fileset dir="${APP_ROOT}/resources" includes="**.*"/> 
+		</copy>
+		<chmod file="${DEPLOY_DIR}/upload.php" perm="777"/>
+		<copy todir="${DEPLOY_DIR}">
+			<fileset dir="${APP_ROOT}/resources/tests" includes="*.php"/>
+		</copy>
+		<copy todir="${DEPLOY_DIR}/resources/images">
+			<fileset dir="${APP_ROOT}/resources/images" includes="**/*"/>
+		</copy>
+		<chmod dir="${DEPLOY_DIR}/resources/images/thumbs" perm="777"/>
+		<copy todir="${DEPLOY_DIR}/resources/templates">
+			<fileset dir="${APP_ROOT}/resources/templates" includes="**/*"/>
+		</copy>
+		<mkdir dir="${DEPLOY_DIR}/resources/uploads"/>
+		<chmod dir="${DEPLOY_DIR}/resources/uploads" perm="777"/>
+		<mkdir dir="${DEPLOY_DIR}/resources/searchIndexes"/>
+		<chmod dir="${DEPLOY_DIR}/resources/searchIndexes" perm="777"/>
+	</target>
+	
+	<target name="app-fix-domains">
+		<replace file="${APP_ROOT}/service-config.xml" token='/${REPOSITORY_DOMAIN}' value="/${SERVER_DOMAIN}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
+		<replace file="${APP_ROOT}/services/crossdomain.xml" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
+	</target>
+
+	<target name="LH_SyncDB" description="sync local de la BD">
+		<!--Eliminar las tablas de babeliumproject -->
+		<!-- && Recrear desde all.sql -->
+		<exec dir="${BASE}" executable="./updatedb.sh" />
+	</target>
+
+	<target name="LH_clean" description="borrar bin-debug">
+		<delete>
+			<!-- Deletes playerProductInstall.swf -->
+			<fileset dir="${DEPLOY_DIR}" includes="playerProductInstall.swf" defaultexcludes="false" />
+			<!-- Deletes index.html and historyFrame.html -->
+			<fileset dir="${DEPLOY_DIR}" includes="*.html" defaultexcludes="false" />
+			<!-- Deletes history.css -->
+			<fileset dir="${DEPLOY_DIR}" includes="*.css" defaultexcludes="false" />
+			<!-- Deletes history.js and AC_OETags.js -->
+			<fileset dir="${DEPLOY_DIR}" includes="*.js" defaultexcludes="false" />
+		</delete>
+	</target>
+
+
+	<target name="BP_babelia_to_babelium" description="s/babelia/babeliumproject.com/">
+		<input message="Please enter source:" addproperty="input.src" defaultvalue="babelia" />
+		<input message="Please enter destination:" addproperty="input.dst" defaultvalue="babeliumproject.com" />
+		<replace file="${APP_ROOT}/service-config.xml" token='/${input.src}' value="/${input.dst}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"${input.src}' value='"${input.dst}' />
+	</target>
+
+	<target name="LH_deployServices" description="Copiar servicios">
+		<copy todir="${services.dstdir}">
+			<fileset dir="${services.srcdir}" />
+		</copy>
+	</target>
+
+	<target name="BP_deployremote" description="Copy deployed app to remote host">
+		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}" verbose="true">
+			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
+		</scp>
+		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}/amfphp/services/babelia" verbose="true">
+			<fileset dir="${services.srcdir}" includes="**/*" />
+		</scp>
+	</target>
+
+	<target name="LH_deploylocal" description="Copy deployed app to local webserver">
+		<copy preservelastmodified="yes" todir="${local.server.path}/babelia">
+			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
+		</copy>
+	</target>
+
+	<target name="LH_deployImages" description="Copy resource images">
+		<copy preservelastmodified="yes" todir="${images.dstdir}">
+			<fileset dir="${images.srcdir}" includes="**/*" />
+		</copy>
+	</target>
+
+
+	<target name="LH_deployVideos" description="Copiar videos">
+		<copy preservelastmodified="yes" todir="${videos.dstdir}">
+			<fileset dir="${videos.srcdir}" includes="**/*" />
+		</copy>
+	</target>
+
+	<target name="BP_SyncDB" description="Sync DB">
+
+		<scp trust="true" file="${sql.all}" todir="${server.username}:${server.password}@${server.host}:${server.home}" verbose="true" />
+
+		<sshexec host="${server.host}" username="${server.username}" password="${server.password}" command="~/updatedb.sh" />
+	</target>
+
+	<target name="LH_red5_start" description="Start Red5">
+		<exec executable="bash" dir="${red5.path}">
+			<arg value="${red5.path}/red5.sh" />
+		</exec>
+	</target>
+
+	<target name="LH_red5_stop" description="Stop Red5">
+		<exec executable="bash" dir="${red5.path}">
+			<arg value="${red5.path}/red5-shutdown.sh" />
+		</exec>
+	</target>
+
+
+</project>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  xmlns:userManagement="modules.userManagement.*"
+		  width="100%"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
+		  creationComplete="completeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.events.FlexEvent;
+			
+			import skins.IconLinkSkin;
+			
+			import view.common.LocaleFlagResource;
+			
+			import vo.UserLanguageVO;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				displayMyLanguages();
+				displayMyPersonalData();
+			}
+
+			public function displayMyLanguages():void
+			{
+				practiceLanguages.removeAllElements();
+				evaluateLanguages.removeAllElements();
+				for each (var lang:UserLanguageVO in dataModel.loggedUser.userLanguages)
+				{
+					if (lang.purpose == 'practice')
+					{
+						practiceLanguages.addElement(generateLanguageInfo(lang));
+					}
+					else if (lang.purpose == 'evaluate')
+					{
+						evaluateLanguages.addElement(generateLanguageInfo(lang));
+					}
+				}
+			}
+			
+			public function displayMyPersonalData():void{
+				userName.text = dataModel.loggedUser.realName;
+				userSurname.text = dataModel.loggedUser.realSurname;
+				userEmail.text = dataModel.loggedUser.email;
+			}
+
+			private function generateLanguageInfo(lang:UserLanguageVO):HGroup
+			{
+				var data:Object=dataModel.localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+
+				var flag:Image=new Image();
+				flag.source=data.icon;
+
+				var langName:Label=new Label();
+				langName.text=resourceManager.getString('myResources', 'LOCALE_' + String(data.code).toUpperCase());
+
+				var langLevel:Label=new Label();
+				langLevel.text=dataModel.localesAndFlags.getLevelCorrespondence(lang.level);
+				langLevel.styleName='boldYellowLabel';
+
+				var lHGroup:HGroup=new HGroup();
+				lHGroup.addElement(flag);
+				lHGroup.addElement(langName);
+				lHGroup.addElement(langLevel);
+
+				return lHGroup;
+			}
+			
+			private function editCancelHandler(event:MouseEvent):void{
+				profileOverview.visible=true;
+				profileOverview.includeInLayout=true;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
+				modifyPassword.resetToolTips();
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+				modifyLanguages.resetToInitialStatus();
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
+				modifyPersonalData.resetToInitialStatus();
+				
+				displayMyLanguages();
+				displayMyPersonalData();
+			}
+			
+			protected function modifyLanguagesClickHandler(event:MouseEvent):void{
+				modifyLanguages.visible=true;
+				modifyLanguages.includeInLayout=true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
+			}
+
+			protected function modifyPasswordClickHandler(event:MouseEvent):void
+			{
+				modifyPassword.visible = true;
+				modifyPassword.includeInLayout = true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+				modifyPersonalData.visible=false;
+				modifyPersonalData.includeInLayout=false;
+			}
+			
+			protected function modifyPersonalDataClickHandler(event:MouseEvent):void{
+				modifyPersonalData.visible=true;
+				modifyPersonalData.includeInLayout=true;
+				profileOverview.visible=false;
+				profileOverview.includeInLayout=false;
+				modifyPassword.visible = false;
+				modifyPassword.includeInLayout = false;
+				modifyLanguages.visible=false;
+				modifyLanguages.includeInLayout=false;
+			}
+			
+			public function resetComponent():void{
+				editCancelHandler(null);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<s:Label text="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}"
+			 styleName="sectionTitleLabel"
+			 id="userProfileTitleLabel"/>
+	<s:Line width="{userProfileTitleLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{userProfileTitleLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+	<s:Label text="{resourceManager.getString('myResources','MODIFY_USER_INFO_DESCRIPTION')}"/>
+
+	<s:HGroup width="100%">
+		<!-- Overwiew of the profile of the user -->
+		<s:VGroup id="profileOverview"
+				  paddingTop="16"
+				  paddingLeft="16"
+				  paddingRight="16">
+			<s:HGroup paddingTop="10">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_PERSONAL_INFO')}"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase()+' '+resourceManager.getString('myResources','LABEL_PERSONAL_INFO').toLowerCase()}"
+								  click="modifyPersonalDataClickHandler(event)"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
+						 styleName="boldLabel"/>
+				<s:Label id="userName"
+						 text="{dataModel.loggedUser.realName}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
+						 styleName="boldLabel"/>
+				<s:Label id="userSurname"
+						 text="{dataModel.loggedUser.realSurname}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','LABEL_EMAIL')}"
+						 styleName="boldLabel"/>
+				<s:Label id="userEmail"
+						 text="{dataModel.loggedUser.email}"/>
+			</s:HGroup>
+
+			<s:HGroup paddingTop="16">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_SECURITY')}"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources','LABEL_MODIFY_PASSWORD').toLowerCase()}"
+								  click="modifyPasswordClickHandler(event)"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+
+			<s:HGroup paddingTop="16">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGES')}"
+						 styleName="exerciseTitleLabel"/>
+				<skins:IconButton styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase() +' '+resourceManager.getString('myResources','LABEL_LANGUAGES').toLowerCase()}"
+								  click="modifyLanguagesClickHandler(event)"/>
+			</s:HGroup>
+			<skins:HorizontalSeparatorLine/>
+			<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATE_LANGUAGE')}"
+					 styleName="boldLabel"/>
+			<s:VGroup id="evaluateLanguages"
+					  paddingLeft="16"/>
+			<s:Label text="{resourceManager.getString('myResources','LABEL_PRACTICE_LANGUAGE')}"
+					 styleName="boldLabel"/>
+			<s:VGroup id="practiceLanguages"
+					  paddingLeft="16"/>
+		</s:VGroup>
+
+		<!-- Edit personal information -->
+
+		<!-- Modify password -->
+		<userManagement:ModifyPassword id="modifyPassword"
+									   includeInLayout="false"
+									   visible="false"
+									   paddingTop="16"
+									   cancelClickHandler="{editCancelHandler}"/>
+
+		<!-- Modify languages -->
+		<userManagement:ModifyLanguages id="modifyLanguages"
+										includeInLayout="false"
+										visible="false"
+										cancelClickHandler="{editCancelHandler}"/>
+		
+		<userManagement:ModifyPersonalData id="modifyPersonalData"
+										   includeInLayout="false"
+										   visible="false"
+										   paddingTop="16"
+										   cancelClickHandler="{editCancelHandler}"/>
+
+	</s:HGroup>
+
+</s:VGroup>

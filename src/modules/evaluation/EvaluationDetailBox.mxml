@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:hulstkamp="com.hulstkamp.*"
+					width="100%">
+
+
+	<fx:Script>
+		<![CDATA[
+			import com.hulstkamp.AhRatingComponentStarSkin;
+			
+			import model.DataModel;
+			
+			import mx.managers.PopUpManager;
+			
+			import vo.EvaluationVO;
+
+			[Bindable]
+			private var _evaluationData:EvaluationVO;
+
+			public function set evaluationData(values:EvaluationVO):void
+			{
+				_evaluationData=values;
+				if (_evaluationData)
+					placeValues();
+			}
+
+			private function placeValues():void
+			{
+
+				intonationScore.rating=_evaluationData.intonationScore;
+				fluencyScore.rating=_evaluationData.fluencyScore;
+				rhythmScore.rating=_evaluationData.rhythmScore;
+				spontaneityScore.rating=_evaluationData.spontaneityScore;
+				overallScore.rating=_evaluationData.overallScore;
+				textComment.text=_evaluationData.comment;
+				videoCommentThumbnail.source=getImageSource(_evaluationData);
+				this.label=_evaluationData.userName;
+			}
+
+			protected function videoCommentThumbnailClickHandler(event:MouseEvent):void
+			{
+				if (_evaluationData.evaluationVideoFileIdentifier)
+				{
+					//Launch videoStop event
+					//todo
+
+					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
+					watchEvaluationVideoComment.videoSource=DataModel.getInstance().evaluationStreamsFolder + '/' + _evaluationData.evaluationVideoFileIdentifier;
+					PopUpManager.centerPopUp(watchEvaluationVideoComment);
+				}
+			}
+
+			public function getImageSource(temp:EvaluationVO):String
+			{
+				var url:String = '';
+				if (temp.evaluationVideoThumbnailUri)
+				{
+					videoCommentThumbnail.includeInLayout=true;
+					videoCommentThumbnail.visible=true;
+					url=DataModel.getInstance().thumbURL + "/" + temp.evaluationVideoThumbnailUri;
+				} else {
+					videoCommentThumbnail.includeInLayout=false;
+					videoCommentThumbnail.visible=false;
+				}
+				return url;
+			}
+		]]>
+	</fx:Script>
+
+
+	<s:layout>
+		<s:VerticalLayout paddingBottom="16"
+						  paddingLeft="16"
+						  paddingRight="16"
+						  paddingTop="16"/>
+	</s:layout>
+	<s:Label text="{resourceManager.getString('myResources','TITLE_USER_EVALUATION')}"
+			 styleName="sectionTitleLabel"/>
+	<s:HGroup width="100%" paddingTop="10">
+		<s:VGroup id="scoresGroup"
+				  width="50%">
+			<s:HGroup id="intonationGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+						 width="270"/>
+				<hulstkamp:AhFxRatingComponent id="intonationScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="fluencyGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+						 width="270"/>
+				<hulstkamp:AhFxRatingComponent id="fluencyScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="rhythmGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+						 width="270"/>
+				<hulstkamp:AhFxRatingComponent id="rhythmScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="spontaneityGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+						 width="270"/>
+				<hulstkamp:AhFxRatingComponent id="spontaneityScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="overallGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
+						 width="270"/>
+				<hulstkamp:AhFxRatingComponent id="overallScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="50%">
+			<s:Label text="{resourceManager.getString('myResources', 'COMMENTS')}"/>
+			<s:Label id="textComment"
+					 paddingLeft="20"
+					 width="400"
+					 text=""/>
+			<s:Label text="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"/>
+			<mx:Image id="videoCommentThumbnail"
+					  width="120"
+					  height="90"
+					  click="videoCommentThumbnailClickHandler(event)"
+					  scaleContent="true"
+					  autoLoad="true"
+					  useHandCursor="true"
+					  buttonMode="true"
+					  includeInLayout="false"
+					  visible="true"/>
+		</s:VGroup>
+	</s:HGroup>
+
+
+
+</s:NavigatorContent>

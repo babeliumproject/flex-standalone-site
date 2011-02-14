@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service id="amfphp-flashremoting-service" class="flex.messaging.services.RemotingService" messageTypes="flex.messaging.messages.RemotingMessage">
+
+   <default-channels>
+      <channel ref="my-amfphp"/>
+   </default-channels>
+
+   <destination id="empService">
+      <properties>
+         <source>*</source>
+      </properties>
+   </destination>
+
+</service> 

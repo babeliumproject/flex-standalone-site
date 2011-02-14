@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:skins="skins.*"
+						 autoLayout="true"
+						 styleName="genericPopup"
+						 title="{resourceManager.getString('myResources','TITLE_INSERT_NEW_ROL')}">
+
+	<skins:layout>
+		<s:VerticalLayout paddingBottom="16"
+						  paddingLeft="16"
+						  paddingRight="16"
+						  paddingTop="16"/>
+	</skins:layout>
+
+	<s:Label id="errorInfo"
+			 styleName="errorLabel"
+			 textAlign="center"
+			 width="100%"/>
+
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('myResources','LABEL_NEW_ROLE')+':'}"/>
+		<s:TextInput id="newrole"
+					 width="100%"
+					 maxChars="20"/>
+	</s:HGroup>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle"
+			  paddingTop="10">
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+				  id="okButton"
+				  buttonMode="true"
+				  styleName="bigBlueButton"/>
+		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+				  id="cancelButton"
+				  buttonMode="true"
+				  styleName="bigBlueButton"/>
+	</s:HGroup>
+
+</skins:CustomTitleWindow>

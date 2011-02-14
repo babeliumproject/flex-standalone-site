@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  creationComplete="onComplete()"
+		  xmlns:skins="skins.*"
+		  xmlns:videoPlayer="modules.videoPlayer.*">
+
+	<fx:Script>
+		<![CDATA[
+			import events.MessageOfTheDayEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Text;
+			import mx.utils.ObjectUtil;
+
+			import skins.IconButtonVerticalSkin;
+
+			import spark.components.NavigatorContent;
+
+			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
+
+			[Bindable]
+			private var selectedIndex:int=0;
+
+			[Bindable]
+			private var messageArray:ArrayCollection=new ArrayCollection();
+
+			[Bindable]
+			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+
+			private var slideTimer:Timer;
+
+			protected function onComplete():void
+			{
+				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
+				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				getUnsignedMessagesOfTheDay();
+			}
+
+			protected function onTimerTick(event:TimerEvent):void
+			{
+				var slideCount:int=appDescriptionViewStack.numChildren;
+				if (slideCount > 0)
+				{
+					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
+					if (currentlySelectedIndex < (slideCount - 1))
+						selectedIndex=currentlySelectedIndex + 1;
+					else
+						selectedIndex=0;
+				}
+			}
+
+			public function getUnsignedMessagesOfTheDay():void
+			{
+				if (!DataModel.getInstance().isLoggedIn)
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
+			}
+
+			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
+			{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					messageArray=DataModel.getInstance().messagesOfTheDayData;
+					if (messageArray.length > 0)
+					{
+						slideTimer.stop();
+						appDescriptionViewStack.removeAllChildren();
+						callLater(addMessagesToContainer);
+					}
+					else
+					{
+						var navc:NavigatorContent=new NavigatorContent();
+						navc.addElement(new StaticUnsignedMotd());
+						appDescriptionViewStack.addChild(navc);
+					}
+				}
+
+			}
+
+			protected function addMessagesToContainer():void
+			{
+				var navcs:NavigatorContent=new NavigatorContent();
+				navcs.addElement(new StaticUnsignedMotd());
+				appDescriptionViewStack.addChild(navcs);
+				for each (var messageData:Object in messageArray)
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					navc.addElement(generateMessageBox(messageData));
+					appDescriptionViewStack.addChild(navc);
+				}
+				selectedIndex=0;
+				slideTimer.start();
+			}
+
+			protected function generateMessageBox(messageData:Object):HGroup
+			{
+				var messageImage:Image=new Image();
+				messageImage.source=messageData.resourceUrl;
+				messageImage.width=240;
+				messageImage.height=180;
+				messageImage.scaleContent=true;
+
+				var titleLabel:Label=new Label();
+				titleLabel.text=messageData.title;
+				titleLabel.styleName="sectionInfoTitleLabel";
+
+				var messageText:Text=new Text();
+				messageText.text=messageData.message;
+				messageText.percentWidth=100;
+				messageText.percentHeight=100;
+
+				var messageVBox:VGroup=new VGroup();
+				messageVBox.percentWidth=100;
+				messageVBox.percentHeight=100;
+				messageVBox.setStyle("verticalAlign", "middle");
+				messageVBox.addElement(titleLabel);
+				messageVBox.addElement(messageText);
+
+				var motdBox:HGroup=new HGroup();
+				motdBox.percentWidth=100;
+				motdBox.setStyle("verticalAlign", "middle");
+				motdBox.addElement(messageImage);
+				motdBox.addElement(messageVBox);
+
+				return motdBox;
+			}
+
+			public function set onLanguageChanged(value:Boolean):void
+			{
+				getUnsignedMessagesOfTheDay();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
+				destination="onUnsignedMessagesOfTheDayRetrieved"/>
+
+	<fx:Binding source="{DataModel.getInstance().languageChanged}"
+				destination="onLanguageChanged"/>
+
+
+	<s:BorderContainer id="unsignedMotdBox"
+					   styleName="sectionInfoBox"
+					   minHeight="0"
+					   width="100%"
+					   minWidth="1000">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:HGroup id="descriptionPaginationUnsigned"
+				  paddingLeft="16"
+				  paddingRight="16"/>
+		<mx:ViewStack id="appDescriptionViewStack"
+					  selectedIndex="{selectedIndex}"
+					  width="100%"
+					  minWidth="1000"
+					  resizeToContent="true"
+					  paddingLeft="16"
+					  paddingRight="16"
+					  paddingBottom="16">
+		</mx:ViewStack>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	<s:HGroup paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16">
+		<s:BitmapImage source="@Embed('/resources/images/icon_foot.png')"/>
+		<s:VGroup>
+			<s:Label id="stepByStepTitle"
+					 text="{resourceManager.getString('myResources','STEP_BY_STEP')}"
+					 styleName="sectionTitleLabel"/>
+			<s:Line width="{stepByStepTitle.width}">
+				<s:stroke>
+					<mx:SolidColorStroke weight="3"
+										 color="#268caa"/>
+				</s:stroke>
+			</s:Line>
+		</s:VGroup>
+	</s:HGroup>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="16"
+			  gap="32">
+		<s:VGroup horizontalAlign="center">
+			<s:Label id="howToConfigureDevices"
+					 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
+					 styleName="exerciseTitleLabel"/>
+			<videoPlayer:VideoPlayerBabelia id="howToConfigureYourDevicesVideo"
+											skin="white"
+											seek="true"
+											subtitles="true"
+											autoScale="false"
+											arrows="false"
+											width="400"
+											height="250"
+											streamSource="{streamSource}"/>
+			<s:Label id="howToPracticeLanguage"
+					 text="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
+					 styleName="exerciseTitleLabel"
+					 paddingTop="16"/>
+			<videoPlayer:VideoPlayerBabelia id="howToPracticeLanguageVideo"
+											skin="white"
+											seek="true"
+											subtitles="true"
+											autoScale="false"
+											arrows="false"
+											width="400"
+											height="250"
+											streamSource="{streamSource}"/>
+		</s:VGroup>
+
+
+		<s:VGroup horizontalAlign="center">
+			<s:Label id="howToAssessOtherUsers"
+					 text="{resourceManager.getString('myResources','HOW_ASSESS_OTHER_USERS_WORK')}"
+					 styleName="exerciseTitleLabel"/>
+			<videoPlayer:VideoPlayerBabelia id="howToAssessOtherUsersVideo"
+											skin="white"
+											seek="true"
+											subtitles="true"
+											autoScale="false"
+											arrows="false"
+											width="400"
+											height="250"
+											streamSource="{streamSource}"/>
+
+			<s:Label id="howToSubtitle"
+					 text="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
+					 styleName="exerciseTitleLabel"
+					 paddingTop="16"/>
+			<videoPlayer:VideoPlayerBabelia id="howToSubtitleVideo"
+											skin="white"
+											seek="true"
+											subtitles="true"
+											autoScale="false"
+											arrows="false"
+											width="400"
+											height="250"
+											streamSource="{streamSource}"/>
+		</s:VGroup>
+	</s:HGroup>
+
+</s:VGroup>

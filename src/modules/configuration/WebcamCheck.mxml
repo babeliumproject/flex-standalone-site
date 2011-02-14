@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  height="100%"
+		  creationComplete="init()">
+
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+
+			import view.common.CustomAlert;
+			import view.common.PrivacyRights;
+
+			public var cam:Camera;
+			public var mic:Microphone;
+			private var video:Video;
+			public var rec:Boolean=false;
+			public var timerRec:Timer;
+			public var timerPlay:Timer;
+			public var oflaDemoRed5Sentences:OflaDemoRed5Sentences;
+
+			private var privacyRights:PrivacyRights;
+			private var _micCamEnabled:Boolean;
+
+			private function init():void
+			{
+				oflaDemoRed5Sentences=new OflaDemoRed5Sentences();
+				oflaDemoRed5Sentences.connect();
+				initTimers();
+			}
+
+			private function recStart():void
+			{
+				//First we close the previous streaming channels
+				oflaDemoRed5Sentences.closeNetStreamObjects();
+				prepareDevices();
+			}
+
+			private function playStart():void
+			{
+				if (rec)
+				{ //Rec file exists
+					DataModel.getInstance().playing=true;
+					initCont();
+					statusTextFunc("playing");
+					oflaDemoRed5Sentences.play('video');
+					video.attachNetStream(oflaDemoRed5Sentences.play_ns);
+					videoHolder.addChild(video);
+					timerPlay.start();
+				}
+				else //Rec file not exists
+					CustomAlert.error(resourceManager.getString('myResources', 'CONFIGURATION_NO_FILE_EXISTS'));
+			}
+
+			private function timerRecFunc(event:TimerEvent):void
+			{
+				var denb:int
+				denb=timerRec.currentCount;
+				if (timerRec.currentCount <= 10)
+				{
+					contador.text=denb.toString();
+				}
+				else if (timerRec.currentCount > 10)
+				{
+					endRec();
+					hideInfo();
+					rec=true;
+					timerRec.reset(); //Get ready for the next recording
+				}
+			}
+
+			private function timerPlayFunc(event:TimerEvent):void
+			{
+				var denb:int;
+				denb=timerPlay.currentCount;
+				if (timerPlay.currentCount <= 10)
+				{
+					contador.text=denb.toString();
+				}
+				else if (timerPlay.currentCount > 10)
+				{
+					DataModel.getInstance().playing=false;
+					var ev:ConfigurationResultEvent=new ConfigurationResultEvent(ConfigurationResultEvent.WEBCAM_RESULT, true);
+					dispatchEvent(ev);
+					hideInfo();
+					timerPlay.reset(); //Get ready for the next playback
+				}
+			}
+
+			private function initCont():void
+			{
+				contador.text="0";
+				contador.visible=true;
+			}
+
+			private function initTimers():void
+			{
+				//This Timer is used for video recording
+				timerRec=new Timer(1000, 0);
+				timerRec.addEventListener(TimerEvent.TIMER, timerRecFunc);
+				//This Timer is used for video playback
+				timerPlay=new Timer(1000, 0);
+				timerPlay.addEventListener(TimerEvent.TIMER, timerPlayFunc);
+			}
+
+			private function hideInfo():void
+			{
+				contador.visible=false;
+				statusText.visible=false;
+			}
+
+			private function endRec():void
+			{
+				DataModel.getInstance().recording=false;
+				oflaDemoRed5Sentences.rec_ns.attachCamera(null);
+				oflaDemoRed5Sentences.rec_ns.attachAudio(null);
+				video.attachCamera(null);
+				video.clear();
+			}
+
+			private function statusTextFunc(s:String):void
+			{
+				statusText.text=s;
+				statusText.visible=true;
+			}
+
+			private function prepareRecording():void
+			{
+				oflaDemoRed5Sentences.rec_ns.attachCamera(cam);
+				DataModel.getInstance().videoRec=true;
+				DataModel.getInstance().recording=true;
+				statusTextFunc("recording");
+				video=new Video();
+				video.attachCamera(cam);
+				videoHolder.addChild(video);
+				timerRec.start();
+				oflaDemoRed5Sentences.rec_ns.attachAudio(mic);
+				oflaDemoRed5Sentences.publish('video');
+				initCont();
+			}
+
+			private function prepareDevices():void
+			{
+				if (PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
+				{
+					_micCamEnabled=DataModel.getInstance().micCamAllowed;
+					configureDevices();
+				}
+				else
+				{
+					PrivacyRights.useMicAndCamera=true;
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
+					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
+					PopUpManager.centerPopUp(privacyRights);
+				}
+			}
+
+			private function configureDevices():void
+			{
+				cam=DataModel.getInstance().camera;
+				cam.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
+				mic=DataModel.getInstance().microphone;
+				//mic.setUseEchoSuppression(true);
+				//mic.setLoopBack(true); only if we want to hear what we are saying. Even using echo supression leads to echoes.
+				mic.setSilenceLevel(0, 60000);
+				//mic.gain=40; inherited from the old code
+
+				prepareRecording();
+				//startCountdown(); maybe we'll need it later
+			}
+
+			private function privacyBoxClosed(event:Event):void
+			{
+				PopUpManager.removePopUp(privacyRights);
+				_micCamEnabled=DataModel.getInstance().micCamAllowed;
+				if (_micCamEnabled && PrivacyRights.cameraFound && PrivacyRights.microphoneFound)
+				{
+					configureDevices();
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<s:Label id="labelWebcamCheck"
+			 text="{resourceManager.getString('myResources', 'CONFIGURATION_WEBCAM_TITTLE')}"
+			 styleName="sectionTitleLabel"/>
+	<s:Line width="{labelWebcamCheck.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{labelWebcamCheck.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+
+	<s:HGroup width="100%">
+		<s:VGroup width="100%">
+			<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}"/>
+			<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}"/>
+		</s:VGroup>
+		<s:HGroup horizontalAlign="right"
+				  width="100%">
+			<s:VGroup id="videoPanel"
+					  horizontalAlign="center"
+					  verticalAlign="top">
+				<s:BorderContainer borderStyle="solid"
+								   cornerRadius="3"
+								   backgroundColor="#e9edee">
+					<s:layout>
+						<s:VerticalLayout horizontalAlign="center"
+										  verticalAlign="middle"/>
+					</s:layout>
+					<s:BorderContainer borderStyle="solid"
+									   width="320"
+									   height="240"
+									   backgroundColor="black">
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<mx:UIComponent id="videoHolder"
+										width="100%"
+										height="100%"/>
+						<s:Label id="statusText"
+								 visible="false"
+								 styleName="errorLabel"/>
+					</s:BorderContainer>
+					<s:HGroup horizontalAlign="center">
+						<s:Button label="REC"
+								  click="recStart()"
+								  buttonMode="true"
+								  horizontalCenter="true"
+								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
+						<s:Button label="PLAY"
+								  click="playStart()"
+								  buttonMode="true"
+								  horizontalCenter="true"
+								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
+							   !DataModel.getInstance().recording &amp;&amp;
+							   DataModel.getInstance().permissions}"/>
+					</s:HGroup>
+					<s:VGroup horizontalAlign="center">
+						<s:Label id="contador"
+								 visible="false"/>
+					</s:VGroup>
+				</s:BorderContainer>
+			</s:VGroup>
+		</s:HGroup>
+	</s:HGroup>
+</s:VGroup>

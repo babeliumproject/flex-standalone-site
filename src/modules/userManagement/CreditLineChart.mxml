@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import events.ViewChangeEvent;
+			import mx.controls.Alert;
+			import mx.formatters.DateFormatter;
+			import vo.CreditHistoryVO;
+			import mx.collections.ArrayCollection;
+			import model.DataModel;
+
+			[Bindable]
+			public var chartData:ArrayCollection;
+
+			[Bindable] private var chartMaxDate:Date;
+			[Bindable] private var chartMinDate:Date;
+			
+			[Bindable] private var chartLabelUnits:String;
+			
+
+			public function init():void
+			{
+				chartMaxDate = new Date();
+				chartMinDate = new Date(chartMaxDate.setMonth(chartMaxDate.month - 1));
+			}
+			
+			public function set chartMinimum(min:Date):void{
+				chartMinDate = min;
+			}
+			
+			public function set chartMaximum(max:Date):void{
+				chartMaxDate = max;
+			}
+			
+			public function get chartMaximum():Date{
+				return chartMaxDate;
+			}
+			
+			public function set labelUnits(unit:String):void{
+				var choices:ArrayCollection = new ArrayCollection(new Array("years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"));
+				if (choices.contains(unit)){
+					chartLabelUnits = unit;
+					dateAxis.labelUnits = chartLabelUnits;
+				}
+			}
+
+			public function set creditHistoryRetrieved(value:Boolean):void
+			{
+				chartMaxDate = new Date();
+				chartData=DataModel.getInstance().creditChartData;
+				if (chartData.length > 0)
+				{
+					creditLineChart.dataProvider=chartData;
+				}
+				DataModel.getInstance().isChartDataRetrieved=false;
+			}
+			
+			private function dateParseFunction(s:String):Date{
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "YYYY/MM/DD JJ:NN:SS";
+				var d:Date = new Date(df.format(s));
+				return d;
+			}
+		]]>
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isChartDataRetrieved}"
+				destination="creditHistoryRetrieved"/>
+	<mx:LineChart id="creditLineChart"
+				  showDataTips="true"
+				  height="100%"
+				  width="100%">
+		<mx:horizontalAxis>
+			<mx:DateTimeAxis id="dateAxis"
+							 minimum="{chartMinDate}"
+							 maximum="{chartMaxDate}"
+							 parseFunction="dateParseFunction"/>
+			<!--<mx:CategoryAxis categoryField="Date"/>-->
+		</mx:horizontalAxis>
+
+		<mx:series>
+			<mx:LineSeries yField="Credits"
+						   xField="Date"
+						   form="segment"
+						   displayName="Credit Variation"/>
+		</mx:series>
+
+	</mx:LineChart>
+	<mx:Legend id="legend"
+			   dataProvider="{creditLineChart}"
+			   color="0x323232"/>
+</s:HGroup>

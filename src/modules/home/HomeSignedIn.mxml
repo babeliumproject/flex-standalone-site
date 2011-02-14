@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  creationComplete="onComplete()"
+		  xmlns:home="modules.home.*"
+		  xmlns:skins="skins.*">
+
+	<fx:Script>
+		<![CDATA[
+			import events.MessageOfTheDayEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Label;
+			import mx.controls.Text;
+
+			import spark.components.Button;
+			import spark.components.NavigatorContent;
+
+			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
+
+			[Bindable]
+			private var selectedIndex:int=0;
+
+			private var slideTimer:Timer;
+
+			[Bindable]
+			private var messageArray:ArrayCollection=new ArrayCollection();
+
+			protected function onComplete():void
+			{
+				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
+				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				getSignedInMessagesOfTheDay();
+			}
+
+			protected function onTimerTick(event:TimerEvent):void
+			{
+				var slideCount:int=appDescriptionViewStack.getChildren().length;
+				if (slideCount > 0)
+				{
+					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
+					if (currentlySelectedIndex < (slideCount - 1))
+						selectedIndex=currentlySelectedIndex + 1;
+					else
+						selectedIndex=0;
+				}
+			}
+
+			public function getSignedInMessagesOfTheDay():void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
+			}
+
+			protected function set onSignedInMessagesOfTheDayRetrieved(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+
+					messageArray=DataModel.getInstance().messagesOfTheDayData;
+					if (messageArray.length > 0)
+					{
+						slideTimer.stop();
+						appDescriptionViewStack.removeAllChildren();
+						callLater(addMessagesToContainer);
+					}
+					else
+					{
+						var navc:NavigatorContent=new NavigatorContent();
+						navc.addElement(new StaticSignedInMotd());
+						appDescriptionViewStack.addChild(navc);
+					}
+				}
+			}
+
+			protected function addMessagesToContainer():void
+			{
+				var navcs:NavigatorContent=new NavigatorContent();
+				navcs.addElement(new StaticSignedInMotd());
+				appDescriptionViewStack.addChild(navcs);
+				for each (var messageData:Object in messageArray)
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					navc.addElement(generateMessageBox(messageData));
+					appDescriptionViewStack.addChild(navc);
+				}
+				selectedIndex=0;
+				slideTimer.start();
+			}
+
+			protected function generateMessageBox(messageData:Object):HGroup
+			{
+
+				var messageImage:Image=new Image();
+				messageImage.source=messageData.resourceUrl;
+				messageImage.width=240;
+				messageImage.height=180;
+				messageImage.scaleContent=true;
+
+				var titleLabel:Label=new Label();
+				titleLabel.text=messageData.title;
+				titleLabel.styleName="sectionInfoTitleLabel";
+
+				var messageText:Text=new Text();
+				messageText.text=messageData.message;
+				messageText.percentWidth=100;
+				messageText.percentHeight=100;
+
+				var messageVBox:VGroup=new VGroup();
+				messageVBox.percentWidth=100;
+				messageVBox.percentHeight=100;
+				messageVBox.setStyle("verticalAlign", "middle");
+				messageVBox.addElement(titleLabel);
+				messageVBox.addElement(messageText);
+
+				var motdBox:HGroup=new HGroup();
+				motdBox.percentWidth=100;
+				motdBox.setStyle("verticalAlign", "middle");
+				motdBox.addElement(messageImage);
+				motdBox.addElement(messageVBox);
+
+				return motdBox;
+			}
+
+			public function buildAvailableActionsPanel():void
+			{
+				var homeUploadButton:Button=new Button();
+				homeUploadButton.label=resourceManager.getString('myResources', 'LABEL_UPLOAD');
+				homeUploadButton.styleName="homeUploadButton";
+			}
+
+			public function set onLanguageChanged(value:Boolean):void
+			{
+				getSignedInMessagesOfTheDay();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
+				destination="onSignedInMessagesOfTheDayRetrieved"/>
+
+	<fx:Binding source="{DataModel.getInstance().languageChanged}"
+				destination="onLanguageChanged"/>
+
+	<s:BorderContainer id="signedMotdBox"
+					   styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:HGroup id="descriptionPaginationSigned"
+				  paddingLeft="16"
+				  paddingRight="16"/>
+		<mx:ViewStack id="appDescriptionViewStack"
+					  selectedIndex="{selectedIndex}"
+					  width="100%"
+					  resizeToContent="true"
+					  paddingLeft="16"
+					  paddingRight="16">
+		</mx:ViewStack>
+
+		<s:HGroup horizontalAlign="right"
+				  width="100%"
+				  verticalAlign="bottom"
+				  gap="0">
+			<skins:HorizontalSeparatorLine width="100%"/>
+			<s:TabBar dataProvider="{myHomeViewStack}"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
+			<skins:HorizontalSeparatorLine width="16"/>
+		</s:HGroup>
+	</s:BorderContainer>
+
+	<mx:ViewStack id="myHomeViewStack"
+				  width="100%"
+				  height="100%"
+				  resizeToContent="true">
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}">
+			<home:LatestUploadedVideos/>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}">
+			<home:LatestBestRatedVideos/>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_ACTIVITY')}">
+			<home:LatestUserActivity/>
+		</s:NavigatorContent>
+
+	</mx:ViewStack>
+
+</s:VGroup>

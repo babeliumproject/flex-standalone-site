@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------------
+FLEX MONKEY TESTS FOR CONFIGURATION MODULE ------------------------------------
+-------------------------------------------------------------------------------
+
+In this directory can be found different files and folders:
+-Snapshost directory, monkeyTestProject.xml file and monkeyTestSuites.xml file were created
+directly from flexMonkey desktop application. If you want to load the project from flexmonkey
+application you must load monkeyTestProject.xml file from app load browser.
+-testSuites folder contains flexmonkey´s test in action script 3 code. This folders contains
+the files that you must use for automatically testings.
+
+
+HOW TO CHECK THE TEST:
+----------------------
+If you want to check the test, you need flexmonkey desktop application. You can download it
+from the next web site: http://www.gorillalogic.com/
+
+Once you´ve got flexmonkey app installed on your computer, you will be able to open flexmonkey
+test project by clicking in File/Open_project and choosing the root folder (wich name is 'FlexMonkeyTest').
+
+Now, you must init your IDE (eclipse, flash builder...) and add in Compiler/adittional_compiler_arguments
+the following lines: 
+-include-libraries "../libs/automation_monkey.swc" -include-libraries "${flexlib}/libs/automation.swc" 
+-include-libraries "${flexlib}/libs/automation_agent.swc" -include-libraries "${flexlib}/libs/automation_dmv.swc"
+
+A file is necesary in you project/lib folder. The file that you must add can download from gorillalogic/flex monkey/
+monkey accesories but you must choose the file that corresponds with you flex sdk version.
+
+When you added the automation file in lib folder, you can launch babelia and run flexmonkey´s test directly from
+desktop application.
+
+Flexmonkey guide can download in the next website: http://www.gorillalogic.com/userfiles/flexmonkey/FlexMonkey%201.0%20GA%20User%20Guide.pdf

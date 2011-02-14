@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ProgressBar xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+				label=""
+				labelPlacement="center"
+				trackHeight="20"
+				width="100%"
+				height="100%"
+				creationComplete="onComplete()">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.containers.VBox;
+
+			private var mictimer:Timer=null;
+			private var my_mic:Microphone;
+
+			private var box:VBox=new VBox();
+			private var percentage:int=0;
+
+
+			private function onComplete():void
+			{
+				mictimer=new Timer(20, 0);
+				mictimer.addEventListener(TimerEvent.TIMER, onTick);
+				mode="manual";
+			}
+
+			public function giveMicrophone(mic:Microphone):void
+			{
+				my_mic=mic;
+				mictimer.start();
+			}
+
+			private function onTick(event:TimerEvent):void
+			{
+				percentage=my_mic.activityLevel;
+				this.setProgress(percentage, 100);
+				//this.label=percentage + "%";
+			}
+
+
+			override protected function createChildren():void
+			{
+				super.createChildren();
+
+
+				this.addChild(box);
+			}
+
+
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+
+				box.setActualSize(box.getExplicitOrMeasuredWidth(), box.getExplicitOrMeasuredHeight());
+				box.move(1, 1);
+
+				this.setStyle("barColor", "white");
+
+				var trackHeight:Number=getStyle("trackHeight");
+
+				var g:Graphics=box.graphics;
+
+				var matr:Matrix=new Matrix();
+
+				matr.createGradientBox(width, trackHeight, 0, -20, 0);
+				g.clear();
+				//g.beginGradientFill("linear", [0xFF0000, 0xFFFF00, 0x00FF00], [100, 100, 100], [0, 130, 255], matr);
+				g.beginGradientFill("linear", [0x00FF00, 0xFFFF00, 0xFF0000], [100, 100, 100], [0, 130, 255], matr);
+				g.drawRoundRect(0, 0, percentage * 2, trackHeight - 2, 0, 0);
+				//box.blendMode = BlendMode.HARDLIGHT;
+
+			}
+		]]>
+	</fx:Script>
+
+</mx:ProgressBar>

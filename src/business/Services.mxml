@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceLocator xmlns="com.adobe.cairngorm.business.*"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx">
+
+	<fx:Declarations>
+
+
+
+		<mx:RemoteObject id="userRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="UserDAO"/>
+
+		<mx:RemoteObject id="registerRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="RegisterUser"/>
+
+		<mx:RemoteObject id="creditRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="CreditDAO"/>
+
+		<mx:RemoteObject id="prefRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="PreferenceDAO"/>
+
+		<mx:RemoteObject id="loginRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="LoginDAO"/>
+
+		<mx:RemoteObject id="subtitleRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="SubtitleDAO"/>
+
+		<mx:RemoteObject id="rolRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="ExerciseRoleDAO"/>
+
+		<mx:RemoteObject id="exerciseRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="ExerciseDAO"/>
+
+		<mx:RemoteObject id="searchRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="SearchDAO"/>
+
+		<mx:RemoteObject id="tagCloudRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="TagCloudDAO"/>
+
+		<mx:RemoteObject id="youtubeRO"
+						 destination="empService"
+						 showBusyCursor="false"
+						 source="YouTubeDAO"/>
+
+		<mx:RemoteObject id="autoevaluationRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="TranscriptionsDAO"/>
+
+		<mx:RemoteObject id="evaluationRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="EvaluationDAO"/>
+
+		<mx:RemoteObject id="responseRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="ResponseDAO"/>
+		
+		<mx:RemoteObject id="videoHistoryRO"
+						 destination="empService"
+						 showBusyCursor="false"
+						 source="UserVideoHistoryDAO"/>
+
+		<mx:RemoteObject id="homepageRO"
+						 destination="empService"
+						 showBusyCursor="true"
+						 source="HomepageDAO"/>
+
+	</fx:Declarations>
+
+</ServiceLocator>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+						  xmlns:s="library://ns.adobe.com/flex/spark"
+						  xmlns:mx="library://ns.adobe.com/flex/mx"
+						  xmlns:ns2="view.*"
+						  height="100%"
+						  xmlns:common="view.common.*">
+
+	<s:layout>
+		<s:HorizontalLayout horizontalAlign="center"/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			public function get value():Number
+			{
+				return (data.startTime);
+			}
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+				ShowTimeStepper.value=data.startTime;
+			}
+		]]>
+	</fx:Script>
+	<ns2:FormattedStepper id="ShowTimeStepper"
+						  height="100%"
+						  stepSize="0.01"
+						  width="81"
+						  maximum="250000"
+						  formatter="{formater1}"
+						  valueCommit="{data.startTime = Number(ShowTimeStepper.value); }"/>
+	<fx:Declarations>
+		<common:TimeFormatter id="formater1"
+							  outputMilliseconds="true"/>
+	</fx:Declarations>
+</s:MXDataGridItemRenderer>

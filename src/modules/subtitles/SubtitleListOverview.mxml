@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:subtitles="modules.subtitles.*"
+		  paddingTop="0"
+		  width="100%"
+		  creationComplete="completeHandler(event)"
+		  xmlns:skins="skins.*">
+
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label id="subtitleModuleTitle"
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"
+				 text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
+
+		<s:Label text="{resourceManager.getString('myResources','SUBTITLE_SECTION_DESCRIPTION')}"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+
+		<!--
+		<s:HGroup horizontalAlign="right"
+				  width="100%"
+				  verticalAlign="bottom"
+				  gap="0">
+			<skins:HorizontalSeparatorLine width="100%"/>
+			<s:TabBar dataProvider="{subtitleListOverviewViewStack}"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
+			<skins:HorizontalSeparatorLine width="16"/>
+		</s:HGroup>
+		-->
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	<subtitles:SubtitleEditor id="subtitleEditor"
+							  includeInLayout="false"
+							  visible="false"
+							  width="100%"/>
+
+	<mx:Spacer height="20"/>
+
+	<!--
+	<mx:ViewStack id="subtitleListOverviewViewStack"
+				  creationPolicy="all"
+				  resizeToContent="true"
+				  change="onSubtitleTabChange(event)"
+				  width="100%">
+
+		<s:NavigatorContent id="subtitlePendingListNavContent"
+							label="{resourceManager.getString('myResources','LABEL_PENDING_SUBTITLES')}">
+	-->
+			<subtitles:SubtitlePendingList id="subtitlePendingList"
+										   dataProvider="{emptySubtitleList}"
+										   changeListener="{emptySubtitleChangeHandler}"
+										   width="100%"/>
+	<!--	
+		</s:NavigatorContent>
+
+		<s:NavigatorContent id="subtitleReviewListNavContent"
+							label="{resourceManager.getString('myResources','LABEL_REVIEW_SUBTITLES')}">
+			<subtitles:SubtitleReviewList id="subtitleReviewList"
+										  dataProvider="{reviewSubtitleList}"
+										  changeListener="{reviewSubtitleChangeHandler}"
+										  width="100%"/>
+		</s:NavigatorContent>
+
+	</mx:ViewStack>
+	-->
+	
+	<fx:Binding source="{dataModel.isLoggedIn}"
+				destination="userAuthenticationHandler"/>
+
+	<fx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
+				destination="exercisesWithoutSubtitlesRetrievedHandler"/>
+	<!--
+	<fx:Binding source="{dataModel.exercisesWithSubtitlesToReviewRetrieved}"
+				destination="exercisesWithSubtitlesToReviewRetrievedHandler"/>
+	-->
+	
+	<fx:Binding source="{dataModel.stopVideoFlag}"
+				destination="onTabChange"/>
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+				destination="onURLChange"/>
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			import control.CuePointManager;
+
+			import events.ExerciseEvent;
+			import events.SubtitleEvent;
+			import events.SubtitleListEvent;
+			import events.ViewChangeEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+
+			import spark.components.List;
+
+			import vo.ExerciseRoleVO;
+			import vo.ExerciseVO;
+			import vo.SubtitleAndSubtitleLinesVO;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			[Bindable]
+			private var currentExercise:ExerciseVO;
+
+			private var currentPageEmptySubtitle:uint=1;
+			/* private var currentPageReviewSubtitle:uint=1; */
+
+			[Bindable]
+			private var emptySubtitleList:ArrayCollection;
+			[Bindable]
+			private var reviewSubtitleList:ArrayCollection;
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				refreshExerciseLists();
+			}
+
+			public function refreshExerciseLists():void
+			{
+				if (dataModel.isLoggedIn)
+				{
+					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES).dispatch();
+					//new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW).dispatch();
+				}
+				else
+				{
+					emptySubtitleList=new ArrayCollection();
+					//reviewSubtitleList=new ArrayCollection();
+				}
+			}
+
+			private function set exercisesWithoutSubtitlesRetrievedHandler(value:Boolean):void
+			{
+				var ewsDataprovider:ArrayCollection=dataModel.exercisesWithoutSubtitles;
+				emptySubtitleList=ewsDataprovider;
+				allDataReceived();
+			}
+
+			/*
+			private function set exercisesWithSubtitlesToReviewRetrievedHandler(value:Boolean):void
+			{
+				var ewstrDataprovider:ArrayCollection=dataModel.exercisesWithSubtitlesToReview;
+				reviewSubtitleList=ewstrDataprovider;
+				allDataReceived();
+			}
+			*/
+
+			private function emptySubtitleChangeHandler(event:Event):void
+			{
+				var selectedItem:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				currentExercise=selectedItem;
+
+				//Set the current exercise in the subtitle editor
+				prepareExercise();
+
+				//Add the subtitle editor to the stage
+				subtitleEditor.includeInLayout=true;
+				subtitleEditor.visible=true;
+
+				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, currentExercise.name);
+
+			}
+
+			/*
+			private function reviewSubtitleChangeHandler(event:Event):void
+			{
+				var selectedItem:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				currentExercise=selectedItem;
+
+				//Set the current exercise in the subtitle editor
+				prepareExercise();
+
+				//Add the subtitle editor to the stage
+				subtitleEditor.includeInLayout=true;
+				subtitleEditor.visible=true;
+
+				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, currentExercise.name);
+
+			}
+			*/
+
+			private function prepareExercise():void
+			{
+				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
+				var roles:ExerciseRoleVO=new ExerciseRoleVO();
+				roles.exerciseId=currentExercise.id;
+
+				CuePointManager.getInstance().reset();
+
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+
+				var recModuleCurrentExerciseRetr:Boolean=dataModel.currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
+				dataModel.currentExercise.setItemAt(currentExercise, 0);
+				dataModel.currentExerciseRetrieved=new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
+			}
+
+			private function allDataReceived():void
+			{
+				if (emptySubtitleList != null /*&& reviewSubtitleList != null*/)
+				{
+					onURLChange="Data";
+				}
+			}
+
+			private function onSubtitleTabChange(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+
+				//Reset the state of the lists of the module
+				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
+				/*subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;*/
+
+				currentPageEmptySubtitle=1;
+				/*currentPageReviewSubtitle=1;*/
+				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
+				/*subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;*/
+
+				//Hide and reset the subtitle editor and its videoplayer on tab change
+				subtitleEditor.visible=false;
+				subtitleEditor.includeInLayout=false;
+				subtitleEditor.onTabChange(true);
+			}
+
+			private function set onTabChange(value:Boolean):void
+			{
+				//Reset the state of the lists of the module
+				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
+				/*subtitleReviewList.exercisesWithSubtitlesTile.selectedItem=null;*/
+
+				currentPageEmptySubtitle=1;
+				/*currentPageReviewSubtitle=1;*/
+				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
+				/*subtitleReviewList.currentPaginationPage=currentPageReviewSubtitle;*/
+				
+				//Put the viewstack on the first position
+				/*subtitleListOverviewViewStack.selectedChild = subtitlePendingListNavContent;*/
+
+				//Hide and reset the subtitle editor and its videoplayer on tab change
+				subtitleEditor.visible=false;
+				subtitleEditor.includeInLayout=false;
+			}
+
+			private function set userAuthenticationHandler(value:Boolean):void
+			{
+				refreshExerciseLists();
+				//subtitleListOverviewViewStack.selectedChild = subtitlePendingListNavContent;
+			}
+
+			private function set onURLChange(value:Object):void
+			{
+				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+
+				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+					return;
+			}
+		]]>
+	</fx:Script>
+
+</s:VGroup>

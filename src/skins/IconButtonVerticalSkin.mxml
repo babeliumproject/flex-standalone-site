@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+	 ADOBE SYSTEMS INCORPORATED
+	 Copyright 2008 Adobe Systems Incorporated
+	 All Rights Reserved.
+
+	 NOTICE: Adobe permits you to use, modify, and distribute this file
+	 in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for the Spark Button component.
+
+	 @see spark.components.Button
+
+	 @langversion 3.0
+	 @playerversion Flash 10
+	 @playerversion AIR 1.5
+	 @productversion Flex 4
+-->
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+			 xmlns:s="library://ns.adobe.com/flex/spark"
+			 xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+			 minWidth="21"
+			 minHeight="21"
+			 alpha.disabled="0.5">
+	<fx:Metadata>[HostComponent("skins.IconButton")]</fx:Metadata>
+
+	<!-- host component -->
+	<fx:Script fb:purpose="styling">
+		<![CDATA[
+			
+			import mx.collections.ArrayCollection;
+			import mx.graphics.GradientEntry;
+			import mx.graphics.LinearGradient;
+			import mx.utils.ArrayUtil;
+			/* Define the skin elements that should not be colorized.
+			 For button, the graphics are colorized but the label is not. */
+			static private const exclusions:Array=["labelDisplay"];
+			
+			private var gradientColors:Array = [0xFFFFFF, 0xD8D8D8];
+			private var gradientColorsOver:Array = [0xBBBDBD, 0x9FA0A1];
+			private var gradientColorsDown:Array = [0xAAAAAA, 0x929496];
+			
+			private var borderWeight:uint = 1;
+			private var borderGradientColors:Array = [0x000000, 0x000000];
+
+			/**
+			 * @private
+			 */
+			override public function get colorizeExclusions():Array
+			{
+				return exclusions;
+			}
+
+			/**
+			 * @private
+			 */
+			override protected function initializationComplete():void
+			{
+				useChromeColor=true;
+				super.initializationComplete();
+			}
+
+			/**
+			 *  @private
+			 */
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				var gc:Array = ArrayUtil.toArray(getStyle('gradientColors'));
+				var gco:Array = ArrayUtil.toArray(getStyle('gradientColorsOver'));
+				var gcd:Array = ArrayUtil.toArray(getStyle('gradientColorsDown'));
+				
+				if(gc && !equalArrays(gradientColors,gc)){
+					gradientColors=gc;
+					entry1.color = gradientColors[0];
+					if(gradientColors.length > 1)
+						entry2.color = gradientColors[1];
+					else
+						entry2.color = gradientColors[0];
+				}
+				
+				if(gco && !equalArrays(gradientColorsOver,gco)){
+					gradientColorsOver = gco;
+					entryOver1.color = gradientColorsOver[0];
+					if(gradientColorsOver.length > 1)
+						entryOver2.color = gradientColorsOver[1];
+					else
+						entryOver2.color = gradientColorsOver[0];
+				}
+				
+				if(gcd && !equalArrays(gradientColorsDown,gcd)){
+					gradientColorsDown = gcd;
+					entryDown1.color = gradientColorsDown[0];
+					if(gradientColorsDown.length > 1)
+						entryDown2.color = gradientColorsDown[1];
+					else
+						entryDown2.color = gradientColorsDown[0];
+				}
+				
+				var bw:uint = getStyle('borderWeight');
+				
+				if (borderWeight != bw){
+					borderWeight = bw;
+					borderStroke.weight = borderWeight;
+				}
+				
+				var bgc:Array = ArrayUtil.toArray(getStyle('borderColors'));
+				
+				if(bgc && !equalArrays(borderGradientColors, bgc)){
+					borderGradientColors = bgc;
+					borderEntry1.color = borderGradientColors[0];
+					if(borderGradientColors.length > 1)
+						borderEntry2.color = borderGradientColors[1];
+					else
+						borderEntry2.color = borderGradientColors[0];
+				}
+				
+				var bis:String = getStyle('icon');
+				
+				if(bis)
+					iconImage.includeInLayout = true;
+				
+				if(!hostComponent.label){
+					labelDisplay.includeInLayout = false;
+				}
+				
+				var cr:Number=getStyle("cornerRadius");
+					
+				if (cornerRadius != cr)
+				{
+					cornerRadius=cr;
+					fill.radiusX=cornerRadius;
+					fillOver.radiusX = cornerRadius;
+					fillDown.radiusX = cornerRadius;
+					border.radiusX=cornerRadius;
+					dropShadow.trRadius=cornerRadius;
+					dropShadow.tlRadius=cornerRadius;
+					dropShadow.brRadius=cornerRadius;
+					dropShadow.blRadius=cornerRadius;
+				}
+
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+
+			private var cornerRadius:Number=2;
+			
+			private function equalArrays(array1:Array, array2:Array):Boolean{
+				var equivalent:Boolean = true;
+				if(!array1 || !array2)
+					return false;
+				if(array1.length != array2.length)
+					return false;
+				for(var i:int = 0; i < array1.length; i++) {
+					if(array1[i] != array2[i]) {
+						equivalent = false;
+						break;
+					}
+				}
+				return equivalent;
+			}
+			
+		]]>
+	</fx:Script>
+
+	<!-- states -->
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+
+	<!-- layer 1: shadow -->
+	<!--- @private -->
+	<s:RectangularDropShadow id="dropShadow"
+							 blurX="8"
+							 blurY="8"
+							 alpha="0.32"
+							 distance="0"
+							 angle="90"
+							 color="0x000000"
+							 left="0"
+							 top="0"
+							 right="0"
+							 bottom="0"
+							 />
+	<s:Group left="0"
+			 top="0"
+			 right="0"
+			 bottom="0">
+
+		<!-- layer 2: fill -->
+		<!--- @private -->
+		<s:Rect id="fill"
+				left="1"
+				right="1"
+				top="1"
+				bottom="1"
+				radiusX="2"
+				includeIn="up,disabled">
+			<s:fill>
+				<s:LinearGradient rotation="90" >
+					<s:GradientEntry id="entry1"
+									 color="0xFFFFFF"
+									 ratio="0.3"/>
+					<s:GradientEntry id="entry2"
+									 color="0xD8D8D8"
+									 ratio="1.0"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		
+		<s:Rect id="fillOver"
+				left="1"
+				right="1"
+				top="1"
+				bottom="1"
+				radiusX="2"
+				includeIn="over"
+				itemCreationPolicy="immediate">
+			<s:fill>
+				<s:LinearGradient rotation="90" >
+					<s:GradientEntry id="entryOver1"
+									 color="0xBBBDBD"
+									 ratio="0.3"/>
+					<s:GradientEntry id="entryOver2"
+									 color="0x9FA0A1"
+									 ratio="1.0"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		
+		<s:Rect id="fillDown"
+				left="1"
+				right="1"
+				top="1"
+				bottom="1"
+				radiusX="2"
+				includeIn="down"
+				itemCreationPolicy="immediate">
+			<s:fill>
+				<s:LinearGradient rotation="90" >
+					<s:GradientEntry id="entryDown1"
+									 color="0xAAAAAA"
+									 ratio="0.3"/>
+					<s:GradientEntry id="entryDown2"
+									 color="0x929496"
+									 ratio="1.0"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+
+		<!-- layer 7: border - put on top of the fill so it doesn't disappear when scale is less than 1 -->
+		<!--- @private -->
+		<s:Rect id="border"
+				left="0"
+				right="0"
+				top="0"
+				bottom="0"
+				width="69"
+				height="20"
+				radiusX="2">
+			<s:stroke>
+				<s:LinearGradientStroke id="borderStroke"
+										rotation="90">
+					<s:GradientEntry id="borderEntry1"
+									 alpha="0.5625"
+									 alpha.down="0.6375"/>
+					<s:GradientEntry id="borderEntry2"
+									 alpha="0.75"
+									 alpha.down="0.85"/>
+				</s:LinearGradientStroke>
+			</s:stroke>
+		</s:Rect>
+
+		<s:Group width="100%"
+				 height="100%">
+			<s:layout>
+				<s:VerticalLayout paddingBottom="16"
+								  paddingLeft="16"
+								  paddingRight="16"
+								  paddingTop="16"
+								  gap="16"
+								  horizontalAlign="center"/>
+			</s:layout>
+
+			<s:BitmapImage id="iconImage" source="{hostComponent.getStyle('icon')}" includeInLayout="false"/>
+			<!-- layer 8: text -->
+			<!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+			<s:Label id="labelDisplay"
+					 fontWeight="{hostComponent.getStyle('fontWeight')}"
+					 textAlign="center"
+					 verticalAlign="middle"
+					 maxDisplayedLines="1">
+			</s:Label>
+		</s:Group>
+	</s:Group>
+
+</s:SparkSkin>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:common="view.common.*"
+		  xmlns:skins="skins.*"
+		  verticalAlign="middle">
+
+	<fx:Script>
+		<![CDATA[
+			public function set deleteButtonClickHandler(clickHandler:Function):void
+			{
+				deleteButton.addEventListener(MouseEvent.CLICK, clickHandler);
+				deleteButton.visible=true;
+				deleteButton.includeInLayout=true;
+			}
+		]]>
+	</fx:Script>
+
+	<common:LanguageComboBox id="languageCombo"/>
+	<skins:IconButton id="deleteButton"
+					  styleName="removeLanguageLinkButton"
+					  visible="false"
+					  includeInLayout="false"/>
+
+</s:HGroup>

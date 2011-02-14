@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:hulstkamp="com.hulstkamp.*"
+				   xmlns:skins="skins.*">
+
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="left"
+						  paddingTop="2"
+						  paddingBottom="2"
+						  paddingLeft="2"
+						  paddingRight="2"
+						  gap="0"/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			
+			import events.ExerciseEvent;
+			import events.SearchEvent;
+			import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.controls.LinkButton;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			
+			import view.common.ReportInappropriatePopUp;
+			
+			import vo.ExerciseReportVO;
+			import vo.ExerciseScoreVO;
+			import vo.ExerciseVO;
+
+			[Bindable]
+			private var _exercise:ExerciseVO=null;
+
+			[Bindable]
+			private var _tags:Array;
+
+			[Bindable]
+			private var _exerciseRating:int=0;
+
+			[Bindable]
+			private var _dataAvailable:Boolean=false;
+
+			private var reportPopUp:ReportInappropriatePopUp;
+
+			public function set exerciseData(exercise:ExerciseVO):void
+			{
+				if (exercise)
+				{
+					_exercise=exercise;
+					_exerciseRating=exercise.avgRating;
+					_dataAvailable=true;
+					updateComponents();
+				}
+				else
+				{
+					_dataAvailable=false;
+					disableComponents();
+				}
+			}
+
+			public function get exerciseData():ExerciseVO
+			{
+				return _exercise;
+			}
+
+			private function updateComponents():void
+			{
+				rating.rating=_exerciseRating;
+				addTagLinkButtons();
+
+				var score:ExerciseScoreVO=new ExerciseScoreVO();
+				var report:ExerciseReportVO=new ExerciseReportVO();
+				score.exerciseId=_exercise.id;
+				report.exerciseId=_exercise.id;
+
+				new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
+				new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
+			}
+
+			private function disableComponents():void
+			{
+				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
+				{
+					_exerciseRating=0;
+					removeTagLinkButtons();
+				}
+			}
+
+			private function addTagLinkButtons():void
+			{
+				removeTagLinkButtons();
+				tagBoxSeparator.height=1;
+				_tags=_exercise.tags.split(',');
+				for each (var tag:String in _tags)
+				{
+					var linkTag:LinkButton=new LinkButton();
+					linkTag.label=StringUtil.trim(tag);
+					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+					//exerciseTagsBox.addChild(linkTag);
+					exerciseTagsBox.addElement(linkTag);
+				}
+			}
+
+			private function removeTagLinkButtons():void
+			{
+				tagBoxSeparator.height=0;
+				//exerciseTagsBox.removeAllChildren();
+				exerciseTagsBox.removeAllElements();
+				_tags=null;
+			}
+
+			protected function tagClickHandler(event:MouseEvent):void
+			{
+				DataModel.getInstance().searchField=(event.target as LinkButton).label;
+				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+			}
+
+			protected function ratingClickHandler(event:MouseEvent):void
+			{
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
+				{
+					var score:ExerciseScoreVO=new ExerciseScoreVO();
+					score.suggestedScore=rating.rating;
+					score.exerciseId=_exercise.id;
+					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
+				}
+			}
+
+			protected function reportVideoClickHandler(event:MouseEvent):void
+			{
+				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
+				{
+					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, ReportInappropriatePopUp, true));
+					PopUpManager.centerPopUp(reportPopUp);
+					reportPopUp.exerciseData=_exercise;
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<s:HGroup id="ratingAndReportBox"
+			  width="100%">
+		<s:HGroup paddingTop="4"
+				  paddingLeft="4">
+			<hulstkamp:AhFxRatingComponent id="rating"
+										   rating="{_exerciseRating}"
+										   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
+										   click="ratingClickHandler(event)"
+										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+										   scaleX="1.5"
+										   scaleY="1.5"/>
+		</s:HGroup>
+		<s:HGroup horizontalAlign="right"
+				  paddingBottom="0"
+				  paddingTop="0"
+				  paddingLeft="0"
+				  paddingRight="0"
+				  width="100%">
+			<skins:IconButton id="reportVideo"
+							  label="{resourceManager.getString('myResources','REPORT')}"
+							  toolTip="{resourceManager.getString('myResources','REPORT_INNAPROPRIATE_VIDEO')}"
+							  styleName="reportLinkButton"
+							  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
+							  click="reportVideoClickHandler(event)"/>
+		</s:HGroup>
+	</s:HGroup>
+	<s:VGroup horizontalAlign="center"
+			  width="100%">
+		<mx:HRule id="tagBoxSeparator"
+				  width="100%"
+				  height="0"/>
+		<s:TileGroup id="exerciseTagsBox" width="100%"/>
+		<!--
+		<mx:Tile id="exerciseTagsBox"
+				 width="100%"
+				 horizontalGap="1"
+				 verticalGap="1"
+				 autoLayout="true">
+		</mx:Tile>-->
+	</s:VGroup>
+
+</s:Group>
