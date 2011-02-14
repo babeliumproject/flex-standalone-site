@@ -804,13 +804,23 @@
 			<s:NavigatorContent id="waitingAssessmentBoxNavContent"
 								label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
 				<s:VGroup id="waitingAssessmentBox"
-						  horizontalAlign="center"
 						  width="100%"
 						  height="100%">
+					<!--
 					<skins:DottedLine width="100%" dotColor="0x000000" dotWidth="1" dotAlpha="1" height="1" />
-
+					-->
 					<evaluation:EvaluationRatingBox id="evaluationRatingBox"
 													width="100%"/>
+					
+					<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST')}"
+							 styleName="sectionTitleLabel"
+							 id="assessmentPendingListTitleLabel"/>
+					<s:Line width="{assessmentPendingListTitleLabel.width}">
+						<s:stroke>
+							<mx:SolidColorStroke weight="3"
+												 color="{assessmentPendingListTitleLabel.getStyle('color')}"/>
+						</s:stroke>
+					</s:Line>
 					<mx:DataGrid id="waitingAssessmentDataGrid"
 								 dataProvider="{waitingForAssessmentList}"
 								 width="100%"
@@ -873,6 +883,15 @@
 										  resizeToContent="true"/>
 						</s:BorderContainer>
 					</s:VGroup>
+					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_TO_USER_LIST')}"
+							 styleName="sectionTitleLabel"
+							 id="assessedToUserListTitleLabel"/>
+					<s:Line width="{assessedToUserListTitleLabel.width}">
+						<s:stroke>
+							<mx:SolidColorStroke weight="3"
+												 color="{assessedToUserListTitleLabel.getStyle('color')}"/>
+						</s:stroke>
+					</s:Line>
 					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
 														  dataProvider="{assessedToCurrentUserList}"
 														  changeListener="{assessedToCurrentUserChangeHandler}"
@@ -894,6 +913,15 @@
 						<evaluation:EvaluationDetailBox id="assessedByUserDetail"
 														width="100%"/>
 					</s:BorderContainer>
+					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_BY_USER_LIST')}"
+							 styleName="sectionTitleLabel"
+							 id="assessedByUserListTitleLabel"/>
+					<s:Line width="{assessedByUserListTitleLabel.width}">
+						<s:stroke>
+							<mx:SolidColorStroke weight="3"
+												 color="{assessedByUserListTitleLabel.getStyle('color')}"/>
+						</s:stroke>
+					</s:Line>
 					<mx:DataGrid width="100%"
 								 id="assessedByCurrentUserDataGrid"
 								 dataProvider="{assessedByCurrentUserList}"

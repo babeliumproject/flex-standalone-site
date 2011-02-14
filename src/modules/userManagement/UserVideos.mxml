@@ -163,8 +163,12 @@
 		<s:Button id="deleteSelectedVideos"
 				  click="deleteSelectedVideos_clickHandler(event)"
 				  label="{resourceManager.getString('myResources','DELETE')}"/>
+		<mx:VRule height="20"/>
 		<s:Label id="videoCount"
+				 paddingLeft="16"
+				 paddingRight="16"
 				 text="{userVideoList.length > 1 ? StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_MANY'),userVideoList.length) : StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_SINGLE'),userVideoList.length)}"/>
+		<!--
 		<mx:VRule height="20"/>
 		<s:Label text="{resourceManager.getString('myResources','SORT_BY')+':'}"/>
 		<s:DropDownList id="sortOptions"/>
@@ -175,6 +179,7 @@
 					  click="searchButton_clickHandler(event)"
 					  label="{resourceManager.getString('myResources','SEARCH')}"/>
 		</s:HGroup>
+		-->
 	</s:BorderContainer>
 
 	<!--

@@ -463,7 +463,7 @@ package modules.subtitles
 				if (i > 0)
 				{
 					if (subtitleCollection.getItemAt((i - 1)).endTime >= subtitleCollection.getItemAt(i).startTime)
-						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAP')+"\n", i);
+						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAPS')+"\n", i);
 				}
 			}
 			return errorMessage;

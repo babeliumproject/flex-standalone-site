@@ -19,10 +19,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -30,18 +30,18 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -104,12 +104,14 @@
 			private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 
 			public var _videoPlayerReady:Boolean=false;
-			
+
 			[Embed('/resources/images/button_abort.png')]
-			[Bindable] private var abortIcon:Class;
-			
+			[Bindable]
+			private var abortIcon:Class;
+
 			[Embed('/resources/images/button_rec.png')]
-			[Bindable] private var recIcon:Class;
+			[Bindable]
+			private var recIcon:Class;
 
 			/**
 			 * On creation complete
@@ -412,9 +414,9 @@
 
 					//Save statistical data
 					statisticRecAttempt();
-					
-					
-			
+
+
+
 				}
 				else
 				{
@@ -427,7 +429,7 @@
 				recordingError();
 				prepareExercise();
 				resetCueManager();
-				
+
 			}
 
 			private function statisticRecAttempt():void
@@ -472,7 +474,7 @@
 			 **/
 			private function onRecordingAborted(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
+				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -481,7 +483,7 @@
 			 **/
 			private function onCamAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
+				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -490,7 +492,7 @@
 			 **/
 			private function onMicAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_WORKING'));
+				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -950,7 +952,18 @@
 
 	</s:HGroup>
 
-
+	<s:VGroup width="100%" horizontalAlign="left">
+		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
+				 styleName="sectionTitleLabel"
+				 id="exerciseListTitleLabel"/>
+		<s:Line width="{exerciseListTitleLabel.width}">
+			<s:stroke>
+				<mx:SolidColorStroke weight="3"
+									 color="{exerciseListTitleLabel.getStyle('color')}"/>
+			</s:stroke>
+		</s:Line>
+	</s:VGroup>
+	
 	<!-- Video List -->
 	<exercises:VideoList width="100%"
 						 id="exerciseList"/>

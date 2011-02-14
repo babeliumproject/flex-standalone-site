@@ -91,13 +91,14 @@
 		</s:HGroup>
 
 		<s:HGroup width="100%"
-				  verticalAlign="middle">
-			<s:Button id="editVideoData"
-					  label="{resourceManager.getString('myResources','EDIT')}"
-					  click="editVideoData_clickHandler(event)"/>
+				  verticalAlign="middle"
+				  paddingBottom="16">
 			<s:Label text="{resourceManager.getString('myResources','VIDEO_STATUS')+':'}"/>
 			<s:Label text="{data.status}"/>
 		</s:HGroup>
+		<s:Button id="editVideoData"
+				  label="{resourceManager.getString('myResources','EDIT')}"
+				  click="editVideoData_clickHandler(event)"/>
 
 	</s:VGroup>
 

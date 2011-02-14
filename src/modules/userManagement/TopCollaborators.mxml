@@ -68,7 +68,14 @@
 	
 	
 	<s:Label text="{resourceManager.getString('myResources','LABEL_TOP_COLLABORATORS')}"
-			 styleName="sectionTitleLabel"/>
+			 styleName="sectionTitleLabel"
+			 id="topCollaboratorsTitleLabel"/>
+	<s:Line width="{topCollaboratorsTitleLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{topCollaboratorsTitleLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
 
 	<mx:DataGrid width="100%"
 				 height="100%"

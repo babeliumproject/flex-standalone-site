@@ -140,7 +140,14 @@
 	</fx:Declarations>
 
 	<s:Label text="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}"
-			 styleName="sectionTitleLabel"/>
+			 styleName="sectionTitleLabel"
+			 id="userProfileTitleLabel"/>
+	<s:Line width="{userProfileTitleLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{userProfileTitleLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
 	<s:Label text="{resourceManager.getString('myResources','MODIFY_USER_INFO_DESCRIPTION')}"/>
 
 	<s:HGroup width="100%">

@@ -133,7 +133,14 @@
 				destination="creditHistoryRetrieved"/>
 
 	<s:Label text="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
-			 styleName="sectionTitleLabel"/>
+			 styleName="sectionTitleLabel"
+			 id="creditHistoryTitleLabel"/>
+	<s:Line width="{creditHistoryTitleLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{creditHistoryTitleLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
 
 	<s:BorderContainer width="100%"
 					   minHeight="0"
