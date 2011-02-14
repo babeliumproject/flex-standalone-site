@@ -79,14 +79,14 @@
 
 			protected function deleteSelectedVideos_clickHandler(event:MouseEvent):void
 			{
-			
+			    itemsToDelete = new Array();
 				for(var i:int =0; i<userVideoList.length;i++){
 					if(userVideoList[i].itemSelected == true){
 						itemsToDelete.push(userVideoList[i]);
 					}
 				}
-			
-				CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteVideosConfirmation, Alert.NO);
+				if(itemsToDelete.length > 0)			
+					CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteVideosConfirmation, Alert.NO);
 			}
 
 			private function deleteVideosConfirmation(event:CloseEvent):void
@@ -110,12 +110,12 @@
 
 			public function resetComponent():void
 			{
-
+				currentPageUserVideos = 1;
+				itemsToDelete = new Array();
 			}
 			
 			public function set onTabChange(value:Boolean):void{
-				currentPageUserVideos = 1;
-				itemsToDelete = new Array();
+				
 			}
 
 

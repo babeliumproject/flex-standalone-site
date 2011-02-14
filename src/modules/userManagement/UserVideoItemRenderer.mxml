@@ -65,7 +65,8 @@
 
 		<s:Label text="{data.description}"
 				 maxDisplayedLines="3"
-				 toolTip="{data.description}"/>
+				 toolTip="{data.description}"
+				 width="850"/>
 		<s:HGroup verticalAlign="middle"
 				  width="100%">
 			<mx:Image id="license"
@@ -85,7 +86,8 @@
 							  width="240"
 							  label="{data.reference}"
 							  click="referenceClickHandler(event)"
-							  styleName="commonLinkButton"/>
+							  styleName="commonLinkButton"
+							  enabled="{checkExternalUrl(data.reference)}"/>
 		</s:HGroup>
 
 		<s:HGroup width="100%"

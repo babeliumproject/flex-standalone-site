@@ -32,6 +32,8 @@ class ExerciseVO {
 	public $score;
 	public $idIndex;
 	
+	public $itemSelected;
+	
 	public $_explicitType = "ExerciseVO";
 
 }

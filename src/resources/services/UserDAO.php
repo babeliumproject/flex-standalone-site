@@ -7,6 +7,8 @@ require_once 'utils/EmailAddressValidator.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/ExerciseVO.php';
 
+require_once 'ExerciseDAO.php';
+
 
 /**
  * This class is used to make queries related to an VO object. When the results
@@ -176,7 +178,7 @@ class UserDAO {
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-     			WHERE e.fk_user_id = %d
+     			WHERE e.fk_user_id = %d AND e.status <> 'Unavailable' 
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 			
@@ -225,19 +227,22 @@ class UserDAO {
 		try {
 			$verifySession = new SessionHandler(true);
 			
-			$names = '';
+			$whereClause = '';
+			$names = array();
 			
 			if(count($selectedVideos) > 0){
 				foreach($selectedVideos as $selectedVideo){
-					$names .= " '" . $selectedVideo->name . "',";
+					$whereClause .= " name = '%s' OR";
+					array_push($names, $selectedVideo->name);
 				}
 				unset($selectedVideo);
-				$names = substr($names,0,-1);
+				$whereClause = substr($whereClause,0,-2);
 			
-				$sql = "UPDATE exercise SET status='Unavailable' WHERE fk_user_id=%d AND name IN (%s) ";
+				$sql = "UPDATE exercise SET status='Unavailable' WHERE ( fk_user_id=%d AND" . $whereClause ." )";
 				
-				$updateData = $this->conn->_execute($sql, $_SESSION['uid'], $names);
-				
+				$merge = array_merge((array)$sql, (array)$_SESSION['uid'], $names);
+				$updateData = $this->conn->_execute($merge);
+
 				return $updateData ? true : false;
 			}
 			

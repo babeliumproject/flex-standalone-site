@@ -4,7 +4,8 @@
 				xmlns:mx="library://ns.adobe.com/flex/mx"
 				xmlns:hulstkamp="com.hulstkamp.*"
 				autoDrawBackground="true"
-				creationComplete="completeHandler()" xmlns:skins="skins.*">
+				creationComplete="completeHandler()"
+				xmlns:skins="skins.*">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="middle"
@@ -40,13 +41,15 @@
 				 text="{data.title}"
 				 width="320"
 				 styleName="boldLabel"/>
-		<s:Line width="320" alpha="0.5">
+		<s:Line width="320"
+				alpha="0.5">
 			<s:stroke>
 				<mx:SolidColorStroke weight="2"
 									 color="#aaaaaa"/>
 			</s:stroke>
 		</s:Line>
-		<s:HGroup gap="20" verticalAlign="middle">
+		<s:HGroup gap="20"
+				  verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
 				<mx:Image width="16"
@@ -75,7 +78,8 @@
 				  verticalAlign="middle"
 				  width="320">
 			<s:Label text="{resourceManager.getString('myResources','USER')+':'}"/>
-			<skins:IconButton label="{data.userName}" styleName="commonLinkButton"/>
+			<skins:IconButton label="{data.userName}"
+							  styleName="commonLinkButton"/>
 		</s:HGroup>
 		<s:HGroup>
 			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
@@ -97,10 +101,11 @@
 			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					 visible="{data.reference}"/>-->
 			<skins:IconButton id="referenceUrl"
-						   width="240"
-						   label="{data.reference}"
-						   click="referenceClickHandler(event)"
-						   styleName="commonLinkButton"/>
+							  width="240"
+							  label="{data.reference}"
+							  click="referenceClickHandler(event)"
+							  styleName="commonLinkButton"
+							  enabled="{checkExternalUrl(data.reference)}"/>
 		</s:HGroup>
 
 	</s:VGroup>
@@ -228,7 +233,7 @@
 				_licenseData=LicenseResource.getLicenseData(temp.license);
 				return _licenseData.imageResource;
 			}
-			
+
 			//http://livedocs.adobe.com/flex/3/langref/flash/net/package.html#navigateToURL%28%29
 			private function addHttpIfneeded(url:String):String
 			{
