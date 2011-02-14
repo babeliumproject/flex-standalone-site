@@ -23,7 +23,7 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).modifyUserLanguages((event as UserEvent).languages);
+			new UserDelegate(this).modifyUserLanguages((event as UserEvent).dataList);
 		}
 
 		public function result(data:Object):void

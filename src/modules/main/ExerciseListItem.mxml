@@ -4,7 +4,7 @@
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:ns1="com.asfusion.controls.*"
 						  creationComplete="completeHandler()"
-						  xmlns:hulstkamp="com.hulstkamp.*">
+						  xmlns:hulstkamp="com.hulstkamp.*" xmlns:skins="skins.*">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="middle"
@@ -71,7 +71,7 @@
 				  verticalAlign="middle"
 				  width="100%">
 			<s:Label text="{resourceManager.getString('myResources','USER')+':'}"/>
-			<mx:LinkButton label="{data.userName}"/>
+			<skins:IconButton label="{data.userName}" styleName="commonLinkButton"/>
 		</s:HGroup>
 		<s:HGroup>
 			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
@@ -91,9 +91,10 @@
 					  buttonMode="true"/>
 			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					 visible="{data.reference}"/>
-			<mx:LinkButton id="referenceUrl"
+			<skins:IconButton id="referenceUrl"
 						   label="{data.reference}"
-						   click="referenceClickHandler(event)"/>
+						   click="referenceClickHandler(event)"
+						   styleName="commonLinkButton"/>
 		</s:HGroup>
 
 	</s:VGroup>

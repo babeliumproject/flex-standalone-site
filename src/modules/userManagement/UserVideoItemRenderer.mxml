@@ -4,17 +4,20 @@
 				  xmlns:mx="library://ns.adobe.com/flex/mx"
 				  xmlns:hulstkamp="com.hulstkamp.*"
 				  autoDrawBackground="true"
-				  creationComplete="completeHandler()">
+				  creationComplete="completeHandler()"
+				  xmlns:skins="skins.*">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="top"
-							paddingTop="4"
-							paddingBottom="4"
+							paddingTop="16"
+							paddingBottom="16"
 							paddingLeft="8"
 							paddingRight="8"/>
 	</s:layout>
-	
-	<s:CheckBox id="itemSelected"/>
+
+	<s:CheckBox id="itemSelected"
+				change="itemSelected_changeHandler(event)"
+				selected="{data.itemSelected}"/>
 
 	<mx:Image id="thumbnail"
 			  scaleContent="true"
@@ -39,8 +42,7 @@
 			</s:stroke>
 		</s:Line>
 		<s:HGroup gap="20"
-				  verticalAlign="middle"
-				  paddingBottom="">
+				  verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
 				<mx:Image width="16"
@@ -79,10 +81,11 @@
 			<!--
 			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
 					 visible="{data.reference}"/>-->
-			<mx:LinkButton id="referenceUrl"
-						   width="240"
-						   label="{data.reference}"
-						   click="referenceClickHandler(event)"/>
+			<skins:IconButton id="referenceUrl"
+							  width="240"
+							  label="{data.reference}"
+							  click="referenceClickHandler(event)"
+							  styleName="commonLinkButton"/>
 		</s:HGroup>
 
 		<s:HGroup width="100%"
@@ -137,6 +140,7 @@
 
 			[Bindable]
 			private var _timeFormatter:TimeFormatter=new TimeFormatter();
+
 
 			public function completeHandler():void
 			{
@@ -246,6 +250,11 @@
 					return (false);
 				}
 				return (true);
+			}
+
+			protected function itemSelected_changeHandler(event:Event):void
+			{
+				data.itemSelected=(event.currentTarget as CheckBox).selected;
 			}
 		]]>
 	</fx:Script>

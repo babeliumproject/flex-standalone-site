@@ -30,6 +30,7 @@ package modules.subtitles
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.utils.StringUtil;
 	
 	import skins.IconButton;
 	
@@ -454,15 +455,15 @@ package modules.subtitles
 			for (var i:int=0; i < subtitleCollection.length; i++)
 			{
 				if (subtitleCollection.getItemAt(i).roleId < 1)
-					errorMessage+="The role on the line " + (i + 1) + " is empty.\n";
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources','ROLE_EMPTY')+"\n",i+1);
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)
-					errorMessage+="The text on the line " + (i + 1) + " is empty.\n";
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources','TEXT_EMPTY')+"\n",i+1);
 				if (i > 0)
 				{
 					if (subtitleCollection.getItemAt((i - 1)).endTime >= subtitleCollection.getItemAt(i).startTime)
-						errorMessage+="The subtitle on the line " + i + " overlaps with the next subtitle.\n";
+						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAP')+"\n", i);
 				}
 			}
 			return errorMessage;

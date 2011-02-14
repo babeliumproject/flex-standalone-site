@@ -43,15 +43,17 @@
 		<s:Label text="{resourceManager.getString('myResources','VIDEO_TUTORIALS_DESCRIPTION')}"/>
 		<s:HGroup>
 			<mx:Spacer/>
-			<mx:LinkButton label="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
+			<skins:IconButton label="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
 						   textDecoration="underline"
-						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"/>
+						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"
+						   styleName="commonLinkButton"/>
 		</s:HGroup>
 		<s:HGroup>
 			<mx:Spacer/>
-			<mx:LinkButton label="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
+			<skins:IconButton label="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
 						   textDecoration="underline"
-						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=VstggUIIMlY')"/>
+						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=VstggUIIMlY')"
+						   styleName="commonLinkButton"/>
 		</s:HGroup>
 	</s:VGroup>
 

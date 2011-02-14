@@ -392,13 +392,10 @@
 				<s:HGroup>
 					<s:VGroup id="motherLanguagesBox">
 					</s:VGroup>
-					<mx:LinkButton id="addAnotherMotherLang"
+					<skins:IconButton id="addAnotherMotherLang"
 								   click="addAnotherMotherLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-								   textDecoration="underline"
-								   paddingLeft="6"
-								   paddingRight="6"
-								   icon="@Embed(source='../../resources/images/add.png')"/>
+								   styleName="addLanguageLinkButton"/>
 				</s:HGroup>
 			</mx:FormItem>
 			<mx:Spacer/>
@@ -409,13 +406,10 @@
 				<s:HGroup>
 					<s:VGroup id="knownLanguagesBox">
 					</s:VGroup>
-					<mx:LinkButton id="addAnotherKnownLang"
+					<skins:IconButton id="addAnotherKnownLang"
 								   click="addAnotherKnownLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-								   textDecoration="underline"
-								   paddingLeft="6"
-								   paddingRight="6"
-								   icon="@Embed(source='../../resources/images/add.png')"/>
+								   styleName="addLanguageLinkButton"/>
 				</s:HGroup>
 			</mx:FormItem>
 			<mx:Spacer/>
@@ -426,13 +420,10 @@
 				<s:HGroup>
 					<s:VGroup id="interestLanguagesBox">
 					</s:VGroup>
-					<mx:LinkButton id="addAnotherInterestLang"
+					<skins:IconButton id="addAnotherInterestLang"
 								   click="addAnotherInterestLang_clickHandler(event)"
 								   label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
-								   textDecoration="underline"
-								   paddingLeft="6"
-								   paddingRight="6"
-								   icon="@Embed(source='../../resources/images/add.png')"/>
+								   styleName="addLanguageLinkButton"/>
 				</s:HGroup>
 			</mx:FormItem>
 		</mx:Form>

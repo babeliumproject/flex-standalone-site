@@ -33,6 +33,7 @@ package vo
 		
 		public var score:Number; //is used to sort the searches
 		public var idIndex:int; //is used to delete exercises
+		public var itemSelected:Boolean; //Determines whether this object is selected in a customRenderer list-based control
 
 	}
 }

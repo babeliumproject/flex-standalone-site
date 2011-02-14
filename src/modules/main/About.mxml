@@ -46,8 +46,8 @@
 				 styleName="boldYellowLabel"/>
 		<s:VGroup width="100%">
 			<s:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
-			<mx:LinkButton label="babeliumproject@gmail.com"
-						   styleName="blueLinkButton"
+			<skins:IconButton label="babeliumproject@gmail.com"
+						   styleName="commonLinkButton"
 						   click="emailButtonClickHandler(event)"/>
 		</s:VGroup>
 		<mx:Spacer height="24"/>

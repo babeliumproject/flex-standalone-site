@@ -11,14 +11,15 @@ package events
 		public static const MODIFY_PREFERRED_LANGUAGES:String = "modifyPreferredLanguages";
 		public static const MODIFY_PERSONAL_DATA:String = "modifyPersonalData";
 		public static const RETRIEVE_USER_VIDEOS:String = "retrieveUserVideos";
+		public static const DELETE_SELECTED_VIDEOS:String = "deleteSelectedVideos";
 		
-		public var languages:Array;
+		public var dataList:Array;
 		public var personalData:UserVO;
 		
-		public function UserEvent(type:String, languages:Array = null, personalData:UserVO = null)
+		public function UserEvent(type:String, dataList:Array = null, personalData:UserVO = null)
 		{
 			super(type);
-			this.languages = languages;
+			this.dataList = dataList;
 			this.personalData = personalData;
 		}
 		

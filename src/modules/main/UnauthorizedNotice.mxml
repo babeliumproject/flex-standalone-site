@@ -6,7 +6,7 @@
 		  verticalAlign="top"
 		  paddingTop="20"
 		  gap="10"
-		  width="100%">
+		  width="100%" xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -55,14 +55,15 @@
 					  verticalAlign="middle"
 					  paddingTop="30">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
-				<mx:LinkButton id="signInLink"
+				<skins:IconButton id="signInLink"
 							   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
-							   cornerRadius="4"
-							   click="signInLink_clickHandler(event)"/>
+							   click="signInLink_clickHandler(event)"
+							   styleName="commonLinkButton"/>
 				<s:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
-				<mx:LinkButton id="signUpLink"
+				<skins:IconButton id="signUpLink"
 							   label="{resourceManager.getString('myResources','BUTTON_HERE')}"
-							   click="signUpLink_clickHandler(event)"/>
+							   click="signUpLink_clickHandler(event)"
+							   styleName="commonLinkButton"/>
 			</s:HGroup>
 		</s:VGroup>
 	</s:BorderContainer>

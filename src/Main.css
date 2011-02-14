@@ -83,6 +83,16 @@ s|TextInput{
 	fontWeight: bold;
 }
 
+.commonLinkButton{
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	colorOver:#2d89a4;
+	colorDown:#2d89a4;
+	color:#666666;
+	underlineOver:true;
+	underlineDown:false;
+}
+
 .blueLinkButton{
 	rollOverColor: #268caa;
 	selectionColor: #268caa;

@@ -70,5 +70,11 @@ package business
 			var pendingCall:AsyncToken = service.retrieveUserVideos();
 			pendingCall.addResponder(responder);
 		}
+		
+		public function deleteSelectedVideos(selectedVideos:Array):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.deleteSelectedVideos(selectedVideos);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

@@ -11,17 +11,31 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
-
+			
 			import model.DataModel;
-
+			
+			import modules.main.VideoPaginator;
+			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.utils.StringUtil;
+			
+			import view.common.CustomAlert;
+			
+			import vo.UserVO;
 
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
+			
+			private var currentPageUserVideos:uint = 1;
 
 			[Bindable]
 			private var userVideoList:ArrayCollection;
+			
+			private var itemsToDelete:Array = new Array();
 
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
@@ -30,6 +44,7 @@
 
 			private function retrieveVideos():void
 			{
+				currentPageUserVideos = 1;
 				new UserEvent(UserEvent.RETRIEVE_USER_VIDEOS).dispatch();
 			}
 
@@ -37,17 +52,70 @@
 			{
 				var dataProvider:ArrayCollection=dataModel.userVideoList;
 				userVideoList=dataProvider;
-				userVideoTable.rowCount=userVideoList.length;
+				createPagination(userVideoTable, userVideoList, currentPageUserVideos, paginationUserVideos, navigateToUserVideoPage);
+				
+			}
+			
+			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
+			{
+				VideoPaginator.createPaginationMenu(dataProvider.length, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
+				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
+			}
+			
+			public function refreshDataProvider(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint):void
+			{
+				var current:int=currentPageIndicator - 1;
+				var pageSize:int=dataModel.pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				targetDatagrid.rowCount=dataTemp.length;
+				targetDatagrid.dataProvider=dataTemp;
+			}
+			
+			private function navigateToUserVideoPage(event:MouseEvent):void
+			{
+				currentPageUserVideos=int((event.target as Button).id);
+				createPagination(userVideoTable, userVideoList, currentPageUserVideos, paginationUserVideos, navigateToUserVideoPage);
 			}
 
 			protected function deleteSelectedVideos_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+			
+				for(var i:int =0; i<userVideoList.length;i++){
+					if(userVideoList[i].itemSelected == true){
+						itemsToDelete.push(userVideoList[i]);
+					}
+				}
+			
+				CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteVideosConfirmation, Alert.NO);
+			}
+
+			private function deleteVideosConfirmation(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES)
+					deleteSelectedVideosConfirmed();
+			}
+
+			private function deleteSelectedVideosConfirmed():void
+			{
+				new UserEvent(UserEvent.DELETE_SELECTED_VIDEOS,itemsToDelete).dispatch();
+			}
+			
+			private function set selectedVideosDeleted(value:Boolean):void{
+				if(dataModel.selectedVideosDeleted){
+					itemsToDelete = new Array();
+					retrieveVideos();
+					dataModel.selectedVideosDeleted = false;
+				}
 			}
 
 			public function resetComponent():void
 			{
 
+			}
+			
+			public function set onTabChange(value:Boolean):void{
+				currentPageUserVideos = 1;
+				itemsToDelete = new Array();
 			}
 
 
@@ -60,6 +128,9 @@
 
 	<fx:Binding source="{dataModel.userVideoListRetrieved}"
 				destination="userVideoListRetrieved"/>
+	
+	<fx:Binding source="{dataModel.selectedVideosDeleted}"
+				destination="selectedVideosDeleted"/>
 
 	<s:Label id="myVideosTitle"
 			 text="{resourceManager.getString('myResources','MY_VIDEOS')}"
@@ -75,24 +146,36 @@
 			 paddingBottom="10"/>
 
 
-	<s:HGroup id="controlBar"
-			  width="100%"
-			  verticalAlign="middle">
+	<s:BorderContainer id="controlBar"
+					   width="100%"
+					   minHeight="0"
+					   backgroundAlpha="0.5"
+					   styleName="roundedBorderGreyBox">
+
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle"
+								paddingBottom="8"
+								paddingLeft="8"
+								paddingRight="8"
+								paddingTop="8"/>
+		</s:layout>
+
 		<s:Button id="deleteSelectedVideos"
 				  click="deleteSelectedVideos_clickHandler(event)"
 				  label="{resourceManager.getString('myResources','DELETE')}"/>
 		<s:Label id="videoCount"
-				 text="Z videos"/>
+				 text="{userVideoList.length > 1 ? StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_MANY'),userVideoList.length) : StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_SINGLE'),userVideoList.length)}"/>
 		<mx:VRule height="20"/>
 		<s:Label text="{resourceManager.getString('myResources','SORT_BY')+':'}"/>
 		<s:DropDownList id="sortOptions"/>
-		<s:HGroup width="100%" horizontalAlign="right">
+		<s:HGroup width="100%"
+				  horizontalAlign="right">
 			<s:TextInput id="searchMyVideos"/>
 			<s:Button id="searchButton"
 					  click="searchButton_clickHandler(event)"
 					  label="{resourceManager.getString('myResources','SEARCH')}"/>
 		</s:HGroup>
-	</s:HGroup>
+	</s:BorderContainer>
 
 	<!--
 
@@ -112,12 +195,20 @@
 				 horizontalScrollPolicy="off"
 				 verticalScrollPolicy="off"
 				 headerHeight="0"
-				 variableRowHeight="true"
-				 borderVisible="false">
+				 horizontalGridLines="true"
+				 horizontalGridLineColor="0xaaaaaa"
+				 contentBackgroundAlpha="0.0"
+				 alternatingItemColors="{[]}"
+				 selectable="false"
+				 variableRowHeight="true">
 		<mx:columns>
 
-			<mx:DataGridColumn itemRenderer="modules.userManagement.UserVideoItemRenderer"/>
+			<mx:DataGridColumn itemRenderer="modules.userManagement.UserVideoItemRenderer" />
 		</mx:columns>
 	</mx:DataGrid>
+	<s:HGroup id="paginationUserVideos"
+			  width="100%"
+			  horizontalAlign="center"
+			  gap="2"/>
 
 </s:VGroup>

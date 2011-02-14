@@ -220,6 +220,31 @@ class UserDAO {
 
 		return $searchResults;
 	}
+	
+	public function deleteSelectedVideos($selectedVideos){
+		try {
+			$verifySession = new SessionHandler(true);
+			
+			$names = '';
+			
+			if(count($selectedVideos) > 0){
+				foreach($selectedVideos as $selectedVideo){
+					$names .= " '" . $selectedVideo->name . "',";
+				}
+				unset($selectedVideo);
+				$names = substr($names,0,-1);
+			
+				$sql = "UPDATE exercise SET status='Unavailable' WHERE fk_user_id=%d AND name IN (%s) ";
+				
+				$updateData = $this->conn->_execute($sql, $_SESSION['uid'], $names);
+				
+				return $updateData ? true : false;
+			}
+			
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage());
+		}	
+	}
 
 	private function _getPositivesToNextLevel(){
 		$result = $this->conn->_execute(func_get_args());
