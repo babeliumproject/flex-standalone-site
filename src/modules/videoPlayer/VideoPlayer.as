@@ -737,14 +737,14 @@ package modules.videoPlayer
 			trace("Requested to play another video");
 			//trace(e.currentTarget);
 
-			if (_ns)
-			{
+			//if (_ns)
+			//{
 				playVideo();
 				_ppBtn.State=PlayButton.PAUSE_STATE;
 
 				if (!autoPlay)
 					pauseVideo();
-			}
+			//}
 		}
 
 		/**
