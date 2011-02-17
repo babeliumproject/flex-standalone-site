@@ -250,6 +250,27 @@ class UserDAO {
 			throw new Exception($e->getMessage());
 		}	
 	}
+	
+	public function modifyVideoData($videoData){
+		try{
+			$verifySession = new SessionHandler(true);
+			
+			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s' 
+					WHERE ( name='%s' AND fk_user_id=%d )";
+			
+			$updateData = $this->conn->_execute($sql, $videoData->title, $videoData->description, $videoData->tags, $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
+			
+			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
+			
+			$insertData = $this->conn->_execute($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
+			
+			return $updateData && $insertData ? true : false;
+			
+			
+		} catch (Exception $e){
+			throw new Exception ($e->getMessage());
+		}
+	}
 
 	private function _getPositivesToNextLevel(){
 		$result = $this->conn->_execute(func_get_args());

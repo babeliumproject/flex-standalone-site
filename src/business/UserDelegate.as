@@ -9,6 +9,7 @@ package business
 	import mx.rpc.remoting.RemoteObject;
 	
 	import vo.ChangePassVO;
+	import vo.ExerciseVO;
 	import vo.LoginVO;
 	import vo.UserVO;
 	
@@ -74,6 +75,12 @@ package business
 		public function deleteSelectedVideos(selectedVideos:Array):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
 			var pendingCall:AsyncToken = service.deleteSelectedVideos(selectedVideos);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function modifyVideoData(videoData:ExerciseVO):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
+			var pendingCall:AsyncToken = service.modifyVideoData(videoData);
 			pendingCall.addResponder(responder);
 		}
 	}

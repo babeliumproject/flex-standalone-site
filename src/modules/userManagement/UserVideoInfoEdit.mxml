@@ -34,17 +34,21 @@
 						 width="100%"
 						 styleName="boldLabel"
 						 required="true">
-				<mx:TextArea width="100%"
-							 id="videoDescription"
-							 maxChars="500"/>
+				<s:TextArea width="100%"
+							id="videoDescription"
+							maxChars="500"
+							fontWeight="normal"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 						 width="100%"
 						 styleName="boldLabel"
 						 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
 						 required="true">
-				<mx:TextArea width="100%"
-							 id="videoTags"/>
+				<s:TextArea width="100%"
+							heightInLines="3"
+							id="videoTags"
+							maxChars="255"
+							fontWeight="normal"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
 						 styleName="boldLabel"
@@ -157,7 +161,7 @@
 
 			public function resetComponent():void
 			{
-				
+
 				VP.endVideo();
 
 				//Reset the combobox components
@@ -185,7 +189,7 @@
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
-				
+
 			}
 
 
@@ -246,7 +250,6 @@
 				var validUrl:Boolean=true;
 				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text))
 				{
-					red5VideoData=new ExerciseVO();
 					red5VideoData.title=videoTitle.text;
 					red5VideoData.description=videoDescription.text;
 					red5VideoData.tags=parseTags(videoTags.text);
@@ -258,7 +261,7 @@
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 
-						//new UserEvent(MODIFY_VIDEO_DATA,red5VideoData).dispatch();
+					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, red5VideoData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
@@ -281,22 +284,35 @@
 				videoTitle.text=red5VideoData.title;
 				videoDescription.text=red5VideoData.description;
 				videoTags.text=red5VideoData.tags;
+				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(red5VideoData.language);
+				licenseSelector.dataProvider = licenseSelector.licenses;
 				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(red5VideoData.license);
 				referenceUrl.text=red5VideoData.reference;
 				difficultySelector.selectedIndex=red5VideoData.avgDifficulty - 1;
-				
+
 				VP.stopVideo();
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
-				VP.controlsEnabled = true;
+				VP.controlsEnabled=true;
 				VP.videoSource=EXERCISE_FOLDER + '/' + red5VideoData.name;
-				
+			}
+
+			private function set videoDataModified(value:Boolean):void
+			{
+				if (DataModel.getInstance().videoDataModified == true)
+				{
+					CustomAlert.info(resourceManager.getString('myResources', 'VIDEO_DATA_SUCCESSFULLY_MODIFIED'));
+					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					DataModel.getInstance().videoDataModified=false;
+				}
 			}
 		]]>
 	</fx:Script>
 
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
+	<fx:Binding source="{DataModel.getInstance().videoDataModified}"
+				destination="videoDataModified"/>
 
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
