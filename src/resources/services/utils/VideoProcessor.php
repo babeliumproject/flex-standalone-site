@@ -12,10 +12,13 @@ class VideoProcessor{
 	private $frameWidth16_9;
 	private $frameHeight;
 
+	private $mediaObject;
+
 	private $conn;
 
 	public function VideoProcessor(){
 		$settings = new Config();
+		$this->mediaObject = new stdclass();
 
 		$this->uploadsPath = $settings->filePath;
 		$this->imagePath = $settings->imagePath;
@@ -25,6 +28,73 @@ class VideoProcessor{
 		$this->frameWidth16_9 = $settings->frameWidth16_9;
 		$this->frameHeight = $settings->frameHeight;
 
+	}
+
+	public function retrieveMediaInfo($filePath = '/opt/red5_r4176/webapps/oflaDemo/streams/exercises/mzgVmrokCM7.flv'){
+		$cleanPath = escapeshellcmd($filePath);
+		if(is_file($cleanPath) && filesize($cleanPath)>0){
+			$output = (exec("ffmpeg -i $cleanPath 2>&1",$cmd));
+			$strCmd = implode($cmd);
+			if($this->isMediaFile($strCmd)){
+				$this->checkAudio($strCmd);
+				$this->checkVideo($strCmd);
+				var_dump($this->mediaObject);
+			} else {
+				throw new Exception("Unknown media format");
+			}
+		} else {
+			throw new Exception("Not a file");
+		}
+	}
+
+	public function isMediaFile($ffmpegOutput){
+		$pos = strpos($ffmpegOutput, 'Unknown format');
+		if ($pos === false) {
+    		return true;
+		} else {
+		 	return false;
+		}
+	}
+
+	public function checkAudio($ffmpegOutput){
+		if(preg_match('/Audio: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+))/s', $ffmpegOutput, $audioinfo)){
+			$this->mediaObject->hasAudio = true;
+			$this->mediaObject->audioCodec = trim($audioinfo[2]);
+			$this->mediaObject->audioRate = trim($audioinfo[3]);
+			$this->mediaObject->audioChannels = trim($audioinfo[4]);
+			$this->mediaObject->audioBits = trim($audioinfo[5]);
+			$this->mediaObject->audioBitrate = trim($audioinfo[6]);
+			if($this->mediaObject->audioCodec == 'aac' && $this->mediaObject->audioChannels == '5.1'){
+				//Non-transcodable audio
+			}
+		} else {
+			$this->$mediaObject->hasAudio = false;
+		}
+	}
+
+	public function checkVideo($ffmpegOutput){
+		if(preg_match('/Video: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+))/s', $ffmpegOutput, $result)){
+			$this->mediaObject->hasVideo = true;
+			$this->mediaObject->videoCodec = trim($result[2]);
+			$this->mediaObject->videoColorspace = trim($result[3]);
+			$this->mediaObject->videoResolution = trim($result[4]);
+			$resolution = explode("x",$this->mediaObject->videoResolution);
+			$this->mediaObject->videoWidth = $resolution[0];
+			$this->mediaObject->videoHeight = $resolution[1];
+			$this->mediaObject->videoFpsBitrate = trim($result[5]);
+			$this->mediaObject->videoTbr = trim($result[6]);
+			$this->mediaObject->videoTbn = trim($result[7]);
+			$this->mediaObject->videoTbc = trim($result[8]);
+		} else {
+			$this->mediaObject->hasVideo = false;
+		}
+	}
+
+
+	public function checkMimeType($filePath){
+		//$mimetype = system("file -bi " . $path);
+		//$mimecode = split($mime, ";");
+		return true;
 	}
 
 	public function calculateVideoDuration($filePath){
@@ -39,19 +109,8 @@ class VideoProcessor{
 		}
 		return $total;
 	}
-	
-	public function isVideoFile($filePath){
-		if(is_file($filePath) && filesize($filePath)>0){
-			$output = (exec("ffmpeg -i $filePath 2>&1",$cmd));
-			return strpos($output, 'Unknown format') ? true : false;
-		}
-	}
-	
-	public function checkMimeType($filePath){
-		//$mimetype = system("file -bi " . $path);
-		//$mimecode = split($mime, ";");
-		return true;
-	}
+
+
 
 	public function takeRandomSnapshot($videoFilePath, $videoFileName, $outputImagePath, $outputImageFileName){
 
@@ -70,18 +129,8 @@ class VideoProcessor{
 		$resultsnap = (exec("ffmpeg -y -i $videoPath -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
 		return $resultsnap;
 	}
-	
-	public function checkAudio(){
-		if(preg_match('/Audio: ((\s+),(\s+),(\s+),(\s+),(\s+))', implode($cmd), $audioinfo)){
-			$codec = $audioinfo[0];
-			$rate = $audioinfo[1];
-			$channels = $audioinfo[2];
-			$bits = $audioinfo[3];
-			$bitrate = $audioinfo[4];
-			if($codec == 'aac' && $channels == '5.1')
-				//Not valid audio
-		}
-	}
+
+
 
 	public function deleteVideoFile($filePath) {
 		if(is_file($filePath) && filesize($filePath)>0){

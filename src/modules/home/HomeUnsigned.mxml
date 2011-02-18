@@ -199,12 +199,14 @@
 			<videoPlayer:VideoPlayerBabelia id="howToConfigureYourDevicesVideo"
 											skin="white"
 											seek="true"
+											autoPlay="false"
 											subtitles="true"
 											autoScale="false"
 											arrows="false"
 											width="400"
 											height="250"
-											streamSource="{streamSource}"/>
+											streamSource="{streamSource}"
+											controlsEnabled="false"/>
 			<s:Label id="howToPracticeLanguage"
 					 text="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
 					 styleName="exerciseTitleLabel"
@@ -212,12 +214,14 @@
 			<videoPlayer:VideoPlayerBabelia id="howToPracticeLanguageVideo"
 											skin="white"
 											seek="true"
+											autoPlay="false"
 											subtitles="true"
 											autoScale="false"
 											arrows="false"
 											width="400"
 											height="250"
-											streamSource="{streamSource}"/>
+											streamSource="{streamSource}"
+											controlsEnabled="false"/>
 		</s:VGroup>
 
 
@@ -228,12 +232,14 @@
 			<videoPlayer:VideoPlayerBabelia id="howToAssessOtherUsersVideo"
 											skin="white"
 											seek="true"
+											autoPlay="false"
 											subtitles="true"
 											autoScale="false"
 											arrows="false"
 											width="400"
 											height="250"
-											streamSource="{streamSource}"/>
+											streamSource="{streamSource}"
+											controlsEnabled="false"/>
 
 			<s:Label id="howToSubtitle"
 					 text="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
@@ -242,12 +248,14 @@
 			<videoPlayer:VideoPlayerBabelia id="howToSubtitleVideo"
 											skin="white"
 											seek="true"
+											autoPlay="false"
 											subtitles="true"
 											autoScale="false"
 											arrows="false"
 											width="400"
 											height="250"
-											streamSource="{streamSource}"/>
+											streamSource="{streamSource}"
+											controlsEnabled="false"/>
 		</s:VGroup>
 	</s:HGroup>
 
