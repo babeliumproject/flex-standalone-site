@@ -4,6 +4,7 @@ require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
 require_once 'utils/SessionHandler.php';
 require_once 'utils/EmailAddressValidator.php';
+require_once 'utils/Mailer.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/ExerciseVO.php';
 
@@ -311,11 +312,9 @@ class UserDAO {
 		$user = "";
 		$realName = "";
 
-		require_once('Mailer.php');
-
 		$aux = "name";
 		if ( Mailer::checkEmail($username) )
-		$aux = "email";
+			$aux = "email";
 
 		// Username or email checking
 		$sql = "SELECT id, name, email, realName FROM users WHERE $aux = '%s'";
@@ -330,32 +329,43 @@ class UserDAO {
 			$realName = $row[3];
 		}
 
-		if ( $realName == '' || $realName == 'unknown' ) $realName = $user;
+		if ( $realName == '' || $realName == 'unknown' ) 
+			$realName = $user;
 
 		// User dont exists
-		if ( $id == -1 ) return "Unregistered user";
+		if ( $id == -1 ) 
+			return "Unregistered user";
 
 		$newPassword = $this->_createNewPassword();
+		
+		$this->conn->_startTransaction();
 
 		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
 		$result = $this->conn->_execute($sql, sha1($newPassword), $id);
+		
+		if($this->conn->_affectedRows() == 1){
 
+			$args = array(
+							'REAL_NAME' => $realName,
+							'USERNAME' => $user,
+							'PASSWORD' => $newPassword,
+							'SIGNATURE' => 'The Babelium Project Team');
 
-		$args = array(
-						'REAL_NAME' => $realName,
-						'USERNAME' => $user,
-						'PASSWORD' => $newPassword,
-						'SIGNATURE' => 'The Babelium Project Team');
+			$mail = new Mailer($email);
 
-		$mail = new Mailer($email);
+			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) return null;
 
-		if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) return null;
+			$subject = "Your password has been reseted";
 
-		$subject = "Your password has been reseted";
+			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
+			
+			$this->conn->_endTransaction();
 
-		$mail->send($mail->txtContent, $subject, $mail->htmlContent);
-
-		return "Done";
+			return "Done";
+		} else {
+			$this->conn->_failedTransaction();
+			throw new Exception("Error while restoring user password");
+		}
 	}
 
 	// Returns an array of Users
