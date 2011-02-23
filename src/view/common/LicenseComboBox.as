@@ -74,5 +74,16 @@ package view.common
 			this.selectedItem = oldSelectedItem;
 		}
 		
+		public function getLicenseAndIconGivenCode(code:String):Object{
+			var licenseAndIcon:Object = null;
+			for each(var licence:Object in licenses){
+				if(licence.code == code.toUpperCase()){
+					licenseAndIcon = licence;
+					break;
+				}
+			}
+			return licenseAndIcon;
+		}
+		
 	}
 }
