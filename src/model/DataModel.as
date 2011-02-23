@@ -83,6 +83,7 @@ package model
 		[Bindable] public var userVideoListRetrieved:Boolean = false;
 		[Bindable] public var userVideoList:ArrayCollection = new ArrayCollection();
 		[Bindable] public var selectedVideosDeleted:Boolean = false;
+		[Bindable] public var videoDataModified:Boolean = false;
 		
 		//Pass recovery
 		[Bindable] public var passRecoveryDone:Boolean;

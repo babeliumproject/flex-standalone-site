@@ -38,8 +38,10 @@
 						creditHistoryContainer.resetComponent();
 						topCollaborators.resetComponent();
 						userProfile.resetComponent();
+						userVideos.resetComponent();
 						break;
 				}
+				userVideos.videoEditPanel.resetComponent();
 			}
 		]]>
 	</fx:Script>

@@ -2,112 +2,182 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:common="view.common.*">
+		  xmlns:common="view.common.*"
+		  xmlns:skins="skins.*"
+		  width="100%"
+		  creationComplete="completeHandler(event)"
+		  xmlns:videoPlayer="modules.videoPlayer.*">
 
-	<mx:Form width="100%"
-			 styleName="roundedBlueBorderBox">
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
-					 width="100%"
-					 styleName="boldLabel"
-					 required="true">
-			<s:TextInput width="100%"
-						 id="videoTitle"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
-					 width="100%"
-					 styleName="boldLabel"
-					 required="true">
-			<mx:TextArea width="100%"
-						 id="videoDescription"
-						 maxChars="500"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
-					 width="100%"
-					 styleName="boldLabel"
-					 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
-					 required="true">
-			<mx:TextArea width="100%"
-						 id="videoTags"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
-					 styleName="boldLabel"
-					 required="true">
-			<common:DifficultyLevelComboBox id="difficultySelector"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
-					 styleName="boldLabel"
-					 required="true">
-			<common:LanguageComboBox id="languageSelector"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
-					 styleName="boldLabel"
-					 required="true">
-			<common:LicenseComboBox id="licenseSelector"/>
-		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
-					 styleName="boldLabel"
-					 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
-					 width="100%">
-			<s:TextInput width="100%"
-						 id="referenceUrl"/>
-		</mx:FormItem>
 
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
-					 styleName="boldLabel"
-					 visible="{DataModel.getInstance().loggedUser.isAdmin}"
-					 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
-					 height="67">
-			<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
-						id="autoevaluateCheckbox"/>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
-						 styleName="boldLabel">
-				<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
+	<s:Label id="editVideoTitle"
+			 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
+			 styleName="sectionTitleLabel"/>
+	<s:Line width="{editVideoTitle.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{editVideoTitle.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+
+	<s:HGroup width="100%">
+
+		<mx:Form width="100%"
+				 styleName="roundedBlueBorderBox">
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
+						 width="100%"
+						 styleName="boldLabel"
+						 required="true">
+				<s:TextInput width="100%"
+							 id="videoTitle"/>
 			</mx:FormItem>
-		</mx:FormItem>
-	</mx:Form>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
+						 width="100%"
+						 styleName="boldLabel"
+						 required="true">
+				<s:TextArea width="100%"
+							id="videoDescription"
+							maxChars="500"
+							fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
+						 width="100%"
+						 styleName="boldLabel"
+						 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
+						 required="true">
+				<s:TextArea width="100%"
+							heightInLines="3"
+							id="videoTags"
+							maxChars="255"
+							fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
+						 styleName="boldLabel"
+						 required="true">
+				<common:DifficultyLevelComboBox id="difficultySelector"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
+						 styleName="boldLabel"
+						 required="true">
+				<common:LanguageComboBox id="languageSelector"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
+						 styleName="boldLabel"
+						 required="true">
+				<common:LicenseComboBox id="licenseSelector"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
+						 styleName="boldLabel"
+						 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
+						 width="100%">
+				<s:TextInput width="100%"
+							 id="referenceUrl"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
+						 styleName="boldLabel"
+						 visible="{DataModel.getInstance().loggedUser.isAdmin}"
+						 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
+						 height="67">
+				<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
+							id="autoevaluateCheckbox"/>
+				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
+							 styleName="boldLabel">
+					<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
+				</mx:FormItem>
+			</mx:FormItem>
+		</mx:Form>
+
+		<videoPlayer:VideoPlayerBabelia id="VP"
+										layoutDirection="ltr"
+										autoPlay="false"
+										skin="white"
+										seek="true"
+										subtitles="false"
+										autoScale="false"
+										arrows="false"
+										subtitlingControls="false"
+										width="500"
+										height="{Math.floor(VP.width * 9 / 16)}"
+										streamSource="{_streamSource}"
+										controlsEnabled="false"/>
+
+
+	</s:HGroup>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<skins:IconButton id="saveButton"
+						  label="{resourceManager.getString('myResources','BUTTON_SAVE_NEWPASS')}"
+						  click="saveChangesClickHandler(event)"
+						  skinClass="skins.IconButtonSkin"
+						  icon="@Embed('/resources/images/save.png')"/>
+
+		<skins:IconButton id="cancelButton"
+						  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						  skinClass="skins.IconButtonSkin"
+						  icon="@Embed('/resources/images/cancel.png')"/>
+
+	</s:HGroup>
+
 
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
-			
+
+			import model.DataModel;
+			import model.LocalesAndFlags;
+
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.Validator;
+
 			import view.common.CustomAlert;
-			
+
 			import vo.ExerciseVO;
-			
+
+			[Bindable]
+			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
+
 			[Bindable]
 			public var formIsValid:Boolean=false;
-			
+
+			[Bindable]
+			private var red5VideoData:ExerciseVO;
+
+			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
+
 			// Holds a reference to the currently focussed 
 			// control on the form.
 			private var focussedFormControl:DisplayObject;
 
-			private function onComplete():void
+			private function completeHandler(event:FlexEvent):void
 			{
-				
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
-				
 			}
-			
-			
-			private function resetComponent():void
+
+			public function resetComponent():void
 			{
-				
+
+				VP.endVideo();
+
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
-				
+
 				//Reset the video form fields
 				videoTitle.removeEventListener(Event.CHANGE, validateForm);
 				videoDescription.removeEventListener(Event.CHANGE, validateForm);
 				videoTags.removeEventListener(Event.CHANGE, validateForm);
-				
+
 				titleValidator.enabled=false;
 				descriptionValidator.enabled=false;
 				tagValidator.enabled=false;
-				
+
 				videoTitle.text="";
 				videoDescription.text="";
 				videoTags.text="";
@@ -115,42 +185,43 @@
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
-				
+
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
+
 			}
-			
-			
+
+
 			private function validateForm(event:Event):void
 			{
 				focussedFormControl=event.target as DisplayObject;
-				
+
 				// Mark the form as valid to start with                
 				formIsValid=true;
-				
+
 				validate(titleValidator);
 				validate(descriptionValidator);
 				validate(tagValidator);
 				//validate(fileGridValidator);
 			}
-			
+
 			private function validate(validator:Validator):Boolean
 			{
-				
+
 				var validatorSource:DisplayObject=validator.source as DisplayObject;
-				
+
 				var suppressEvents:Boolean=(validatorSource != focussedFormControl);
-		
+
 				var event:ValidationResultEvent=validator.validate(null, suppressEvents);
-				
+
 				var currentControlIsValid:Boolean=(event.type == ValidationResultEvent.VALID);
-				
+
 				formIsValid=formIsValid && currentControlIsValid;
-				
+
 				return currentControlIsValid;
 			}
-			
+
 			private function checkExternalUrl(url:String):Boolean
 			{
 				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
@@ -161,45 +232,88 @@
 				}
 				return (true);
 			}
-			
+
 			private function parseTags(tags:String):String
 			{
 				return tags;
 			}
-			
+
 			private function fieldHasData(fieldText:String):Boolean
 			{
 				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				return (fieldData.length < 1) ? false : true;
 			}
-			
-			private function saveRecordedExercise():void
+
+			private function saveChangesClickHandler(event:MouseEvent):void
 			{
-				
+
 				var validUrl:Boolean=true;
 				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text))
 				{
-					red5VideoData=new ExerciseVO();
 					red5VideoData.title=videoTitle.text;
 					red5VideoData.description=videoDescription.text;
 					red5VideoData.tags=parseTags(videoTags.text);
 					red5VideoData.language=languageSelector.selectedItem.code;
-					
+
 					red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 					red5VideoData.reference=referenceUrl.text;
-					
+
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
-					
-					//new UserEvent(MODIFY_VIDEO_DATA,red5VideoData).dispatch();
+
+					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, red5VideoData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
 			}
-			
+
+			public function set cancelClickHandler(cancelFunction:Function):void
+			{
+				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
+			}
+
+			protected function set onTabChange(value:Boolean):void
+			{
+				VP.endVideo();
+				//resetComponent();
+			}
+
+			public function setInformation(data:ExerciseVO):void
+			{
+				red5VideoData=data;
+				videoTitle.text=red5VideoData.title;
+				videoDescription.text=red5VideoData.description;
+				videoTags.text=red5VideoData.tags;
+				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
+				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(red5VideoData.language);
+				licenseSelector.dataProvider = licenseSelector.licenses;
+				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(red5VideoData.license);
+				referenceUrl.text=red5VideoData.reference;
+				difficultySelector.selectedIndex=red5VideoData.avgDifficulty - 1;
+
+				VP.stopVideo();
+				VP.state=VideoPlayerBabelia.PLAY_STATE;
+				VP.controlsEnabled=true;
+				VP.videoSource=EXERCISE_FOLDER + '/' + red5VideoData.name;
+			}
+
+			private function set videoDataModified(value:Boolean):void
+			{
+				if (DataModel.getInstance().videoDataModified == true)
+				{
+					CustomAlert.info(resourceManager.getString('myResources', 'VIDEO_DATA_SUCCESSFULLY_MODIFIED'));
+					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					DataModel.getInstance().videoDataModified=false;
+				}
+			}
 		]]>
 	</fx:Script>
-	
+
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
+	<fx:Binding source="{DataModel.getInstance().videoDataModified}"
+				destination="videoDataModified"/>
+
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
 							source="{videoTitle}"
@@ -217,5 +331,5 @@
 							minLength="3"
 							maxLength="255"/>
 	</fx:Declarations>
-	
+
 </s:VGroup>

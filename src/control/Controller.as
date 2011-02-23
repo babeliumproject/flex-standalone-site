@@ -94,6 +94,7 @@ package control {
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
 			addCommand(UserEvent.RETRIEVE_USER_VIDEOS, RetrieveUserVideosCommand);
 			addCommand(UserEvent.DELETE_SELECTED_VIDEOS, DeleteSelectedVideosCommand);
+			addCommand(UserEvent.MODIFY_VIDEO_DATA, ModifyVideoDataCommand);
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
