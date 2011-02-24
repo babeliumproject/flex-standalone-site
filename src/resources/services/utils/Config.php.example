@@ -52,6 +52,9 @@
 
 		//Number of tags for the cloud of tags
 		public $numTags = 25;
+		
+		//Secret key used for webhook messages
+		public $project_secret_key = '';
 
 		
 		/*
