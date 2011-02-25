@@ -10,8 +10,7 @@
 		//Server path to store uploaded files
 		public $filePath = '';
 		public $imagePath = '';
-		public $red5Path = 'C:/Archivos de programa/Red5/webapps/oflaDemo/streams';
-		//public $red5Path = '/opt/red5_0_8/webapps/oflaDemo/streams';
+		public $red5Path = '/opt/red5/webapps/oflaDemo/streams';
 		
 		//Youtube authentication data
 		public $yt_user = '';
@@ -53,8 +52,11 @@
 		//Number of tags for the cloud of tags
 		public $numTags = 25;
 		
-		//Secret key used for webhook messages
+		//Secret key used for GoogleCode's webhooks' authentication
 		public $project_secret_key = '';
+		
+		//
+		public $logPath = '';
 
 		
 		/*
