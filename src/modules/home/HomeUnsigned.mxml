@@ -192,6 +192,9 @@
 			  paddingRight="16"
 			  paddingBottom="16"
 			  gap="32">
+		
+		<skins:IconButton styleName="paginationWhitBlueButton" label="1"/>
+		
 		<s:VGroup horizontalAlign="center">
 			<s:Label id="howToConfigureDevices"
 					 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"

@@ -46,6 +46,8 @@
 			
 			private var borderWeight:uint = 1;
 			private var borderGradientColors:Array = [0x000000, 0x000000];
+			
+			private var padding:uint = 16;
 
 			/**
 			 * @private
@@ -106,6 +108,16 @@
 					borderWeight = bw;
 					borderStroke.weight = borderWeight;
 				}
+				
+				var pas:uint = getStyle('padding');
+				if(pas && padding != pas){
+					padding = pas;
+				}
+				iconLabelGroupLayout.paddingBottom = padding;
+				iconLabelGroupLayout.paddingLeft = padding;
+				iconLabelGroupLayout.paddingRight = padding;
+				iconLabelGroupLayout.paddingTop = padding;
+				iconLabelGroupLayout.gap = padding;
 				
 				var bgc:Array = ArrayUtil.toArray(getStyle('borderColors'));
 				
@@ -260,8 +272,8 @@
 				right="0"
 				top="0"
 				bottom="0"
-				width="69"
-				height="20"
+				width="6"
+				height="6"
 				radiusX="2">
 			<s:stroke>
 				<s:LinearGradientStroke id="borderStroke"
@@ -279,18 +291,17 @@
 		<s:Group width="100%"
 				 height="100%">
 			<s:layout>
-				<s:VerticalLayout paddingBottom="16"
-								  paddingLeft="16"
-								  paddingRight="16"
-								  paddingTop="16"
-								  gap="16"
-								  horizontalAlign="center"/>
+				<s:VerticalLayout id="iconLabelGroupLayout"
+								  horizontalAlign="center"
+								  verticalAlign="middle"/>
 			</s:layout>
 
 			<s:BitmapImage id="iconImage" source="{hostComponent.getStyle('icon')}" includeInLayout="false"/>
 			<!-- layer 8: text -->
 			<!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
 			<s:Label id="labelDisplay"
+					 color.over="{hostComponent.getStyle('colorOver')}"
+					 color.down="{hostComponent.getStyle('colorDown')}"
 					 fontWeight="{hostComponent.getStyle('fontWeight')}"
 					 textAlign="center"
 					 verticalAlign="middle"

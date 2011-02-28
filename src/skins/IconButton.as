@@ -26,6 +26,8 @@ package skins
 	[Style(name="underlineOver", type="Boolean")]
 	
 	[Style(name="underlineDown", type="Boolean")]
+	
+	[Style(name="padding", type="uint", format="Length")]
 
 	public class IconButton extends Button
 	{

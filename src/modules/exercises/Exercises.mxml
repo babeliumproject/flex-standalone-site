@@ -19,10 +19,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -30,18 +30,18 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -91,7 +91,6 @@
 			/**
 			 * Options menus
 			 **/
-			private var _recordingEndOptions:RecordingEndOptions;
 			private var _evaluationRequest:EvaluationRequest;
 
 			/**
@@ -120,6 +119,7 @@
 			{
 				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				setupVideoPlayer();
+				setupResponseOptions();
 				hideSelectedExercise();
 			}
 
@@ -134,6 +134,13 @@
 				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
 				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied);
 				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied);
+			}
+			
+			private function setupResponseOptions():void{
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onAbortRecording);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
 			}
 
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
@@ -239,13 +246,8 @@
 			{
 				var cached:Boolean=_cueManager.setVideo(_exerciseId);
 
-				// TODO: if ( cached ) // Cuepoints are cached, only need to setup commands
-				// TODO:	setupPlayCommands();
-				// TODO: else // Need to get cuepoints for this video manually
-				//{ 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
-				//}	
+				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);	
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -394,42 +396,29 @@
 			 **/
 			private function onStartRecordingClicked(e:MouseEvent):void
 			{
-				if (!DataModel.getInstance().recordingExercise)
-				{
-					// Commands with selected role
-					_selectedRole=availableRoles.selectedItem.toString();
-					setupRecordingCommands();
+				panelSelectedExercise.includeInLayout=false;
+				panelSelectedExercise.visible=false;
+				recordingEndOptions.includeInLayout=true;
+				recordingEndOptions.visible=true;
 
-					// Recording mode
-					if (micOnly.selected)
-						VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
-					else
-						VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
+				// Commands with selected role
+				_selectedRole=availableRoles.selectedItem.toString();
+				setupRecordingCommands();
 
-					// Prepare arrows
-					showArrows();
-
-					// Disable events and tabs
-					DataModel.getInstance().recordingExercise=true;
-
-					//Save statistical data
-					statisticRecAttempt();
-
-
-
-				}
+				// Recording mode
+				if (micOnly.selected)
+					VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
 				else
-				{
-					abortRecordingClicked(null);
-				}
-			}
+					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
 
-			private function abortRecordingClicked(e:MouseEvent):void
-			{
-				recordingError();
-				prepareExercise();
-				resetCueManager();
+				// Prepare arrows
+				showArrows();
 
+				// Disable events and tabs
+				DataModel.getInstance().recordingExercise=true;
+
+				//Save statistical data
+				statisticRecAttempt();
 			}
 
 			private function statisticRecAttempt():void
@@ -454,19 +443,18 @@
 			 **/
 			private function onRecordingEnd(e:RecordingEvent):void
 			{
-
-				// Store response's filename
+				// Store last recorded response's filename
 				_recordedFilename=e.fileName;
+				
+				DataModel.getInstance().recordingExercise = false;
 
-				// Remove arrows
-				hideArrows();
-				VP.state=VideoPlayerBabelia.PLAY_STATE;
-
-				// Show menu options
-				showEndOptions();
-
-				// on replay end
-				VP.addEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
+				// Set the videoplayer to playback both the exercise and the last response.
+				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
+				
+				VP.seek=false;
+				VP.stopVideo();
 			}
 
 			/**
@@ -503,6 +491,11 @@
 				VP.unattachUserDevices();
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				
+				recordingEndOptions.includeInLayout=false;
+				recordingEndOptions.visible=false;
+				panelSelectedExercise.visible=true;
+				panelSelectedExercise.includeInLayout=true;
 
 			}
 
@@ -525,23 +518,6 @@
 			}
 
 			/**
-			 * Show recording end menu
-			 **/
-			private function showEndOptions():void
-			{
-				_recordingEndOptions=RecordingEndOptions(PopUpManager.createPopUp(parent, RecordingEndOptions, true));
-				_recordingEndOptions.title=resourceManager.getString('myResources', 'TITLE_AVAILABLE_ACTIONS');
-				PopUpManager.centerPopUp(_recordingEndOptions);
-
-				// Add Listeners
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_RESPONSE, onWatchResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onDiscardResponse);
-				_recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
-			}
-
-			/**
 			 * On tab change - reset selected video and stop streaming
 			 **/
 			private function set onTabChange(value:Boolean):void
@@ -558,8 +534,6 @@
 
 				VP.arrows=false; // Hide arrows
 
-				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
-
 				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				_currentExercise=null; // Reset current exercise
 
@@ -574,26 +548,15 @@
 				ratingShareReport.exerciseData=null;
 			}
 
-
-			/**
-			 * Recording end options
-			 **/
-			private function onReplayEnd(e:Event):void
-			{
-				showEndOptions();
-			}
-
 			// Watch both
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
 				showArrows();
 				setupRecordingCommands();
-				DataModel.getInstance().recordingExercise=false;
 
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
-				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;
 			}
@@ -603,11 +566,9 @@
 			{
 				showArrows();
 				setupReplayCommands();
-				DataModel.getInstance().recordingExercise=false;
 
 				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
-				PopUpManager.removePopUp(_recordingEndOptions);
 
 				VP.seek=false;
 			}
@@ -616,7 +577,6 @@
 			private function onRecordAgain(e:Event):void
 			{
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.removeEventListener(RecordingEvent.REPLAY_END, onReplayEnd);
 				setupRecordingCommands();
 				showArrows();
 				DataModel.getInstance().recordingExercise=true;
@@ -627,18 +587,15 @@
 				else
 					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
 
-				PopUpManager.removePopUp(_recordingEndOptions);
-
 				//Save this new record attempt
 				statisticRecAttempt();
 			}
-
-			// On discard response
-			private function onDiscardResponse(e:Event):void
+			
+			private function onAbortRecording(e:Event):void
 			{
-				DataModel.getInstance().recordingExercise=false;
-				PopUpManager.removePopUp(_recordingEndOptions);
-				resetComponent();
+				recordingError();
+				prepareExercise();
+				resetCueManager();	
 			}
 
 			// Save response
@@ -657,12 +614,14 @@
 					//Third, save response				
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 
-					// Close options
-					PopUpManager.removePopUp(_recordingEndOptions);
 					//showEvaluationRequest();
+					
+					recordingEndOptions.includeInLayout = false;
+					recordingEndOptions.visible = false;
+					panelSelectedExercise.includeInLayout = true;
+					panelSelectedExercise.visible = true;
+					
 
-					// End record mode
-					DataModel.getInstance().recordingExercise=false;
 					resetComponent();
 				}
 				else
@@ -779,6 +738,8 @@
 					guestEditWarningBox.visible=true;
 					panelSelectedExercise.includeInLayout=false;
 					panelSelectedExercise.visible=false;
+					recordingEndOptions.visible=false;
+					recordingEndOptions.includeInLayout=false;
 				}
 				else
 				{
@@ -786,6 +747,8 @@
 					guestEditWarningBox.visible=false;
 					panelSelectedExercise.includeInLayout=true;
 					panelSelectedExercise.visible=true;
+					recordingEndOptions.visible=false;
+					recordingEndOptions.includeInLayout=false;
 				}
 			}
 		]]>
@@ -884,7 +847,7 @@
 		<s:BorderContainer id="panelSelectedExercise"
 						   includeInLayout="false"
 						   visible="false"
-						   width="100%"
+						   width="400"
 						   backgroundAlpha="0"
 						   cornerRadius="8">
 			<s:layout>
@@ -949,10 +912,15 @@
 			</s:HGroup>
 
 		</s:BorderContainer>
+		<exercises:RecordingEndOptions id="recordingEndOptions"
+									   includeInLayout="false"
+									   visible="false"
+									   width="400"/>
 
 	</s:HGroup>
 
-	<s:VGroup width="100%" horizontalAlign="left">
+	<s:VGroup width="100%"
+			  horizontalAlign="left">
 		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
 				 styleName="sectionTitleLabel"
 				 id="exerciseListTitleLabel"/>
@@ -963,7 +931,7 @@
 			</s:stroke>
 		</s:Line>
 	</s:VGroup>
-	
+
 	<!-- Video List -->
 	<exercises:VideoList width="100%"
 						 id="exerciseList"/>

@@ -30,6 +30,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Image;
 	import mx.controls.Text;
 	import mx.core.Application;
 	import mx.core.FlexGlobals;
@@ -39,6 +40,8 @@ package modules.videoPlayer
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
+	
+	import spark.primitives.BitmapImage;
 	
 	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
@@ -132,6 +135,8 @@ package modules.videoPlayer
 		private var _cuePointTimer:Timer;
 		
 		public static const SUBTILE_INSERT_DELAY:Number = 0.5;
+		
+		private var _micImage:Image;
 
 
 		/**
@@ -172,6 +177,16 @@ package modules.videoPlayer
 
 			_camVideo=new Video();
 			_camVideo.visible=false;
+			
+			_micImage = new Image();
+			
+			_micImage.source = DataModel.getInstance().uploadDomain+"resources/images/mic-watermark.png";
+			_micImage.height = 128;
+			_micImage.width = 128;
+			_micImage.alpha = 0.7;
+			_micImage.autoLoad = true;
+			_micImage.visible = false;
+			
 
 //			_subtitlingControls=new UIComponent();
 //			_subtitlingText=new Text();
@@ -207,7 +222,10 @@ package modules.videoPlayer
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
 			addChild(_videoBarPanel);
+		
+			addChild(_micImage);
 			addChild(_camVideo);
+	
 			addChild(_countdownTxt);
 			//addChild(_subtitlingControls);
 			addChild(_subtitlePanel);
@@ -840,7 +858,8 @@ package modules.videoPlayer
 					break;
 
 				case PLAY_BOTH_STATE:
-
+					_micActivityBar.visible=false;
+					this.updateDisplayList(0,0);
 					//splitVideoPanel();
 					break;
 
@@ -849,6 +868,7 @@ package modules.videoPlayer
 					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
 					_camVideo.visible=false;
+					_micImage.visible=false;
 
 					this.updateDisplayList(0, 0);
 
@@ -881,8 +901,10 @@ package modules.videoPlayer
 				_countdownTxt.visible=false;
 				_video.visible=true;
 
-				if (state == RECORD_BOTH_STATE)
+				if (state == RECORD_BOTH_STATE){
 					_camVideo.visible=true;
+					_micImage.visible=true;
+				}
 
 				// Reset countdown timer
 				_countdownTxt.text="5";
@@ -936,6 +958,7 @@ package modules.videoPlayer
 			//DataModel.getInstance().microphone.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 
 			_video.visible=false;
+			_micImage.visible=false;
 			_countdownTxt.visible=true;
 
 			prepareRecording();
@@ -991,6 +1014,7 @@ package modules.videoPlayer
 
 				splitVideoPanel();
 				_camVideo.visible=false;
+				_micImage.visible=false;
 			}
 
 			if (state & RECORD_FLAG)
@@ -1105,6 +1129,7 @@ package modules.videoPlayer
 			scaleVideo();
 
 			_camVideo.visible=false;
+			_micImage.visible=false;
 			_micActivityBar.visible=false;
 
 			//trace("The video panel recovered its original size");
@@ -1131,6 +1156,10 @@ package modules.videoPlayer
 			_camVideo.height-=2;
 			_camVideo.x+=1;
 			_camVideo.width-=2;
+			
+			_micImage.y = (_videoHeight - _micImage.height)/2;
+			_micImage.x = _videoWidth - _micImage.width - (_camVideo.width - _micImage.width)/2;
+			
 		}
 
 		override protected function scaleVideo():void
@@ -1174,6 +1203,7 @@ package modules.videoPlayer
 				_camVideo.attachNetStream(null);
 				_camVideo.clear();
 				_camVideo.visible=false;
+				_micImage.visible=false;
 			}
 		}
 
@@ -1240,6 +1270,7 @@ package modules.videoPlayer
 				_inNs.client=nsClient;
 				_camVideo.attachNetStream(_inNs);
 				_camVideo.visible=true;
+				_micImage.visible=true;
 
 				_inNs.play(_secondStreamSource);
 
