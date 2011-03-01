@@ -10,17 +10,18 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Text;
 			import mx.utils.ObjectUtil;
-
+			
 			import skins.IconButtonVerticalSkin;
-
+			import skins.StepTabBarSkin;
+			
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -35,6 +36,14 @@
 			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
 			private var slideTimer:Timer;
+			
+			[Bindable]
+			public var STATE_ARRAY:Array = [
+				{label:"Alabama", data:"Montgomery"},
+				{label:"Alaska", data:"Juneau"},
+				{label:"Arkansas", data:"LittleRock"}
+			];
+
 
 			protected function onComplete():void
 			{
@@ -153,6 +162,10 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
+		
+		<skins:StepTabBar styleName="paginationWhiteBlueButton" dataProvider="{appDescriptionViewStack}"/>
+		
+		
 		<s:HGroup id="descriptionPaginationUnsigned"
 				  paddingLeft="16"
 				  paddingRight="16"/>
@@ -194,6 +207,9 @@
 			  gap="32">
 		
 		<skins:IconButton styleName="paginationWhitBlueButton" label="1"/>
+		
+		
+		
 		
 		<s:VGroup horizontalAlign="center">
 			<s:Label id="howToConfigureDevices"

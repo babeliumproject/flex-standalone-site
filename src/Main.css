@@ -498,8 +498,8 @@ s|TextInput{
 	skinClass: ClassReference('skins.ActionButtonSkin');
 }
 
-.paginationWhitBlueButton{
-	skinClass: ClassReference('skins.IconButtonVerticalSkin');
+.paginationWhiteBlueButton{
+	skinClass: ClassReference('skins.StepTabBarSkin');
 	cornerRadius: 4;
 	fontSize: 11;
 	fontWeight: bold;
@@ -510,7 +510,7 @@ s|TextInput{
 	gradientColorsOver: #F0F0F0, #E3DEDF;
 	gradientColorsDown: #31b5de, #207791;
 	borderColors: #FFFFFF;
-	borderWeight: 1;	
+	borderSize: 1;	
 	padding: 4;
 }
 
