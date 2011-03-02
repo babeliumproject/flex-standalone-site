@@ -10,18 +10,19 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Text;
+			import mx.events.IndexChangedEvent;
 			import mx.utils.ObjectUtil;
-			
+
 			import skins.IconButtonVerticalSkin;
 			import skins.StepTabBarSkin;
-			
+
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -36,14 +37,6 @@
 			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
 			private var slideTimer:Timer;
-			
-			[Bindable]
-			public var STATE_ARRAY:Array = [
-				{label:"Alabama", data:"Montgomery"},
-				{label:"Alaska", data:"Juneau"},
-				{label:"Arkansas", data:"LittleRock"}
-			];
-
 
 			protected function onComplete():void
 			{
@@ -87,6 +80,7 @@
 						var navc:NavigatorContent=new NavigatorContent();
 						navc.addElement(new StaticUnsignedMotd());
 						appDescriptionViewStack.addChild(navc);
+						navc.label = appDescriptionViewStack.numChildren.toString();
 					}
 				}
 
@@ -97,11 +91,12 @@
 				var navcs:NavigatorContent=new NavigatorContent();
 				navcs.addElement(new StaticUnsignedMotd());
 				appDescriptionViewStack.addChild(navcs);
-				for each (var messageData:Object in messageArray)
+				for (var i:uint=0; i < messageArray.length; i++)
 				{
 					var navc:NavigatorContent=new NavigatorContent();
-					navc.addElement(generateMessageBox(messageData));
+					navc.addElement(generateMessageBox(messageArray[i]));
 					appDescriptionViewStack.addChild(navc);
+					navc.label = appDescriptionViewStack.numChildren.toString();
 				}
 				selectedIndex=0;
 				slideTimer.start();
@@ -144,6 +139,13 @@
 			{
 				getUnsignedMessagesOfTheDay();
 			}
+
+
+			protected function steptabbar1_clickHandler(event:MouseEvent):void
+			{
+				slideTimer.reset();
+				slideTimer.start();
+			}
 		]]>
 	</fx:Script>
 
@@ -162,10 +164,14 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		
-		<skins:StepTabBar styleName="paginationWhiteBlueButton" dataProvider="{appDescriptionViewStack}"/>
-		
-		
+
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<skins:StepTabBar styleName="paginationWhiteBlueButton"
+							  dataProvider="{appDescriptionViewStack}"
+							  click="steptabbar1_clickHandler(event)"/>
+		</s:HGroup>
+
 		<s:HGroup id="descriptionPaginationUnsigned"
 				  paddingLeft="16"
 				  paddingRight="16"/>
@@ -205,12 +211,7 @@
 			  paddingRight="16"
 			  paddingBottom="16"
 			  gap="32">
-		
-		<skins:IconButton styleName="paginationWhitBlueButton" label="1"/>
-		
-		
-		
-		
+
 		<s:VGroup horizontalAlign="center">
 			<s:Label id="howToConfigureDevices"
 					 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"

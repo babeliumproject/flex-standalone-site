@@ -506,12 +506,13 @@ s|TextInput{
 	color: #31b5de;
 	colorOver: #31b5de;
 	colorDown: #F9F9F9;
-	gradientColors: #F9F9F9, #F0F0F0;
-	gradientColorsOver: #F0F0F0, #E3DEDF;
-	gradientColorsDown: #31b5de, #207791;
-	borderColors: #FFFFFF;
-	borderSize: 1;	
-	padding: 4;
+	gradientColors: #FFFFFF, #F9F9F9;
+	gradientColorsSelectedUp: #31b5de, #207791;
+	gradientColorsSelectedOver: #31b5de, #1c6980;
+	gradientColorsDown: #1c6980, #165365;
+	borderColors: #FFFFFF, #FFFFFF;
+	borderSize: 2;	
+	tabGap: 4;
 }
 
 .sectionInfoBox{
