@@ -10,6 +10,8 @@
 		<![CDATA[
 			import events.ViewChangeEvent;
 			
+			import flash.net.navigateToURL;
+			
 			protected function footerFAQ_clickHandler(event:MouseEvent):void
 			{
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
@@ -18,6 +20,10 @@
 			protected function footerAboutUs_clickHandler(event:MouseEvent):void
 			{
 				new ViewChangeEvent(ViewChangeEvent.VIEW_ABOUT_MODULE).dispatch();
+			}
+			
+			protected function footerDevelopers_clickHandler(event:MouseEvent):void{
+				navigateToURL(new URLRequest('http://code.google.com/p/babeliumproject/'), '_blank');
 			}
 
 
@@ -28,7 +34,7 @@
 
 			protected function footerCopyleft_clickHandler(event:MouseEvent):void
 			{
-				navigateToURL(new URLRequest('http://www.gnu.org/licenses/gpl-2.0.html'), '_blank');
+				navigateToURL(new URLRequest('http://www.gnu.org/licenses/gpl.html'), '_blank');
 			}
 		]]>
 	</fx:Script>
@@ -75,13 +81,18 @@
 									  click="footerAboutUs_clickHandler(event)"
 									  styleName="footerLinkButton"/>
 					<s:Label text="|"/>
+					<skins:IconButton id="footerDevelopers"
+									  label="{resourceManager.getString('myResources','DEVELOPERS')}"
+									  click="footerDevelopers_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
 					<skins:IconButton id="footerTermsOfUse"
 									  label="{resourceManager.getString('myResources','TERMS_OF_USE')}"
 									  click="footerTermsOfUse_clickHandler(event)"
 									  styleName="footerLinkButton"/>
 					<s:Label text="|"/>
 					<skins:IconButton id="footerCopyleft"
-									  label="Copyleft 2010 Babelium"
+									  label="Copyleft 2011 Babelium"
 									  click="footerCopyleft_clickHandler(event)"
 									  styleName="footerLinkButton"/>
 				</s:HGroup>

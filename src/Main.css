@@ -94,12 +94,15 @@ s|TextInput{
 }
 
 .blueLinkButton{
-	rollOverColor: #268caa;
-	selectionColor: #268caa;
-	color: #268caa;
-	textRollOverColor: #f9f9f9;
-	textSelectedColor: #f9f9f9;
+	skinClass:ClassReference("skins.IconLinkSkin");
+	fontWeight:bold;
+	color:#2d89a4;
+	colorOver:#666666;
+	colorDown:#666666;
+	underlineOver:true;
+	underlineDown:false;
 }
+
 
 .yellowLinkButton{
 	skinClass:ClassReference("skins.IconLinkSkin");

@@ -247,6 +247,7 @@
 			 horizontalCenter="0"
 			 verticalCenter="1"
 			 color.over="{hostComponent.getStyle('colorOver')}"
+			 color.selectedStates="{hostComponent.getStyle('colorDown')}"
 			 color.down="{hostComponent.getStyle('colorDown')}"
 			 fontWeight="{hostComponent.getStyle('fontWeight')}"
 			 left="10"

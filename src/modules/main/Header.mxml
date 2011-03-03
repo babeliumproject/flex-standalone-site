@@ -40,6 +40,10 @@
 							  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
 							  click="helpFAQ_clickHandler(event)"
 							  toolTip="{resourceManager.getString('myResources','HELP_FAQ')}"/>
+			<skins:IconButton id="blogButton"
+							  styleName="blueLinkButton"
+							  label="{resourceManager.getString('myResources','BLOG')}"
+							  click="blogButton_clickHandler(event)"/>
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"
@@ -107,16 +111,18 @@
 		<![CDATA[
 			import events.LoginEvent;
 			import events.ViewChangeEvent;
-
+			
+			import flash.net.navigateToURL;
+			
 			import model.DataModel;
-
+			
 			import modules.userManagement.LoginRestorePassForm;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import spark.effects.Animate;
 			import spark.effects.animation.MotionPath;
 			import spark.effects.animation.RepeatBehavior;
@@ -221,6 +227,10 @@
 			public function helpFAQ_clickHandler(event:MouseEvent):void
 			{
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
+			}
+			
+			public function blogButton_clickHandler(event:MouseEvent):void{
+				navigateToURL(new URLRequest('http://blog.babeliumproject.com'), '_blank');
 			}
 
 			private function onAccountActivation(flag:Boolean):void

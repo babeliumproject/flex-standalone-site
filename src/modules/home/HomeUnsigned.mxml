@@ -91,6 +91,7 @@
 				var navcs:NavigatorContent=new NavigatorContent();
 				navcs.addElement(new StaticUnsignedMotd());
 				appDescriptionViewStack.addChild(navcs);
+				navcs.label = appDescriptionViewStack.numChildren.toString();
 				for (var i:uint=0; i < messageArray.length; i++)
 				{
 					var navc:NavigatorContent=new NavigatorContent();
