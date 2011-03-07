@@ -10,19 +10,19 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Text;
 			import mx.events.IndexChangedEvent;
 			import mx.utils.ObjectUtil;
-
+			
 			import skins.IconButtonVerticalSkin;
 			import skins.StepTabBarSkin;
-
+			
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -37,6 +37,8 @@
 			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
 			private var slideTimer:Timer;
+			
+			private var staticMotd:StaticUnsignedMotd;
 
 			protected function onComplete():void
 			{
@@ -78,9 +80,10 @@
 					else
 					{
 						var navc:NavigatorContent=new NavigatorContent();
-						navc.addElement(new StaticUnsignedMotd());
+						staticMotd = new StaticUnsignedMotd();
+						navc.addElement(staticMotd);
 						appDescriptionViewStack.addChild(navc);
-						navc.label = appDescriptionViewStack.numChildren.toString();
+						navc.label=appDescriptionViewStack.numChildren.toString();
 					}
 				}
 
@@ -89,15 +92,16 @@
 			protected function addMessagesToContainer():void
 			{
 				var navcs:NavigatorContent=new NavigatorContent();
-				navcs.addElement(new StaticUnsignedMotd());
+				staticMotd = new StaticUnsignedMotd();
+				navcs.addElement(staticMotd);
 				appDescriptionViewStack.addChild(navcs);
-				navcs.label = appDescriptionViewStack.numChildren.toString();
+				navcs.label=appDescriptionViewStack.numChildren.toString();
 				for (var i:uint=0; i < messageArray.length; i++)
 				{
 					var navc:NavigatorContent=new NavigatorContent();
 					navc.addElement(generateMessageBox(messageArray[i]));
 					appDescriptionViewStack.addChild(navc);
-					navc.label = appDescriptionViewStack.numChildren.toString();
+					navc.label=appDescriptionViewStack.numChildren.toString();
 				}
 				selectedIndex=0;
 				slideTimer.start();
@@ -142,11 +146,43 @@
 			}
 
 
-			protected function steptabbar1_clickHandler(event:MouseEvent):void
+			protected function steptabbar_clickHandler(event:MouseEvent):void
 			{
 				slideTimer.reset();
 				slideTimer.start();
 			}
+
+			protected function howToVideosVS_changeHandler(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+				switch (newIndex)
+				{
+					case howToVideosVS.getChildIndex(howToConfDevNavContent):
+						howToVideoPlayer.videoSource="";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_CONFIGURE_YOUR_DEVICES');
+						break;
+					case howToVideosVS.getChildIndex(howToPractLangNavContent):
+						howToVideoPlayer.videoSource="record";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_PRACTICE_A_LANGUAGE');
+						break;
+					case howToVideosVS.getChildIndex(howToAssessUsersNavContent):
+						howToVideoPlayer.videoSource="evaluate";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_ASSESS_OTHER_USERS_WORK');
+						break;
+					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
+						howToVideoPlayer.videoSource="";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
+						break;
+					default:
+						break;
+				}
+			}
+			
+			private function set onTabChange(value:Boolean):void{
+				howToVideoPlayer.stopVideo();
+				staticMotd.staticUnsignedMotdVp.stopVideo();
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -155,6 +191,8 @@
 
 	<fx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="onLanguageChanged"/>
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
 
 
 	<s:BorderContainer id="unsignedMotdBox"
@@ -170,7 +208,7 @@
 				  horizontalAlign="center">
 			<skins:StepTabBar styleName="paginationWhiteBlueButton"
 							  dataProvider="{appDescriptionViewStack}"
-							  click="steptabbar1_clickHandler(event)"/>
+							  click="steptabbar_clickHandler(event)"/>
 		</s:HGroup>
 
 		<s:HGroup id="descriptionPaginationUnsigned"
@@ -205,79 +243,56 @@
 		</s:VGroup>
 	</s:HGroup>
 
-	<s:HGroup width="100%"
+	<s:VGroup width="100%"
 			  horizontalAlign="center"
 			  paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16"
-			  paddingBottom="16"
-			  gap="32">
-
-		<s:VGroup horizontalAlign="center">
-			<s:Label id="howToConfigureDevices"
-					 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
-					 styleName="exerciseTitleLabel"/>
-			<videoPlayer:VideoPlayerBabelia id="howToConfigureYourDevicesVideo"
-											skin="white"
-											seek="true"
-											autoPlay="false"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											width="400"
-											height="250"
-											streamSource="{streamSource}"
-											controlsEnabled="false"/>
-			<s:Label id="howToPracticeLanguage"
-					 text="{resourceManager.getString('myResources','HOW_TO_PRACTICE_A_LANGUAGE')}"
-					 styleName="exerciseTitleLabel"
-					 paddingTop="16"/>
-			<videoPlayer:VideoPlayerBabelia id="howToPracticeLanguageVideo"
-											skin="white"
-											seek="true"
-											autoPlay="false"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											width="400"
-											height="250"
-											streamSource="{streamSource}"
-											controlsEnabled="false"/>
-		</s:VGroup>
+			  paddingBottom="16">
 
 
-		<s:VGroup horizontalAlign="center">
-			<s:Label id="howToAssessOtherUsers"
-					 text="{resourceManager.getString('myResources','HOW_ASSESS_OTHER_USERS_WORK')}"
-					 styleName="exerciseTitleLabel"/>
-			<videoPlayer:VideoPlayerBabelia id="howToAssessOtherUsersVideo"
-											skin="white"
-											seek="true"
-											autoPlay="false"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											width="400"
-											height="250"
-											streamSource="{streamSource}"
-											controlsEnabled="false"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center"
+				  paddingBottom="16">
+			<skins:StepTabBar styleName="paginationWhiteBlueButton"
+							  dataProvider="{howToVideosVS}"/>
+		</s:HGroup>
 
-			<s:Label id="howToSubtitle"
-					 text="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
-					 styleName="exerciseTitleLabel"
-					 paddingTop="16"/>
-			<videoPlayer:VideoPlayerBabelia id="howToSubtitleVideo"
-											skin="white"
-											seek="true"
-											autoPlay="false"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											width="400"
-											height="250"
-											streamSource="{streamSource}"
-											controlsEnabled="false"/>
-		</s:VGroup>
-	</s:HGroup>
+		<mx:ViewStack id="howToVideosVS"
+					  change="howToVideosVS_changeHandler(event)">
+			<s:NavigatorContent id="howToConfDevNavContent"
+								label="1">
+			</s:NavigatorContent>
+
+			<s:NavigatorContent id="howToPractLangNavContent"
+								label="2">
+			</s:NavigatorContent>
+
+			<s:NavigatorContent id="howToAssessUsersNavContent"
+								label="3">
+			</s:NavigatorContent>
+
+			<s:NavigatorContent id="howToSubtitleNavContent"
+								label="4">
+			</s:NavigatorContent>
+		</mx:ViewStack>
+
+		<s:Label id="howToVideoLabel"
+				 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
+				 styleName="exerciseTitleLabel"/>
+		<videoPlayer:VideoPlayerBabelia id="howToVideoPlayer"
+										skin="white"
+										seek="true"
+										autoPlay="false"
+										subtitles="true"
+										autoScale="false"
+										arrows="false"
+										width="800"
+										height="{Math.floor(howToVideoPlayer.width * 9 / 16)}"
+										streamSource="{streamSource}"
+										controlsEnabled="false"/>
+
+
+	</s:VGroup>
 
 </s:VGroup>
