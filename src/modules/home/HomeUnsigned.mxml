@@ -158,7 +158,7 @@
 				switch (newIndex)
 				{
 					case howToVideosVS.getChildIndex(howToConfDevNavContent):
-						howToVideoPlayer.videoSource="";
+						howToVideoPlayer.videoSource="config";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_CONFIGURE_YOUR_DEVICES');
 						break;
 					case howToVideosVS.getChildIndex(howToPractLangNavContent):
@@ -170,7 +170,7 @@
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_ASSESS_OTHER_USERS_WORK');
 						break;
 					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
-						howToVideoPlayer.videoSource="";
+						howToVideoPlayer.videoSource="subtitle";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
 						break;
 					default:
@@ -283,7 +283,7 @@
 		<videoPlayer:VideoPlayerBabelia id="howToVideoPlayer"
 										skin="white"
 										seek="true"
-										autoPlay="false"
+										autoPlay="true"
 										subtitles="true"
 										autoScale="false"
 										arrows="false"
