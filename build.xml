@@ -3,7 +3,7 @@
 
 	<property file="build.properties" />
 	<path id="project.classpath">
-		<fileset dir="${tools.dir}">
+		<fileset dir="${FLEX_LIB}">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -20,7 +20,7 @@
 		</svn>
 	</target>
 	
-	<taskdef resource="flexTasks.tasks" classpath="${flexTasks.jar}" classpathref="project.classpath" />
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_ANT_LIB}" classpathref="project.classpath" />
 	
 	<target name="flex-deploy" depends="flex-compile,flex-copy-html-template,flex-generate-wrapper,flex-copy-video-player-skins"/>
 
@@ -79,7 +79,8 @@
 		</copy>
 	</target>
 	
-	<target name="app-deploy" depends="app-fix-domains,flex-deploy" >
+	<target name="app-deploy" depends="app-fix-domains,app-fill-config,flex-deploy" >
+		
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources" includes="**.*"/> 
 		</copy>
@@ -98,12 +99,37 @@
 		<chmod dir="${DEPLOY_DIR}/resources/uploads" perm="777"/>
 		<mkdir dir="${DEPLOY_DIR}/resources/searchIndexes"/>
 		<chmod dir="${DEPLOY_DIR}/resources/searchIndexes" perm="777"/>
+		<copy todir="${DEPLOY_DIR}/services">
+			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
+		</copy>
+		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services'\)"/>
+		
 	</target>
 	
 	<target name="app-fix-domains">
-		<replace file="${APP_ROOT}/service-config.xml" token='/${REPOSITORY_DOMAIN}' value="/${SERVER_DOMAIN}" />
-		<replace file="${APP_ROOT}/model/DataModel.as" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
-		<replace file="${APP_ROOT}/services/crossdomain.xml" token='"${REPOSITORY_DOMAIN}' value='"${SERVER_DOMAIN}' />
+		<replace file="${APP_ROOT}/service-config.xml" token='/babelia' value="/${WEB_DOMAIN}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"babelia' value='"${WEB_DOMAIN}' />
+		<replace file="${APP_ROOT}/resources/crossdomain.xml" token='"babelia' value='"${WEB_DOMAIN}' />
+	</target>
+	
+	<target name="app-fill-config">
+		<copy file="${APP_ROOT}/resources/services/utils/Config.php.example" tofile="${APP_ROOT}/resources/services/utils/Config.php" overwrite="true"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="host.+;" replace="host = '${sql.host}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${sql.user}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${sql.pass}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${sql.dbname}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${red5.path}/webapps/oflaDemo/streams';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_PASS}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameHeight.+;" replace="frameHeight = ${VIDEO_FRAME_HEIGHT};"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth16_9.+;" replace="frameWidth16_9 = ${VIDEO_FRAME_WIDTH_16_9};"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth4_3.+;" replace="frameWidth4_3 = ${VIDEO_FRAME_WIDTH_4_3};"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxDuration.+;" replace="maxDuration = ${VIDEO_MAX_DURATION};"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxSize.+;" replace="maxSize = ${VIDEO_MAX_SIZE};"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="project_secret_key.+;" replace="project_secret_key = '${GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="logPath.+;" replace="logPath = '${LOG_PATH}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>
 
 	<target name="LH_SyncDB" description="sync local de la BD">
