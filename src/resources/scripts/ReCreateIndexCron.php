@@ -5,7 +5,8 @@
  *  can search the latest exercises added to the database.
  */
 
-require_once 'SearchDAO.php';
+define('SERVICE_PATH', '/var/www/babelium/services');
+require_once SERVICE_PATH . '/SearchDAO.php';
 
 $searchCron = new SearchDAO();
 $searchCron->reCreateIndex();

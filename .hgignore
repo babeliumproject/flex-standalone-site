@@ -1,0 +1,7 @@
+
+syntax: regexp
+^build\.properties$
+syntax: regexp
+^src/resources/services/utils/Config\.php$
+syntax: regexp
+^dist$

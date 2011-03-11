@@ -50,7 +50,8 @@ function check_duration($path, $maxDuration){
 switch ($_REQUEST ['action']) {
 	
 	case "upload" :
-		include_once $_SERVER ['DOCUMENT_ROOT'] ."/amfphp/services/babelia/utils/Config.php";
+		define ('SERVICE_PATH', '/var/www/babelium/services/');
+		include_once dirname(__FILE__) . SERVICE_PATH ."utils/Config.php";
 
 		$settings = new Config();
 		

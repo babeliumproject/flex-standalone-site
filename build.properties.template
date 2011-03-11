@@ -1,21 +1,68 @@
-# ant script for Babelium Project
-# @author: Juanan Pereira
-# GPL (2011)
+# Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+#
+# Copyright (c) 2011 GHyM and by respective authors (see below).
+#	
+# This file is part of Babelium Project.
+#		
+# Babelium Project is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#	
+# Babelium Project is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#	
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dir.lib=/path/to/ant/lib
+
+# Ant properties file for Babelium Project
+# @author: Juanan Pereira, Inko Perurena
+
+#Flex build tool paths
 FLEX_HOME=/path/to/flex/4/sdk
+FLEX_ANT_LIB =	${FLEX_HOME}/ant/lib/flexTasks.jar
+FLEX_LIB = ${FLEX_HOME}/lib
  
 BASE=/path/to/flex/project
 APP_ROOT=${BASE}/src
 DEPLOY_DIR=${BASE}/bin-test
 APP_LIB=${BASE}/libs
 MXMLC_CUSTOM_CONFIG_FILE=build-config.xml
-REPOSITORY_DOMAIN=babelia
-SERVER_DOMAIN=your_domain
 
-#Flex build tool paths
-flexTasks.jar =	${FLEX_HOME}/ant/lib/flexTasks.jar
-tools.dir = ${FLEX_HOME}/lib
+WEB_DOMAIN=your_domain
+WEB_ROOT=your_web_root_path
+SERVICE_PATH=${WEB_DOMAIN}/your_services
+
+#Configuration file parameters
+SMTP_SERVER_PASS=mail_server_password
+SMTP_SERVER_USER=mail_account
+VIDEO_FRAME_HEIGHT=default_video_height
+VIDEO_FRAME_WIDTH_16_9=default_video_width_when_16/9
+VIDEO_FRAME_WIDTH_4_3=default_video_width_when_4/3
+VIDEO_MAX_DURATION=max_video_duration_in_seconds
+VIDEO_MAX_SIZE=max_video_size_in_MB
+GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY=project_hosting_webhook_hash_key
+LOG_PATH=your_log_folder_path
+SCRIPT_PATH=your_script_folder_path
+
+
+#Service data
+services.srcdir = /path/to/services/inside/flex/project
+services.dstdir = /path/to/webroot
+
+#Image resource data
+images.srcdir = ${APP_ROOT}/resources/images
+images.dstdir = ${DEPLOY_DIR}/resources/images
+
+#Red5 server data
+red5.path = /path/to/red5/instance
+
+#Video content data
+videos.dstdir = ${red5.path}/path/to/video/streaming/app
+videos.srcdir = /path/to/video/resources
 
 #Remote host data
 server.username=
@@ -46,18 +93,5 @@ sql.base   = /path/to/database/scripts
 sql.all   = /path/to/full/database/script/(non-incremental)
 sql.backup = /path/to/store/database/dump/backups
 
-#Service data
-services.srcdir = /path/to/services/inside/flex/project
-services.dstdir = /path/to/webroot
 
-#Image resource data
-images.srcdir = ${APP_ROOT}/resources/images
-images.dstdir = ${DEPLOY_DIR}/resources/images
-
-#Red5 server data
-red5.path = /path/to/red5/instance
-
-#Video content data
-videos.dstdir = ${red5.path}/path/to/video/streaming/app
-videos.srcdir = /path/to/video/resources
 

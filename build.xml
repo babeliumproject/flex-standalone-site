@@ -103,7 +103,17 @@
 			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
 		</copy>
 		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services'\)"/>
+		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services'\)"/>
 		
+	</target>
+	
+	<target name="cron-deploy">
+		<copy todir="${DEPLOY_DIR}/cron">
+			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
+		</copy>
+		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
+				<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
+		</replaceregexp>
 	</target>
 	
 	<target name="app-fix-domains">
