@@ -39,6 +39,9 @@
 			private var slideTimer:Timer;
 			
 			private var staticMotd:StaticUnsignedMotd;
+			
+			[Bindable]
+			private var howToVideoArray:ArrayCollection = new ArrayCollection(new Array('config','record','evaluate','subtitle'));
 
 			protected function onComplete():void
 			{
@@ -158,19 +161,19 @@
 				switch (newIndex)
 				{
 					case howToVideosVS.getChildIndex(howToConfDevNavContent):
-						howToVideoPlayer.videoSource="config";
+						//howToVideoPlayer.videoSource="config";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_CONFIGURE_YOUR_DEVICES');
 						break;
 					case howToVideosVS.getChildIndex(howToPractLangNavContent):
-						howToVideoPlayer.videoSource="record";
+						//howToVideoPlayer.videoSource="record";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_PRACTICE_A_LANGUAGE');
 						break;
 					case howToVideosVS.getChildIndex(howToAssessUsersNavContent):
-						howToVideoPlayer.videoSource="evaluate";
+						//howToVideoPlayer.videoSource="evaluate";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_ASSESS_OTHER_USERS_WORK');
 						break;
 					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
-						howToVideoPlayer.videoSource="subtitle";
+						//howToVideoPlayer.videoSource="subtitle";
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
 						break;
 					default:
@@ -180,6 +183,7 @@
 			
 			private function set onTabChange(value:Boolean):void{
 				howToVideoPlayer.stopVideo();
+				howToVideosVS.selectedIndex = 0;
 				staticMotd.staticUnsignedMotdVp.stopVideo();
 			}
 			
@@ -290,6 +294,7 @@
 										width="800"
 										height="{Math.floor(howToVideoPlayer.width * 9 / 16)}"
 										streamSource="{streamSource}"
+										videoSource="{howToVideoArray.getItemAt(howToVideosVS.selectedIndex)}"
 										controlsEnabled="false"/>
 
 

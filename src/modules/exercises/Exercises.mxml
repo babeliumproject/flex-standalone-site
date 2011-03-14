@@ -920,7 +920,10 @@
 	</s:HGroup>
 
 	<s:VGroup width="100%"
-			  horizontalAlign="left">
+			  horizontalAlign="left"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingTop="16">
 		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
 				 styleName="sectionTitleLabel"
 				 id="exerciseListTitleLabel"/>
@@ -934,6 +937,10 @@
 
 	<!-- Video List -->
 	<exercises:VideoList width="100%"
-						 id="exerciseList"/>
+						 id="exerciseList"
+						 paddingLeft="16"
+						 paddingRight="16"
+						 paddingTop="16"
+						 paddingBottom="16"/>
 
 </s:VGroup>
