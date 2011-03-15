@@ -369,9 +369,10 @@ class ExerciseDAO {
 				// The user is reporting an innapropriate exercise
 				$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date)
 				    VALUES ('%d', '%d', '%s', NOW() )";
-
-				return $this->conn->_insert($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
-
+				
+				$result = $this->conn->_insert($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
+				//$this->notifyExerciseReported($report);
+				return $result;
 			} else {
 				return 0;
 			}
@@ -379,6 +380,14 @@ class ExerciseDAO {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	private function notifyExerciseReported($report){
+			$mail = new Mailer();
+			$subject = 'Babelium Project: Exercise reported';
+			$text = sprintf("Exercise (id=%d) has been reported to be %s by the user (id=%d)", $report->exerciseId, $report->reason, $_SESSION['uid']);
+			return ($mail->send($text, $subject, null));
+	}
+	
 
 	public function addExerciseScore($score){
 		try {

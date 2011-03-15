@@ -140,6 +140,7 @@ package model
 		[Bindable] public var evaluationStreamsFolder:String="evaluations";
 		[Bindable] public var responseStreamsFolder:String="responses";
 		[Bindable] public var exerciseStreamsFolder:String="exercises";
+		[Bindable] public var configStreamsFolder:String="config";
 		
 		[Bindable] public var uploadURL:String = uploadDomain+"upload.php";
 		[Bindable] public var thumbURL:String = uploadDomain+"resources/images/thumbs";

@@ -80,15 +80,17 @@ class Mailer
 		$mail->setBodyText(utf8_decode($body));
 		if ( $htmlBody != null )
 			$mail->setBodyHtml($htmlBody);
-		$mail->setFrom($this->smtp_mail_setFromMail, $this->smtp_mail_setFromName);
+		$mail->setFrom($this->_settings->smtp_mail_setFromMail, $this->_settings->smtp_mail_setFromName);
 		$mail->addTo($this->_userMail, $this->_userRealName);
 		$mail->setSubject($subject);
 		
 		try {
 			$mail->send($transport);
 		} catch (Exception $e) {
+			error_log("[".date("d/m/Y H:i:s")."] Problem while sending notification mail to ". $this->_userMail . ":" . $e->getMessage() . "\n",3,$this->_settings->logPath.'/mail_smtp.log');
 			return false;
 		}
+		error_log("[".date("d/m/Y H:i:s")."] Notification mail successfully sent to ". $this->_userMail . "\n",3,$this->_settings->logPath.'/mail_smtp.log');
 		return true;
 	}
 

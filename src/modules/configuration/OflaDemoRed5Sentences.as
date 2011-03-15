@@ -18,6 +18,11 @@ package modules.configuration
 		public var play_ns:NetStream;
 		public var nc:NetConnection;
 		
+		public var audioFilename:String;
+		public var videoFilename:String;
+		
+		private const CONFIG_FOLDER:String=DataModel.getInstance().configStreamsFolder;
+		
 		public function OflaDemoRed5Sentences()
 		{
 			BindingUtils.bindSetter(netStatusHandler, DataModel.getInstance(), "netConnected");
@@ -52,19 +57,26 @@ package modules.configuration
 			play_ns.close();
 		}
 		
-		public function play(s:String):void{
-			if (s=='video'){
-				play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationVideo.flv");
-			}else{
-				play_ns.play(DataModel.getInstance().loggedUser.name + "ConfigurationAudio.flv");
-			}
+		public function play(mediaType:String):void{
+			if (mediaType=='video')
+				play_ns.play(videoFilename);
+			else
+				play_ns.play(audioFilename);
 		}
 		
-		public function publish(s:String):void{
-			if (s=='video'){
-				rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationVideo", 'record');
-			}else{
-				rec_ns.publish(DataModel.getInstance().loggedUser.name + "ConfigurationAudio", 'record');
+		public function publish(mediaType:String):void{
+			
+			var d:Date=new Date();
+			var fileName:String;
+			
+			if(mediaType == 'video') {
+				fileName = "conf-video-" + d.getTime().toString();
+				videoFilename=CONFIG_FOLDER + "/" + fileName;
+				rec_ns.publish(videoFilename, 'record');
+			} else {
+				fileName = "conf-audio-" + d.getTime().toString();
+				audioFilename=CONFIG_FOLDER + "/" + fileName;
+				rec_ns.publish(audioFilename, 'record');
 			}
 		}
 

@@ -344,7 +344,7 @@ class EvaluationDAO {
 		
 		//Update the priority of the pending assessments of this user
 		$pendingAssessmentsPriority = $this->_updatePendingAssessmentsPriority();
-		if($pendingAssessmentsPriority){
+		if(!$pendingAssessmentsPriority){
 			$this->conn->_failedTransaction();
 			throw  new Exception("Pending assessment priority update failed");
 		}
