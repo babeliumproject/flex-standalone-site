@@ -10,6 +10,7 @@ UPDATE evaluation SET score_overall = 2*score_overall, score_intonation = 2*scor
 UPDATE exercise_score SET suggested_score = 2*suggested_score WHERE true;
 
 INSERT INTO preferences (prefName, prefValue) VALUES ('web_domain', 'babelia');
+INSERT INTO preferences (prefName, prefValue) VALUES ('pageSize', '8');
 
 -- SVN control line. Must be added on each incremental script
 UPDATE `preferences` SET `prefValue` =  '$Revision: 707 $'  WHERE `preferences`.`prefName` = 'dbrevision';

@@ -29,12 +29,16 @@ package events {
 		public static const CHECK_AUTOEVALUATION_SUPPORT_RESPONSE:String = "checkAutoevaluationSupportResponse";
 		
 		public var evaluation:EvaluationVO;
-		public var responseId:int;
+		public var responseId:uint;
+		public var sortField:String;
+		public var pageNumber:uint;
 
-		public function EvaluationEvent(type:String, evaluation:EvaluationVO = null, responseId:int = 0) {
+		public function EvaluationEvent(type:String, evaluation:EvaluationVO = null, responseId:uint = 0, sortField:String = '', pageNumber:uint = 0) {
 			super(type);
 			this.evaluation = evaluation;
 			this.responseId = responseId;
+			this.sortField=sortField;
+			this.pageNumber=pageNumber;
 		}
 
 		override public function clone():Event {

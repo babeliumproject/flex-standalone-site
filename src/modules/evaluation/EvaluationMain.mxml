@@ -558,17 +558,17 @@
 				_currentPageAssessedToCurrentUser=1;
 
 				assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+				createPagination(waitingAssessmentDataGrid, dataModel.waitingForAssessmentCount, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
+				createPagination(assessedByCurrentUserDataGrid, dataModel.assessedByCurrentUserCount, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 				resetVideoPlayer();
 
 				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
 			}
 
-			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
+			public function createPagination(targetDatagrid:DataGrid, dataLength:uint, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
 			{
-				VideoPaginator.createPaginationMenu(dataProvider.length, DataModel.getInstance().pageSize, currentPageIndicator, DataModel.getInstance().numberOfPagesNav, paginationContainer, pageClickHandler);
+				VideoPaginator.createPaginationMenu(dataLength, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
 				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
 			}
 
@@ -885,7 +885,8 @@
 					</s:VGroup>
 					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_TO_USER_LIST')}"
 							 styleName="sectionTitleLabel"
-							 id="assessedToUserListTitleLabel"/>
+							 id="assessedToUserListTitleLabel"
+							 paddingTop="16"/>
 					<s:Line width="{assessedToUserListTitleLabel.width}">
 						<s:stroke>
 							<mx:SolidColorStroke weight="3"

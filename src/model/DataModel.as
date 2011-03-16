@@ -195,12 +195,15 @@ package model
 		[Bindable] public var evaluationChartData:ArrayCollection;
 		[Bindable] public var evaluationChartDataRetrieved:Boolean = false;
 		
+		[Bindable] public var waitingForAssessmentCount:uint;
 		[Bindable] public var waitingForAssessmentData:ArrayCollection;
 		[Bindable] public var waitingForAssessmentDataRetrieved:Boolean = false;
 		
+		[Bindable] public var assessedToCurrentUserCount:uint;
 		[Bindable] public var assessedToCurrentUserData:ArrayCollection;
 		[Bindable] public var assessedToCurrentUserDataRetrieved:Boolean = false;
 		
+		[Bindable] public var assessedByCurrentUserCount:uint;
 		[Bindable] public var assessedByCurrentUserData:ArrayCollection;
 		[Bindable] public var assessedByCurrentUserDataRetrieved:Boolean = false;
 		

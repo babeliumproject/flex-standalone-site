@@ -25,9 +25,9 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getResponsesAssessedToCurrentUser():void{
+		public function getResponsesAssessedToCurrentUser(sortField:String,pageNumber:uint):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
-			var pendingCall:AsyncToken=service.getResponsesAssessedToCurrentUser();
+			var pendingCall:AsyncToken=service.getResponsesAssessedToCurrentUser(sortField,pageNumber);
 			pendingCall.addResponder(responder);
 		}
 		

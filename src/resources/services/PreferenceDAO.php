@@ -32,6 +32,7 @@ class PreferenceDAO {
 
 	private function _listQuery($sql){
 		$searchResults = array();
+		$preferenceData = array();
 		$result = $this->conn->_execute($sql);
 
 		while ($row = $this->conn->_nextRow($result))
@@ -39,9 +40,10 @@ class PreferenceDAO {
 			$temp = new PreferenceVO();
 			$temp->prefName = $row[1];
 			$temp->prefValue = $row[2];
+			$preferenceData[$row[1]] = $row[2];
 			array_push($searchResults, $temp);
 		}
-
+		$_SESSION['preferenceData'] = $preferenceData;
 		return $searchResults;
 	}
 }

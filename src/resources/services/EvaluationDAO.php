@@ -91,23 +91,51 @@ class EvaluationDAO {
 		return $searchResults;
 	}
 
-	public function getResponsesAssessedToCurrentUser(){
+	public function getResponsesAssessedToCurrentUser($sortField, $page){
+		
+		$querySortField = 'last_date';
+		$queryLimitOffset = 0;
+		$hitCount = 0;
+		
+		$pageSize = $_SESSION['preferenceData']['pageSize'];
+		
+		//Available sorting fields
+		$sortFields = array('exercise_title', 'exercise_language', 'avg_exerciselevel', 'last_date', 'evaluation_count');
+		
+		if(in_array($sortField, $sortFields))
+			$querySortField = $sortField;
+		
+		//Check how many evaluated responses there are
+		$sql = "SELECT COUNT(DISTINCT R.id) FROM response R INNER JOIN evaluation E ON R.id = E.fk_response_id WHERE R.fk_user_id = %d";
+		$result = $this->conn->_execute( $sql, $_SESSION['uid']);
+		if($row = $this->conn->_nextRow ( $result ))
+			$hitCount = $row[0];
+		
+		if($page > 1)
+			$queryLimitOffset = ($page-1)*$pageSize - 1;
+		
 
-		$sql = "SELECT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id,
+		$sql = "SELECT A.file_identifier, A.id, A.rating_amount AS evaluation_count, A.character_name, A.fk_subtitle_id,
 		               A.adding_date, A.source, A.thumbnail_uri, A.duration,
-		               B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source,
+		               B.id, B.name, B.duration, B.language AS exercise_language, B.thumbnail_uri, B.title AS exercise_title, B.source,
 		               AVG(C.score_overall) AS avg_rating, AVG(C.score_intonation) AS avg_intonation, 
 		               AVG(score_fluency) AS avg_fluency, AVG(score_rhythm) avg_rhythm, AVG(score_spontaneity) AS avg_spontaneity,
-		               AVG(suggested_level) as avg_exerciselevel
+		               AVG(suggested_level) as avg_exerciselevel, MAX(C.adding_date) AS last_date
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
 					 LEFT OUTER JOIN exercise_level E ON B.id=E.fk_exercise_id
 				WHERE ( A.fk_user_id = '%d' ) 
-				GROUP BY A.id,B.id";
+				GROUP BY A.id,B.id 
+				ORDER BY %s 
+				LIMIT %d, %d";
 
-		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $_SESSION['uid'] );
+		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $_SESSION['uid'], $querySortField, $queryLimitOffset, $pageSize );
 
-		return $searchResults;
+		$result = new stdClass();
+		$result->hitCount = $hitCount;
+		$result->data = $searchResults;
+		
+		return $result;
 	}
 
 	private function _listAssessedToCurrentUserQuery() {
@@ -140,8 +168,8 @@ class EvaluationDAO {
 			$temp->fluencyScoreAverage = $row[18];
 			$temp->rhythmScoreAverage = $row[19];
 			$temp->spontaneityScoreAverage = $row[20];
-
 			$temp->exerciseAvgDifficulty = $row[21];
+			$temp->addingDate = $row[22];
 
 			array_push ( $searchResults, $temp );
 		}

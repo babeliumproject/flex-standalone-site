@@ -23,12 +23,15 @@ package commands.evaluation
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getResponsesAssessedToCurrentUser();
+			var sortField:String = (event as EvaluationEvent).sortField;
+			var pageNumber:uint = (event as EvaluationEvent).pageNumber;
+			new EvaluationDelegate(this).getResponsesAssessedToCurrentUser(sortField, pageNumber);
 		}
 		
 		public function result(data:Object):void
 		{
-			var result:Object=data.result;
+			var hitCount:uint = data.result.hitCount;
+			var result:Object=data.result.data;
 			var resultCollection:ArrayCollection;
 			
 			if (result is Array && (result as Array).length > 0 )
@@ -39,6 +42,7 @@ package commands.evaluation
 			} else {
 				dataModel.assessedToCurrentUserData = new ArrayCollection();
 			}
+			dataModel.assessedByCurrentUserCount = hitCount;
 			dataModel.assessedToCurrentUserDataRetrieved = !dataModel.assessedToCurrentUserDataRetrieved;
 		}
 		
