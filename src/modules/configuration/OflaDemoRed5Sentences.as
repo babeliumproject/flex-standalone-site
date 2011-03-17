@@ -2,7 +2,9 @@ package modules.configuration
 {
 	import events.StartConnectionEvent;
 	
+	import flash.errors.IOError;
 	import flash.events.AsyncErrorEvent;
+	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
@@ -42,14 +44,27 @@ package modules.configuration
 				rec_ns = new NetStream(nc);
 				play_ns = new NetStream(nc); 
 				rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+				rec_ns.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+				play_ns.addEventListener(IOErrorEvent.IO_ERROR,ioErrorHandler);
+				
+				var nsClient:Object=new Object();
+				nsClient.onMetaData=function():void{};
+				nsClient.onCuePoint=function():void{};
+				nsClient.onPlayStatus=function():void{};
+				play_ns.client = nsClient;
+				
 			} else {
 				//Streaming server connection = false;
 			}
 		}
+		
+		private function ioErrorHandler(e:IOErrorEvent):void{
+			//Avoid flash debugger error messages
+		}	
 			
 		private function asyncErrrorHandler(e:AsyncErrorEvent):void{
-			//Not used but avoids error display in flash debugger version
+			//Avoid flash debugger error messages
 		}
 		
 		public function closeNetStreamObjects():void{
@@ -58,10 +73,11 @@ package modules.configuration
 		}
 		
 		public function play(mediaType:String):void{
-			if (mediaType=='video')
-				play_ns.play(videoFilename);
-			else
-				play_ns.play(audioFilename);
+			if (mediaType=='video'){
+				play_ns.play(videoFilename+'.flv');
+			}else{
+				play_ns.play(audioFilename+'.flv');
+			}
 		}
 		
 		public function publish(mediaType:String):void{

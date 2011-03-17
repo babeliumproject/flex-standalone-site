@@ -23,9 +23,11 @@ mx|LinkButton{
 	fontWeight: normal;
 }
 
+/*
 mx|Alert{
 	buttonStyleName: bigBlueButton;
 }
+*/
 
 s|Label{
 	fontWeight: normal;

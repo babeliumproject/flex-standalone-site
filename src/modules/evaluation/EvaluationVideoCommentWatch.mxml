@@ -1,36 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:videoPlayer="modules.videoPlayer.*"
-						  xmlns:skins="skins.*"
-						  title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
-						  creationComplete="onComplete()">
-	
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:videoPlayer="modules.videoPlayer.*"
+						 xmlns:skins="skins.*"
+						 title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
+						 creationComplete="onComplete()">
+
 	<skins:layout>
-		<s:VerticalLayout   horizontalAlign="center"/>
+		<s:VerticalLayout horizontalAlign="center"
+						  verticalAlign="middle"
+						  paddingBottom="16"
+						  paddingLeft="16"
+						  paddingRight="16"
+						  paddingTop="16"/>
 	</skins:layout>
 
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.VideoPlayerEvent;
-			
+
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
-			
+
 			[Bindable]
 			private static var _commentSource:String='';
 
 			[Bindable]
 			private var _videoPlayerReady:Boolean=false;
-			
-			public function set videoSource(source:String):void{
-				VideoCommentVP.videoSource = source;
+
+			public function set videoSource(source:String):void
+			{
+				VideoCommentVP.videoSource=source;
 			}
 
 			private function onComplete():void
@@ -48,9 +54,9 @@
 			{
 				_videoPlayerReady=true;
 				VideoCommentVP.stopVideo();
-				VideoCommentVP.state = VideoPlayerBabelia.PLAY_STATE;
+				VideoCommentVP.state=VideoPlayerBabelia.PLAY_STATE;
 				VideoCommentVP.videoSource=_commentSource;
-				VideoCommentVP.controlsEnabled = true;
+				VideoCommentVP.controlsEnabled=true;
 			}
 
 			private function closeButtonClickHandler(event:Event):void
@@ -78,5 +84,6 @@
 	</s:VGroup>
 	<mx:Spacer width="20"/>
 	<s:Button click="closeButtonClickHandler(event)"
-			  buttonMode="true"/>
+			  buttonMode="true"
+			  label="{resourceManager.getString('myResources','BUTTON_CLOSE')}"/>
 </skins:CustomTitleWindow>

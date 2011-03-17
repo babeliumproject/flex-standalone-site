@@ -9,11 +9,13 @@
 	<fx:Script>
 		<![CDATA[
 			import com.hulstkamp.AhRatingComponentStarSkin;
-			
+
 			import model.DataModel;
-			
+
+			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
-			
+			import mx.utils.StringUtil;
+
 			import vo.EvaluationVO;
 
 			[Bindable]
@@ -37,7 +39,8 @@
 				textComment.text=_evaluationData.comment;
 				videoCommentThumbnail.source=getImageSource(_evaluationData);
 				this.label=_evaluationData.userName;
-				userEvaluationTitleLabel.text = resourceManager.getString('myResources','TITLE_USER_EVALUATION')+' '+_evaluationData.userName;
+				userEvaluationTitleLabel.text=StringUtil.substitute(resourceManager.getString('myResources', 'TITLE_USER_EVALUATION'), _evaluationData.userName);
+				evaluationDateLabel.text=_evaluationData.addingDate;
 			}
 
 			protected function videoCommentThumbnailClickHandler(event:MouseEvent):void
@@ -47,7 +50,7 @@
 					//Launch videoStop event
 					//todo
 
-					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
+					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, EvaluationVideoCommentWatch, true));
 					watchEvaluationVideoComment.videoSource=DataModel.getInstance().evaluationStreamsFolder + '/' + _evaluationData.evaluationVideoFileIdentifier;
 					PopUpManager.centerPopUp(watchEvaluationVideoComment);
 				}
@@ -55,13 +58,15 @@
 
 			public function getImageSource(temp:EvaluationVO):String
 			{
-				var url:String = '';
+				var url:String='';
 				if (temp.evaluationVideoThumbnailUri)
 				{
 					videoCommentThumbnail.includeInLayout=true;
 					videoCommentThumbnail.visible=true;
 					url=DataModel.getInstance().thumbURL + "/" + temp.evaluationVideoThumbnailUri;
-				} else {
+				}
+				else
+				{
 					videoCommentThumbnail.includeInLayout=false;
 					videoCommentThumbnail.visible=false;
 				}
@@ -78,15 +83,24 @@
 						  paddingTop="16"/>
 	</s:layout>
 	<s:Label id="userEvaluationTitleLabel"
-			 text="{resourceManager.getString('myResources','TITLE_USER_EVALUATION')}"
+			 text="{StringUtil.substitute(resourceManager.getString('myResources','TITLE_USER_EVALUATION'),_evaluationData.userName)}"
 			 styleName="sectionTitleLabel"/>
-	<s:HGroup width="100%" paddingTop="10">
+	<s:HGroup width="100%" verticalAlign="middle">
+		<!--
+		<s:Label text="{resourceManager.getString('myResources','EVALUATION_DATE')+':'}" styleName="bolLabel"/>
+		-->
+		<s:Label id="evaluationDateLabel" styleName="boldYellowLabel"/>
+	</s:HGroup>
+	
+	<s:HGroup width="100%"
+			  paddingTop="10">
 		<s:VGroup id="scoresGroup"
 				  width="50%">
 			<s:HGroup id="intonationGroup"
 					  verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
-						 width="270"/>
+						 width="270"
+						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="intonationScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
@@ -96,7 +110,8 @@
 			<s:HGroup id="fluencyGroup"
 					  verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
-						 width="270"/>
+						 width="270"
+						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="fluencyScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
@@ -106,7 +121,8 @@
 			<s:HGroup id="rhythmGroup"
 					  verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
-						 width="270"/>
+						 width="270"
+						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="rhythmScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
@@ -116,7 +132,8 @@
 			<s:HGroup id="spontaneityGroup"
 					  verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
-						 width="270"/>
+						 width="270"
+						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="spontaneityScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
@@ -126,7 +143,8 @@
 			<s:HGroup id="overallGroup"
 					  verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
-						 width="270"/>
+						 width="270"
+						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="overallScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
@@ -135,12 +153,14 @@
 			</s:HGroup>
 		</s:VGroup>
 		<s:VGroup width="50%">
-			<s:Label text="{resourceManager.getString('myResources', 'COMMENTS')}"/>
+			<s:Label text="{resourceManager.getString('myResources', 'COMMENTS')}"
+					 styleName="boldLabel"/>
 			<s:Label id="textComment"
 					 paddingLeft="20"
 					 width="400"
-					 text=""/>
-			<s:Label text="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"/>
+					 text="{resourceManager.getString('myResources','NO_COMMENT_AVAILABLE')}"/>
+			<s:Label text="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
+					 styleName="boldLabel"/>
 			<mx:Image id="videoCommentThumbnail"
 					  width="120"
 					  height="90"
@@ -153,7 +173,4 @@
 					  visible="true"/>
 		</s:VGroup>
 	</s:HGroup>
-
-
-
 </s:NavigatorContent>

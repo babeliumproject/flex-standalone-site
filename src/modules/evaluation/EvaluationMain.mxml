@@ -32,6 +32,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
@@ -359,7 +360,8 @@
 					_exerciseTitle=selectedItem.exerciseTitle;
 					_evaluationSelected=true;
 
-
+					//Scroll up to see the video
+					callLater(updateVerticalScroll);
 
 					//Retrieve the associated subtitles and prepare the videoplayer
 					prepareEvaluation();
@@ -416,22 +418,6 @@
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
-			}
-
-			private function assessmentDetailChangeHandler(event:Event):void
-			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				if (selectedItem.evaluationVideoFileIdentifier)
-				{
-					VP.pauseVideo();
-					_videoCommentName=selectedItem.evaluationVideoFileIdentifier;
-
-
-					//EvaluationVideoCommentWatch.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
-					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(this, EvaluationVideoCommentWatch, true));
-					watchEvaluationVideoComment.videoSource=EVALUATION_FOLDER + '/' + _videoCommentName;
-					PopUpManager.centerPopUp(watchEvaluationVideoComment);
-				}
 			}
 
 			private function set showAutoevalTab(val:Boolean):void
@@ -558,17 +544,17 @@
 				_currentPageAssessedToCurrentUser=1;
 
 				assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-				createPagination(waitingAssessmentDataGrid, dataModel.waitingForAssessmentCount, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-				createPagination(assessedByCurrentUserDataGrid, dataModel.assessedByCurrentUserCount, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
+				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 
 				resetVideoPlayer();
 
 				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
 			}
 
-			public function createPagination(targetDatagrid:DataGrid, dataLength:uint, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
+			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
 			{
-				VideoPaginator.createPaginationMenu(dataLength, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
+				VideoPaginator.createPaginationMenu(dataProvider.length, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
 				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
 			}
 
@@ -591,6 +577,11 @@
 			{
 				_currentPageAssessedByCurrentUser=int((event.target as Button).id);
 				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+			}
+			
+			public function updateVerticalScroll():void
+			{
+				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
 			}
 
 			private function set onURLChange(value:Object):void

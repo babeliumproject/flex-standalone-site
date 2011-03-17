@@ -5,6 +5,7 @@ require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/Mailer.php';
 require_once 'utils/SessionHandler.php';
+require_once 'utils/VideoProcessor.php';
 
 require_once 'vo/EvaluationVO.php';
 require_once 'vo/UserVO.php';
@@ -19,6 +20,8 @@ class EvaluationDAO {
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
 	private $responseFolder = '';
+	
+	private $mediaHelper;
 
 	public function EvaluationDAO(){
 		try {
@@ -27,6 +30,7 @@ class EvaluationDAO {
 			$this->imagePath = $settings->imagePath;
 			$this->red5Path = $settings->red5Path;
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
+			$this->mediaHelper = new VideoProcessor();
 
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -91,12 +95,13 @@ class EvaluationDAO {
 		return $searchResults;
 	}
 
-	public function getResponsesAssessedToCurrentUser($sortField, $page){
+	public function getResponsesAssessedToCurrentUser(/*$sortField, $page*/){
 		
 		$querySortField = 'last_date';
 		$queryLimitOffset = 0;
 		$hitCount = 0;
 		
+		/*
 		$pageSize = $_SESSION['preferenceData']['pageSize'];
 		
 		//Available sorting fields
@@ -113,7 +118,7 @@ class EvaluationDAO {
 		
 		if($page > 1)
 			$queryLimitOffset = ($page-1)*$pageSize - 1;
-		
+		*/
 
 		$sql = "SELECT A.file_identifier, A.id, A.rating_amount AS evaluation_count, A.character_name, A.fk_subtitle_id,
 		               A.adding_date, A.source, A.thumbnail_uri, A.duration,
@@ -126,10 +131,10 @@ class EvaluationDAO {
 					 LEFT OUTER JOIN exercise_level E ON B.id=E.fk_exercise_id
 				WHERE ( A.fk_user_id = '%d' ) 
 				GROUP BY A.id,B.id 
-				ORDER BY %s 
-				LIMIT %d, %d";
+				ORDER BY %s"; 
+				//LIMIT %d, %d";
 
-		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $_SESSION['uid'], $querySortField, $queryLimitOffset, $pageSize );
+		$searchResults = $this->_listAssessedToCurrentUserQuery ( $sql, $_SESSION['uid'], $querySortField);//, $queryLimitOffset, $pageSize );
 
 		$result = new stdClass();
 		$result->hitCount = $hitCount;
@@ -182,10 +187,12 @@ class EvaluationDAO {
 		               			A.adding_date, A.source, A.thumbnail_uri, A.duration,
 		               			U.name, C.score_overall, C.score_intonation, C.score_fluency, C.score_rhythm,
 		               			C.score_spontaneity, C.comment, C.adding_date,
-		               			B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source 
+		               			B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source, 
+		               			E.video_identifier, E.thumbnail_uri 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
 			         INNER JOIN users AS U ON U.ID = A.fk_user_id
+			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
 			    WHERE (C.fk_user_id = '%d')
 			    ORDER BY A.adding_date DESC";
 
@@ -227,6 +234,9 @@ class EvaluationDAO {
 			$temp->exerciseThumbnailUri = $row[21];
 			$temp->exerciseTitle = $row[22];
 			$temp->exerciseSource = $row[23];
+			
+			$temp->evaluationVideoFileIdentifier = $row[24];
+			$temp->evaluationVideoThumbnailUri = $row[25];
 
 			array_push ( $searchResults, $temp );
 		}
@@ -236,7 +246,7 @@ class EvaluationDAO {
 
 	public function detailsOfAssessedResponse($responseId){
 		$sql = "SELECT C.name, A.score_overall, A.score_intonation, A.score_fluency, A.score_rhythm, A.score_spontaneity,
-					   A.adding_date, A.comment, B.video_identifier 
+					   A.adding_date, A.comment, B.video_identifier, B.thumbnail_uri 
 			    FROM (evaluation AS A INNER JOIN users AS C ON A.fk_user_id = C.id) 
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
@@ -262,6 +272,7 @@ class EvaluationDAO {
 			$temp->addingDate = $row[6];
 			$temp->comment = $row[7];
 			$temp->evaluationVideoFileIdentifier = $row[8];
+			$temp->evaluationVideoThumbnailUri = $row[9];
 
 			array_push ( $searchResults, $temp );
 		}
@@ -424,7 +435,6 @@ class EvaluationDAO {
 		try{
 			$videoPath = $this->red5Path .'/'. $this->evaluationFolder .'/'. $evalData->evaluationVideoFileIdentifier . '.flv';
 			$imagePath = $this->imagePath .'/'. $evalData->evaluationVideoFileIdentifier . '.jpg';
-			
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
 			$this->mediaHelper->takeRandomSnapshot($videoPath, $imagePath);

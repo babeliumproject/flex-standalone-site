@@ -267,9 +267,10 @@ class VideoProcessor{
 		$cleanPath = escapeshellcmd($filePath);
 		$cleanImagePath = escapeshellcmd($outputImagePath);
 
-		if(!is_readable($cleanPath) || !is_writable(dirname($cleanImagePath)))
-			throw new Exception("You don't have enough permissions to perform this operation");
-
+		if(!is_readable($cleanPath))
+			throw new Exception("You don't have enough permissions to read from the input");
+		if(!is_writable(dirname($cleanImagePath)))
+			throw new Exception("You don't have enough permissions to write to the output");
 		if($this->mediaContainer->hash != md5_file($cleanPath)){
 			try {
 				//This file hasn't been scanned yet
@@ -303,9 +304,11 @@ class VideoProcessor{
 	public function transcodeToFlv($inputFilepath, $outputFilepath, $preset = 1){
 		$cleanInputPath = escapeshellcmd($inputFilepath);
 		$cleanOutputPath = escapeshellcmd($outputFilepath);
-
-		if(!is_readable($cleanInputPath) || !is_writable(dirname($cleanOutputPath)))
-			throw new Exception("You don't have enough permissions to perform this operation");
+			
+		if(!is_readable($cleanInputPath))
+			throw new Exception("You don't have enough permissions to read from the input");
+		if(!is_writable(dirname($cleanOutputPath)))
+			throw new Exception("You don't have enough permissions to write to the output");
 
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {

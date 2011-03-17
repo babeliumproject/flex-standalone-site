@@ -38,7 +38,8 @@
 										arrows="false"
 										width="400"
 										height="250"
-										streamSource="{streamSource}"/>
+										streamSource="{streamSource}"
+										videoSource="intro"/>
 	</s:BorderContainer>
 
 	<s:VGroup>

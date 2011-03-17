@@ -63,21 +63,26 @@
 		<s:VGroup id="selectedRoleRatingAmountBox"
 				  width="100%">
 			<s:HGroup verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LAST_ASSESSMENT_DATE')}"
+				<s:Label text="{resourceManager.getString('myResources','LAST_ASSESSMENT_DATE')+':'}"
 						 styleName="boldLabel"/>
 				<s:Label text="{data.addingDate}"
 						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','BALORAZIOKOP')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label text="{data.responseRatingAmount}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','RECORD_DATE')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label text="{data.responseAddingDate}"/>
 			</s:HGroup>
 			<s:HGroup verticalAlign="middle">
 				<mx:Image id="roleIcon"
 						  source="@Embed('../../resources/images/roles.png')"
 						  toolTip="{resourceManager.getString('myResources','SELECTEDCHAR')}"/>
 				<s:Label text="{data.responseCharacterName}"/>
-			</s:HGroup>
-			<s:HGroup verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','BALORAZIOKOP')+':'}"
-						 styleName="boldLabel"/>
-				<s:Label text="{data.responseRatingAmount}"/>
 			</s:HGroup>
 		</s:VGroup>
 
