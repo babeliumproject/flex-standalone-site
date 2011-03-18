@@ -141,6 +141,20 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="logPath.+;" replace="logPath = '${LOG_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>
+		
+	<target name="rsync-videos-server-local" >
+		<exec executable="rsync" dir="." failonerror="true">
+		  	<arg value="-r"/>
+		  	<arg value="--partial"/>
+		  	<arg value="--progress"/>
+		  	<arg value="--rsh=ssh"/>
+		  	<arg value="--ignore-existing"/> <!-- If it's already on local folder don't download it again, even if it's newer-->
+		  	<arg value="--times"/> <!-- Keep server timestamps of local copy -->
+		    <arg value="${USERNAME}@${REMOTE_HOST}:${REMOTE_DIR}/*"/> <!-- Where to retrieve the files from -->
+		    <arg value="/tmp"/> <!-- Target path -->
+		</exec>
+	</target>	
+		
 
 	<target name="LH_SyncDB" description="sync local de la BD">
 		<!--Eliminar las tablas de babeliumproject -->
