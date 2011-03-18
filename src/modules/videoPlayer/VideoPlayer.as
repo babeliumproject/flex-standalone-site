@@ -25,6 +25,8 @@ package modules.videoPlayer
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	
+	import flashx.textLayout.operations.PasteOperation;
+	
 	import model.DataModel;
 	
 	import modules.videoPlayer.controls.AudioSlider;
@@ -503,10 +505,12 @@ package modules.videoPlayer
 				//Get the netConnection reference
 				_nc=DataModel.getInstance().netConnection;
 
-				if (_autoPlay)
-				{
-					playVideo();
-					_ppBtn.State=PlayButton.PAUSE_STATE;
+				
+				playVideo();
+				_ppBtn.State=PlayButton.PAUSE_STATE;
+				if (!_autoPlay)
+				{	
+					pauseVideo();
 				}
 
 				enableControls();
@@ -752,7 +756,8 @@ package modules.videoPlayer
 		 */
 		protected function onPPBtnChanged(e:PlayPauseEvent):void
 		{
-			
+			if(!_ns)
+				return;
 			if (_ppBtn.getState() == PlayButton.PAUSE_STATE)
 			{
 				if (_ns.time != 0)

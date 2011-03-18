@@ -13,7 +13,10 @@
 			import model.DataModel;
 			
 			[Bindable]
-			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			private var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			
+			[Bindable]
+			private var videoSource:String = 'intro';
 
 			protected function registerButton_clickHandler(event:MouseEvent):void
 			{
@@ -32,6 +35,7 @@
 		</s:layout>
 		<videoPlayer:VideoPlayerBabelia id="staticUnsignedMotdVp"
 										skin="white"
+										autoPlay="false"
 										seek="true"
 										subtitles="true"
 										autoScale="false"
@@ -39,7 +43,8 @@
 										width="400"
 										height="250"
 										streamSource="{streamSource}"
-										videoSource="intro"/>
+										videoSource="{videoSource}"
+										controlsEnabled="false"/>
 	</s:BorderContainer>
 
 	<s:VGroup>
