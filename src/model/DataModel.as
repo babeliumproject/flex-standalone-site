@@ -30,7 +30,6 @@ package model
 		public var appBody:Body;
 		
 		public var localesAndFlags:LocalesAndFlags;
-		public var currentlyActiveLocale:String = 'en_US';
 		
 		public static const SUBTITLE_MODULE:int = 0;
 		public static const RECORDING_MODULE:int = 1;
@@ -133,7 +132,7 @@ package model
 		[Bindable] public var savedResponseId:int;
 		
 		//Exercise uploading related data
-		[Bindable] public var server: String = "babelia";
+		[Bindable] public var server: String = "babelium";
 		[Bindable] public var red5Port: String = "1935";
 		[Bindable] public var uploadDomain:String = "http://"+server+"/";
 		[Bindable] public var streamingResourcesPath:String = "rtmp://" + server + "/oflaDemo";
@@ -253,9 +252,6 @@ package model
 		[Bindable] public var recording:Boolean = false;
 		[Bindable] public var playing:Boolean = false;
 		[Bindable] public var permissions:Boolean = true;
-
-		// l10n
-		[Bindable] public var locales:Array = [ "en_US" , "es_ES", "eu_ES", "fr_FR"];
 		
 		// Variables to manage the input devices
 		[Bindable] public var microphone:Microphone;

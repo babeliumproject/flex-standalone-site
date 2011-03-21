@@ -1,24 +1,13 @@
 <?xml version="1.0" ?>
-<project name="babelia" default="app-deploy">
+<project name="Babelium Project" default="app-deploy">
 
 	<property file="build.properties" />
+	
 	<path id="project.classpath">
 		<fileset dir="${FLEX_LIB}">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-
-	<target name="init">
-		<tstamp>
-			<format property="TODAY" pattern="yyMMdd-HHmm" />
-		</tstamp>
-	</target>
-
-	<target name="svn-checkout" description="checkout desde Subversion (XP-dev)">
-		<svn username="${svn.username}" password="${svn.password}">
-			<checkout url="${svn.url}" destPath="${svn.dir}" />
-		</svn>
-	</target>
 	
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_ANT_LIB}" classpathref="project.classpath" />
 	
@@ -28,7 +17,7 @@
 		<mxmlc file="${APP_ROOT}/Main.mxml" 
 			   output="${DEPLOY_DIR}/Main.swf"
 			   services="${APP_ROOT}/service-config.xml"
-			   locale="en_US,es_ES,eu_ES,fr_FR">
+			   locale="en_US,es_ES,eu_ES">
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
@@ -102,18 +91,9 @@
 		<copy todir="${DEPLOY_DIR}/services">
 			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
 		</copy>
-		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services'\)"/>
-		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services'\)"/>
+		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
+		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
 		
-	</target>
-	
-	<target name="cron-deploy">
-		<copy todir="${DEPLOY_DIR}/cron">
-			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
-		</copy>
-		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
-				<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
-		</replaceregexp>
 	</target>
 	
 	<target name="app-fix-domains">
@@ -141,6 +121,15 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="logPath.+;" replace="logPath = '${LOG_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>
+	
+	<target name="cron-deploy">
+		<copy todir="${DEPLOY_DIR}/cron">
+			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
+		</copy>
+		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
+				<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
+		</replaceregexp>
+	</target>
 		
 	<target name="rsync-videos-server-local" >
 		<exec executable="rsync" dir="." failonerror="true">
@@ -155,6 +144,17 @@
 		</exec>
 	</target>	
 		
+	<target name="init">
+		<tstamp>
+			<format property="TODAY" pattern="yyMMdd-HHmm" />
+		</tstamp>
+	</target>
+
+	<target name="svn-checkout" description="checkout desde Subversion (XP-dev)">
+		<svn username="${svn.username}" password="${svn.password}">
+			<checkout url="${svn.url}" destPath="${svn.dir}" />
+		</svn>
+	</target>
 
 	<target name="LH_SyncDB" description="sync local de la BD">
 		<!--Eliminar las tablas de babeliumproject -->
@@ -183,12 +183,6 @@
 		<replace file="${APP_ROOT}/model/DataModel.as" token='"${input.src}' value='"${input.dst}' />
 	</target>
 
-	<target name="LH_deployServices" description="Copiar servicios">
-		<copy todir="${services.dstdir}">
-			<fileset dir="${services.srcdir}" />
-		</copy>
-	</target>
-
 	<target name="BP_deployremote" description="Copy deployed app to remote host">
 		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}" verbose="true">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
@@ -201,19 +195,6 @@
 	<target name="LH_deploylocal" description="Copy deployed app to local webserver">
 		<copy preservelastmodified="yes" todir="${local.server.path}/babelia">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
-		</copy>
-	</target>
-
-	<target name="LH_deployImages" description="Copy resource images">
-		<copy preservelastmodified="yes" todir="${images.dstdir}">
-			<fileset dir="${images.srcdir}" includes="**/*" />
-		</copy>
-	</target>
-
-
-	<target name="LH_deployVideos" description="Copiar videos">
-		<copy preservelastmodified="yes" todir="${videos.dstdir}">
-			<fileset dir="${videos.srcdir}" includes="**/*" />
 		</copy>
 	</target>
 

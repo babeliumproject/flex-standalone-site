@@ -81,9 +81,7 @@ package commands.userManagement
 			if (ResourceManager.getInstance().getLocales().indexOf(localeCode) != -1)
 			{
 				ResourceManager.getInstance().localeChain=[localeCode];
-				//Updating changes in DataModel, used in Search.mxml 
-				DataModel.getInstance().languageChanged=true;
-				DataModel.getInstance().currentlyActiveLocale = localeCode;
+				DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
 			}
 		}
 

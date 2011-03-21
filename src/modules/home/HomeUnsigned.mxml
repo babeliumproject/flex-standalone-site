@@ -18,6 +18,7 @@
 			import mx.controls.Image;
 			import mx.controls.Text;
 			import mx.events.IndexChangedEvent;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			
 			import skins.IconButtonVerticalSkin;
@@ -66,7 +67,7 @@
 			public function getUnsignedMessagesOfTheDay():void
 			{
 				if (!DataModel.getInstance().isLoggedIn)
-					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
 			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void

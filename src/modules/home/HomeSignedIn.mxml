@@ -10,15 +10,16 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
-
+			import mx.resources.ResourceManager;
+			
 			import spark.components.Button;
 			import spark.components.NavigatorContent;
 
@@ -55,7 +56,7 @@
 			public function getSignedInMessagesOfTheDay():void
 			{
 				if (DataModel.getInstance().isLoggedIn)
-					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, DataModel.getInstance().currentlyActiveLocale).dispatch();
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
 			protected function set onSignedInMessagesOfTheDayRetrieved(value:Boolean):void

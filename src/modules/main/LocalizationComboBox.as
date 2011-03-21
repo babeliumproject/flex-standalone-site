@@ -25,19 +25,23 @@ package modules.main
 {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.system.Capabilities;
 	
 	import model.DataModel;
 	
+	import mx.controls.Alert;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.events.ResourceEvent;
+	import mx.resources.ResourceManager;
+	import mx.utils.ObjectUtil;
 	
 	import view.common.IconComboBox;
 	
 	public class LocalizationComboBox extends IconComboBox
 	{
 		
-		private var _availableLocales:Array=DataModel.getInstance().localesAndFlags.availableI18n;
+		private var _availableLocales:Array=DataModel.getInstance().localesAndFlags.guiLanguages;
 		
 		public function LocalizationComboBox()
 		{
@@ -56,7 +60,12 @@ package modules.main
 			updateLocaleComboBox();
 		}
 		
-		// Localization combobox functions
+		/**
+		 * Parses the language codes and returns a locally formatted label with the name of the language
+		 * 
+		 * @param item
+		 * @return Language name
+		 */		
 		public function localeComboBoxLabelFunction(item:Object):String
 		{
 			var locale:String=String(item.code);
@@ -67,7 +76,6 @@ package modules.main
 		public function localeComboBoxChangeHandler(event:Event):void
 		{
 			var newLocale:String=String(this.selectedItem.code);
-			DataModel.getInstance().currentlyActiveLocale = newLocale;
 			if (resourceManager.getLocales().indexOf(newLocale) != -1)
 			{
 				switchLocale();
@@ -90,9 +98,7 @@ package modules.main
 			var newLocale:String=String(this.selectedItem.code);
 			resourceManager.localeChain=[newLocale];
 			updateLocaleComboBox();
-			//Updating changes in DataModel, used in Search.mxml 
-			DataModel.getInstance().languageChanged=true;
-			DataModel.getInstance().currentlyActiveLocale=newLocale;
+			DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
 		}
 		
 		private function localeCompareFunction(item1:Object, item2:Object):int

@@ -34,7 +34,7 @@ package commands.userManagement
 				DataModel.getInstance().accountActivationStatus = 1;
 				ResourceManager.getInstance().localeChain=[localeCode];
 				//Updating changes in DataModel, used in Search.mxml 
-				DataModel.getInstance().languageChanged=true;
+				DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
 			}
 			
 			DataModel.getInstance().accountActivationRetrieved = true;

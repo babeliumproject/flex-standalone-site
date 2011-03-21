@@ -2,6 +2,7 @@ package model
 {
 	import mx.formatters.NumberBaseRoundType;
 	import mx.formatters.NumberFormatter;
+	import mx.resources.ResourceManager;
 
 	public class LocalesAndFlags
 	{
@@ -168,8 +169,9 @@ package model
 		//This array contains the selectable languages for the exercises
 		[Bindable] public var availableLanguages:Array = new Array();
 		
-		//This array contains the selectable GUI locales
-		[Bindable] public var availableI18n:Array = new Array(en_US,es_ES,eu_ES);
+
+		//The selectable GUI languages
+		[Bindable] public var guiLanguages:Array = new Array;
 
 		public function LocalesAndFlags()
 		{
@@ -180,6 +182,10 @@ package model
 			availableLanguages.push(fr_FR);
 			availableLanguages.push(de_DE);
 			availableLanguages.push(ar_MA);
+			
+			for each(var code:String in ResourceManager.getInstance().getLocales()){
+				guiLanguages.push(getLocaleAndFlagGivenLocaleCode(code));
+			}
 		}
 
 		public function getLocaleAndFlagGivenLocaleCode(code:String):Object
