@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-		 >
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
 
 	<fx:Script>
 		<![CDATA[
@@ -11,8 +10,9 @@
 			import modules.main.VideoPaginator;
 			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Button;
 			import mx.events.ListEvent;
+			
+			import spark.components.Button;
 
 
 			[Bindable]
@@ -20,9 +20,10 @@
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
-			
-			public function set currentPaginationPage(value:uint):void{
-				_currentPage = value;
+
+			public function set currentPaginationPage(value:uint):void
+			{
+				_currentPage=value;
 				createPagination();
 			}
 
@@ -31,20 +32,25 @@
 				_dataProvider=assessedToCurrentUserData;
 				if (_dataProvider.length > 0)
 				{
-					assessedToCurrentUserListTable.includeInLayout=true;
-					assessedToCurrentUserListTable.visible=true;
+					evaluationTable.includeInLayout=true;
+					evaluationTable.visible=true;
 					createPagination();
 				}
 				else
 				{
-					assessedToCurrentUserListTable.includeInLayout=false;
-					assessedToCurrentUserListTable.visible=false;
+					evaluationTable.includeInLayout=false;
+					evaluationTable.visible=false;
 				}
+			}
+
+			public function set itemRenderer(renderer:Class):void
+			{
+				evaluationTableColumn.itemRenderer=new ClassFactory(renderer);
 			}
 
 			public function set changeListener(changeFunction:Function):void
 			{
-				assessedToCurrentUserListTable.addEventListener(ListEvent.CHANGE, changeFunction);
+				evaluationTable.addEventListener(ListEvent.CHANGE, changeFunction);
 			}
 
 			public function createPagination():void
@@ -66,29 +72,28 @@
 				var current:int=_currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				assessedToCurrentUserListTable.rowCount=dataTemp.length;
-				assessedToCurrentUserListTable.dataProvider=dataTemp;
+				evaluationTable.rowCount=dataTemp.length;
+				evaluationTable.dataProvider=dataTemp;
 			}
 		]]>
 	</fx:Script>
 
 
-	<mx:DataGrid id="assessedToCurrentUserListTable"
+	<mx:DataGrid id="evaluationTable"
 				 width="100%"
 				 editable="false"
-				 
 				 sortableColumns="false"
 				 draggableColumns="false"
 				 headerHeight="0"
 				 dataProvider="{_dataProvider}">
 		<mx:columns>
-			<mx:DataGridColumn itemRenderer="modules.evaluation.AssessedToCurrentUserListItem"/>
+			<mx:DataGridColumn id="evaluationTableColumn"/>
 		</mx:columns>
 	</mx:DataGrid>
 
 	<s:HGroup id="paginationBox"
-			 width="100%"
-			 horizontalAlign="left"
-			 gap="2"/>
+			  width="100%"
+			  horizontalAlign="center"
+			  gap="2"/>
 
 </s:VGroup>

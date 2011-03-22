@@ -47,9 +47,11 @@ class EvaluationDAO {
 
 		$sql = "SELECT DISTINCT A.file_identifier, A.id, A.rating_amount, A.character_name, A.fk_subtitle_id,
 		                        A.adding_date, A.source, A.thumbnail_uri, A.duration, F.name, 
-		                        B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source
-				FROM (response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id) 
-				     INNER JOIN users AS F on A.fk_user_id = F.ID 
+		                        B.id, B.name, B.duration, B.language, B.thumbnail_uri, B.title, B.source, 
+		                        AVG(EL.suggested_level) AS avg_exercise_level
+				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
+				     INNER JOIN users AS F on A.fk_user_id = F.ID
+				     LEFT OUTER JOIN exercise_level EL ON B.id=EL.fk_exercise_id 
 		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
 				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
 				AND NOT EXISTS (SELECT *
@@ -89,6 +91,7 @@ class EvaluationDAO {
 			$temp->exerciseThumbnailUri = $row[14];
 			$temp->exerciseTitle = $row[15];
 			$temp->exerciseSource = $row[16];
+			$temp->exerciseAvgDifficulty = $row[17];
 			array_push ( $searchResults, $temp );
 		}
 

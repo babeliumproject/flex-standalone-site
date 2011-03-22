@@ -210,6 +210,11 @@ s|TextInput{
 	color: #d5ac32;
 }
 
+.boldBlueLabel{
+	fontWeight: bold;
+	color: #2d89a4;
+}
+
 .lightGreyLabel{
 	color: #797977;
 }

@@ -86,60 +86,6 @@
 			</s:HGroup>
 		</s:VGroup>
 
-		<s:VGroup>
-			<s:HGroup id="intonationBox"
-					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_INTONATION_SCORE')+':' }"/>
-				<s:HGroup horizontalAlign="right"
-						  width="100%">
-					<hulstkamp:AhFxRatingComponent rating="{data.intonationScoreAverage}"
-												   enabled="false"
-												   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
-				</s:HGroup>
-			</s:HGroup>
-			<s:HGroup id="rhythmBox"
-					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')+':' }"/>
-				<s:HGroup horizontalAlign="right"
-						  width="100%">
-					<hulstkamp:AhFxRatingComponent rating="{data.rhythmScoreAverage}"
-												   enabled="false"
-												   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
-				</s:HGroup>
-			</s:HGroup>
-			<s:HGroup id="fluencyBox"
-					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')+':' }"/>
-				<s:HGroup horizontalAlign="right"
-						  width="100%">
-					<hulstkamp:AhFxRatingComponent rating="{data.fluencyScoreAverage}"
-												   enabled="false"
-												   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
-				</s:HGroup>
-			</s:HGroup>
-			<s:HGroup id="spontaneityBox"
-					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')+':' }"/>
-				<s:HGroup horizontalAlign="right"
-						  width="100%">
-					<hulstkamp:AhFxRatingComponent rating="{data.spontaneityScoreAverage}"
-												   enabled="false"
-												   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
-				</s:HGroup>
-			</s:HGroup>
-			<s:HGroup id="overallBox"
-					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','AVG')+' '+resourceManager.getString('myResources','LABEL_OVERALL_SCORE')+':' }"/>
-				<s:HGroup horizontalAlign="right"
-						  width="100%">
-					<hulstkamp:AhFxRatingComponent rating="{data.overallScoreAverage}"
-												   enabled="false"
-												   skinClass="com.hulstkamp.AhRatingComponentStarSkin"/>
-				</s:HGroup>
-			</s:HGroup>
-		</s:VGroup>
-
-
 	</s:HGroup>
 
 

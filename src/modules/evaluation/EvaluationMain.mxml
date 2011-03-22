@@ -32,6 +32,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.DataGrid;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
@@ -149,7 +150,6 @@
 				var waDataprovider:ArrayCollection=dataModel.waitingForAssessmentData;
 				//waitingAssessmentDataGrid.rowCount=waDataprovider.length;
 				waitingForAssessmentList=waDataprovider;
-				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
 				allDataReceived();
 			}
 
@@ -158,7 +158,6 @@
 				var abcuDataprovider:ArrayCollection=dataModel.assessedByCurrentUserData;
 				//assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
 				assessedByCurrentUserList=abcuDataprovider;
-				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 				allDataReceived();
 			}
 
@@ -214,8 +213,6 @@
 					assessedToCurrentUserList=new ArrayCollection();
 					assessedByCurrentUserList=new ArrayCollection();
 					assessmentDetailList=new ArrayCollection();
-					createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-					createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 				}
 				assessmentsOfSelectedResponse.visible=false;
 				evaluationRatingBox.includeInLayout=false;
@@ -323,6 +320,9 @@
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseAddingDate=selectedItem.responseAddingDate;
 				_responseUserName=selectedItem.responseUserName;
+				
+				//Scroll up to see the video
+				callLater(updateVerticalScroll);
 
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
@@ -428,14 +428,6 @@
 				}
 			}
 
-			private function durationLabelFunction(item:Object, column:DataGridColumn):String
-			{
-				if (item)
-					return _timeFormatter.format(item.exerciseDuration);
-				else
-					return "";
-			}
-
 			private function resetVideoPlayer():void
 			{
 				VP.endVideo(); // Stop video
@@ -459,8 +451,8 @@
 				switch (newIndex)
 				{
 					case evaluationOptionsViewStack.getChildIndex(waitingAssessmentBoxNavContent):
-						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
-						assessedByCurrentUserDataGrid.selectedItem=null;
+						assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=null;
+						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
 						assessedByUserDetailContainer.includeInLayout = false;
@@ -470,15 +462,15 @@
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
 						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+						waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
+						assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
 						resetVideoPlayer();
 
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBoxNavContent):
-						waitingAssessmentDataGrid.selectedItem=null;
-						assessedByCurrentUserDataGrid.selectedItem=null;
+						waitingAssessmentListAndPagination.evaluationTable.selectedItem=null;
+						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
 						assessedByUserDetailContainer.includeInLayout = false;
@@ -488,15 +480,15 @@
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
 						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+						waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
+						assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
 						resetVideoPlayer();
 
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBoxNavContent):
-						waitingAssessmentDataGrid.selectedItem=null;
-						assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=null;
+						waitingAssessmentListAndPagination.evaluationTable.selectedItem=null;
+						assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
 						evaluationRatingBox.includeInLayout=false;
@@ -506,8 +498,8 @@
 						_currentPageAssessedByCurrentUser=1;
 						_currentPageAssessedToCurrentUser=1;
 						assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-						createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-						createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+						waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
+						assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
 						resetVideoPlayer();
 
@@ -534,9 +526,9 @@
 				assessmentsOfSelectedResponse.includeInLayout=false;
 
 				// Remove selected items
-				waitingAssessmentDataGrid.selectedIndex=-1;
-				assessedByCurrentUserDataGrid.selectedIndex=-1;
-				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=-1;
+				waitingAssessmentListAndPagination.evaluationTable.selectedIndex=-1;
+				assessedByCurrentUserListAndPagination.evaluationTable.selectedIndex=-1;
+				assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=-1;
 
 				//Return the pagination controls to the first page
 				_currentPageWaitingForAssessment=1;
@@ -544,39 +536,12 @@
 				_currentPageAssessedToCurrentUser=1;
 
 				assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
+				waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
+				assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
 				resetVideoPlayer();
 
 				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
-			}
-
-			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
-			{
-				VideoPaginator.createPaginationMenu(dataProvider.length, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
-				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
-			}
-
-			public function refreshDataProvider(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint):void
-			{
-				var current:int=currentPageIndicator - 1;
-				var pageSize:int=DataModel.getInstance().pageSize;
-				var dataTemp:ArrayCollection=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				targetDatagrid.rowCount=dataTemp.length;
-				targetDatagrid.dataProvider=dataTemp;
-			}
-
-			private function navigateToPageWaitingAssessment(event:MouseEvent):void
-			{
-				_currentPageWaitingForAssessment=int((event.target as Button).id);
-				createPagination(waitingAssessmentDataGrid, waitingForAssessmentList, _currentPageWaitingForAssessment, paginationWaitingAssessment, navigateToPageWaitingAssessment);
-			}
-
-			private function navigateToPageAssessedByCurrentUser(event:MouseEvent):void
-			{
-				_currentPageAssessedByCurrentUser=int((event.target as Button).id);
-				createPagination(assessedByCurrentUserDataGrid, assessedByCurrentUserList, _currentPageAssessedByCurrentUser, paginationAssessedByCurrentUser, navigateToPageAssessedByCurrentUser);
 			}
 			
 			public function updateVerticalScroll():void
@@ -676,24 +641,24 @@
 			{
 				//Go to the speficied tab and dispatch a change event
 				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
-				waitingAssessmentDataGrid.selectedItem=tmpEvaluate;
-				waitingAssessmentDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				waitingAssessmentListAndPagination.evaluationTable.selectedItem=tmpEvaluate;
+				waitingAssessmentListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 			}
 
 			private function goToSelectedView(tmpView:EvaluationVO):void
 			{
 				//Go to the speficied tab and dispatch a change event
 				evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBoxNavContent;
-				assessedByCurrentUserDataGrid.selectedItem=tmpView;
-				assessedByCurrentUserDataGrid.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=tmpView;
+				assessedByCurrentUserListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 			}
 
 			private function goToSelectedRevise(tmpRevise:EvaluationVO):void
 			{
 				//Go to the speficied tab and dispatch a change event
 				evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
-				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.selectedItem=tmpRevise;
-				assessedToCurrentUserListAndPagination.assessedToCurrentUserListTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=tmpRevise;
+				assessedToCurrentUserListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
 			}
 		]]>
@@ -805,49 +770,19 @@
 					
 					<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST')}"
 							 styleName="sectionTitleLabel"
-							 id="assessmentPendingListTitleLabel"/>
+							 id="assessmentPendingListTitleLabel"
+							 paddingTop="16"/>
 					<s:Line width="{assessmentPendingListTitleLabel.width}">
 						<s:stroke>
 							<mx:SolidColorStroke weight="3"
 												 color="{assessmentPendingListTitleLabel.getStyle('color')}"/>
 						</s:stroke>
 					</s:Line>
-					<mx:DataGrid id="waitingAssessmentDataGrid"
-								 dataProvider="{waitingForAssessmentList}"
-								 width="100%"
-								 horizontalScrollPolicy="off"
-								 verticalAlign="middle"
-								 change="waitingAssessmentChangeHandler(event)">
-						<mx:columns>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-											   dataField="responseThumbnailUri"
-											   width="{120*0.8}">
-								<mx:itemRenderer>
-									<fx:Component>
-										<mx:Image height="{90*0.8}"
-												  width="{120*0.8}"
-												  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
-									</fx:Component>
-								</mx:itemRenderer>
-							</mx:DataGridColumn>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'OWNER')}"
-											   dataField="responseUserName"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-											   dataField="responseDuration"
-											   labelFunction="{durationLabelFunction}"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-											   dataField="responseRatingAmount"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-											   dataField="responseCharacterName"
-											   visible="false"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'DATE')}"
-											   dataField="responseAddingDate"/>
-						</mx:columns>
-					</mx:DataGrid>
-					<s:HGroup id="paginationWaitingAssessment"
-							  width="100%"
-							  horizontalAlign="left"
-							  gap="2"/>
+					<evaluation:CustomItemRendererEvaluationTable id="waitingAssessmentListAndPagination"
+																  dataProvider="{waitingForAssessmentList}"
+																  changeListener="{waitingAssessmentChangeHandler}"
+																  itemRenderer="{modules.evaluation.ListItemWaitingForAssessment}"
+																  width="100%"/>
 				</s:VGroup>
 			</s:NavigatorContent>
 
@@ -884,9 +819,10 @@
 												 color="{assessedToUserListTitleLabel.getStyle('color')}"/>
 						</s:stroke>
 					</s:Line>
-					<evaluation:AssessedToCurrentUserList id="assessedToCurrentUserListAndPagination"
+					<evaluation:CustomItemRendererEvaluationTable id="assessedToCurrentUserListAndPagination"
 														  dataProvider="{assessedToCurrentUserList}"
 														  changeListener="{assessedToCurrentUserChangeHandler}"
+														  itemRenderer="{modules.evaluation.ListItemAssessedToCurrentUser}"
 														  width="100%"/>
 				</s:VGroup>
 			</s:NavigatorContent>
@@ -907,45 +843,19 @@
 					</s:BorderContainer>
 					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_BY_USER_LIST')}"
 							 styleName="sectionTitleLabel"
-							 id="assessedByUserListTitleLabel"/>
+							 id="assessedByUserListTitleLabel"
+							 paddingTop="16"/>
 					<s:Line width="{assessedByUserListTitleLabel.width}">
 						<s:stroke>
 							<mx:SolidColorStroke weight="3"
 												 color="{assessedByUserListTitleLabel.getStyle('color')}"/>
 						</s:stroke>
 					</s:Line>
-					<mx:DataGrid width="100%"
-								 id="assessedByCurrentUserDataGrid"
-								 dataProvider="{assessedByCurrentUserList}"
-								 change="assessedByCurrentUserChangeHandler(event)"
-								 verticalAlign="middle">
-						<mx:columns>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'JATORRIZKOA')}"
-											   dataField="exerciseThumbnailUri"
-											   width="{120*0.8}">
-								<mx:itemRenderer>
-									<fx:Component>
-										<mx:Image height="{90*0.8}"
-												  width="{120*0.8}"
-												  source="{outerDocument.thumbUrl+'/'+data.responseThumbnailUri}"/>
-									</fx:Component>
-								</mx:itemRenderer>
-							</mx:DataGridColumn>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'GRABADOR')}"
-											   dataField="responseUserName"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'IRAUPENA')}"
-											   dataField="responseDuration"
-											   labelFunction="{durationLabelFunction}"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
-											   dataField="responseRatingAmount"/>
-							<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'SELECTEDCHAR')}"
-											   dataField="responseCharacterName"/>
-						</mx:columns>
-					</mx:DataGrid>
-					<s:HGroup id="paginationAssessedByCurrentUser"
-							  width="100%"
-							  horizontalAlign="left"
-							  gap="2"/>
+					<evaluation:CustomItemRendererEvaluationTable id="assessedByCurrentUserListAndPagination"
+																  dataProvider="{assessedByCurrentUserList}"
+																  changeListener="{assessedByCurrentUserChangeHandler}"
+																  itemRenderer="{modules.evaluation.ListItemAssessedByCurrentUser}"
+																  width="100%"/>
 				</s:VGroup>
 			</s:NavigatorContent>
 

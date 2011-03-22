@@ -8,7 +8,7 @@
 	<channels>
 		<channel-definition id="my-amfphp"
 			class="mx.messaging.channels.AMFChannel">
-			<endpoint uri="http://babelium/server.php" class="flex.messaging.endpoints.AMFEndpoint" />
+			<endpoint uri="http://babelia/server.php" class="flex.messaging.endpoints.AMFEndpoint" />
 		</channel-definition>
 	</channels>
 
