@@ -20,6 +20,7 @@ package model
 	import vo.CreditHistoryVO;
 	import vo.ExerciseVO;
 	import vo.UserVO;
+	import vo.VideoSliceVO;
 	
 	public class DataModel implements IModelLocator
 	{
@@ -166,7 +167,15 @@ package model
 		
 		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
-
+		//Video Slice related data	
+		[Bindable] public var urlSearch:String = "";
+		[Bindable] public var userSearch:String = "";
+		[Bindable] public var retrieveVideoComplete:Boolean = false;
+		[Bindable] public var retrieveUserVideoComplete:Boolean = false;
+		[Bindable] public var slicePreview:Boolean = false;
+		[Bindable] public var sliceComplete:Boolean = false;
+		[Bindable] public var tempVideoSlice:VideoSliceVO = new VideoSliceVO;
+		[Bindable] public var tempExercise:ExerciseVO = new ExerciseVO;
 		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;

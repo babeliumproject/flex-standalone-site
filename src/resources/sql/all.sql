@@ -408,6 +408,22 @@ CREATE TABLE IF NOT EXISTS `user_videohistory` (
   KEY `FK_user_videohistory_6` (`fk_exercise_role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `video_slice`
+--
+
+CREATE TABLE IF NOT EXISTS `video_slice` (
+`id` int( 10 ) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`name` varchar( 11 ) NOT NULL COMMENT 'Youtube vID',
+`watchUrl` VARCHAR( 200 ) NOT NULL,
+`start_time` int( 10 ) NOT NULL COMMENT 'slice start time',
+`duration` int( 10 ) NOT NULL COMMENT 'slice duration'
+) ENGINE = innodb DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
 
 --
 -- Datos para las tablas descargadas (dump)

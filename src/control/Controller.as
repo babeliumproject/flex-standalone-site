@@ -11,6 +11,7 @@ package control {
 	import commands.search.*;
 	import commands.subtitles.*;
 	import commands.userManagement.*;
+	import commands.videoSlice.*;
 	import commands.videoUpload.*;
 	
 	import events.*;
@@ -117,6 +118,11 @@ package control {
 			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
 			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
 			addCommand(ExerciseEvent.ADD_WEBCAM_EXERCISE, AddWebcamExerciseCommand);
+			
+			//VideoSlice management commands
+			addCommand(VideoSliceEvent.SEARCH_URL, SearchUrlCommand);
+			addCommand(VideoSliceEvent.SEARCH_USER, SearchUserCommand);
+			addCommand(VideoSliceEvent.CREATE_SLICE, CreateSliceCommand);
 
 			//Exercise management commands
 			addCommand(ExerciseEvent.GET_EXERCISES, GetExercisesCommand);
