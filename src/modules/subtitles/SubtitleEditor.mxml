@@ -23,17 +23,40 @@
 				 width="100%"
 				 styleName="exerciseTitleLabel"/>
 		<s:HGroup width="100%">
-			<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
-											autoPlay="true"
-											skin="white"
-											seek="true"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											width="400"
-											height="250"
-											subtitlingControls="true"
-											streamSource="{streamSource}"/>
+			<s:VGroup>
+				<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
+												autoPlay="true"
+												skin="white"
+												seek="true"
+												subtitles="true"
+												autoScale="false"
+												arrows="false"
+												width="400"
+												height="250"
+												subtitlingControls="true"
+												streamSource="{streamSource}"/>
+				<s:BorderContainer id="simultaneousEditNotice"
+								   minHeight="0"
+								   includeInLayout="false"
+								   visible="false"
+								   cornerRadius="8"
+								   borderWeight="2"
+								   backgroundAlpha="0.5"
+								   backgroundColor="#a8c6ee"
+								   borderColor="#a8c6ee"
+								   width="100%">
+					<s:layout>
+						<s:HorizontalLayout verticalAlign="middle"
+											paddingBottom="4"
+											paddingLeft="10"
+											paddingRight="10"
+											paddingTop="4"/>
+					</s:layout>
+					<mx:Image source="@Embed('/resources/images/alertInfo.png')"/>
+					<s:Label width="300"
+							 text="Someone else's editing this very same subtitles"/>
+				</s:BorderContainer>
+			</s:VGroup>
 
 
 			<s:BorderContainer id="subtitleEditor"
@@ -136,7 +159,7 @@
 								</fx:Component>
 							</mx:itemEditor>
 						</mx:DataGridColumn>
-						
+
 					</mx:columns>
 				</mx:DataGrid>
 				<mx:Spacer height="10"/>

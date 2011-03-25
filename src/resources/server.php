@@ -4,7 +4,7 @@
 require_once 'Zend/Loader.php';
 require_once 'Zend/Amf/Server.php';
 
-define ('SERVICE_PATH', '/amfphp/services/babelia/');
+define ('SERVICE_PATH', '/services/');
 
 /** Bootstrap */
 

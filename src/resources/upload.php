@@ -50,7 +50,7 @@ function check_duration($path, $maxDuration){
 switch ($_REQUEST ['action']) {
 	
 	case "upload" :
-		define ('SERVICE_PATH', '/var/www/babelium/services/');
+		define ('SERVICE_PATH', '/services/');
 		include_once dirname(__FILE__) . SERVICE_PATH ."utils/Config.php";
 
 		$settings = new Config();
