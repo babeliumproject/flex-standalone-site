@@ -504,7 +504,7 @@ package modules.videoPlayer
 
 			// Put subtitle box at top
 			_subtitlePanel.width=_videoBarPanel.width;
-			_subtitlePanel.height=30;
+			_subtitlePanel.height=40;
 			_subtitlePanel.x=_defaultMargin;
 
 			/*

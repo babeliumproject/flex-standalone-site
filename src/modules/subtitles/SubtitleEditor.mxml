@@ -10,11 +10,6 @@
 							   paddingTop="20"
 							   paddingLeft="16"
 							   paddingRight="16">
-	<fx:Script>
-		<![CDATA[
-			import skins.IconButtonSkin;
-		]]>
-	</fx:Script>
 
 	<!-- Video Player -->
 	<s:VGroup width="100%">
@@ -155,7 +150,7 @@
 										   width="375">
 							<mx:itemEditor>
 								<fx:Component>
-									<mx:TextInput maxChars="80"/>
+									<mx:TextInput maxChars="120"/>
 								</fx:Component>
 							</mx:itemEditor>
 						</mx:DataGridColumn>
