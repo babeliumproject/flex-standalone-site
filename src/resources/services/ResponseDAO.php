@@ -3,6 +3,7 @@
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
+require_once 'utils/VideoProcessor.php';
 
 require_once 'vo/ResponseVO.php';
 require_once 'vo/UserVO.php';
@@ -17,6 +18,8 @@ class ResponseDAO {
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
 	private $responseFolder = '';
+	
+	private $mediaHelper;
 
 	public function ResponseDAO() {
 		try {
@@ -26,6 +29,8 @@ class ResponseDAO {
 			$this->imagePath = $settings->imagePath;
 			$this->red5Path = $settings->red5Path;
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
+			
+			$this->mediaHelper = new VideoProcessor();
 
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -35,18 +40,24 @@ class ResponseDAO {
 	public function saveResponse($data){
 		set_time_limit(0);
 		$this->_getResourceDirectories();
-		$thumbnail = $data->thumbnailUri;
-		$duration = $this->calculateVideoDuration($data->fileIdentifier);
-		if(!$this->audioOnlyResponse($data->fileIdentifier)){
-			$this->takeRandomSnapshot($data->fileIdentifier, $data->fileIdentifier);
-			$thumbnail = $data->fileIdentifier.'.jpg';
+		$imagePath = $data->thumbnailUri;
+		
+		try{
+			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $data->fileIdentifier . '.flv';
+			$imagePath = $this->imagePath .'/'. $data->fileIdentifier . '.jpg';
+			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
+			$duration = $mediaData->duration;
+			if($mediaData->hasVideo)
+				$this->mediaHelper->takeRandomSnapshot($videoPath, $imagePath);
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
 		}
+		
 
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
 		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
 
-		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier,
-		$thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId );
+		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $imagePath, $data->source, $duration, $data->characterName, $data->subtitleId );
 
 	}
 
@@ -156,46 +167,6 @@ class ResponseDAO {
 		$this->exerciseFolder = $row ? $row[0] : '';
 		$row = $this->conn->_nextRow($result);
 		$this->responseFolder = $row ? $row[0] : '';
-	}
-
-	private function takeRandomSnapshot($videoFileName,$outputImageName){
-		$videoPath  = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFileName . '.flv';
-		// where you'll save the image
-		$imagePath  = $this->imagePath .'/'. $outputImageName . '.jpg';
-		// default time to get the image
-		$second = 1;
-
-		// get the duration and a random place within that
-		$resultduration = (exec("ffmpeg -i '".$videoPath."' 2>&1",$cmd));
-		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
-			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
-			$second = rand(1, ($total - 1));
-		}
-		$resultsnap = (exec("ffmpeg -y -i '".$videoPath."' -r 1 -ss $second -vframes 1 -r 1 -s 120x90 $imagePath 2>&1",$cmd));
-		return $resultsnap;
-	}
-
-	private function audioOnlyResponse($videoFilename){
-		$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFilename . '.flv';
-		// Get videofile informationo
-		$videoInfo = (exec("ffmpeg -i '".$videoPath."' 2>&1",$cmd));
-		if(preg_match('/Could not find codec parameters/s', implode($cmd))){
-			//The video resource seems to be only audio
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private function calculateVideoDuration($videoFileName){
-		$videoPath  = $this->red5Path .'/'. $this->responseFolder .'/'. $videoFileName . '.flv';
-		$total = 0;
-
-		$resultduration = (exec("ffmpeg -i '".$videoPath."' 2>&1",$cmd));
-		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)) {
-			$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
-		}
-		return $total;
 	}
 
 }

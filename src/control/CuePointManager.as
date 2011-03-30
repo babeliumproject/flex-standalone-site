@@ -43,7 +43,7 @@ package control
 		public var cached:Boolean=false;
 		
 		private var roleColors:Array = [0xffffff, 0xfffd22, 0x69fc00, 0xfd7200, 0x056cf9, 0xff0f0b, 0xc314c9, 0xff6be5];
-		private var colorDictionary:Array = new Array();
+		public var colorDictionary:Array = new Array();
 
 		/**
 		 * Constructor - Singleton Pattern

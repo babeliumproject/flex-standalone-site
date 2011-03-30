@@ -50,11 +50,13 @@ package commands.subtitles
 				{
 					if (resultCollection[0] is SubtitleLineVO)
 					{
+						cueManager.colorDictionary = new Array();
 						for (var i:int=0; i < resultCollection.length; i++)
 						{
 							var item:SubtitleLineVO=resultCollection.getItemAt(i) as SubtitleLineVO;
 							generateRoleArray(item);
 							untouchedSubtitles.addItem(new CueObject(item.subtitleId, item.showTime, item.hideTime, item.text, item.exerciseRoleId, item.exerciseRoleName));
+							
 							cueManager.addCueFromSubtitleLine(item);
 						}
 					}

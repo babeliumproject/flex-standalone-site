@@ -84,6 +84,14 @@ package control
 			return instance;
 		}
 		
+		public function addBrowserChangeListener(listenerFunction:Function):void{
+			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, listenerFunction);
+		}
+		
+		public function removeBrowseChangeListener(listenerFunction:Function):void{
+			_browserManager.removeEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, listenerFunction);
+		}
+		
 		/**
 		 * Parse function
 		 **/

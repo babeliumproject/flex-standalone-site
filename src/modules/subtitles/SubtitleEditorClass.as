@@ -183,7 +183,6 @@ package modules.subtitles
 			VPSubtitle.videoSource=EXERCISE_FOLDER + '/' + exerciseFileName;
 			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			VPSubtitle.enableSubtitlingEndButton=false;
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -287,7 +286,6 @@ package modules.subtitles
 
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
-			VPSubtitle.enableSubtitlingEndButton=true;
 			subtitleStartTime=e.time;
 			startEntry=new CueObject(0, subtitleStartTime, subtitleStartTime + 0.5, '', 0, '');
 			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry, VPSubtitle));
@@ -299,7 +297,6 @@ package modules.subtitles
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
 		{
-			VPSubtitle.enableSubtitlingEndButton=false;
 			if (subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;

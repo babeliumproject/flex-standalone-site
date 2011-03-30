@@ -1,5 +1,6 @@
 package modules.videoPlayer.controls.babelia
 {
+	import flash.display.BlendMode;
 	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
 	import flash.text.FontStyle;
@@ -30,8 +31,8 @@ package modules.videoPlayer.controls.babelia
 		//private var _bg:Sprite;
 		private var _textBox:Label;
 		private var _boxWidth:Number=100;
-		private var _boxHeight:Number=30;
-		private var _defaultHeight:Number=30;
+		private var _boxHeight:Number=40;
+		private var _defaultHeight:Number=40;
 		
 		private var _dropShadowFilter:DropShadowFilter;
 		private var _group:HGroup;
@@ -51,6 +52,7 @@ package modules.videoPlayer.controls.babelia
 			_group = new HGroup();
 			_group.verticalAlign = VerticalAlign.BOTTOM;
 			_group.horizontalAlign = HorizontalAlign.CENTER;
+			_group.paddingBottom = 6;
 
 			_textBox=new Label();
 			_textBox.setStyle("textAlign", "center");
@@ -77,26 +79,8 @@ package modules.videoPlayer.controls.babelia
 			
 			_group.width = width;
 			_group.height = height;
-
-			//CreateBG(width, height);
-			//CreateBox(_box, getSkinColor(BOX_COLOR), width - 5, height - 5, true, getSkinColor(BORDER_COLOR));
-			//CreateBox(_box, getSkinColor(BOX_COLOR), width, height);
-//			_box.x=width / 2 - _box.width / 2;
-//			_box.y=height / 2 - _box.height / 2;
-//
-//			_textBox.x=_box.x;
-//			_textBox.y=_box.y + 2;
-//			_textBox.width=_box.width*0.9;
-//			_textBox.height=_box.height;
-			
 			
 			_textBox.width=_group.width*0.9;
-//			_textBox.height=height;
-//			_textBox.x=width / 2 - _textBox.width / 2;
-//			_textBox.y=height / 2 - _textBox.height / 2 + 2;
-			
-			
-			
 		
 			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));
 		}
