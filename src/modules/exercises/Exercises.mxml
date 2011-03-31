@@ -38,7 +38,11 @@
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
 			
 			import view.common.*;
 			
@@ -54,6 +58,9 @@
 			 **/
 			private const SELECT_EXERCISE:String="SELECT_EXERCISE";
 
+			private var _creationComplete:Boolean = false;
+			
+			
 			/**
 			 * Exercise Related variables
 			 **/
@@ -117,10 +124,11 @@
 			 **/
 			private function onComplete():void
 			{
-				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
 				setupVideoPlayer();
 				setupResponseOptions();
-				hideSelectedExercise();
+				if(_exerciseTitle == null)
+					_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
+				_creationComplete = true;
 			}
 
 			/**
@@ -135,8 +143,9 @@
 				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied);
 				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied);
 			}
-			
-			private function setupResponseOptions():void{
+
+			private function setupResponseOptions():void
+			{
 				recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
 				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
 				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onAbortRecording);
@@ -247,7 +256,7 @@
 				var cached:Boolean=_cueManager.setVideo(_exerciseId);
 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);	
+				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -365,6 +374,7 @@
 			 **/
 			private function set onExerciseSelected(value:Boolean):void
 			{
+
 				if (value == true)
 				{
 					// Retrieving selected exercise information
@@ -445,14 +455,14 @@
 			{
 				// Store last recorded response's filename
 				_recordedFilename=e.fileName;
-				
-				DataModel.getInstance().recordingExercise = false;
+
+				DataModel.getInstance().recordingExercise=false;
 
 				// Set the videoplayer to playback both the exercise and the last response.
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
 				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
-				
+
 				VP.seek=false;
 				VP.stopVideo();
 			}
@@ -491,7 +501,7 @@
 				VP.unattachUserDevices();
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-				
+
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
 				panelSelectedExercise.visible=true;
@@ -522,7 +532,8 @@
 			 **/
 			private function set onTabChange(value:Boolean):void
 			{
-				resetComponent();
+				if(_creationComplete)
+					resetComponent();
 			}
 
 			private function resetComponent():void
@@ -538,11 +549,11 @@
 				_currentExercise=null; // Reset current exercise
 
 				hideSelectedExercise(); // Information of selected exercise
+				
+				exerciseList.exerciseListDataGroup.selectedIndex = -1;
 
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-
-//				exerciseList.exerciseListDatagrid.selectedItem=null;
 
 				//Remove the current exercise's info
 				ratingShareReport.exerciseData=null;
@@ -590,12 +601,12 @@
 				//Save this new record attempt
 				statisticRecAttempt();
 			}
-			
+
 			private function onAbortRecording(e:Event):void
 			{
 				recordingError();
 				prepareExercise();
-				resetCueManager();	
+				resetCueManager();
 			}
 
 			// Save response
@@ -614,13 +625,11 @@
 					//Third, save response				
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 
-					//showEvaluationRequest();
-					
-					recordingEndOptions.includeInLayout = false;
-					recordingEndOptions.visible = false;
-					panelSelectedExercise.includeInLayout = true;
-					panelSelectedExercise.visible = true;
-					
+					recordingEndOptions.includeInLayout=false;
+					recordingEndOptions.visible=false;
+					panelSelectedExercise.includeInLayout=true;
+					panelSelectedExercise.visible=true;
+
 
 					resetComponent();
 				}
@@ -665,26 +674,6 @@
 				}
 			}
 
-			/*
-			   // Evaluation request
-			   private function showEvaluationRequest():void
-			   {
-			   _evaluationRequest=EvaluationRequest(PopUpManager.createPopUp(parent, EvaluationRequest, true));
-			   _evaluationRequest.title="Evaluation Request";
-			   PopUpManager.centerPopUp(_evaluationRequest);
-
-			   _evaluationRequest.addEventListener(RecordingEndOptionEvent.CLOSE_REQUEST, onCloseRequest);
-			   }
-
-			   // On close request
-			   private function onCloseRequest(e:Event):void
-			   {
-			   // Close options
-			   PopUpManager.removePopUp(_evaluationRequest);
-			   }
-			 */
-
-
 			// On URL change
 			public function set onURLChange(value:Object):void
 			{
@@ -700,6 +689,7 @@
 				{
 					if (browser.targetFragment != '')
 					{
+
 						var tempEx:ExerciseVO=null;
 						var exercises:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
 
@@ -718,9 +708,8 @@
 							new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 							return;
 						}
-
-						DataModel.getInstance().currentExercise.setItemAt(tempEx, DataModel.RECORDING_MODULE);
-						DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
+						new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, tempEx).dispatch();
+						FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
 					}
 					else
 					{
@@ -764,7 +753,7 @@
 				destination="this.onRolesRetrieved"/>
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
-	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
 				destination="onURLChange"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>

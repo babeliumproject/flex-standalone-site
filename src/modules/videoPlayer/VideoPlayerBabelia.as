@@ -41,6 +41,9 @@ package modules.videoPlayer
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 	
+	import skins.OverlayPlayButtonSkin;
+	
+	import spark.components.Button;
 	import spark.primitives.BitmapImage;
 	
 	import view.common.CustomAlert;
@@ -135,6 +138,7 @@ package modules.videoPlayer
 		public static const SUBTILE_INSERT_DELAY:Number = 0.5;
 		
 		private var _micImage:Image;
+		private var _overlayButton:Button;
 
 
 		/**
@@ -192,6 +196,13 @@ package modules.videoPlayer
 
 			_micActivityBar=new MicActivityBar();
 			_micActivityBar.visible=false;
+			
+			_overlayButton = new Button();
+			_overlayButton.setStyle("skinClass",OverlayPlayButtonSkin);
+			_overlayButton.width = 128;
+			_overlayButton.height = 128;
+			_overlayButton.visible = false;
+			_overlayButton.addEventListener(MouseEvent.CLICK, overlayClicked);
 
 			/**
 			 * Events listeners
@@ -213,6 +224,8 @@ package modules.videoPlayer
 	
 			addChild(_countdownTxt);
 			addChild(_subtitlePanel);
+			
+			addChild(_overlayButton);
 			
 
 			/**
@@ -308,6 +321,16 @@ package modules.videoPlayer
 		{
 			return _subtitlingControls.visible;
 		}
+		
+		
+		/**
+		 * Autoplay
+		 */
+		override public function set autoPlay(tf:Boolean):void
+		{
+			super.autoPlay = tf;
+			tf ? _overlayButton.visible = false : _overlayButton.visible = true;
+		}
 
 		/**
 		 * Video player's state
@@ -326,6 +349,11 @@ package modules.videoPlayer
 
 			_state=state;
 			switchPerspective();
+		}
+		
+		public function overlayClicked(event:MouseEvent):void{
+			_overlayButton.visible = false;
+			_ppBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 		}
 
 		/**
@@ -482,6 +510,10 @@ package modules.videoPlayer
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
 			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
+			
+			//Play overlay
+			_overlayButton.width = _videoWidth;
+			_overlayButton.height = _videoHeight;
 			
 			
 			if(_subtitleStartEnd.visible){

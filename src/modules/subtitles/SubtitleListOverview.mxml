@@ -124,6 +124,8 @@
 					{
 						rso=SharedObject.getRemote("SubtitleEdition", dataModel.netConnection.uri, false);
 						rso.addEventListener(SyncEvent.SYNC, onRemoteUpdate);
+						rso.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onError);
+						rso.addEventListener(NetStatusEvent.NET_STATUS, onError);
 						rso.connect(dataModel.netConnection);
 						clearRemoteSlot();
 					}
@@ -132,6 +134,10 @@
 						trace(error.message);
 					}
 				}
+			}
+			
+			private function onError(event:Event):void{
+				//Do nothing, leave it for debugging purposes
 			}
 
 			private function onRemoteUpdate(event:SyncEvent):void

@@ -82,8 +82,8 @@ package modules.videoPlayer
 		protected var _defaultMargin:Number=0;
 
 		private var _bgVideo:Sprite;
-		protected var _ppBtn:PlayButton;
-		protected var _stopBtn:StopButton;
+		public var _ppBtn:PlayButton;
+		public var _stopBtn:StopButton;
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
