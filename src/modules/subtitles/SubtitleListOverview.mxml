@@ -127,10 +127,10 @@
 					try
 					{
 						rso=SharedObject.getRemote("SubtitleEdition", dataModel.netConnection.uri, false);
-						rso.addEventListener(SyncEvent.SYNC, onRemoteUpdate);
 						rso.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onError);
 						rso.addEventListener(NetStatusEvent.NET_STATUS, onError);
 						rso.connect(dataModel.netConnection);
+						rso.addEventListener(SyncEvent.SYNC, onRemoteUpdate);
 					}
 					catch (error:Error)
 					{

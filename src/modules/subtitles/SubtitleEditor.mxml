@@ -49,7 +49,7 @@
 					</s:layout>
 					<mx:Image source="@Embed('/resources/images/alertInfo.png')"/>
 					<s:Label width="300"
-							 text="Someone else's editing this very same subtitles"/>
+							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBTITLE_EDITION')}"/>
 				</s:BorderContainer>
 			</s:VGroup>
 

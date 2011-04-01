@@ -11,9 +11,9 @@
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
@@ -21,10 +21,10 @@
 			import mx.events.IndexChangedEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-
+			
 			import skins.IconButtonVerticalSkin;
 			import skins.StepTabBarSkin;
-
+			
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -196,6 +196,13 @@
 					staticMotd.staticUnsignedMotdVp.autoPlay=false;
 				}
 			}
+
+			protected function appDescriptionViewStack_changeHandler(event:IndexChangedEvent):void
+			{
+				staticMotd.staticUnsignedMotdVp.stopVideo();
+				staticMotd.staticUnsignedMotdVp.autoPlay=false;
+			}
+
 		]]>
 	</fx:Script>
 
@@ -229,6 +236,7 @@
 				  paddingRight="16"/>
 		<mx:ViewStack id="appDescriptionViewStack"
 					  selectedIndex="{selectedIndex}"
+					  change="appDescriptionViewStack_changeHandler(event)"
 					  width="100%"
 					  minWidth="1000"
 					  resizeToContent="true"
