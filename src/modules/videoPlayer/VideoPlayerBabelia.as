@@ -22,6 +22,7 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleStartEndButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
+	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
@@ -201,6 +202,7 @@ package modules.videoPlayer
 			_overlayButton.setStyle("skinClass",OverlayPlayButtonSkin);
 			_overlayButton.width = 128;
 			_overlayButton.height = 128;
+			_overlayButton.buttonMode = true;
 			_overlayButton.visible = false;
 			_overlayButton.addEventListener(MouseEvent.CLICK, overlayClicked);
 
@@ -352,8 +354,13 @@ package modules.videoPlayer
 		}
 		
 		public function overlayClicked(event:MouseEvent):void{
-			_overlayButton.visible = false;
 			_ppBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+		}
+		
+		override protected function onPPBtnChanged(e:PlayPauseEvent):void{
+			super.onPPBtnChanged(e);
+			if(_overlayButton.visible)
+				_overlayButton.visible = false;
 		}
 
 		/**

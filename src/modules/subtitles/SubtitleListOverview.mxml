@@ -47,7 +47,7 @@
 
 	<mx:Spacer height="20"/>
 
-	
+
 	<subtitles:SubtitlePendingList id="subtitlePendingList"
 								   dataProvider="{emptySubtitleList}"
 								   changeListener="{emptySubtitleChangeHandler}"
@@ -104,16 +104,20 @@
 
 			private var rso:SharedObject;
 			private var rsoidleTimer:Timer;
-			private var SLOT_RESERVE_DELAY:uint = 10000; //10 seconds
+			private var SLOT_RESERVE_DELAY:uint=10000; //10 seconds
+
+			private var creationComplete:Boolean=false;
 
 			public function completeHandler(event:FlexEvent):void
 			{
 				refreshExerciseLists();
 
 				connectToSharedObject();
-				
+
 				rsoidleTimer=new Timer(SLOT_RESERVE_DELAY, 0);
 				rsoidleTimer.addEventListener(TimerEvent.TIMER, reserveRemoteSlot);
+
+				creationComplete=true;
 			}
 
 			private function connectToSharedObject():void
@@ -127,7 +131,6 @@
 						rso.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onError);
 						rso.addEventListener(NetStatusEvent.NET_STATUS, onError);
 						rso.connect(dataModel.netConnection);
-						clearRemoteSlot();
 					}
 					catch (error:Error)
 					{
@@ -135,8 +138,9 @@
 					}
 				}
 			}
-			
-			private function onError(event:Event):void{
+
+			private function onError(event:Event):void
+			{
 				//Do nothing, leave it for debugging purposes
 			}
 
@@ -144,15 +148,15 @@
 			{
 				var simultaneousEdit:Boolean=false;
 				var remoteData:Object=rso.data;
-				var timestamp:uint = new Date().getTime();
+				var timestamp:uint=new Date().getTime();
 				for (var item:Object in remoteData)
 				{
 					//If other than yourself is editing this exercise's subtitles display a notification
-					var ex:String = remoteData[item].exercise;
-					var ts:uint = remoteData[item].timestamp;
-					var dif:uint = (timestamp - ts)/1000;
-					
-					
+					var ex:String=remoteData[item].exercise;
+					var ts:uint=remoteData[item].timestamp;
+					var dif:uint=(timestamp - ts) / 1000;
+
+
 					if (item.toString() != dataModel.loggedUser.name && ex == currentExercise.name && dif < 20)
 					{
 						simultaneousEdit=true;
@@ -167,16 +171,10 @@
 			{
 				if (dataModel.loggedUser.name && currentExercise && currentExercise.name)
 				{
-					var date:Date = new Date();
+					var date:Date=new Date();
 					rso.setProperty(dataModel.loggedUser.name, {exercise: currentExercise.name, timestamp: date.getTime()});
 				}
 			}
-			
-			private function clearRemoteSlot():void{
-				if(rso.data[dataModel.loggedUser.name] != undefined)
-					rso.setProperty(dataModel.loggedUser.name, null);
-			}
-
 
 			public function refreshExerciseLists():void
 			{
@@ -210,10 +208,6 @@
 				//Set the current exercise in the subtitle editor
 				prepareExercise();
 
-				//Add the subtitle editor to the stage
-				subtitleEditor.includeInLayout=true;
-				subtitleEditor.visible=true;
-
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, currentExercise.name);
 
 			}
@@ -242,51 +236,94 @@
 				}
 			}
 
+			/*
 			private function onSubtitleTabChange(event:IndexChangedEvent):void
 			{
 				var newIndex:uint=event.newIndex;
 
 				//Reset the state of the lists of the module
 				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
-				
+
 
 				currentPageEmptySubtitle=1;
-				
+
 				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
 
 				//Hide and reset the subtitle editor and its videoplayer on tab change
 				subtitleEditor.visible=false;
 				subtitleEditor.includeInLayout=false;
 				subtitleEditor.onTabChange(true);
-			}
+			}*/
 
 			private function set onTabChange(value:Boolean):void
 			{
-				//Reset the state of the lists of the module
-				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
+				if (creationComplete && dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
+				{
+					//Reset the state of the lists of the module
+					subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
 
-				currentPageEmptySubtitle=1;
-				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
+					currentPageEmptySubtitle=1;
+					subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
 
-				//Hide and reset the subtitle editor and its videoplayer on tab change
-				subtitleEditor.visible=false;
-				subtitleEditor.includeInLayout=false;
-				
-				rsoidleTimer.stop();
-				clearRemoteSlot();
+					//Hide and reset the subtitle editor and its videoplayer on tab change
+					subtitleEditor.visible=false;
+					subtitleEditor.includeInLayout=false;
+
+					if (rsoidleTimer)
+						rsoidleTimer.stop();
+				}
 			}
 
 			private function set userAuthenticationHandler(value:Boolean):void
 			{
-				refreshExerciseLists();
+				if (creationComplete)
+					refreshExerciseLists();
 			}
 
 			private function set onURLChange(value:Object):void
 			{
 				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
-
+				
 				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX)
 					return;
+
+				if (value == null)
+					return;
+				
+				if(!dataModel.isLoggedIn)
+					return;
+
+				var actionFragment:String=browser.actionFragment;
+
+				if (actionFragment == BabeliaBrowserManager.SUBTITLE)
+				{
+					if (browser.targetFragment != '')
+					{
+
+						var tempEx:ExerciseVO=null;
+						var exercises:ArrayCollection=dataModel.exercisesWithoutSubtitles;
+						for (var i:int=0; i < exercises.length; i++)
+						{
+							var tmp:ExerciseVO=exercises.getItemAt(i) as ExerciseVO;
+							if (tmp.name == browser.targetFragment)
+							{
+								tempEx=tmp;
+								break;
+							}
+						}
+
+						if (tempEx)
+							currentExercise=tempEx;
+						
+						//Set the current exercise in the subtitle editor
+						prepareExercise();
+					}
+					else
+					{
+						new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+						return;
+					}
+				}
 			}
 		]]>
 	</fx:Script>

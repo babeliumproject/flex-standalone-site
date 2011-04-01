@@ -8,7 +8,8 @@
 		  xmlns:videoPlayer="modules.videoPlayer.*"
 		  width="100%"
 		  minWidth="1000"
-		  creationComplete="completeHandler()" xmlns:skins="skins.*">
+		  creationComplete="completeHandler()"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -31,7 +32,6 @@
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
 			import mx.controls.DataGrid;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
@@ -64,6 +64,7 @@
 			private var _cueManagerReady:Boolean=false;
 
 			private var _timeFormatter:TimeFormatter=new TimeFormatter();
+			private var _creationComplete:Boolean=false;
 
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
@@ -130,6 +131,8 @@
 				refreshEvaluationLists();
 
 				setupVideoPlayer();
+
+				_creationComplete=true;
 			}
 
 			private function setupVideoPlayer():void
@@ -189,12 +192,15 @@
 
 			private function set assessmentSavedHandler(value:Boolean):void
 			{
-				evaluationRatingBox.includeInLayout=false;
-				evaluationRatingBox.visible=false;
+				if (_creationComplete)
+				{
+					evaluationRatingBox.includeInLayout=false;
+					evaluationRatingBox.visible=false;
 
-				resetVideoPlayer();
+					resetVideoPlayer();
 
-				refreshEvaluationLists();
+					refreshEvaluationLists();
+				}
 			}
 
 			private function refreshEvaluationLists():void
@@ -310,10 +316,18 @@
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 
+				prepareWaitingAssessment(selectedItem);
+
+				var urlResponseName:String=_responseName.replace("audio/", "");
+
+				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
+			}
+			
+			private function prepareWaitingAssessment(selectedItem:EvaluationVO):void{
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_exerciseTitle=selectedItem.exerciseTitle;
-
+				
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
@@ -323,26 +337,20 @@
 				
 				//Scroll up to see the video
 				callLater(updateVerticalScroll);
-
+				
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 				_evaluationSelected=true;
-
+				
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-
+				
 				//Prepare the component in which the user leaves the assessment
 				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
 				evaluationRatingBox.responseData(_responseId, _userName, _responseName, _responseAddingDate, _responseUserName, _exerciseTitle);
 				evaluationRatingBox.includeInLayout=true;
 				evaluationRatingBox.visible=true;
-
-
-				var urlResponseName:String=_responseName.replace("audio/", "");
-
-				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
-
 			}
 
 			private function assessedToCurrentUserChangeHandler(event:Event):void
@@ -350,74 +358,88 @@
 				if (DataGrid(event.target).selectedItem is EvaluationVO)
 				{
 					var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-					_exerciseId=selectedItem.exerciseId;
-					_exerciseName=selectedItem.exerciseName;
-					_responseCharacterName=selectedItem.responseCharacterName;
-					_responseId=selectedItem.responseId;
-					_responseName=selectedItem.responseFileIdentifier;
-					_responseSubtitleId=selectedItem.responseSubtitleId;
-
-					_exerciseTitle=selectedItem.exerciseTitle;
-					_evaluationSelected=true;
-
-					//Scroll up to see the video
-					callLater(updateVerticalScroll);
-
-					//Retrieve the associated subtitles and prepare the videoplayer
-					prepareEvaluation();
-
-					//Visualize the video player component
-					videoPlayerBox.includeInLayout=true;
-					videoPlayerBox.visible=true;
-
-					//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
-
-					assessmentsOfSelectedResponse.visible=true;
-					assessmentsOfSelectedResponse.includeInLayout=true;
-
-					//Clear the previous assessment detail data, if any
-					evaluationDetailViewStack.removeAllChildren();
-
-					new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
-
-					//Get the autoevaluation info if available
-					if (!computerEvaluation.initialized)
-						computerEvaluation.initialize();
-					computerEvaluation.setResponseID(_responseId);
+				
+					prepareAssessedToCurrentUser(selectedItem);
 
 					var urlResponseName:String=_responseName.replace("audio/", "");
 
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
 				}
 			}
-
-			private function assessedByCurrentUserChangeHandler(event:Event):void
-			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+			
+			private function prepareAssessedToCurrentUser(selectedItem:EvaluationVO):void{
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-
+				
 				_exerciseTitle=selectedItem.exerciseTitle;
 				_evaluationSelected=true;
-
+				
+				//Scroll up to see the video
+				callLater(updateVerticalScroll);
+				
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-
+				
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-			
-				assessedByUserDetail.evaluationData = selectedItem;
-				assessedByUserDetailContainer.includeInLayout = true;
-				assessedByUserDetailContainer.visible = true;
+				
+				//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
+				
+				assessmentsOfSelectedResponse.visible=true;
+				assessmentsOfSelectedResponse.includeInLayout=true;
+				
+				//Clear the previous assessment detail data, if any
+				evaluationDetailViewStack.removeAllChildren();
+				
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
+				
+				//Get the autoevaluation info if available
+				if (!computerEvaluation.initialized)
+					computerEvaluation.initialize();
+				computerEvaluation.setResponseID(_responseId);
+			}
 
+			private function assessedByCurrentUserChangeHandler(event:Event):void
+			{
+				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+				
+				prepareAssessedByCurrentUser(selectedItem);
+				
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
+			}
+			
+			private function prepareAssessedByCurrentUser(selectedItem:EvaluationVO):void{
+				_exerciseId=selectedItem.exerciseId;
+				_exerciseName=selectedItem.exerciseName;
+				_responseCharacterName=selectedItem.responseCharacterName;
+				_responseId=selectedItem.responseId;
+				_responseName=selectedItem.responseFileIdentifier;
+				_responseSubtitleId=selectedItem.responseSubtitleId;
+				
+				_exerciseTitle=selectedItem.exerciseTitle;
+				_evaluationSelected=true;
+				
+				//Scroll up to see the video
+				callLater(updateVerticalScroll);
+				
+				//Retrieve the associated subtitles and prepare the videoplayer
+				prepareEvaluation();
+				
+				//Visualize the video player component
+				videoPlayerBox.includeInLayout=true;
+				videoPlayerBox.visible=true;
+				
+				assessedByUserDetail.evaluationData=selectedItem;
+				assessedByUserDetailContainer.visible=true;
+				assessedByUserDetailContainer.includeInLayout=true;
+				
 			}
 
 			private function set showAutoevalTab(val:Boolean):void
@@ -455,8 +477,8 @@
 						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
-						assessedByUserDetailContainer.includeInLayout = false;
-						assessedByUserDetailContainer.visible = false;
+						assessedByUserDetailContainer.includeInLayout=false;
+						assessedByUserDetailContainer.visible=false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -473,8 +495,8 @@
 						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-						assessedByUserDetailContainer.includeInLayout = false;
-						assessedByUserDetailContainer.visible = false;
+						assessedByUserDetailContainer.includeInLayout=false;
+						assessedByUserDetailContainer.visible=false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -511,39 +533,42 @@
 
 			private function set userAuthenticationHandler(value:Boolean):void
 			{
-				refreshEvaluationLists();
-
-				resetVideoPlayer();
-
-				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+				if(_creationComplete){
+					refreshEvaluationLists();
+					resetVideoPlayer();
+					evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+				}
 			}
 
 			private function set onTabChange(value:Boolean):void
 			{
-				evaluationRatingBox.includeInLayout=false;
-				evaluationRatingBox.visible=false;
-				assessmentsOfSelectedResponse.visible=false;
-				assessmentsOfSelectedResponse.includeInLayout=false;
+				if (_creationComplete && dataModel.oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX)
+				{
+					evaluationRatingBox.includeInLayout=false;
+					evaluationRatingBox.visible=false;
+					assessmentsOfSelectedResponse.visible=false;
+					assessmentsOfSelectedResponse.includeInLayout=false;
 
-				// Remove selected items
-				waitingAssessmentListAndPagination.evaluationTable.selectedIndex=-1;
-				assessedByCurrentUserListAndPagination.evaluationTable.selectedIndex=-1;
-				assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=-1;
+					// Remove selected items
+					waitingAssessmentListAndPagination.evaluationTable.selectedIndex=-1;
+					assessedByCurrentUserListAndPagination.evaluationTable.selectedIndex=-1;
+					assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=-1;
 
-				//Return the pagination controls to the first page
-				_currentPageWaitingForAssessment=1;
-				_currentPageAssessedByCurrentUser=1;
-				_currentPageAssessedToCurrentUser=1;
+					//Return the pagination controls to the first page
+					_currentPageWaitingForAssessment=1;
+					_currentPageAssessedByCurrentUser=1;
+					_currentPageAssessedToCurrentUser=1;
 
-				assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
-				waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
-				assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
+					assessedToCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedToCurrentUser;
+					waitingAssessmentListAndPagination.currentPaginationPage=_currentPageWaitingForAssessment;
+					assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
-				resetVideoPlayer();
+					resetVideoPlayer();
 
-				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+					evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+				}
 			}
-			
+
 			public function updateVerticalScroll():void
 			{
 				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
@@ -559,18 +584,11 @@
 				if (value == null)
 					return;
 
-				//	if (!dataModel.isLoggedIn)
-				//	{
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
-				//		return;
-				//	}
-
+				if (!dataModel.isLoggedIn)
+					return;
 
 				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
-				{
-					//new ViewChangeEvent(ViewChangeEvent.VIEW_EVALUATION_MODULE).dispatch();
 					return;
-				}
 
 				switch (browser.actionFragment)
 				{
@@ -617,6 +635,7 @@
 
 						if (browser.targetFragment != '')
 						{
+							evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBoxNavContent;
 							var tmpView:EvaluationVO;
 							for each (var evView:EvaluationVO in assessedByCurrentUserList)
 							{
@@ -627,7 +646,7 @@
 									break;
 								}
 							}
-							if (tmpView != null)
+							if (tmpView)
 								callLater(goToSelectedView, [tmpView]);
 						}
 						break;
@@ -639,27 +658,18 @@
 
 			private function goToSelectedEvaluate(tmpEvaluate:EvaluationVO):void
 			{
-				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
-				waitingAssessmentListAndPagination.evaluationTable.selectedItem=tmpEvaluate;
-				waitingAssessmentListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
-			}
-
-			private function goToSelectedView(tmpView:EvaluationVO):void
-			{
-				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBoxNavContent;
-				assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=tmpView;
-				assessedByCurrentUserListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				prepareWaitingAssessment(tmpEvaluate);
+			
 			}
 
 			private function goToSelectedRevise(tmpRevise:EvaluationVO):void
 			{
-				//Go to the speficied tab and dispatch a change event
-				evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
-				assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=tmpRevise;
-				assessedToCurrentUserListAndPagination.evaluationTable.dispatchEvent(new ListEvent(ListEvent.CHANGE));
-
+				prepareAssessedToCurrentUser(tmpRevise);
+			}
+			
+			private function goToSelectedView(tmpView:EvaluationVO):void
+			{
+				prepareAssessedByCurrentUser(tmpView);
 			}
 		]]>
 	</fx:Script>
@@ -767,7 +777,7 @@
 					-->
 					<evaluation:EvaluationRatingBox id="evaluationRatingBox"
 													width="100%"/>
-					
+
 					<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST')}"
 							 styleName="sectionTitleLabel"
 							 id="assessmentPendingListTitleLabel"
@@ -796,7 +806,9 @@
 							  width="100%"
 							  horizontalAlign="right"
 							  gap="0">
-						<s:HGroup width="100%" horizontalAlign="right" paddingRight="16">
+						<s:HGroup width="100%"
+								  horizontalAlign="right"
+								  paddingRight="16">
 							<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
 						</s:HGroup>
 						<s:BorderContainer width="100%"
@@ -820,16 +832,17 @@
 						</s:stroke>
 					</s:Line>
 					<evaluation:CustomItemRendererEvaluationTable id="assessedToCurrentUserListAndPagination"
-														  dataProvider="{assessedToCurrentUserList}"
-														  changeListener="{assessedToCurrentUserChangeHandler}"
-														  itemRenderer="{modules.evaluation.ListItemAssessedToCurrentUser}"
-														  width="100%"/>
+																  dataProvider="{assessedToCurrentUserList}"
+																  changeListener="{assessedToCurrentUserChangeHandler}"
+																  itemRenderer="{modules.evaluation.ListItemAssessedToCurrentUser}"
+																  width="100%"/>
 				</s:VGroup>
 			</s:NavigatorContent>
 
 			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"
 								label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
-				<s:VGroup id="assessedByCurrentUserBox" width="100%">
+				<s:VGroup id="assessedByCurrentUserBox"
+						  width="100%">
 					<s:BorderContainer id="assessedByUserDetailContainer"
 									   width="100%"
 									   minHeight="0"

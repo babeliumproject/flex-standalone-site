@@ -658,6 +658,7 @@ package modules.videoPlayer
 			if (_ns)
 			{
 				_ns.play(false);
+				_video.clear();
 				//_ns.pause();
 				//_ns.seek(0);
 			}

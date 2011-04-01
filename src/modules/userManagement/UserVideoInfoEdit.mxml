@@ -163,6 +163,8 @@
 			{
 
 				VP.endVideo();
+				VP.videoSource = '';
+				VP.autoPlay = false;
 
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;

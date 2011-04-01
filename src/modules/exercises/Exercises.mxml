@@ -532,7 +532,7 @@
 			 **/
 			private function set onTabChange(value:Boolean):void
 			{
-				if(_creationComplete)
+				if(_creationComplete && DataModel.getInstance().oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
 					resetComponent();
 			}
 

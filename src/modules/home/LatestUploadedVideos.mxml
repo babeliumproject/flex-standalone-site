@@ -50,6 +50,7 @@
 				{
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
 				}
+				List(event.target).selectedItem = null;
 				BabeliaBrowserManager.getInstance().parseURL(null);
 			}
 		]]>
