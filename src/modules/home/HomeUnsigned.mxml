@@ -10,9 +10,10 @@
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
-			
+			import events.ViewChangeEvent;
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
@@ -20,10 +21,10 @@
 			import mx.events.IndexChangedEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-			
+
 			import skins.IconButtonVerticalSkin;
 			import skins.StepTabBarSkin;
-			
+
 			import spark.components.NavigatorContent;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
@@ -38,17 +39,20 @@
 			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
 			//private var slideTimer:Timer;
-			
+
 			private var staticMotd:StaticUnsignedMotd;
-			
+
 			[Bindable]
-			private var howToVideoArray:ArrayCollection = new ArrayCollection(new Array('config','record','evaluate','subtitle'));
+			private var howToVideoArray:ArrayCollection=new ArrayCollection(new Array('config', 'record', 'evaluate', 'subtitle'));
+
+			private var creationComplete:Boolean=false;
 
 			protected function onComplete():void
 			{
 				//slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
 				//slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
 				getUnsignedMessagesOfTheDay();
+				creationComplete=true;
 			}
 
 			/* We don't require timed slides at this moment
@@ -68,37 +72,35 @@
 
 			public function getUnsignedMessagesOfTheDay():void
 			{
-				if (!DataModel.getInstance().isLoggedIn)
-					new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
+				new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
 			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
 			{
-				if (!DataModel.getInstance().isLoggedIn)
+
+				messageArray=DataModel.getInstance().messagesOfTheDayData;
+				if (messageArray.length > 0)
 				{
-					messageArray=DataModel.getInstance().messagesOfTheDayData;
-					if (messageArray.length > 0)
-					{
-						//slideTimer.stop();
-						appDescriptionViewStack.removeAllChildren();
-						callLater(addMessagesToContainer);
-					}
-					else
-					{
-						var navc:NavigatorContent=new NavigatorContent();
-						staticMotd = new StaticUnsignedMotd();
-						navc.addElement(staticMotd);
-						appDescriptionViewStack.addChild(navc);
-						navc.label=appDescriptionViewStack.numChildren.toString();
-					}
+					//slideTimer.stop();
+					appDescriptionViewStack.removeAllChildren();
+					callLater(addMessagesToContainer);
 				}
+				else
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					staticMotd=new StaticUnsignedMotd();
+					navc.addElement(staticMotd);
+					appDescriptionViewStack.addChild(navc);
+					navc.label=appDescriptionViewStack.numChildren.toString();
+				}
+
 
 			}
 
 			protected function addMessagesToContainer():void
 			{
 				var navcs:NavigatorContent=new NavigatorContent();
-				staticMotd = new StaticUnsignedMotd();
+				staticMotd=new StaticUnsignedMotd();
 				navcs.addElement(staticMotd);
 				appDescriptionViewStack.addChild(navcs);
 				navcs.label=appDescriptionViewStack.numChildren.toString();
@@ -183,14 +185,17 @@
 						break;
 				}
 			}
-			
-			private function set onTabChange(value:Boolean):void{
-				howToVideoPlayer.stopVideo();
-				howToVideosVS.selectedIndex = 0;
-				staticMotd.staticUnsignedMotdVp.stopVideo();
-				staticMotd.staticUnsignedMotdVp.autoPlay = false;
+
+			private function set onTabChange(value:Boolean):void
+			{
+				if (creationComplete && DataModel.getInstance().oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX)
+				{
+					howToVideoPlayer.stopVideo();
+					howToVideosVS.selectedIndex=0;
+					staticMotd.staticUnsignedMotdVp.stopVideo();
+					staticMotd.staticUnsignedMotdVp.autoPlay=false;
+				}
 			}
-			
 		]]>
 	</fx:Script>
 
@@ -288,7 +293,7 @@
 		<s:Label id="howToVideoLabel"
 				 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
 				 styleName="exerciseTitleLabel"/>
-		
+
 		<videoPlayer:VideoPlayerBabelia id="howToVideoPlayer"
 										skin="white"
 										seek="true"
