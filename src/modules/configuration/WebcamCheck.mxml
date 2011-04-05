@@ -203,59 +203,52 @@
 		</s:stroke>
 	</s:Line>
 
-	<s:HGroup width="100%">
-		<s:VGroup width="100%">
-			<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}"/>
-			<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}"/>
-		</s:VGroup>
-		<s:HGroup horizontalAlign="right"
-				  width="100%">
-			<s:VGroup id="videoPanel"
-					  horizontalAlign="center"
-					  verticalAlign="top">
-				<s:BorderContainer borderStyle="solid"
-								   cornerRadius="3"
-								   backgroundColor="#e9edee">
-					<s:layout>
-						<s:VerticalLayout horizontalAlign="center"
-										  verticalAlign="middle"/>
-					</s:layout>
-					<s:BorderContainer borderStyle="solid"
-									   width="320"
-									   height="240"
-									   backgroundColor="black">
-						<s:layout>
-							<s:VerticalLayout/>
-						</s:layout>
-						<mx:UIComponent id="videoHolder"
-										width="100%"
-										height="100%"/>
-						<s:Label id="statusText"
-								 visible="false"
-								 styleName="errorLabel"/>
-					</s:BorderContainer>
-					<s:HGroup horizontalAlign="center">
-						<s:Button label="REC"
-								  click="recStart()"
-								  buttonMode="true"
-								  horizontalCenter="true"
-								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
+
+	<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE1') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE2')}"/>
+	<s:Label text="{resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE3') +' '+ resourceManager.getString('myResources', 'CONFIGURATION_VIDEO_MESSAGE4')}"/>
+
+
+	<s:BorderContainer borderStyle="solid"
+					   cornerRadius="3"
+					   backgroundColor="#e9edee">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center"
+							  verticalAlign="middle"/>
+		</s:layout>
+		<s:BorderContainer borderStyle="solid"
+						   width="320"
+						   height="240"
+						   backgroundColor="black">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<mx:UIComponent id="videoHolder"
+							width="100%"
+							height="100%"/>
+			<s:Label id="statusText"
+					 visible="false"
+					 styleName="errorLabel"/>
+		</s:BorderContainer>
+		<s:HGroup horizontalAlign="center">
+			<s:Button label="REC"
+					  click="recStart()"
+					  buttonMode="true"
+					  horizontalCenter="true"
+					  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>
-						<s:Button label="PLAY"
-								  click="playStart()"
-								  buttonMode="true"
-								  horizontalCenter="true"
-								  enabled="{!DataModel.getInstance().playing &amp;&amp; 
+			<s:Button label="PLAY"
+					  click="playStart()"
+					  buttonMode="true"
+					  horizontalCenter="true"
+					  enabled="{!DataModel.getInstance().playing &amp;&amp; 
 							   !DataModel.getInstance().recording &amp;&amp;
 							   DataModel.getInstance().permissions}"/>
-					</s:HGroup>
-					<s:VGroup horizontalAlign="center">
-						<s:Label id="contador"
-								 visible="false"/>
-					</s:VGroup>
-				</s:BorderContainer>
-			</s:VGroup>
 		</s:HGroup>
-	</s:HGroup>
+		<s:VGroup horizontalAlign="center">
+			<s:Label id="contador"
+					 visible="false"/>
+		</s:VGroup>
+	</s:BorderContainer>
+
 </s:VGroup>
