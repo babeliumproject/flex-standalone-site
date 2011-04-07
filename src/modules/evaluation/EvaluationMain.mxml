@@ -659,7 +659,6 @@
 			private function goToSelectedEvaluate(tmpEvaluate:EvaluationVO):void
 			{
 				prepareWaitingAssessment(tmpEvaluate);
-			
 			}
 
 			private function goToSelectedRevise(tmpRevise:EvaluationVO):void
@@ -671,6 +670,57 @@
 			{
 				prepareAssessedByCurrentUser(tmpView);
 			}
+			
+//			private function createWaitingAssessment():void{
+//				
+//				var evaluationRatingBox:EvaluationRatingBox = new EvaluationRatingBox();
+//				evaluationRatingBox.percentWidth = 100;
+//				
+//				var assessmentPendingListTitleLabel:Label = new Label();
+//				assessmentPendingListTitleLabel.styleName = "sectionTitleLabel";
+//				assessmentPendingListTitleLabel.text = resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST');
+//				assessmentPendingListTitleLabel.setStyle('paddingTop',16);
+//				
+//				
+//				var colorStroke:SolidColorStroke = new SolidColorStroke();
+//				colorStroke.color = assessmentPendingListTitleLabel.getStyle('color');
+//				colorStroke.weight = 3;
+//				
+//				var assessmentPendingListTitleLine:Line = new Line();
+//				assessmentPendingListTitleLine.stroke = colorStroke;
+//				
+//				
+//				var waitingAssessmentListAndPagination:CustomItemRendererEvaluationTable = new CustomItemRendererEvaluationTable();
+//				waitingAssessmentListAndPagination.dataProvider = waitingForAssessmentList;
+//				waitingAssessmentListAndPagination.changeListener = waitingAssessmentChangeHandler;
+//				waitingAssessmentListAndPagination.itemRenderer = ListItemWaitingForAssessment;
+//				waitingAssessmentListAndPagination.percentWidth = 100;
+//				
+//				var waitingAssessmentBox:VGroup = new VGroup();
+//				waitingAssessmentBox.percentHeight = 100;
+//				waitingAssessmentBox.percentWidth = 100;
+//				
+//				waitingAssessmentBox.addElement(evaluationRatingBox);
+//				waitingAssessmentBox.addElement(assessmentPendingListTitleLabel);
+//				waitingAssessmentBox.addElement(assessmentPendingListTitleLine);
+//				waitingAssessmentBox.addElement(waitingAssessmentListAndPagination);
+//				
+//				var waitingAssessmentBoxNavContent:NavigatorContent = new NavigatorContent();
+//				waitingAssessmentBoxNavContent.label = resourceManager.getString('myResources','EPAITUGABEDAUDENAK');
+//				
+//				waitingAssessmentBoxNavContent.addElement(waitingAssessmentBox);
+//				
+//			}
+//			
+//			private function createAssessedToCurrentUser():void{
+//				
+//			}
+//			
+//			private function createAssessedByCurrentUser():void{
+//				
+//			}
+			
+			
 		]]>
 	</fx:Script>
 

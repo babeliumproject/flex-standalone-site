@@ -4,6 +4,7 @@
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
+require_once 'utils/CosineMeasure.php';
 
 require_once 'vo/ExerciseVO.php';
 require_once 'vo/ExerciseRoleVO.php';
@@ -321,7 +322,9 @@ class SubtitleDAO {
 		foreach ($compareSubject as $cline)
 			$currentText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $cline->text)."\n";
 		foreach ($unmodifiedSubtitlesLines as $uline)
-			$unmodifiedText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $uline->text)."\n"; 
+			$unmodifiedText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $uline->text)."\n";
+		$cosmeas = new CosineMeasure($currentText,$unmodifiedText);
+		$cosmeas->compareTexts(); 
 		$modificationRate = (strlen($unmodifiedText) - similar_text($unmodifiedText, $currentText)) * (strlen($unmodifiedText)/100);
 		
 	}

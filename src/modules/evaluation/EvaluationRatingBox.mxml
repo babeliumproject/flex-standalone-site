@@ -67,7 +67,18 @@
 
 				if (_responseDataAvailable)
 				{
-					if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
+					var compulsoryDataFilled:Boolean=false;
+					if (CONFIG::restricted)
+					{
+						if (userOverallScore.ratingComponent.rating > 0)
+							compulsoryDataFilled=true;
+					}
+					else
+					{
+						if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
+							compulsoryDataFilled=true;
+					}
+					if (compulsoryDataFilled)
 					{
 						if (includeTextCheck.selected && textComment.text == '')
 						{
@@ -117,8 +128,6 @@
 				{
 					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_EVALUATION_DATA_NOT_SPECIFIED'));
 				}
-
-
 			}
 
 			public function resetEvaluationButtonClickHandler(event:MouseEvent):void
