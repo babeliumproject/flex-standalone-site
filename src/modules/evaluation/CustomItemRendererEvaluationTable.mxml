@@ -19,7 +19,7 @@
 			private var _currentPage:int=1;
 
 			[Bindable]
-			private var _dataProvider:ArrayCollection;
+			private var _dataProvider:ArrayCollection = new ArrayCollection();
 
 			public function set currentPaginationPage(value:uint):void
 			{
@@ -30,7 +30,7 @@
 			public function set dataProvider(assessedToCurrentUserData:ArrayCollection):void
 			{
 				_dataProvider=assessedToCurrentUserData;
-				if (_dataProvider.length > 0)
+				if (_dataProvider && _dataProvider.length > 0)
 				{
 					evaluationTable.includeInLayout=true;
 					evaluationTable.visible=true;

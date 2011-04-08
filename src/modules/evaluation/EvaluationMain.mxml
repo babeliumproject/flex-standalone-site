@@ -8,6 +8,7 @@
 		  xmlns:videoPlayer="modules.videoPlayer.*"
 		  width="100%"
 		  minWidth="1000"
+		  preinitialize="preinitializeHandler(event)"
 		  creationComplete="completeHandler()"
 		  xmlns:skins="skins.*">
 
@@ -17,35 +18,40 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.*;
-			
+
 			import model.DataModel;
-			
+
 			import modules.autoevaluation.AutoevaluationPanel;
+			import modules.autoevaluation.Evaluation;
 			import modules.main.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
+			import mx.graphics.SolidColorStroke;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.components.Button;
-			
+			import spark.components.NavigatorContent;
+			import spark.layouts.HorizontalAlign;
+			import spark.primitives.Line;
+
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -119,7 +125,72 @@
 
 			private var computerEvaluation:AutoevaluationPanel=new AutoevaluationPanel();
 
-			//Empty while we have mixed visuals and code
+
+			private var evaluationRatingBox:EvaluationRatingBox;
+			private var assessmentPendingListTitleLabel:Label;
+			private var colorStroke:SolidColorStroke;
+			private var assessmentPendingListTitleLine:Line;
+			private var waitingAssessmentListAndPagination:CustomItemRendererEvaluationTable;
+			private var waitingAssessmentBox:VGroup;
+			private var waitingAssessmentBoxNavContent:NavigatorContent;
+
+
+			private var assessmentsOfSelectedResponseTabBar:TabBar;
+			private var assessmentsOfSelectedResponseHead:HGroup;
+			private var evaluationDetailViewStack:ViewStack;
+			private var assessmentsOfSelectedResponseBox:BorderContainer;
+			private var assessmentsOfSelectedResponse:VGroup;
+			private var assessedToUserListTitleLabel:Label;
+			private var assessedToUserListTitleStroke:SolidColorStroke;
+			private var assessedToUserListTitleLine:Line;
+			private var assessedToCurrentUserListAndPagination:CustomItemRendererEvaluationTable;
+			private var assessedToCurrentUserBox:VGroup;
+			private var assessedToCurrentUserBoxNavContent:NavigatorContent;
+
+
+			private var assessedByUserDetail:EvaluationDetailBox;
+			private var assessedByUserDetailContainer:BorderContainer;
+			private var assessedByUserListTitleLabel:Label;
+			private var assessedByUserListTitleStroke:SolidColorStroke;
+			private var assessedByUserListTitleLine:Line;
+			private var assessedByCurrentUserListAndPagination:CustomItemRendererEvaluationTable;
+			private var assessedByCurrentUserBox:VGroup;
+			private var assessedByCurrentUserBoxNavContent:NavigatorContent;
+
+
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				createWaitingAssessment();
+				createAssessedToCurrentUser();
+				createAssessedByCurrentUser();
+				
+				if (CONFIG::restricted)
+				{
+					if (dataModel.loggedUser.isAdmin == true)
+					{
+						
+						evaluationOptionsViewStack.addChild(waitingAssessmentBoxNavContent);
+						evaluationOptionsViewStack.addChild(assessedToCurrentUserBoxNavContent);
+						evaluationOptionsViewStack.addChild(assessedByCurrentUserBoxNavContent);
+						evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+					}
+					else
+					{
+						evaluationOptionsViewStack.addChild(assessedToCurrentUserBoxNavContent);
+						evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
+					}
+				}
+				else
+				{
+					evaluationOptionsViewStack.addChild(waitingAssessmentBoxNavContent);
+					evaluationOptionsViewStack.addChild(assessedToCurrentUserBoxNavContent);
+					evaluationOptionsViewStack.addChild(assessedByCurrentUserBoxNavContent);
+					evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+				}
+				
+				
+				
+			}
 
 			/**
 			 * Constructor
@@ -151,24 +222,24 @@
 			private function set waitingAssessmentRetrievedHandler(value:Boolean):void
 			{
 				var waDataprovider:ArrayCollection=dataModel.waitingForAssessmentData;
-				//waitingAssessmentDataGrid.rowCount=waDataprovider.length;
 				waitingForAssessmentList=waDataprovider;
+				waitingAssessmentListAndPagination.dataProvider=waitingForAssessmentList;
 				allDataReceived();
 			}
 
 			private function set assessedByCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var abcuDataprovider:ArrayCollection=dataModel.assessedByCurrentUserData;
-				//assessedByCurrentUserDataGrid.rowCount=abcuDataprovider.length;
 				assessedByCurrentUserList=abcuDataprovider;
+				assessedByCurrentUserListAndPagination.dataProvider=assessedByCurrentUserList;
 				allDataReceived();
 			}
 
 			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				var atcuDataprovider:ArrayCollection=dataModel.assessedToCurrentUserData;
-				//assessedToCurrentUserDataGrid.rowCount=atcuDataprovider.length;
 				assessedToCurrentUserList=atcuDataprovider;
+				assessedToCurrentUserListAndPagination.dataProvider=assessedToCurrentUserList;
 				allDataReceived();
 			}
 
@@ -220,9 +291,13 @@
 					assessedByCurrentUserList=new ArrayCollection();
 					assessmentDetailList=new ArrayCollection();
 				}
-				assessmentsOfSelectedResponse.visible=false;
-				evaluationRatingBox.includeInLayout=false;
-				evaluationRatingBox.visible=false;
+				if (assessmentsOfSelectedResponse)
+					assessmentsOfSelectedResponse.visible=false;
+				if (evaluationRatingBox)
+				{
+					evaluationRatingBox.includeInLayout=false;
+					evaluationRatingBox.visible=false;
+				}
 			}
 
 			private function prepareEvaluation():void
@@ -322,30 +397,31 @@
 
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
 			}
-			
-			private function prepareWaitingAssessment(selectedItem:EvaluationVO):void{
+
+			private function prepareWaitingAssessment(selectedItem:EvaluationVO):void
+			{
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_exerciseTitle=selectedItem.exerciseTitle;
-				
+
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseAddingDate=selectedItem.responseAddingDate;
 				_responseUserName=selectedItem.responseUserName;
-				
+
 				//Scroll up to see the video
 				callLater(updateVerticalScroll);
-				
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
 				_evaluationSelected=true;
-				
+
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-				
+
 				//Prepare the component in which the user leaves the assessment
 				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
 				evaluationRatingBox.responseData(_responseId, _userName, _responseName, _responseAddingDate, _responseUserName, _exerciseTitle);
@@ -358,7 +434,7 @@
 				if (DataGrid(event.target).selectedItem is EvaluationVO)
 				{
 					var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				
+
 					prepareAssessedToCurrentUser(selectedItem);
 
 					var urlResponseName:String=_responseName.replace("audio/", "");
@@ -366,38 +442,39 @@
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
 				}
 			}
-			
-			private function prepareAssessedToCurrentUser(selectedItem:EvaluationVO):void{
+
+			private function prepareAssessedToCurrentUser(selectedItem:EvaluationVO):void
+			{
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-				
+
 				_exerciseTitle=selectedItem.exerciseTitle;
 				_evaluationSelected=true;
-				
+
 				//Scroll up to see the video
 				callLater(updateVerticalScroll);
-				
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
+
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-				
+
 				//overallAverageRating.text=resourceManager.getString('myResources', 'AVG') + ": " + selectedItem.overallScoreAverage;
-				
+
 				assessmentsOfSelectedResponse.visible=true;
 				assessmentsOfSelectedResponse.includeInLayout=true;
-				
+
 				//Clear the previous assessment detail data, if any
 				evaluationDetailViewStack.removeAllChildren();
-				
+
 				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
-				
+
 				//Get the autoevaluation info if available
 				if (!computerEvaluation.initialized)
 					computerEvaluation.initialize();
@@ -407,39 +484,40 @@
 			private function assessedByCurrentUserChangeHandler(event:Event):void
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				
+
 				prepareAssessedByCurrentUser(selectedItem);
-				
+
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
 				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
 			}
-			
-			private function prepareAssessedByCurrentUser(selectedItem:EvaluationVO):void{
+
+			private function prepareAssessedByCurrentUser(selectedItem:EvaluationVO):void
+			{
 				_exerciseId=selectedItem.exerciseId;
 				_exerciseName=selectedItem.exerciseName;
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseId=selectedItem.responseId;
 				_responseName=selectedItem.responseFileIdentifier;
 				_responseSubtitleId=selectedItem.responseSubtitleId;
-				
+
 				_exerciseTitle=selectedItem.exerciseTitle;
 				_evaluationSelected=true;
-				
+
 				//Scroll up to see the video
 				callLater(updateVerticalScroll);
-				
+
 				//Retrieve the associated subtitles and prepare the videoplayer
 				prepareEvaluation();
-				
+
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-				
+
 				assessedByUserDetail.evaluationData=selectedItem;
 				assessedByUserDetailContainer.visible=true;
 				assessedByUserDetailContainer.includeInLayout=true;
-				
+
 			}
 
 			private function set showAutoevalTab(val:Boolean):void
@@ -533,10 +611,33 @@
 
 			private function set userAuthenticationHandler(value:Boolean):void
 			{
-				if(_creationComplete){
-					refreshEvaluationLists();
-					resetVideoPlayer();
-					evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+				if (_creationComplete)
+				{
+					if (CONFIG::restricted)
+					{
+						evaluationOptionsViewStack.removeAllChildren();
+						resetVideoPlayer();
+						if (dataModel.loggedUser.isAdmin == true)
+						{
+
+							evaluationOptionsViewStack.addChild(waitingAssessmentBoxNavContent);
+							evaluationOptionsViewStack.addChild(assessedToCurrentUserBoxNavContent);
+							evaluationOptionsViewStack.addChild(assessedByCurrentUserBoxNavContent);
+							evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+						}
+						else
+						{
+							evaluationOptionsViewStack.addChild(assessedToCurrentUserBoxNavContent);
+							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
+						}
+						refreshEvaluationLists();
+					}
+					else
+					{
+						refreshEvaluationLists();
+						resetVideoPlayer();
+						evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+					}
 				}
 			}
 
@@ -564,8 +665,18 @@
 					assessedByCurrentUserListAndPagination.currentPaginationPage=_currentPageAssessedByCurrentUser;
 
 					resetVideoPlayer();
-
-					evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+					
+					if (CONFIG::restricted)
+					{
+						if (dataModel.loggedUser.isAdmin == true)
+							evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+						else
+							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
+					}
+					else
+					{
+						evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
+					}
 				}
 			}
 
@@ -665,62 +776,162 @@
 			{
 				prepareAssessedToCurrentUser(tmpRevise);
 			}
-			
+
 			private function goToSelectedView(tmpView:EvaluationVO):void
 			{
 				prepareAssessedByCurrentUser(tmpView);
 			}
-			
-//			private function createWaitingAssessment():void{
-//				
-//				var evaluationRatingBox:EvaluationRatingBox = new EvaluationRatingBox();
-//				evaluationRatingBox.percentWidth = 100;
-//				
-//				var assessmentPendingListTitleLabel:Label = new Label();
-//				assessmentPendingListTitleLabel.styleName = "sectionTitleLabel";
-//				assessmentPendingListTitleLabel.text = resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST');
-//				assessmentPendingListTitleLabel.setStyle('paddingTop',16);
-//				
-//				
-//				var colorStroke:SolidColorStroke = new SolidColorStroke();
-//				colorStroke.color = assessmentPendingListTitleLabel.getStyle('color');
-//				colorStroke.weight = 3;
-//				
-//				var assessmentPendingListTitleLine:Line = new Line();
-//				assessmentPendingListTitleLine.stroke = colorStroke;
-//				
-//				
-//				var waitingAssessmentListAndPagination:CustomItemRendererEvaluationTable = new CustomItemRendererEvaluationTable();
-//				waitingAssessmentListAndPagination.dataProvider = waitingForAssessmentList;
-//				waitingAssessmentListAndPagination.changeListener = waitingAssessmentChangeHandler;
-//				waitingAssessmentListAndPagination.itemRenderer = ListItemWaitingForAssessment;
-//				waitingAssessmentListAndPagination.percentWidth = 100;
-//				
-//				var waitingAssessmentBox:VGroup = new VGroup();
-//				waitingAssessmentBox.percentHeight = 100;
-//				waitingAssessmentBox.percentWidth = 100;
-//				
-//				waitingAssessmentBox.addElement(evaluationRatingBox);
-//				waitingAssessmentBox.addElement(assessmentPendingListTitleLabel);
-//				waitingAssessmentBox.addElement(assessmentPendingListTitleLine);
-//				waitingAssessmentBox.addElement(waitingAssessmentListAndPagination);
-//				
-//				var waitingAssessmentBoxNavContent:NavigatorContent = new NavigatorContent();
-//				waitingAssessmentBoxNavContent.label = resourceManager.getString('myResources','EPAITUGABEDAUDENAK');
-//				
-//				waitingAssessmentBoxNavContent.addElement(waitingAssessmentBox);
-//				
-//			}
-//			
-//			private function createAssessedToCurrentUser():void{
-//				
-//			}
-//			
-//			private function createAssessedByCurrentUser():void{
-//				
-//			}
-			
-			
+
+			private function createWaitingAssessment():void
+			{
+
+				evaluationRatingBox=new EvaluationRatingBox();
+				evaluationRatingBox.percentWidth=100;
+
+				assessmentPendingListTitleLabel=new Label();
+				assessmentPendingListTitleLabel.styleName="sectionTitleLabel";
+				assessmentPendingListTitleLabel.text=resourceManager.getString('myResources', 'ASSESSMENT_PENDING_RESPONSES_LIST');
+				assessmentPendingListTitleLabel.setStyle('paddingTop', 16);
+
+				colorStroke=new SolidColorStroke();
+				colorStroke.color=assessmentPendingListTitleLabel.getStyle('color');
+				colorStroke.weight=3;
+
+				assessmentPendingListTitleLine=new Line();
+				assessmentPendingListTitleLine.stroke=colorStroke;
+
+				waitingAssessmentListAndPagination=new CustomItemRendererEvaluationTable();
+				//waitingAssessmentListAndPagination.dataProvider = waitingForAssessmentList;
+				waitingAssessmentListAndPagination.changeListener=waitingAssessmentChangeHandler;
+				waitingAssessmentListAndPagination.itemRenderer=ListItemWaitingForAssessment;
+				waitingAssessmentListAndPagination.percentWidth=100;
+
+				waitingAssessmentBox=new VGroup();
+				waitingAssessmentBox.percentHeight=100;
+				waitingAssessmentBox.percentWidth=100;
+
+				waitingAssessmentBox.addElement(evaluationRatingBox);
+				waitingAssessmentBox.addElement(assessmentPendingListTitleLabel);
+				waitingAssessmentBox.addElement(assessmentPendingListTitleLine);
+				waitingAssessmentBox.addElement(waitingAssessmentListAndPagination);
+
+				waitingAssessmentBoxNavContent=new NavigatorContent();
+				waitingAssessmentBoxNavContent.label=resourceManager.getString('myResources', 'EPAITUGABEDAUDENAK');
+				waitingAssessmentBoxNavContent.addElement(waitingAssessmentBox);
+
+			}
+
+			private function createAssessedToCurrentUser():void
+			{
+
+				evaluationDetailViewStack=new ViewStack();
+				evaluationDetailViewStack.percentWidth=100;
+				evaluationDetailViewStack.resizeToContent=true;
+
+				assessmentsOfSelectedResponseBox=new BorderContainer();
+				assessmentsOfSelectedResponseBox.percentWidth=100;
+				assessmentsOfSelectedResponseBox.minHeight=0;
+				assessmentsOfSelectedResponseBox.minWidth=900;
+				assessmentsOfSelectedResponseBox.setStyle('cornerRadius', 8);
+				assessmentsOfSelectedResponseBox.setStyle('backgroundAlpha', 0);
+				assessmentsOfSelectedResponseBox.addElement(evaluationDetailViewStack);
+
+				assessmentsOfSelectedResponseTabBar=new TabBar();
+				assessmentsOfSelectedResponseTabBar.dataProvider=evaluationDetailViewStack;
+
+				assessmentsOfSelectedResponseHead=new HGroup();
+				assessmentsOfSelectedResponseHead.horizontalAlign=HorizontalAlign.RIGHT;
+				assessmentsOfSelectedResponseHead.percentWidth=100;
+				assessmentsOfSelectedResponseHead.paddingRight=16;
+				assessmentsOfSelectedResponseHead.addElement(assessmentsOfSelectedResponseTabBar);
+
+				assessmentsOfSelectedResponse=new VGroup();
+				assessmentsOfSelectedResponse.percentWidth=100;
+				assessmentsOfSelectedResponse.horizontalAlign=HorizontalAlign.RIGHT;
+				assessmentsOfSelectedResponse.gap=0;
+				assessmentsOfSelectedResponse.addElement(assessmentsOfSelectedResponseHead);
+				assessmentsOfSelectedResponse.addElement(assessmentsOfSelectedResponseBox);
+
+				assessedToUserListTitleLabel=new Label();
+				assessedToUserListTitleLabel.text=resourceManager.getString('myResources', 'RESPONSES_ASSESSED_TO_USER_LIST');
+				assessedToUserListTitleLabel.styleName="sectionTitleLabel";
+				assessedToUserListTitleLabel.setStyle('paddingTop', 16);
+
+				assessedToUserListTitleStroke=new SolidColorStroke();
+				assessedToUserListTitleStroke.weight=3;
+				assessedToUserListTitleStroke.color=assessedToUserListTitleLabel.getStyle('color');
+
+				assessedToUserListTitleLine=new Line();
+				assessedToUserListTitleLine.width=assessedToUserListTitleLabel.width;
+				assessedToUserListTitleLine.stroke=assessedToUserListTitleStroke;
+
+				assessedToCurrentUserListAndPagination=new CustomItemRendererEvaluationTable();
+				//assessedToCurrentUserListAndPagination.dataProvider = assessedToCurrentUserList; 
+				assessedToCurrentUserListAndPagination.changeListener=assessedToCurrentUserChangeHandler;
+				assessedToCurrentUserListAndPagination.itemRenderer=ListItemAssessedToCurrentUser;
+				assessedToCurrentUserListAndPagination.percentWidth=100;
+
+				assessedToCurrentUserBox=new VGroup();
+				assessedToCurrentUserBox.percentHeight=100;
+				assessedToCurrentUserBox.percentWidth=100;
+				assessedToCurrentUserBox.addElement(assessmentsOfSelectedResponse);
+				assessedToCurrentUserBox.addElement(assessedToUserListTitleLabel);
+				assessedToCurrentUserBox.addElement(assessedToUserListTitleLine);
+				assessedToCurrentUserBox.addElement(assessedToCurrentUserListAndPagination);
+
+				assessedToCurrentUserBoxNavContent=new NavigatorContent();
+				assessedToCurrentUserBoxNavContent.label=resourceManager.getString('myResources', 'NIRIPAITUTAKOAK');
+				assessedToCurrentUserBoxNavContent.addElement(assessedToCurrentUserBox);
+
+			}
+
+			private function createAssessedByCurrentUser():void
+			{
+
+				assessedByUserDetail=new EvaluationDetailBox();
+				assessedByUserDetail.percentWidth=100;
+
+				assessedByUserDetailContainer=new BorderContainer();
+				assessedByUserDetailContainer.percentWidth=100;
+				assessedByUserDetailContainer.minHeight=0;
+				assessedByUserDetailContainer.minWidth=900;
+				assessedByUserDetailContainer.includeInLayout=false;
+				assessedByUserDetailContainer.visible=false;
+				assessedByUserDetailContainer.setStyle('cornerRadius', 8);
+				assessedByUserDetailContainer.setStyle('backgroundAlpha', 0);
+				assessedByUserDetailContainer.addElement(assessedByUserDetail);
+
+				assessedByUserListTitleLabel=new Label();
+				assessedByUserListTitleLabel.text=resourceManager.getString('myResources', 'RESPONSES_ASSESSED_BY_USER_LIST');
+				assessedByUserListTitleLabel.styleName="sectionTitleLabel";
+				assessedByUserListTitleLabel.setStyle('paddingTop', 16);
+
+				assessedByUserListTitleStroke=new SolidColorStroke();
+				assessedByUserListTitleStroke.weight=3;
+				assessedByUserListTitleStroke.color=assessedByUserListTitleLabel.getStyle('color');
+
+				assessedByUserListTitleLine=new Line();
+				assessedByUserListTitleLine.width=assessedByUserListTitleLabel.width;
+				assessedByUserListTitleLine.stroke=assessedByUserListTitleStroke;
+
+				assessedByCurrentUserListAndPagination=new CustomItemRendererEvaluationTable();
+				//assessedByCurrentUserListAndPagination.dataProvider = assessedByCurrentUserList;
+				assessedByCurrentUserListAndPagination.changeListener=assessedByCurrentUserChangeHandler;
+				assessedByCurrentUserListAndPagination.itemRenderer=ListItemAssessedByCurrentUser;
+				assessedByCurrentUserListAndPagination.percentWidth=100;
+
+				assessedByCurrentUserBox=new VGroup();
+				assessedByCurrentUserBox.percentWidth=100;
+				assessedByCurrentUserBox.addElement(assessedByUserDetailContainer);
+				assessedByCurrentUserBox.addElement(assessedByUserListTitleLabel);
+				assessedByCurrentUserBox.addElement(assessedByUserListTitleLine);
+				assessedByCurrentUserBox.addElement(assessedByCurrentUserListAndPagination);
+
+				assessedByCurrentUserBoxNavContent=new NavigatorContent();
+				assessedByCurrentUserBoxNavContent.label=resourceManager.getString('myResources', 'NIKEPAITUTAKOAK');
+				assessedByCurrentUserBoxNavContent.addElement(assessedByCurrentUserBox);
+
+			}
 		]]>
 	</fx:Script>
 
@@ -816,111 +1027,110 @@
 					  creationPolicy="all"
 					  resizeToContent="true"
 					  change="onEvaluationTabChange(event)">
+			<!--
+						<s:NavigatorContent id="waitingAssessmentBoxNavContent"
+											label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
+							<s:VGroup id="waitingAssessmentBox"
+									  width="100%"
+									  height="100%">
 
-			<s:NavigatorContent id="waitingAssessmentBoxNavContent"
-								label="{resourceManager.getString('myResources','EPAITUGABEDAUDENAK')}">
-				<s:VGroup id="waitingAssessmentBox"
-						  width="100%"
-						  height="100%">
-					<!--
-					<skins:DottedLine width="100%" dotColor="0x000000" dotWidth="1" dotAlpha="1" height="1" />
-					-->
-					<evaluation:EvaluationRatingBox id="evaluationRatingBox"
-													width="100%"/>
+								<evaluation:EvaluationRatingBox id="evaluationRatingBox"
+																width="100%"/>
 
-					<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST')}"
-							 styleName="sectionTitleLabel"
-							 id="assessmentPendingListTitleLabel"
-							 paddingTop="16"/>
-					<s:Line width="{assessmentPendingListTitleLabel.width}">
-						<s:stroke>
-							<mx:SolidColorStroke weight="3"
-												 color="{assessmentPendingListTitleLabel.getStyle('color')}"/>
-						</s:stroke>
-					</s:Line>
-					<evaluation:CustomItemRendererEvaluationTable id="waitingAssessmentListAndPagination"
-																  dataProvider="{waitingForAssessmentList}"
-																  changeListener="{waitingAssessmentChangeHandler}"
-																  itemRenderer="{modules.evaluation.ListItemWaitingForAssessment}"
-																  width="100%"/>
-				</s:VGroup>
-			</s:NavigatorContent>
+								<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_PENDING_RESPONSES_LIST')}"
+										 styleName="sectionTitleLabel"
+										 id="assessmentPendingListTitleLabel"
+										 paddingTop="16"/>
+								<s:Line width="{assessmentPendingListTitleLabel.width}">
+									<s:stroke>
+										<mx:SolidColorStroke weight="3"
+															 color="{assessmentPendingListTitleLabel.getStyle('color')}"/>
+									</s:stroke>
+								</s:Line>
+								<evaluation:CustomItemRendererEvaluationTable id="waitingAssessmentListAndPagination"
+																			  dataProvider="{waitingForAssessmentList}"
+																			  changeListener="{waitingAssessmentChangeHandler}"
+																			  itemRenderer="{modules.evaluation.ListItemWaitingForAssessment}"
+																			  width="100%"/>
+							</s:VGroup>
+						</s:NavigatorContent>
 
 
-			<s:NavigatorContent id="assessedToCurrentUserBoxNavContent"
-								label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
-				<s:VGroup id="assessedToCurrentUserBox"
-						  width="100%"
-						  height="100%">
-					<s:VGroup id="assessmentsOfSelectedResponse"
-							  width="100%"
-							  horizontalAlign="right"
-							  gap="0">
-						<s:HGroup width="100%"
-								  horizontalAlign="right"
-								  paddingRight="16">
-							<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
-						</s:HGroup>
-						<s:BorderContainer width="100%"
-										   minHeight="0"
-										   minWidth="900"
-										   cornerRadius="8"
-										   backgroundAlpha="0">
-							<mx:ViewStack id="evaluationDetailViewStack"
+						<s:NavigatorContent id="assessedToCurrentUserBoxNavContent"
+											label="{resourceManager.getString('myResources','NIRIPAITUTAKOAK')}">
+							<s:VGroup id="assessedToCurrentUserBox"
+									  width="100%"
+									  height="100%">
+								<s:VGroup id="assessmentsOfSelectedResponse"
 										  width="100%"
-										  resizeToContent="true"/>
-						</s:BorderContainer>
-					</s:VGroup>
-					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_TO_USER_LIST')}"
-							 styleName="sectionTitleLabel"
-							 id="assessedToUserListTitleLabel"
-							 paddingTop="16"/>
-					<s:Line width="{assessedToUserListTitleLabel.width}">
-						<s:stroke>
-							<mx:SolidColorStroke weight="3"
-												 color="{assessedToUserListTitleLabel.getStyle('color')}"/>
-						</s:stroke>
-					</s:Line>
-					<evaluation:CustomItemRendererEvaluationTable id="assessedToCurrentUserListAndPagination"
-																  dataProvider="{assessedToCurrentUserList}"
-																  changeListener="{assessedToCurrentUserChangeHandler}"
-																  itemRenderer="{modules.evaluation.ListItemAssessedToCurrentUser}"
-																  width="100%"/>
-				</s:VGroup>
-			</s:NavigatorContent>
+										  horizontalAlign="right"
+										  gap="0">
+									<s:HGroup width="100%"
+											  horizontalAlign="right"
+											  paddingRight="16">
+										<s:TabBar dataProvider="{evaluationDetailViewStack}"/>
+									</s:HGroup>
+									<s:BorderContainer width="100%"
+													   minHeight="0"
+													   minWidth="900"
+													   cornerRadius="8"
+													   backgroundAlpha="0">
+										<mx:ViewStack id="evaluationDetailViewStack"
+													  width="100%"
+													  resizeToContent="true"/>
+									</s:BorderContainer>
+								</s:VGroup>
+								<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_TO_USER_LIST')}"
+										 styleName="sectionTitleLabel"
+										 id="assessedToUserListTitleLabel"
+										 paddingTop="16"/>
+								<s:Line width="{assessedToUserListTitleLabel.width}">
+									<s:stroke>
+										<mx:SolidColorStroke weight="3"
+															 color="{assessedToUserListTitleLabel.getStyle('color')}"/>
+									</s:stroke>
+								</s:Line>
+								<evaluation:CustomItemRendererEvaluationTable id="assessedToCurrentUserListAndPagination"
+																			  dataProvider="{assessedToCurrentUserList}"
+																			  changeListener="{assessedToCurrentUserChangeHandler}"
+																			  itemRenderer="{modules.evaluation.ListItemAssessedToCurrentUser}"
+																			  width="100%"/>
+							</s:VGroup>
+						</s:NavigatorContent>
 
-			<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"
-								label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
-				<s:VGroup id="assessedByCurrentUserBox"
-						  width="100%">
-					<s:BorderContainer id="assessedByUserDetailContainer"
-									   width="100%"
-									   minHeight="0"
-									   minWidth="900"
-									   cornerRadius="8"
-									   backgroundAlpha="0"
-									   includeInLayout="false"
-									   visible="false">
-						<evaluation:EvaluationDetailBox id="assessedByUserDetail"
-														width="100%"/>
-					</s:BorderContainer>
-					<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_BY_USER_LIST')}"
-							 styleName="sectionTitleLabel"
-							 id="assessedByUserListTitleLabel"
-							 paddingTop="16"/>
-					<s:Line width="{assessedByUserListTitleLabel.width}">
-						<s:stroke>
-							<mx:SolidColorStroke weight="3"
-												 color="{assessedByUserListTitleLabel.getStyle('color')}"/>
-						</s:stroke>
-					</s:Line>
-					<evaluation:CustomItemRendererEvaluationTable id="assessedByCurrentUserListAndPagination"
-																  dataProvider="{assessedByCurrentUserList}"
-																  changeListener="{assessedByCurrentUserChangeHandler}"
-																  itemRenderer="{modules.evaluation.ListItemAssessedByCurrentUser}"
-																  width="100%"/>
-				</s:VGroup>
-			</s:NavigatorContent>
+						<s:NavigatorContent id="assessedByCurrentUserBoxNavContent"
+											label="{resourceManager.getString('myResources', 'NIKEPAITUTAKOAK')}">
+							<s:VGroup id="assessedByCurrentUserBox"
+									  width="100%">
+								<s:BorderContainer id="assessedByUserDetailContainer"
+												   width="100%"
+												   minHeight="0"
+												   minWidth="900"
+												   cornerRadius="8"
+												   backgroundAlpha="0"
+												   includeInLayout="false"
+												   visible="false">
+									<evaluation:EvaluationDetailBox id="assessedByUserDetail"
+																	width="100%"/>
+								</s:BorderContainer>
+								<s:Label text="{resourceManager.getString('myResources','RESPONSES_ASSESSED_BY_USER_LIST')}"
+										 styleName="sectionTitleLabel"
+										 id="assessedByUserListTitleLabel"
+										 paddingTop="16"/>
+								<s:Line width="{assessedByUserListTitleLabel.width}">
+									<s:stroke>
+										<mx:SolidColorStroke weight="3"
+															 color="{assessedByUserListTitleLabel.getStyle('color')}"/>
+									</s:stroke>
+								</s:Line>
+								<evaluation:CustomItemRendererEvaluationTable id="assessedByCurrentUserListAndPagination"
+																			  dataProvider="{assessedByCurrentUserList}"
+																			  changeListener="{assessedByCurrentUserChangeHandler}"
+																			  itemRenderer="{modules.evaluation.ListItemAssessedByCurrentUser}"
+																			  width="100%"/>
+							</s:VGroup>
+						</s:NavigatorContent>
+						-->
 
 		</mx:ViewStack>
 	</s:VGroup>
