@@ -1,6 +1,7 @@
 <?php
 
-define('SERVICE_PATH', '/var/www/babelium/services');
+if(!defined('SERVICE_PATH'))
+	define('SERVICE_PATH', '/var/www/babelium/services');
 
 require_once SERVICE_PATH . '/utils/Datasource.php';
 require_once SERVICE_PATH . '/utils/Config.php';
@@ -61,7 +62,7 @@ class UploadExerciseDAO{
 					$outputPath = $this->filePath .'/'. $outputName;
 						
 					try {
-						$this->mediaHelper->transcodeToFlv($path,$outputPath);
+						$encoding_output = $this->mediaHelper->transcodeToFlv($path,$outputPath);
 							
 						//Check if the video already exists
 						if(!$this->checkIfFileExists($outputPath)){
@@ -162,7 +163,7 @@ class UploadExerciseDAO{
 		if($row){
 			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
 			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
-			return $this->conn->insert ($sql, $userId, $exerciseId, 'upload', $row[0]);
+			return $this->conn->_insert ($sql, $userId, $exerciseId, 'upload', $row[0]);
 		} else {
 			return false;
 		}

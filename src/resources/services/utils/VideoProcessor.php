@@ -21,7 +21,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'Config.php';
+if(!defined('SERVICE_PATH'))
+	define('SERVICE_PATH', '/var/www/babelium/services');
+
+require_once SERVICE_PATH . '/utils/Config.php';
 
 /**
  * Helper class to perform media transcoding tasks.
@@ -78,8 +81,8 @@ class VideoProcessor{
 				$this->retrieveAudioInfo($strCmd);
 				$this->retrieveVideoInfo($strCmd);
 				$this->retrieveDuration($strCmd);
-				if($this->mediaContainer->hasVideo)
-				$this->retrieveVideoAspectRatio();
+				if($this->mediaContainer->hasVideo == true)
+					$this->retrieveVideoAspectRatio();
 				return $this->mediaContainer;
 			} else {
 				throw new Exception("Unknown media format");
@@ -97,6 +100,12 @@ class VideoProcessor{
 	private function checkMimeType($filePath){
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
+			
+			//Not always returns accurate info on the mime type
+			//$finfo = finfo_open(FILEINFO_MIME_TYPE);
+    		//$file_mime = finfo_file($finfo, $file_path);
+			//finfo_close($finfo);
+			
 			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
 
 			$implodedOutput = implode($cmd);
@@ -143,7 +152,8 @@ class VideoProcessor{
 	private function isMediaFile($ffmpegOutput){
 		$error1 = strpos($ffmpegOutput, 'Unknown format');
 		$error2 = strpos($ffmpegOutput, 'Error while parsing header');
-		if ($error1 === false && $error2 === false) {
+		$error3 = strpos($ffmpegOutput, 'Invalid data found when processing input');
+		if ($error1 === false && $error2 === false && $error3 === false) {
 			return true;
 		} else {
 			return false;
@@ -181,7 +191,7 @@ class VideoProcessor{
 	 * @param string $ffmpegOutput
 	 */
 	private function retrieveVideoInfo($ffmpegOutput){
-		if(preg_match('/Video: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+, )?([\w\s\/\[\]:]+, )?(\w+\stbr), (\w+\stbn), (\w+\stbc))/s', $ffmpegOutput, $result)){
+		if(preg_match('/Video: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+, )?([\w\s\/\[\]:]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
 			$this->mediaContainer->hasVideo = true;
 			$this->mediaContainer->videoCodec = trim($result[2]);
 			$this->mediaContainer->videoColorspace = trim($result[3]);
@@ -239,7 +249,7 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoAspectRatio(){
 		if(!$this->mediaContainer->hasVideo || !$this->mediaContainer->videoHeight || !$this->mediaContainer->videoWidth)
-		throw new Exception("Operation not allowed on non-video files");
+			throw new Exception("Operation not allowed on non-video files");
 			
 		if($this->mediaContainer->videoWidth > $this->mediaContainer->videoHeight){
 			$originalRatio = $this->mediaContainer->videoWidth / $this->mediaContainer->videoHeight;

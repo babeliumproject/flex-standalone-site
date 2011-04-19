@@ -68,12 +68,7 @@
 				if (_responseDataAvailable)
 				{
 					var compulsoryDataFilled:Boolean=false;
-					if (CONFIG::restricted)
-					{
-						if (userOverallScore.ratingComponent.rating > 0)
-							compulsoryDataFilled=true;
-					}
-					else
+					if (!CONFIG::restricted)
 					{
 						if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
 							compulsoryDataFilled=true;

@@ -51,27 +51,38 @@ switch ($_REQUEST ['action']) {
 	
 	case "upload" :
 		define ('SERVICE_PATH', '/services/');
-		include_once dirname(__FILE__) . SERVICE_PATH ."utils/Config.php";
+		include_once dirname(__FILE__) . SERVICE_PATH . "utils/Config.php";
+		include_once dirname(__FILE__) . SERVICE_PATH . "utils/VideoProcessor.php";
 
 		$settings = new Config();
+		$vp = new VideoProcessor();
 		
 		$file_temp = $_FILES ['file'] ['tmp_name'];
 		$file_name = $_FILES ['file'] ['name'];
 		$file_size = $_FILES ['file'] ['size'];
+		
+		//Filter the filename just in case someone wants to launch some cmd using trickery
+		$file_name = escapeshellcmd($file_name);
 		
 		$file_path = $settings->filePath;
 		
 		$file_max_size = ($settings->maxSize)*1024*1024;
 		$file_max_duration = $settings->maxDuration;
 		
-		//To grab the mimetype we use system(file -bi $path)
-		//must comply with one of the list: video/x-msvideo, video/x-flv
-		
 		//checks for duplicate files
 		if (! file_exists ( $file_path . "/" . $file_name )) {
 			
 			//complete upload
 			$filestatus = move_uploaded_file ( $file_temp, $file_path . "/" . $file_name );
+			
+			//Retrieve the mime type of the uploaded file
+			$cleanPath = $file_path . "/" . $file_name;
+			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
+			$file_mime = implode($cmd);
+			
+			//$finfo = finfo_open(FILEINFO_MIME_TYPE);
+    		//$file_mime = finfo_file($finfo, $file_path . "/" . $file_name);
+			//finfo_close($finfo);
 			
 			if (! $filestatus) {
 				$success = "false";
@@ -84,13 +95,22 @@ switch ($_REQUEST ['action']) {
 				$success = "false";
 				array_push ( $errors, "Maximum video size exceeded. Should be less than ".$settings->maxSize."MB");
 				@unlink($file_path . "/" . $file_name);
-			}else{
-				if (stristr(PHP_OS, 'Linux')){
-					$file_mime = mime_content_type($file_path."/".$file_name);
-				}
-				$data = array($file_path, $file_mime);
-				$success = "true";
-				@chmod($file_path . "/" . $file_name, 0644);
+			} else if (strpos($file_mime, 'video') === false){
+				$success = "false";
+				array_push ( $errors, "Provided file is not a video file.");
+				@unlink($file_path . "/" . $file_name);
+			} else{
+				try{
+					$media = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
+					$data = array($file_path, $file_mime);
+					$success = "true";
+                    @chmod($file_path . "/" . $file_name, 0644);
+                }
+                catch (Exception $e){
+					$success = "false";
+					array_push($errors, "Provided file is not a valid video file.");
+					@unlink($file_path . "/" . $file_name);
+                }
 			}
 		
 		} else {
