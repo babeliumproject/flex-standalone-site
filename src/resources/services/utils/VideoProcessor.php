@@ -114,6 +114,7 @@ class VideoProcessor{
 
 			$validMime = false;
 
+			/*
 			foreach($this->mimeTypes as $mimeType ){
 				if($mimeType == $fileMimeType){
 					//The mime of this file is among the accepted mimes list
@@ -121,6 +122,12 @@ class VideoProcessor{
 					break;
 				}
 			}
+			*/
+			
+			if(strpos($implodedOutput,'video') !== false){
+				$validMime = true;
+			}
+			
 			return $validMime ? $fileMimeType : "Not valid mime type";
 		} else {
 			throw new Exception("Not a file");

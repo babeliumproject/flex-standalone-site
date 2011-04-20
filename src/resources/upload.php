@@ -24,7 +24,7 @@ function return_result($success, $errors, $data) {
 	echo "<results>";
 		echo "<success>".$success."</success>";
 		echo "<data>";
-			echo "<filepath>".$data[0]."</filepath>";
+			echo "<filename>".$data[0]."</filename>";
 			echo "<filemimetype>".$data[1]."</filemimetype>";
 		echo "</data>";
 		echo_errors($errors);
@@ -102,7 +102,7 @@ switch ($_REQUEST ['action']) {
 			} else{
 				try{
 					$media = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
-					$data = array($file_path, $file_mime);
+					$data = array($file_name, $file_mime);
 					$success = "true";
                     @chmod($file_path . "/" . $file_name, 0644);
                 }
@@ -130,14 +130,14 @@ switch ($_REQUEST ['action']) {
 /*
 // We log the upload process so that we can check periodically if something went wrong.
 
-error_log("success = ".$success."\n", 3, "/tmp/error.log");
+error_log("success = ".$success."\n", 3, "/tmp/upload.log");
 for($i=0; $i<count($errors); $i++)
-	error_log("error[".$i."] = ".$errors[$i]."\n", 3, "/tmp/error.log");
+	error_log("error[".$i."] = ".$errors[$i]."\n", 3, "/tmp/upload.log");
 for($j=0; $j<count($data); $j++)
-	error_log("data[".$j."] = ".$data[$j]."\n", 3, "/tmp/error.log");
-error_log("file name = ". $file_name."\n", 3, "/tmp/error.log");
-error_log("file temp = ". $file_temp."\n", 3, "/tmp/error.log");
-error_log("file size = ". $file_size."\n\n", 3, "/tmp/error.log");
+	error_log("data[".$j."] = ".$data[$j]."\n", 3, "/tmp/upload.log");
+error_log("file name = ". $file_name."\n", 3, "/tmp/upload.log");
+error_log("file temp = ". $file_temp."\n", 3, "/tmp/upload.log");
+error_log("file size = ". $file_size."\n\n", 3, "/tmp/upload.log");
 
 */
 

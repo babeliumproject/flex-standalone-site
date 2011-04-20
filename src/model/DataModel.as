@@ -154,6 +154,7 @@ package model
 		[Bindable] public var uploadFinished:Boolean = false;
 		[Bindable] public var uploadFinishedData:Boolean = false;
 		[Bindable] public var uploadErrors:String = '';
+		[Bindable] public var uploadFileName:String = '';
 		
 		
 		[Bindable] public var newExerciseData:ExerciseVO = null;

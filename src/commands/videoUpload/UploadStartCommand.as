@@ -42,12 +42,16 @@ package commands.videoUpload
 			else if (data is DataEvent)
 			{
 				var controlMessage:String=(data as DataEvent).data;
-				//success, data, data.filepath, data.filemimetype, error
+				//success, data, data.filename, data.filemimetype, error
 				var messageXML:XML=new XML(controlMessage);
-				if (messageXML.success == "true")
+				if (messageXML.success == "true"){
 					_dataModel.uploadErrors='';
-				else
+					_dataModel.uploadFileName = messageXML.data.filename;
+				}
+				else{
 					_dataModel.uploadErrors=messageXML.error;
+					_dataModel.uploadFileName = '';
+				}
 				_dataModel.uploadFinishedData=true;
 			}
 		}

@@ -12,21 +12,21 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.validators.Validator;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -239,7 +239,8 @@
 						red5VideoData.description=videoDescription.text;
 						red5VideoData.tags=parseTags(videoTags.text);
 						red5VideoData.language=languageSelector.selectedItem.code;
-						red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
+						//red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
+						red5VideoData.name=DataModel.getInstance().uploadFileName;
 
 						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 						red5VideoData.reference=referenceUrl.text;

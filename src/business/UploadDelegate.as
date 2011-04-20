@@ -37,11 +37,12 @@ package business
 
 		public function browse():void
 		{
-			var videosFilter:FileFilter=new FileFilter("Videos (.avi, .flv, .mp4)", "*.avi;*.flv;*.mp4");
+			//var videosFilter:FileFilter=new FileFilter("Videos (.avi, .flv, .mp4)", "*.avi;*.flv;*.mp4");
 			uploadReference=_dataModel.uploadFileReference;
 			uploadReference.addEventListener(Event.SELECT, onSelectFile);
 			uploadReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
-			uploadReference.browse([videosFilter]);
+			//uploadReference.browse([videosFilter]);
+			uploadReference.browse();
 		}
 
 		public function upload():void
