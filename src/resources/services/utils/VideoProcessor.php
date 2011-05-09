@@ -21,10 +21,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if(!defined('SERVICE_PATH'))
-	define('SERVICE_PATH', '/var/www/babelium/services');
+if(!defined('SERVICE_PATH_VPROC'))
+	define('SERVICE_PATH_VPROC', '/var/www/babelium/services/');
 
-require_once SERVICE_PATH . '/utils/Config.php';
+require_once SERVICE_PATH_VPROC . 'utils/Config.php';
 
 /**
  * Helper class to perform media transcoding tasks.
