@@ -40,11 +40,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/* Codigo base extraido del API del reproductor AS3 de Youtube. Contiene modificaciones
-para adaptarlo a las necesidades de BabeliumProject */
+/*Code extracted from Youtube's AS3 chromeless videoplayer API. Contains modifications to suit 
+BabeliumProject's needs*/
 
     // Member variables.
-    private var cueButton:Button;
+    //private var cueButton:Button;
     //private var isQualityPopulated:Boolean;
     private var isWidescreen:Boolean;
     private var pauseButton:Button;
@@ -69,7 +69,6 @@ para adaptarlo a las necesidades de BabeliumProject */
     
 
     // CONSTANTS.
-    //private static const DEFAULT_VIDEO_ID:String = "0QRO3gKj3qw";
     private static const PLAYER_URL:String =
         "http://www.youtube.com/apiplayer?version=3";
     private static const SECURITY_DOMAIN:String = "http://www.youtube.com";
@@ -110,22 +109,22 @@ para adaptarlo a las necesidades de BabeliumProject */
 	  sliceStopFlag = false;
 	  
       // Create a TextInput field for the YouTube video id, and pre-populate it.
-      videoIdTextInput = new TextInput();
+      /*videoIdTextInput = new TextInput();
       videoIdTextInput.text = YOUTUBE_VIDEO_ID;
       videoIdTextInput.width = 100;
       videoIdTextInput.x = 0;
       videoIdTextInput.y = 10;
-      addChild(videoIdTextInput);
+      addChild(videoIdTextInput);*/
 
       // Create a Button for cueing up the video whose id is specified.
-      cueButton = new Button();
+      /*cueButton = new Button();
       cueButton.enabled = false;
       cueButton.label = resourceManager.getString("myResources","BUTTON_CUEVIDEO");
       cueButton.width = 100;
       cueButton.x = 110;
       cueButton.y = 10;
       cueButton.addEventListener(MouseEvent.CLICK, cueButtonClickHandler);
-      addChild(cueButton);
+      addChild(cueButton);*/
 
       // Create a ComboBox that will contain the list of available playback
       // qualities. Selecting from the ComboBox will change the playback quality
@@ -147,7 +146,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       playButton.label = "Play";
       playButton.width = 80;
       playButton.x = 440;
-      playButton.y = 50;
+      playButton.y = 10;
       playButton.addEventListener(MouseEvent.CLICK, playButtonClickHandler);
       addChild(playButton);
 
@@ -157,7 +156,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       pauseButton.label = "Pause";
       pauseButton.width = 80;
       pauseButton.x = 440;
-      pauseButton.y = 85;
+      pauseButton.y = 45;
       pauseButton.addEventListener(MouseEvent.CLICK, pauseButtonClickHandler);
       addChild(pauseButton);
       
@@ -167,7 +166,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       recordButton.label = "Rec";
       recordButton.width = 80;
       recordButton.x = 440;
-      recordButton.y = 120;
+      recordButton.y = 80;
       recordButton.addEventListener(MouseEvent.CLICK, recordButtonClickHandler);
       addChild(recordButton);
       
@@ -178,7 +177,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       stopRecButton.label = "Stop";
       stopRecButton.width = 80;
       stopRecButton.x = 440;
-      stopRecButton.y = 120;
+      stopRecButton.y = 80;
       stopRecButton.addEventListener(MouseEvent.CLICK, stopRecButtonClickHandler);
       addChild(stopRecButton);
       
@@ -190,7 +189,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       createSliceButton.width = 95;
       createSliceButton.height = 50;
       createSliceButton.x = 433;
-      createSliceButton.y = 170;
+      createSliceButton.y = 130;
       createSliceButton.addEventListener(MouseEvent.CLICK, createSliceButtonClickHandler);
       addChild(createSliceButton);
       
@@ -200,7 +199,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       playSliceButton.label = resourceManager.getString("myResources","BUTTON_PLAYSLICE");
       playSliceButton.width = 80;
       playSliceButton.x = 440;
-      playSliceButton.y = 235;
+      playSliceButton.y = 195;
       playSliceButton.addEventListener(MouseEvent.CLICK, playSliceButtonClickHandler);
       addChild(playSliceButton);
       
@@ -208,7 +207,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       cTimeLbl = new Label();
       cTimeLbl.width = 40;
       cTimeLbl.x = 335;
-      cTimeLbl.y = 375;
+      cTimeLbl.y = 335;
       cTimeLbl.text = "00:00";
       cTimeLbl.visible = false;
       
@@ -216,13 +215,13 @@ para adaptarlo a las necesidades de BabeliumProject */
       spacerLbl.text = "/";
       spacerLbl.width = 10;
       spacerLbl.x = 370;
-      spacerLbl.y = 375;
+      spacerLbl.y = 335;
       spacerLbl.visible = false;
       
       tTimeLbl = new Label();
       tTimeLbl.width = 40;
       tTimeLbl.x = 380;
-      tTimeLbl.y = 375;
+      tTimeLbl.y = 335;
       tTimeLbl.text = "00:00";
       tTimeLbl.visible = false;
       
@@ -233,7 +232,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       // Create the Horizontal time slider
       hslider = new HSlider();
       hslider.x = 0;
-      hslider.y = 385;
+      hslider.y = 345;
       hslider.width = 420;
       hslider.height = 16;
       hslider.allowTrackClick = true;
@@ -283,8 +282,8 @@ para adaptarlo a las necesidades de BabeliumProject */
       //isQualityPopulated = false;
       // Cue up the video once we know whether it's widescreen.
       // Alternatively, you could start playing instead of cueing with
-      // player.loadVideoById(videoIdTextInput.text);
-      player.cueVideoById(videoIdTextInput.text);
+      //player.loadVideoById(YOUTUBE_VIDEO_ID);
+      player.cueVideoById(YOUTUBE_VIDEO_ID);
     }
 
     /*private function qualityComboBoxChangeHandler(event:Event):void {
@@ -292,20 +291,20 @@ para adaptarlo a las necesidades de BabeliumProject */
       player.setPlaybackQuality(qualityLevel);
     }*/
 
-    private function cueButtonClickHandler(event:MouseEvent):void {
-      var request:URLRequest = new URLRequest(YOUTUBE_API_PREFIX +
-                                              videoIdTextInput.text);
-
-      var urlVariables:URLVariables = new URLVariables();
-      urlVariables.v = YOUTUBE_API_VERSION;
-      urlVariables.format = YOUTUBE_API_FORMAT;
-      request.data = urlVariables;
-      
-      try {
-        youtubeApiLoader.load(request);
-      } catch (error:SecurityError) {
-        trace("A SecurityError occurred while loading", request.url);
-      }
+    private function cueVideoRequest():void {
+		var request:URLRequest = new URLRequest(YOUTUBE_API_PREFIX +
+			YOUTUBE_VIDEO_ID);
+		
+		var urlVariables:URLVariables = new URLVariables();
+		urlVariables.v = YOUTUBE_API_VERSION;
+		urlVariables.format = YOUTUBE_API_FORMAT;
+		request.data = urlVariables;
+		
+		try {
+			youtubeApiLoader.load(request);
+		} catch (error:SecurityError) {
+			trace("A SecurityError occurred while loading", request.url);
+		}
     }
 
     private function playButtonClickHandler(event:MouseEvent):void {      
@@ -410,7 +409,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       player = playerLoader.content;
       player.visible = false;
 
-      cueButton.enabled = true;
+      //cueButton.enabled = true;
     }
 
     private function onPlayerError(event:Event):void {
@@ -478,7 +477,7 @@ para adaptarlo a las necesidades de BabeliumProject */
       //player.x = (stage.stageWidth - newWidth) / 2;
       //player.y = (stage.stageHeight - newHeight) / 2;
       player.x = 0;
-      player.y = 50;
+      player.y = 10;
 
       player.visible = true;
       
@@ -506,6 +505,7 @@ para adaptarlo a las necesidades de BabeliumProject */
     	setupUi();
         setupPlayerLoader();
         setupYouTubeApiLoader();
+		cueVideoRequest();
     	
     }
   
