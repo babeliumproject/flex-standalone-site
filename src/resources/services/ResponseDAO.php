@@ -57,7 +57,7 @@ class ResponseDAO {
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
 		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
 
-		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $imagePath, $data->source, $duration, $data->characterName, $data->subtitleId );
+		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $data->fileIdentifier . '.jpg', $data->source, $duration, $data->characterName, $data->subtitleId );
 
 	}
 

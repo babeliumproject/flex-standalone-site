@@ -5,3 +5,8 @@ syntax: regexp
 ^src/resources/services/utils/Config\.php$
 syntax: regexp
 ^dist$
+
+syntax: regexp
+^build\.espantapajaros\.properties$
+syntax: regexp
+^build\.local\.properties$

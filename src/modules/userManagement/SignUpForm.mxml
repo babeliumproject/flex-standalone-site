@@ -176,7 +176,7 @@
 				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
 				{
 					if (iLang.languageCombo.selectedIndex != -1)
-						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
+						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
 				}
 
 
