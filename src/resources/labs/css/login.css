@@ -15,7 +15,7 @@ form{
   -webkit-border-radius:11px;
   border-radius:11px;
   background:#fff;
-  background:url(popup_bgr_unlock.png) no-repeat top right;
+  background:url(images/bp_popup_bgr_unlock.png) no-repeat top right;
   border:1px solid #e5e5e5;
   -moz-box-shadow:rgba(200,200,200,1) 0 4px 18px;
   -webkit-box-shadow:rgba(200,200,200,1) 0 4px 18px;
@@ -61,7 +61,7 @@ form p{
   margin-bottom:24px;
 }
 h1 a{
-  background:url(bp_logo.png) no-repeat top center;
+  background:url(images/bp_logo.png) no-repeat top center;
   width:200px;
   height:176px;
   text-indent:-9999px;
