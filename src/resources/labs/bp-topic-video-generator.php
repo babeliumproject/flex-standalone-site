@@ -76,7 +76,8 @@ $(document).ready(function(){
 			}).keypress();
 		$('#gImageSearchBtn').click(function (event) {
 			var value = $('#gImageSearchTxtf').val();
-			gImagesQuery(value);
+				gImagesQuery(value);
+				searchTopicRelatedWords(value);
 			});
 		/*
 		   $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&jsoncallback=?",function(data){
@@ -86,6 +87,7 @@ $(document).ready(function(){
 		   });
 		   });
 		 */
+		 
 		function gImagesQuery(query){
 			var server = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&";
 			var arg_imgtype = "imgtype=photo";
@@ -104,6 +106,27 @@ $(document).ready(function(){
 					$("#gImageSearchResults").append(html);
 					buildDraggableImageGallery();
 			});
+		}
+
+		//For the time being we'll webscrap cambridge's online dictionaries, since they provide a smart thesaurus
+		function searchTopicRelatedWords(query){
+			var server = "http://dictionary.cambridge.org/search/british/direct/?q=";
+			//Strip the query from unnecessary symbols, replace the whitespaces with - character
+			var filtered_query = query.replace(" ", "-");
+			var query_string = server + filtered_query;
+			alert(query_string);
+			$.get(query_string, function(data,statusText,jqxhr){
+				alert(statusText);
+				parseCambridgePage(data);
+			});
+		}
+
+		function parseCambridgePage(result){
+			//What happens when the topic is not found?
+
+			//What happens if more precise hits are found?
+
+			//If the topic is concrete-most webscrap the related words
 		}
 
 		function buildDraggableImageGallery() {
