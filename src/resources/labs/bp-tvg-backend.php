@@ -95,28 +95,26 @@ function makeImageFromText($text){
 
 
 	// Draw the word/phrase string
+   for($i=0;$i<count($lines);$i++){
+     
+     //Return an 8 item array with the coords of the box as follows when succeeded: lower-left x,y lower-right x,y upper-right x,y upper-left x,y
+     $bbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $font, $text);
+     
+     // This is our cordinates for X and Y
+     $x = $bbox[0] + (imagesx($img) / 2) - ($bbox[4] / 2);
+     $y = $bbox[1] + (imagesy($img)/2) - (($bbox[5]/2)*(count($lines)-(2*$i)));
+     
+     imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, $font, $text);
+     
+   }
+   //Save the image we've just generated
+     
+   //header("Content-type: image/png");
+   //imagepng($img);
 
-	//multiplied by imagesy($img/2) this:
-	//odd series: ...7,5,3,1,-2,-3,-4...
-	//even series: ...6,4,2,0,-2,-4...
-
-	//Return an 8 item array with the coords of the box as follows when succeeded: lower-left x,y lower-right x,y upper-right x,y upper-left x,y
-	$bbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $font, $text);
-
-
-	// This is our cordinates for X and Y
-	$x = $bbox[0] + (imagesx($img) / 2) - ($bbox[4] / 2);
-	$y = $bbox[1] + (imagesy($img) / 2) - ($bbox[5] / 2);
-
-
-	imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, $font, $text);
-
-	// Output the image as a PNG using a header
-	header("Content-type: image/png");
-	imagepng($img);
-
-	// Clean up
-	imagedestroy($img);
+   // Clean up
+   imagedestroy($img);
+	
 }
 
 function buildVideo(){
