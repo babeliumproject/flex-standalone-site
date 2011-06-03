@@ -1,7 +1,8 @@
 <?php
 
-cambridgeDictionaryQuery('climate');
-
+//cambridgeDictionaryQuery('climate');
+//makeImagesWithFoundWords('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'); //34 lowercase chars
+makeImagesWithFoundWords('AAAAAAAAAAAAAAAAAAAAAAAAAA'); //26
 
 function cambridgeDictionaryQuery($query){
 	$base_url = 'http://dictionary.cambridge.org';
@@ -22,7 +23,9 @@ function cambridgeDictionaryQuery($query){
 	$result = curl_exec($ch);
 
 	if(preg_match('/id="cdo-spellcheck-container"/m',$result)){
+		//The term you searched for didn't gave any results decomponse it (if it's possible) and search for individual words
 		return "No results\n";
+		
 	} else {
 		foreach(preg_split("/(\r?\n)/", $result) as $line){
 			//WARNING: I'm not 100% sure this pattern is constant, maybe the <a> tag's attributes exchange order in certain cases.
@@ -44,9 +47,9 @@ function cambridgeDictionaryQuery($query){
 				}
 			}
 			if(count($relatedWords) > 0)
-				return $relatedWords;
-			else 
-				return "No related thesaurus found\n";
+			return $relatedWords;
+			else
+			return "No related thesaurus found\n";
 		} else {
 			return "No related thesaurus found\n";
 		}
@@ -55,8 +58,65 @@ function cambridgeDictionaryQuery($query){
 
 }
 
-function makeImagesWithFoundWords(){
-	//Use gd library to create a set of images with the words given. Store them in the same place as the photos for this video.
+function makeImageFromText($text){
+	define('SLIDE_WIDTH', 720);   // width of image
+	define('SLIDE_HEIGHT', 576);   // height of image
+	define('SLIDE_FONTSIZE', 28);
+	define('SLIDE_TEXTANGLE',0);
+	define('MAX_CHARS_PER_LINE', 30); //calculated for a font size equal to 28 using arial font
+	
+	define('FONT','./arial.ttf');
+	
+	$words = explode(" ",trim($text));
+	$lines = array();
+	if(count($words) <= 1){
+		array_push($lines,trim($text));
+	else {
+		foreach($words as $word){
+			if(strlen($line)+1+strlen($word) <= MAX_CHARS_PER_LINE){
+				$line .= $word.' ';
+			} else {
+				array_push($lines,$line);
+				$line = $word.' ';
+			}
+		}
+	}
+
+	// Create the image
+	$img = imagecreatetruecolor(SLIDE_WIDTH, SLIDE_HEIGHT);
+
+	// Set a white background with black text and gray graphics
+	$bg_color = imagecolorallocate($img, 255, 255, 255);     // white
+	$text_color = imagecolorallocate($img, 0, 0, 0);         // black
+	$graphic_color = imagecolorallocate($img, 64, 64, 64);   // dark gray
+
+	// Fill the background
+	imagefilledrectangle($img, 0, 0, SLIDE_WIDTH, SLIDE_HEIGHT, $bg_color);
+
+
+	// Draw the word/phrase string
+
+	//multiplied by imagesy($img/2) this:
+	//odd series: ...7,5,3,1,-2,-3,-4...
+	//even series: ...6,4,2,0,-2,-4...
+
+	//Return an 8 item array with the coords of the box as follows when succeeded: lower-left x,y lower-right x,y upper-right x,y upper-left x,y
+	$bbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $font, $text);
+
+
+	// This is our cordinates for X and Y
+	$x = $bbox[0] + (imagesx($img) / 2) - ($bbox[4] / 2);
+	$y = $bbox[1] + (imagesy($img) / 2) - ($bbox[5] / 2);
+
+
+	imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, $font, $text);
+
+	// Output the image as a PNG using a header
+	header("Content-type: image/png");
+	imagepng($img);
+
+	// Clean up
+	imagedestroy($img);
 }
 
 function buildVideo(){
@@ -69,7 +129,7 @@ function retrieveSelectedImageFiles($imgUrls){
 	for($i=0; $i<count($imgUrls);$i++){
 		$urlPieces = explode($imgUrls[$i],'/');
 		if(!(count($urlPieces) > 0))
-			return;
+		return;
 			
 		$filename = $urlPieces[count($urlPieces)-1]; //the filename
 		$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
