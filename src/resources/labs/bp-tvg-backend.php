@@ -1,8 +1,9 @@
 <?php
 
+session_start();
+
 //cambridgeDictionaryQuery('climate');
-//makeImagesWithFoundWords('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'); //34 lowercase chars
-makeImagesWithFoundWords('AAAAAAAAAAAAAAAAAAAAAAAAAA'); //26
+makeImageFromText('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod libero vel lacus tristique quis ullamcorper diam ultrices. Ut sit amet tellus dui.'); //26
 
 function cambridgeDictionaryQuery($query){
 	$base_url = 'http://dictionary.cambridge.org';
@@ -25,7 +26,7 @@ function cambridgeDictionaryQuery($query){
 	if(preg_match('/id="cdo-spellcheck-container"/m',$result)){
 		//The term you searched for didn't gave any results decomponse it (if it's possible) and search for individual words
 		return "No results\n";
-		
+
 	} else {
 		foreach(preg_split("/(\r?\n)/", $result) as $line){
 			//WARNING: I'm not 100% sure this pattern is constant, maybe the <a> tag's attributes exchange order in certain cases.
@@ -42,8 +43,8 @@ function cambridgeDictionaryQuery($query){
 			foreach(preg_split("/(\r?\n)/", $result_topic) as $line){
 				preg_match('/<span class="hwd">([^<]+)</ism', $line, $matches);
 				if (count($matches) > 0){
-					//echo $matches[1]."\n";
-					array_push($relatedWords,$matches[1]);
+					if(!array_search($matches[1],$relatedWords))
+						array_push($relatedWords,$matches[1]);
 				}
 			}
 			if(count($relatedWords) > 0)
@@ -64,21 +65,26 @@ function makeImageFromText($text){
 	define('SLIDE_FONTSIZE', 28);
 	define('SLIDE_TEXTANGLE',0);
 	define('MAX_CHARS_PER_LINE', 30); //calculated for a font size equal to 28 using arial font
-	
+
 	define('FONT','./arial.ttf');
-	
+
 	$words = explode(" ",trim($text));
 	$lines = array();
 	if(count($words) <= 1){
 		array_push($lines,trim($text));
-	else {
-		foreach($words as $word){
-			if(strlen($line)+1+strlen($word) <= MAX_CHARS_PER_LINE){
-				$line .= $word.' ';
+	} else {
+		$line = '';
+		for($j=0; $j<count($words); $j++){
+			if(strlen($line)+1+strlen($words[$j]) <= MAX_CHARS_PER_LINE){
+				$line .= $words[$j].' ';
 			} else {
 				array_push($lines,$line);
-				$line = $word.' ';
+				$line = $words[$j].' ';
 			}
+			if($j == count($words) -1){
+				array_push($lines,$line);
+			}
+			//echo $line . "\n";
 		}
 	}
 
@@ -93,28 +99,33 @@ function makeImageFromText($text){
 	// Fill the background
 	imagefilledrectangle($img, 0, 0, SLIDE_WIDTH, SLIDE_HEIGHT, $bg_color);
 
+	$textbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, FONT, $lines[0]);
+	$textbox_height = abs($textbox[3]-$textbox[5]);
+	$image_center_x = imagesx($img)/2;
+	$image_center_y = imagesy($img)/2;
 
 	// Draw the word/phrase string
-   for($i=0;$i<count($lines);$i++){
-     
-     //Return an 8 item array with the coords of the box as follows when succeeded: lower-left x,y lower-right x,y upper-right x,y upper-left x,y
-     $bbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $font, $text);
-     
-     // This is our cordinates for X and Y
-     $x = $bbox[0] + (imagesx($img) / 2) - ($bbox[4] / 2);
-     $y = $bbox[1] + (imagesy($img)/2) - (($bbox[5]/2)*(count($lines)-(2*$i)));
-     
-     imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, $font, $text);
-     
-   }
-   //Save the image we've just generated
-     
-   //header("Content-type: image/png");
-   //imagepng($img);
+	for($i=0;$i<count($lines);$i++){
+			
+		//Return an 8 item array with the coords of the box as follows when succeeded: lower-left x,y lower-right x,y upper-right x,y upper-left x,y
+		$bbox = imagettfbbox(SLIDE_FONTSIZE, SLIDE_TEXTANGLE, FONT, $lines[$i]);
 
-   // Clean up
-   imagedestroy($img);
-	
+		// This is our cordinates for X and Y
+		$x = $image_center_x - abs($bbox[0]-$bbox[2])/2;
+		$y = $image_center_y - (($textbox_height/2)*(count($lines)-2-(2*$i)));
+		imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, FONT, $lines[$i]);
+			
+	}
+	//Save the image we've just generated
+	$folder_hash = md5(session_id()+'date or sth stored in the session');
+	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
+	$_SESSION['temp_folder'] = $folder_abs;
+	if(mkdir($folder_abs))
+		imagepng($img, $folder_abs.'/text'.sprintf("%02d",$i).'.png');
+
+	// Clean up
+	imagedestroy($img);
+
 }
 
 function buildVideo(){
@@ -130,16 +141,18 @@ function retrieveSelectedImageFiles($imgUrls){
 		return;
 			
 		$filename = $urlPieces[count($urlPieces)-1]; //the filename
-		$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
+		//$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
 
 		$imgFile = file_get_contents($imgUrls[$i]);
 
-		$file_loc=$_SERVER['DOCUMENT_ROOT'].'/images/'.$filedir.'/img'.sprintf("%02d",$i);
+		if(isset($_SESSION['temp_folder'])){
+			$file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$i);
 
-		$file_handler=fopen($file_loc,'w');
+			$file_handler=fopen($file_loc,'w');
 
-		if(fwrite($file_handler,$imgFile)==false){
-			echo "Error saving file: ".$imgUrl."\n";
+			if(fwrite($file_handler,$imgFile)==false){
+				echo "Error saving file: ".$imgUrls[$i]."\n";
+			}
 		}
 	}
 }
