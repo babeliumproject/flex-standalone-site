@@ -110,20 +110,24 @@ $(document).ready(function(){
 
 		//For the time being we'll webscrap cambridge's online dictionaries, since they provide a smart thesaurus
 		function searchTopicRelatedWords(query){
-			var server = "http://dictionary.cambridge.org/search/british/direct/?q=";
+			var server = "http://babeliumhtml5/bp-tvg-backend.php?action=querydictionary&query=";
 			//Strip the query from unnecessary symbols, replace the whitespaces with - character
 			var filtered_query = query.replace(" ", "-");
 			var query_string = server + filtered_query;
-			alert(query_string);
-			$.get(query_string, function(data,statusText,jqxhr){
-				alert(statusText);
+			$.getJSON(query_string, function(data){
+				//alert(data);
 				parseCambridgePage(data);
 			});
 		}
 
 		function parseCambridgePage(result){
-			//What happens when the topic is not found?
-
+			//What happens when the topic is not found
+			var html = '<ol id="selectable">';
+			$.each(result, function(i,results){	
+				html += '<li class="ui-widget-content ui-draggable">'+results+'</li>';
+			});
+			html += '</ol>';
+			$("#gImageSearchResults").append(html);
 			//What happens if more precise hits are found?
 
 			//If the topic is concrete-most webscrap the related words

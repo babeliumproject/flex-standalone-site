@@ -3,7 +3,23 @@
 session_start();
 
 //cambridgeDictionaryQuery('climate');
-makeImageFromText('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod libero vel lacus tristique quis ullamcorper diam ultrices. Ut sit amet tellus dui.'); //26
+//makeImageFromText('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod libero vel lacus tristique quis ullamcorper diam ultrices. Ut sit amet tellus dui.'); //26
+
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'default';
+
+if ( !in_array($action, array('querydictionary', 'downloadimages', 'makeimagefromtext','default'), true) )
+	$action = 'default';
+	
+$http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
+switch ($action) {
+	case 'querydictionary':
+		$query = $_GET['query'];
+		echo cambridgeDictionaryQuery($query);
+		break;
+	default:
+		echo 'No action requested';
+		break;
+}
 
 function cambridgeDictionaryQuery($query){
 	$base_url = 'http://dictionary.cambridge.org';
@@ -25,7 +41,7 @@ function cambridgeDictionaryQuery($query){
 
 	if(preg_match('/id="cdo-spellcheck-container"/m',$result)){
 		//The term you searched for didn't gave any results decomponse it (if it's possible) and search for individual words
-		return "No results\n";
+		$results = "No results";
 
 	} else {
 		foreach(preg_split("/(\r?\n)/", $result) as $line){
@@ -48,14 +64,16 @@ function cambridgeDictionaryQuery($query){
 				}
 			}
 			if(count($relatedWords) > 0)
-			return $relatedWords;
+				$results = implode(', ',$relatedWords);
 			else
-			return "No related thesaurus found\n";
+			$results = "No related thesaurus found";
 		} else {
-			return "No related thesaurus found\n";
+			$results = "No related thesaurus found";
 		}
 	}
 	curl_close($ch);
+	return json_encode($results);
+	//return $results;
 
 }
 
