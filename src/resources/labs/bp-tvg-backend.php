@@ -64,7 +64,7 @@ function cambridgeDictionaryQuery($query){
 				}
 			}
 			if(count($relatedWords) > 0)
-				$results = implode(', ',$relatedWords);
+				$results = json_encode($relatedWords);//implode(', ',$relatedWords);
 			else
 			$results = "No related thesaurus found";
 		} else {
@@ -72,8 +72,8 @@ function cambridgeDictionaryQuery($query){
 		}
 	}
 	curl_close($ch);
-	return json_encode($results);
-	//return $results;
+	//return json_encode($results);
+	return $results;
 
 }
 

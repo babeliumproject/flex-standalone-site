@@ -11,58 +11,81 @@
 <meta name='robots' content='noindex,nofollow' />
 
 <style type="text/css">
-      #gallery { 
-	float: left; 
-	width: 65%; 
-	min-height: 12em; 
-      } 
-      * html #gallery { 
-	height: 12em; 
-      } /* IE6 */
-      .gallery.custom-state-active { 
-	background: #eee; 
-      }
-      .gallery li { 
-	float: left; 
-	width: 100px;
-	padding: 0.4em;
-	margin: 0 0.4em 0.4em 0;
-	text-align: center;
-      }
-      .gallery li h5 { 
-	margin: 0 0 0.4em; 
-	cursor: move; 
-      }
-      .gallery li a { 
-	float: right; 
-      }
-      .gallery li a.ui-icon-zoomin { 
-	float: left; 
-      }
-      .gallery li img { 
-	width: 100%; 
-	cursor: move; 
-      }
-
-      #trash { 
-	float: right; 
-	width: 32%; 
-	min-height: 18em; 
-	padding: 1%;
-      } 
-      * html #trash { 
-	height: 18em; 
-      } /* IE6 */
-      #trash h4 { 
-	line-height: 16px; 
-	margin: 0 0 0.4em; 
-      }
-      #trash h4 .ui-icon { 
-	float: left; 
-      }
-      #trash .gallery h5 { 
-	display: none; 
-      }
+    #gallery { 
+		float: none; 
+		width: 90%; 
+		min-height: 12em; 
+    } 
+    * html #gallery { 
+		height: 12em; 
+    } /* IE6 */
+    .gallery.custom-state-active { 
+		background: #eee; 
+    }
+    .gallery li { 
+		float: left; 
+		width: 100px;
+		padding: 0.4em;
+		margin: 0 0.4em 0.4em 0;
+		text-align: center;
+    }
+    .gallery li h5 { 
+		margin: 0 0 0.4em; 
+		cursor: move; 
+    }
+    .gallery li a { 
+		float: right; 
+    }
+    .gallery li a.ui-icon-zoomin { 
+		float: left; 
+    }
+    .gallery li img { 
+		width: 100%; 
+		cursor: move; 
+    }
+	#trash {   
+		min-height: 20em; 
+		margin: 16px 16px 16px 16px;
+    } 
+    * html #trash { 
+		height: 20em; 
+    } /* IE6 */
+    #trash h4 { 
+		line-height: 20px; 
+		margin: 0 0 0.4em; 
+    }
+    #trash h4 .ui-icon { 
+		float: left; 
+    }
+    #trash .gallery h5 { 
+		display: none; 
+    }
+    
+    #feedback {
+    	font-size: 1.4em; 
+    }
+	#selectable .ui-selecting { 
+		background: #FECA40;
+	}
+	#selectable .ui-selected { 
+		background: #F39814; 
+		color: white; 
+	}
+	#selectable { 
+		list-style-type: none; 
+		/*margin: 0;
+		padding: 0;*/
+	}
+	#selectable li { 
+		float: left;
+		margin: 3px;
+		padding: 0.4em;
+		font-size: 1.4em;
+		height: 18px;
+		cursor: move; 
+	}
+    
+    
 </style>
 
 <script type="text/javascript">
@@ -96,13 +119,13 @@ $(document).ready(function(){
 			var query_string = server + arg_imgtype + '&' + arg_resultperpage + '&q=' + query + '&callback=?';
 			$.getJSON(query_string, function(data){
 					$("#gImageSearchResults").empty();
-					var html = '<ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">';
+					var html = '<div id="trash" class="ui-widget-content ui-state-default"><h4 class="ui-widget-header">Selected Images</h4></div><h2>Images related to the provided topic</h2><ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">';
 					$.each(data.responseData.results, function(i,results){
 						html += '<li class="ui-widget-content ui-corner-tr"><img src="'+results.tbUrl+'" width="'+results.tbWidth+'" height="'+results.tbHeight+' "/>';
 						html += '<a href="'+results.url+'" title="View larger image" class="ui-icon ui-icon-zoomin">View larger</a>';
 						html += '<a href="link/to/trash/script/when/we/have/js/off" title="Add image to selection" class="ui-icon ui-icon-plus">Add Image</a></li>';
 						});
-					html +='</ul><div id="trash" class="ui-widget-content ui-state-default"><h4 class="ui-widget-header">Selected Images</h4></div>';
+					html +='</ul>';
 					$("#gImageSearchResults").append(html);
 					buildDraggableImageGallery();
 			});
@@ -122,21 +145,35 @@ $(document).ready(function(){
 
 		function parseCambridgePage(result){
 			//What happens when the topic is not found
-			var html = '<ol id="selectable">';
+			var html = '<h2>Words/phrases related to the provided topic</h2><ol id="selectable">';
 			$.each(result, function(i,results){	
 				html += '<li class="ui-widget-content ui-draggable">'+results+'</li>';
 			});
 			html += '</ol>';
-			$("#gImageSearchResults").append(html);
+			$("#cambridgeSearchResults").empty();
+			$("#cambridgeSearchResults").append(html);
+			buildDraggableWordList();
 			//What happens if more precise hits are found?
 
 			//If the topic is concrete-most webscrap the related words
 		}
 
+		function buildDraggableWordList(){
+			var $words = $('#selectable');
+			$('li',$words).draggable({
+				cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
+				revert: 'invalid', // when not dropped, the item will revert back to its initial position
+				containment: $('#demo-frame').length ? '#demo-frame' : 'document', // stick to demo-frame if present
+				helper: 'clone',
+				cursor: 'move'
+			});
+		}
+
 		function buildDraggableImageGallery() {
 			// there's the gallery and the trash
 			var $gallery = $('#gallery'), $trash = $('#trash');
-
+			
+			
 			// let the gallery items be draggable
 			$('li',$gallery).draggable({
 				cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
@@ -146,9 +183,11 @@ $(document).ready(function(){
 				cursor: 'move'
 			});
 
+			
+
 			// let the trash be droppable, accepting the gallery items
 			$trash.droppable({
-				accept: '#gallery > li',
+				accept: 'li',
 				activeClass: 'ui-state-highlight',
 				drop: function(ev, ui) {
 					deleteImage(ui.draggable);
@@ -164,6 +203,13 @@ $(document).ready(function(){
 				}
 			});
 
+			function addWord($item){
+				$item.fadeOut(function(){
+					var $list = $('ul',$trash).length ? $('ul',$trash) : $('<ul class="gallery ui-helper-reset"/>"').appendTo($trash);
+				});
+			}
+			
+
 			// image deletion function
 			var remove_icon = '<a href="link/to/recycle/script/when/we/have/js/off" title="Remove image from selection" class="ui-icon ui-icon-close">Remove image</a>';
 			function deleteImage($item) {
@@ -172,7 +218,7 @@ $(document).ready(function(){
 
 					$item.find('a.ui-icon-plus').remove();
 					$item.append(remove_icon).appendTo($list).fadeIn(function() {
-						$item.animate({ width: '48px' }).find('img').animate({ height: '36px' });
+						$item.animate({ width: '640px' }).find('img').animate({ height: '480px' });
 					});
 				});
 			}
@@ -232,8 +278,8 @@ $(document).ready(function(){
 <input type="text" id="gImageSearchTxtf" class="input" value="" size="20"/>
 <input type="submit" id="gImageSearchBtn" class="button-primary" value="Search"/>
 </label>
-<div id="gImageSearchResults" class="ui-widget ui-helper-clearfix">
-</div>
+<div id="gImageSearchResults" class="ui-widget ui-helper-clearfix"></div>
+<div id="cambridgeSearchResults"></div>
 
 
 <script type="text/javascript">
