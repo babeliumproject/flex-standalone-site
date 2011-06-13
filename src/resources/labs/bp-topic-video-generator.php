@@ -4,11 +4,13 @@
 <title>Babelium Project: Log In</title>
 <script type="text/javascript" src="js/jquery1.5.1.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
+<script type="text/javascript" src="js/infinitecarousel/jquery.infinitecarousel2.min.js"></script>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name='robots' content='noindex,nofollow' />
+
 <link rel='stylesheet' id='login-css'  href='css/login.css' type='text/css' media='all' />
 <link type="text/css" href="css/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
-<meta name='robots' content='noindex,nofollow' />
 
 <style type="text/css">
     #gallery { 
@@ -90,6 +92,16 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+		$('#carousel').infiniteCarousel({
+			textholderHeight : .25,
+			displayProgressBar : false,
+			thumbnailWidth: '120px',
+			thumbnailHeight: '90px',
+			autoStart: false,
+			showControls: true
+		});
+	
 		$('#gImageSearchTxtf').keypress(function (event) {
 			var value = $(this).val();
 			var key=event.keyCode || event.which; 
@@ -280,6 +292,18 @@ $(document).ready(function(){
 </label>
 <div id="gImageSearchResults" class="ui-widget ui-helper-clearfix"></div>
 <div id="cambridgeSearchResults"></div>
+
+<div id="carousel">
+<ul>
+	<li><img alt="" src="http://www.j83.com/print/large/smoggy.jpg" width="500" height="213" /><p>This carousel has no padding applied to it so you won't see hints for the previous and next images. Also, the progress bar could be disabled by setting just one option on the plugin.</p></li>
+	<li><img alt="" src="http://www.tobacco-news.net/wp-content/uploads/2010/09/smoking-ban.jpg" width="500" height="213" /><p>This is the caption for the second image. The height of the caption box is an option.</p></li>
+	<li><p>Text only, no image what you do then</p></li>
+	<li><img alt="" src="http://blog.silive.com/latest_news/2008/10/large_10-14-atlantic-city.jpg" width="500" height="213" /></li>
+	<li><img alt="" src="http://www.tobaccocampaign.com/wp-content/uploads/2009/07/smoking-ban-failure.jpg" width="500" height="213" /><p>It's not easy being green.</p></li>
+	<li><img alt="" src="http://www.cigarettesflavours.com/wp-content/uploads/2011/05/city-smoking-ban.jpg" width="500" height="213" /></li>
+	<li><img alt="" src="http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2011/1/2/1293987633849/Spain-smoking-ban-008.jpg" width="500" height="213" /><p>You can easily mix images types. Gif, png, and jpeg all work without any issues.</p></li>
+</ul>
+</div>
 
 
 <script type="text/javascript">
