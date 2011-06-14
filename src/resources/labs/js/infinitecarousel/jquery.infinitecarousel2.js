@@ -48,11 +48,15 @@
 			var obj = $(this);
 			var autopilot = o.autoStart;
 
-			var numImages = $('img', obj).length; // Number of images
-			var imgHeight = $('img:first', obj).height();
-			var imgWidth = $('img:first', obj).width();
+			var numImages = $('div', obj).length; // Number of images
+			//var imgHeight = $('div:first > img', obj).height() ? $('div:first > img', obj).height() : 720;
+			//var imgWidth = $('div:first > img', obj).width() ? $('div:first > img', obj).width(): 576;
+			var imgHeight = 576;
+			var imgWidth = 720;
+			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.9+'px','text-align':'center', 'font-size':'2em'});
 
-			if(o.inView > numImages-1) o.inView=numImages-1; // check to make sure inview isnt greater than the number of images. inview should be at least two less than numimages (otherwise hinting wont work and animating left may catch a flash), but one less can work
+			if(o.inView > numImages-1) 
+				o.inView=numImages-1; // check to make sure inview isnt greater than the number of images. inview should be at least two less than numimages (otherwise hinting wont work and animating left may catch a flash), but one less can work
 			$('p', obj).hide(); // Hide any text paragraphs in the carousel
 			$(obj).css({'position':'relative','overflow':'hidden'}).width((imgWidth*o.inView)+(o.inView*parseInt(o.padding)*2)).height(imgHeight+(parseInt(o.padding)*2)); //,'overflow':'hidden'
 			$('ul', obj).css({'list-style':'none','margin':'0','padding':'0','position':'relative'}).width(imgWidth*numImages);
@@ -61,87 +65,11 @@
 			// Move rightmost image over to the left
 			$('li:last', obj).prependTo($('ul', obj));
 			$('ul', obj).css('left',-imgWidth-(parseInt(o.padding)*2)+'px').width(9999);
+			
+			$('li', obj).append('<input type="text" name="Test" value="5" />');
+			$('li > input', obj).css({'display':'block','font-size':'1em','margin-left':'auto','margin-right':'auto'});
 
-			// Build progress bar
-			if(o.displayProgressBar)
-			{
-				$(obj).append('<div id="progress'+randID+'" class="ic-progress-bar" style="position:absolute;bottom:0;background:#bbb;left:0;z-index:1"></div>');
-				$('#progress'+randID).width('100%').height(5).css('opacity','.6');
-			}
-
-			// Animate progress bar
-			function startProgressBar(barTime)
-			{
-				barTime = (barTime==null)? o.displayTime:barTime;
-				$('#progress'+randID).width('100%').height(5);
-				$('#progress'+randID).animate({'width':0},barTime);
-			}
-
-			// Build textholder div(s) as wide as one image and as tall as the textholderHeight option
-			var containerBorder = parseInt($(obj).css('border-bottom-width')) + parseInt($(obj).css('border-top-width'));
-			if(isNaN(containerBorder)) containerBorder = 0; // IE returns NaN for $(obj).css('border-bottom-width')
-			var containerPaddingLeft = parseInt($(obj).css('padding-left')); // Normally we'd do both left and right but only left matters here
-			for(i=1;i<=o.inView;i++)
-			{
-				$(obj).append('<div id="textholder'+randID+'_'+i+'" class="textholder" style="position:absolute;width:'+imgWidth+'px;bottom:0px;margin-bottom:'+-(imgHeight*o.textholderHeight+containerBorder)+'px;"><span></span></div>');
-				$('#textholder'+randID+'_'+i).css({'left':(i-1)*(imgWidth+parseInt(o.padding)*2),'margin-left':parseInt(o.padding)+containerPaddingLeft,'margin-right':o.padding});
-				$('#textholder'+randID+'_'+i).height(imgHeight*o.textholderHeight).css({'backgroundColor':'#FFF','opacity':'0.5'});
-				html = '<div class="minmax" id="minmax'+randID+'_'+i+'" style="width:8px;height:8px;position:absolute;top:1px;right:10px;cursor:pointer;background:url('+o.imagePath+'caption.gif) no-repeat 0 -8px"></div>';
-				html += '<div class="close" id="close'+randID+'_'+i+'" style="width:8px;height:8px;position:absolute;top:1px;right:1px;cursor:pointer;background:url('+o.imagePath+'caption.gif) no-repeat 0 0"></div>';
-				$('#textholder'+randID+'_'+i).append(html);
-				$('#minmax'+randID+'_'+i).hide();
-				$('#close'+randID+'_'+i).hide();
-				if(!o.autoHideCaptions) showtext($('li:eq('+i+') p', obj).html(),i);
-			}
-			var textholderPadding = parseInt($('#textholder'+randID+'_1').css('padding-left')) + parseInt($('#textholder'+randID+'_1').css('padding-right'));
-			if (textholderPadding > 0) $('.textholder',obj).width(imgWidth-textholderPadding);
-
-			$('.close',obj).each(function(i){ // Need to use each() because a loop doesn't work in this situation. see http://www.bennadel.com/blog/534-The-Beauty-Of-The-jQuery-Each-Method.htm
-				$(this).click(function(){$('#textholder'+randID+'_'+(i+1)).animate({marginBottom:(-imgHeight*o.textholderHeight)-containerBorder-1+'px'},500)});
-			});
-			$('.minmax',obj).each(function(i){ // Same reason as previous chunk
-				$(this).click(function(){
-					if(parseInt($('#textholder'+randID+'_'+(i+1)).css('margin-bottom'))==0)
-					{
-						$('#textholder'+randID+'_'+(i+1)).animate({marginBottom:((-imgHeight*o.textholderHeight)-containerBorder+12)+'px'},500,function(){
-							$('#minmax'+randID+'_'+(i+1)).css('background-position','0 -16px')});
-					}
-					else
-					{
-						$('#textholder'+randID+'_'+(i+1)).animate({marginBottom:'0px'},500,function(){
-							$('#minmax'+randID+'_'+(i+1)).css('background-position','0 -8px')});
-					}
-
-				});
-			});
-
-			function showtext(t,i)
-			{
-				if(autopilot)
-				{
-					$('#minmax'+randID+'_'+i).hide();
-					$('#close'+randID+'_'+i).hide();
-				}
-				if(t != null)
-				{
-					$('#textholder'+randID+'_'+i+' span').html(t); // Change textholder content
-					$('#textholder'+randID+'_'+i).stop().animate({marginBottom:'0px'},500); // Raise textholder
-					$('#minmax'+randID+'_'+i).css('background-position','0 -8px');
-					showminmax();
-				}
-			}
-
-			function showminmax()
-			{
-				if(!autopilot)
-				{
-					$('.minmax',obj).fadeIn(250);
-					$('.close',obj).fadeIn(250);
-				}
-			}
-
-			function hideCaption() {$('.textholder',obj).stop().animate({marginBottom:(-imgHeight*o.textholderHeight-containerBorder-1)+'px'},o.transitionSpeed)}
-
+			
 			if(o.displayThumbnails)
 			{
 				function thumbclick(event)
@@ -154,7 +82,9 @@
 						clearTimeout(clearInt);
 						$('#thumbs'+randID+' div').css({'cursor':'default'}).unbind('click'); // Unbind the thumbnail click event until the transition has ended
 						autopilot = 0;
-						setTimeout(function(){$('#play_pause_btn'+randID).css('background-position','0 -16px')},o.transitionSpeed);
+						setTimeout(function(){
+							$('#play_pause_btn'+randID).css('background-position','0 -16px')
+							},o.transitionSpeed);
 						$('#play_pause_btn'+randID).unbind('click').bind('click',function(){forceStart();});
 					}
 					if(target_num[1] > viewable[0])
@@ -192,8 +122,10 @@
 				// Assign click handler for the thumbnails. Normally the format $('.thumb') would work but since it's outside of our object (obj) it would get called multiple times
 				$('#thumbs'+randID+' div').bind('click', thumbclick); // We use bind instead of just plain click so that we can repeatedly remove and reattach the handler
 				
-				if(!o.displayThumbnailNumbers) $('#thumbs'+randID+' div').text('');
-				if(!o.displayThumbnailBackground) $('#thumbs'+randID+' div').css({'background-image':'none'});
+				if(!o.displayThumbnailNumbers) 
+					$('#thumbs'+randID+' div').text('');
+				if(!o.displayThumbnailBackground) 
+					$('#thumbs'+randID+' div').css({'background-image':'none'});
 			}
 
 			if(o.showControls)
@@ -245,6 +177,7 @@
 					$(obj).hover(showcontrols,hidecontrols);
 					hidecontrols();
 				}
+				/*
 				if(o.autoHideCaptions)
 				{
 					var isHover;
@@ -252,7 +185,7 @@
 					function autoHideCap(){isHover=false;hideCaption();}
 					$(obj).hover(autoShowCap,autoHideCap);
 					hideCaption();
-				}
+				}*/
 			}
 
 			function keyBind(){
@@ -306,7 +239,7 @@
 					o.onPauseClick.call(this);
 					$('#play_pause_btn'+randID).fadeTo(250,0,function(){$(this).css({'background-position':'0 -16px','opacity':'.5'});}).animate({opacity:.5},250);
 					autopilot = 0;
-					showminmax();
+					//showminmax();
 					$('#progress'+randID).stop().fadeOut();
 					clearTimeout(clearInt);
 					setTimeout(function(){$('#play_pause_btn'+randID).bind('click',function(){forceStart();})},o.transitionSpeed);
@@ -321,14 +254,21 @@
 					setTimeout(function(){$('#play_pause_btn'+randID).css('background-position','0 0')},o.transitionSpeed-1);
 					autopilot = 1;
 					moveLeft();
-					clearInt=setInterval(function(){moveLeft();},o.displayTime+o.transitionSpeed);
-					setTimeout(function(){$('#play_pause_btn'+randID).bind('click',function(){forcePause();})},o.transitionSpeed);
+					//alert($('li:first > input', obj).attr('value'));
+//					clearInt=setInterval(function(){
+//											moveLeft();
+//										 },$('li:first > input', obj).attr('value')+o.transitionSpeed);
+					setTimeout(function(){
+						$('#play_pause_btn'+randID).bind('click',function(){
+							forcePause();
+							})
+					},o.transitionSpeed);
 				}
 			}
 
 			function preMove()
 			{
-				hideCaption();
+				//hideCaption();
 				// Fade out play/pause/left/right
 				if(o.showControls && o.prevNextInternal)
 				{
@@ -336,7 +276,9 @@
 					$('#btn_lt'+randID).fadeOut(200);
 					$('#btn_rt'+randID).fadeOut(200);
 				}
-				if(o.displayThumbnails) for(i=1;i<=numImages;i++) $('#thumb'+randID+'_'+i).css({'border-color':'#ccc'}).animate({'opacity': .65},500);
+				if(o.displayThumbnails) 
+					for(i=1;i<=numImages;i++) 
+						$('#thumb'+randID+'_'+i).css({'border-color':'#ccc'}).animate({'opacity': .65},500);
 			}
 
 			function postMove()
@@ -348,18 +290,24 @@
 					$('#btn_rt'+randID).fadeIn(200);
 				}
 				keyBind();
-				if(o.autoHideCaptions && isHover) autoShowCap();
-				if(o.displayThumbnails) for(i=0;i<viewable.length;i++) $('#thumb'+randID+'_'+viewable[i]).css({'border-color':'#ff0000'}).animate({'opacity': 1},500);
-				if(!o.autoHideCaptions) for(i=1;i<=o.inView;i++) showtext($('li:eq('+i+') p', obj).html(),i);
-				if(o.displayThumbnails) $('#thumbs'+randID+' div').unbind('click').bind('click', thumbclick).css({'cursor':'pointer'});
+				//if(o.autoHideCaptions && isHover) autoShowCap();
+				if(o.displayThumbnails) 
+					for(i=0;i<viewable.length;i++) 
+						$('#thumb'+randID+'_'+viewable[i]).css({'border-color':'#ff0000'}).animate({'opacity': 1},500);
+				//if(!o.autoHideCaptions) for(i=1;i<=o.inView;i++) showtext($('li:eq('+i+') p', obj).html(),i);
+				if(o.displayThumbnails) 
+					$('#thumbs'+randID+' div').unbind('click').bind('click', thumbclick).css({'cursor':'pointer'});
 				ary=[];
-				for(x=1;x<=o.inView;x++){ary.push($('img:eq('+x+')',obj).attr('src'))}
+				for(x=1;x<=o.inView;x++){
+					ary.push($('img:eq('+x+')',obj).attr('src'))
+				}
 				o.onSlideEnd.call(this,ary);
 			}
 
 			function moveLeft(dist)
 			{
-				if(dist==null) dist=o.advance;
+				if(dist==null) 
+					dist=o.advance;
 				preMove();
 				if(o.displayThumbnails)
 				{
@@ -368,15 +316,25 @@
 						unviewable.push(viewable.shift());
 					}
 				}
-				if(o.displayTime == 0){clearInterval(clearInt);} // If running a contonuous show with no display time, fist clear the interval. Then below, recursively call moveLeft
+//				if(o.displayTime == 0){
+//					clearInterval(clearInt);
+//				} // If running a contonuous show with no display time, fist clear the interval. Then below, recursively call moveLeft
 				$('li:lt('+dist+')', obj).clone(true).insertAfter($('li:last', obj)); // Copy the first image (offscreen to the left) to the end of the list (offscreen to the right)
 				o.onSlideStart.call(this,viewable,'left');
 				$('ul', obj).animate({left:-imgWidth*(dist+1)-(parseInt(o.padding)*(dist+1))*2},o.transitionSpeed,o.easeLeft,function(){ // Animate the entire list to the left
 					$('li:lt('+dist+')', obj).remove(); // When the animation finishes, remove the first image (on the left). It has already been copied to the end of the list (right)
 					$(this).css({'left':-imgWidth-parseInt(o.padding)*2});
-					if(o.displayProgressBar && autopilot) startProgressBar();
+//					if(o.displayProgressBar && autopilot) 
+//						startProgressBar();
 					postMove();
-					if(o.displayTime == 0){moveLeft();}
+//					if(o.displayTime == 0){
+//						moveLeft();
+//					}
+					if(autopilot ){
+					clearInterval(clearInt);
+					clearInt=setInterval(function(){
+						moveLeft();
+					 },$('li:first > input', obj).attr('value')+o.transitionSpeed);}
 				});
 			}
 			function moveRight(dist)
@@ -402,9 +360,15 @@
 			// Kickoff the show
 			if(autopilot)
 			{
-				var clearInt = setInterval(function(){moveLeft();},o.displayTime+o.transitionSpeed);
-				if(o.displayProgressBar) startProgressBar(o.displayTime+o.transitionSpeed);
-			} else {status='pause';$('#play_pause_btn'+randID).css({'background-position':'0 -16px'});}
+				var clearInt = setInterval(function(){
+					moveLeft();
+					},o.displayTime+o.transitionSpeed);
+				if(o.displayProgressBar) 
+					startProgressBar(o.displayTime+o.transitionSpeed);
+			} else {
+				status='pause';
+				$('#play_pause_btn'+randID).css({'background-position':'0 -16px'});
+			}
 			keyBind();
  		});
 	}
