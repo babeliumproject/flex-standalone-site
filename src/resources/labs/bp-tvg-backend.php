@@ -2,14 +2,20 @@
 
 session_start();
 
-//cambridgeDictionaryQuery('climate');
-//makeImageFromText('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod libero vel lacus tristique quis ullamcorper diam ultrices. Ut sit amet tellus dui.'); //26
+
+//Generate a temporal folder for the incoming resources
+if(!isset($_SESSION['temp_folder'])){
+	$folder_hash = md5(session_id());
+	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
+	if(mkdir($folder_abs))
+		$_SESSION['temp_folder'] = $folder_abs;
+}
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'default';
 
 if ( !in_array($action, array('querydictionary', 'downloadimages', 'makeimagefromtext','default'), true) )
-	$action = 'default';
-	
+$action = 'default';
+
 $http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
 switch ($action) {
 	case 'querydictionary':
@@ -60,11 +66,11 @@ function cambridgeDictionaryQuery($query){
 				preg_match('/<span class="hwd">([^<]+)</ism', $line, $matches);
 				if (count($matches) > 0){
 					if(!array_search($matches[1],$relatedWords))
-						array_push($relatedWords,$matches[1]);
+					array_push($relatedWords,$matches[1]);
 				}
 			}
 			if(count($relatedWords) > 0)
-				$results = json_encode($relatedWords);//implode(', ',$relatedWords);
+			$results = json_encode($relatedWords);//implode(', ',$relatedWords);
 			else
 			$results = "No related thesaurus found";
 		} else {
@@ -77,7 +83,7 @@ function cambridgeDictionaryQuery($query){
 
 }
 
-function makeImageFromText($text){
+function makeImageFromText($text, $imageIndex){
 	define('SLIDE_WIDTH', 720);   // width of image
 	define('SLIDE_HEIGHT', 576);   // height of image
 	define('SLIDE_FONTSIZE', 28);
@@ -139,17 +145,79 @@ function makeImageFromText($text){
 	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
 	$_SESSION['temp_folder'] = $folder_abs;
 	if(mkdir($folder_abs))
-		imagepng($img, $folder_abs.'/text'.sprintf("%02d",$i).'.png');
+		imagepng($img, $folder_abs.'/img'.sprintf("%02d",$imageIndex).'.png');
 
 	// Clean up
 	imagedestroy($img);
 
 }
 
-function buildVideo(){
+function whiteImage($imageIndex){
+	//convert -size 640x480 xc:white img.$imageIndex.png
+}
+
+function buildVideo($slides){
 	//Command-line call to melt or ffmpeg. Video format: (Image |5s| Word/Phrase/Phrasal verb |5s|)xN times + White image |2min| explain what you saw in the images
 	//$ melt ABSOLUTE_PATH/*png out=125 -filter luma:%luma01.pgm luma.softness=0.2 -repeat 2 -consumer avformat:OUTPUTFILENAME.EXTENSION b=1500k
+	$slide_arr = json_decode($slides);
+	$video_paths = array();
+	for($i=0; $i<count($slide_arr);$i++){
+		//This slide contains an image
+		if(isset($slide_arr[$i]['url'] && $slide_arr[$i]['url'] != ''){
+			$path = retrieveImageFile($slide_arr[$i]['url'],$i);
+			$video_path = videoFromImage($path, $slide_arr[$i]['time']);
+				
+		} elseif(isset($slide_arr[$i]['text'] && $slide_arr[$i]['text'] != '') {
+			$path = makeImageFromText($slide_arr[$i]['text'],$i);
+			$video_path = videoFromImage($path, $slide_arr[$i]['time']);	
+		} else {
+			$path = whiteImage($i);
+			$video_path = videoFromImage($path, $slide_arr[$i]['time']);
+		}
+		array_push($video_paths,$video_path);
+	}
+	concatVideos($video_paths);
 
+}
+
+function videoFromImage($inputPath,$time){
+	$preset = "ffmpeg -loop_input -f image2 -i %s -acodec pcm_s16le -f s16le -i /dev/zero -r 25 -t %d -s 640x480 %s.flv 2>&1"; 
+	$sysCall = sprintf($preset, $inputPath, $time, $inputPath);
+	$result = (exec($sysCall,$output));
+	return $result;
+}
+
+function concatVideos($video_paths){
+	$call = "mencoder -oac copy -ovc copy -idx -o concat.flv %s 2>&1";
+	$pieces = '';
+	foreach($video_paths as $video_path){
+		$pieces.= $video_path.' ';
+	}
+	$sysCall = sprintf($call, $pieces);
+	$result = (exec($sysCall,$output));
+}
+
+function retrieveImageFile($url, $imageIndex){
+	$urlPieces = explode($url,'/');
+	if(!(count($urlPieces) > 0))
+		return;
+		
+	$filename = $urlPieces[count($urlPieces)-1]; //the filename
+	//$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
+
+	$imgFile = file_get_contents($url);
+
+	if(isset($_SESSION['temp_folder'])){
+		$file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$imageIndex);
+
+		$file_handler=fopen($file_loc,'w');
+
+		if(fwrite($file_handler,$imgFile)==false){
+			return false;
+		} else {
+			return $file_loc;
+		}
+	}
 }
 
 function retrieveSelectedImageFiles($imgUrls){

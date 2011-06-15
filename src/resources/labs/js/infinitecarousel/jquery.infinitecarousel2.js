@@ -51,8 +51,8 @@
 			var numImages = $('div', obj).length; // Number of images
 			//var imgHeight = $('div:first > img', obj).height() ? $('div:first > img', obj).height() : 720;
 			//var imgWidth = $('div:first > img', obj).width() ? $('div:first > img', obj).width(): 576;
-			var imgHeight = 576;
-			var imgWidth = 720;
+			var imgHeight = 480;
+			var imgWidth = 640;
 			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.9+'px','text-align':'center', 'font-size':'2em'});
 
 			if(o.inView > numImages-1) 

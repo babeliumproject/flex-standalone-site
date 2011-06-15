@@ -91,6 +91,20 @@
 </style>
 
 <script type="text/javascript">
+
+function wp_attempt_focus(){
+	setTimeout( function(){ 
+			try{
+			d = document.getElementById('gImageSearchTxtf');
+			d.focus();
+			d.select();
+			} catch(e){
+			}
+			}, 200);
+}
+
+wp_attempt_focus();
+
 $(document).ready(function(){
 
 		$('#carousel').infiniteCarousel({
@@ -115,6 +129,14 @@ $(document).ready(function(){
 				gImagesQuery(value);
 				searchTopicRelatedWords(value);
 			});
+
+		$('#addWordBtn').click(function (event){
+			var value = $('#addWordBtn').val();
+			var html = '<li class="ui-widget-content ui-draggable">'+trim(value)+'</li>';
+			$("#cambridgeSearchResults").append(html);
+		});
+
+		
 		/*
 		   $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&jsoncallback=?",function(data){
 		   $.each(data.items, function(i,item){
@@ -132,11 +154,12 @@ $(document).ready(function(){
 			var query_string = server + arg_imgtype + '&' + arg_resultperpage + '&q=' + query + '&callback=?';
 			$.getJSON(query_string, function(data){
 					$("#gImageSearchResults").empty();
-					var html = '<div id="trash" class="ui-widget-content ui-state-default"><h4 class="ui-widget-header">Selected Images</h4></div><h2>Images related to the provided topic</h2><ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">';
+					var html = '<div id="trash" class="ui-widget-content ui-state-default"><h4 class="ui-widget-header">Drag items here</h4></div>';
+					html += '<h2>Images related to the provided topic</h2>';
+					html += '<ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">';
 					$.each(data.responseData.results, function(i,results){
-						html += '<li class="ui-widget-content ui-corner-tr"><img src="'+results.tbUrl+'" width="'+results.tbWidth+'" height="'+results.tbHeight+' "/>';
-						html += '<a href="'+results.url+'" title="View larger image" class="ui-icon ui-icon-zoomin">View larger</a>';
-						html += '<a href="link/to/trash/script/when/we/have/js/off" title="Add image to selection" class="ui-icon ui-icon-plus">Add Image</a></li>';
+						html += '<li class="ui-widget-content ui-corner-tr"><div><img src="'+results.tbUrl+'" width="'+results.tbWidth+'" height="'+results.tbHeight+' "/>';
+						html += '<a href="'+results.url+'">Image</a></div></li>';
 						});
 					html +='</ul>';
 					$("#gImageSearchResults").append(html);
@@ -158,9 +181,11 @@ $(document).ready(function(){
 
 		function parseCambridgePage(result){
 			//What happens when the topic is not found
-			var html = '<h2>Words/phrases related to the provided topic</h2><ol id="selectable">';
+			var html = '<h2>Words/phrases related to the provided topic</h2>';
+			html += '<label>Add new word:</label><input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
+			html += '<ol id="selectable" class="ui-helper-reset ui-helper-clearfix">';
 			$.each(result, function(i,results){	
-				html += '<li class="ui-widget-content ui-draggable">'+results+'</li>';
+				html += '<li class="ui-widget-content">'+results+'</li>';
 			});
 			html += '</ol>';
 			$("#cambridgeSearchResults").empty();
@@ -180,6 +205,24 @@ $(document).ready(function(){
 				helper: 'clone',
 				cursor: 'move'
 			});
+
+			$words.droppable({
+				accept: '#trash li',
+				activeClass: 'custom-state-active',
+				drop: function(ev, ui) {
+					removeItem(ui.draggable);
+				}
+			});
+
+			function removeItem($item) {
+				$item.fadeOut(function() {
+				//	$item.find('a.ui-icon-close').remove();
+				$item.appendTo($words).fadeIn();
+				//	$item.css('width','96px').append(trash_icon).find('img').css('height','72px').end().appendTo($gallery).fadeIn();
+				});
+			}
+
+			
 		}
 
 		function buildDraggableImageGallery() {
@@ -197,13 +240,12 @@ $(document).ready(function(){
 			});
 
 			
-
 			// let the trash be droppable, accepting the gallery items
 			$trash.droppable({
 				accept: 'li',
 				activeClass: 'ui-state-highlight',
 				drop: function(ev, ui) {
-					deleteImage(ui.draggable);
+					addItem(ui.draggable);
 				}
 			});
 
@@ -212,40 +254,44 @@ $(document).ready(function(){
 				accept: '#trash li',
 				activeClass: 'custom-state-active',
 				drop: function(ev, ui) {
-					recycleImage(ui.draggable);
+					removeImage(ui.draggable);
 				}
 			});
 
+			/*
 			function addWord($item){
 				$item.fadeOut(function(){
 					var $list = $('ul',$trash).length ? $('ul',$trash) : $('<ul class="gallery ui-helper-reset"/>"').appendTo($trash);
+					$item.appendTo($list).fadeIn();
 				});
-			}
+			}*/
 			
 
 			// image deletion function
-			var remove_icon = '<a href="link/to/recycle/script/when/we/have/js/off" title="Remove image from selection" class="ui-icon ui-icon-close">Remove image</a>';
-			function deleteImage($item) {
+			//var remove_icon = '<a href="link/to/recycle/script/when/we/have/js/off" title="Remove image from selection" class="ui-icon ui-icon-close">Remove image</a>';
+			function addItem($item) {
 				$item.fadeOut(function() {
 					var $list = $('ul',$trash).length ? $('ul',$trash) : $('<ul class="gallery ui-helper-reset"/>').appendTo($trash);
-
-					$item.find('a.ui-icon-plus').remove();
-					$item.append(remove_icon).appendTo($list).fadeIn(function() {
-						$item.animate({ width: '640px' }).find('img').animate({ height: '480px' });
-					});
+					$item.appendTo($list).fadeIn();
+					//$item.find('a.ui-icon-plus').remove();
+					//$item.append(remove_icon).appendTo($list).fadeIn(function() {
+						//$item.animate({ width: '640px' }).find('img').animate({ height: '480px' });
+					//});
 				});
 			}
 
 			// image recycle function
-			var trash_icon = '<a href="link/to/trash/script/when/we/have/js/off" title="Delete this image" class="ui-icon ui-icon-plus">Delete image</a>';
-			function recycleImage($item) {
+			//var trash_icon = '<a href="link/to/trash/script/when/we/have/js/off" title="Delete this image" class="ui-icon ui-icon-plus">Delete image</a>';
+			function removeImage($item) {
 				$item.fadeOut(function() {
-					$item.find('a.ui-icon-close').remove();
-					$item.css('width','96px').append(trash_icon).find('img').css('height','72px').end().appendTo($gallery).fadeIn();
+				//	$item.find('a.ui-icon-close').remove();
+				$item.appendTo($gallery).fadeIn();
+				//	$item.css('width','96px').append(trash_icon).find('img').css('height','72px').end().appendTo($gallery).fadeIn();
 				});
 			}
 
 			// image preview function, demonstrating the ui.dialog used as a modal window
+			/*
 			function viewLargerImage($link) {
 				var src = $link.attr('href');
 				var title = $link.siblings('img').attr('alt');
@@ -263,9 +309,10 @@ $(document).ready(function(){
 						});
 					}, 1);
 				}
-			}
+			}*/
 
 			// resolve the icons behavior with event delegation
+			/*
 			$('ul.gallery > li').click(function(ev) {
 				var $item = $(this);
 				var $target = $(ev.target);
@@ -278,8 +325,23 @@ $(document).ready(function(){
 					recycleImage($item);
 				}
 				return false;
-			});
+			});*/
+
+
+			
 	}
+
+		$('#saveSlideshow').click(function (event) {
+			$('#drop-carousel > li').each(function(i){
+				if($('img',this)){
+					alert($('img',this).attr('src')+' time: '+$('input',this).val());
+				} else {
+					alert($('div',this).html()+' time: '+$('input',this).val());
+				}
+				
+				//alert($(this).html());
+			});
+			});
 
 });
 </script>
@@ -292,38 +354,23 @@ $(document).ready(function(){
 <input type="submit" id="gImageSearchBtn" class="button-primary" value="Search"/>
 </label>
 <div id="gImageSearchResults" class="ui-widget ui-helper-clearfix"></div>
-<div id="cambridgeSearchResults"></div>
+<div id="cambridgeSearchResults" class="ui-widget ui-helper-clearfix"></div>
 
 
 
-<div id="carousel">
-<ul>
-	<li><div><img alt="" src="http://www.j83.com/print/large/smoggy.jpg" width="500" height="213" /><p>This carousel has no pa.</p></div></li>
-	<li><div><img alt="" src="http://www.tobacco-news.net/wp-content/uploads/2010/09/smoking-ban.jpg" width="500" height="213" /><p>This is the capt.</p></div></li>
-	<li><div><img alt="" src="http://blog.silive.com/latest_news/2008/10/large_10-14-atlantic-city.jpg" width="500" height="213" /></div></li>
-	<li><div><img alt="" src="http://www.tobaccocampaign.com/wp-content/uploads/2009/07/smoking-ban-failure.jpg" width="500" height="213" /><p>It's not easy being green.</p></div></li>
-	<li><div><img alt="" src="http://www.cigarettesflavours.com/wp-content/uploads/2011/05/city-smoking-ban.jpg" width="500" height="213" /></div></li>
+<div id="carousel" style="width: 640px; height: 480px;">
+<ul id="drop-carousel" class="ui-droppable">
+	<li><div><img alt="" src="http://www.j83.com/print/large/smoggy.jpg" /><p>This carousel has no pa.</p></div></li>
+	<li><div><img alt="" src="http://www.tobacco-news.net/wp-content/uploads/2010/09/smoking-ban.jpg" /><p>This is the capt.</p></div></li>
+	<li><div><img alt="" src="http://blog.silive.com/latest_news/2008/10/large_10-14-atlantic-city.jpg" /></div></li>
+	<li><div><img alt="" src="http://www.tobaccocampaign.com/wp-content/uploads/2009/07/smoking-ban-failure.jpg"  /><p>It's not easy being green.</p></div></li>
+	<li><div><img alt="" src="http://www.cigarettesflavours.com/wp-content/uploads/2011/05/city-smoking-ban.jpg" /></div></li>
 	<li><div>What happens if I put this here</div></li>
-	<li><div><img alt="" src="http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2011/1/2/1293987633849/Spain-smoking-ban-008.jpg" width="500" height="213" /><p>You can easily mix images type.</p></div></li>
+	<li><div><img alt="" src="http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2011/1/2/1293987633849/Spain-smoking-ban-008.jpg" /><p>You can easily mix images type.</p></div></li>
 </ul>
 </div>
+<input type="submit" id="saveSlideshow" value="Save Slideshow"/>
 
-<script type="text/javascript">
-
-function wp_attempt_focus(){
-	setTimeout( function(){ 
-			try{
-			d = document.getElementById('gImageSearchTxtf');
-			d.focus();
-			d.select();
-			} catch(e){
-			}
-			}, 200);
-}
-
-wp_attempt_focus();
-
-</script>
 </body>
 </html>
 
