@@ -33,9 +33,9 @@
 				showControls: true,
 				autoHideControls: false,
 				autoHideCaptions: false,
-				autoStart: true,
+				autoStart: false,
 				prevNextInternal: true,
-				enableKeyboardNav: true,
+				enableKeyboardNav: false,
 				onSlideStart: function(){},
 				onSlideEnd: function(){},
 				onPauseClick: function(){}
@@ -53,12 +53,12 @@
 			//var imgWidth = $('div:first > img', obj).width() ? $('div:first > img', obj).width(): 576;
 			var imgHeight = 480;
 			var imgWidth = 640;
-			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.9+'px','text-align':'center', 'font-size':'2em'});
-
+			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.94+'px','text-align':'center', 'font-size':'2em'});
+			$('img', obj).width(imgWidth).height(imgHeight*0.94);
 			if(o.inView > numImages-1) 
 				o.inView=numImages-1; // check to make sure inview isnt greater than the number of images. inview should be at least two less than numimages (otherwise hinting wont work and animating left may catch a flash), but one less can work
 			$('p', obj).hide(); // Hide any text paragraphs in the carousel
-			$(obj).css({'position':'relative','overflow':'hidden'}).width((imgWidth*o.inView)+(o.inView*parseInt(o.padding)*2)).height(imgHeight+(parseInt(o.padding)*2)); //,'overflow':'hidden'
+			$(obj).css({'border':'solid 1px black','position':'relative','overflow':'hidden', 'margin-left':'auto','margin-right':'auto'}).width((imgWidth*o.inView)+(o.inView*parseInt(o.padding)*2)).height(imgHeight+(parseInt(o.padding)*2)); //,'overflow':'hidden'
 			$('ul', obj).css({'list-style':'none','margin':'0','padding':'0','position':'relative'}).width(imgWidth*numImages);
 			$('li', obj).css({'display':'inline','float':'left','padding':o.padding});
 
@@ -66,8 +66,9 @@
 			$('li:last', obj).prependTo($('ul', obj));
 			$('ul', obj).css('left',-imgWidth-(parseInt(o.padding)*2)+'px').width(9999);
 			
-			$('li', obj).append('<input type="text" name="Test" value="5" />');
-			$('li > input', obj).css({'display':'block','font-size':'1em','margin-left':'auto','margin-right':'auto'});
+			$('li', obj).append('<label>Display time:<input type="text" name="Test" value="5" size="3" /></label>');
+			$('li > label', obj).css({'background-color':'#3B3B3B', 'display':'block','font-size':'1em','margin-left':'auto','margin-right':'auto', 'padding-top':'4px', 'padding-bottom':'4px', 'text-align':'center', 'color':'white'});
+			//$('li > input', obj).css({'display':'block','font-size':'1em','margin-left':'auto','margin-right':'auto'});
 
 			
 			if(o.displayThumbnails)
@@ -102,11 +103,14 @@
 				var viewable = []; // track which images are being displayed
 				var unviewable = []; // track which images are being displayed
 				// Build thumbnail viewer and thumbnail divs
-				$(obj).after('<div id="thumbs'+randID+'" style="position:relative;overflow:auto;clear:left;text-align:left;padding-top:5px;"></div>');
+				$(obj).after('<div id="thumbs'+randID+'" style="position:relative;overflow:auto;clear:left;text-align:center;padding-top:5px;margin-left:auto;margin-right:auto;"></div>');
 				for(i=0;i<=numImages-1;i++)
 				{
-					thumb = $('img:eq('+(i+1)+')', obj).attr('src');
-					$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;background-image:url('+thumb+');display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff">'+(i+1)+'</div>');
+					thumb = $('img:eq('+(i+1)+')', obj).attr('src') ? $('img:eq('+(i+1)+')', obj).attr('src') : '';
+					if(thumb)
+						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;background-image:url('+thumb+');display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff"></div>');
+					else
+						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff"></div>');
 					if(i<=o.inView) $('#thumb'+randID+'_'+i).css({'border-color':'#ff0000'});
 					unviewable.push(i+1);
 				}
@@ -115,7 +119,8 @@
 
 				// Next two lines are a special case to handle the first list element which was originally the last
 				thumb = $('img:first', obj).attr('src');
-				$('#thumb'+randID+'_'+numImages).css({'background-image':'url('+thumb+')'});
+				if(thumb)
+					$('#thumb'+randID+'_'+numImages).css({'background-image':'url('+thumb+')'});
 				$('#thumbs'+randID+' div.thumb:not(:first)').css({opacity:.65}); // makes all thumbs 65% opaque except the first one
 
 				$('#thumbs'+randID+' div.thumb').hover(function(){$(this).animate({'opacity':1},150)},function(){if(viewable[0]!=this.id.split('_')[1]) $(this).animate({'opacity':.65},250)}); // add hover to thumbs
@@ -334,7 +339,7 @@
 					clearInterval(clearInt);
 					clearInt=setInterval(function(){
 						moveLeft();
-					 },$('li:first > input', obj).attr('value')+o.transitionSpeed);}
+					 },$('li:eq('+dist+') > label > input', obj).attr('value')+o.transitionSpeed);}
 				});
 			}
 			function moveRight(dist)
