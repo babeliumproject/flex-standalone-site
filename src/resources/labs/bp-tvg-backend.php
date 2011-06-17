@@ -13,14 +13,23 @@ if(!isset($_SESSION['temp_folder'])){
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'default';
 
-if ( !in_array($action, array('querydictionary', 'downloadimages', 'makeimagefromtext','default'), true) )
+if ( !in_array($action, array('querydictionary', 'downloadimages', 'makeimagefromtext','default', 'saveslideshow'), true) )
 $action = 'default';
 
-$http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
+if(isset($_SERVER['REQUEST_METHOD'])){
+	$http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
+	if($http_post)
+		$res = json_decode($_REQUEST['data'], true);
+}
+//This is not set when we work in cli mode
+
 switch ($action) {
 	case 'querydictionary':
 		$query = $_GET['query'];
 		echo cambridgeDictionaryQuery($query);
+		break;
+	case 'saveslideshow':
+		echo "Result";
 		break;
 	default:
 		echo 'No action requested';
@@ -163,11 +172,11 @@ function buildVideo($slides){
 	$video_paths = array();
 	for($i=0; $i<count($slide_arr);$i++){
 		//This slide contains an image
-		if(isset($slide_arr[$i]['url'] && $slide_arr[$i]['url'] != ''){
+		if(isset($slide_arr[$i]['url']) && $slide_arr[$i]['url'] != ''){
 			$path = retrieveImageFile($slide_arr[$i]['url'],$i);
 			$video_path = videoFromImage($path, $slide_arr[$i]['time']);
 				
-		} elseif(isset($slide_arr[$i]['text'] && $slide_arr[$i]['text'] != '') {
+		} elseif(isset($slide_arr[$i]['text']) && $slide_arr[$i]['text'] != '') {
 			$path = makeImageFromText($slide_arr[$i]['text'],$i);
 			$video_path = videoFromImage($path, $slide_arr[$i]['time']);	
 		} else {

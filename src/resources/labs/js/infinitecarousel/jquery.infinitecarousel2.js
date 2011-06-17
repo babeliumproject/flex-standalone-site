@@ -14,7 +14,7 @@
 		{
 			var defaults = 
 			{
-				transitionSpeed: 800,
+				transitionSpeed: 20,
 				displayTime: 6000,
 				textholderHeight: .25,
 				displayProgressBar: true,
@@ -53,7 +53,7 @@
 			//var imgWidth = $('div:first > img', obj).width() ? $('div:first > img', obj).width(): 576;
 			var imgHeight = 480;
 			var imgWidth = 640;
-			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.94+'px','text-align':'center', 'font-size':'2em'});
+			$('div', obj).css({'width':imgWidth+'px','height':imgHeight*0.94+'px','text-align':'center', 'font-size':'4em'});
 			$('img', obj).width(imgWidth).height(imgHeight*0.94);
 			if(o.inView > numImages-1) 
 				o.inView=numImages-1; // check to make sure inview isnt greater than the number of images. inview should be at least two less than numimages (otherwise hinting wont work and animating left may catch a flash), but one less can work
@@ -71,8 +71,34 @@
 			//$('li > input', obj).css({'display':'block','font-size':'1em','margin-left':'auto','margin-right':'auto'});
 
 			
-			if(o.displayThumbnails)
-			{
+			function goToFirstSlide(auto){
+				target_num = 1; // we want target_num[1]
+				if(viewable[0] != target_num)
+				{
+					status='pause';
+					//$('#progress'+randID).stop().fadeOut();
+					clearTimeout(clearInt);
+					$('#thumbs'+randID+' div').css({'cursor':'default'}).unbind('click'); // Unbind the thumbnail click event until the transition has ended
+					autopilot = 0;
+					setTimeout(function(){
+						$('#play_pause_btn'+randID).css('background-position','0 -16px')
+						},o.transitionSpeed);
+					$('#play_pause_btn'+randID).unbind('click').bind('click',function(){forceStart();});
+				}
+				if(target_num > viewable[0])
+				{
+					diff = target_num - viewable[0];
+					moveLeft(diff);
+				}
+				if(target_num < viewable[0])
+				{
+					diff = viewable[0]- target_num;
+					moveRight(diff);
+				}
+				autopilot = auto;
+			}
+			
+			
 				function thumbclick(event)
 				{
 					target_num = this.id.split('_'); // we want target_num[1]
@@ -105,25 +131,37 @@
 				// Build thumbnail viewer and thumbnail divs
 				$(obj).after('<div id="thumbs'+randID+'" style="position:relative;overflow:auto;clear:left;text-align:center;padding-top:5px;margin-left:auto;margin-right:auto;"></div>');
 				for(i=0;i<=numImages-1;i++)
-				{
-					thumb = $('img:eq('+(i+1)+')', obj).attr('src') ? $('img:eq('+(i+1)+')', obj).attr('src') : '';
+				{		
+					thumb = $('div:eq('+(i+1)+') > img', obj).attr('src') ? $('img:eq('+(i+1)+')', obj).attr('src') : '';
+					thtext = $('div:eq('+(i+1)+')', obj).html() ? $('div:eq('+(i+1)+')', obj).html(): '' ;
 					if(thumb)
-						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;background-image:url('+thumb+');display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff"></div>');
+						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff"><img src="'+thumb+'" width="120" heigth="90"/></div>');
 					else
-						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff"></div>');
-					if(i<=o.inView) $('#thumb'+randID+'_'+i).css({'border-color':'#ff0000'});
+						$('#thumbs'+randID).append('<div class="thumb" id="thumb'+randID+'_'+(i+1)+'" style="cursor:pointer;display:inline;float:left;width:'+o.thumbnailWidth+';height:'+o.thumbnailHeight+';line-height:'+o.thumbnailHeight+';padding:0;overflow:hidden;text-align:center;border:2px solid #ccc;margin-right:4px;font-size:'+o.thumbnailFontSize+';font-family:Arial;color:#000;text-shadow:0 0 3px #fff">'+thtext+'</div>');
+					//Put red border to the thumbs whose images are displayed
+					if(i<=o.inView) 
+						$('#thumb'+randID+'_'+i).css({'border-color':'#ff0000'});
 					unviewable.push(i+1);
 				}
 				// Initialize viewable/unviewable arrays
-				for(i=1;i<=o.inView;i++) viewable.push(unviewable.shift());
+				for(i=1;i<=o.inView;i++) 
+					viewable.push(unviewable.shift());
 
 				// Next two lines are a special case to handle the first list element which was originally the last
-				thumb = $('img:first', obj).attr('src');
+				thumb = $('div:first > img', obj).attr('src') ? $('div:first > img', obj).attr('src') : '';
+				text = $('div:first', obj).html() ? $('div:first', obj).html() : '';
 				if(thumb)
-					$('#thumb'+randID+'_'+numImages).css({'background-image':'url('+thumb+')'});
+					$('#thumb'+randID+'_'+numImages).empty().append('<img src="'+thumb+'" width="120" heigth="90"/>');//.css({'background-image':'url('+thumb+')'});
+				else
+					$('#thumb'+randID+'_'+numImages).empty().append(text);
 				$('#thumbs'+randID+' div.thumb:not(:first)').css({opacity:.65}); // makes all thumbs 65% opaque except the first one
 
-				$('#thumbs'+randID+' div.thumb').hover(function(){$(this).animate({'opacity':1},150)},function(){if(viewable[0]!=this.id.split('_')[1]) $(this).animate({'opacity':.65},250)}); // add hover to thumbs
+				$('#thumbs'+randID+' div.thumb').hover(function(){
+					$(this).animate({'opacity':1},150)},
+									function(){
+										if(viewable[0]!=this.id.split('_')[1]) 
+											$(this).animate({'opacity':.65},250)}
+									); // add hover to thumbs
 				// Assign click handler for the thumbnails. Normally the format $('.thumb') would work but since it's outside of our object (obj) it would get called multiple times
 				$('#thumbs'+randID+' div').bind('click', thumbclick); // We use bind instead of just plain click so that we can repeatedly remove and reattach the handler
 				
@@ -131,7 +169,7 @@
 					$('#thumbs'+randID+' div').text('');
 				if(!o.displayThumbnailBackground) 
 					$('#thumbs'+randID+' div').css({'background-image':'none'});
-			}
+			
 
 			if(o.showControls)
 			{
@@ -253,6 +291,7 @@
 
 			function forceStart()
 			{
+				goToFirstSlide(1);
 				$('#play_pause_btn'+randID).unbind('click'); // unbind the click, wait for transition, then reenable
 				if(!autopilot)
 				{

@@ -137,7 +137,7 @@ $(document).ready(function(){
 				autoStart: false,
 				showControls: true
 			});
-			$('#drop-carousel').droppable();
+			//$('#drop-carousel').droppable();
 		}
 
 		$('#secondStep').hide();
@@ -151,8 +151,8 @@ $(document).ready(function(){
 			}).keypress();
 		$('#gImageSearchBtn').click(function (event) {
 			var value = $('#gImageSearchTxtf').val();
-				gImagesQuery(value);
-				searchTopicRelatedWords(value);
+			gImagesQuery(value);
+			searchTopicRelatedWords(value);
 		});
 
 		/*
@@ -206,9 +206,18 @@ $(document).ready(function(){
 			//Strip the query from unnecessary symbols, replace the whitespaces with - character
 			var filtered_query = query.replace(" ", "-");
 			var query_string = server + filtered_query;
+			$("#cambridgeSearchResults").empty();
 			$.getJSON(query_string, function(data){
-				//alert(data);
 				parseCambridgePage(data);
+			}).success(function() { 
+				//alert("second success"); 
+			}).error(function() { 
+				var html = '<h2>Words/phrases related to the provided topic</h2>';
+				html += '<label>Add new text:</label><input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
+				html += '<ol id="selectable" class="ui-helper-reset ui-helper-clearfix"></ol>';
+				$("#cambridgeSearchResults").append(html);
+				buildDraggableWordList();
+				addWordClickHandler();
 			});
 		}
 
@@ -221,7 +230,7 @@ $(document).ready(function(){
 				html += '<li class="ui-widget-content"><div>'+results+'</div></li>';
 			});
 			html += '</ol>';
-			$("#cambridgeSearchResults").empty();
+			
 			$("#cambridgeSearchResults").append(html);
 			buildDraggableWordList();
 			addWordClickHandler();
@@ -406,18 +415,24 @@ $(document).ready(function(){
 	}
 		$('#makeSlideshow').click(function (event){
 			var html = '';
+			//Clear previous carousel
 			$('#drop-carousel').empty();
-			$('#trash > ul > li').each(function(i){
+			$("div[id^=thumbs]").remove();
+			$("div[id^=play_pause_btn]").remove();
+			$("div[id^=btn_rt]").remove();
+			$("div[id^=btn_lt]").remove();
+			//Add items to the soon-to-be carousel container
+			$('#trash > ul > li').each(function(j){
 				var isImage = false;
 				for (i=0; i<gImages.length;i++){
 					if($(this).attr('id') == gImages[i].imageId){
-						html +='<li><div><img src="'+gImages[i].url+'" /></div></li>';
+						html +='<li><div id="slide_'+j+'"><img src="'+gImages[i].url+'" /></div></li>';
 						isImage = true;
 						break;
 					}
 				}
 				if(!isImage){
-					html += '<li><div>'+$('div',this).html()+'</div></li>';
+					html += '<li><div id="slide_'+j+'">'+$('div',this).html()+'</div></li>';
 				}
 			});
 			$('#firstStep').hide();
@@ -432,15 +447,17 @@ $(document).ready(function(){
 		});
 
 		$('#saveSlideshow').click(function (event) {
+			var jsonObj = []; //declare array
 			$('#drop-carousel > li').each(function(i){
-				if($(this).has('img')){
-					alert($('img',this).attr('src')+' time: '+$('input',this).val());
-				} else {
-					alert($('div',this).html()+' time: '+$('input',this).val());
-				}
-				
-				//alert($(this).html());
+				jsonObj.push({index: $('div',this).attr('id').split('_')[1], img: $('img',this).attr('src'), text: $('div',this).html(), diplayTime: $('input',this).val()});
 			});
+			var server = "http://babeliumhtml5/bp-tvg-backend.php?action=saveslideshow";
+			$.post(server, {data: jsonObj}, function(res){
+			    //var obj = $.evalJSON(res);
+			    //if(obj.somebool === true)
+			    //  $("#result").html(obj.hello + ' ' + obj.array[1] + obj.worked + ". Message from PHP: "+obj.php_message);
+			  });
+			console.log(jsonObj);
 		});
 
 });
