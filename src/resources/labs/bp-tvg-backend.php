@@ -2,26 +2,25 @@
 
 session_start();
 
-
-//Generate a temporal folder for the incoming resources
-if(!isset($_SESSION['temp_folder'])){
-	$folder_hash = md5(session_id());
-	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
-	if(mkdir($folder_abs))
-		$_SESSION['temp_folder'] = $folder_abs;
-}
-
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'default';
 
-if ( !in_array($action, array('querydictionary', 'downloadimages', 'makeimagefromtext','default', 'saveslideshow'), true) )
+if ( !in_array($action, array('querydictionary', 'saveslideshow'), true) )
 $action = 'default';
 
 if(isset($_SERVER['REQUEST_METHOD'])){
 	$http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
-	if($http_post)
-		$res = json_decode($_REQUEST['data'], true);
+	if($http_post){
+		if(isset($_POST['data'])){
+			$post_data = $_POST['data'];
+			if(is_string($post_data))
+			{
+				$res = json_decode($_POST['data'], true);
+			} else {
+				$res = $post_data;
+			}
+		}
+	}
 }
-//This is not set when we work in cli mode
 
 switch ($action) {
 	case 'querydictionary':
@@ -29,11 +28,36 @@ switch ($action) {
 		echo cambridgeDictionaryQuery($query);
 		break;
 	case 'saveslideshow':
-		echo "Result";
+		if(isset($res)){
+			if(generateTempFolder()){
+				echo buildVideo($res);
+			} else {
+				echo "Couldn't create temp folder";
+			}
+		} else {
+			echo 'No data provided';
+		}
 		break;
 	default:
 		echo 'No action requested';
 		break;
+}
+
+function generateTempFolder(){
+	//Generate a temporal folder for the incoming resources
+	$folder_hash = md5(session_id());
+	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
+	error_log($folder_abs."\n",3,"/tmp/error.log");
+	if(!file_exists($folder_abs)){
+		if(mkdir($folder_abs)){
+			$_SESSION['temp_folder'] = $folder_abs;
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
 }
 
 function cambridgeDictionaryQuery($query){
@@ -117,7 +141,6 @@ function makeImageFromText($text, $imageIndex){
 			if($j == count($words) -1){
 				array_push($lines,$line);
 			}
-			//echo $line . "\n";
 		}
 	}
 
@@ -149,75 +172,97 @@ function makeImageFromText($text, $imageIndex){
 		imagettftext($img, SLIDE_FONTSIZE, SLIDE_TEXTANGLE, $x, $y, $text_color, FONT, $lines[$i]);
 			
 	}
+	$full_path;
 	//Save the image we've just generated
-	$folder_hash = md5(session_id()+'date or sth stored in the session');
-	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
-	$_SESSION['temp_folder'] = $folder_abs;
-	if(mkdir($folder_abs))
-		imagepng($img, $folder_abs.'/img'.sprintf("%02d",$imageIndex).'.png');
+	if(isset($_SESSION['temp_folder'])){
+		$folder_abs = $_SESSION['temp_folder'];
+		$full_path = $folder_abs.'/img'.sprintf("%02d",$imageIndex).'.png';
+		imagepng($img, $full_path);
+	}
 
 	// Clean up
 	imagedestroy($img);
+	return $full_path;
 
 }
 
 function whiteImage($imageIndex){
-	//convert -size 640x480 xc:white img.$imageIndex.png
+	$call = "convert -size 720x576 xc:white %s 2>&1";
+	$outputPath = $_SESSION['temp_folder'] . sprintf('/img%02d.png',$imageIndex);
+	$sysCall = sprintf($call,$outputPath,$imageIndex);
+	$result = (exec($sysCall,$output));
+	return $outputPath;
 }
 
 function buildVideo($slides){
 	//Command-line call to melt or ffmpeg. Video format: (Image |5s| Word/Phrase/Phrasal verb |5s|)xN times + White image |2min| explain what you saw in the images
 	//$ melt ABSOLUTE_PATH/*png out=125 -filter luma:%luma01.pgm luma.softness=0.2 -repeat 2 -consumer avformat:OUTPUTFILENAME.EXTENSION b=1500k
-	$slide_arr = json_decode($slides);
+
+	foreach ($slides as $key => $row) {
+		$index[$key]  = $row['index'];
+	}
+	array_multisort($index, SORT_ASC, $slides);
+
+
 	$video_paths = array();
-	for($i=0; $i<count($slide_arr);$i++){
+	for($i=0; $i<count($slides);$i++){
 		//This slide contains an image
-		if(isset($slide_arr[$i]['url']) && $slide_arr[$i]['url'] != ''){
-			$path = retrieveImageFile($slide_arr[$i]['url'],$i);
-			$video_path = videoFromImage($path, $slide_arr[$i]['time']);
-				
-		} elseif(isset($slide_arr[$i]['text']) && $slide_arr[$i]['text'] != '') {
-			$path = makeImageFromText($slide_arr[$i]['text'],$i);
-			$video_path = videoFromImage($path, $slide_arr[$i]['time']);	
+		if(isset($slides[$i]['img']) && $slides[$i]['img'] != ''){
+			$path = retrieveImageFile($slides[$i]['img'],$slides[$i]['index']);
+			error_log($path."\n",3,"/tmp/error.log");
+			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
+
+		} elseif(isset($slides[$i]['text']) && $slides[$i]['text'] != '') {
+			$path = makeImageFromText($slides[$i]['text'],$slides[$i]['index']);
+			error_log($path."\n",3,"/tmp/error.log");
+			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
 		} else {
-			$path = whiteImage($i);
-			$video_path = videoFromImage($path, $slide_arr[$i]['time']);
+			$path = whiteImage($slides[$i]['index']);
+			error_log($path."\n",3,"/tmp/error.log");
+			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
 		}
 		array_push($video_paths,$video_path);
 	}
 	concatVideos($video_paths);
-
+	echo 'All done';
 }
 
 function videoFromImage($inputPath,$time){
-	$preset = "ffmpeg -loop_input -f image2 -i %s -acodec pcm_s16le -f s16le -i /dev/zero -r 25 -t %d -s 640x480 %s.flv 2>&1"; 
+	$preset = "ffmpeg -y -loop_input -f image2 -i %s -acodec pcm_s16le -f s16le -i /dev/zero -r 25 -t %d -s 720x576 %s.flv 2>&1";
 	$sysCall = sprintf($preset, $inputPath, $time, $inputPath);
+	error_log($sysCall."\n",3,"/tmp/error.log");
 	$result = (exec($sysCall,$output));
-	return $result;
+	error_log($result."\n",3,"/tmp/error.log");
+	return $inputPath.'.flv';
 }
 
 function concatVideos($video_paths){
-	$call = "mencoder -oac copy -ovc copy -idx -o concat.flv %s 2>&1";
+	$outputpath = $_SESSION['temp_folder'].'/concat.flv';
+	$call = "mencoder -oac copy -ovc copy -idx -o ".$outputpath." %s 2>&1";
 	$pieces = '';
 	foreach($video_paths as $video_path){
 		$pieces.= $video_path.' ';
 	}
 	$sysCall = sprintf($call, $pieces);
 	$result = (exec($sysCall,$output));
+	return $result;
 }
 
 function retrieveImageFile($url, $imageIndex){
-	$urlPieces = explode($url,'/');
+	$urlPieces = explode('/',$url);
 	if(!(count($urlPieces) > 0))
-		return;
-		
+	return;
+
 	$filename = $urlPieces[count($urlPieces)-1]; //the filename
+	$filename_pieces = explode('.',$url);
+	$file_ext = $filename_pieces[count($filename_pieces) - 1]; //the extension
+
 	//$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
 
 	$imgFile = file_get_contents($url);
 
 	if(isset($_SESSION['temp_folder'])){
-		$file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$imageIndex);
+		$file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$imageIndex).'.'.$file_ext;
 
 		$file_handler=fopen($file_loc,'w');
 
@@ -229,28 +274,29 @@ function retrieveImageFile($url, $imageIndex){
 	}
 }
 
-function retrieveSelectedImageFiles($imgUrls){
-	for($i=0; $i<count($imgUrls);$i++){
-		$urlPieces = explode($imgUrls[$i],'/');
-		if(!(count($urlPieces) > 0))
-		return;
-			
-		$filename = $urlPieces[count($urlPieces)-1]; //the filename
-		//$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
+/*
+ function retrieveSelectedImageFiles($imgUrls){
+ for($i=0; $i<count($imgUrls);$i++){
+ $urlPieces = explode($imgUrls[$i],'/');
+ if(!(count($urlPieces) > 0))
+ return;
 
-		$imgFile = file_get_contents($imgUrls[$i]);
+ $filename = $urlPieces[count($urlPieces)-1]; //the filename
+ //$filedir = '/md5 hash of the session_id + randomly generated identifier, for example/';
 
-		if(isset($_SESSION['temp_folder'])){
-			$file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$i);
+ $imgFile = file_get_contents($imgUrls[$i]);
 
-			$file_handler=fopen($file_loc,'w');
+ if(isset($_SESSION['temp_folder'])){
+ $file_loc=$_SESSION['temp_folder'].'/img'.sprintf("%02d",$i);
 
-			if(fwrite($file_handler,$imgFile)==false){
-				echo "Error saving file: ".$imgUrls[$i]."\n";
-			}
-		}
-	}
-}
+ $file_handler=fopen($file_loc,'w');
 
+ if(fwrite($file_handler,$imgFile)==false){
+ echo "Error saving file: ".$imgUrls[$i]."\n";
+ }
+ }
+ }
+ }
+ */
 
 ?>

@@ -449,14 +449,14 @@ $(document).ready(function(){
 		$('#saveSlideshow').click(function (event) {
 			var jsonObj = []; //declare array
 			$('#drop-carousel > li').each(function(i){
-				jsonObj.push({index: $('div',this).attr('id').split('_')[1], img: $('img',this).attr('src'), text: $('div',this).html(), diplayTime: $('input',this).val()});
+				jsonObj.push({index: $('div',this).attr('id').split('_')[1], img: $('img',this).attr('src'), text: $('div',this).html(), displayTime: $('input',this).val()});
 			});
-			var server = "http://babeliumhtml5/bp-tvg-backend.php?action=saveslideshow";
-			$.post(server, {data: jsonObj}, function(res){
-			    //var obj = $.evalJSON(res);
-			    //if(obj.somebool === true)
-			    //  $("#result").html(obj.hello + ' ' + obj.array[1] + obj.worked + ". Message from PHP: "+obj.php_message);
-			  });
+			var server = "bp-tvg-backend.php";
+			$.post(server, { action: "saveslideshow", data: jsonObj },
+					   function(data) {
+					     alert("Data Loaded: " + data);
+					   });
+			
 			console.log(jsonObj);
 		});
 
