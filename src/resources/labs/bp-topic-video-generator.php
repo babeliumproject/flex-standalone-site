@@ -10,16 +10,84 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name='robots' content='noindex,nofollow' />
 
+<!--
 <link rel='stylesheet' id='login-css' href='css/login.css'
-	type='text/css' media='all' />
+	type='text/css' media='all' />-->
 <link type="text/css" href="css/jquery-ui-1.8.13.custom.css"
 	rel="stylesheet" />
 
 <style type="text/css">
+
+*{
+  margin:0;
+  padding:0;
+}
+
 #gallery {
 	float: none;
-	width: 90%;
+	/*width: 90%;*/
 	min-height: 12em;
+}
+
+body{
+  font:11px "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(0.25, rgb(229,236,242)),
+    color-stop(0.5, rgb(249,249,249)),
+    color-stop(1, rgb(229,236,242))
+	);
+	background-image: -moz-linear-gradient(
+    left center,
+    rgb(229,236,242) 25%,
+    rgb(249,249,249) 50%,
+    rgb(229,236,242) 100%
+	);
+  
+}
+
+#header{
+	background: url("./themes/babelium/images/pattern2.png");
+	display: block;
+	margin-top: 0;
+	padding: 16px;
+	border-bottom: 1px solid #38BABC;
+}
+
+#header h1{
+	color: #972C0A;
+	padding-bottom: 10px;
+}
+
+.stepContent{
+	padding: 16px;
+}
+
+.nextStep{
+	background: #ffffff;
+	border-top: 1px solid #38BABC;
+	display: block;
+	padding: 4px 16px;
+}
+
+.nextStep div{
+	float: right;
+	background: inherit;
+}
+
+.input{
+  font-size:16px;
+  padding:3px;
+  margin-top:2px;
+  margin-right:6px;
+  margin-bottom:16px;
+  border:1px solid #92D3D5;
+  background:#fbfbfb;
+}
+input{
+  color:#555;
 }
 
 * html #gallery {
@@ -140,6 +208,13 @@ $(document).ready(function(){
 			//$('#drop-carousel').droppable();
 		}
 
+		$('#noSlideDialog').dialog({
+			buttons: { "Ok": function() { $(this).dialog("close"); } },
+			autoOpen: false,
+			title: 'No slides were added to the slideshow',
+			resizable: false
+		});
+
 		$('#secondStep').hide();
 	
 		$('#gImageSearchTxtf').keypress(function (event) {
@@ -202,7 +277,7 @@ $(document).ready(function(){
 
 		//For the time being we'll webscrap cambridge's online dictionaries, since they provide a smart thesaurus
 		function searchTopicRelatedWords(query){
-			var server = "http://babeliumhtml5/bp-tvg-backend.php?action=querydictionary&query=";
+			var server = "bp-tvg-backend.php?action=querydictionary&query=";
 			//Strip the query from unnecessary symbols, replace the whitespaces with - character
 			var filtered_query = query.replace(" ", "-");
 			var query_string = server + filtered_query;
@@ -224,7 +299,7 @@ $(document).ready(function(){
 		function parseCambridgePage(result){
 			//What happens when the topic is not found
 			var html = '<h2>Words/phrases related to the provided topic</h2>';
-			html += '<label>Add new text:</label><input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
+			html += '<label>Add new text:<input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
 			html += '<ol id="selectable" class="ui-helper-reset ui-helper-clearfix">';
 			$.each(result, function(i,results){	
 				html += '<li class="ui-widget-content"><div>'+results+'</div></li>';
@@ -422,23 +497,27 @@ $(document).ready(function(){
 			$("div[id^=btn_rt]").remove();
 			$("div[id^=btn_lt]").remove();
 			//Add items to the soon-to-be carousel container
-			$('#trash > ul > li').each(function(j){
-				var isImage = false;
-				for (i=0; i<gImages.length;i++){
-					if($(this).attr('id') == gImages[i].imageId){
-						html +='<li><div id="slide_'+j+'"><img src="'+gImages[i].url+'" /></div></li>';
-						isImage = true;
-						break;
+			if($('#trash > ul > li').length > 0){
+				$('#trash > ul > li').each(function(j){
+					var isImage = false;
+					for (i=0; i<gImages.length;i++){
+						if($(this).attr('id') == gImages[i].imageId){
+							html +='<li><div id="slide_'+j+'"><img src="'+gImages[i].url+'" /></div></li>';
+							isImage = true;
+							break;
+						}
 					}
-				}
-				if(!isImage){
-					html += '<li><div id="slide_'+j+'">'+$('div',this).html()+'</div></li>';
-				}
-			});
-			$('#firstStep').hide();
-			$('#secondStep').show();
-			$('#drop-carousel').append(html);
-			createCarousel();
+					if(!isImage){
+						html += '<li><div id="slide_'+j+'">'+$('div',this).html()+'</div></li>';
+					}
+				});
+				$('#firstStep').hide();
+				$('#secondStep').show();
+				$('#drop-carousel').append(html);
+				createCarousel();
+			} else {
+				$('#noSlideDialog').dialog('open');
+			}
 		});
 
 		$('#backToChooseSlides').click(function(event){
@@ -465,16 +544,23 @@ $(document).ready(function(){
 
 </head>
 <body class="topic-video-generator">
+	<div id="header">
 	<h1>Topic-based video generator</h1>
+	<p>Type a topic of your interest (i.e. climate change) and let Babelium search photos and useful words/phrases related to it for you. Then, pick the images and texts you want to put in your video-exercise and drop them in the designed area. Let Babelium create a slideshow with those resources and modify/preview the display times of each slide. Lastly, you can tell the system to generate a video with the provided slideshow.</p>
+	</div>
 	<div id="firstStep">
+		<div class="stepContent">
 		<label>Enter exercise topic:<br /> <input type="text"
 			id="gImageSearchTxtf" class="input" value="" size="20" /> <input
 			type="submit" id="gImageSearchBtn" class="button-primary"
 			value="Search" /> </label>
 		<div id="gImageSearchResults" class="ui-widget ui-helper-clearfix"></div>
 		<div id="cambridgeSearchResults" class="ui-widget ui-helper-clearfix"></div>
-
-		<input type="submit" id="makeSlideshow" class="bigButton" value="Make slideshow" />
+		</div>
+		<div class="nextStep">
+			<div><input type="submit" id="makeSlideshow" class="ui-button ui-widget" value="Make slideshow" /></div>
+		</div>
+		<div id="noSlideDialog">No slides were added to the draggable area.</div>
 	</div>
 	<div id="secondStep">
 		<div id="carousel" style="width: 640px; height: 480px;">

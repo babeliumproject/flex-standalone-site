@@ -15,7 +15,7 @@
 
 <h1><a href="http://www.babeliumproject.com/" title="Babelium Project">Babelium Project</a></h1>
 
-<form name="loginform" id="loginform" action="http://babeliumhtml5/bp-login.php" method="post">
+<form name="loginform" id="loginform" action="bp-login.php" method="post">
 <p>
 <label>Username<br />
 <input type="text" name="log" id="user_login" class="input" value="" size="20" tabindex="10" /></label>

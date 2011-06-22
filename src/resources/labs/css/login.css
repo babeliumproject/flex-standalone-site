@@ -30,7 +30,7 @@ form .forgetmenot{
 .button-primary{
   font-family:"Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   padding:3px 10px;
-  border:none;
+  
   color: #ffffff;
   font-size:12px;
   font-weight: bold;
@@ -73,6 +73,8 @@ h1 a{
   overflow:hidden;
   padding-bottom:15px;
   display:block;
+  margin-left:auto;
+  margin-right:auto;
 }
 #nav{
   text-shadow:rgba(255,255,255,1) 0 1px 0;
