@@ -31,7 +31,12 @@ form .forgetmenot{
   font-family:"Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
   padding:3px 10px;
   border:none;
+  color: #ffffff;
   font-size:12px;
+  font-weight: bold;
+  background: #207791;
+  background:-moz-linear-gradient(bottom,#207791,#31b5de);
+  background:-webkit-gradient(linear,left bottom,left top,from(#207791),to(#31b5de));
   border-width:1px;
   border-style:solid;
   -moz-border-radius:11px;

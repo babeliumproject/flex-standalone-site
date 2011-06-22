@@ -47,7 +47,7 @@ function generateTempFolder(){
 	//Generate a temporal folder for the incoming resources
 	$folder_hash = md5(session_id());
 	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
-	error_log($folder_abs."\n",3,"/tmp/error.log");
+	//error_log($folder_abs."\n",3,"/tmp/error.log");
 	if(!file_exists($folder_abs)){
 		if(mkdir($folder_abs)){
 			$_SESSION['temp_folder'] = $folder_abs;
@@ -209,16 +209,16 @@ function buildVideo($slides){
 		//This slide contains an image
 		if(isset($slides[$i]['img']) && $slides[$i]['img'] != ''){
 			$path = retrieveImageFile($slides[$i]['img'],$slides[$i]['index']);
-			error_log($path."\n",3,"/tmp/error.log");
+			//error_log($path."\n",3,"/tmp/error.log");
 			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
 
 		} elseif(isset($slides[$i]['text']) && $slides[$i]['text'] != '') {
 			$path = makeImageFromText($slides[$i]['text'],$slides[$i]['index']);
-			error_log($path."\n",3,"/tmp/error.log");
+			//error_log($path."\n",3,"/tmp/error.log");
 			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
 		} else {
 			$path = whiteImage($slides[$i]['index']);
-			error_log($path."\n",3,"/tmp/error.log");
+			//error_log($path."\n",3,"/tmp/error.log");
 			$video_path = videoFromImage($path, $slides[$i]['displayTime']);
 		}
 		array_push($video_paths,$video_path);
@@ -230,9 +230,9 @@ function buildVideo($slides){
 function videoFromImage($inputPath,$time){
 	$preset = "ffmpeg -y -loop_input -f image2 -i %s -acodec pcm_s16le -f s16le -i /dev/zero -r 25 -t %d -s 720x576 %s.flv 2>&1";
 	$sysCall = sprintf($preset, $inputPath, $time, $inputPath);
-	error_log($sysCall."\n",3,"/tmp/error.log");
+	//error_log($sysCall."\n",3,"/tmp/error.log");
 	$result = (exec($sysCall,$output));
-	error_log($result."\n",3,"/tmp/error.log");
+	//error_log($result."\n",3,"/tmp/error.log");
 	return $inputPath.'.flv';
 }
 
