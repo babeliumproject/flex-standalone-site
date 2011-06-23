@@ -61,6 +61,13 @@ body{
 	padding-bottom: 10px;
 }
 
+.h2{
+	color: #268caa;
+	text-decoration: underline;
+	padding-bottom: 16px;
+	padding-top: 16px;
+}
+
 .stepContent{
 	padding: 16px;
 }
@@ -73,7 +80,7 @@ body{
 }
 
 .nextStep div{
-	float: right;
+	/*float: right;*/
 	background: inherit;
 }
 
@@ -258,7 +265,7 @@ $(document).ready(function(){
 			$.getJSON(query_string, function(data){
 					$("#gImageSearchResults").empty();
 					var html = '<div id="trash" class="ui-widget-content ui-state-default"><h4 class="ui-widget-header">Drag items here</h4></div>';
-					html += '<h2>Images related to the provided topic</h2>';
+					html += '<h2 class="h2">Images related to the provided topic</h2>';
 					html += '<input type="submit" id="addBlankImageBtn" class="button-primary" value="Add Blank Image"/>';
 					html += '<ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">';
 					
@@ -287,7 +294,7 @@ $(document).ready(function(){
 			}).success(function() { 
 				//alert("second success"); 
 			}).error(function() { 
-				var html = '<h2>Words/phrases related to the provided topic</h2>';
+				var html = '<h2 class="h2">Words/phrases related to the provided topic</h2>';
 				html += '<label>Add new text:</label><input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
 				html += '<ol id="selectable" class="ui-helper-reset ui-helper-clearfix"></ol>';
 				$("#cambridgeSearchResults").append(html);
@@ -298,7 +305,7 @@ $(document).ready(function(){
 
 		function parseCambridgePage(result){
 			//What happens when the topic is not found
-			var html = '<h2>Words/phrases related to the provided topic</h2>';
+			var html = '<h2 class="h2">Words/phrases related to the provided topic</h2>';
 			html += '<label>Add new text:<input type="text" id="addWordInput" class="input" value="" size="20"/><input type="submit" id="addWordBtn" class="button-primary" value="Add word"/></label>';
 			html += '<ol id="selectable" class="ui-helper-reset ui-helper-clearfix">';
 			$.each(result, function(i,results){	
@@ -563,11 +570,16 @@ $(document).ready(function(){
 		<div id="noSlideDialog">No slides were added to the draggable area.</div>
 	</div>
 	<div id="secondStep">
-		<div id="carousel" style="width: 640px; height: 480px;">
-			<ul id="drop-carousel"></ul>
+		<div class="stepContent">
+			<div id="carousel" style="width: 640px; height: 480px;">
+				<ul id="drop-carousel"></ul>
+			</div>
 		</div>
-		<input type="submit" id="backToChooseSlides" value="Back to choosing slides"/>
-		<input type="submit" id="saveSlideshow" value="Save Slideshow" />
+		<div class="nextStep">
+			<input type="submit" id="backToChooseSlides" class="ui-button ui-widget" value="Back to choosing slides"/>
+			<input type="submit" id="saveSlideshow" class="ui-button ui-widget" value="Save Slideshow" />
+		</div>
+		<div id="saveSlideDialog">Converting slideshow to video. Please wait...</div>
 	</div>
 
 </body>
