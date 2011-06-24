@@ -46,6 +46,8 @@ switch ($action) {
 function generateTempFolder(){
 	//Generate a temporal folder for the incoming resources
 	$folder_hash = md5(session_id());
+	if(strlen($folder_hash) == 0)
+		return false;
 	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
 	//error_log($folder_abs."\n",3,"/tmp/error.log");
 	if(!file_exists($folder_abs)){
@@ -223,8 +225,11 @@ function buildVideo($slides){
 		}
 		array_push($video_paths,$video_path);
 	}
-	concatVideos($video_paths);
-	echo 'All done';
+	if(count($video_paths) > 0)
+		$video = concatVideos($video_paths);
+	else
+		$video = 'Error while generating video';
+	echo $video;
 }
 
 function videoFromImage($inputPath,$time){
@@ -245,7 +250,7 @@ function concatVideos($video_paths){
 	}
 	$sysCall = sprintf($call, $pieces);
 	$result = (exec($sysCall,$output));
-	return $result;
+	return $outputpath;
 }
 
 function retrieveImageFile($url, $imageIndex){

@@ -97,6 +97,20 @@ input{
   color:#555;
 }
 
+#dataForm{
+	border: 1px solid #92D3D5;
+	padding: 16px;
+}
+
+.formLabel{
+	width: 150px;
+	font-size: 14px;
+	display: block;
+	float:left;
+	text-align:right;
+	rigt-margin: 4px;
+}
+
 * html #gallery {
 	height: 12em;
 } /* IE6 */
@@ -201,6 +215,7 @@ wp_attempt_focus();
 $(document).ready(function(){
 
 		var gImages;
+		var videoGenerated = false;
 
 		function createCarousel(){
 		
@@ -218,11 +233,25 @@ $(document).ready(function(){
 		$('#noSlideDialog').dialog({
 			buttons: { "Ok": function() { $(this).dialog("close"); } },
 			autoOpen: false,
+			modal: true,
+			draggable: false,
 			title: 'No slides were added to the slideshow',
 			resizable: false
 		});
 
+		$('#saveSlideDialog').dialog({
+			autoOpen: false,
+			title: 'Generating video',
+			modal: true,
+			draggable: false,
+			resizable: false,
+			beforeClose: function(event, ui) { 
+							return videoGenerated;
+						 }
+		});
+
 		$('#secondStep').hide();
+		$('#thirdStep').hide();
 	
 		$('#gImageSearchTxtf').keypress(function (event) {
 			var value = $(this).val();
@@ -538,9 +567,23 @@ $(document).ready(function(){
 				jsonObj.push({index: $('div',this).attr('id').split('_')[1], img: $('img',this).attr('src'), text: $('div',this).html(), displayTime: $('input',this).val()});
 			});
 			var server = "bp-tvg-backend.php";
+			videoGenerated = false;
+			$('#saveSlideDialog').empty();
+			$('#saveSlideDialog').append('Converting slideshow to video. Please wait...');
+			$('#saveSlideDialog').dialog({buttons: {}, title: 'Generating video'});
+			$('#saveSlideDialog').dialog('open');
 			$.post(server, { action: "saveslideshow", data: jsonObj },
 					   function(data) {
-					     alert("Data Loaded: " + data);
+				   		 videoGenerated = true;
+				   		 $('#saveSlideDialog').dialog('close');
+				   		 $('#saveSlideDialog').empty();
+				   		 $('#saveSlideDialog').append('Video was successfully generated');
+				   		 $('#saveSlideDialog').dialog({buttons: { "Ok": function() { $(this).dialog("close"); }}, title: 'Successfully Generated'});
+				   		 $('video').attr('src',data);
+				   		$('#firstStep').hide();
+						$('#secondStep').hide();
+						$('#thirdStep').show();
+					     //alert("Data Loaded: " + data);
 					   });
 			
 			console.log(jsonObj);
@@ -580,6 +623,58 @@ $(document).ready(function(){
 			<input type="submit" id="saveSlideshow" class="ui-button ui-widget" value="Save Slideshow" />
 		</div>
 		<div id="saveSlideDialog">Converting slideshow to video. Please wait...</div>
+	</div>
+	
+	<div id="thirdStep">
+		<div class="stepContent">
+			<div id="videoHolder">
+				<video src="" controls="controls">
+					Your browser does not support the video tag
+				</video>
+			</div>
+			<div id="dataForm">
+				<form id="videoData" action="saveall" method="post">
+					<label class="formLabel">Title:</label><input type="text" class="input" name="Title" value=""/><br />
+					<label class="formLabel">Description:</label><input type="text"  class="input" name="Description" value=""/><br />
+					<label>Tags:</label><input type="text" class="input" name="Tags" value=""/><br />
+					<label>Difficulty level:</label>
+						<select>
+							<option>A1 Beginner</option>
+							<option>A2 Elementary</option>
+							<option>B1 Pre-intermediate</option>
+							<option>B2 Intermediate</option>
+							<option>C1 Upper-intermediate</option>
+						</select>
+					<br />
+					<label>Language:</label>
+						<select>
+							<option>Arabic (Morocco)</option>
+							<option>Basque</option>
+							<option>English (New Zealand)</option>
+							<option>English (United Kingdom)</option>
+							<option>English (United States)</option>
+							<option>German (Germany)</option><
+							<option>French (France)</option>
+							<option>Spanish (Spain)</option>
+							<option>Spanish (Argentina)</option>
+						</select>
+					<br />
+					<label>Specify video license:</label>
+						<select>
+							<option>CC-BY: Attribution</option>
+							<option>CC-BY-SA: Attribution Share-alike</option>
+							<option>CC-BY-ND: Attribution No Derivative</option>
+							<option>CC-BY-NC: Attribution Non-comercial</option>
+							<option>CC-BY-NC-SA: Attribution Non-comercial Share Alike</option>
+							<option>CC-BY-NC-ND: Attribution Non-comercial No Derivative</option>
+							<option>Copyright</option>
+						</select>
+					<br />
+					<label>Author's Name/Source url:</label><input type="text" class="input" name="reference" value=""/><br />			
+				</form>
+			</div>
+			
+		</div>
 	</div>
 
 </body>
