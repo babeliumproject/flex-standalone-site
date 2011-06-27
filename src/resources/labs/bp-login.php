@@ -38,12 +38,12 @@ default:
 	if ( !empty($_POST['log']) && !empty($_POST['pwd'])) {
 		$user_name = $_POST['log'];
 		$user_pass = $_POST['pwd'];
-		error_log('Form filled',3,"/tmp/error.log");
 		require_once 'Zend/Rest/Client.php';
+		//MAKE SURE you put your endpoint class' path here, otherways you'll receive nasty errors
 		if(isset($_SERVER['SERVER_NAME']))
-			$client = new Zend_Rest_Client('http://'.$_SERVER['SERVER_NAME'].'/rest');
+			$client = new Zend_Rest_Client('http://'.$_SERVER['SERVER_NAME'].'/rest/rest');
 		else
-			$client = new Zend_Rest_Client('http://babeliumhtml5/rest');
+			$client = new Zend_Rest_Client('http://babeliumhtml5/rest/rest');
 		
 		$request = array();
 		$request['name'] = trim($user_name);
@@ -55,7 +55,6 @@ default:
 		$success = $result->name();
 	}
 	if (strlen($success)){
-		error_log($_POST['redirect_to'],3,"/tmp/error.log");
 		$_SESSION['logged'] = true;
 		header('Location: '.$_POST['redirect_to']);
 	} else {

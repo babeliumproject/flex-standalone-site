@@ -569,6 +569,28 @@ $(document).ready(function(){
 		$('#backToChooseSlides').click(function(event){
 			$('#firstStep').show();
 			$('#secondStep').hide();
+			$('#thirdStep').hide();
+		});
+
+		$('#backToPreviewSlides').click(function(event){
+			$('#firstStep').hide();
+			$('#secondStep').show();
+			$('#thirdStep').hide();
+		});
+
+		$('#saveVideo').click(function(event){
+			//Retrieve form data
+
+			//Send request
+
+			//Show confirmation
+
+			//Clear all data
+
+			//Go to first step
+			$('#firstStep').show();
+			$('#secondStep').hide();
+			$('#thirdStep').hide();
 		});
 
 		$('#saveSlideshow').click(function (event) {
@@ -589,14 +611,16 @@ $(document).ready(function(){
 				   		 $('#saveSlideDialog').empty();
 				   		 $('#saveSlideDialog').append('Video was successfully generated');
 				   		 $('#saveSlideDialog').dialog({buttons: { "Ok": function() { $(this).dialog("close"); }}, title: 'Successfully Generated'});
-				   		 $('#videoPl').attr('src').
+				   		 $('#videoPl').attr('src',data);
+				   		 var elem = document.getElementById("videoPl");
+				   		 elem.load();
 				   		 $('#firstStep').hide();
 						 $('#secondStep').hide();
 						 $('#thirdStep').show();
 					     //alert("Data Loaded: " + data);
 					   });
 			
-			console.log(jsonObj);
+			//console.log(jsonObj);
 		});
 
 });

@@ -247,7 +247,7 @@ function videoFromImage($inputPath,$time){
 
 function concatVideos($video_paths){
 	$outputpath = $_SESSION['temp_folder'].'/concat.flv';
-	$outputurl='http://'.$_SERVER['SERVER_NAME'].'/'.$_SESSION['temp_folder_rel'].'/concat.ogv';
+	$outputurl='http://'.$_SERVER['SERVER_NAME'].'/'.$_SESSION['temp_folder_rel'].'/concat.mp4';
 	$call = "mencoder -oac copy -ovc copy -idx -o ".$outputpath." %s 2>&1";
 	$pieces = '';
 	foreach($video_paths as $video_path){
@@ -256,7 +256,7 @@ function concatVideos($video_paths){
 	$sysCall = sprintf($call, $pieces);
 	$result = (exec($sysCall,$output));
 	
-	$call = "ffmpeg -y -i %s %s/concat.ogv 2>&1";
+	$call = "ffmpeg -y -i %s %s/concat.mp4 2>&1";
 	$sysCall = sprintf($call,$outputpath,$_SESSION['temp_folder']);
 	$result = (exec($sysCall,$output));
 	
