@@ -1,3 +1,70 @@
+<?php 
+
+//
+// Main
+//
+session_start();
+
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
+
+if ( isset($_GET['key']) )
+	$action = 'resetpass';
+
+// validate action so as to default to the login screen
+if ( !in_array($action, array('logout', 'lostpassword', 'retrievepassword', 'resetpass', 'rp', 'register', 'login'), true) )
+	$action = 'login';
+
+$http_post = ('POST' == $_SERVER['REQUEST_METHOD']);
+switch ($action) {
+
+case 'logout' :
+	break;
+
+case 'lostpassword' :
+case 'retrievepassword' :
+	break;
+
+case 'resetpass' :
+case 'rp' :
+	break;
+
+case 'register' :
+	break;
+
+case 'login' :
+default:
+	$success = '';
+	// If the user wants ssl but the session is not ssl, force a secure cookie.
+	if ( !empty($_POST['log']) && !empty($_POST['pwd'])) {
+		$user_name = $_POST['log'];
+		$user_pass = $_POST['pwd'];
+		error_log('Form filled',3,"/tmp/error.log");
+		require_once 'Zend/Rest/Client.php';
+		if(isset($_SERVER['SERVER_NAME']))
+			$client = new Zend_Rest_Client('http://'.$_SERVER['SERVER_NAME'].'/rest');
+		else
+			$client = new Zend_Rest_Client('http://babeliumhtml5/rest');
+		
+		$request = array();
+		$request['name'] = trim($user_name);
+		$request['pass'] = sha1(trim($user_pass));
+		$jrequest = json_encode($request);
+		$b64req = base64_encode($jrequest);
+
+		$result = $client->processLogin($b64req)->post();
+		$success = $result->name();
+	}
+	if (strlen($success)){
+		error_log($_POST['redirect_to'],3,"/tmp/error.log");
+		$_SESSION['logged'] = true;
+		header('Location: '.$_POST['redirect_to']);
+	} else {
+?>
+
+
+
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
 <head>
@@ -15,7 +82,7 @@
 
 <h1><a href="http://www.babeliumproject.com/" title="Babelium Project">Babelium Project</a></h1>
 
-<form name="loginform" id="loginform" action="bp-login.php" method="post">
+<form name="loginform" id="loginform" action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
 <p>
 <label>Username<br />
 <input type="text" name="log" id="user_login" class="input" value="" size="20" tabindex="10" /></label>
@@ -34,7 +101,7 @@
 <br />
 <p class="submit">
 <input type="submit" name="bp-submit" id="bp-submit" class="button-primary" value="Log In" tabindex="100" />
-<input type="hidden" name="redirect_to" value="http://babeliumhtml5/bp-labs/" />
+<input type="hidden" name="redirect_to" value="<?php echo 'http://'.$_SERVER['SERVER_NAME'].'/bp-topic-video-generator.php' ?>" />
 <input type="hidden" name="testcookie" value="1" />
 </p>
 </form>
@@ -68,4 +135,8 @@ wp_attempt_focus();
 </script>
 </body>
 </html>
-
+<?php
+}
+break;
+}
+?>

@@ -49,15 +49,19 @@ function generateTempFolder(){
 	if(strlen($folder_hash) == 0)
 		return false;
 	$folder_abs = dirname(__FILE__).'/images/'.$folder_hash;
-	//error_log($folder_abs."\n",3,"/tmp/error.log");
+	$folder_rel = 'images/'.$folder_hash;
+	error_log($folder_abs."\n",3,"/tmp/error.log");
 	if(!file_exists($folder_abs)){
 		if(mkdir($folder_abs)){
 			$_SESSION['temp_folder'] = $folder_abs;
+			$_SESSION['temp_folder_rel'] = $folder_rel;
 			return true;
 		} else {
 			return false;
 		}
 	} else {
+		$_SESSION['temp_folder'] = $folder_abs;
+		$_SESSION['temp_folder_rel'] = $folder_rel;
 		return true;
 	}
 }
@@ -243,6 +247,7 @@ function videoFromImage($inputPath,$time){
 
 function concatVideos($video_paths){
 	$outputpath = $_SESSION['temp_folder'].'/concat.flv';
+	$outputurl='http://'.$_SERVER['SERVER_NAME'].'/'.$_SESSION['temp_folder_rel'].'/concat.ogv';
 	$call = "mencoder -oac copy -ovc copy -idx -o ".$outputpath." %s 2>&1";
 	$pieces = '';
 	foreach($video_paths as $video_path){
@@ -250,7 +255,12 @@ function concatVideos($video_paths){
 	}
 	$sysCall = sprintf($call, $pieces);
 	$result = (exec($sysCall,$output));
-	return $outputpath;
+	
+	$call = "ffmpeg -y -i %s %s/concat.ogv 2>&1";
+	$sysCall = sprintf($call,$outputpath,$_SESSION['temp_folder']);
+	$result = (exec($sysCall,$output));
+	
+	return $outputurl;
 }
 
 function retrieveImageFile($url, $imageIndex){

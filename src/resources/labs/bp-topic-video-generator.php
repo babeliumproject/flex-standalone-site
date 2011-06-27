@@ -1,7 +1,17 @@
+<?php 
+
+session_start();
+if(!isset($_SESSION['logged']) || $_SESSION['logged'] == false){
+	header('Location: http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');
+} else {
+
+?>
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
 <head>
-<title>Babelium Project: Log In</title>
+<title>Babelium Project: Video Topic Generator</title>
 <script type="text/javascript" src="js/jquery1.5.1.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
 <script type="text/javascript"
@@ -579,10 +589,10 @@ $(document).ready(function(){
 				   		 $('#saveSlideDialog').empty();
 				   		 $('#saveSlideDialog').append('Video was successfully generated');
 				   		 $('#saveSlideDialog').dialog({buttons: { "Ok": function() { $(this).dialog("close"); }}, title: 'Successfully Generated'});
-				   		 $('video').attr('src',data);
-				   		$('#firstStep').hide();
-						$('#secondStep').hide();
-						$('#thirdStep').show();
+				   		 $('#videoPl').attr('src').
+				   		 $('#firstStep').hide();
+						 $('#secondStep').hide();
+						 $('#thirdStep').show();
 					     //alert("Data Loaded: " + data);
 					   });
 			
@@ -620,7 +630,7 @@ $(document).ready(function(){
 		</div>
 		<div class="nextStep">
 			<input type="submit" id="backToChooseSlides" class="ui-button ui-widget" value="Back to choosing slides"/>
-			<input type="submit" id="saveSlideshow" class="ui-button ui-widget" value="Save Slideshow" />
+			<input type="submit" id="saveSlideshow" class="ui-button ui-widget" value="Generate Video" />
 		</div>
 		<div id="saveSlideDialog">Converting slideshow to video. Please wait...</div>
 	</div>
@@ -628,7 +638,7 @@ $(document).ready(function(){
 	<div id="thirdStep">
 		<div class="stepContent">
 			<div id="videoHolder">
-				<video src="" controls="controls">
+				<video id="videoPl" controls="controls">
 					Your browser does not support the video tag
 				</video>
 			</div>
@@ -672,11 +682,16 @@ $(document).ready(function(){
 					<br />
 					<label>Author's Name/Source url:</label><input type="text" class="input" name="reference" value=""/><br />			
 				</form>
+				
 			</div>
-			
+		</div>
+		<div class="nextStep">
+			<input type="submit" id="backToPreviewSlides" class="ui-button ui-widget" value="Back to slideshow"/>
+			<input type="submit" id="saveVideo" class="ui-button ui-widget" value="Save Video" />
 		</div>
 	</div>
 
 </body>
 </html>
 
+<?php } ?>
