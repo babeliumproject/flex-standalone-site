@@ -33,11 +33,13 @@ case 'register' :
 
 case 'login' :
 default:
-	$success = '';
+	$response = '';
 	// If the user wants ssl but the session is not ssl, force a secure cookie.
 	if ( !empty($_POST['log']) && !empty($_POST['pwd'])) {
-		$user_name = $_POST['log'];
-		$user_pass = $_POST['pwd'];
+		//Sanitize these fields to avoid DB hijacking
+		$user_name = trim($_POST['log']);
+		$user_pass = trim($_POST['pwd']);
+		/*
 		require_once 'Zend/Rest/Client.php';
 		//MAKE SURE you put your endpoint class' path here, otherways you'll receive nasty errors
 		if(isset($_SERVER['SERVER_NAME']))
@@ -53,9 +55,17 @@ default:
 
 		$result = $client->processLogin($b64req)->post();
 		$success = $result->name();
+		*/
+		require_once 'services/Auth.php';
+		$params = new stdClass();
+		$params->name = $user_name;
+		$params->pass = sha1($user_pass);
+		$service = new Auth();
+		$response = $service->processLogin($params);
 	}
-	if (strlen($success)){
-		$_SESSION['logged'] = true;
+	//if(strlen($success)){
+	if ( is_object($response) && strlen($response->name) ){
+		//$_SESSION['logged'] = true;
 		header('Location: '.$_POST['redirect_to']);
 	} else {
 ?>

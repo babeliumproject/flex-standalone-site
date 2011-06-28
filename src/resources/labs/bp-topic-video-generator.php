@@ -1,9 +1,17 @@
 <?php 
 
-session_start();
-if(!isset($_SESSION['logged']) || $_SESSION['logged'] == false){
-	header('Location: http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');
-} else {
+require_once 'services/utils/SessionHandler.php';
+
+//session_start();
+//if(!isset($_SESSION['logged']) || $_SESSION['logged'] == false){
+//	header('Location: http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');
+//} else {
+
+try{
+   $service = new SessionHandler(true);
+}catch(Exception $e){
+   header('Location: http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');
+}
 
 ?>
 
@@ -102,9 +110,20 @@ body{
   margin-bottom:16px;
   border:1px solid #92D3D5;
   background:#fbfbfb;
+  width: 300px;
 }
 input{
   color:#555;
+}
+
+select{
+  font-size:16px;
+  padding:3px;
+  margin-top:2px;
+  margin-right:6px;
+  margin-bottom:16px;
+  border:1px solid #92D3D5;
+  background:#fbfbfb;
 }
 
 #dataForm{
@@ -113,12 +132,19 @@ input{
 }
 
 .formLabel{
-	width: 150px;
+	width: 250px;
 	font-size: 14px;
 	display: block;
 	float:left;
 	text-align:right;
-	rigt-margin: 4px;
+	margin-right: 8px;
+}
+
+#videoHolder{
+   display: block;
+   margin-right: auto;
+   margin-left: auto;
+   padding: 16px;
 }
 
 * html #gallery {
@@ -226,7 +252,8 @@ $(document).ready(function(){
 
 		var gImages;
 		var videoGenerated = false;
-
+		var videoSaved = false;
+		var videoPath;
 		function createCarousel(){
 		
 			$('#carousel').infiniteCarousel({
@@ -255,9 +282,18 @@ $(document).ready(function(){
 			modal: true,
 			draggable: false,
 			resizable: false,
-			beforeClose: function(event, ui) { 
-							return videoGenerated;
-						 }
+			beforeClose: function(event, ui) { return videoGenerated; }
+			
+		});
+
+		$('#saveVideoDialog').dialog({
+			autoOpen: false,
+			title: 'Saving video data',
+			modal: true,
+			draggable: false,
+			resizable: false,
+			beforeClose: function(event, ui) { return videoSaved; }
+			
 		});
 
 		$('#secondStep').hide();
@@ -580,17 +616,56 @@ $(document).ready(function(){
 
 		$('#saveVideo').click(function(event){
 			//Retrieve form data
+			var values = {};
+				$.each($('#videoData').serializeArray(), function(i, field) {
+    				values[field.name] = field.value;
+				//console.log(field.name + ':' + field.value);
+			});
 
-			//Send request
+			values['videopath'] = videoPath;
+			//Show dialog & send request
+			var server = "bp-tvg-backend.php";
+			videoSaved = false;
+			$('#saveVideoDialog').empty();
+			$('#saveVideoDialog').append('Saving video data. Please wait...');
+			$('#saveVideoDialog').dialog({buttons: {}, title: 'Saving video'});
+			$('#saveVideoDialog').dialog('open');
+			
+			$.post(server, 
+			       { action: "savevideo", data: values },
+			       function(data){
+				   //Show confirmation
+			       	   videoSaved = true;
+				   //$('#saveVideoDialog').dialog('close');
+				   //$('#saveVideoDialog').empty();
+				   if(data){
+					$('#saveVideoDialog').empty();
+				   	$('#saveVideoDialog').append('Video data successfully saved. It\'ll be made available in Babelium as soon as possible. Thank you.');
+				   	$('#saveVideoDialog').dialog({buttons: {"Ok": function() { $(this).dialog("close"); }}, title: 'Successfully Saved'});
+				        //Clear all data
+					$("#gImageSearchResults").empty();
+					$("#cambridgeSearchResults").empty();
+					$("#gImageSearchTxtf").val("");
+					
+					$('#drop-carousel').empty();
+                        		$("div[id^=thumbs]").remove();
+                        		$("div[id^=play_pause_btn]").remove();
+                        		$("div[id^=btn_rt]").remove();
+                        		$("div[id^=btn_lt]").remove();
 
-			//Show confirmation
-
-			//Clear all data
-
-			//Go to first step
-			$('#firstStep').show();
-			$('#secondStep').hide();
-			$('#thirdStep').hide();
+                        		$.each($('#videoData'), function(i, field) {
+                               			$(field).val("");
+                        		});
+                        		//Go to first step
+                        		$('#firstStep').show();
+                        		$('#secondStep').hide();
+                        		$('#thirdStep').hide();
+                		   } else{
+					$('#saveVideoDialog').empty();
+				        $('#saveVideoDialog').append('Error saving your video data. Try again later.');
+                                        $('#saveVideoDialog').dialog({buttons: {"Ok": function() { $(this).dialog("close"); }}, title: 'Error saving'});   
+				   }
+			       });
 		});
 
 		$('#saveSlideshow').click(function (event) {
@@ -611,10 +686,13 @@ $(document).ready(function(){
 				   		 $('#saveSlideDialog').empty();
 				   		 $('#saveSlideDialog').append('Video was successfully generated');
 				   		 $('#saveSlideDialog').dialog({buttons: { "Ok": function() { $(this).dialog("close"); }}, title: 'Successfully Generated'});
-				   		 $('#videoPl').attr('src',data);
-				   		 var elem = document.getElementById("videoPl");
-				   		 elem.load();
-				   		 $('#firstStep').hide();
+				   		 //$('#videoPl').attr('src',data);
+				   		 //var elem = document.getElementById("videoPl");
+				   		 //elem.load();
+						 $('#videoHolder').empty();
+						 $('#videoHolder').append('<video id="videoPl" controls><source src="'+data+'" type="video/mp4"><a href="'+data+'">Video tag not supported</video>');
+				   		 videoPath = data;
+						 $('#firstStep').hide();
 						 $('#secondStep').hide();
 						 $('#thirdStep').show();
 					     //alert("Data Loaded: " + data);
@@ -662,17 +740,20 @@ $(document).ready(function(){
 	<div id="thirdStep">
 		<div class="stepContent">
 			<div id="videoHolder">
+				<!--
 				<video id="videoPl" controls="controls">
-					Your browser does not support the video tag
+				   <source src="" type="video/">
+				   <a href="">Your browser does not support the video tag</a>
 				</video>
+				-->
 			</div>
 			<div id="dataForm">
 				<form id="videoData" action="saveall" method="post">
-					<label class="formLabel">Title:</label><input type="text" class="input" name="Title" value=""/><br />
-					<label class="formLabel">Description:</label><input type="text"  class="input" name="Description" value=""/><br />
-					<label>Tags:</label><input type="text" class="input" name="Tags" value=""/><br />
-					<label>Difficulty level:</label>
-						<select>
+					<label class="formLabel">Title:</label><input type="text" class="input" name="title" value=""/><br />
+					<label class="formLabel">Description:</label><input type="text"  class="input" name="description" value=""/><br />
+					<label class="formLabel">Tags:</label><input type="text" class="input" name="tags" value=""/><br />
+					<label class="formLabel">Difficulty level:</label>
+						<select name="difficulty">
 							<option>A1 Beginner</option>
 							<option>A2 Elementary</option>
 							<option>B1 Pre-intermediate</option>
@@ -680,8 +761,8 @@ $(document).ready(function(){
 							<option>C1 Upper-intermediate</option>
 						</select>
 					<br />
-					<label>Language:</label>
-						<select>
+					<label class="formLabel">Language:</label>
+						<select name="language">
 							<option>Arabic (Morocco)</option>
 							<option>Basque</option>
 							<option>English (New Zealand)</option>
@@ -693,8 +774,8 @@ $(document).ready(function(){
 							<option>Spanish (Argentina)</option>
 						</select>
 					<br />
-					<label>Specify video license:</label>
-						<select>
+					<label class="formLabel">Specify video license:</label>
+						<select name="license">
 							<option>CC-BY: Attribution</option>
 							<option>CC-BY-SA: Attribution Share-alike</option>
 							<option>CC-BY-ND: Attribution No Derivative</option>
@@ -704,7 +785,7 @@ $(document).ready(function(){
 							<option>Copyright</option>
 						</select>
 					<br />
-					<label>Author's Name/Source url:</label><input type="text" class="input" name="reference" value=""/><br />			
+					<label class="formLabel">Author's Name/Source url:</label><input type="text" class="input" name="reference" value=""/><br />			
 				</form>
 				
 			</div>
@@ -713,9 +794,12 @@ $(document).ready(function(){
 			<input type="submit" id="backToPreviewSlides" class="ui-button ui-widget" value="Back to slideshow"/>
 			<input type="submit" id="saveVideo" class="ui-button ui-widget" value="Save Video" />
 		</div>
+		<div id="saveVideoDialog">Saving video data. Please wait...</div>
 	</div>
 
 </body>
 </html>
 
-<?php } ?>
+<?php 
+//} 
+?>

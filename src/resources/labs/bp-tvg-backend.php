@@ -4,7 +4,7 @@ session_start();
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'default';
 
-if ( !in_array($action, array('querydictionary', 'saveslideshow'), true) )
+if ( !in_array($action, array('querydictionary', 'saveslideshow', 'savevideo'), true) )
 $action = 'default';
 
 if(isset($_SERVER['REQUEST_METHOD'])){
@@ -37,6 +37,10 @@ switch ($action) {
 		} else {
 			echo 'No data provided';
 		}
+		break;
+	case 'savevideo':
+		$result = saveVideoData($res);
+		echo $result;
 		break;
 	default:
 		echo 'No action requested';
@@ -256,12 +260,122 @@ function concatVideos($video_paths){
 	$sysCall = sprintf($call, $pieces);
 	$result = (exec($sysCall,$output));
 	
-	$call = "ffmpeg -y -i %s %s/concat.mp4 2>&1";
+	//HTML5 compliant mp4 video: AVC video (libx264), MP4A (libfaac)
+	$call = "ffmpeg -y -i %s -vcodec libx264 -vpre hq %s/concat.mp4 2>&1";
 	$sysCall = sprintf($call,$outputpath,$_SESSION['temp_folder']);
+	$_SESSION['temp_video_path'] = $_SESSION['temp_folder'].'/concat.mp4';
 	$result = (exec($sysCall,$output));
 	
 	return $outputurl;
 }
+
+function saveVideoData($fieldData){
+	$result = false;
+
+	$params = new stdClass();
+
+	$params->title = trim($fieldData['title']);
+	$params->description = trim($fieldData['description']);
+	$params->tags = trim($fieldData['tags']);
+	$params->reference = trim($fieldData['reference']);
+
+
+	$params->avgDifficulty = calculateDifficulty(trim($fieldData['difficulty']));
+
+	$l = explode(':',$fieldData['license']);
+	$params->license = strtolower($l[0]);
+	$params->language = calculateLanguage(trim($fieldData['language']));
+
+	if($path = moveVideoToProcessingDir(trim($fieldData['videopath']))){
+		$params->name = $path;
+	} else {
+           return $result;
+	}
+
+
+	require_once 'services/Exercise.php';
+	$service = new Exercise();
+	try{
+	   $response = $service->addUnprocessedExercise($params);
+	   if($response)
+		$result = true;
+	   error_log($response,3,"/tmp/error.log");
+	   return $result;
+	} catch(Exception $e){
+	   error_log($e->getMessage(),3,"/tmp/error.log");
+ 	   return $result;
+	}
+}
+
+function moveVideoToProcessingDir($videoPath){
+	require_once 'services/utils/Config.php';
+	$inputPath = $videoPath;
+	$settings = new Config();
+	$tempName = str_makerand(11,1,1).'.mp4';
+	$destPath = $settings->filePath .'/'.$tempName;
+	if(isset($_SESSION['temp_video_path']))
+	   $inputPath = $_SESSION['temp_video_path'];
+	error_log('Rename: '.$inputPath .' to: '.$destPath."\n",3,"/tmp/error.log");
+	if(@copy($inputPath, $destPath)){
+		return $tempName;
+	} else {
+	        return false;
+	}
+}
+
+function calculateDifficulty($field){
+	$level = explode(' ', $field);
+	$code = 0;
+	switch($level[0]){
+	   case 'A1': $code = 1; break;
+	   case 'A2': $code = 2; break;
+	   case 'B1': $code = 3; break;
+	   case 'B2': $code = 4; break;
+	   case 'C1': $code = 5; break;
+	   default: break;
+	}
+	return $code;
+}
+
+function calculateLanguage($field){
+	$code = 'en_US';
+	switch($field){
+	   case 'Arabic (Morocco)': 
+		$code = 'ar_MA'; break;
+           case 'Basque': 
+		$code = 'eu_ES'; break;
+           case 'English (New Zealand)': 
+		$code = 'en_NZ'; break;
+           case 'English (United Kingdom)': 
+		$code = 'en_UK'; break;
+           case 'English (United States)': 
+		$code = 'en_US'; break;
+           case 'German (Germany)': 
+		$code = 'de_DE'; break;
+           case 'French (France)': 
+		$code = 'fr_FR'; break;
+	   case 'Spanish (Spain)': 
+		$code = 'es_ES'; break;
+	   case 'Spanish (Argentina)': 
+		$code = 'es_AR'; break;
+	   default: break;
+	}
+	return $code;
+}
+
+function str_makerand ($length, $useupper, $usenumbers)
+{
+                $key= '';
+                $charset = "abcdefghijklmnopqrstuvwxyz";
+                if ($useupper)
+                $charset .= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                if ($usenumbers)
+                $charset .= "0123456789";
+                for ($i=0; $i<$length; $i++)
+                $key .= $charset[(mt_rand(0,(strlen($charset)-1)))];
+                return $key;
+}
+
 
 function retrieveImageFile($url, $imageIndex){
 	$urlPieces = explode('/',$url);
