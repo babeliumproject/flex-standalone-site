@@ -17,3 +17,11 @@ UPDATE `subtitle_line` SET `text`='Am Anichke. They made a new website, and they
 
 -- SVN control line. Must be added on each incremental script
 UPDATE `preferences` SET `prefValue` =  '$Revision: 708 $'  WHERE `preferences`.`prefName` = 'dbrevision';
+
+INSERT INTO `preferences` (`prefName` , `prefValue`) VALUES
+('minExerciseDuration',15),
+('maxExerciseDuration',120),
+('minVideoEvalDuration',5),
+('maxFileSize',188743680);
+
+ALTER TABLE `exercise` CHANGE `name` `name` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid'

@@ -42,6 +42,10 @@ INSERT INTO `preferences` VALUES
 (46,'spinvox.language','es'),
 (47,'minVideoRatingCount','10'),
 (48,'reportCredit','2'),
-(49,'web_domain','babeliumproject.com');
+(49,'web_domain','babeliumproject.com'),
+(50,'minExerciseDuration',15),
+(51,'maxExerciseDuration',120),
+(52,'minVideoEvalDuration',5),
+(53,'maxFileSize',188743680);
 /*!40000 ALTER TABLE `preferences` ENABLE KEYS */;
 UNLOCK TABLES;

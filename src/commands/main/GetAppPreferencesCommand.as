@@ -46,6 +46,7 @@ package commands.main
 				}
 				dataModel.prefDic=dic;
 				initializePaths();
+				initializeFileBounds();
 				dataModel.preferencesRetrieved=!dataModel.preferencesRetrieved;
 			}
 
@@ -69,6 +70,18 @@ package commands.main
 				dataModel.uploadURL="http://" + server + "/upload.php";
 				dataModel.thumbURL="http://" + server + "/resources/images/thumbs";
 			}
+		}
+		
+		private function initializeFileBounds():void{
+			
+			if(dataModel.prefDic['minExerciseDuration'] && dataModel.prefDic['minExerciseDuration'].length > 0)
+				dataModel.minExerciseDuration = dataModel.prefDic['minExerciseDuration']; //seconds
+			if(dataModel.prefDic['maxExerciseDuration'] && dataModel.prefDic['maxExerciseDuration'].length > 0)
+				dataModel.maxExerciseDuration = dataModel.prefDic['maxExerciseDuration']; //seconds
+			if(dataModel.prefDic['minVideoEvalDuration'] && dataModel.prefDic['minVideoEvalDuration'].length > 0)
+				dataModel.minVideoEvalDuration = dataModel.prefDic['minVideoEvalDuration']; //seconds
+			if(dataModel.prefDic['maxFileSize'] && dataModel.prefDic['maxFileSize'].length > 0)
+				dataModel.maxFileSize = dataModel.prefDic['maxFileSize']; //Bytes (180MB)
 		}
 
 	}

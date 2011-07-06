@@ -108,7 +108,7 @@ DROP TABLE IF EXISTS `exercise`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `exercise` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(80) NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid',
+  `name` varchar(200) NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid',
   `description` text NOT NULL COMMENT 'Describe the video''s content',
   `source` enum('Youtube','Red5') NOT NULL COMMENT 'Specifies where the video comes from',
   `language` varchar(45) NOT NULL COMMENT 'The spoken language of this exercise',
