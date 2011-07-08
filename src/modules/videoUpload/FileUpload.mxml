@@ -742,7 +742,9 @@
 					<s:RadioButton id="youtubeChoice"
 								   value="ytChoice"
 								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_YOUTUBE')}"
-								   group="{uploadOptionsGroup}"/>
+								   group="{uploadOptionsGroup}"
+								   includeInLayout="{CONFIG::unstable ? true : false}"
+								   visible = "{CONFIG::unstable ? true : false}"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 styleName="boldLabel"
@@ -760,7 +762,8 @@
 			
 			<!-- Part of the Video Slice widget -->
 			<s:VGroup id="sliceButtons"
-					  visible="false">
+					  visible="false"
+					  includeInLayout="{CONFIG::unstable ? true : false}">
 				<mx:Text id="requestInfo"
 						 visible="false"
 						 text="{resourceManager.getString('myResources','SLICEREQUEST_TEXT')}"
@@ -888,6 +891,7 @@
 		<!-- Video Slice widget -->
 		<s:VGroup id="vSliceWidget" 
 				  visible="false"
+				  includeInLayout="{CONFIG::unstable ? true : false}"
 				  width="100%">
 			<mx:Label text="{resourceManager.getString('myResources','TITLE_URLSEARCH')}"
 					  fontSize="12"

@@ -22,6 +22,7 @@
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
 			<define name="CONFIG::restricted" value="false"/>
+			<define name="CONFIG::unstable" value="false"/>
 			
 			<compiler.library-path dir="${BASE}" append="true">
 				<include name="libs"/>
