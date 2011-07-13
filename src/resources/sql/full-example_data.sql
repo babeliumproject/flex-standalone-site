@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 --
 -- Dumping data for table `exercise`
 --
@@ -42,7 +44,7 @@ INSERT INTO `exercise_role` VALUES
 (15,8,1,'NPC'),
 (16,8,1,'Yourself'),
 (17,9,1,'NPC'),
-(18,9,1,'Yourself')
+(18,9,1,'Yourself'),
 (19,23,1,'NPC'),
 (20,23,1,'Yourself');
 /*!40000 ALTER TABLE `exercise_role` ENABLE KEYS */;
@@ -203,3 +205,5 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES 
 (1,'guest1','7ca6774b43437f228048ae4451081963bc84802c','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
 (2,'guest2','4eff1c28f92bb604596e75d2c98bf7085ac685c4','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);
+
+SET FOREIGN_KEY_CHECKS = 1;
