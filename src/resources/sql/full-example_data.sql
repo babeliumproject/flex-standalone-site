@@ -4,10 +4,12 @@
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/* Passwords are the same as the user name. For example, (u: guest1 p: guest1) */
 INSERT INTO `users` (`ID`,`name`,`password`,`email`,`realName`,`realSurname`,`creditCount`,`joiningDate`,`active`,`activation_hash`,`isAdmin`) VALUES 
-(1,'guest1','7ca6774b43437f228048ae4451081963bc84802c','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
-(2,'guest2','4eff1c28f92bb604596e75d2c98bf7085ac685c4','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);
-
+(1,'guest1','1144e9791066fcc2f911108616deb91e09458c37','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
+(2,'guest2','ea4a2ae4287d89d58ca0ff6f475c4dacca456e3b','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Dumping data for table `user_languages`
@@ -87,8 +89,8 @@ INSERT INTO `exercise_role` (`id`,`fk_exercise_id`,`fk_user_id`,`character_name`
 (16,8,1,'Yourself'),
 (17,9,1,'NPC'),
 (18,9,1,'Yourself'),
-(19,23,1,'NPC'),
-(20,23,1,'Yourself');
+(19,5,1,'NPC'),
+(20,5,1,'Yourself');
 /*!40000 ALTER TABLE `exercise_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,7 +160,8 @@ INSERT INTO `subtitle_line` (`id`,`fk_subtitle_id`,`show_time`,`hide_time`,`text
 
 (85,9,0.3,2.006,'What are you up to this weekend?',17),
 (86,9,2.206,3.6,'What are you up to this weekend?',18),
-(87,9,3.8,4.613,'Where\'s that?',17),(88,9,4.813,5.8,'Where\'s that?',18),
+(87,9,3.8,4.613,'Where\'s that?',17),
+(88,9,4.813,5.8,'Where\'s that?',18),
 (89,9,6,8.123,'Oh yeah, I know where the Albert Park is.',17),
 (90,9,8.323,10.8,'Oh yeah, I know where the Albert Park is.',18),
 (91,9,11,13.906,'That\'s were the lantern festival was last week.',17),
@@ -178,21 +181,21 @@ INSERT INTO `subtitle_line` (`id`,`fk_subtitle_id`,`show_time`,`hide_time`,`text
 (105,9,52.212,53.8,'Yeah. What day did you go?',18),
 (106,9,54,57.1,'Am, Sunday I think it was. Yeah, yeah, Sunday night.',17),
 
-(210,23,0.3,1.2,'What\'s that?',47),
-(211,23,1.4,2.9,'What\'s that?',48),
-(212,23,3.1,5.22,'Can\'t you just use your sleeve?',47),
-(213,23,5.42,8.2,'Can\'t you just use your sleeve?',48),
-(214,23,8.4,9.23,'Who gave it to you?',47),
-(215,23,9.43,11.5,'Who gave it to you?',48),
-(216,23,11.7,14.31,'Look I got a present',47),
-(217,23,14.51,15.6,'What\'s that?',48),
-(218,23,15.8,18.52,'It\'s a \"keitai kurina\".',47),
-(219,23,18.72,19.6,'What\'s that?',48),
-(220,23,19.8,28.51,'Well, \"keitai\" means cell-phone and this has material on the back of it and...',47),
-(221,23,28.71,30.9,'Can\'t you just use your sleeve?',48),
-(222,23,31.1,32.83,'Well... yeah, but...',47),
-(223,23,33.03,34.3,'Who gave it to you?',48),
-(224,23,34.5,43,'Am Anichke. They made a new website, and they used a few seconds of one of my videos. So... they sent me, this.',47);
+(210,23,0.3,1.2,'What\'s that?',19),
+(211,23,1.4,2.9,'What\'s that?',20),
+(212,23,3.1,5.22,'Can\'t you just use your sleeve?',19),
+(213,23,5.42,8.2,'Can\'t you just use your sleeve?',20),
+(214,23,8.4,9.23,'Who gave it to you?',19),
+(215,23,9.43,11.5,'Who gave it to you?',20),
+(216,23,11.7,14.31,'Look I got a present',19),
+(217,23,14.51,15.6,'What\'s that?',20),
+(218,23,15.8,18.52,'It\'s a \"keitai kurina\".',19),
+(219,23,18.72,19.6,'What\'s that?',20),
+(220,23,19.8,28.51,'Well, \"keitai\" means cell-phone and this has material on the back of it and...',19),
+(221,23,28.71,30.9,'Can\'t you just use your sleeve?',20),
+(222,23,31.1,32.83,'Well... yeah, but...',19),
+(223,23,33.03,34.3,'Who gave it to you?',20),
+(224,23,34.5,43,'Am Anichke. They made a new website, and they used a few seconds of one of my videos. So... they sent me, this.',19);
 /*!40000 ALTER TABLE `subtitle_line` ENABLE KEYS */;
 UNLOCK TABLES;
 

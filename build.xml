@@ -92,9 +92,10 @@
 		<copy todir="${DEPLOY_DIR}/services">
 			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
 		</copy>
-		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
-		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
-		
+		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('WEBROOT_PATH',.+\)" replace="\('WEBROOT_PATH', '${WEB_ROOT}'\)" flags="g"/>
 	</target>
 	
 	<target name="app-fix-domains">
@@ -105,10 +106,10 @@
 	
 	<target name="app-fill-config">
 		<copy file="${APP_ROOT}/resources/services/utils/Config.php.example" tofile="${APP_ROOT}/resources/services/utils/Config.php" overwrite="true"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="host.+;" replace="host = '${sql.host}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${sql.user}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${sql.pass}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${sql.dbname}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="host.+;" replace="host = '${SQL_HOST}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${SQL_BABELIUM_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${SQL_BABELIUM_USER_PASS}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${SQL_DB_NAME}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${red5.path}/webapps/oflaDemo/streams';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_USER}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_PASS}';"/>
@@ -128,7 +129,7 @@
 			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
 		</copy>
 		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
-				<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
+			<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
 		</replaceregexp>
 	</target>
 		
@@ -144,6 +145,14 @@
 		    <arg value="/tmp"/> <!-- Target path -->
 		</exec>
 	</target>	
+	
+	<target name="database-deploy" description="">
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  <transaction src="${SQL_SCHEMA_SCRIPT}"/>
+		  <transaction src="${SQL_MINIMUM_DATA_SCRIPT}"/>
+		  <transaction src="${SQL_EXAMPLE_DATA_SCRIPT}"/>
+		</sql>
+	</target>
 		
 	<target name="init">
 		<tstamp>
@@ -151,17 +160,13 @@
 		</tstamp>
 	</target>
 
-	<target name="svn-checkout" description="checkout desde Subversion (XP-dev)">
-		<svn username="${svn.username}" password="${svn.password}">
-			<checkout url="${svn.url}" destPath="${svn.dir}" />
-		</svn>
-	</target>
-
 	<target name="LH_SyncDB" description="sync local de la BD">
 		<!--Eliminar las tablas de babeliumproject -->
 		<!-- && Recrear desde all.sql -->
 		<exec dir="${BASE}" executable="./updatedb.sh" />
 	</target>
+	
+	
 
 	<target name="LH_clean" description="borrar bin-debug">
 		<delete>
