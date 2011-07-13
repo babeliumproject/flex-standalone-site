@@ -1,10 +1,36 @@
 --
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` (`ID`,`name`,`password`,`email`,`realName`,`realSurname`,`creditCount`,`joiningDate`,`active`,`activation_hash`,`isAdmin`) VALUES 
+(1,'guest1','7ca6774b43437f228048ae4451081963bc84802c','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
+(2,'guest2','4eff1c28f92bb604596e75d2c98bf7085ac685c4','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);
+
+
+--
+-- Dumping data for table `user_languages`
+--
+
+LOCK TABLES `user_languages` WRITE;
+/*!40000 ALTER TABLE `user_languages` DISABLE KEYS */;
+INSERT INTO `user_languages` (`id`,`fk_user_id`,`language`,`level`,`positives_to_next_level`,`purpose`) VALUES
+(1,1,'es_ES',7,15,'evaluate'),
+(2,1,'en_US',5,15,'practice'),
+(3,2,'en_US',7,15,'evaluate'),
+(4,2,'es_ES',5,15,'practice');
+/*!40000 ALTER TABLE `user_languages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
 -- Dumping data for table `exercise`
 --
 
 LOCK TABLES `exercise` WRITE;
 /*!40000 ALTER TABLE `exercise` DISABLE KEYS */;
-INSERT INTO `exercise` VALUES 
+INSERT INTO `exercise` (`id`,`name`,`description`,`source`,`language`,`fk_user_id`,`tags`,`title`,`thumbnail_uri`,`adding_date`,`duration`,`status`,`filehash`,`fk_transcription_id`,`license`,`reference`) VALUES 
 (5,'tdes_1065_qa','Repeat phrases and then talk to Sarah','Red5','en_US',1,'daily, english, show','The Daily English Show #1065 Fragment','tdes_1065_qa.jpg','2010-03-08 12:10:00',43,'Available','161abc5e831c545305f55f4139fd4799',NULL,'cc-by','http://www.thedailyenglishshow.com'),
 (6,'tdes_1170_qa','Repeat phrases and then talk to Sarah','Red5','en_US',1,'daily, english, show','The Daily English Show #1170 Fragment','tdes_1170_qa.jpg','2010-03-08 12:10:00',52,'Available','38b99457f8cd8af5b56728c5e2f0485b',NULL,'cc-by','http://www.thedailyenglishshow.com'),
 (7,'tdes_1179_qa','Repeat phrases and then talk to Sarah','Red5','en_US',1,'daily, english, show','The Daily English Show #1179 Fragment','tdes_1179_qa.jpg','2010-03-08 12:10:00',30,'Available','4fe59e622c208b53dc4e61cfdcb7b2a8',NULL,'cc-by','http://www.thedailyenglishshow.com'),
@@ -13,54 +39,6 @@ INSERT INTO `exercise` VALUES
 /*!40000 ALTER TABLE `exercise` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Dumping data for table `exercise_level`
---
-
-LOCK TABLES `exercise_level` WRITE;
-/*!40000 ALTER TABLE `exercise_level` DISABLE KEYS */;
-INSERT INTO `exercise_level` VALUES 
-(1,5,1,4,'2010-07-29 17:49:46'),
-(2,6,1,4,'2010-07-29 17:49:46'),
-(3,7,1,4,'2010-07-29 17:49:46'),
-(4,8,1,4,'2010-07-29 17:49:46'),
-(5,9,1,4,'2010-07-29 17:49:46');
-/*!40000 ALTER TABLE `exercise_level` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `exercise_role`
---
-
-LOCK TABLES `exercise_role` WRITE;
-/*!40000 ALTER TABLE `exercise_role` DISABLE KEYS */;
-INSERT INTO `exercise_role` VALUES 
-(11,6,1,'NPC'),
-(12,6,1,'Yourself'),
-(13,7,1,'NPC'),
-(14,7,1,'Yourself'),
-(15,8,1,'NPC'),
-(16,8,1,'Yourself'),
-(17,9,1,'NPC'),
-(18,9,1,'Yourself')
-(19,23,1,'NPC'),
-(20,23,1,'Yourself');
-/*!40000 ALTER TABLE `exercise_role` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `motd`
---
-
-LOCK TABLES `motd` WRITE;
-/*!40000 ALTER TABLE `motd` DISABLE KEYS */;
-INSERT INTO `motd` VALUES 
-(1,'Record a video-exercise  as many times as you want','After recording a video-exercise you can watch or redo it again  before publishing it?\rJust click the Watch Simultaneously or Watch Response button. Whenever you are confident\rwith your work,  click “Save Response” Button in order to be evaluated.','/img/motd1.png','2010-10-01 00:00:00',0,'1','en_US'),
-(2,'Did you know that you can dub your favourite actor','or actress? Do you feel lucky, punk?','/img/motd2.png','2010-10-04 00:00:00',0,'2','en_US'),
-(3,'Did you know that you can report an inappropiate video?','Users can report inappropiate videos, choosing the reason for banning among a frequently used reasons list.','/img/motd3.png','2010-10-03 00:00:00',0,'3','en_US'),
-(4,'Did you know that you can follow us on Twitter?','Just follow the @babelium user','/img/motd6.png','2010-10-05 00:00:00',0,'4','en_US');
-/*!40000 ALTER TABLE `motd` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `subtitle`
@@ -68,7 +46,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `subtitle` WRITE;
 /*!40000 ALTER TABLE `subtitle` DISABLE KEYS */;
-INSERT INTO `subtitle` VALUES 
+INSERT INTO `subtitle` (`id`,`fk_exercise_id`,`fk_user_id`,`language`,`translation`,`adding_date`) VALUES 
 (6,6,1,'en_US',0,'2010-06-04 23:23:11'),
 (7,7,1,'en_US',0,'2010-06-04 23:23:11'),
 (8,8,1,'en_US',0,'2010-06-04 23:23:11'),
@@ -77,13 +55,51 @@ INSERT INTO `subtitle` VALUES
 /*!40000 ALTER TABLE `subtitle` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+--
+-- Dumping data for table `exercise_level`
+--
+
+LOCK TABLES `exercise_level` WRITE;
+/*!40000 ALTER TABLE `exercise_level` DISABLE KEYS */;
+INSERT INTO `exercise_level` (`id`,`fk_exercise_id`,`fk_user_id`,`suggested_level`,`suggest_date`) VALUES 
+(1,5,1,4,'2010-07-29 17:49:46'),
+(2,6,1,4,'2010-07-29 17:49:46'),
+(3,7,1,4,'2010-07-29 17:49:46'),
+(4,8,1,4,'2010-07-29 17:49:46'),
+(5,9,1,4,'2010-07-29 17:49:46');
+/*!40000 ALTER TABLE `exercise_level` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Dumping data for table `exercise_role`
+--
+
+LOCK TABLES `exercise_role` WRITE;
+/*!40000 ALTER TABLE `exercise_role` DISABLE KEYS */;
+INSERT INTO `exercise_role` (`id`,`fk_exercise_id`,`fk_user_id`,`character_name`) VALUES 
+(11,6,1,'NPC'),
+(12,6,1,'Yourself'),
+(13,7,1,'NPC'),
+(14,7,1,'Yourself'),
+(15,8,1,'NPC'),
+(16,8,1,'Yourself'),
+(17,9,1,'NPC'),
+(18,9,1,'Yourself'),
+(19,23,1,'NPC'),
+(20,23,1,'Yourself');
+/*!40000 ALTER TABLE `exercise_role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 --
 -- Dumping data for table `subtitle_line`
 --
 
 LOCK TABLES `subtitle_line` WRITE;
 /*!40000 ALTER TABLE `subtitle_line` DISABLE KEYS */;
-INSERT INTO `subtitle_line` VALUES 
+INSERT INTO `subtitle_line` (`id`,`fk_subtitle_id`,`show_time`,`hide_time`,`text`,`fk_exercise_role_id`) VALUES 
 (32,6,0.3,2.307,'Oh, it\'s going that well, huh?',11),
 (33,6,2.507,4.9,'Oh, it\'s going that well, huh?',12),
 (34,6,5.1,8.023,'When do I get to meet the phantom physician?',11),
@@ -180,26 +196,19 @@ INSERT INTO `subtitle_line` VALUES
 /*!40000 ALTER TABLE `subtitle_line` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
 --
--- Dumping data for table `user_languages`
+-- Dumping data for table `motd`
 --
 
-LOCK TABLES `user_languages` WRITE;
-/*!40000 ALTER TABLE `user_languages` DISABLE KEYS */;
-INSERT INTO `user_languages` VALUES
-(1,1,'es_ES',7,15,'evaluate'),
-(1,1,'en_US',5,15,'practice'),
-(2,2,'en_US',7,15,'evaluate'),
-(2,2,'es_ES',5,15,'practice');
-/*!40000 ALTER TABLE `user_languages` ENABLE KEYS */;
+LOCK TABLES `motd` WRITE;
+/*!40000 ALTER TABLE `motd` DISABLE KEYS */;
+INSERT INTO `motd` (`id`,`title`,`message`,`resource`,`displaydate`,`displaywhenloggedin`,`code`,`language`) VALUES 
+(1,'Record a video-exercise  as many times as you want','After recording a video-exercise you can watch or redo it again  before publishing it?\rJust click the Watch Simultaneously or Watch Response button. Whenever you are confident\rwith your work,  click “Save Response” Button in order to be evaluated.','/img/motd1.png','2010-10-01 00:00:00',0,'1','en_US'),
+(2,'Did you know that you can dub your favourite actor','or actress? Do you feel lucky, punk?','/img/motd2.png','2010-10-04 00:00:00',0,'2','en_US'),
+(3,'Did you know that you can report an inappropiate video?','Users can report inappropiate videos, choosing the reason for banning among a frequently used reasons list.','/img/motd3.png','2010-10-03 00:00:00',0,'3','en_US'),
+(4,'Did you know that you can follow us on Twitter?','Just follow the @babelium user','/img/motd6.png','2010-10-05 00:00:00',0,'4','en_US');
+/*!40000 ALTER TABLE `motd` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Dumping data for table `users`
---
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES 
-(1,'guest1','7ca6774b43437f228048ae4451081963bc84802c','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
-(2,'guest2','4eff1c28f92bb604596e75d2c98bf7085ac685c4','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);

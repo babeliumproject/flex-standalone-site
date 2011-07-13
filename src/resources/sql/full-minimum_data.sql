@@ -4,7 +4,7 @@
 
 LOCK TABLES `preferences` WRITE;
 /*!40000 ALTER TABLE `preferences` DISABLE KEYS */;
-INSERT INTO `preferences` VALUES 
+INSERT INTO `preferences` (`id`,`prefName`,`prefValue`) VALUES 
 (1,'initialCredits','40'),
 (2,'subtitleAdditionCredits','4'),
 (3,'evaluationRequestCredits','10'),
