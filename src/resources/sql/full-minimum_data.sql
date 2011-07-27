@@ -4,7 +4,7 @@
 
 LOCK TABLES `preferences` WRITE;
 /*!40000 ALTER TABLE `preferences` DISABLE KEYS */;
-INSERT INTO `preferences` VALUES 
+INSERT INTO `preferences` (`id`,`prefName`,`prefValue`) VALUES 
 (1,'initialCredits','40'),
 (2,'subtitleAdditionCredits','4'),
 (3,'evaluationRequestCredits','10'),
@@ -42,7 +42,7 @@ INSERT INTO `preferences` VALUES
 (46,'spinvox.language','es'),
 (47,'minVideoRatingCount','10'),
 (48,'reportCredit','2'),
-(49,'web_domain','babeliumproject.com'),
+(49,'web_domain','babelia'),
 (50,'minExerciseDuration',15),
 (51,'maxExerciseDuration',120),
 (52,'minVideoEvalDuration',5),
