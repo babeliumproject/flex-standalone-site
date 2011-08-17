@@ -99,9 +99,9 @@
 	</target>
 	
 	<target name="app-fix-domains">
-		<replace file="${APP_ROOT}/service-config.xml" token='/babelia' value="/${WEB_DOMAIN}" />
-		<replace file="${APP_ROOT}/model/DataModel.as" token='"babelia' value='"${WEB_DOMAIN}' />
-		<replace file="${APP_ROOT}/resources/crossdomain.xml" token='"babelia' value='"${WEB_DOMAIN}' />
+		<replace file="${APP_ROOT}/service-config.xml" token='/babelium' value="/${WEB_DOMAIN}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"babelium' value='"${WEB_DOMAIN}' />
+		<replace file="${APP_ROOT}/resources/crossdomain.xml" token='"babelium' value='"${WEB_DOMAIN}' />
 	</target>
 	
 	<target name="app-fill-config">
@@ -182,8 +182,8 @@
 	</target>
 
 
-	<target name="BP_babelia_to_babelium" description="s/babelia/babeliumproject.com/">
-		<input message="Please enter source:" addproperty="input.src" defaultvalue="babelia" />
+	<target name="BP_babelium_to_babelium" description="s/babelium/babeliumproject.com/">
+		<input message="Please enter source:" addproperty="input.src" defaultvalue="babelium" />
 		<input message="Please enter destination:" addproperty="input.dst" defaultvalue="babeliumproject.com" />
 		<replace file="${APP_ROOT}/service-config.xml" token='/${input.src}' value="/${input.dst}" />
 		<replace file="${APP_ROOT}/model/DataModel.as" token='"${input.src}' value='"${input.dst}' />
@@ -193,13 +193,13 @@
 		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}" verbose="true">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
 		</scp>
-		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}/amfphp/services/babelia" verbose="true">
+		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}/amfphp/services/babelium" verbose="true">
 			<fileset dir="${services.srcdir}" includes="**/*" />
 		</scp>
 	</target>
 
 	<target name="LH_deploylocal" description="Copy deployed app to local webserver">
-		<copy preservelastmodified="yes" todir="${local.server.path}/babelia">
+		<copy preservelastmodified="yes" todir="${local.server.path}/babelium">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
 		</copy>
 	</target>
