@@ -308,6 +308,82 @@ class VideoProcessor{
 		$resultsnap = (exec("ffmpeg -y -i '$cleanPath' -ss $second -vframes 1 -r 1 -s ". $snapshotWidth . "x" . $snapshotHeight ." '$cleanImagePath' 2>&1",$cmd));
 		return $resultsnap;
 	}
+	
+	/**
+	 * Takes various images from the provided video and creates a folder to store them. Checks if the provided paths
+	 * are readable/writable and if needed retrieves the info of the provided video file.
+	 *
+	 * @param string $filePath
+	 * @param string $outputImagePath
+	 * @throws Exception
+	 */
+	public function takeFolderedRandomSnapshots($filePath, $thumbPath, $posterPath, $thumbnailWidth = 120, $thumbnailHeight = 90, $snapshotCount = 3){
+		$cleanVideoPath = escapeshellcmd($filePath);
+		$cleanThumbPath = realpath(escapeshellcmd($thumbPath));
+		$cleanPosterPath = realpath(escapeshellcmd($posterPath));
+
+		if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
+			throw new Exception("You don't have enough permissions to read from the input");
+		if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
+			throw new Exception("You don't have enough permissions to write to the output");
+		if($this->mediaContainer->hash != md5_file($cleanVideoPath)){
+			try {
+				//This file hasn't been scanned yet
+				$this->retrieveMediaInfo($cleanVideoPath);
+			} catch (Exception $e) {
+				throw new Exception($e->getMessage());
+			}
+		}
+
+		//Create a folder to hold all the thumbnails, only if doesn't exist
+		$path_parts = pathinfo($cleanVideoPath);
+		$hash = $path_parts['filename'];
+		$cleanThumbPath = $cleanThumbPath . '/' . $hash;
+		$cleanPosterPath = $cleanPosterPath . '/' . $hash;
+		
+		if(!is_dir($cleanThumbPath)){
+			if(!mkdir($cleanThumbPath)){
+				throw new Exception("You don't have enough permissions to create a thumbnail folder");
+			}
+		}
+		if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
+			throw new Exception("Yon don't have enough permissions to write to the thumbnail folder");
+		}
+		
+		if(!is_dir($cleanPosterPath)){
+			if(!mkdir($cleanPosterPath)){
+				throw new Exception("You don't have enough permissions to create a poster folder");
+			}
+		}
+		if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
+			throw new Exception("Yon don't have enough permissions to write to the poster folder");
+		}
+		
+		//Default thumbnail time
+		$second = 1;
+		$lastSecond = 1;
+		for($i=0; $i<$snapshotCount; $i++){
+			
+			//Random time between 1 and videoDuration-1
+			$second = rand(1, ($this->mediaContainer->duration - 1));
+			$lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
+			
+			$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i);
+			$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i);
+			if(!is_file($toPath))
+				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
+			if(!is_file($toPath))
+				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s '$toPath' 2>&1",$cmd));
+		}
+		
+		//Create a symbolic link to the first generated thumbnail/poster to set it as the default image
+		
+		if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg' || !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
+			throw new Exception ("Couldn't create links for the snapshots");
+		}
+		
+		return $resultsnap;
+	}
 
 	/**
 	 * Transcodes the provided video file into an FLV container video with stereo MP3 audio. Checks if the provided paths

@@ -24,6 +24,7 @@ class UploadExerciseDAO{
 		$settings = new Config();
 		$this->filePath = $settings->filePath;
 		$this->imagePath = $settings->imagePath;
+		$this->posterPath = $settings->posterPath;
 		$this->red5Path = $settings->red5Path;
 
 		$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
@@ -70,7 +71,7 @@ class UploadExerciseDAO{
 						if(!$this->checkIfFileExists($outputPath)){
 							//Asuming everything went ok, take a snapshot of the video
 							$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
-							$snapshot_output = $this->mediaHelper->takeRandomSnapshot($outputPath, $outputImagePath);
+							$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 
 							//move the outputFile to it's final destination
 							$renameResult = rename($outputPath, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
