@@ -233,6 +233,39 @@ class UploadExerciseDAO{
 		}
 		return $fileExists;
 	}
+	
+	public function takeMissingSnapshots(){
+		$mediaPaths = array();
+		$sql = "SELECT name FROM exercise WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->exerciseFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		$sql = "SELECT file_identifier FROM response WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->responseFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		$sql = "SELECT video_identifier FROM evaluation_video WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->evaluationFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		foreach($mediaPaths as $path){
+			try{
+				$this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
+			} catch(Exception $e){
+				echo $e->getMessage()."\n";
+			}
+		}
+		
+	}
 
 }
 
