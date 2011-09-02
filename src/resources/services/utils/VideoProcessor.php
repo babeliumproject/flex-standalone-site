@@ -2,9 +2,9 @@
 
 /**
  * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
- * 
+ *
  * Copyright (c) 2011 GHyM and by respective authors (see below).
- * 
+ *
  * This file is part of Babelium Project.
  *
  * Babelium Project is free software: you can redistribute it and/or modify
@@ -22,11 +22,11 @@
  */
 
 if(!defined('SERVICE_PATH'))
-	define('SERVICE_PATH', '/services/');
+define('SERVICE_PATH', '/services/');
 
 if(!defined('WEBROOT_PATH'))
-	define('WEBROOT_PATH', '/var/www/babelium');	
-	
+define('WEBROOT_PATH', '/var/www/babelium');
+
 require_once WEBROOT_PATH . SERVICE_PATH . 'utils/Config.php';
 
 /**
@@ -85,7 +85,7 @@ class VideoProcessor{
 				$this->retrieveVideoInfo($strCmd);
 				$this->retrieveDuration($strCmd);
 				if($this->mediaContainer->hasVideo == true)
-					$this->retrieveVideoAspectRatio();
+				$this->retrieveVideoAspectRatio();
 				return $this->mediaContainer;
 			} else {
 				throw new Exception("Unknown media format");
@@ -103,12 +103,12 @@ class VideoProcessor{
 	private function checkMimeType($filePath){
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
-			
+
 			//Not always returns accurate info on the mime type
 			//$finfo = finfo_open(FILEINFO_MIME_TYPE);
-    		//$file_mime = finfo_file($finfo, $file_path);
+			//$file_mime = finfo_file($finfo, $file_path);
 			//finfo_close($finfo);
-			
+
 			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
 
 			$implodedOutput = implode($cmd);
@@ -118,19 +118,19 @@ class VideoProcessor{
 			$validMime = false;
 
 			/*
-			foreach($this->mimeTypes as $mimeType ){
+			 foreach($this->mimeTypes as $mimeType ){
 				if($mimeType == $fileMimeType){
-					//The mime of this file is among the accepted mimes list
-					$validMime = true;
-					break;
+				//The mime of this file is among the accepted mimes list
+				$validMime = true;
+				break;
 				}
-			}
-			*/
-			
+				}
+				*/
+
 			if(strpos($implodedOutput,'video') !== false){
 				$validMime = true;
 			}
-			
+
 			return $validMime ? $fileMimeType : "Not valid mime type";
 		} else {
 			throw new Exception("Not a file");
@@ -259,12 +259,12 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoAspectRatio(){
 		if(!$this->mediaContainer->hasVideo || !$this->mediaContainer->videoHeight || !$this->mediaContainer->videoWidth)
-			throw new Exception("Operation not allowed on non-video files");
+		throw new Exception("Operation not allowed on non-video files");
 			
 		if($this->mediaContainer->videoWidth > $this->mediaContainer->videoHeight){
 			$originalRatio = $this->mediaContainer->videoWidth / $this->mediaContainer->videoHeight;
 			$this->mediaContainer->originalAspectRatio = $originalRatio;
-				
+
 			$deviation16_9 = abs(((16/9)-$originalRatio));
 			$deviation4_3 = abs(((4/3)-$originalRatio));
 			$this->mediaContainer->suggestedTranscodingAspectRatio = ($deviation4_3 < $deviation16_9) ? 43 : 169;
@@ -288,9 +288,9 @@ class VideoProcessor{
 		$cleanImagePath = escapeshellcmd($outputImagePath);
 
 		if(!is_readable($cleanPath))
-			throw new Exception("You don't have enough permissions to read from the input");
+		throw new Exception("You don't have enough permissions to read from the input");
 		if(!is_writable(dirname($cleanImagePath)))
-			throw new Exception("You don't have enough permissions to write to the output");
+		throw new Exception("You don't have enough permissions to write to the output");
 		if($this->mediaContainer->hash != md5_file($cleanPath)){
 			try {
 				//This file hasn't been scanned yet
@@ -308,7 +308,7 @@ class VideoProcessor{
 		$resultsnap = (exec("ffmpeg -y -i '$cleanPath' -ss $second -vframes 1 -r 1 -s ". $snapshotWidth . "x" . $snapshotHeight ." '$cleanImagePath' 2>&1",$cmd));
 		return $resultsnap;
 	}
-	
+
 	/**
 	 * Takes various images from the provided video and creates a folder to store them. Checks if the provided paths
 	 * are readable/writable and if needed retrieves the info of the provided video file.
@@ -323,9 +323,9 @@ class VideoProcessor{
 		$cleanPosterPath = realpath(escapeshellcmd($posterPath));
 
 		if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
-			throw new Exception("You don't have enough permissions to read from the input");
+		throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file");
 		if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
-			throw new Exception("You don't have enough permissions to write to the output");
+		throw new Exception("You don't have enough permissions to write to the output");
 		if($this->mediaContainer->hash != md5_file($cleanVideoPath)){
 			try {
 				//This file hasn't been scanned yet
@@ -335,53 +335,68 @@ class VideoProcessor{
 			}
 		}
 
-		//Create a folder to hold all the thumbnails, only if doesn't exist
-		$path_parts = pathinfo($cleanVideoPath);
-		$hash = $path_parts['filename'];
-		$cleanThumbPath = $cleanThumbPath . '/' . $hash;
-		$cleanPosterPath = $cleanPosterPath . '/' . $hash;
-		
-		if(!is_dir($cleanThumbPath)){
-			if(!mkdir($cleanThumbPath)){
-				throw new Exception("You don't have enough permissions to create a thumbnail folder");
+		$resultsnap = 'No snapshot was taken';
+		if($this->mediaContainer->hasVideo){
+
+			//Create a folder to hold all the thumbnails, only if doesn't exist
+			$path_parts = pathinfo($cleanVideoPath);
+			$hash = $path_parts['filename'];
+			$cleanThumbPath = $cleanThumbPath . '/' . $hash;
+			$cleanPosterPath = $cleanPosterPath . '/' . $hash;
+
+			if(!is_dir($cleanThumbPath)){
+				if(!mkdir($cleanThumbPath)){
+					throw new Exception("You don't have enough permissions to create a thumbnail folder");
+				}
 			}
-		}
-		if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
-			throw new Exception("Yon don't have enough permissions to write to the thumbnail folder");
-		}
-		
-		if(!is_dir($cleanPosterPath)){
-			if(!mkdir($cleanPosterPath)){
-				throw new Exception("You don't have enough permissions to create a poster folder");
+			if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
+				throw new Exception("Yon don't have enough permissions to write to the thumbnail folder");
 			}
-		}
-		if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
-			throw new Exception("Yon don't have enough permissions to write to the poster folder");
-		}
-		
-		//Default thumbnail time
-		$second = 1;
-		$lastSecond = 1;
-		for($i=0; $i<$snapshotCount; $i++){
-			
-			//Random time between 1 and videoDuration-1
-			$second = rand(1, ($this->mediaContainer->duration - 1));
-			$lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
-			
-			$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
-			$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
-			if(!is_file($toPath))
+
+			if(!is_dir($cleanPosterPath)){
+				if(!mkdir($cleanPosterPath)){
+					throw new Exception("You don't have enough permissions to create a poster folder");
+				}
+			}
+			if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
+				throw new Exception("Yon don't have enough permissions to write to the poster folder");
+			}
+
+			//Default thumbnail time
+			$second = 1;
+			$lastSecond = 1;
+			for($i=0; $i<$snapshotCount; $i++){
+
+				//Random time between 1 and videoDuration-1
+				$second = rand(1, ($this->mediaContainer->duration - 1));
+				$lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
+
+				$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
+				$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
+				if(!is_file($toPath))
 				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
-			if(!is_file($toPath))
-				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s '$poPath' 2>&1",$cmd));
+				if(!is_file($poPath))
+				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 '$poPath' 2>&1",$cmd));
+			}
+
+			//Create a symbolic link to the first generated thumbnail/poster to set it as the default image
+
+
+			if( is_link($cleanThumbPath.'/default.jpg') ){
+				unlink($cleanThumbPath.'/default.jpg');
+			}
+			if( is_link($cleanPosterPath.'/default.jpg') ){
+				unlink($cleanPosterPath.'/default.jpg');
+			}
+			if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg')  ){
+				throw new Exception ("Couldn't create link for the thumbnail");
+			}
+			if( !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
+				throw new Exception ("Couldn't create link for the poster");
+			}
 		}
-		
-		//Create a symbolic link to the first generated thumbnail/poster to set it as the default image
-		
-		if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg') || !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
-			throw new Exception ("Couldn't create links for the snapshots");
-		}
-		
+
+
 		return $resultsnap;
 	}
 
@@ -402,9 +417,9 @@ class VideoProcessor{
 		$cleanOutputPath = escapeshellcmd($outputFilepath);
 			
 		if(!is_readable($cleanInputPath))
-			throw new Exception("You don't have enough permissions to read from the input");
+		throw new Exception("You don't have enough permissions to read from the input");
 		if(!is_writable(dirname($cleanOutputPath)))
-			throw new Exception("You don't have enough permissions to write to the output");
+		throw new Exception("You don't have enough permissions to write to the output");
 
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {
@@ -427,11 +442,11 @@ class VideoProcessor{
 			//5.1 AAC audio can't be downmixed to stereo audio using ffmpeg
 			if($this->mediaContainer->audioCodec == 'aac' && $this->mediaContainer->audioChannels == '5.1'){
 				/*
-			 	 * A workaround for this issue could be to transcode the audio to an 5.1 AC3 file first using
-			 	 * MKV as a container (because it can contain most formats without complaining) and then
-			 	 * transcoding this MKV using our regular transcoding preset. For now, we will cancel the
-			 	 * transcoding process and raise an exception.
-			 	 */
+				 * A workaround for this issue could be to transcode the audio to an 5.1 AC3 file first using
+				 * MKV as a container (because it can contain most formats without complaining) and then
+				 * transcoding this MKV using our regular transcoding preset. For now, we will cancel the
+				 * transcoding process and raise an exception.
+				 */
 				throw new Exception("Non-transcodable audio. Transcode aborted.");
 			}
 		}

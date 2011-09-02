@@ -1,7 +1,7 @@
 <?php
 
 if(!defined('SERVICE_PATH'))
-define('SERVICE_PATH', '/var/www/babelium/services');
+	define('SERVICE_PATH', '/var/www/babelium/services');
 
 require_once SERVICE_PATH . '/utils/Datasource.php';
 require_once SERVICE_PATH . '/utils/Config.php';
@@ -259,11 +259,18 @@ class UploadExerciseDAO{
 		
 		foreach($mediaPaths as $path){
 			try{
-				$this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
+				$result = $this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
 			} catch(Exception $e){
 				echo $e->getMessage()."\n";
 			}
 		}
+		
+		$sql = "UPDATE exercise SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
+		$sql = "UPDATE response SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
+		$sql = "UPDATE evaluation_video SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
 		
 	}
 

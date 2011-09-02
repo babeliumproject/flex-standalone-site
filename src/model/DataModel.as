@@ -144,6 +144,7 @@ package model
 		
 		[Bindable] public var uploadURL:String = uploadDomain+"upload.php";
 		[Bindable] public var thumbURL:String = uploadDomain+"resources/images/thumbs";
+		[Bindalbe] public var posterURL:String = uploadDomain+"resources/images/posters";
 		
 		[Bindable] public var uploadFileReference:FileReference = null;
 		[Bindable] public var uploadFileSelected:Boolean = false;

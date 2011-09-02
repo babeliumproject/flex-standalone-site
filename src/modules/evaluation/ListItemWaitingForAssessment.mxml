@@ -159,7 +159,7 @@
 			{
 				var url:String='';
 				if (temp.exerciseSource == "Red5")
-					url=DataModel.getInstance().thumbURL + "/" + temp.exerciseThumbnailUri;
+					url=DataModel.getInstance().thumbURL + "/" + temp.exerciseName + "/default.jpg";
 				else
 					url=temp.exerciseThumbnailUri;
 				return url;
@@ -169,7 +169,7 @@
 			{
 				var url:String='';
 				if (temp.responseSource == "Red5")
-					url=DataModel.getInstance().thumbURL + "/" + temp.responseThumbnailUri;
+					url=DataModel.getInstance().thumbURL + "/" + temp.responseFileIdentifier + "/default.jpg";
 				else
 					url=temp.responseThumbnailUri;
 				return url;

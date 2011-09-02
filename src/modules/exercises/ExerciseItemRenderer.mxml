@@ -222,7 +222,10 @@
 			{
 				var url:String='';
 				if (temp.source == "Red5")
-					url=DataModel.getInstance().thumbURL + "/" + temp.thumbnailUri;
+					if(temp.thumbnailUri != 'nothumb.png')
+						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
+					else
+						url=DataModel.getInstance().thumbURL + '/nothumb.png';
 				else
 					url=temp.thumbnailUri;
 				return url;
