@@ -368,17 +368,17 @@ class VideoProcessor{
 			$second = rand(1, ($this->mediaContainer->duration - 1));
 			$lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
 			
-			$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i);
-			$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i);
+			$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
+			$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
 			if(!is_file($toPath))
 				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
 			if(!is_file($toPath))
-				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s '$toPath' 2>&1",$cmd));
+				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s '$poPath' 2>&1",$cmd));
 		}
 		
 		//Create a symbolic link to the first generated thumbnail/poster to set it as the default image
 		
-		if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg' || !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
+		if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg') || !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
 			throw new Exception ("Couldn't create links for the snapshots");
 		}
 		
