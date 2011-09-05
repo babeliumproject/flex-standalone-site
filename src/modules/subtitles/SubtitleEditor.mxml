@@ -184,7 +184,7 @@
 									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
 									  click="saveSubtitlesHandler()"
 									  skinClass="skins.IconButtonSkin"
-									  icon="@Embed('/resources/images/save.png')"/>
+									  icon="@Embed('/resources/images/disk.png')"/>
 				</s:HGroup>
 
 			</s:BorderContainer>
