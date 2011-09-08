@@ -337,6 +337,7 @@ CREATE TABLE `subtitle` (
   `language` varchar(45) NOT NULL,
   `translation` tinyint(1) NOT NULL default '0',
   `adding_date` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `complete` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`),
   KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
   KEY `FK_exercise_subtitle_2` (`fk_user_id`),

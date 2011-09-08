@@ -376,6 +376,7 @@ package modules.subtitles
 			{
 				if (subtitleCollection.getItemAt(i).roleId < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY') + "\n", i + 1);
+				var test:String = StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY'), DataModel.getInstance().maxFileSize, DataModel.getInstance().maxExerciseDuration);
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)

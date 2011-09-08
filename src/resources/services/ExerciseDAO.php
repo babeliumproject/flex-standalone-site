@@ -309,7 +309,7 @@ class ExerciseDAO {
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE (e.status = 'Available')
+       			 WHERE (e.status = 'Available' AND t.complete = 1)
 				 GROUP BY e.id
 				 ORDER BY e.adding_date DESC, e.language DESC";
 

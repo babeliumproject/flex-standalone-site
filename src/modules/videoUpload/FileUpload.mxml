@@ -10,26 +10,28 @@
 
 	<fx:Script>
 		<![CDATA[
+			
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
 			import events.VideoSliceEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
 			import mx.validators.Validator;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -758,6 +760,18 @@
 						<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
 					</mx:FormItem>
 				</mx:FormItem>
+			
+				<mx:Spacer height="16"/>
+				<s:HGroup width="100%">
+					<mx:Image id="groupLogo"
+							  source="resources/images/about_section_title_icon.png"/>
+					<s:VGroup width="100%">
+						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_INFO'), DataModel.getInstance().maxFileSize/1048576, DataModel.getInstance().minExerciseDuration, DataModel.getInstance().maxExerciseDuration) }"
+							 	 fontSize="14"/>
+						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_REASONING'), DataModel.getInstance().maxExerciseDuration) }" width="100%"/>
+					</s:VGroup>
+				
+				</s:HGroup>
 			</mx:Form>
 			
 			<!-- Part of the Video Slice widget -->

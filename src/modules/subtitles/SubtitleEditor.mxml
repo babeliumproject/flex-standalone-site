@@ -158,9 +158,14 @@
 					</mx:columns>
 				</mx:DataGrid>
 				<mx:Spacer height="10"/>
+				<s:HGroup width="100%" verticalAlign="middle">
+					<mx:Image id="groupLogo"
+						  	  source="resources/images/about_section_title_icon.png"/>
+					<mx:Text htmlText="{resourceManager.getString('myResources','COMPLETE_SUBTITLE_INFO')}" width="100%" fontSize="14"/>
+				</s:HGroup>
 				<s:HGroup height="40"
-						  width="45%"
-						  styleName="roundedBorderGreyBox">
+						  width="100%"
+						  horizontalAlign="center">
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
 									  enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
 									  click="{subtitleInsertHandler(event)}"
