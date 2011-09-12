@@ -8,6 +8,7 @@ package commands.userManagement
 	import events.UserEvent;
 	
 	import mx.resources.ResourceManager;
+	import mx.rpc.Fault;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
@@ -24,11 +25,13 @@ package commands.userManagement
 		public function result(data:Object):void
 		{
 			//User is kept alive, do nothing more
+			CustomAlert.info(data.result);
 		}
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
+			//CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
+			CustomAlert.error(info.result); 
 			trace(ObjectUtil.toString(info));
 		}
 	}

@@ -169,6 +169,8 @@ package model
 		
 		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
+		[Bindable] public var activeUserList:ArrayCollection;
+		
 		//Video Slice related data	
 		[Bindable] public var urlSearch:String = "";
 		[Bindable] public var userSearch:String = "";

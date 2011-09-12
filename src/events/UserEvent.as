@@ -14,6 +14,7 @@ package events
 		public static const RETRIEVE_USER_VIDEOS:String = "retrieveUserVideos";
 		public static const DELETE_SELECTED_VIDEOS:String = "deleteSelectedVideos";
 		public static const MODIFY_VIDEO_DATA:String = "modifyVideoData";
+		public static const GET_USERS:String = "getUsers";
 		
 		public var dataList:Array;
 		public var personalData:UserVO;

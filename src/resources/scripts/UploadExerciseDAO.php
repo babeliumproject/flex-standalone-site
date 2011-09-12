@@ -50,7 +50,7 @@ class UploadExerciseDAO{
 	public function processPendingVideos(){
 		set_time_limit(0);
 		$sql = "SELECT id, name, source, language, title, thumbnail_uri, duration, status, fk_user_id
-				FROM exercise WHERE (status='Unprocessed') ";
+				FROM exercise WHERE (status='Unprocessed' OR status='UnprocessedNoPractice') ";
 		$transcodePendingVideos = $this->_listQuery($sql);
 		if(count($transcodePendingVideos) > 0){
 			echo "  * There are videos that need to be processed.\n";
@@ -90,17 +90,30 @@ class UploadExerciseDAO{
 								//$this->conn->_failedTransaction();
 								throw new Exception("Database operation error. Changes rollbacked.");
 							}
+							
+							if($pendingVideo->status == 'UnprocessedNoPractice'){
+							
+								$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
+								$this->conn->_insert($sql,$pendingVideo->id);
 								
-							$creditUpdate = $this->_addCreditsForUploading($pendingVideo->userId);
-							if(!$creditUpdate){
-								//$this->conn->_failedTransaction();
-								throw new Exception("Database operation error. Changes rollbacked.");
-							}
+								$sql = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_transcription_id, fk_subtitle_id)
+										VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 'None', NULL, NULL)";
+								$this->conn->_insert($sql,$pendingVideo->userId,$outputHash,$duration);
 								
-							$historyUpdate = $this->_addUploadingToCreditHistory($pendingVideo->userId, $pendingVideo->id);
-							if(!$historyUpdate){
-								//$this->conn->_failedTransaction();
-								throw new Exception("Database operation error. Changes rollbacked.");
+							} else {
+							
+								$creditUpdate = $this->_addCreditsForUploading($pendingVideo->userId);
+								if(!$creditUpdate){
+									//$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked.");
+								}
+								
+								$historyUpdate = $this->_addUploadingToCreditHistory($pendingVideo->userId, $pendingVideo->id);
+								if(!$historyUpdate){
+									//$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked.");
+								}
+							
 							}
 								
 							$this->conn->_endTransaction();

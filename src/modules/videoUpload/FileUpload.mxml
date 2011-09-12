@@ -5,33 +5,34 @@
 		  xmlns:ns1="modules.videoUpload.*"
 		  xmlns:ns2="modules.videoSlice.*"
 		  xmlns:common="view.common.*"
-		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*"
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
-			
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
+			import events.UserEvent;
 			import events.VideoSliceEvent;
-			
+
 			import flash.events.*;
 			import flash.net.*;
-			
+
 			import model.DataModel;
-			
+
+			import mx.collections.ArrayCollection;
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 			import mx.validators.Validator;
-			
+
 			import skins.IconButtonSkin;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -41,13 +42,7 @@
 
 			private var addFileReference:FileReference;
 
-			//private var _refUploadFile:FileReference;
 			private var _arrUploadFiles:Array;
-
-			//private var _numCurrentUpload:Number=0;
-
-			private var youtubeVideoData:ExerciseVO;
-			private var youtubeVideoLevel:ExerciseLevelVO;
 
 			private var red5VideoData:ExerciseVO;
 			private var red5VideoLevel:ExerciseLevelVO;
@@ -55,11 +50,11 @@
 
 			private var checkStatusTimer:Timer;
 
+
 			[Bindable]
 			public var formIsValid:Boolean=false;
 
-			// Holds a reference to the currently focussed 
-			// control on the form.
+			// Holds a reference to the currently focussed control on the form.
 			private var focussedFormControl:DisplayObject;
 
 			// Set uploadUrl
@@ -78,6 +73,11 @@
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
+
+				if (DataModel.getInstance().loggedUser.isAdmin)
+				{
+					new UserEvent(UserEvent.GET_USERS).dispatch();
+				}
 
 			}
 
@@ -227,24 +227,11 @@
 					{
 						uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD');
 
-						/*
-						   youtubeVideoData=new ExerciseVO();
-						   youtubeVideoData.title=videoTitle.text;
-						   youtubeVideoData.description=videoDescription.text;
-						   youtubeVideoData.tags=parseTags(videoTags.text);
-						   youtubeVideoData.language=languageComboBox.selectedLabel;
-						   youtubeVideoData.name=DataModel.getInstance().uploadFileReference.name;
-
-						   youtubeVideoLevel = new ExerciseLevelVO();
-						   youtubeVideoLevel.suggestedLevel = dificultyComboBox.selectedIndex+1;
-						 */
-
 						red5VideoData=new ExerciseVO();
 						red5VideoData.title=videoTitle.text;
 						red5VideoData.description=videoDescription.text;
 						red5VideoData.tags=parseTags(videoTags.text);
 						red5VideoData.language=languageSelector.selectedItem.code;
-						//red5VideoData.name=DataModel.getInstance().uploadFileReference.name;
 						red5VideoData.name=DataModel.getInstance().uploadFileName;
 
 						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
@@ -252,11 +239,12 @@
 
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
-
+						
+						if(uploadTypeGroup.selection == uploadType2){
+							red5VideoData.status = "evaluation-video";
+						}
+						
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
-						/*
-						   new UploadEvent(UploadEvent.YOUTUBE_UPLOAD, youtubeVideoData).dispatch();
-						 */
 					}
 					else
 						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
@@ -264,47 +252,6 @@
 					clearUpload();
 				}
 			}
-
-			/*
-			   private function set onYoutubeTransferComplete(value:Boolean):void
-			   {
-			   if (DataModel.getInstance().youtubeTransferComplete == true)
-			   {
-			   checkStatusTimer=new Timer(30000, 0);
-			   checkStatusTimer.addEventListener(TimerEvent.TIMER, onTimer);
-			   checkStatusTimer.start();
-			   DataModel.getInstance().youtubeTransferComplete=false;
-			   }
-			   }
-
-			   private function onTimer(event:TimerEvent):void
-			   {
-			   var checkExercise:ExerciseVO=DataModel.getInstance().newYoutubeData;
-			   new UploadEvent(UploadEvent.YOUTUBE_CHECK_VIDEO_STATUS, checkExercise).dispatch();
-			   }
-
-
-			   private function set onYoutubeProcessingComplete(value:Boolean):void
-			   {
-			   uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_UPLOADFINISHED');
-			   checkStatusTimer.stop();
-			   DataModel.getInstance().youtubeProcessingComplete=false;
-			   youtubeVideoData.source="Youtube";
-
-			   _arrUploadFiles.pop();
-			   listFiles.dataProvider=_arrUploadFiles;
-			   clearUpload();
-			   resetComponent();
-
-			   new ExerciseEvent(ExerciseEvent.ADD_EXERCISE, youtubeVideoData).dispatch();
-			   }
-
-			   private function set onYoutubeProcessUpdate(value:Boolean):void
-			   {
-			   uploadInformationLabel.text=DataModel.getInstance().youtubeProcessMessage;
-			   DataModel.getInstance().youtubeProcessUpdate=false;
-			   }
-			 */
 
 			private function set onUnprocessedExerciseComplete(value:Boolean):void
 			{
@@ -321,7 +268,6 @@
 
 					DataModel.getInstance().unprocessedExerciseSaved=false;
 				}
-				//uploadInformationLabel.text="Successful Upload. You can check your exercises' status on Account:My Exercises";
 			}
 
 			private function changeUploadMethod(event:ItemClickEvent):void
@@ -381,6 +327,10 @@
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					
+					if(uploadTypeGroup.selection == uploadType2){
+						red5VideoData.status = "evaluation-video";
+					}
 
 					var historic:CreditHistoryVO=new CreditHistoryVO();
 					historic.videoExerciseName=recFromWebcamBox.recordingFileName;
@@ -494,7 +444,14 @@
 				resetComponent();
 			}
 
+			private function changeUploadType(event:ItemClickEvent):void
+			{
 
+			}
+
+			/**
+			 * Autoevaluation related functions
+			 */
 			private function enableAutoevaluation(exerciseId:int):void
 			{
 				var requestData:EvaluationVO=new EvaluationVO();
@@ -511,120 +468,144 @@
 					DataModel.getInstance().enableAutoevalToExerciseError="";
 				}
 			}
-			
-			//Video Slice related functions
-			
-			private function identifySearchType():void {
-				
-				var searchInput:String = sliceSearch.text;
-				
-				if(searchInput!= ""){
+
+			/**
+			 * Video slice related functions
+			 */
+			private function identifySearchType():void
+			{
+
+				var searchInput:String=sliceSearch.text;
+
+				if (searchInput != "")
+				{
 					//TextField is not empty
-					var urlType:String = new String("http://www.youtube.com/watc");
-					var urlType2:String = new String("http://www.youtube.com/user");
-					var temp:String = searchInput.substr(0,27);
-					
-					if(urlType==temp){
+					var urlType:String=new String("http://www.youtube.com/watc");
+					var urlType2:String=new String("http://www.youtube.com/user");
+					var temp:String=searchInput.substr(0, 27);
+
+					if (urlType == temp)
+					{
 						//Search Input is normal video URL
 						urlSearch(searchInput);
-						
-					}else if(urlType2==temp){
+
+					}
+					else if (urlType2 == temp)
+					{
 						//Search Input is user channel video URL
 						userSearch(searchInput);
-						
-					}else{
-						CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+
 					}
-					
-				}else{
-					CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+					else
+					{
+						CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'VALID_URL_ALERT'));
+					}
+
 				}
-				
+				else
+				{
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'VALID_URL_ALERT'));
+				}
+
 			}
-			
-			private function urlSearch(searchInput:String):void {
-				
-				DataModel.getInstance().urlSearch = searchInput;
-				DataModel.getInstance().tempVideoSlice.watchUrl = searchInput;
+
+			private function urlSearch(searchInput:String):void
+			{
+
+				DataModel.getInstance().urlSearch=searchInput;
+				DataModel.getInstance().tempVideoSlice.watchUrl=searchInput;
 				new VideoSliceEvent(VideoSliceEvent.SEARCH_URL).dispatch();
-				
+
 			}
-			
-			private function userSearch(searchInput:String):void {
-				
-				DataModel.getInstance().userSearch = searchInput;
+
+			private function userSearch(searchInput:String):void
+			{
+
+				DataModel.getInstance().userSearch=searchInput;
 				new VideoSliceEvent(VideoSliceEvent.SEARCH_USER).dispatch();
 			}
-			
-			public function set onRetrieveVideoComplete(value:Boolean):void {
-				
-				if(DataModel.getInstance().retrieveVideoComplete) {
-					
+
+			public function set onRetrieveVideoComplete(value:Boolean):void
+			{
+
+				if (DataModel.getInstance().retrieveVideoComplete)
+				{
+
 					VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
-					VP.visible = true;
-					
-					DataModel.getInstance().retrieveVideoComplete = false;
-					
+					VP.visible=true;
+
+					DataModel.getInstance().retrieveVideoComplete=false;
+
 				}
 			}
-			
-			public function set onRetrieveUserVideoComplete(value:Boolean):void {
-				
-				if(DataModel.getInstance().retrieveUserVideoComplete) {
-					
+
+			public function set onRetrieveUserVideoComplete(value:Boolean):void
+			{
+
+				if (DataModel.getInstance().retrieveUserVideoComplete)
+				{
+
 					VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
-					VP.visible = true;
-					
-					DataModel.getInstance().retrieveUserVideoComplete = false;
-					
+					VP.visible=true;
+
+					DataModel.getInstance().retrieveUserVideoComplete=false;
+
 				}
 			}
-			
-			public function set onSlicePreviewComplete(value:Boolean):void {
-				
-				if(DataModel.getInstance().slicePreview) {
-					
-					requestInfo.visible = true;
-					sliceButtons.visible = true;
-					
-				}else{
-					sliceButtons.visible = false;
-					requestInfo.visible = false;
+
+			public function set onSlicePreviewComplete(value:Boolean):void
+			{
+
+				if (DataModel.getInstance().slicePreview)
+				{
+
+					requestInfo.visible=true;
+					sliceButtons.visible=true;
+
+				}
+				else
+				{
+					sliceButtons.visible=false;
+					requestInfo.visible=false;
 				}
 			}
-			
-			public function set onSliceCreationComplete (value:Boolean):void {
-				
-				if(DataModel.getInstance().sliceComplete) {
-					
-					infoMessage.visible = false;
+
+			public function set onSliceCreationComplete(value:Boolean):void
+			{
+
+				if (DataModel.getInstance().sliceComplete)
+				{
+
+					infoMessage.visible=false;
 				}
 			}
-			
-			private function cancelSlice():void {
-				
-				DataModel.getInstance().slicePreview = false;
-				requestInfo.visible = false;
+
+			private function cancelSlice():void
+			{
+
+				DataModel.getInstance().slicePreview=false;
+				requestInfo.visible=false;
 				resetComponent();
 			}
-			
-			private function saveSlice():void {
-				
-				DataModel.getInstance().tempExercise.name = DataModel.getInstance().tempVideoSlice.name;
-				DataModel.getInstance().tempExercise.title = videoTitle.text;
-				DataModel.getInstance().tempExercise.description = videoDescription.text;
-				DataModel.getInstance().tempExercise.tags = parseTags(videoTags.text);
-				DataModel.getInstance().tempExercise.avgDifficulty = difficultySelector.selectedIndex;
-				DataModel.getInstance().tempExercise.language = languageSelector.selectedLabel;
-				DataModel.getInstance().tempExercise.source = "Youtube";
-				DataModel.getInstance().tempExercise.userId = DataModel.getInstance().loggedUser.id;
+
+			private function saveSlice():void
+			{
+
+				DataModel.getInstance().tempExercise.name=DataModel.getInstance().tempVideoSlice.name;
+				DataModel.getInstance().tempExercise.title=videoTitle.text;
+				DataModel.getInstance().tempExercise.description=videoDescription.text;
+				DataModel.getInstance().tempExercise.tags=parseTags(videoTags.text);
+				DataModel.getInstance().tempExercise.avgDifficulty=difficultySelector.selectedIndex;
+				DataModel.getInstance().tempExercise.language=languageSelector.selectedLabel;
+				DataModel.getInstance().tempExercise.source="Youtube";
+				DataModel.getInstance().tempExercise.userId=DataModel.getInstance().loggedUser.id;
 				//DataModel.getInstance().tempExercise.userId = 1;
-				DataModel.getInstance().tempExercise.license = "cc-by";
-				DataModel.getInstance().tempExercise.reference = "http://www.youtube.com";
-				DataModel.getInstance().tempExercise.status = "Unsliced";
-				
+				DataModel.getInstance().tempExercise.license="cc-by";
+				DataModel.getInstance().tempExercise.reference="http://www.youtube.com";
+				DataModel.getInstance().tempExercise.status="Unsliced";
+
 				new VideoSliceEvent(VideoSliceEvent.CREATE_SLICE).dispatch();
-				infoMessage.visible = true;
+				infoMessage.visible=true;
 			}
 		]]>
 	</fx:Script>
@@ -635,16 +616,6 @@
 				destination="this.onUploadProgress"/>
 	<fx:Binding source="{DataModel.getInstance().uploadFinishedData}"
 				destination="this.onUploadCompleteData"/>
-	<!--
-		 <fx:Binding source="{DataModel.getInstance().uploadFinished}"
-		 destination="this.onUploadComplete"/>
-		 <fx:Binding source="{DataModel.getInstance().youtubeTransferComplete}"
-		 destination="this.onYoutubeTransferComplete"/>
-		 <fx:Binding source="{DataModel.getInstance().youtubeProcessingComplete}"
-		 destination="this.onYoutubeProcessingComplete"/>
-		 <fx:Binding source="{DataModel.getInstance().youtubeProcessUpdate}"
-		 destination="this.onYoutubeProcessUpdate"/>
-	-->
 	<fx:Binding source="{DataModel.getInstance().unprocessedExerciseSaved}"
 				destination="this.onUnprocessedExerciseComplete"/>
 	<fx:Binding source="{DataModel.getInstance().enableAutoevalToExerciseError}"
@@ -679,9 +650,29 @@
 
 
 	<s:HGroup width="100%"
-			  paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16">
+			  paddingBottom="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingTop="16">
 		<s:VGroup width="100%"
 				  height="100%">
+			<mx:Form width="100%"
+					 styleName="roundedBlueBorderBox"
+					 label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}">
+				<mx:FormItem label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}"
+							 styleName="boldLabel">
+					<s:RadioButtonGroup id="uploadTypeGroup"
+										itemClick="changeUploadType(event)"/>
+					<s:RadioButton id="uploadType1"
+								   value="upldType1"
+								   label="{resourceManager.getString('myResources','UPLOAD_PRACTICE_EXERCISE')}"
+								   group="{uploadTypeGroup}"/>
+					<s:RadioButton id="uploadType2"
+								   value="upldType2"
+								   label="{resourceManager.getString('myResources','UPLOAD_EVALUATION_EXERCISE')}"
+								   group="{uploadTypeGroup}"/>
+				</mx:FormItem>
+			</mx:Form>
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox">
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
@@ -746,12 +737,15 @@
 								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_YOUTUBE')}"
 								   group="{uploadOptionsGroup}"
 								   includeInLayout="{CONFIG::unstable ? true : false}"
-								   visible = "{CONFIG::unstable ? true : false}"/>
+								   visible="{CONFIG::unstable ? true : false}"/>
 				</mx:FormItem>
+
+				<!-- Now we only let the automatic transcription widget to appear in the unstable release.
+					 Previously we checked the user was an admin to enable this feature using DataModel.getInstance().loggedUser.isAdmin in both "visible" and "includeInLayout" attributes. -->
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 styleName="boldLabel"
-							 visible="{DataModel.getInstance().loggedUser.isAdmin}"
-							 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
+							 visible="{ CONFIG::unstable }"
+							 includeInLayout="{ CONFIG::unstable }"
 							 height="67">
 					<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
 								id="autoevaluateCheckbox"/>
@@ -760,20 +754,21 @@
 						<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
 					</mx:FormItem>
 				</mx:FormItem>
-			
+
 				<mx:Spacer height="16"/>
 				<s:HGroup width="100%">
 					<mx:Image id="groupLogo"
 							  source="resources/images/about_section_title_icon.png"/>
 					<s:VGroup width="100%">
 						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_INFO'), DataModel.getInstance().maxFileSize/1048576, DataModel.getInstance().minExerciseDuration, DataModel.getInstance().maxExerciseDuration) }"
-							 	 fontSize="14"/>
-						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_REASONING'), DataModel.getInstance().maxExerciseDuration) }" width="100%"/>
+								 fontSize="14"/>
+						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_REASONING'), DataModel.getInstance().maxExerciseDuration) }"
+								 width="100%"/>
 					</s:VGroup>
-				
+
 				</s:HGroup>
 			</mx:Form>
-			
+
 			<!-- Part of the Video Slice widget -->
 			<s:VGroup id="sliceButtons"
 					  visible="false"
@@ -785,27 +780,27 @@
 						 width="100%"/>
 				<mx:Spacer height="20"/>
 				<s:HGroup>
-					<mx:Button  label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
-								toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
-								id="sliceUpload"
-								click="saveSlice()"
-								enabled="{formIsValid}"
-								icon="@Embed(source='../../resources/images/bullet_go.png')"/>
-				
-					<mx:Button  id="sliceCancel"
-								toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
-								icon="@Embed(source='../../resources/images/cancel.png')"
-								width="26"
-								click="cancelSlice()"/>
+					<mx:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
+							   toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
+							   id="sliceUpload"
+							   click="saveSlice()"
+							   enabled="{formIsValid}"
+							   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+
+					<mx:Button id="sliceCancel"
+							   toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
+							   icon="@Embed(source='../../resources/images/cancel.png')"
+							   width="26"
+							   click="cancelSlice()"/>
 				</s:HGroup>
 				<mx:Spacer height="10"/>
 				<mx:Label id="infoMessage"
 						  text="{resourceManager.getString('myResources','SLICEPROGRESS_TEXT')}"
 						  fontWeight="bold"
 						  visible="false"/>
-				
+
 			</s:VGroup>
-			
+
 			<!-- File Upload widget -->
 			<s:VGroup id="uploadFileBox"
 					  styleName="roundedBlueBorderBox"
@@ -901,24 +896,27 @@
 			</s:VGroup>
 
 		</s:VGroup>
-		
+
 		<!-- Video Slice widget -->
-		<s:VGroup id="vSliceWidget" 
+		<s:VGroup id="vSliceWidget"
 				  visible="false"
 				  includeInLayout="{CONFIG::unstable ? true : false}"
 				  width="100%">
 			<mx:Label text="{resourceManager.getString('myResources','TITLE_URLSEARCH')}"
 					  fontSize="12"
-					  fontWeight="bold"/>	
+					  fontWeight="bold"/>
 			<mx:HBox>
-				<mx:TextInput width="200" id="sliceSearch"/>
-				<mx:Button label="{resourceManager.getString('myResources','BUTTON_SEARCH')}" click="identifySearchType()"/>									
+				<mx:TextInput width="200"
+							  id="sliceSearch"/>
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_SEARCH')}"
+						   click="identifySearchType()"/>
 			</mx:HBox>
-				
-			<ns2:AS3Player id="VP" visible="false"/>
-					
+
+			<ns2:AS3Player id="VP"
+						   visible="false"/>
+
 		</s:VGroup>
-		
+
 	</s:HGroup>
 
 	<fx:Declarations>
