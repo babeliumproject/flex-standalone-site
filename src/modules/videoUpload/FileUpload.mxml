@@ -15,12 +15,12 @@
 			import events.UploadEvent;
 			import events.UserEvent;
 			import events.VideoSliceEvent;
-
+			
 			import flash.events.*;
 			import flash.net.*;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.*;
 			import mx.events.*;
@@ -28,11 +28,11 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 			import mx.validators.Validator;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
@@ -240,8 +240,14 @@
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 						
-						if(uploadTypeGroup.selection == uploadType2){
-							red5VideoData.status = "evaluation-video";
+						if(CONFIG::restricted){
+							if(DataModel.getInstance().loggedUser.isAdmin){
+								if(uploadTypeGroup.selection == uploadType2){
+									red5VideoData.status = "evaluation-video";
+								}
+							} else {
+								red5VideoData.status = "evaluation-video";
+							}
 						}
 						
 						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
@@ -328,8 +334,14 @@
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 					
-					if(uploadTypeGroup.selection == uploadType2){
-						red5VideoData.status = "evaluation-video";
+					if(CONFIG::restricted){
+						if(DataModel.getInstance().loggedUser.isAdmin){
+							if(uploadTypeGroup.selection == uploadType2){
+								red5VideoData.status = "evaluation-video";
+							}
+						} else {
+							red5VideoData.status = "evaluation-video";
+						}
 					}
 
 					var historic:CreditHistoryVO=new CreditHistoryVO();
@@ -658,7 +670,9 @@
 				  height="100%">
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox"
-					 label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}">
+					 label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}"
+					 visible="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::restricted}"
+					 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::restricted}">
 				<mx:FormItem label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}"
 							 styleName="boldLabel">
 					<s:RadioButtonGroup id="uploadTypeGroup"
@@ -666,6 +680,7 @@
 					<s:RadioButton id="uploadType1"
 								   value="upldType1"
 								   label="{resourceManager.getString('myResources','UPLOAD_PRACTICE_EXERCISE')}"
+								   selected="true"
 								   group="{uploadTypeGroup}"/>
 					<s:RadioButton id="uploadType2"
 								   value="upldType2"

@@ -42,7 +42,7 @@ INSERT INTO `preferences` (`id`,`prefName`,`prefValue`) VALUES
 (46,'spinvox.language','es'),
 (47,'minVideoRatingCount','10'),
 (48,'reportCredit','2'),
-(49,'web_domain','babelia'),
+(49,'web_domain','babelium'),
 (50,'minExerciseDuration',15),
 (51,'maxExerciseDuration',120),
 (52,'minVideoEvalDuration',5),

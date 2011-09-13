@@ -118,7 +118,7 @@ CREATE TABLE `exercise` (
   `thumbnail_uri` varchar(200) character set latin1 NOT NULL default 'nothumb.png',
   `adding_date` datetime NOT NULL,
   `duration` int(10) unsigned NOT NULL,
-  `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable') NOT NULL default 'Unprocessed',
+  `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable','UnprocessedNoPractice') NOT NULL default 'Unprocessed',
   `filehash` varchar(32) character set latin1 NOT NULL default 'none',
   `fk_transcription_id` int(10) unsigned default NULL,
   `license` varchar(60) NOT NULL default 'cc-by' COMMENT 'The kind of license this exercise is attached to',

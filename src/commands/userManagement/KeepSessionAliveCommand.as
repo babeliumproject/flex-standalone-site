@@ -25,13 +25,12 @@ package commands.userManagement
 		public function result(data:Object):void
 		{
 			//User is kept alive, do nothing more
-			CustomAlert.info(data.result);
 		}
 		
 		public function fault(info:Object):void
 		{
-			//CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
-			CustomAlert.error(info.result); 
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
+			//CustomAlert.error(info.result); 
 			trace(ObjectUtil.toString(info));
 		}
 	}

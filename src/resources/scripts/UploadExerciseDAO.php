@@ -94,11 +94,20 @@ class UploadExerciseDAO{
 							if($pendingVideo->status == 'UnprocessedNoPractice'){
 							
 								$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
-								$this->conn->_insert($sql,$pendingVideo->id);
-								
+								$this->conn->_execute($sql,$pendingVideo->id);
+								if(!$this->conn->_affectedRows())
+									throw new Exception("Couldn't update no-practice exercise. Changes rollbacked.");
 								$sql = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_transcription_id, fk_subtitle_id)
-										VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 'None', NULL, NULL)";
-								$this->conn->_insert($sql,$pendingVideo->userId,$outputHash,$duration);
+										VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 0, 'None', NULL, NULL)";
+								$result = $this->conn->_insert($sql,$pendingVideo->userId,$pendingVideo->id,$outputHash,$duration);
+								if(!$result)
+									throw new Exception("Couldn't insert no-practice response. Changes rollbacked.");
+									
+								//move the outputFile to it's final destination
+								$renameResult = rename($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName, $this->red5Path .'/'. $this->responseFolder .'/'. $outputName);
+								if(!$renameResult){
+									throw new Exception("Couldn't move transcoded file. Changes rollbacked.");
+								}
 								
 							} else {
 							

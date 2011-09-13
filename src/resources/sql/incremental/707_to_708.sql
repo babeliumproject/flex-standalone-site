@@ -15,6 +15,10 @@ UPDATE `subtitle_line` SET `text`='Am Anichke. They made a new website, and they
 
 ALTER TABLE `subtitle` ADD COLUMN `complete` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0'  AFTER `adding_date` ;
 
+ALTER TABLE `exercise` CHANGE COLUMN `status` `status` ENUM('Unprocessed','Processing','Available','Rejected','Error','Unavailable','UnprocessedNoPractice') NOT NULL DEFAULT 'Unprocessed'  ;
+
+
+
 -- SVN control line. Must be added on each incremental script
 UPDATE `preferences` SET `prefValue` =  '$Revision: 708 $'  WHERE `preferences`.`prefName` = 'dbrevision';
 

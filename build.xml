@@ -21,8 +21,8 @@
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
-			<define name="CONFIG::restricted" value="false"/>
-			<define name="CONFIG::unstable" value="false"/>
+			<define name="CONFIG::restricted" value="${CONFIG_RESTRICTED}"/>
+			<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
 			
 			<compiler.library-path dir="${BASE}" append="true">
 				<include name="libs"/>
@@ -74,6 +74,7 @@
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources" includes="**.*"/> 
 		</copy>
+		<!-- This scripts controls the upload process -->
 		<chmod file="${DEPLOY_DIR}/upload.php" perm="777"/>
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources/tests" includes="*.php"/>
@@ -81,12 +82,19 @@
 		<copy todir="${DEPLOY_DIR}/resources/images">
 			<fileset dir="${APP_ROOT}/resources/images" includes="**/*"/>
 		</copy>
+		<!-- There should be a nothumb.png image and nothing else inside the thumbs folder -->
 		<chmod dir="${DEPLOY_DIR}/resources/images/thumbs" perm="777"/>
+		<!-- Make a folder for the preview poster images of the videos -->
+		<mkdir dir="${DEPLOY_DIR}/resources/images/posters"/>
+		<chmod dir="${DEPLOY_DIR}/resources/images/posters" perm="777"/>
+		<!-- PHP email templates -->
 		<copy todir="${DEPLOY_DIR}/resources/templates">
 			<fileset dir="${APP_ROOT}/resources/templates" includes="**/*"/>
 		</copy>
+		<!-- The uploaded videos will temporarily be left in this place -->
 		<mkdir dir="${DEPLOY_DIR}/resources/uploads"/>
 		<chmod dir="${DEPLOY_DIR}/resources/uploads" perm="777"/>
+		<!-- Apache lucene's indexation files should be here once initialized -->
 		<mkdir dir="${DEPLOY_DIR}/resources/searchIndexes"/>
 		<chmod dir="${DEPLOY_DIR}/resources/searchIndexes" perm="777"/>
 		<copy todir="${DEPLOY_DIR}/services">
@@ -125,14 +133,34 @@
 	</target>
 	
 	<target name="cron-deploy">
-		<copy todir="${DEPLOY_DIR}/cron">
-			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
+		<copy todir="${DEPLOY_DIR}/scripts">
+			<fileset dir="${APP_ROOT}/resources/scripts" includes="**/*"/> 
 		</copy>
 		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
-			<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
+			<fileset dir="${DEPLOY_DIR}/scripts" includes="*.php"/>
 		</replaceregexp>
 	</target>
+	
+	<!-- TODO: Replace the data on full-minimum_data.sql with the appropriate values for this instance. Values are retrieved from the build.properties file
+			   Task to create schema
+			   Task to create babelium user and give permissions in the schema
+			   Insert minimum data & example data
+			   Download and extract copy to it's place the example data -->
+	
+	
+	<target name="database-deploy" description="">
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  <transaction src="${SQL_SCHEMA_SCRIPT}"/>
+		  <transaction src="${SQL_MINIMUM_DATA_SCRIPT}"/>
+		  <transaction src="${SQL_EXAMPLE_DATA_SCRIPT}"/>
+		</sql>
+	</target>
+	
+	
 		
+	<!-- ///////////////////////////////////// -->
+	<!-- LEGACY FUNCTIONS USE AT YOUR OWN RISK -->
+	<!-- ///////////////////////////////////// -->
 	<target name="rsync-videos-server-local" >
 		<exec executable="rsync" dir="." failonerror="true">
 		  	<arg value="-r"/>
@@ -144,14 +172,6 @@
 		    <arg value="${USERNAME}@${REMOTE_HOST}:${REMOTE_DIR}/*"/> <!-- Where to retrieve the files from -->
 		    <arg value="/tmp"/> <!-- Target path -->
 		</exec>
-	</target>	
-	
-	<target name="database-deploy" description="">
-		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
-		  <transaction src="${SQL_SCHEMA_SCRIPT}"/>
-		  <transaction src="${SQL_MINIMUM_DATA_SCRIPT}"/>
-		  <transaction src="${SQL_EXAMPLE_DATA_SCRIPT}"/>
-		</sql>
 	</target>
 		
 	<target name="init">

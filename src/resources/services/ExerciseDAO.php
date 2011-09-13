@@ -18,6 +18,7 @@ class ExerciseDAO {
 	private $filePath;
 	private $imagePath;
 	private $red5Path;
+	private $posterPath;
 
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
@@ -36,6 +37,7 @@ class ExerciseDAO {
 			$settings = new Config ( );
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
+			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
 			$this->mediaHelper = new VideoProcessor();
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
@@ -54,7 +56,7 @@ class ExerciseDAO {
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
 			
-			if(isset($exercise->status) && $exercise->status == 'evaluation-exercise'){
+			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
 				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status) ";
 				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s') ";
 				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
@@ -90,11 +92,11 @@ class ExerciseDAO {
 			
 			
 			$videoPath = $this->red5Path .'/'. $this->exerciseFolder .'/'. $exercise->name . '.flv';
-			$imagePath = $this->imagePath .'/'. $exercise->name . '.jpg';
+			$destPath = $this->red5Path . '/' . $this->responseFolder . '/' . $exercise->name . '.flv';
 			
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
-			$this->mediaHelper->takeRandomSnapshot($videoPath, $imagePath);
+			$this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
 
 			$exerciseLevel = new ExerciseLevelVO();
 			$exerciseLevel->userId = $_SESSION['uid'];
@@ -103,19 +105,11 @@ class ExerciseDAO {
 			$this->conn->_startTransaction();
 
 			
-			if(isset($exercise->status) && $exercise->status == 'evaluation-exercise'){
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference, status) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s', '%s') ";
+			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
+			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
 
-				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-				$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference, 'UnprocessedNoPractice');
-			}else{
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
-
-				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
-				$exercise->language, $_SESSION['uid'], $exercise->name.'.jpg', $duration, $exercise->license, $exercise->reference );
-			}
+			$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, $exercise->tags,
+			$exercise->language, $_SESSION['uid'], 'default.jpg', $duration, $exercise->license, $exercise->reference );
 
 			if(!$lastExerciseId){
 				$this->conn->_failedTransaction();
@@ -128,25 +122,48 @@ class ExerciseDAO {
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise level save failed.");
 			}
+			
+			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
 
-			//Update the user's credit count
-			$creditUpdate = $this->_addCreditsForUploading();
-			if(!$creditUpdate){
-				$this->conn->_failedTransaction();
-				throw new Exception("Credit addition failed");
-			}
+				$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
+				$this->conn->_execute($sql,$lastExerciseId);
+				if(!$this->conn->_affectedRows()){
+					$this->conn->_failedTransaction();
+					throw new Exception("Couldn't update no-practice exercise. Changes rollbacked.");
+				}
+				$sql = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_transcription_id, fk_subtitle_id)
+						VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 0, 'None', NULL, NULL)";
+				$lastResponseId = $this->conn->_insert($sql,$_SESSION['uid'],$lastExerciseId,$exercise->name,$duration);
+				if(!$lastResponseId){
+					$this->conn->_failedTransaction();
+					throw new Exception("Couldn't insert no-practice response. Changes rollbacked.");
+				}
+				
+				//Move the file from exercises folder to the response folder
+				$renameResult = @rename($videoPath, $destPath);
+				if(!$renameResult){
+					$this->conn->_failedTransaction();
+					throw new Exception("Couldn't move transcoded file. Changes rollbacked.");
+				}
+			}else{
 
-			//Update the credit history
-			$creditHistoryInsert = $this->_addUploadingToCreditHistory($lastExerciseId);
-			if(!$creditHistoryInsert){
-				$this->conn->_failedTransaction();
-				throw new Exception("Credit history update failed");
-			}
+				//Update the user's credit count
+				$creditUpdate = $this->_addCreditsForUploading();
+				if(!$creditUpdate){
+					$this->conn->_failedTransaction();
+					throw new Exception("Credit addition failed");
+				}
 
-			if($lastExerciseId && $insertLevel && $creditUpdate && $creditHistoryInsert){
-				$this->conn->_endTransaction();
-				$result = $this->_getUserInfo();
+				//Update the credit history
+				$creditHistoryInsert = $this->_addUploadingToCreditHistory($lastExerciseId);
+				if(!$creditHistoryInsert){
+					$this->conn->_failedTransaction();
+					throw new Exception("Credit history update failed");
+				}
 			}
+			
+			$this->conn->_endTransaction();
+			$result = $this->_getUserInfo();
 
 			return $result;
 
