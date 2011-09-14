@@ -47,8 +47,12 @@ VIDEO_FRAME_WIDTH_4_3=320
 VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
 GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY=project_hosting_webhook_hash_key
+
+#Deploy paths
 LOG_PATH=your_log_folder_path
 SCRIPT_PATH=your_script_folder_path
+BACKUP_PATH=your_backup_folder_path
+WEBROOT_PATH=your_webroot_folder_path
 
 #Database data
 SQL_DRIVER = com.mysql.jdbc.Driver
@@ -56,7 +60,7 @@ SQL_DBMS = mysql
 SQL_DB_NAME = babeliumproject
 SQL_HOST = 
 SQL_PORT = 3306
-SQL_URL = jdbc\:${SQL_DBMS}\://${SQL_HOST}:${SQL_PORT}/${SQL_DB_NAME}
+SQL_URL = jdbc\:${SQL_DBMS}\://${SQL_HOST}:${SQL_PORT}
 SQL_ROOT_USER = #Needed only if you want to fill the database
 SQL_ROOT_USER_PASS = #Needed only if you want to fill the database
 SQL_BABELIUM_USER =
@@ -64,7 +68,7 @@ SQL_BABELIUM_USER_PASS =
 SQL_SCRIPT_ROOT = ${APP_ROOT}/resources/sql
 SQL_SCHEMA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-schema.sql
 SQL_MINIMUM_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-minimum_data.sql
-SQL_EXAMPLE_DATA = ${SQL_SCRIPT_ROOT}/full-example_data.sql
+SQL_EXAMPLE_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-example_data.sql
 
 
 

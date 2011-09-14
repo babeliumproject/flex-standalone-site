@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <project name="Babelium Project" default="app-deploy">
 
+	<tstamp><format property="DAY_TIME_NOW" pattern="yyyy-MM-dd_HH.mm.ss" /></tstamp>
 	<property file="build.properties" />
 	
 	<path id="project.classpath">
@@ -141,19 +142,72 @@
 		</replaceregexp>
 	</target>
 	
-	<!-- TODO: Replace the data on full-minimum_data.sql with the appropriate values for this instance. Values are retrieved from the build.properties file
-			   Task to create schema
-			   Task to create babelium user and give permissions in the schema
-			   Insert minimum data & example data
-			   Download and extract copy to it's place the example data -->
-	
-	
-	<target name="database-deploy" description="">
+	<!-- TODO: Replace the preference data on full-minimum_data.sql with the appropriate values for this instance. Values are retrieved from the build.properties file
+	           Download babelium_sample_resources.tar.gz and copy the resources to the appropriate locations -->
+		
+	<target name="database-deploy" depends="database-backup">
+		<echo level="info" message="You need the mysql-connector-java.jar library on your ant lib folder (i.e. /usr/share/ant/lib) to launch this task."/>
 		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  DROP DATABASE IF EXISTS ${SQL_DB_NAME};
+		  CREATE DATABASE ${SQL_DB_NAME};
+		</sql>
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}/${SQL_DB_NAME}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" delimiter="|" >
+		  <!-- Dropping the user requires a bit of magic since there's no built-in DROP USER IF EXISTS command -->
+		  <!-- SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ANSI';-->
+		  DROP PROCEDURE IF EXISTS ${SQL_DB_NAME}.DROP_USER_IF_EXISTS|
+		  
+		  CREATE PROCEDURE ${SQL_DB_NAME}.DROP_USER_IF_EXISTS()
+		  BEGIN 
+  			DECLARE f INT;
+			SET f = 0;
+  			SELECT COUNT(*) INTO f
+    				FROM mysql.user
+      				WHERE User = '${SQL_BABELIUM_USER}' AND  Host = '${SQL_HOST}';
+   			IF f > 0 THEN
+         			DROP USER '${SQL_BABELIUM_USER}'@'${SQL_HOST}';
+  			END IF;
+		  END|
+		</sql>
+
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  CALL ${SQL_DB_NAME}.DROP_USER_IF_EXISTS();
+		  DROP PROCEDURE IF EXISTS ${SQL_DB_NAME}.DROP_USER_IF_EXISTS ;
+		  <!--SET SQL_MODE=@OLD_SQL_MODE ;-->
+
+		  CREATE USER '${SQL_BABELIUM_USER}'@'${SQL_HOST}' IDENTIFIED BY '${SQL_BABELIUM_USER_PASS}';
+		  GRANT SELECT, INSERT, UPDATE, DELETE, DROP ON `${SQL_DB_NAME}`.* TO '${SQL_BABELIUM_USER}'@'{SQL_HOST}' IDENTIFIED BY '${SQL_BABELIUM_USER_PASS}';
+		  FLUSH PRIVILEGES;
+		</sql>
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}/${SQL_DB_NAME}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}">
 		  <transaction src="${SQL_SCHEMA_SCRIPT}"/>
 		  <transaction src="${SQL_MINIMUM_DATA_SCRIPT}"/>
 		  <transaction src="${SQL_EXAMPLE_DATA_SCRIPT}"/>
 		</sql>
+	</target>
+	
+	
+	<target name="database-backup">
+	    <mkdir dir="${BACKUP_PATH}"/><!-- Create the archive directory anyway. -->
+	    <!-- Command to dump the database to *.sql file.-->
+	    <exec executable="mysqldump" output="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql">
+	      <arg value="--hex-blob"/>
+	      <arg value="--extended-insert=false"/>
+	      <arg value="--complete-insert=true"/>
+	      <arg value="--user=${SQL_ROOT_USER}"/>
+	      <arg value="--password=${SQL_ROOT_USER_PASS}"/>
+	      <arg value="${SQL_DB_NAME}"/>
+	    </exec>
+	 
+	    <!-- Compress the dumped file(*.sql) -->
+	    <tar destfile="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql.tar.gz" 
+	          compression="gzip">
+	      <tarfileset dir="${BACKUP_PATH}">
+	        <include name="${SQL_DB_NAME}_${DAY_TIME_NOW}.sql"/>
+	      </tarfileset>
+	    </tar>
+	 
+	    <!-- Delete the dumped file(*.sql) -->
+	    <delete file="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql"/>
 	</target>
 	
 	
