@@ -240,7 +240,7 @@
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 						
-						if(CONFIG::restricted){
+						if(CONFIG::noPracticeUpload){
 							if(DataModel.getInstance().loggedUser.isAdmin){
 								if(uploadTypeGroup.selection == uploadType2){
 									red5VideoData.status = "evaluation-video";
@@ -334,7 +334,7 @@
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 					
-					if(CONFIG::restricted){
+					if(CONFIG::noPracticeUpload){
 						if(DataModel.getInstance().loggedUser.isAdmin){
 							if(uploadTypeGroup.selection == uploadType2){
 								red5VideoData.status = "evaluation-video";
@@ -671,8 +671,8 @@
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox"
 					 label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}"
-					 visible="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::restricted}"
-					 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::restricted}">
+					 visible="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::noPracticeUpload}"
+					 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin &amp;&amp; CONFIG::noPracticeUpload}">
 				<mx:FormItem label="{resourceManager.getString('myResources','UPLOAD_EXERCISE_TYPE')}"
 							 styleName="boldLabel">
 					<s:RadioButtonGroup id="uploadTypeGroup"

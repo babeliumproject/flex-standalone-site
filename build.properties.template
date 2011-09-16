@@ -28,7 +28,8 @@ FLEX_LIB = ${FLEX_HOME}/lib
 
 #Compilation options
 #These flags decide how the app is compiled. Depending on what you choose some parts of the app will be left out or will work in another way. To see what each option is about see the code.
-CONFIG_RESTRICTED=false
+CONFIG_RESTRICTED_EVALUATION=false
+CONFIG_NO_PRACTICE_UPLOAD=false
 CONFIG_UNSTABLE=false
 
 #Project paths 

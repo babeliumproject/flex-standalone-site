@@ -22,7 +22,8 @@
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
-			<define name="CONFIG::restricted" value="${CONFIG_RESTRICTED}"/>
+			<define name="CONFIG::restrictedEvaluation" value="${CONFIG_RESTRICTED_EVALUATION}"/>
+			<define name="CONFIG::noPracticeUpload" value="${CONFIG_NO_PRACTICE_UPLOAD}"/>
 			<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
 			
 			<compiler.library-path dir="${BASE}" append="true">

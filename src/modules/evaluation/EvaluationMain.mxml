@@ -164,7 +164,7 @@
 				createAssessedToCurrentUser();
 				createAssessedByCurrentUser();
 				
-				if (CONFIG::restricted)
+				if (CONFIG::restrictedEvaluation)
 				{
 					if (dataModel.loggedUser.isAdmin == true)
 					{
@@ -634,7 +634,7 @@
 			{
 				if (_creationComplete)
 				{
-					if (CONFIG::restricted)
+					if (CONFIG::restrictedEvaluation)
 					{
 						evaluationOptionsViewStack.removeAllChildren();
 						resetVideoPlayer();
@@ -687,7 +687,7 @@
 
 					resetVideoPlayer();
 					
-					if (CONFIG::restricted)
+					if (CONFIG::restrictedEvaluation)
 					{
 						if (dataModel.loggedUser.isAdmin == true)
 							evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;
