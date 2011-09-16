@@ -119,7 +119,7 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${SQL_BABELIUM_USER}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${SQL_BABELIUM_USER_PASS}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${SQL_DB_NAME}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${red5.path}/webapps/oflaDemo/streams';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${RED5_PATH}/webapps/oflaDemo/streams';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_USER}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_PASS}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_USER}';"/>
@@ -133,11 +133,33 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>
 	
+	<target name="app-fill-db-preferences">	
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'initialCredits',.+\)" replace=",'initialCredits','${INITIAL_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'subtitleAdditionCredits',.+\)" replace=",'subtitleAdditionCredits','${SUBTITLE_ADDITION_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluationRequestCredits',.+\)" replace=",'evaluationRequestCredits','${EVALUATION_REQUEST_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluatedWithVideoCredits',.+\)" replace=",'evaluatedWithVideoCredits','${EVALUATION_DONE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluatedWithScoreCredits',.+\)" replace=",'evaluatedWithScoreCredits','${EVALUATION_DONE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'uploadExerciseCredits',.+\)" replace=",'uploadExerciseCredits','${UPLOAD_EXERCISE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'trial\.threshold',.+\)" replace=",'trial\.threshold','${EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION}'\)"/>	
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'reports_to_delete',.+\)" replace=",'reports_to_delete','${REPORT_COUNT_TO_DELETE_VIDEO}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'bwCheckMin',.+\)" replace=",'bwCheckMin','${MIN_BANDWIDTH}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'exerciseFolder',.+\)" replace=",'exerciseFolder','${RED5_EXERCISE_FOLDER}'\)"/>		
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluationFolder',.+\)" replace=",'evaluationFolder','${RED5_EVALUATION_FOLDER}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'responseFolder',.+\)" replace=",'responseFolder','${RED5_RESPONSE_FOLDER}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minVideoRatingCount',.+\)" replace=",'minVideoRatingCount','${MIN_VIDEO_RATING_COUNT}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'web_domain',.+\)" replace=",'web_domain','${WEB_DOMAIN}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minExerciseDuration',.+\)" replace=",'minExerciseDuration','${VIDEO_MIN_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'maxExerciseDuration',.+\)" replace=",'maxExerciseDuration','${VIDEO_MAX_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minVideoEvalDuration',.+\)" replace=",'minVideoEvalDuration','${VIDEO_EVAL_MIN_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'maxFileSize',.+\)" replace=",'maxFileSize','${VIDEO_MAX_SIZE}'\)"/>
+		
+	</target>
+	
 	<target name="cron-deploy">
-		<copy todir="${DEPLOY_DIR}/scripts">
+		<copy todir="${DEPLOY_DIR}/scripts" overwrite="true">
 			<fileset dir="${APP_ROOT}/resources/scripts" includes="**/*"/> 
 		</copy>
-		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
+		<replaceregexp match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '${WEB_ROOT}/services'\)" flags="g">
 			<fileset dir="${DEPLOY_DIR}/scripts" includes="*.php"/>
 		</replaceregexp>
 	</target>
@@ -286,14 +308,14 @@
 	</target>
 
 	<target name="LH_red5_start" description="Start Red5">
-		<exec executable="bash" dir="${red5.path}">
-			<arg value="${red5.path}/red5.sh" />
+		<exec executable="bash" dir="${RED5_PATH}">
+			<arg value="${RED5_PATH}/red5.sh" />
 		</exec>
 	</target>
 
 	<target name="LH_red5_stop" description="Stop Red5">
-		<exec executable="bash" dir="${red5.path}">
-			<arg value="${red5.path}/red5-shutdown.sh" />
+		<exec executable="bash" dir="${RED5_PATH}">
+			<arg value="${RED5_PATH}/red5-shutdown.sh" />
 		</exec>
 	</target>
 

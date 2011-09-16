@@ -48,6 +48,22 @@ VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
 GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY=project_hosting_webhook_hash_key
 
+#Database preference table data
+INITIAL_CREDITS=40
+SUBTITLE_ADDITION_CREDITS=4
+EVALUATION_REQUEST_CREDITS=10
+EVALUATION_DONE_CREDITS=20
+UPLOAD_EXERCISE_CREDITS=16
+EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION=3	
+REPORT_COUNT_TO_DELETE_VIDEO=10
+MIN_BANDWIDTH=512
+RED5_EXERCISE_FOLDER=exercises	
+RED5_EVALUATION_FOLDER=evaluations
+RED5_RESPONSE_FOLDER=responses
+MIN_VIDEO_RATING_COUNT=10
+VIDEO_MIN_DURATION=15
+VIDEO_EVAL_MIN_DURATION=5
+
 #Deploy paths
 LOG_PATH=your_log_folder_path
 SCRIPT_PATH=your_script_folder_path
@@ -70,16 +86,16 @@ SQL_SCHEMA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-schema.sql
 SQL_MINIMUM_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-minimum_data.sql
 SQL_EXAMPLE_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-example_data.sql
 
+#Deploy paths
+WEB_DOMAIN=your_domain
+WEB_ROOT=your_web_root_path
+SERVICE_PATH=${WEB_DOMAIN}/services
+RED5_PATH = /path/to/red5/instance
 
 
 ########################################
 #LEGACY PROPERTIES USE AT YOUR OWN RISK#
 ########################################
-
-#Deploy paths
-WEB_DOMAIN=your_domain
-WEB_ROOT=your_web_root_path
-SERVICE_PATH=${WEB_DOMAIN}/services
 
 #Service data
 services.srcdir = /path/to/services/inside/flex/project
