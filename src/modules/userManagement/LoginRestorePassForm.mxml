@@ -9,6 +9,7 @@
 						 title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
 						 creationComplete="completeHandler()"
 						 styleName="loginPopup"
+						 autoLayout="true"
 						 minWidth="300">
 
 	<skins:layout>
@@ -21,19 +22,20 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
 			import events.LoginEvent;
-
+			
 			import model.DataModel;
-
+			
+			import mx.controls.Alert;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import skins.ActionButtonSkin;
 			import skins.CustomTitleWindowSkin;
-
+			
 			import vo.LoginVO;
 			import vo.UserVO;
 
@@ -76,8 +78,10 @@
 				{
 					if (DataModel.getInstance().loginErrorMessage == "inactive_user")
 					{
-						resendEmailLink.visible=true;
+						restorePassword.includeInLayout=false;
+						restorePassword.visible=false;
 						resendEmailLink.includeInLayout=true;
+						resendEmailLink.visible=true;
 					}
 					DataModel.getInstance().loginPop.errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
@@ -123,6 +127,8 @@
 				title=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
 				userOrEmail.text='';
 				focusManager.setFocus(username);
+				restorePassword.visible=true;
+				restorePassword.includeInLayout=true;
 				resendEmailLink.visible=false;
 				resendEmailLink.includeInLayout=false;
 				loginViewStack.selectedChild=loginFormBoxNavContent;
@@ -134,8 +140,10 @@
 				this.title=resourceManager.getString('myResources', 'LABEL_SEND_EMAIL_AGAIN');
 				activationUsername.text='';
 				activationEmail.text='';
-				resendEmailLink.visible=false;
-				resendEmailLink.includeInLayout=false;
+				resendEmailLink.visible=true;
+				resendEmailLink.includeInLayout=true;
+				restorePassword.visible=false;
+				restorePassword.includeInLayout=false;
 				focusManager.setFocus(activationUsername);
 				loginViewStack.selectedChild=resendActivationEmailBoxNavContent;
 			}
@@ -293,28 +301,38 @@
 		<s:NavigatorContent id="resendActivationEmailBoxNavContent">
 			<s:VGroup id="resendActivationEmailBox"
 					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_INPUT_USER_AND_EMAIL')}"/>
-				<mx:Form width="100%">
-					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_USER_NAME')}">
+				
+				<!--
+				<s:Label text="{resourceManager.getString('myResources','LABEL_INPUT_USER_AND_EMAIL')}"
+						 styleName="formLabel"/>
+				-->	
+						<s:Label text="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
+								 styleName="formLabel"/>
 						<s:TextInput id="activationUsername"
+									 styleName="searchTextInput"
+									 fontSize="16"
 									 width="100%"/>
-					</mx:FormItem>
-					<mx:FormItem label="{resourceManager.getString('myResources','LABEL_EMAIL')}">
+					
+						<s:Label text="{resourceManager.getString('myResources','LABEL_EMAIL')}"
+								 styleName="formLabel"/>
 						<s:TextInput id="activationEmail"
+									 styleName="searchTextInput"
+									 fontSize="16"
 									 width="100%"/>
-					</mx:FormItem>
-				</mx:Form>
+					
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle">
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
 							  buttonMode="true"
 							  id="activationOkButton"
+							  styleName="bigBlueButton"
 							  click="resendActivationEmail(event)"/>
 					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 							  buttonMode="true"
 							  id="activationCancelButton"
-							  click="cancelButtonClickHandler(event)"/>
+							  styleName="bigBlueButton"
+							  click="showLogin(event)"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
