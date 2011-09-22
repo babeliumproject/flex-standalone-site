@@ -160,7 +160,7 @@
 		<copy todir="${DEPLOY_DIR}/scripts" overwrite="true">
 			<fileset dir="${APP_ROOT}/resources/scripts" includes="**/*"/> 
 		</copy>
-		<replaceregexp match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '${WEB_ROOT}/services'\)" flags="g">
+		<replaceregexp match="\('CLI_SERVICE_PATH',.+\)" replace="\('CLI_SERVICE_PATH', '${WEB_ROOT}/services'\)" flags="g">
 			<fileset dir="${DEPLOY_DIR}/scripts" includes="*.php"/>
 		</replaceregexp>
 	</target>
