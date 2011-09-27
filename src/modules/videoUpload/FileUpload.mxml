@@ -74,7 +74,7 @@
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
 
-				if (DataModel.getInstance().loggedUser.isAdmin)
+				if (DataModel.getInstance().loggedUser != null && DataModel.getInstance().loggedUser.isAdmin)
 				{
 					new UserEvent(UserEvent.GET_USERS).dispatch();
 				}
@@ -776,7 +776,8 @@
 							  source="resources/images/about_section_title_icon.png"/>
 					<s:VGroup width="100%">
 						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_INFO'), DataModel.getInstance().maxFileSize/1048576, DataModel.getInstance().minExerciseDuration, DataModel.getInstance().maxExerciseDuration) }"
-								 fontSize="14"/>
+								 fontSize="14"
+								 width="100%"/>
 						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_REASONING'), DataModel.getInstance().maxExerciseDuration) }"
 								 width="100%"/>
 					</s:VGroup>
