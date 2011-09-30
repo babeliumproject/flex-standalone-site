@@ -551,6 +551,7 @@
 			private function userSearch(searchInput:String):void {
 				
 				DataModel.getInstance().userSearch = searchInput;
+				DataModel.getInstance().tempVideoSlice.watchUrl = searchInput;
 				new VideoSliceEvent(VideoSliceEvent.SEARCH_USER).dispatch();
 			}
 			
