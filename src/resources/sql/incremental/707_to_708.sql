@@ -1,10 +1,11 @@
 -- Changes for adding video_slice management related changes
 
 ALTER TABLE `exercise` 
-CHANGE `status` `status` ENUM( 'Unsliced', 'Unprocessed', 'Processing', 'Available', 'Rejected', 'Error', 'Unavailable' ) NOT NULL DEFAULT 'Unprocessed'
+CHANGE `status` `status` ENUM( 'Unsliced', 'Unprocessed', 'Processing', 'Available', 'Rejected', 'Error', 'Unavailable' ) NOT NULL DEFAULT 'Unprocessed';
 
 INSERT INTO `preferences` (`prefName` , `prefValue`) VALUES ('uploadSliceCredits', '2');
 INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('subtitleLineMaxChars', '120');
+INSERT INTO `preferences` (`prefName`, `prefValue`) VALUES ('sliceDownCommandPath', 'C:\\\\Python27\\\\python.exe C:\\\\Users\\\\Iker\\\\Commands\\\\youtube-dl.py');
 
 ALTER TABLE `subtitle_line` CHANGE COLUMN `text` `text` VARCHAR(255) NOT NULL  ;
 
