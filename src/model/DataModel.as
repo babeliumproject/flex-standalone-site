@@ -175,8 +175,8 @@ package model
 		[Bindable] public var retrieveUserVideoComplete:Boolean = false;
 		[Bindable] public var slicePreview:Boolean = false;
 		[Bindable] public var sliceComplete:Boolean = false;
-		[Bindable] public var tempVideoSlice:VideoSliceVO = new VideoSliceVO;
-		[Bindable] public var tempExercise:ExerciseVO = new ExerciseVO;
+		[Bindable] public var tempVideoSlice:VideoSliceVO = new VideoSliceVO();
+		[Bindable] public var tempExercise:ExerciseVO = new ExerciseVO();
 		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;

@@ -6,12 +6,22 @@ if(!defined('SERVICE_PATH'))
 require_once SERVICE_PATH . '/utils/Datasource.php';
 require_once SERVICE_PATH . '/utils/Config.php';
 require_once SERVICE_PATH . '/utils/VideoProcessor.php';
+require_once SERVICE_PATH . '/utils/SessionHandler.php';
+require_once SERVICE_PATH . '/vo/VideoSliceVO.php';
+require_once SERVICE_PATH . 'Zend/Loader.php';
 
 class UploadExerciseDAO{
 
 	private $filePath;
 	private $imagePath;
 	private $red5Path;
+	
+	// Enter your Google account credentials
+	private $email;
+	private $passwd;
+	private $devKey;
+	// Video duration size
+	private $maxDuration;
 
 	private $evaluationFolder;
 	private $exerciseFolder;
@@ -21,6 +31,17 @@ class UploadExerciseDAO{
 	private $mediaHelper;
 
 	public function UploadExerciseDAO(){
+	
+			Zend_Loader::loadClass ( 'Zend_Gdata_YouTube' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_ClientLogin' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_Exception' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_Extension_Control' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_CaptchaRequiredException' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_HttpException' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_AuthException' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_YouTube_VideoEntry' );
+			Zend_Loader::loadClass ( 'Zend_Gdata_App_Entry' );
+			
 			$settings = new Config();
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
@@ -28,8 +49,29 @@ class UploadExerciseDAO{
 
 			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
 			$this->mediaHelper = new VideoProcessor();
-
+			
+			$this->email = $settings->yt_user;
+			$this->passwd = $settings->yt_password;
+			$this->devKey = $settings->yt_developerKey;
+			$this->maxDuration = $settings->maxDuration;
 			$this->_getResourceDirectories();
+	}
+	
+	private function authenticate() {
+		try {
+			$client = Zend_Gdata_ClientLogin::getHttpClient ( $this->email, $this->passwd, 'youtube' );
+		} catch ( Zend_Gdata_App_CaptchaRequiredException $cre ) {
+			//echo 'URL of CAPTCHA image: ' . $cre->getCaptchaUrl() . "\n";
+			//echo 'Token ID: ' . $cre->getCaptchaToken() . "\n";
+			//echo 'Captcha required: ' . $cre->getCaptchaToken () . "\n";
+			throw new Exception ( "Captcha required: " . $cre->getCaptchaToken () . "\n" . "URL of CAPTCHA image: " . $cre->getCaptchaUrl () . "\n" );
+		} catch ( Zend_Gdata_App_AuthException $ae ) {
+			//return 'Problem authenticating: ' . $ae->exception () . "\n";
+			throw new Exception ( "Problem authenticating: " . $ae->getMessage () . "\n" );
+		}
+		
+		$client->setHeaders ( 'X-GData-Key', 'key=' . $this->devKey );
+		return $client;
 	}
 
 	private function _getResourceDirectories(){
@@ -127,6 +169,190 @@ class UploadExerciseDAO{
 			echo "  * There aren't videos that need to be processed.\n";
 		}
 	}
+	
+	public function processPendingSlices(){
+		set_time_limit(0);
+		$sql = "SELECT id, name, source, language, title, thumbnail_uri, duration, status, fk_user_id
+				FROM exercise WHERE (status='Unsliced') ";
+		$transcodePendingVideos = $this->_listQuery($sql);
+		if(count($transcodePendingVideos) > 0){
+			echo "  * There are video slices that need to be processed.\n";
+			foreach($transcodePendingVideos as $pendingVideo){
+				$this->setExerciseProcessing($pendingVideo->id);
+				//Prepare for video to be downloaded and sliced up
+				$sql2 = "SELECT id, name, watchUrl, start_time, duration
+						 FROM video_slice WHERE (name = '%s')";
+				$vSlice = new VideoSliceVO();
+				$vSlice = $this->_listSliceQuery($sql2, $pendingVideo->name);
+				//Call the download and slice function
+				$creation = $this->createSlice($vSlice);		
+				if ($creation) {
+					//The video was downloaded and sliced up
+					$sliceFileName = 'SLC'.$pendingVideo->name.'.flv';
+					$path = $this->filePath.'/'.$sliceFileName;
+					if(is_file($path) && filesize($path)>0){
+						$outputHash = $this->mediaHelper->str_makerand(11,true,true);
+						$outputName = $outputHash.".flv";
+						
+						try{
+							//Check if the video already exists
+							if(!$this->checkIfFileExists($path)){
+								//Asuming everything went ok, take a snapshot of the video
+								$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
+								$snapshot_output = $this->mediaHelper->takeRandomSnapshot($path, $outputImagePath);
+		
+								//move the outputFile to it's final destination
+								rename($path, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
+								$duration = $vSlice->duration;
+
+								//Set the exercise as available and update it's data
+								$this->conn->_startTransaction();
+								
+								$updateResult = $this->setExerciseAvailable($pendingVideo->id, $outputHash, $outputHash.'.jpg', $duration, md5_file($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName));
+								if(!$updateResult){
+									$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked. SetExerciseAvailableFail");
+								}
+								
+								$updateSlice = $this->updateSliceName($outputHash,$vSlice->id);
+								if(!$updateSlice){
+									$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked. updateSliceNameFail");
+								}
+								
+								$creditUpdate = $this->_addCreditsForUploading($pendingVideo->userId);
+								if(!$creditUpdate){
+									$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked. AddCreditsForUploadingFail");
+								}
+								
+								$historyUpdate = $this->_addUploadingToCreditHistory($pendingVideo->userId, $pendingVideo->id);
+								if(!$historyUpdate){
+									$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked. addUploadingToCreditHistory");
+								}
+								
+								$this->conn->_endTransaction();
+								
+								echo "\n";
+								echo "          filename: ".$pendingVideo->name."\n";
+								echo "          filesize: ".filesize($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName)."\n";
+								echo "          input path: ".$path."\n";
+								echo "          output path: ".$this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName."\n";
+								echo "          snapshot output: ".$snapshot_output."\n";
+							} else {
+								//Remove the non-valid files
+								//@unlink($outputPath);
+								$this->setExerciseRejected($pendingVideo->id);
+								echo "\n";
+								echo "          filename: ".$pendingVideo->name."\n";
+								echo "          filesize: ".filesize($path)."\n";
+								echo "          input path: ".$path."\n";
+								echo "          error: Duplicated file\n";
+							}
+							//Remove the old files (original and slice)
+							@unlink($path);
+							$originalPath = $this->filePath.'/'.$pendingVideo->name.'.flv';
+							@unlink($originalPath);
+							
+						} catch (Exception $e) {
+						echo $e->getMessage()."\n";
+						}
+					}//end if(is_file)
+				}else{
+					//The video was not downloaded due to duration limit restrictions
+					$this->setExerciseRejected($pendingVideo->id);
+							echo "\n";
+							echo "          filename: ".$pendingVideo->name."\n";
+							echo "          filesize: ".filesize($path)."\n";
+							echo "          input path: ".$path."\n";
+							echo "          error: Duplicated file\n";
+				
+				}
+			}//end for_each
+				
+		} else {
+			echo "  * There aren't video slices that need to be processed.\n";		
+		}
+	
+	}
+	
+	public function createSlice (VideoSliceVO $data) {
+		
+		set_time_limit(0); // Bypass the execution time limit
+		try {
+			new SessionHandler(true);
+			
+		$name = $data->name;
+		$watchUrl = $data->watchUrl;
+		$start_time = $data->start_time;
+		$duration = $data->duration;
+		
+		$outputFolder = $this->filePath;
+		$outputVideo = $outputFolder."/".$name.'.flv';
+		
+		/*$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'sliceDownCommandPath')";
+		$pathComando = $this->_singleQuery($sql);*/	
+		
+		$maxDurationCheck = $this->checkVideoDuration($name);
+		
+		if($maxDurationCheck) {
+		
+			//$comandoDescarga = $pathComando." -w -o ".$outputVideo." ".$watchUrl; // Para Windows, en otro caso poner directamente la llamada al comando youtube-dl
+			$comandoDescarga = "youtube-dl -w -o ".$outputVideo." ".$watchUrl;
+			$downloadVideo = exec($comandoDescarga); //Download temporarily Video
+			$vidDescarga = $outputVideo;
+			$sliceFileName = 'SLC'.$name.'.flv';
+			$sliceVideo = $outputFolder."/".$sliceFileName;
+	
+			$comandoRecorte = "ffmpeg -y -i ".$vidDescarga." -ss ".$start_time." -t ".$duration." -s 320x240 -acodec libmp3lame -ar 22050 -ac 2 -f flv ".$sliceVideo; 	//Execute Slice
+	
+			$ffmpeg_output = exec($comandoRecorte);
+		}
+		
+		if (is_file($sliceVideo)) {
+			return true;	
+		}else{
+			return false;
+		}
+		
+		}catch (Exception $e){
+				throw new Exception($e->getMessage());
+		}	
+		
+	}
+	
+	private function checkVideoDuration($videoId) {
+		//Check that the video to be downloaded for the slicing process does not exceed maximum duration
+		set_time_limit(0);
+		
+		$httpClient = $this->authenticate ();
+		$yt = new Zend_Gdata_YouTube ( $httpClient );
+		
+		$myVideoEntry = $yt->getVideoEntry($videoId);
+		$duration = $myVideoEntry->getVideoDuration();
+		$limit = $this->maxDuration;
+	
+		if ($duration<=$limit) {	
+			return true;
+		}else{
+			return false;
+		}
+	
+	}
+	
+	private function updateSliceName($newName,$id){
+	
+		$sql = "UPDATE video_slice SET name='%s' WHERE (id=%d) ";
+		return $this->_databaseUpdate($sql, $newName, $id);
+	
+	}
+	
+	private function _databaseUpdate() {
+		$result = $this->conn->_execute ( func_get_args() );
+		
+		return $result;
+	}
 
 	private function setExerciseAvailable($exerciseId, $newName, $newThumbnail, $newDuration, $fileHash){
 
@@ -190,6 +416,26 @@ class UploadExerciseDAO{
 		}
 
 		return $searchResults;
+	}
+	
+	private function _listSliceQuery() {
+		$searchResults = array ();
+		$result = $this->conn->_execute ( func_get_args() );
+		
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$temp = new VideoSliceVO ( );
+			$temp->id= $row [0];
+			$temp->name = $row [1];
+			$temp->watchUrl = $row [2];
+			$temp->start_time = $row [3];
+			$temp->duration = $row [4];
+			
+			array_push ( $searchResults, $temp );
+		}
+		if (count ( $searchResults ) > 0)
+			return $temp;
+		else
+			return false;
 	}
 
 	private function _listHash(){

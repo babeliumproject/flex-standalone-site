@@ -3,6 +3,7 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:ns1="modules.videoUpload.*"
+		  xmlns:ns2="modules.videoSlice.*"
 		  xmlns:common="view.common.*"
 		  creationComplete="onComplete()"
 		  xmlns:skins="skins.*">
@@ -12,6 +13,7 @@
 			import events.EvaluationEvent;
 			import events.ExerciseEvent;
 			import events.UploadEvent;
+			import events.VideoSliceEvent;
 			
 			import flash.events.*;
 			import flash.net.*;
@@ -21,6 +23,8 @@
 			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
+			import mx.resources.ResourceManager;
+			import mx.utils.*;
 			import mx.validators.Validator;
 			
 			import skins.IconButtonSkin;
@@ -46,6 +50,8 @@
 
 			private var red5VideoData:ExerciseVO;
 			private var red5VideoLevel:ExerciseLevelVO;
+			
+			private var userId:int = DataModel.getInstance().loggedUser.id;
 
 
 			private var checkStatusTimer:Timer;
@@ -323,20 +329,38 @@
 			{
 				if (event.currentTarget.selectedValue == "updChoice")
 				{
+					uploadFileBox.includeInLayout=true;
 					uploadFileBox.minHeight=0;
 					uploadFileBox.height=150;
 					uploadFileBox.visible=true;
 					recFromWebcamBox.visible=false;
 					recUploadBox.visible=false;
+					vSliceWidget.visible=false;
+					sliceButtons.visible=false;
+					sliceButtons.includeInLayout=false;
 
 				}
 				else if (event.currentTarget.selectedValue == "recChoice")
 				{
+					webcamWidget.includeInLayout=true;
 					recFromWebcamBox.visible=true;
 					recUploadBox.visible=true;
 					uploadFileBox.minHeight=0;
 					uploadFileBox.height=0;
 					uploadFileBox.visible=false;
+					vSliceWidget.visible=false;
+					sliceButtons.visible=false;
+				}
+				else if (event.currentTarget.selectedValue == "ytChoice")
+				{
+					webcamWidget.includeInLayout=false;
+					recFromWebcamBox.visible=false;
+					recUploadBox.visible=false;
+					uploadFileBox.includeInLayout=false;
+					uploadFileBox.minHeight=0;
+					uploadFileBox.height=0;
+					uploadFileBox.visible=false;
+					vSliceWidget.visible=true;
 				}
 			}
 
@@ -410,8 +434,10 @@
 				uploadOptionsGroup.selectedValue=null;
 				uploadChoice.selected=false;
 				recordChoice.selected=false;
+				youtubeChoice.selected=false;
 				uploadFileBox.visible=false;
 				recFromWebcamBox.visible=false;
+				vSliceWidget.visible=false;
 			}
 
 
@@ -487,6 +513,122 @@
 					DataModel.getInstance().enableAutoevalToExerciseError="";
 				}
 			}
+			
+			//Video Slice related functions
+			
+			private function identifySearchType():void {
+				
+				var searchInput:String = sliceSearch.text;
+				
+				if(searchInput!= ""){
+					//TextField is not empty
+					var urlType:String = new String("http://www.youtube.com/watc");
+					var urlType2:String = new String("http://www.youtube.com/user");
+					var temp:String = searchInput.substr(0,27);
+					
+					if(urlType==temp){
+						//Search Input is normal video URL
+						urlSearch(searchInput);
+						
+					}else if(urlType2==temp){
+						//Search Input is user channel video URL
+						userSearch(searchInput);
+						
+					}else{
+						CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+					}
+					
+				}else{
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+				}
+				
+			}
+			
+			private function urlSearch(searchInput:String):void {
+				
+				DataModel.getInstance().urlSearch = searchInput;
+				DataModel.getInstance().tempVideoSlice.watchUrl = searchInput;
+				new VideoSliceEvent(VideoSliceEvent.SEARCH_URL).dispatch();
+				
+			}
+			
+			private function userSearch(searchInput:String):void {
+				
+				DataModel.getInstance().userSearch = searchInput;
+				DataModel.getInstance().tempVideoSlice.watchUrl = searchInput;
+				new VideoSliceEvent(VideoSliceEvent.SEARCH_USER).dispatch();
+			}
+			
+			public function set onRetrieveVideoComplete(value:Boolean):void {
+				
+				if(DataModel.getInstance().retrieveVideoComplete) {
+					
+					VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
+					VP.visible = true;
+					
+					DataModel.getInstance().retrieveVideoComplete = false;
+					
+				}
+			}
+			
+			public function set onRetrieveUserVideoComplete(value:Boolean):void {
+				
+				if(DataModel.getInstance().retrieveUserVideoComplete) {
+					
+					VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
+					VP.visible = true;
+					
+					DataModel.getInstance().retrieveUserVideoComplete = false;
+					
+				}
+			}
+			
+			public function set onSlicePreviewComplete(value:Boolean):void {
+				
+				if(DataModel.getInstance().slicePreview) {
+					
+					requestInfo.visible = true;
+					sliceButtons.visible = true;
+					
+				}else{
+					sliceButtons.visible = false;
+					requestInfo.visible = false;
+				}
+			}
+			
+			public function set onSliceCreationComplete (value:Boolean):void {
+				
+				if(DataModel.getInstance().sliceComplete) {
+					
+					infoMessage.visible = false;
+				}
+			}
+			
+			private function cancelSlice():void {
+				
+				DataModel.getInstance().slicePreview = false;
+				requestInfo.visible = false;
+				resetComponent();
+			}
+			
+			private function saveSlice():void {
+				
+				DataModel.getInstance().tempExercise.name = DataModel.getInstance().tempVideoSlice.name;
+				DataModel.getInstance().tempExercise.title = videoTitle.text;
+				DataModel.getInstance().tempExercise.description = videoDescription.text;
+				DataModel.getInstance().tempExercise.tags = parseTags(videoTags.text);
+				DataModel.getInstance().tempExercise.avgDifficulty = difficultySelector.selectedIndex;
+				DataModel.getInstance().tempExercise.language = languageSelector.selectedLabel;
+				DataModel.getInstance().tempExercise.source = "Youtube";
+				DataModel.getInstance().tempExercise.userId = userId;
+				DataModel.getInstance().tempExercise.license = "cc-by";
+				DataModel.getInstance().tempExercise.reference = "http://www.youtube.com";
+				DataModel.getInstance().tempExercise.status = "Unsliced";
+				
+				new VideoSliceEvent(VideoSliceEvent.CREATE_SLICE).dispatch();	
+				//Alert.show(ObjectUtil.toString(DataModel.getInstance().loggedUser));
+				infoMessage.visible = true;
+			}
 		]]>
 	</fx:Script>
 
@@ -512,6 +654,14 @@
 				destination="this.onAutoevaluationEnableError"/>
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
+	<fx:Binding source="{DataModel.getInstance().retrieveVideoComplete}"
+				destination="this.onRetrieveVideoComplete"/>
+	<fx:Binding source="{DataModel.getInstance().retrieveUserVideoComplete}"
+				destination="this.onRetrieveUserVideoComplete"/>
+	<fx:Binding source="{DataModel.getInstance().slicePreview}"
+				destination="this.onSlicePreviewComplete"/>
+	<fx:Binding source="{DataModel.getInstance().sliceComplete}"
+				destination="this.onSliceCreationComplete"/>
 
 	<s:BorderContainer styleName="sectionInfoBox"
 					   width="100%"
@@ -594,6 +744,10 @@
 								   value="recChoice"
 								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_STREAMING')}"
 								   group="{uploadOptionsGroup}"/>
+					<s:RadioButton id="youtubeChoice"
+								   value="ytChoice"
+								   label="{resourceManager.getString('myResources','LABEL_UPLOAD_YOUTUBE')}"
+								   group="{uploadOptionsGroup}"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 							 styleName="boldLabel"
@@ -608,7 +762,39 @@
 					</mx:FormItem>
 				</mx:FormItem>
 			</mx:Form>
-
+			
+			<!-- Part of the Video Slice widget -->
+			<s:VGroup id="sliceButtons"
+					  visible="false">
+				<mx:Text id="requestInfo"
+						 visible="false"
+						 text="{resourceManager.getString('myResources','SLICEREQUEST_TEXT')}"
+						 fontSize="12"
+						 width="100%"/>
+				<mx:Spacer height="20"/>
+				<s:HGroup>
+					<mx:Button  label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
+								toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
+								id="sliceUpload"
+								click="saveSlice()"
+								enabled="{formIsValid}"
+								icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+					
+					<mx:Button  id="sliceCancel"
+								toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
+								icon="@Embed(source='../../resources/images/cancel.png')"
+								width="26"
+								click="cancelSlice()"/>
+				</s:HGroup>
+				<mx:Spacer height="10"/>
+				<mx:Label id="infoMessage"
+						  text="{resourceManager.getString('myResources','SLICEPROGRESS_TEXT')}"
+						  fontWeight="bold"
+						  visible="false"/>
+				
+			</s:VGroup>
+			
+			<!-- File Upload widget -->
 			<s:VGroup id="uploadFileBox"
 					  styleName="roundedBlueBorderBox"
 					  width="100%"
@@ -682,7 +868,7 @@
 		</s:VGroup>
 
 		<!-- Wecbam recording widget -->
-		<s:VGroup>
+		<s:VGroup id="webcamWidget">
 			<ns1:TempVideoRecording id="recFromWebcamBox"
 									visible="false"
 									streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
@@ -703,6 +889,23 @@
 			</s:VGroup>
 
 		</s:VGroup>
+		
+		<!-- Video Slice widget -->
+		<s:VGroup id="vSliceWidget" 
+				  visible="false"
+				  width="100%">
+			<mx:Label text="{resourceManager.getString('myResources','TITLE_URLSEARCH')}"
+					  fontSize="12"
+					  fontWeight="bold"/>	
+			<mx:HBox>
+				<mx:TextInput width="200" id="sliceSearch"/>
+				<mx:Button label="{resourceManager.getString('myResources','BUTTON_SEARCH')}" click="identifySearchType()"/>									
+			</mx:HBox>
+			
+			<ns2:AS3Player id="VP" visible="false"/>
+			
+		</s:VGroup>
+		
 	</s:HGroup>
 
 	<fx:Declarations>
