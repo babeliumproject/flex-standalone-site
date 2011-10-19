@@ -35,6 +35,9 @@ package model
 		[Embed("../resources/images/flags/flag_germany.png")]
 		public var FlagGermany:Class;
 		
+		[Bindable]
+		[Embed("../resources/images/flags/flag_italy.png")]
+		public var FlagItaly:Class;
 		
 //		private var af_ZA:Object={code: 'af_ZA', icon: };
 //		private var sq_AL:Object={code: 'sq_AL', icon: };
@@ -45,7 +48,7 @@ package model
 //		private var ar_JO:Object={code: 'ar_JO', icon: };
 //		private var ar_KW:Object={code: 'ar_KW', icon: };
 //		private var ar_LB:Object={code: 'ar_LB', icon: };
-//		private var ar_LY:Object={code: 'ar_LB', icon: };
+//		private var ar_LY:Object={code: 'ar_LY', icon: };
 		private var ar_MA:Object={code: 'ar_MA', icon: FlagMorocco};
 //		private var ar_OM:Object={code: 'ar_OM', icon: };
 //		private var ar_QA:Object={code: 'ar_QA', icon: };
@@ -107,7 +110,7 @@ package model
 //		private var hu_HU:Object={code: 'hu_HU' icon: };
 //		private var is_IS:Object={code: 'is_IS' icon: };
 //		private var id_ID:Object={code: 'id_ID' icon: };
-//		private var it_IT:Object={code: 'it_IT' icon: };
+		private var it_IT:Object={code: 'it_IT', icon: FlagItaly};
 //		private var it_CH:Object={code: 'it_CH' icon: };
 //		private var ja_JP:Object={code: 'ja_JP' icon: };
 //		private var kn_IN:Object={code: 'kn_IN' icon: };
@@ -182,6 +185,7 @@ package model
 			availableLanguages.push(fr_FR);
 			availableLanguages.push(de_DE);
 			availableLanguages.push(ar_MA);
+			availableLanguages.push(it_IT);
 			
 			for each(var code:String in ResourceManager.getInstance().getLocales()){
 				guiLanguages.push(getLocaleAndFlagGivenLocaleCode(code));

@@ -133,7 +133,7 @@ package model
 		[Bindable] public var savedResponseId:int;
 		
 		//Exercise uploading related data
-		[Bindable] public var server: String = "babelia";
+		[Bindable] public var server: String = "babelium";
 		[Bindable] public var red5Port: String = "1935";
 		[Bindable] public var uploadDomain:String = "http://"+server+"/";
 		[Bindable] public var streamingResourcesPath:String = "rtmp://" + server + "/oflaDemo";
@@ -144,6 +144,7 @@ package model
 		
 		[Bindable] public var uploadURL:String = uploadDomain+"upload.php";
 		[Bindable] public var thumbURL:String = uploadDomain+"resources/images/thumbs";
+		[Bindalbe] public var posterURL:String = uploadDomain+"resources/images/posters";
 		
 		[Bindable] public var uploadFileReference:FileReference = null;
 		[Bindable] public var uploadFileSelected:Boolean = false;
@@ -168,6 +169,8 @@ package model
 		
 		[Bindable] public var unprocessedExerciseSaved:Boolean = false;
 		
+		[Bindable] public var activeUserList:ArrayCollection;
+		
 		//Video Slice related data	
 		[Bindable] public var urlSearch:String = "";
 		[Bindable] public var userSearch:String = "";
@@ -175,8 +178,8 @@ package model
 		[Bindable] public var retrieveUserVideoComplete:Boolean = false;
 		[Bindable] public var slicePreview:Boolean = false;
 		[Bindable] public var sliceComplete:Boolean = false;
-		[Bindable] public var tempVideoSlice:VideoSliceVO = new VideoSliceVO();
-		[Bindable] public var tempExercise:ExerciseVO = new ExerciseVO();
+		[Bindable] public var tempVideoSlice:VideoSliceVO = new VideoSliceVO;
+		[Bindable] public var tempExercise:ExerciseVO = new ExerciseVO;
 		
 		//Subtitle related data
 		[Bindable] public var subtileSaveId:int;

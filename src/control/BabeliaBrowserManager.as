@@ -101,7 +101,10 @@ package control
 			
 			clearFragments();
 			
-			var params:Array = _browserManager.fragment.split(DELIMITER);
+			//Fixes a bug caused by email clients that escape url sequences
+			var uescparams:String = unescape(_browserManager.fragment);
+			
+			var params:Array = uescparams.split(DELIMITER);
 			var length:Number = params.length;
 			
 			if ( length <= 1 )

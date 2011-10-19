@@ -156,19 +156,25 @@
 			{
 				var url:String='';
 				if (temp.exerciseSource == "Red5")
-					url=DataModel.getInstance().thumbURL + "/" + temp.exerciseThumbnailUri;
-				else
-					url=temp.exerciseThumbnailUri;
+					if(temp.exerciseThumbnailUri != 'nothumb.png')
+						url=DataModel.getInstance().thumbURL + "/" + temp.exerciseName + "/default.jpg";
+					else
+						url=DataModel.getInstance().thumbURL + '/nothumb.png';
+					else
+						url=temp.exerciseThumbnailUri;
 				return url;
 			}
-
+			
 			public function getResponseImageSource(temp:EvaluationVO):String
 			{
 				var url:String='';
 				if (temp.responseSource == "Red5")
-					url=DataModel.getInstance().thumbURL + "/" + temp.responseThumbnailUri;
-				else
-					url=temp.responseThumbnailUri;
+					if(temp.responseThumbnailUri != 'nothumb.png')
+						url=DataModel.getInstance().thumbURL + "/" + temp.responseFileIdentifier + "/default.jpg";
+					else
+						url=DataModel.getInstance().thumbURL + '/nothumb.png';
+					else
+						url=temp.responseThumbnailUri;
 				return url;
 			}
 		]]>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE cross-domain-policy PUBLIC "//ADOBE/" "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd">
 <cross-domain-policy>
-     <allow-access-from domain="babelia"/>
+     <allow-access-from domain="babelium"/>
 </cross-domain-policy>
 
 

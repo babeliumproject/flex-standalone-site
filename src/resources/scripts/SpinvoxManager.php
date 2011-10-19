@@ -1,9 +1,9 @@
 <?php
 
-define('SERVICE_PATH', '/var/www/babelium/services');
+define('CLI_SERVICE_PATH', '/var/www/babelium/services');
 
-require_once SERVICE_PATH . '/utils/Datasource.php';
-require_once SERVICE_PATH . '/utils/Config.php';
+require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
+require_once CLI_SERVICE_PATH . '/utils/Config.php';
 
 require_once './SpinvoxConnection.php';
 
