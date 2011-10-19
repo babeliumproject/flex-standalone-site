@@ -789,37 +789,6 @@
 				</s:HGroup>
 			</mx:Form>
 			
-			<!-- Part of the Video Slice widget -->
-			<s:VGroup id="sliceButtons"
-					  visible="false">
-				<mx:Text id="requestInfo"
-						 visible="false"
-						 text="{resourceManager.getString('myResources','SLICEREQUEST_TEXT')}"
-						 fontSize="12"
-						 width="100%"/>
-				<mx:Spacer height="20"/>
-				<s:HGroup>
-					<mx:Button  label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
-								toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
-								id="sliceUpload"
-								click="saveSlice()"
-								enabled="{formIsValid}"
-								icon="@Embed(source='../../resources/images/bullet_go.png')"/>
-					
-					<mx:Button  id="sliceCancel"
-								toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
-								icon="@Embed(source='../../resources/images/cancel.png')"
-								width="26"
-								click="cancelSlice()"/>
-				</s:HGroup>
-				<mx:Spacer height="10"/>
-				<mx:Label id="infoMessage"
-						  text="{resourceManager.getString('myResources','SLICEPROGRESS_TEXT')}"
-						  fontWeight="bold"
-						  visible="false"/>
-				
-			</s:VGroup>
-			
 			<!-- File Upload widget -->
 			<!-- Part of the Video Slice widget -->
 			<s:VGroup id="sliceButtons"
