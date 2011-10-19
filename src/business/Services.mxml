@@ -6,85 +6,83 @@
 
 	<fx:Declarations>
 
-
-
 		<mx:RemoteObject id="userRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="UserDAO"/>
 
 		<mx:RemoteObject id="registerRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="RegisterUser"/>
 
 		<mx:RemoteObject id="creditRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="CreditDAO"/>
 
 		<mx:RemoteObject id="prefRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="PreferenceDAO"/>
 
 		<mx:RemoteObject id="loginRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="LoginDAO"/>
 
 		<mx:RemoteObject id="subtitleRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="SubtitleDAO"/>
 
 		<mx:RemoteObject id="rolRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="ExerciseRoleDAO"/>
 
 		<mx:RemoteObject id="exerciseRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="ExerciseDAO"/>
 
 		<mx:RemoteObject id="searchRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="SearchDAO"/>
 
 		<mx:RemoteObject id="tagCloudRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="TagCloudDAO"/>
 
 		<mx:RemoteObject id="youtubeRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="false"
 						 source="YouTubeDAO"/>
 
 		<mx:RemoteObject id="autoevaluationRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="TranscriptionsDAO"/>
 
 		<mx:RemoteObject id="evaluationRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="EvaluationDAO"/>
 
 		<mx:RemoteObject id="responseRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="ResponseDAO"/>
 		
 		<mx:RemoteObject id="videoHistoryRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="false"
 						 source="UserVideoHistoryDAO"/>
 
 		<mx:RemoteObject id="homepageRO"
-						 destination="empService"
+						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="HomepageDAO"/>
 

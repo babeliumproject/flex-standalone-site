@@ -1,12 +1,19 @@
 <?php
 
+require_once 'Config.php';
+
 class Datasource
 {
 	
 	private $dbLink;
+	private $logPath;
 
 	public function Datasource($dbHost, $dbName, $dbuser, $dbpasswd)
 	{
+		
+		$settings = new Config();
+		$this->logPath = $settings->logPath;
+		
 		$this->dbLink = mysqli_connect ($dbHost, $dbuser, $dbpasswd);
 		if(!$this->dbLink)
 			$this->_checkConnectionErrors();
@@ -96,7 +103,7 @@ class Datasource
 	private function _checkConnectionErrors(){
 		$errno = mysqli_connect_errno();
 		if($errno){
-			error_log("Database connection error #".$errno.": ".mysqli_connect_error()."\n",3,"/tmp/db_error.log");
+			error_log("[".date("d/m/Y H:i:s")."]\nDatabase connection error #".$errno.": ".mysqli_connect_error()."\n",3, $this->logPath . "/db_error.log");
 			throw new Exception("Database connection error.\n");
 		} else {
 			return;
@@ -113,9 +120,9 @@ class Datasource
 		if($sqlstate){
 			//Rollback the uncommited changes just in case
 			$this->_failedTransaction();
-			error_log("Database error #" .$errno. " (".$sqlstate."): ".$error."\n",3,"/tmp/db_error.log");
+			error_log("[".date("d/m/Y H:i:s")."]\nDatabase error #" .$errno. " (".$sqlstate."): ".$error."\n", 3, $this->logPath . "/db_error.log");
 			if($sql != "")
-				error_log("Caused by the following SQL command: ".$sql."\n",3,"/tmp/db_error.log");
+				error_log("Caused by the following SQL command: ".$sql."\n", 3, $this->logPath. "/db_error.log");
 			throw new Exception("Database operation error.\n");
 		}
 		else

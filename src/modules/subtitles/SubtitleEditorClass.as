@@ -2,25 +2,25 @@ package modules.subtitles
 {
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;
-
+	
 	import control.BabeliaBrowserManager;
 	import control.CuePointManager;
-
+	
 	import events.ExerciseEvent;
 	import events.ExerciseRoleEvent;
 	import events.SubtitleEvent;
 	import events.ViewChangeEvent;
-
+	
 	import flash.events.MouseEvent;
-
+	
 	import model.DataModel;
-
+	
 	import modules.videoPlayer.VideoPlayer;
 	import modules.videoPlayer.VideoPlayerBabelia;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitlingEvent;
-
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -31,18 +31,19 @@ package modules.subtitles
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.utils.StringUtil;
-
+	
+	import skins.CustomTitleWindow;
 	import skins.IconButton;
-
+	
 	import spark.components.Button;
 	import spark.components.ComboBox;
 	import spark.components.HGroup;
 	import spark.components.Label;
 	import spark.components.VGroup;
-
+	
 	import view.common.CustomAlert;
 	import view.common.IconComboBox;
-
+	
 	import vo.CreditHistoryVO;
 	import vo.CueObject;
 	import vo.ExerciseRoleVO;
@@ -91,6 +92,8 @@ package modules.subtitles
 		public var subtitleStarted:Boolean=false;
 
 		private var creationComplete:Boolean=false;
+		
+		private var subtitlesToBeSaved:SubtitleAndSubtitleLinesVO;
 
 		/**
 		 * Retrieved data holders
@@ -298,20 +301,24 @@ package modules.subtitles
 					{
 
 						var subtitleLines:Array=subLines.toArray();
-						var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO();
-						subtitles.exerciseId=currentExercise.id;
-						subtitles.language=exerciseLanguage;
-						subtitles.subtitleLines=subtitleLines;
+						subtitlesToBeSaved=new SubtitleAndSubtitleLinesVO();
+						subtitlesToBeSaved.exerciseId=currentExercise.id;
+						subtitlesToBeSaved.language=exerciseLanguage;
+						subtitlesToBeSaved.subtitleLines=subtitleLines;
 						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)
-						subtitles.id=0;
+						subtitlesToBeSaved.id=0;
 						//else
 						//	subtitles.id=DataModel.getInstance().availableSubtitleLines.getItemAt(0).subtitleId;
+						
+						
 
 						var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
 						subHistoricData.videoExerciseId=currentExercise.id;
 						subHistoricData.videoExerciseName=currentExercise.name;
 						DataModel.getInstance().subHistoricData=subHistoricData;
-						new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, subtitles).dispatch();
+						
+						CustomAlert.info(resourceManager.getString('myResources', 'CONFIRMATION_COMPLETE_SUBTITLE'), Alert.YES | Alert.NO, null, completeSubtitleConfirmation, Alert.NO);
+						
 					}
 					else
 					{
@@ -328,6 +335,15 @@ package modules.subtitles
 				CustomAlert.confirm((resourceManager.getString('myResources', 'WARNING_EMPTY_SUBTITLE')), 0x4, null, null, 0x4);
 			}
 
+		}
+		
+		private function completeSubtitleConfirmation(event:CloseEvent):void{
+			if(event.detail == Alert.YES){
+				subtitlesToBeSaved.complete = true;
+			} else {
+				subtitlesToBeSaved.complete = false;
+			}
+			new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, subtitlesToBeSaved).dispatch();
 		}
 
 		private function subtitlesWereModified(compareSubject:ArrayCollection):Boolean
@@ -360,6 +376,7 @@ package modules.subtitles
 			{
 				if (subtitleCollection.getItemAt(i).roleId < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY') + "\n", i + 1);
+				var test:String = StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY'), DataModel.getInstance().maxFileSize, DataModel.getInstance().maxExerciseDuration);
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)

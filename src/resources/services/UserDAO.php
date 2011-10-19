@@ -48,6 +48,8 @@ class UserDAO {
 			$verifySession = new SessionHandler(true);
 
 			$sessionId = session_id();
+			if(empty($sessionId))
+				throw new Exception("Error. Session not set.");
 
 			//Check that there's not another active session for this user
 			$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";

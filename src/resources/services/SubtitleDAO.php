@@ -129,9 +129,9 @@ class SubtitleDAO {
 		$this->conn->_startTransaction();
 
 		//Insert the new subtitle on the database
-		$s_sql = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, adding_date) ";
-		$s_sql .= "VALUES ('%d', '%d', '%s', NOW() ) ";
-		$subtitleId = $this->conn->_insert($s_sql, $subtitles->exerciseId, $_SESSION['uid'], $subtitles->language );
+		$s_sql = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, adding_date, complete) ";
+		$s_sql .= "VALUES (%d, %d, '%s', NOW(), %d ) ";
+		$subtitleId = $this->conn->_insert($s_sql, $subtitles->exerciseId, $_SESSION['uid'], $subtitles->language, $subtitles->complete );
 		if(!$subtitleId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Subtitle save failed");

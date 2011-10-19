@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <project name="Babelium Project" default="app-deploy">
 
+	<tstamp><format property="DAY_TIME_NOW" pattern="yyyy-MM-dd_HH.mm.ss" /></tstamp>
 	<property file="build.properties" />
 	
 	<path id="project.classpath">
@@ -21,7 +22,9 @@
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
-			<define name="CONFIG::restricted" value="false"/>
+			<define name="CONFIG::restrictedEvaluation" value="${CONFIG_RESTRICTED_EVALUATION}"/>
+			<define name="CONFIG::noPracticeUpload" value="${CONFIG_NO_PRACTICE_UPLOAD}"/>
+			<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
 			
 			<compiler.library-path dir="${BASE}" append="true">
 				<include name="libs"/>
@@ -73,6 +76,7 @@
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources" includes="**.*"/> 
 		</copy>
+		<!-- This scripts controls the upload process -->
 		<chmod file="${DEPLOY_DIR}/upload.php" perm="777"/>
 		<copy todir="${DEPLOY_DIR}">
 			<fileset dir="${APP_ROOT}/resources/tests" includes="*.php"/>
@@ -80,35 +84,43 @@
 		<copy todir="${DEPLOY_DIR}/resources/images">
 			<fileset dir="${APP_ROOT}/resources/images" includes="**/*"/>
 		</copy>
+		<!-- There should be a nothumb.png image and nothing else inside the thumbs folder -->
 		<chmod dir="${DEPLOY_DIR}/resources/images/thumbs" perm="777"/>
+		<!-- Make a folder for the preview poster images of the videos -->
+		<mkdir dir="${DEPLOY_DIR}/resources/images/posters"/>
+		<chmod dir="${DEPLOY_DIR}/resources/images/posters" perm="777"/>
+		<!-- PHP email templates -->
 		<copy todir="${DEPLOY_DIR}/resources/templates">
 			<fileset dir="${APP_ROOT}/resources/templates" includes="**/*"/>
 		</copy>
+		<!-- The uploaded videos will temporarily be left in this place -->
 		<mkdir dir="${DEPLOY_DIR}/resources/uploads"/>
 		<chmod dir="${DEPLOY_DIR}/resources/uploads" perm="777"/>
+		<!-- Apache lucene's indexation files should be here once initialized -->
 		<mkdir dir="${DEPLOY_DIR}/resources/searchIndexes"/>
 		<chmod dir="${DEPLOY_DIR}/resources/searchIndexes" perm="777"/>
 		<copy todir="${DEPLOY_DIR}/services">
 			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
 		</copy>
-		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
-		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '/services/'\)"/>
-		
+		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
+		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('WEBROOT_PATH',.+\)" replace="\('WEBROOT_PATH', '${WEB_ROOT}'\)" flags="g"/>
 	</target>
 	
 	<target name="app-fix-domains">
-		<replace file="${APP_ROOT}/service-config.xml" token='/babelia' value="/${WEB_DOMAIN}" />
-		<replace file="${APP_ROOT}/model/DataModel.as" token='"babelia' value='"${WEB_DOMAIN}' />
-		<replace file="${APP_ROOT}/resources/crossdomain.xml" token='"babelia' value='"${WEB_DOMAIN}' />
+		<replace file="${APP_ROOT}/service-config.xml" token='/babelium' value="/${WEB_DOMAIN}" />
+		<replace file="${APP_ROOT}/model/DataModel.as" token='"babelium' value='"${WEB_DOMAIN}' />
+		<replace file="${APP_ROOT}/resources/crossdomain.xml" token='"babelium' value='"${WEB_DOMAIN}' />
 	</target>
 	
 	<target name="app-fill-config">
 		<copy file="${APP_ROOT}/resources/services/utils/Config.php.example" tofile="${APP_ROOT}/resources/services/utils/Config.php" overwrite="true"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="host.+;" replace="host = '${sql.host}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${sql.user}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${sql.pass}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${sql.dbname}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${red5.path}/webapps/oflaDemo/streams';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="host.+;" replace="host = '${SQL_HOST}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_username.+;" replace="db_username = '${SQL_BABELIUM_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${SQL_BABELIUM_USER_PASS}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${SQL_DB_NAME}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${RED5_PATH}/webapps/oflaDemo/streams';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_USER}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_PASS}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_USER}';"/>
@@ -122,15 +134,110 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>
 	
+	<target name="app-fill-db-preferences">	
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'initialCredits',.+\)" replace=",'initialCredits','${INITIAL_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'subtitleAdditionCredits',.+\)" replace=",'subtitleAdditionCredits','${SUBTITLE_ADDITION_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluationRequestCredits',.+\)" replace=",'evaluationRequestCredits','${EVALUATION_REQUEST_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluatedWithVideoCredits',.+\)" replace=",'evaluatedWithVideoCredits','${EVALUATION_DONE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluatedWithScoreCredits',.+\)" replace=",'evaluatedWithScoreCredits','${EVALUATION_DONE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'uploadExerciseCredits',.+\)" replace=",'uploadExerciseCredits','${UPLOAD_EXERCISE_CREDITS}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'trial\.threshold',.+\)" replace=",'trial\.threshold','${EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION}'\)"/>	
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'reports_to_delete',.+\)" replace=",'reports_to_delete','${REPORT_COUNT_TO_DELETE_VIDEO}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'bwCheckMin',.+\)" replace=",'bwCheckMin','${MIN_BANDWIDTH}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'exerciseFolder',.+\)" replace=",'exerciseFolder','${RED5_EXERCISE_FOLDER}'\)"/>		
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'evaluationFolder',.+\)" replace=",'evaluationFolder','${RED5_EVALUATION_FOLDER}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'responseFolder',.+\)" replace=",'responseFolder','${RED5_RESPONSE_FOLDER}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minVideoRatingCount',.+\)" replace=",'minVideoRatingCount','${MIN_VIDEO_RATING_COUNT}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'web_domain',.+\)" replace=",'web_domain','${WEB_DOMAIN}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minExerciseDuration',.+\)" replace=",'minExerciseDuration','${VIDEO_MIN_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'maxExerciseDuration',.+\)" replace=",'maxExerciseDuration','${VIDEO_MAX_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'minVideoEvalDuration',.+\)" replace=",'minVideoEvalDuration','${VIDEO_EVAL_MIN_DURATION}'\)"/>
+		<replaceregexp file="${SQL_MINIMUM_DATA_SCRIPT}" match=",'maxFileSize',.+\)" replace=",'maxFileSize','${VIDEO_MAX_SIZE}'\)"/>
+		
+	</target>
+	
 	<target name="cron-deploy">
-		<copy todir="${DEPLOY_DIR}/cron">
-			<fileset dir="${APP_ROOT}/resources/scripts/cron" includes="**/*"/> 
+		<copy todir="${DEPLOY_DIR}/scripts" overwrite="true">
+			<fileset dir="${APP_ROOT}/resources/scripts" includes="**/*"/> 
 		</copy>
-		<replaceregexp match="\('SERVICE_PATH'.+\)" replace="\('SERVICE_PATH', '${SERVICE_PATH}'\)">
-				<fileset dir="${DEPLOY_DIR}/cron" includes="*.php"/>
+		<replaceregexp match="\('CLI_SERVICE_PATH',.+\)" replace="\('CLI_SERVICE_PATH', '${WEB_ROOT}/services'\)" flags="g">
+			<fileset dir="${DEPLOY_DIR}/scripts" includes="*.php"/>
 		</replaceregexp>
 	</target>
+	
+	<!-- TODO: Replace the preference data on full-minimum_data.sql with the appropriate values for this instance. Values are retrieved from the build.properties file
+	           Download babelium_sample_resources.tar.gz and copy the resources to the appropriate locations -->
 		
+	<target name="database-deploy" depends="database-backup">
+		<echo level="info" message="You need the mysql-connector-java.jar library on your ant lib folder (i.e. /usr/share/ant/lib) to launch this task."/>
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  DROP DATABASE IF EXISTS ${SQL_DB_NAME};
+		  CREATE DATABASE ${SQL_DB_NAME};
+		</sql>
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}/${SQL_DB_NAME}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" delimiter="|" >
+		  <!-- Dropping the user requires a bit of magic since there's no built-in DROP USER IF EXISTS command -->
+		  <!-- SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ANSI';-->
+		  DROP PROCEDURE IF EXISTS ${SQL_DB_NAME}.DROP_USER_IF_EXISTS|
+		  
+		  CREATE PROCEDURE ${SQL_DB_NAME}.DROP_USER_IF_EXISTS()
+		  BEGIN 
+  			DECLARE f INT;
+			SET f = 0;
+  			SELECT COUNT(*) INTO f
+    				FROM mysql.user
+      				WHERE User = '${SQL_BABELIUM_USER}' AND  Host = '${SQL_HOST}';
+   			IF f > 0 THEN
+         			DROP USER '${SQL_BABELIUM_USER}'@'${SQL_HOST}';
+  			END IF;
+		  END|
+		</sql>
+
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}" >
+		  CALL ${SQL_DB_NAME}.DROP_USER_IF_EXISTS();
+		  DROP PROCEDURE IF EXISTS ${SQL_DB_NAME}.DROP_USER_IF_EXISTS ;
+		  <!--SET SQL_MODE=@OLD_SQL_MODE ;-->
+
+		  CREATE USER '${SQL_BABELIUM_USER}'@'${SQL_HOST}' IDENTIFIED BY '${SQL_BABELIUM_USER_PASS}';
+		  GRANT SELECT, INSERT, UPDATE, DELETE, DROP ON `${SQL_DB_NAME}`.* TO '${SQL_BABELIUM_USER}'@'{SQL_HOST}' IDENTIFIED BY '${SQL_BABELIUM_USER_PASS}';
+		  FLUSH PRIVILEGES;
+		</sql>
+		<sql driver="${SQL_DRIVER}" url="${SQL_URL}/${SQL_DB_NAME}" userid="${SQL_ROOT_USER}" password="${SQL_ROOT_USER_PASS}">
+		  <transaction src="${SQL_SCHEMA_SCRIPT}"/>
+		  <transaction src="${SQL_MINIMUM_DATA_SCRIPT}"/>
+		  <transaction src="${SQL_EXAMPLE_DATA_SCRIPT}"/>
+		</sql>
+	</target>
+	
+	
+	<target name="database-backup">
+	    <mkdir dir="${BACKUP_PATH}"/><!-- Create the archive directory anyway. -->
+	    <!-- Command to dump the database to *.sql file.-->
+	    <exec executable="mysqldump" output="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql">
+	      <arg value="--hex-blob"/>
+	      <arg value="--extended-insert=false"/>
+	      <arg value="--complete-insert=true"/>
+	      <arg value="--user=${SQL_ROOT_USER}"/>
+	      <arg value="--password=${SQL_ROOT_USER_PASS}"/>
+	      <arg value="${SQL_DB_NAME}"/>
+	    </exec>
+	 
+	    <!-- Compress the dumped file(*.sql) -->
+	    <tar destfile="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql.tar.gz" 
+	          compression="gzip">
+	      <tarfileset dir="${BACKUP_PATH}">
+	        <include name="${SQL_DB_NAME}_${DAY_TIME_NOW}.sql"/>
+	      </tarfileset>
+	    </tar>
+	 
+	    <!-- Delete the dumped file(*.sql) -->
+	    <delete file="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql"/>
+	</target>
+	
+	
+		
+	<!-- ///////////////////////////////////// -->
+	<!-- LEGACY FUNCTIONS USE AT YOUR OWN RISK -->
+	<!-- ///////////////////////////////////// -->
 	<target name="rsync-videos-server-local" >
 		<exec executable="rsync" dir="." failonerror="true">
 		  	<arg value="-r"/>
@@ -142,7 +249,7 @@
 		    <arg value="${USERNAME}@${REMOTE_HOST}:${REMOTE_DIR}/*"/> <!-- Where to retrieve the files from -->
 		    <arg value="/tmp"/> <!-- Target path -->
 		</exec>
-	</target>	
+	</target>
 		
 	<target name="init">
 		<tstamp>
@@ -150,17 +257,13 @@
 		</tstamp>
 	</target>
 
-	<target name="svn-checkout" description="checkout desde Subversion (XP-dev)">
-		<svn username="${svn.username}" password="${svn.password}">
-			<checkout url="${svn.url}" destPath="${svn.dir}" />
-		</svn>
-	</target>
-
 	<target name="LH_SyncDB" description="sync local de la BD">
 		<!--Eliminar las tablas de babeliumproject -->
 		<!-- && Recrear desde all.sql -->
 		<exec dir="${BASE}" executable="./updatedb.sh" />
 	</target>
+	
+	
 
 	<target name="LH_clean" description="borrar bin-debug">
 		<delete>
@@ -176,8 +279,8 @@
 	</target>
 
 
-	<target name="BP_babelia_to_babelium" description="s/babelia/babeliumproject.com/">
-		<input message="Please enter source:" addproperty="input.src" defaultvalue="babelia" />
+	<target name="BP_babelium_to_babelium" description="s/babelium/babeliumproject.com/">
+		<input message="Please enter source:" addproperty="input.src" defaultvalue="babelium" />
 		<input message="Please enter destination:" addproperty="input.dst" defaultvalue="babeliumproject.com" />
 		<replace file="${APP_ROOT}/service-config.xml" token='/${input.src}' value="/${input.dst}" />
 		<replace file="${APP_ROOT}/model/DataModel.as" token='"${input.src}' value='"${input.dst}' />
@@ -187,13 +290,13 @@
 		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}" verbose="true">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
 		</scp>
-		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}/amfphp/services/babelia" verbose="true">
+		<scp trust="true" todir="${server.username}:${server.password}@${server.host}:${server.path}/amfphp/services/babelium" verbose="true">
 			<fileset dir="${services.srcdir}" includes="**/*" />
 		</scp>
 	</target>
 
 	<target name="LH_deploylocal" description="Copy deployed app to local webserver">
-		<copy preservelastmodified="yes" todir="${local.server.path}/babelia">
+		<copy preservelastmodified="yes" todir="${local.server.path}/babelium">
 			<fileset dir="${DEPLOY_DIR}" includes="**/*" />
 		</copy>
 	</target>
@@ -206,14 +309,14 @@
 	</target>
 
 	<target name="LH_red5_start" description="Start Red5">
-		<exec executable="bash" dir="${red5.path}">
-			<arg value="${red5.path}/red5.sh" />
+		<exec executable="bash" dir="${RED5_PATH}">
+			<arg value="${RED5_PATH}/red5.sh" />
 		</exec>
 	</target>
 
 	<target name="LH_red5_stop" description="Stop Red5">
-		<exec executable="bash" dir="${red5.path}">
-			<arg value="${red5.path}/red5-shutdown.sh" />
+		<exec executable="bash" dir="${RED5_PATH}">
+			<arg value="${RED5_PATH}/red5-shutdown.sh" />
 		</exec>
 	</target>
 

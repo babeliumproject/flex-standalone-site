@@ -1,11 +1,11 @@
 <?php
 
-if(!defined('SERVICE_PATH'))
-	define('SERVICE_PATH', '/var/www/babelium/services');
+if(!defined('CLI_SERVICE_PATH'))
+	define('CLI_SERVICE_PATH', '/var/www/babelium/services');
 
-require_once SERVICE_PATH . '/utils/Datasource.php';
-require_once SERVICE_PATH . '/utils/Config.php';
-require_once SERVICE_PATH . '/utils/VideoProcessor.php';
+require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
+require_once CLI_SERVICE_PATH . '/utils/Config.php';
+require_once CLI_SERVICE_PATH . '/utils/VideoProcessor.php';
 
 class UploadExerciseDAO{
 
@@ -21,15 +21,16 @@ class UploadExerciseDAO{
 	private $mediaHelper;
 
 	public function UploadExerciseDAO(){
-			$settings = new Config();
-			$this->filePath = $settings->filePath;
-			$this->imagePath = $settings->imagePath;
-			$this->red5Path = $settings->red5Path;
+		$settings = new Config();
+		$this->filePath = $settings->filePath;
+		$this->imagePath = $settings->imagePath;
+		$this->posterPath = $settings->posterPath;
+		$this->red5Path = $settings->red5Path;
 
-			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
-			$this->mediaHelper = new VideoProcessor();
+		$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+		$this->mediaHelper = new VideoProcessor();
 
-			$this->_getResourceDirectories();
+		$this->_getResourceDirectories();
 	}
 
 	private function _getResourceDirectories(){
@@ -49,18 +50,20 @@ class UploadExerciseDAO{
 	public function processPendingVideos(){
 		set_time_limit(0);
 		$sql = "SELECT id, name, source, language, title, thumbnail_uri, duration, status, fk_user_id
-				FROM exercise WHERE (status='Unprocessed') ";
+				FROM exercise WHERE (status='Unprocessed' OR status='UnprocessedNoPractice') ";
 		$transcodePendingVideos = $this->_listQuery($sql);
 		if(count($transcodePendingVideos) > 0){
 			echo "  * There are videos that need to be processed.\n";
 			foreach($transcodePendingVideos as $pendingVideo){
-				$this->setExerciseProcessing($pendingVideo->id);
+				//We want the whole process to be rollbacked when something unexpected happens
+				$this->conn->_startTransaction();
+				$processingFlag = $this->setExerciseProcessing($pendingVideo->id);
 				$path = $this->filePath.'/'.$pendingVideo->name;
-				if(is_file($path) && filesize($path)>0){
+				if(is_file($path) && filesize($path)>0 && $processingFlag){
 					$outputHash = $this->mediaHelper->str_makerand(11,true,true);
 					$outputName = $outputHash . ".flv";
 					$outputPath = $this->filePath .'/'. $outputName;
-						
+
 					try {
 						$encoding_output = $this->mediaHelper->transcodeToFlv($path,$outputPath);
 							
@@ -68,37 +71,62 @@ class UploadExerciseDAO{
 						if(!$this->checkIfFileExists($outputPath)){
 							//Asuming everything went ok, take a snapshot of the video
 							$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
-							$snapshot_output = $this->mediaHelper->takeRandomSnapshot($outputPath, $outputImagePath);
+							$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 
 							//move the outputFile to it's final destination
-							rename($outputPath, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
-							
+							$renameResult = rename($outputPath, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
+							if(!$renameResult){
+								throw new Exception("Couldn't move transcoded file. Changes rollbacked.");
+							}
+								
 							$mediaData = $this->mediaHelper->retrieveMediaInfo($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
 							$duration = $mediaData->duration;
 
 							//Set the exercise as available and update it's data
-							$this->conn->_startTransaction();
-							
+							//$this->conn->_startTransaction();
+								
 							$updateResult = $this->setExerciseAvailable($pendingVideo->id, $outputHash, $outputHash.'.jpg', $duration, md5_file($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName));
 							if(!$updateResult){
-								$this->conn->_failedTransaction();
+								//$this->conn->_failedTransaction();
 								throw new Exception("Database operation error. Changes rollbacked.");
 							}
 							
-							$creditUpdate = $this->_addCreditsForUploading($pendingVideo->userId);
-							if(!$creditUpdate){
-								$this->conn->_failedTransaction();
-								throw new Exception("Database operation error. Changes rollbacked.");
-							}
+							if($pendingVideo->status == 'UnprocessedNoPractice'){
 							
-							$historyUpdate = $this->_addUploadingToCreditHistory($pendingVideo->userId, $pendingVideo->id);
-							if(!$historyUpdate){
-								$this->conn->_failedTransaction();
-								throw new Exception("Database operation error. Changes rollbacked.");
-							}
+								$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
+								$this->conn->_execute($sql,$pendingVideo->id);
+								if(!$this->conn->_affectedRows())
+									throw new Exception("Couldn't update no-practice exercise. Changes rollbacked.");
+								$sql = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_transcription_id, fk_subtitle_id)
+										VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 0, 'None', NULL, NULL)";
+								$result = $this->conn->_insert($sql,$pendingVideo->userId,$pendingVideo->id,$outputHash,$duration);
+								if(!$result)
+									throw new Exception("Couldn't insert no-practice response. Changes rollbacked.");
+									
+								//move the outputFile to it's final destination
+								$renameResult = rename($this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName, $this->red5Path .'/'. $this->responseFolder .'/'. $outputName);
+								if(!$renameResult){
+									throw new Exception("Couldn't move transcoded file. Changes rollbacked.");
+								}
+								
+							} else {
 							
+								$creditUpdate = $this->_addCreditsForUploading($pendingVideo->userId);
+								if(!$creditUpdate){
+									//$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked.");
+								}
+								
+								$historyUpdate = $this->_addUploadingToCreditHistory($pendingVideo->userId, $pendingVideo->id);
+								if(!$historyUpdate){
+									//$this->conn->_failedTransaction();
+									throw new Exception("Database operation error. Changes rollbacked.");
+								}
+							
+							}
+								
 							$this->conn->_endTransaction();
-							
+								
 							echo "\n";
 							echo "          filename: ".$pendingVideo->name."\n";
 							echo "          filesize: ".filesize($path)."\n";
@@ -106,21 +134,33 @@ class UploadExerciseDAO{
 							echo "          output path: ".$this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName."\n";
 							echo "          encoding output: ".$encoding_output."\n";
 							echo "          snapshot output: ".$snapshot_output."\n";
+								
+							//Remove the old file
+							@unlink($path);
 						} else {
-							@unlink($outputPath);
+								
 							$this->setExerciseRejected($pendingVideo->id);
 							echo "\n";
 							echo "          filename: ".$pendingVideo->name."\n";
 							echo "          filesize: ".filesize($path)."\n";
 							echo "          input path: ".$path."\n";
 							echo "          error: Duplicated file\n";
+							//Remove the old files
+							@unlink($outputPath);
+							@unlink($path);
 						}
-						//Remove the old file
-						@unlink($path);
+
 							
 					} catch (Exception $e) {
-						echo $e->getMessage()."\n";
-					}	
+						$this->conn->_failedTransaction();
+						echo "          error: ". $e->getMessage()."\n";
+					}
+				} else {
+					$this->conn->_failedTransaction();
+					echo "\n";
+					echo "          filename: ".$pendingVideo->name."\n";
+					echo "          input path: ".$path."\n";
+					echo "          error: File not valid or not found\n";
 				}
 			}
 		} else {
@@ -155,7 +195,7 @@ class UploadExerciseDAO{
 		$this->conn->_execute ( $sql, $userId );
 		return $this->conn->_affectedRows();
 	}
-	
+
 	private function _addUploadingToCreditHistory($userId, $exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='uploadExerciseCredits' )";
 		$result = $this->conn->_execute ( $sql );
@@ -214,6 +254,46 @@ class UploadExerciseDAO{
 			}
 		}
 		return $fileExists;
+	}
+	
+	public function takeMissingSnapshots(){
+		$mediaPaths = array();
+		$sql = "SELECT name FROM exercise WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->exerciseFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		$sql = "SELECT file_identifier FROM response WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->responseFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		$sql = "SELECT video_identifier FROM evaluation_video WHERE true";
+		$result = $this->conn->_execute($sql);
+		while ( $row = $this->conn->_nextRow ( $result ) ) {
+			$tmp = $this->red5Path . '/' . $this->evaluationFolder . '/'. $row[0] . '.flv';
+			array_push($mediaPaths,$tmp);
+		}
+		
+		foreach($mediaPaths as $path){
+			try{
+				$result = $this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
+			} catch(Exception $e){
+				echo $e->getMessage()."\n";
+			}
+		}
+		
+		$sql = "UPDATE exercise SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
+		$sql = "UPDATE response SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
+		$sql = "UPDATE evaluation_video SET thumbnail_uri = 'default.jpg' WHERE (thumbnail_uri <> 'nothumb.png')";
+		$this->conn->_execute($sql);
+		
 	}
 
 }

@@ -10,6 +10,7 @@
 		//Server path to store uploaded files
 		public $filePath = '';
 		public $imagePath = '';
+		public $posterPath = '';
 		public $red5Path = '/opt/red5/webapps/oflaDemo/streams';
 		
 		//Youtube authentication data
@@ -63,17 +64,19 @@
 		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and 
 		 * cut off the subfolders or use a variable and remember to change it.
 		 */ 
-		public $webRootPath = "/var/www/babelia";
+		public $webRootPath = "/var/www/babelium";
 		
 		public function Config(){
 			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
 				$this->imagePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/thumbs";
+				$this->posterPath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/posters";
 				$this->templatePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/templates";
 				$this->indexPath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/searchIndexes";
 			} else {
 				$this->filePath = $this->webRootPath . "/resources/uploads";
 				$this->imagePath = $this->webRootPath . "/resources/images/thumbs";
+				$this->posterPath = $this->webRootPath . "/resources/images/posters";
 				$this->templatePath = $this->webRootPath . "/resources/templates";
 				$this->indexPath = $this->webRootPath . "/resources/searchIndexes";
 			}	

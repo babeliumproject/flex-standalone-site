@@ -12,10 +12,11 @@ package vo
 		public var language:String;
 		public var translation:Boolean;
 		public var addingDate:String;
+		public var complete:Boolean;
 
 		public var subtitleLines:Array;
 
-		public function SubtitleAndSubtitleLinesVO(id:int=0, exerciseId:int=0, userName:String=null, language:String=null, translation:Boolean=false, addingDate:String=null, subtitleLines:Array=null)
+		public function SubtitleAndSubtitleLinesVO(id:int=0, exerciseId:int=0, userName:String=null, language:String=null, translation:Boolean=false, addingDate:String=null, complete:Boolean = false, subtitleLines:Array=null)
 		{
 			this.id=id;
 			this.exerciseId=exerciseId;
@@ -23,6 +24,7 @@ package vo
 			this.language=language;
 			this.translation=translation;
 			this.addingDate=addingDate;
+			this.complete = complete;
 			this.subtitleLines=subtitleLines;
 		}
 

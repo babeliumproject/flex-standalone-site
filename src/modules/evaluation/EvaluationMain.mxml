@@ -18,21 +18,21 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-
+			
 			import events.*;
-
+			
 			import model.DataModel;
-
+			
 			import modules.autoevaluation.AutoevaluationPanel;
 			import modules.autoevaluation.Evaluation;
 			import modules.main.VideoPaginator;
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
 			import mx.core.FlexGlobals;
@@ -43,15 +43,15 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-
+			
 			import spark.components.Button;
 			import spark.components.NavigatorContent;
 			import spark.layouts.HorizontalAlign;
 			import spark.primitives.Line;
-
+			
 			import view.common.CustomAlert;
 			import view.common.TimeFormatter;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.EvaluationVO;
@@ -164,7 +164,7 @@
 				createAssessedToCurrentUser();
 				createAssessedByCurrentUser();
 				
-				if (CONFIG::restricted)
+				if (CONFIG::restrictedEvaluation)
 				{
 					if (dataModel.loggedUser.isAdmin == true)
 					{
@@ -326,14 +326,34 @@
 			}
 
 			private function onSubtitlesRetrieved(e:CueManagerEvent):void
-			{
-				setupSimultaneousPlaybackCommands();
-
-				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
-				VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
-				VP.refresh();
+			{	
+				if(_exerciseName == ''){
+					setupPlayCommands();
+					VP.state=VideoPlayerBabelia.PLAY_STATE;
+					VP.videoSource=RESPONSE_FOLDER + '/' + _responseName;
+					VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
+					VP.refresh();
+				} else {
+					setupSimultaneousPlaybackCommands();
+					VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+					VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+					VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
+					VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
+					VP.refresh();
+				}
+			}
+			
+			private function setupPlayCommands():void{
+				var auxList:ArrayCollection = _cueManager.getCuelist();
+				
+				if(auxList.length <=0)
+						return;
+				for each (var cueobj:CueObject in auxList){
+					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj, VP));
+					cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
+				}
+				
+				_cueManagerReady=true;
 			}
 
 			private function setupSimultaneousPlaybackCommands():void
@@ -376,7 +396,8 @@
 
 			private function onMetadataRetrieved(e:Event):void
 			{
-				showArrows();
+				if(_exerciseName != '')
+					showArrows();
 			}
 
 			private function allDataReceived():void
@@ -613,7 +634,7 @@
 			{
 				if (_creationComplete)
 				{
-					if (CONFIG::restricted)
+					if (CONFIG::restrictedEvaluation)
 					{
 						evaluationOptionsViewStack.removeAllChildren();
 						resetVideoPlayer();
@@ -666,7 +687,7 @@
 
 					resetVideoPlayer();
 					
-					if (CONFIG::restricted)
+					if (CONFIG::restrictedEvaluation)
 					{
 						if (dataModel.loggedUser.isAdmin == true)
 							evaluationOptionsViewStack.selectedChild=waitingAssessmentBoxNavContent;

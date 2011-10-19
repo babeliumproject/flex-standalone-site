@@ -14,7 +14,19 @@ UPDATE `subtitle_line` SET `text`='No, nothing. Just... he has to go to San Fran
 UPDATE `subtitle_line` SET `text`='Oh yeah, I know where the Albert Park is. That\'s were the lantern festival was last week.' WHERE `text` LIKE 'Oh yeah, I know where the Albert Park is. That\'s were the lantern%';
 UPDATE `subtitle_line` SET `text`='Am Anichke. They made a new website, and they used a few seconds of one of my videos, so they sent me... this.' WHERE `text` LIKE 'Am Anichke. They made a new website, and they used a few seconds of on%';
 
+ALTER TABLE `subtitle` ADD COLUMN `complete` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0'  AFTER `adding_date` ;
+
+ALTER TABLE `exercise` CHANGE COLUMN `status` `status` ENUM('Unprocessed','Processing','Available','Rejected','Error','Unavailable','UnprocessedNoPractice') NOT NULL DEFAULT 'Unprocessed'  ;
+
 
 
 -- SVN control line. Must be added on each incremental script
 UPDATE `preferences` SET `prefValue` =  '$Revision: 708 $'  WHERE `preferences`.`prefName` = 'dbrevision';
+
+INSERT INTO `preferences` (`prefName` , `prefValue`) VALUES
+('minExerciseDuration',15),
+('maxExerciseDuration',120),
+('minVideoEvalDuration',5),
+('maxFileSize',188743680);
+
+ALTER TABLE `exercise` CHANGE `name` `name` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid'
