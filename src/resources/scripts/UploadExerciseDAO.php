@@ -72,12 +72,8 @@ class UploadExerciseDAO{
 		try {
 			$client = Zend_Gdata_ClientLogin::getHttpClient ( $this->email, $this->passwd, 'youtube' );
 		} catch ( Zend_Gdata_App_CaptchaRequiredException $cre ) {
-			//echo 'URL of CAPTCHA image: ' . $cre->getCaptchaUrl() . "\n";
-			//echo 'Token ID: ' . $cre->getCaptchaToken() . "\n";
-			//echo 'Captcha required: ' . $cre->getCaptchaToken () . "\n";
 			throw new Exception ( "Captcha required: " . $cre->getCaptchaToken () . "\n" . "URL of CAPTCHA image: " . $cre->getCaptchaUrl () . "\n" );
 		} catch ( Zend_Gdata_App_AuthException $ae ) {
-			//return 'Problem authenticating: ' . $ae->exception () . "\n";
 			throw new Exception ( "Problem authenticating: " . $ae->getMessage () . "\n" );
 		}
 	
@@ -217,8 +213,8 @@ class UploadExerciseDAO{
 				$this->setExerciseProcessing($pendingVideo->id);
 				//Prepare for video to be downloaded and sliced up
 				$sql2 = "SELECT id, name, watchUrl, start_time, duration
-							 FROM video_slice WHERE (name = '%s')";
-				$vSlice = new VideoSliceVO();
+					 	 FROM video_slice WHERE (name = '%s')";
+				$vSlice = new stdClass();
 				$vSlice = $this->_listSliceQuery($sql2, $pendingVideo->name);
 				//Call the download and slice function
 				$creation = $this->createSlice($vSlice);
@@ -229,14 +225,14 @@ class UploadExerciseDAO{
 					if(is_file($path) && filesize($path)>0){
 						$outputHash = $this->mediaHelper->str_makerand(11,true,true);
 						$outputName = $outputHash.".flv";
-	
+						$outputPath = $this->filePath .'/'. $outputName;
 						try{
 							//Check if the video already exists
 							if(!$this->checkIfFileExists($path)){
 								//Asuming everything went ok, take a snapshot of the video
 								$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
-								$snapshot_output = $this->mediaHelper->takeRandomSnapshot($path, $outputImagePath);
-	
+								$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
+								
 								//move the outputFile to it's final destination
 								rename($path, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
 								$duration = $vSlice->duration;
@@ -313,11 +309,9 @@ class UploadExerciseDAO{
 	
 	}
 	
-	public function createSlice (VideoSliceVO $data) {
+	private function createSlice ($data) {
 	
 		set_time_limit(0); // Bypass the execution time limit
-		try {
-			new SessionHandler(true);
 				
 			$name = $data->name;
 			$watchUrl = $data->watchUrl;
@@ -351,11 +345,6 @@ class UploadExerciseDAO{
 			}else{
 				return false;
 			}
-	
-		}catch (Exception $e){
-			throw new Exception($e->getMessage());
-		}
-	
 	}
 	
 	private function checkVideoDuration($videoId) {
@@ -453,7 +442,7 @@ class UploadExerciseDAO{
 		$result = $this->conn->_execute ( func_get_args() );
 	
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new VideoSliceVO ( );
+			$temp = new stdClass();
 			$temp->id= $row [0];
 			$temp->name = $row [1];
 			$temp->watchUrl = $row [2];
