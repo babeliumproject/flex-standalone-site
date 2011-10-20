@@ -171,7 +171,7 @@ class HomepageDAO{
 	public function topScoreMostViewedVideos(){
 		
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.id
+		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -233,7 +233,7 @@ class HomepageDAO{
 
 	public function latestAvailableVideos(){
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.id
+		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id

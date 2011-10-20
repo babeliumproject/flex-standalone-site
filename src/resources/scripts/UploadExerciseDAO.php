@@ -7,6 +7,7 @@ require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
 require_once CLI_SERVICE_PATH . '/utils/VideoProcessor.php';
 
+//Zend Framework should be on php.ini's include_path
 require_once 'Zend/Loader.php';
 
 class UploadExerciseDAO{
@@ -104,7 +105,6 @@ class UploadExerciseDAO{
 						//Check if the video already exists
 						if(!$this->checkIfFileExists($outputPath)){
 							//Asuming everything went ok, take a snapshot of the video
-							$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
 							$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 
 							//move the outputFile to it's final destination
@@ -230,7 +230,6 @@ class UploadExerciseDAO{
 							//Check if the video already exists
 							if(!$this->checkIfFileExists($path)){
 								//Asuming everything went ok, take a snapshot of the video
-								$outputImagePath = $this->imagePath .'/'. $outputHash . '.jpg';
 								$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 								
 								//move the outputFile to it's final destination
@@ -369,7 +368,7 @@ class UploadExerciseDAO{
 	private function updateSliceName($newName,$id){
 	
 		$sql = "UPDATE video_slice SET name='%s' WHERE (id=%d) ";
-		return $this->_databaseUpdate($sql, $newName, $id);
+		return $this->conn->_execute($sql, $newName, $id);
 	
 	}
 

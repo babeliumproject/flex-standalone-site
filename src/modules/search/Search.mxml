@@ -25,13 +25,20 @@
 
 	<fx:Script>
 		<![CDATA[
-			import modules.main.VideoPaginator;
+			import control.BabeliaBrowserManager;
+			
+			import events.ViewChangeEvent;
+			
 			import model.DataModel;
-
+			
+			import modules.main.VideoPaginator;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
 			import mx.controls.Button;
+			
+			import vo.ExerciseVO;
 
 			[Bindable]
 			[Embed(source="../../resources/images/first.png")]
@@ -93,10 +100,11 @@
 				var current:int=DataModel.getInstance().currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				dataTemp=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				searchListTable.rowCount=dataTemp.length;
-				searchListTable.dataProvider=dataTemp;
+				//searchListTable.rowCount=dataTemp.length;
+				searchListDataGroup.dataProvider=dataTemp;
 			}
 
+			
 			public function closeHandler(event:Event):void
 			{
 				var dataSortField:SortField=new SortField();
@@ -141,6 +149,20 @@
 					DataModel.getInstance().languageChanged=false;
 				}
 			}
+			
+			public function changeHandler(event:Event):void{
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				if (obj.isSubtitled)
+				{
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
+				}
+				else
+				{
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
+				}
+				List(event.target).selectedItem = null;
+				BabeliaBrowserManager.getInstance().parseURL(null);
+			}
 
 			private function navigateToPage(event:MouseEvent):void
 			{
@@ -174,6 +196,24 @@
 		</s:HGroup>
 	</mx:ApplicationControlBar>
 	<s:VGroup width="100%">
+		
+		<s:List id="searchListDataGroup"
+				width="100%"
+				minHeight="0"
+				change="changeHandler(event)"
+				borderVisible="false"
+				skinClass="skins.TransparentBgListSkin"
+				itemRenderer="modules.exercises.ExerciseItemRenderer"
+				dataProvider="{dataProvider}">
+			<s:layout>
+				<s:TileLayout horizontalAlign="justify"
+							  verticalAlign="middle"
+							  columnAlign="justifyUsingWidth"
+							  columnWidth="500"/>
+			</s:layout>
+		</s:List>
+		
+		<!--
 		<mx:DataGrid id="searchListTable"
 					 width="100%"
 					 editable="false"
@@ -187,7 +227,6 @@
 				<mx:DataGridColumn itemRenderer="modules.main.ExerciseListItem"/>
 			</mx:columns>
 		</mx:DataGrid>
-		<!--
 			 <s:VGroup>
 			 <tc:TagCloud id="tagCloud"
 			 title="{resourceManager.getString('myResources','SEARCH_TAGCLOUD')}"

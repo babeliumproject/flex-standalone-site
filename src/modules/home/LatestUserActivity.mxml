@@ -128,7 +128,7 @@
 										 height="72">
 									<mx:Image id="thumbnail"
 											  scaleContent="true"
-											  source="{parentDocument.thumbUrl+'/'+data.exerciseThumbnailUri}"
+											  source="{data.exerciseThumbnailUri == 'nothumb.png' ? parentDocument.thumbUrl+ '/' +data.responseThumbnailUri : parentDocument.thumbUrl + '/' + data.exerciseName + '/default.jpg'}"
 											  width="96"
 											  height="72"
 											  toolTip="{data.exerciseTitle}"/>
@@ -292,7 +292,7 @@
 										 height="72">
 									<mx:Image id="thumbnail"
 											  scaleContent="true"
-											  source="{parentDocument.thumbUrl+'/'+data.exerciseThumbnailUri}"
+											  source="{data.exerciseThumbnailUri == 'nothumb.png' ? parentDocument.thumbUrl+ '/' +data.responseThumbnailUri : parentDocument.thumbUrl + '/' + data.exerciseName + '/default.jpg'}"
 											  width="96"
 											  height="72"
 											  toolTip="{data.exerciseTitle}"/>
@@ -319,7 +319,7 @@
 										 height="72">
 									<mx:Image id="thumbnail"
 											  scaleContent="true"
-											  source="{parentDocument.thumbUrl+'/'+data.responseThumbnailUri}"
+											  source="{data.responseThumbnailUri == 'nothumb.png' ? parentDocument.thumbUrl+ '/' + data.responseThumbnailUri : parentDocument.thumbUrl + '/' + data.responseFileIdentifier + '/default.jpg'}"
 											  width="96"
 											  height="72"/>
 									<s:TextInput text="{data.responseUserName}"

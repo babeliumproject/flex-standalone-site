@@ -15,6 +15,7 @@ class EvaluationDAO {
 	private $conn;
 
 	private $imagePath;
+	private $posterPath;
 	private $red5Path;
 
 	private $evaluationFolder = '';
@@ -28,6 +29,7 @@ class EvaluationDAO {
 			$verifySession = new SessionHandler(true);
 			$settings = new Config ( );
 			$this->imagePath = $settings->imagePath;
+			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 			$this->mediaHelper = new VideoProcessor();
@@ -434,16 +436,20 @@ class EvaluationDAO {
 		
 		//Insert video evaluation data
 		$this->_getResourceDirectories();
-		
 		try{
 			$videoPath = $this->red5Path .'/'. $this->evaluationFolder .'/'. $evalData->evaluationVideoFileIdentifier . '.flv';
-			$imagePath = $this->imagePath .'/'. $evalData->evaluationVideoFileIdentifier . '.jpg';
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
-			$this->mediaHelper->takeRandomSnapshot($videoPath, $imagePath);
+			$thumbnail = 'nothumb.png';
+			if($mediaData->hasVideo){
+				$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
+				$thumbnail = 'default.jpg';
+			}
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
+		
+		
 
 		$sql = "INSERT INTO evaluation_video (fk_evaluation_id, video_identifier, source, thumbnail_uri) VALUES (";
 		$sql = $sql . "'%d', ";
@@ -451,7 +457,7 @@ class EvaluationDAO {
 		$sql = $sql . "'Red5', ";
 		$sql = $sql . "'%s')";
 		
-		$evaluationVideoId = $this->conn->_insert ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $evalData->evaluationVideoFileIdentifier.'.jpg' );
+		$evaluationVideoId = $this->conn->_insert ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $thumbnail );
 		if(!$evaluationVideoId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");

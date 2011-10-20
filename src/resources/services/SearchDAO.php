@@ -12,6 +12,9 @@ class SearchDAO {
 	private $conn;
 	private $indexPath;
 	private $index;
+	
+	private $exerciseMinRatingCount;
+	private $exerciseGlobalAvgRating;
 
 	public function SearchDAO() {
 		try {
@@ -23,26 +26,21 @@ class SearchDAO {
 			throw new Exception($e->getMessage());
 		}
 	}
-	
-	public function initialize(){
+
+	private function initialize(){
 		try{
 			$this->index = Zend_Search_Lucene::open($this->indexPath);
 		}catch (Zend_Search_Lucene_Exception $ex){
-			try{
-				$this->createIndex();
-				$this->index = Zend_Search_Lucene::open($this->indexPath);
-			}catch(Zend_Search_Lucene_Exception $exc){
-				$this->initialize();
-			}
+			throw new Exception($e->getMessage());
 		}
 	}
 
 	public function launchSearch($search) {
 		$searchResults = array();
-		
+
 		//Return empty array if empty query
 		if($search == '')
-			return;
+		return;
 
 		//Opens the index
 		$this->initialize();
@@ -63,12 +61,12 @@ class SearchDAO {
 			$hits = $this->index->find($query);
 		}
 		catch (Zend_Search_Lucene_Exception $ex) {
-			$hits = array();
+			throw new Exception($ex->getMessage());
 		}
-		 
+			
 		foreach ($hits as $hit) {
 			$temp = new ExerciseVO( );
-				
+
 			$temp->id = $hit->idEx;
 			$temp->title = $hit->title;
 			$temp->description = $hit->description;
@@ -84,7 +82,7 @@ class SearchDAO {
 			$temp->avgDifficulty = $hit->avgDifficulty;
 			$temp->score = $hit->score;
 			$temp->idIndex = $hit->id;
-				
+
 			array_push ( $searchResults, $temp );
 		}
 		return $searchResults;
@@ -159,53 +157,67 @@ class SearchDAO {
 
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.fk_user_id, e.duration, u.name, avg(suggested_score) as avgScore, 
-       					avg (suggested_level) as avgLevel
-				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
-       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE (e.status = 'Available')
-				 GROUP BY e.id;";
-		$result = $this->conn->_execute ( $sql );
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
+		               e.duration, u.name as userName, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete as isSubtitled
+				FROM exercise e 
+					 INNER JOIN users u ON e.fk_user_id= u.ID
+	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
+       			WHERE e.status = 'Available'
+				GROUP BY e.id";
+		$result = $this->conn->_select ( $sql );
+		if($result){
+			//Create the index
+			$this->index = Zend_Search_Lucene::create($this->indexPath);
 
-		//Create the index
-		$this->index = Zend_Search_Lucene::create($this->indexPath);
+			//To recognize numerics
+			Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
-		//To recognize numerics
-		Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
-			$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]);
+			foreach ( $result as $line ) {
+				
+				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->id);
+				$line->avgRating = $lineAvgRating;
+				
+				$this->addDoc($line);
+			}
+			$this->index->commit();
+			$this->index->optimize();
 		}
-		$this->index->commit();
-		$this->index->optimize();
 	}
+
 	
+	/**
+	 *	Adds a new document entry (exercise data set) to the search index file
+	 *
+	 */
 	public function addDocumentIndex($idDB){
 
 		//Query for the index
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.duration, u.name, avg(suggested_score) as avgScore, 
-       					avg (suggested_level) as avgLevel
-				 FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
-       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 
-       			 WHERE (e.status = 'Available' and e.id=$idDB)
-				 GROUP BY e.id";
-		$result = $this->conn->_execute ( $sql );
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
+		               e.duration, u.name as userName, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete as isSubtitled
+				FROM exercise e 
+					 INNER JOIN users u ON e.fk_user_id= u.ID
+	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
+       			WHERE e.status = 'Available' AND e.id='%d');
+				GROUP BY e.id";
+		$result = $this->conn->_select ( $sql, $idDB );
 
-		//Opens the index
-		$this->initialize();
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$this->addDoc($row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],
-			$row[7],$row[8],$row[9],$row[10],$row[11],$row[12]);
+		//We expect only one record to match this query
+		if($result && count($result) == 1){
+			//Loads the lucene indexation file
+			$this->initialize();
+			
+			$lineAvgScore = $this->getExerciseAvgBayesianScore($result->id);
+			$result->avgRating = $lineAvgRating;
+			
+			$this->addDoc($result);
+			$this->index->commit();
+			$this->index->optimize();
 		}
-		$this->index->commit();
-		$this->index->optimize();
+
 	}
 
 	public function deleteDocumentIndex($idDB){
@@ -223,11 +235,14 @@ class SearchDAO {
 		$this->index->optimize();
 	}
 
-	private function addDoc($idEx,$title,$description,$language,$tags,$source,$name,
-	$thumbnailUri,$addingDate,$duration,$userName,
-	$avgRating,$avgDifficulty){
+	private function addDoc($documentData){
+		
 		$doc = new Zend_Search_Lucene_Document();
-			
+		foreach($documentData as $key => $value){
+			//TODO add a filter to ignore the properties to ignore and type casting to add with the appropriate type setting
+			$doc->addField(Zend_Search_Lucene_Field::Text($key, $value, 'utf-8'));
+		}
+		/*		
 		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('title', $title, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('description', $description, 'utf-8'));
@@ -241,8 +256,43 @@ class SearchDAO {
 		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('avgRating', $avgRating, 'utf-8'));
 		$doc->addField(Zend_Search_Lucene_Field::Text('avgDifficulty', $avgDifficulty, 'utf-8'));
+		*/
 		$this->index->addDocument($doc);
 	}
+	
+	
+	/**
+	 * The average score is not accurate information in statistical terms, so we use a weighted value
+	 * @param int $exerciseId
+	 */
+	private function getExerciseAvgBayesianScore($exerciseId){
+
+		if(!isset($this->exerciseMinRatingCount)){
+			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
+			$result = $this->conn->_select($sql);
+		}
+		$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
+
+		if(!isset($this->exerciseGlobalAvgRating)){
+			$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
+			$result = $this->conn->_select($sql);
+		}
+		$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
+		
+		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
+				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
+				WHERE (e.id = '%d' ) GROUP BY e.id";
+		if($result = $this->conn->_select($sql,$exerciseId)){
+			$exerciseAvgRating = $result->avgRating;
+			$exerciseRatingCount = $result->ratingCount ? $result->ratingCount : 1;
+			$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
+								   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
+			$result->avgRating = $exerciseBayesianAvg;
+		}
+		return $result;
+	}	
+	
+	
 }
 
 ?>

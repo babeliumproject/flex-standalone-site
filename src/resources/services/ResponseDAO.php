@@ -13,6 +13,7 @@ class ResponseDAO {
 	private $conn;
 	private $filePath;
 	private $imagePath;
+	private $posterPath;
 	private $red5Path;
 
 	private $evaluationFolder = '';
@@ -27,6 +28,7 @@ class ResponseDAO {
 			$settings = new Config ( );
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
+			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 			
@@ -38,17 +40,19 @@ class ResponseDAO {
 	}
 
 	public function saveResponse($data){
-		set_time_limit(0);
+	set_time_limit(0);
 		$this->_getResourceDirectories();
-		$imagePath = $data->thumbnailUri;
+		$thumbnail = 'nothumb.png';
 		
 		try{
 			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $data->fileIdentifier . '.flv';
-			$imagePath = $this->imagePath .'/'. $data->fileIdentifier . '.jpg';
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
-			if($mediaData->hasVideo)
-				$this->mediaHelper->takeRandomSnapshot($videoPath, $imagePath);
+
+			if($mediaData->hasVideo){
+				$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
+				$thumbnail = 'default.jpg';
+			}
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
@@ -57,7 +61,7 @@ class ResponseDAO {
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
 		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
 
-		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $data->fileIdentifier . '.jpg', $data->source, $duration, $data->characterName, $data->subtitleId );
+		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId );
 
 	}
 
