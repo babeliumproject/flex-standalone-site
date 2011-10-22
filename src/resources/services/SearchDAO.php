@@ -4,8 +4,6 @@ require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
 
-require_once 'vo/ExerciseVO.php';
-
 require_once 'Zend/Search/Lucene.php';
 
 class SearchDAO {
@@ -15,6 +13,8 @@ class SearchDAO {
 	
 	private $exerciseMinRatingCount;
 	private $exerciseGlobalAvgRating;
+	
+	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
 
 	public function SearchDAO() {
 		try {
@@ -36,11 +36,9 @@ class SearchDAO {
 	}
 
 	public function launchSearch($search) {
-		$searchResults = array();
-
 		//Return empty array if empty query
 		if($search == '')
-		return;
+			return;
 
 		//Opens the index
 		$this->initialize();
@@ -58,34 +56,24 @@ class SearchDAO {
 			
 		//We do the search and send it
 		try {
+			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit 
+			//which has far more properties than those the client needs to know
 			$hits = $this->index->find($query);
+			//Ensure the fields are stored with the exact names you want them to be returned otherways this won't work
+			$fields = $this->index->getFieldNames();
+			$searchResults = array();
+			foreach($hits as $hit){
+				$searchResult = new stdClass();
+				foreach($fields as $field){
+					$searchResult->$field = $hit->$field;
+				}
+				array_push($searchResults,$searchResult);
+			}
+			return $searchResults;
 		}
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());
 		}
-			
-		foreach ($hits as $hit) {
-			$temp = new ExerciseVO( );
-
-			$temp->id = $hit->idEx;
-			$temp->title = $hit->title;
-			$temp->description = $hit->description;
-			$temp->language = $hit->language;
-			$temp->tags = $hit->tags;
-			$temp->source = $hit->source;
-			$temp->name = $hit->name;
-			$temp->thumbnailUri = $hit->thumbnailUri;
-			$temp->addingDate = $hit->addingDate;
-			$temp->duration = $hit->duration;
-			$temp->userName = $hit->userName;
-			$temp->avgRating = $hit->avgRating;
-			$temp->avgDifficulty = $hit->avgDifficulty;
-			$temp->score = $hit->score;
-			$temp->idIndex = $hit->id;
-
-			array_push ( $searchResults, $temp );
-		}
-		return $searchResults;
 	}
 
 	public function fuzzySearch($search){
@@ -123,7 +111,6 @@ class SearchDAO {
 
 	public function reCreateIndex(){
 		$this->deleteIndexRecursive($this->indexPath);
-		//rmdir($this->indexPath);
 		$this->createIndex();
 	}
 
@@ -157,8 +144,8 @@ class SearchDAO {
 
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name as userName, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
+		               e.duration, u.name as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -176,10 +163,10 @@ class SearchDAO {
 
 			foreach ( $result as $line ) {
 				
-				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->id);
-				$line->avgRating = $lineAvgRating;
+				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->exerciseId);
+				$line->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
 				
-				$this->addDoc($line);
+				$this->addDoc($line,$this->unindexedFields);
 			}
 			$this->index->commit();
 			$this->index->optimize();
@@ -194,8 +181,8 @@ class SearchDAO {
 	public function addDocumentIndex($idDB){
 
 		//Query for the index
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name as userName, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
+		               e.duration, u.name as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -211,9 +198,9 @@ class SearchDAO {
 			$this->initialize();
 			
 			$lineAvgScore = $this->getExerciseAvgBayesianScore($result->id);
-			$result->avgRating = $lineAvgRating;
+			$result->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
 			
-			$this->addDoc($result);
+			$this->addDoc($result,$this->unindexedFields);
 			$this->index->commit();
 			$this->index->optimize();
 		}
@@ -235,28 +222,16 @@ class SearchDAO {
 		$this->index->optimize();
 	}
 
-	private function addDoc($documentData){
+	private function addDoc($documentData, $unindexedFields){
 		
 		$doc = new Zend_Search_Lucene_Document();
 		foreach($documentData as $key => $value){
-			//TODO add a filter to ignore the properties to ignore and type casting to add with the appropriate type setting
-			$doc->addField(Zend_Search_Lucene_Field::Text($key, $value, 'utf-8'));
+			if(in_array($key,$unindexedFields)){
+				$doc->addField(Zend_Search_Lucene_Field::UnIndexed($key, $value, 'utf-8'));
+			} else {
+				$doc->addField(Zend_Search_Lucene_Field::Text($key, $value, 'utf-8'));
+			}
 		}
-		/*		
-		$doc->addField(Zend_Search_Lucene_Field::Text('idEx', $idEx, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('title', $title, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('description', $description, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('language', $language, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('tags', $tags, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('source', $source, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('name', $name, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('thumbnailUri', $thumbnailUri, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('addingDate', $addingDate, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('duration', $duration, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('userName', $userName, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('avgRating', $avgRating, 'utf-8'));
-		$doc->addField(Zend_Search_Lucene_Field::Text('avgDifficulty', $avgDifficulty, 'utf-8'));
-		*/
 		$this->index->addDocument($doc);
 	}
 	
@@ -265,29 +240,28 @@ class SearchDAO {
 	 * The average score is not accurate information in statistical terms, so we use a weighted value
 	 * @param int $exerciseId
 	 */
-	private function getExerciseAvgBayesianScore($exerciseId){
-
+	public function getExerciseAvgBayesianScore($exerciseId){
 		if(!isset($this->exerciseMinRatingCount)){
 			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
 			$result = $this->conn->_select($sql);
+			$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
 		}
-		$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
-
+		
 		if(!isset($this->exerciseGlobalAvgRating)){
 			$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
 			$result = $this->conn->_select($sql);
+			$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
 		}
-		$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
 		
 		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
 				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
 				WHERE (e.id = '%d' ) GROUP BY e.id";
 		if($result = $this->conn->_select($sql,$exerciseId)){
-			$exerciseAvgRating = $result->avgRating;
-			$exerciseRatingCount = $result->ratingCount ? $result->ratingCount : 1;
+			$exerciseAvgRating = $result->avgScore ? $result->avgScore : 0;
+			$exerciseRatingCount = $result->scoreCount ? $result->scoreCount : 1;
 			$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
 								   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
-			$result->avgRating = $exerciseBayesianAvg;
+			$result->avgScore = $exerciseBayesianAvg;
 		}
 		return $result;
 	}	
