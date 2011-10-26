@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:tc="modules.search.*"
-		 width="100%">
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:tc="modules.search.*"
+		  width="100%"
+		  xmlns:skins="skins.*">
 
 	<fx:Declarations>
 		<s:ArrayCollection id="sortFields1">
@@ -26,18 +27,20 @@
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-			
+
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.main.VideoPaginator;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
-			import mx.controls.Button;
-			
+			import mx.controls.Alert;
+
+			import spark.components.Button;
+
 			import vo.ExerciseVO;
 
 			[Bindable]
@@ -95,6 +98,14 @@
 				refreshDataProvider();
 			}
 
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				DataModel.getInstance().currentPage=int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+
 			public function refreshDataProvider():void
 			{
 				var current:int=DataModel.getInstance().currentPage - 1;
@@ -104,7 +115,7 @@
 				searchListDataGroup.dataProvider=dataTemp;
 			}
 
-			
+
 			public function closeHandler(event:Event):void
 			{
 				var dataSortField:SortField=new SortField();
@@ -149,8 +160,9 @@
 					DataModel.getInstance().languageChanged=false;
 				}
 			}
-			
-			public function changeHandler(event:Event):void{
+
+			public function changeHandler(event:Event):void
+			{
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
 				if (obj.isSubtitled)
 				{
@@ -160,16 +172,8 @@
 				{
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
 				}
-				List(event.target).selectedItem = null;
+				List(event.target).selectedItem=null;
 				BabeliaBrowserManager.getInstance().parseURL(null);
-			}
-
-			private function navigateToPage(event:MouseEvent):void
-			{
-				//Go to the page
-				DataModel.getInstance().currentPage=int((event.target as Button).id);
-				//Refresh the pagination controls
-				createPagination();
 			}
 		]]>
 	</fx:Script>
@@ -179,24 +183,76 @@
 	<fx:Binding source="{DataModel.getInstance().languageChanged}"
 				destination="this.onLanguage"/>
 
-	<mx:ApplicationControlBar>
-		<s:HGroup>
-			<s:Label id="numResul"
-					  text="{resourceManager.getString('myResources','SEARCH_RESULTSFOUND')} {dataProvider.length}"/>
-			<s:Label id="labelSort"
-					  text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
-					  enabled="false"/>
-			<mx:ComboBox id="sort"
-						 close="closeHandler(event)"
-						 editable="false"
-						 enabled="false"
-						 dataProvider="{sortFields1}">
 
-			</mx:ComboBox>
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label text="{resourceManager.getString('myResources','LABEL_SEARCH') ? resourceManager.getString('myResources','LABEL_SEARCH') : 'Search' }"
+				 paddingLeft="16"
+				 paddingRight="16"
+				 styleName="sectionInfoTitleLabel"/>
+		<s:Label text="{resourceManager.getString('myResources','SEARCH_SECTION_DESCRIPTION') ? resourceManager.getString('myResources','SEARCH_SECTION_DESCRIPTION') : 'Search section description' }"
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+
+	<s:VGroup id="searchResultInfo"
+			  width="100%"
+			  horizontalAlign="left"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingTop="16">
+		<s:VGroup width="100%">
+			<s:Label id="resultsOf"
+					 styleName="sectionTitleLabel"
+					 text="{resourceManager.getString('myResources','SEARCH_RESULTS_FOR') ? resourceManager.getString('myResources','SEARCH_RESULTS_FOR') +' '+DataModel.getInstance().searchField : 'Search results for '+DataModel.getInstance().searchField}"/>
+			<s:Line width="{resultsOf.width}">
+				<s:stroke>
+					<mx:SolidColorStroke weight="3"
+										 color="{resultsOf.getStyle('color')}"/>
+				</s:stroke>
+			</s:Line>
+		</s:VGroup>
+
+		<s:HGroup width="100%"
+				  paddingTop="16"
+				  verticalAlign="middle">
+			<s:Label id="numResul"
+					 text="{resourceManager.getString('myResources','SEARCH_RESULTSFOUND')+': '+ dataProvider.length}"/>
+			<s:HGroup width="100%"
+					  horizontalAlign="right"
+					  verticalAlign="middle">
+				<s:Label id="labelSort"
+						 text="{resourceManager.getString('myResources','SEARCH_ORDERBY')}"
+						 enabled="false"/>
+				<mx:ComboBox id="sort"
+							 close="closeHandler(event)"
+							 editable="false"
+							 enabled="false"
+							 dataProvider="{sortFields1}">
+				</mx:ComboBox>
+			</s:HGroup>
 		</s:HGroup>
-	</mx:ApplicationControlBar>
-	<s:VGroup width="100%">
-		
+		<s:Line width="100%"
+				alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="2"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+	</s:VGroup>
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingTop="16">
+
 		<s:List id="searchListDataGroup"
 				width="100%"
 				minHeight="0"
@@ -212,7 +268,7 @@
 							  columnWidth="500"/>
 			</s:layout>
 		</s:List>
-		
+
 		<!--
 		<mx:DataGrid id="searchListTable"
 					 width="100%"
@@ -239,8 +295,9 @@
 		-->
 
 		<s:HGroup id="paginationBox"
-				 width="100%"
-				 horizontalAlign="center"
-				 gap="2"/>
+				  horizontalAlign="center"
+				  verticalAlign="middle"
+				  width="100%"
+				  height="100%"/>
 	</s:VGroup>
 </s:VGroup>

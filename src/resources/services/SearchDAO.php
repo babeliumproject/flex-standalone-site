@@ -63,9 +63,13 @@ class SearchDAO {
 			$fields = $this->index->getFieldNames();
 			$searchResults = array();
 			foreach($hits as $hit){
-				$searchResult = new stdClass();
+				$searchResult = new ExerciseVO();
 				foreach($fields as $field){
-					$searchResult->$field = $hit->$field;
+					if($field == "exerciseId"){
+						$searchResult->id = $hit->$field;
+					} else {
+						$searchResult->$field = $hit->$field;
+					}
 				}
 				array_push($searchResults,$searchResult);
 			}
@@ -81,13 +85,19 @@ class SearchDAO {
 		$auxSearch=$search;
 		$finalSearch=$search;
 		$count =0;
-		$array_substitution=array("+","-", "&","|","!", "(",")", "{","}", "[","]", "^","~", "*","?",":","\\","/","\"", "or","and","not");
-
-		$auxSearch=str_replace($array_substitution, ',', $auxSearch, $count);
+		//$array_substitution=array("+","-","_","&","|","!", "(",")", "{","}", "[","]", "^","~", "*","?",":","\\","/","\"", "or","and","not");
+		$array_substitution=array("+","-","_","&","|","!", "(",")", "{","}", "[","]", "^","~",":","\\","/","\"", "or","and","not");
+		
+		$auxSearch=trim(str_replace($array_substitution, ' ', $auxSearch, $count));
+		$auxSearch = preg_replace("/\s{2,}/"," ",$auxSearch);
+		$auxSearch = preg_replace("/(\w+) (\W)/","$1$2",$auxSearch);
 		if ($count==0){
 			$finalSearch=str_replace(' ', '~ ', $search);
 			$finalSearch=$finalSearch . "~";
+		} else {
+			$finalSearch = $auxSearch;
 		}
+		//error_log("replace: " . $auxSearch."\nreplaceCount:".$count."\nfinalSearch: ".$finalSearch."\n",3,"/tmp/search.log");
 		return $finalSearch;
 	}
 
