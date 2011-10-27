@@ -10,27 +10,27 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
 			import events.RegisterUserEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
 			import model.LocalesAndFlags;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import spark.components.Group;
-
+			
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-
+			
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
 
@@ -43,7 +43,7 @@
 			private var knownLanguagesArray:ArrayCollection=new ArrayCollection();
 			private var interestLanguagesArray:ArrayCollection=new ArrayCollection();
 
-			private var motherTongue:LanguageComboBox;
+			private var motherTongue:MotherLanguageBox;
 			private var knownLanguage:LanguageKnowledgeBox;
 			private var interestLanguage:LanguageKnowledgeBox;
 
@@ -60,180 +60,187 @@
 
 			public function addInitialComboboxes():void
 			{
-				motherTongue=new LanguageComboBox();
-				motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, languageComboBoxCreated);
+				motherTongue=new MotherLanguageBox();
+				motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 				motherLanguagesBox.addElement(motherTongue);
 				motherLanguagesArray.addItem(motherTongue);
-
+				
 				knownLanguage=new LanguageKnowledgeBox();
 				knownLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedKnown);
 				knownLanguagesBox.addElement(knownLanguage);
 				knownLanguagesArray.addItem(knownLanguage);
-
+				
 				interestLanguage=new LanguageKnowledgeBox();
 				interestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
 				interestLanguagesBox.addElement(interestLanguage);
 				interestLanguagesArray.addItem(interestLanguage);
 			}
-
-			private function languageComboBoxCreated(event:FlexEvent):void
+			
+			private function motherLanguageBoxCreated(event:FlexEvent):void
 			{
-				(event.currentTarget as LanguageComboBox).dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageComboBox).selectedIndex=-1;
-				(event.currentTarget as LanguageComboBox).name="motherLangs";
-				(event.currentTarget as LanguageComboBox).addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				(event.currentTarget as MotherLanguageBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+				(event.currentTarget as MotherLanguageBox).languageCombo.name="motherLangs";
+				
+				if ((event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue)
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedItem=(event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue;
+				else
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedIndex=-1;
+				
+				(event.currentTarget as MotherLanguageBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
-
+			
 			private function languageKnowledgeBoxCreatedKnown(event:FlexEvent):void
 			{
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="knowLangs";
+				
+				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedItem=(event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue;
+					(event.currentTarget as LanguageKnowledgeBox).levelCombo.selectedIndex=(event.currentTarget as LanguageKnowledgeBox).levelCombo.prefixedLevel;
+				}
+				else
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				}
+				
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
-
+			
 			private function languageKnowledgeBoxCreatedInterest(event:FlexEvent):void
 			{
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
-				(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="interestLangs";
+				
+				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedItem=(event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue;
+					(event.currentTarget as LanguageKnowledgeBox).levelCombo.selectedIndex=(event.currentTarget as LanguageKnowledgeBox).levelCombo.prefixedLevel;
+				}
+				else
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				}
+				
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			}
-
+			
 			public function languageComboBoxChangeHandler(event:ListEvent):void
 			{
 				var dispatchingItem:IconComboBox=IconComboBox(event.target);
-
+				
 				if (dispatchingItem.selectedIndex != -1)
 				{
 					switch (dispatchingItem.name)
 					{
 						case "knownLangs":
 							for each (var olcb:LanguageKnowledgeBox in knownLanguagesArray)
+						{
+							if (olcb.languageCombo.selectedIndex != -1 && olcb.languageCombo != dispatchingItem && olcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 							{
-								if (olcb.languageCombo.selectedIndex != -1 && olcb.languageCombo != dispatchingItem && olcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
-								{
-									olcb.languageCombo.selectedIndex=-1;
-								}
+								olcb.languageCombo.selectedIndex=-1;
 							}
+						}
 							break;
-
+						
 						case "interestLangs":
 							for each (var ilcb:LanguageKnowledgeBox in interestLanguagesArray)
+						{
+							if (ilcb.languageCombo.selectedIndex != -1 && ilcb.languageCombo != dispatchingItem && ilcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 							{
-								if (ilcb.languageCombo.selectedIndex != -1 && ilcb.languageCombo != dispatchingItem && ilcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
-								{
-									ilcb.languageCombo.selectedIndex=-1;
-								}
+								ilcb.languageCombo.selectedIndex=-1;
 							}
+						}
 							break;
-
+						
 						case "motherLangs":
-
+							
 							for each (var olcbm:LanguageKnowledgeBox in knownLanguagesArray)
+						{
+							if (olcbm.languageCombo.selectedIndex != -1 && olcbm.languageCombo != dispatchingItem && olcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 							{
-								if (olcbm.languageCombo.selectedIndex != -1 && olcbm.languageCombo != dispatchingItem && olcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
-								{
-									olcbm.languageCombo.selectedIndex=-1;
-								}
+								olcbm.languageCombo.selectedIndex=-1;
 							}
+						}
 							for each (var ilcbm:LanguageKnowledgeBox in interestLanguagesArray)
+						{
+							if (ilcbm.languageCombo.selectedIndex != -1 && ilcbm.languageCombo != dispatchingItem && ilcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 							{
-								if (ilcbm.languageCombo.selectedIndex != -1 && ilcbm.languageCombo != dispatchingItem && ilcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
-								{
-									ilcbm.languageCombo.selectedIndex=-1;
-								}
+								ilcbm.languageCombo.selectedIndex=-1;
 							}
+						}
 							break;
 					}
-					for each (var mlcb:LanguageComboBox in motherLanguagesArray)
+					for each (var mlcb:MotherLanguageBox in motherLanguagesArray)
 					{
-						if (mlcb.selectedIndex != -1 && mlcb != dispatchingItem && mlcb.selectedItem.code == dispatchingItem.selectedItem.code)
+						if (mlcb.languageCombo.selectedIndex != -1 && mlcb.languageCombo != dispatchingItem && mlcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
 						{
-							mlcb.selectedIndex=-1;
+							mlcb.languageCombo.selectedIndex=-1;
 						}
 					}
 				}
 			}
-
-			private function processNewUser():void
-			{
-
-				var mLangCollection:ArrayCollection=new ArrayCollection();
-				var kLangCollection:ArrayCollection=new ArrayCollection();
-				var iLangCollection:ArrayCollection=new ArrayCollection();
-
-				for each (var mLang:LanguageComboBox in motherLanguagesArray)
-				{
-					if (mLang.selectedIndex != -1)
-						mLangCollection.addItem(new UserLanguageVO(0, mLang.selectedItem.code, 7, DataModel.PURPOSE_EVALUATE, 0));
-				}
-				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
-				{
-					if (kLang.languageCombo.selectedIndex != -1)
-						kLangCollection.addItem(new UserLanguageVO(0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_EVALUATE, 0));
-				}
-				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
-				{
-					if (iLang.languageCombo.selectedIndex != -1)
-						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
-				}
-
-
-				var mLangArray:Array=mLangCollection.toArray();
-				var kLangArray:Array=kLangCollection.toArray();
-				var iLangArray:Array=iLangCollection.toArray();
-				if (mLangArray.length > 0 && iLangArray.length > 0)
-				{
-					var languages:Array=mLangArray.concat(kLangArray, iLangArray);
-
-
-					if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
-					{
-						var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, '', languages);
-						new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
-					}
-					else
-					{
-						CustomAlert.error(resourceManager.getString('myResources','WRONG_FIELDS_IN_FORM'));
-					}
-				}
-				else
-				{
-					CustomAlert.error(resourceManager.getString('myResources','MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
-				}
-			}
-
+			
 			protected function addAnotherKnownLang_clickHandler(event:MouseEvent):void
 			{
 				if (knownLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
 					var otherKnownLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherKnownLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 					otherKnownLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedKnown);
 					knownLanguagesBox.addElement(otherKnownLanguage);
 					knownLanguagesArray.addItem(otherKnownLanguage);
 				}
 			}
-
+			
 			protected function addAnotherInterestLang_clickHandler(event:MouseEvent):void
 			{
 				if (interestLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
 					var otherInterestLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherInterestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
 					otherInterestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
 					interestLanguagesBox.addElement(otherInterestLanguage);
 					interestLanguagesArray.addItem(otherInterestLanguage);
 				}
 			}
-
+			
 			protected function addAnotherMotherLang_clickHandler(event:MouseEvent):void
 			{
 				if (motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
 				{
-					var otherMotherLanguage:LanguageComboBox=new LanguageComboBox();
-					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageComboBoxCreated);
+					var otherMotherLanguage:MotherLanguageBox=new MotherLanguageBox();
+					otherMotherLanguage.deleteButtonClickHandler=deleteMotherLanguageBox;
+					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 					motherLanguagesBox.addElement(otherMotherLanguage);
 					motherLanguagesArray.addItem(otherMotherLanguage);
+				}
+			}
+			
+			private function deleteLanguageKnowledgeComboBox(event:MouseEvent):void
+			{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as LanguageKnowledgeBox));
+				var index:uint=0;
+				if ((index=interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				{
+					interestLanguagesArray.removeItemAt(index);
+				}
+				else if ((index=knownLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				{
+					knownLanguagesArray.removeItemAt(index);
+				}
+			}
+			
+			private function deleteMotherLanguageBox(event:MouseEvent):void
+			{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as MotherLanguageBox));
+				var index:uint=0;
+				if ((index=motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1)
+				{
+					motherLanguagesArray.removeItemAt(index);
 				}
 			}
 
@@ -277,6 +284,54 @@
 			protected function set onTabChange(value:Boolean):void
 			{
 				resetToInitialStatus();
+			}
+			
+			private function processNewUser():void
+			{
+				
+				var mLangCollection:ArrayCollection=new ArrayCollection();
+				var kLangCollection:ArrayCollection=new ArrayCollection();
+				var iLangCollection:ArrayCollection=new ArrayCollection();
+				
+				for each (var mLang:MotherLanguageBox in motherLanguagesArray)
+				{
+					if (mLang.languageCombo.selectedIndex != -1)
+						mLangCollection.addItem(new UserLanguageVO(0, mLang.languageCombo.selectedItem.code, 7, DataModel.PURPOSE_EVALUATE, 0));
+				}
+				for each (var kLang:LanguageKnowledgeBox in knownLanguagesArray)
+				{
+					if (kLang.languageCombo.selectedIndex != -1)
+						kLangCollection.addItem(new UserLanguageVO(0, kLang.languageCombo.selectedItem.code, kLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_EVALUATE, 0));
+				}
+				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
+				{
+					if (iLang.languageCombo.selectedIndex != -1)
+						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
+				}
+				
+				
+				var mLangArray:Array=mLangCollection.toArray();
+				var kLangArray:Array=kLangCollection.toArray();
+				var iLangArray:Array=iLangCollection.toArray();
+				if (mLangArray.length > 0 && iLangArray.length > 0)
+				{
+					var languages:Array=mLangArray.concat(kLangArray, iLangArray);
+					
+					
+					if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
+					{
+						var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, '', languages);
+						new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
+					}
+					else
+					{
+						CustomAlert.error(resourceManager.getString('myResources','WRONG_FIELDS_IN_FORM'));
+					}
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources','MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
+				}
 			}
 
 

@@ -109,6 +109,9 @@ class Mailer
 	public function makeTemplate($templateFile, $templateArgs, $language)
 	{
 		$this->_tplFile = $this->_tplDir . $language . "/" . $templateFile;
+		if( !file_exists($this->_tplFile) || !is_file($this->_tplFile) || !is_readable($this->_tplFile) ){
+			$this->_tplFile = $this->_tplDir . "en_US/" . $templateFile;
+		}
 
 		$this->_keys = array();
 		$this->_values = array();
