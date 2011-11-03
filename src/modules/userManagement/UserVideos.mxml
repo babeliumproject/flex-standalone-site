@@ -33,6 +33,8 @@
 			private var dataModel:DataModel=DataModel.getInstance();
 
 			private var currentPageUserVideos:uint=1;
+			
+			private var _creationComplete:Boolean = false;
 
 			[Bindable]
 			private var userVideoList:ArrayCollection;
@@ -42,6 +44,7 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				retrieveVideos();
+				_creationComplete = true;
 			}
 
 			private function retrieveVideos():void
@@ -119,6 +122,9 @@
 				currentPageUserVideos=1;
 				itemsToDelete=new Array();
 				editCancelHandler(null);
+				if(_creationComplete){
+					retrieveVideos();
+				}
 			}
 			
 			public function videoEditRequested(data:ExerciseVO):void{
