@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:ComboBox xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			 xmlns:s="library://ns.adobe.com/flex/spark"
+			 xmlns:mx="library://ns.adobe.com/flex/mx"
 			 dataChange="setSelected()"
 			 change="onSelectionChange(event)"
 			 itemRenderer="modules.subtitles.GridComboBoxItemRenderer">
-	
+
 	<fx:Script>
 		<![CDATA[
 			import mx.controls.dataGridClasses.DataGridListData;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
 			
 			import view.common.CustomAlert;
 			
@@ -20,7 +21,7 @@
 			private var _ownerData:Object;
 			private var _lookupField:String="value";
 			private var _valueField:String="charName";
-			
+
 			private var _actionField:String="action";
 
 			private var _actionRemoveItem:String=RoleComboDataVO.ACTION_DELETE;
@@ -160,7 +161,7 @@
 					else if (selectedItem[_actionField] == _actionDoNothingItem)
 					{
 						//Do nothing
-						CustomAlert.info(resourceManager.getString('myResources','MESSAGE_SELECT_ROL_TO_DELETE'));
+						CustomAlert.info(resourceManager.getString('myResources', 'MESSAGE_SELECT_ROL_TO_DELETE'));
 					}
 				}
 			}
@@ -177,7 +178,7 @@
 			{
 
 				newRolePopUp=NewRolePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, NewRolePopUp, true));
-				PopUpManager.centerPopUp(newRolePopUp);	
+				PopUpManager.centerPopUp(newRolePopUp);
 
 				newRolePopUp.addEventListener("close", cancelInsert);
 				newRolePopUp["cancelButton"].addEventListener("click", cancelInsert);
@@ -185,47 +186,60 @@
 
 				//We add a key listener so that we can push enter to processLogin
 				newRolePopUp.addEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
-				
+
 				newRolePopUp.newrole.setFocus();
+			}
+
+			private function trim(str:String):String
+			{
+				return str.replace(/^\s*(.*?)\s*$/g, "$1");
 			}
 
 			private function insertNewRole(event:Event):void
 			{
 				var maxRoleId:Number=0;
 				var roleExists:Boolean=false;
-				var newRoleName:String=newRolePopUp.newrole.text;
-				for each (var dp:Object in dataProvider)
+				var newRoleName:String=trim(newRolePopUp.newrole.text);
+				if (newRoleName.length < 1)
 				{
-					if (dp[_valueField].toLowerCase() == newRoleName.toLowerCase())
-					{
-						roleExists=true;
-						newRolePopUp.errorInfo.text=resourceManager.getString('myResources','MESSAGE_ROLE_ALREADY_EXISTS');
-					}
-					if (dp[_lookupField] > maxRoleId)
-						maxRoleId=dp[_lookupField];
+					newRolePopUp.errorInfo.text= StringUtil.substitute(resourceManager.getString('myResources', 'SHORT_NEWROLE'), 1);
 				}
-				if (!roleExists)
+				else
 				{
-					//The role doesn't exist, we close the popup and begin the new role insertion
-					PopUpManager.removePopUp(newRolePopUp);
-					var newRoleSelectEntry:RoleComboDataVO = new RoleComboDataVO(maxRoleId +1, newRoleName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
-					var newRoleDeleteEntry:RoleComboDataVO = new RoleComboDataVO(maxRoleId +1, newRoleName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
-					
-					for each (var dpi:Object in dataProvider)
+
+					for each (var dp:Object in dataProvider)
 					{
-						if (dpi[_actionField] == _actionDoNothingItem)
+						if (dp[_valueField].toLowerCase() == newRoleName.toLowerCase())
 						{
-							dataProvider.addItemAt(newRoleSelectEntry, dataProvider.getItemIndex(dpi));
-							break;
+							roleExists=true;
+							newRolePopUp.errorInfo.text=resourceManager.getString('myResources', 'MESSAGE_ROLE_ALREADY_EXISTS');
 						}
+						if (dp[_lookupField] > maxRoleId)
+							maxRoleId=dp[_lookupField];
 					}
-					dataProvider.addItem(newRoleDeleteEntry);
+					if (!roleExists)
+					{
+						//The role doesn't exist, we close the popup and begin the new role insertion
+						PopUpManager.removePopUp(newRolePopUp);
+						var newRoleSelectEntry:RoleComboDataVO=new RoleComboDataVO(maxRoleId + 1, newRoleName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+						var newRoleDeleteEntry:RoleComboDataVO=new RoleComboDataVO(maxRoleId + 1, newRoleName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 
-					//Now we select the new role as the current item
-					var col:DataGridListData=DataGridListData(listData);
-					_ownerData[col.dataField]=newRoleSelectEntry[_lookupField];
-					selectedItemKey=newRoleSelectEntry[_lookupField];
+						for each (var dpi:Object in dataProvider)
+						{
+							if (dpi[_actionField] == _actionDoNothingItem)
+							{
+								dataProvider.addItemAt(newRoleSelectEntry, dataProvider.getItemIndex(dpi));
+								break;
+							}
+						}
+						dataProvider.addItem(newRoleDeleteEntry);
 
+						//Now we select the new role as the current item
+						var col:DataGridListData=DataGridListData(listData);
+						_ownerData[col.dataField]=newRoleSelectEntry[_lookupField];
+						selectedItemKey=newRoleSelectEntry[_lookupField];
+
+					}
 				}
 
 			}
