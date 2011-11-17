@@ -302,6 +302,17 @@ package model
 		private function initialize():void{
 			localesAndFlags = new LocalesAndFlags();
 		}
+		
+		static public function juggleTypes(target:*):*{
+			var change:* = target;
+			for( var i:* in change){
+				if(change[i] is Object){
+					change[i] = DataModel.juggleTypes(change[i]);
+				}
+				change[i] = isNaN(Number(change[i])) ? change[i] : Number(change[i]);
+			}
+			return change;
+		}
 
 	}
 }
