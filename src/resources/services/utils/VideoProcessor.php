@@ -259,7 +259,7 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoAspectRatio(){
 		if(!$this->mediaContainer->hasVideo || !$this->mediaContainer->videoHeight || !$this->mediaContainer->videoWidth)
-		throw new Exception("Operation not allowed on non-video files");
+			throw new Exception("Operation not allowed on non-video files");
 			
 		if($this->mediaContainer->videoWidth > $this->mediaContainer->videoHeight){
 			$originalRatio = $this->mediaContainer->videoWidth / $this->mediaContainer->videoHeight;
@@ -288,10 +288,10 @@ class VideoProcessor{
 		$cleanImagePath = escapeshellcmd($outputImagePath);
 
 		if(!is_readable($cleanPath))
-		throw new Exception("You don't have enough permissions to read from the input");
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanPath);
 		if(!is_writable(dirname($cleanImagePath)))
-		throw new Exception("You don't have enough permissions to write to the output");
-		if($this->mediaContainer->hash != md5_file($cleanPath)){
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanImagePath);
+		if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanPath)) ){
 			try {
 				//This file hasn't been scanned yet
 				$this->retrieveMediaInfo($cleanPath);
@@ -323,10 +323,10 @@ class VideoProcessor{
 		$cleanPosterPath = realpath(escapeshellcmd($posterPath));
 
 		if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
-		throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file");
+			throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath);
 		if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
-		throw new Exception("You don't have enough permissions to write to the output");
-		if($this->mediaContainer->hash != md5_file($cleanVideoPath)){
+			throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath." | ".$cleanPosterPath);
+		if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanVideoPath)) ){
 			try {
 				//This file hasn't been scanned yet
 				$this->retrieveMediaInfo($cleanVideoPath);
@@ -395,8 +395,6 @@ class VideoProcessor{
 				throw new Exception ("Couldn't create link for the poster");
 			}
 		}
-
-
 		return $resultsnap;
 	}
 
@@ -417,9 +415,9 @@ class VideoProcessor{
 		$cleanOutputPath = escapeshellcmd($outputFilepath);
 			
 		if(!is_readable($cleanInputPath))
-		throw new Exception("You don't have enough permissions to read from the input");
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanInputPath);
 		if(!is_writable(dirname($cleanOutputPath)))
-		throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath);
 
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {

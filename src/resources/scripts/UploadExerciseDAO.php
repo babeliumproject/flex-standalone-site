@@ -482,7 +482,7 @@ class UploadExerciseDAO{
 	
 	public function takeMissingSnapshots(){
 		$mediaPaths = array();
-		$sql = "SELECT name FROM exercise WHERE true";
+		$sql = "SELECT name FROM exercise WHERE name IS NOT NULL AND name<>''";
 		$result = $this->conn->_execute($sql);
 		while ( $row = $this->conn->_nextRow ( $result ) ) {
 			$tmp = $this->red5Path . '/' . $this->exerciseFolder . '/'. $row[0] . '.flv';
