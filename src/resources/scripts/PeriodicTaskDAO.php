@@ -22,6 +22,7 @@ class PeriodicTaskDAO{
 	private $exerciseFolder = '';
 	private $responseFolder = '';
 	private $evaluationFolder = '';
+	private $configFolder = 'config';
 
 	public function PeriodicTaskDAO(){
 		$settings = new Config ( );
@@ -32,12 +33,10 @@ class PeriodicTaskDAO{
 	}
 
 	public function deleteAllUnreferenced(){
-		//$this->_getResourceDirectories();
 		$this->_deleteUnreferencedExercises();
-		if($this->exerciseFolder != $this->responseFolder)
 		$this->_deleteUnreferencedResponses();
-		if($this->exerciseFolder != $this->evaluationFolder)
 		$this->_deleteUnreferencedEvaluations();
+		$this->_deleteConfigs();
 	}
 
 	public function deleteInactiveUsers($days){
@@ -85,11 +84,11 @@ class PeriodicTaskDAO{
 		$result = $this->conn->_execute($sql);
 
 		$row = $this->conn->_nextRow($result);
-		$this->evaluationFolder = $row ? $row[0] : '';
+		$this->evaluationFolder = $row ? $row[0] : 'evaluations';
 		$row = $this->conn->_nextRow($result);
-		$this->exerciseFolder = $row ? $row[0] : '';
+		$this->exerciseFolder = $row ? $row[0] : 'exercises';
 		$row = $this->conn->_nextRow($result);
-		$this->responseFolder = $row ? $row[0] : '';
+		$this->responseFolder = $row ? $row[0] : 'responses';
 	}
 
 	private function _deleteUnreferencedExercises(){
@@ -97,11 +96,10 @@ class PeriodicTaskDAO{
 			
 		$exercises = $this->_listFiles($sql);
 
-		if($this->exerciseFolder)
-		$exercisesPath = $this->red5Path .'/'.$this->exerciseFolder;
-		else
-		$exercisesPath = $this->red5Path;
-		$this->_deleteFiles($exercisesPath, $exercises);
+		if($this->exerciseFolder && !empty($this->exerciseFolder)){
+			$exercisesPath = $this->red5Path .'/'.$this->exerciseFolder;
+			$this->_deleteFiles($exercisesPath, $exercises);
+		}
 
 	}
 
@@ -110,11 +108,10 @@ class PeriodicTaskDAO{
 
 		$responses = $this->_listFiles($sql);
 
-		if($this->responseFolder)
-		$responsesPath = $this->red5Path .'/'.$this->responseFolder;
-		else
-		$responsesPath = $this->red5Path;
-		$this->_deleteFiles($responsesPath, $responses);
+		if($this->responseFolder && !empty($this->responseFolder)){
+			$responsesPath = $this->red5Path .'/'.$this->responseFolder;
+			$this->_deleteFiles($responsesPath, $responses);
+		}
 
 	}
 
@@ -123,11 +120,19 @@ class PeriodicTaskDAO{
 
 		$evaluations = $this->_listFiles($sql);
 
-		if($this->evaluationFolder)
-		$evaluationsPath = $this->red5Path .'/'.$this->evaluationFolder;
-		else
-		$evaluationsPath = $this->red5Path;
-		$this->_deleteFiles($evaluationsPath, $evaluations);
+		if($this->evaluationFolder && !empty($this->evaluationFolder)){
+			$evaluationsPath = $this->red5Path .'/'.$this->evaluationFolder;
+			$this->_deleteFiles($evaluationsPath, $evaluations);
+		}
+	}
+	
+	private function _deleteConfigs(){
+		if($this->configFolder && !empty($this->configFolder)){
+			$configs = array();
+			$configs[0] = 'default.flv';
+			$configPath = $this->red5Path .'/'.$this->configFolder;
+			$this->_deleteFiles($configPath, $configs);
+		}
 	}
 
 	private function _listFiles($sql){
@@ -149,9 +154,40 @@ class PeriodicTaskDAO{
 				if(!is_dir($entryFullPath)){
 					$entryInfo = pathinfo($entryFullPath);
 					if($entryInfo['extension'] == 'flv' && !in_array($entry, $referencedResources)){
-						//array_push($resourcesToDelete, $exercisesPath.'/'.$entry);
-						@unlink($entryFullPath);
-						@unlink($entryFullPath.'.meta');
+
+						//Check modified time of the entry.
+						//If it was modified 2 hours ago and is not referenced in the database it is very likely the user isn't watching it and won't watch it anymore
+						if( ($mtime = filemtime ($entryFullPath)) && ((time()-$mtime)/3600 > 2) ){
+							
+							//Append the .unreferenced extension to the videos that aren't in the database
+							//if(rename($entryFullPath, $entryFullPath.'.unreferenced')){
+							//	echo "Successfully RENAMED from: ".$entryFullPath." to: ".$entryFullPath.".unreferenced\n";
+							//} else {
+							//	echo "Error while RENAMING from: ".$entryFullPath." to: ".$entryFullPath.".unreferenced\n";
+							//}
+							
+							//Unlink video metadata that's no longer needed
+							if(is_file($entryFullPath.'.meta')){
+								if(unlink($entryFullPath.'.meta')){
+									echo "Successfully DELETED meta file: ".$entryFullPath.".meta\n";
+								} else {
+									echo "Error while DELETING meta file: ".$entryFullPath.".meta\n";
+								}
+							}
+
+							//If possible, move the file to the unrefenced folder
+							$unrefPath = $this->red5Path.'/unreferenced';
+							if(is_dir($unrefPath) && is_readable($unrefPath) && is_writable($unrefPath)){
+								//if(rename($entryFullPath.'.unreferenced',$unrefPath.'/'.$entry.'.unreferenced')){
+								if(rename($entryFullPath,$unrefPath.'/'.$entry)){
+									echo "Successfully MOVED from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
+								} else {
+									echo "Error while MOVING from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
+								}
+							}
+						}
+							
+							
 					}
 				}
 			}
