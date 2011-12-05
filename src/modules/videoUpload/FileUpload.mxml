@@ -46,8 +46,6 @@
 
 			private var red5VideoData:ExerciseVO;
 			private var red5VideoLevel:ExerciseLevelVO;
-			
-			private var userId:int = DataModel.getInstance().loggedUser.id;
 
 
 			private var checkStatusTimer:Timer;
@@ -615,7 +613,6 @@
 				DataModel.getInstance().tempExercise.language=languageSelector.selectedLabel;
 				DataModel.getInstance().tempExercise.source="Youtube";
 				DataModel.getInstance().tempExercise.userId=DataModel.getInstance().loggedUser.id;
-				//DataModel.getInstance().tempExercise.userId = 1;
 				DataModel.getInstance().tempExercise.license="cc-by";
 				DataModel.getInstance().tempExercise.reference="http://www.youtube.com";
 				DataModel.getInstance().tempExercise.status="Unsliced";
