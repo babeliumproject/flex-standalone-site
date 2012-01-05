@@ -181,7 +181,9 @@ class UploadExerciseDAO{
 							echo "          error: Duplicated file\n";
 							//Remove the old files
 							@unlink($outputPath);
-							@unlink($path);
+							//The system tells us that there's another file, that after being transcoded, has the same md5_file() hash this file has
+							//@unlink($path);
+							
 						}
 
 							

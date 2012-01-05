@@ -93,11 +93,11 @@ switch ($_REQUEST ['action']) {
 			} else if (!check_duration($file_path . "/" . $escaped_file_name, $file_max_duration)){
 				$success = "false";
 				array_push ( $errors, "Maximum video duration exceeded. Should be less than ".$file_max_duration." seconds");
-				@unlink($file_path . "/" . $escaped_file_name);
+				//@unlink($file_path . "/" . $escaped_file_name);
 			} else if ($file_size > $file_max_size){
 				$success = "false";
 				array_push ( $errors, "Maximum video size exceeded. Should be less than ".$settings->maxSize."MB");
-				@unlink($file_path . "/" . $escaped_file_name);
+				//@unlink($file_path . "/" . $escaped_file_name);
 			} else if (strpos($file_mime, 'video') === false){
 				$success = "false";
 				array_push ( $errors, "Provided file is not a video file.");
