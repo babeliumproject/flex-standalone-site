@@ -68,7 +68,7 @@
 					videoCommentThumbnail.visible=true;
 					noVideoComment.includeInLayout=false;
 					noVideoComment.visible=false;
-					url=DataModel.getInstance().thumbURL + "/" + temp.evaluationVideoThumbnailUri;
+					url=DataModel.getInstance().thumbURL + "/" + temp.evaluationVideoFileIdentifier + "/" + temp.evaluationVideoThumbnailUri;
 				}
 				else
 				{
