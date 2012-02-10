@@ -201,7 +201,8 @@ class VideoProcessor{
 	 * @param string $ffmpegOutput
 	 */
 	private function retrieveVideoInfo($ffmpegOutput){
-		if(preg_match('/Video: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+, )?([\w\s\/\[\]:]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
+		
+		if(preg_match('/Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
 			$this->mediaContainer->hasVideo = true;
 			$this->mediaContainer->videoCodec = trim($result[2]);
 			$this->mediaContainer->videoColorspace = trim($result[3]);
