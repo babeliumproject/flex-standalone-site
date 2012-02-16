@@ -1,11 +1,38 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
 
 require_once 'Zend/Search/Lucene.php';
 
+/**
+ * This class is used to perform several kinds of searches over the available exercises of the system
+ * 
+ * @author Babelium Team
+ *
+ */
 class SearchDAO {
 	private $conn;
 	private $indexPath;
@@ -56,14 +83,14 @@ class SearchDAO {
 			
 		//We do the search and send it
 		try {
-			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit 
+			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit
 			//which has far more properties than those the client needs to know
 			$hits = $this->index->find($query);
 			//Ensure the fields are stored with the exact names you want them to be returned otherways this won't work
 			$fields = $this->index->getFieldNames();
 			$searchResults = array();
 			foreach($hits as $hit){
-				$searchResult = new ExerciseVO();
+				$searchResult = new stdClass();
 				foreach($fields as $field){
 					if($field == "exerciseId"){
 						$searchResult->id = $hit->$field;
@@ -73,7 +100,7 @@ class SearchDAO {
 				}
 				array_push($searchResults,$searchResult);
 			}
-			return $searchResults;
+			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
 		}
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());
@@ -101,23 +128,6 @@ class SearchDAO {
 		return $finalSearch;
 	}
 
-	public function setTagToDB($search){
-		if ($search!=''){
-			$sql = "SELECT amount FROM tagcloud WHERE tag='%s'";
-			$result = $this->conn->_execute ($sql, $search);
-			if ($row = $this->conn->_nextRow ($result)){
-				//The tag already exists, so updating the quantity
-				$newAmount= 1 + $row[0];
-				$sql = "UPDATE tagcloud SET amount = ". $newAmount . " WHERE tag='%s'";
-				$result = $this->conn->_execute ($sql, $search);
-			}else{
-				//Insert the tag
-				$sql = "INSERT INTO tagcloud (tag, amount) VALUES ('%s', 0)";
-				$result = $this->conn->_execute ($sql, $search);
-			}
-		}
-		return $result;
-	}
 
 	public function reCreateIndex(){
 		$this->deleteIndexRecursive($this->indexPath);
@@ -163,7 +173,7 @@ class SearchDAO {
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
        			WHERE e.status = 'Available'
 				GROUP BY e.id";
-		$result = $this->conn->_select ( $sql );
+		$result = $this->conn->_multipleSelect ( $sql );
 		if($result){
 			//Create the index
 			$this->index = Zend_Search_Lucene::create($this->indexPath);
@@ -182,7 +192,6 @@ class SearchDAO {
 			$this->index->optimize();
 		}
 	}
-
 	
 	/**
 	 *	Adds a new document entry (exercise data set) to the search index file
@@ -200,10 +209,10 @@ class SearchDAO {
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
        			WHERE e.status = 'Available' AND e.id='%d');
 				GROUP BY e.id";
-		$result = $this->conn->_select ( $sql, $idDB );
+		$result = $this->conn->_singleSelect ( $sql, $idDB );
 
 		//We expect only one record to match this query
-		if($result && count($result) == 1){
+		if($result){
 			//Loads the lucene indexation file
 			$this->initialize();
 			
@@ -253,20 +262,20 @@ class SearchDAO {
 	public function getExerciseAvgBayesianScore($exerciseId){
 		if(!isset($this->exerciseMinRatingCount)){
 			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
-			$result = $this->conn->_select($sql);
+			$result = $this->conn->_singleSelect($sql);
 			$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
 		}
 		
 		if(!isset($this->exerciseGlobalAvgRating)){
 			$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
-			$result = $this->conn->_select($sql);
+			$result = $this->conn->_singleSelect($sql);
 			$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
 		}
 		
 		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
 				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
 				WHERE (e.id = '%d' ) GROUP BY e.id";
-		if($result = $this->conn->_select($sql,$exerciseId)){
+		if($result = $this->conn->_singleSelect($sql,$exerciseId)){
 			$exerciseAvgRating = $result->avgScore ? $result->avgScore : 0;
 			$exerciseRatingCount = $result->scoreCount ? $result->scoreCount : 1;
 			$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +

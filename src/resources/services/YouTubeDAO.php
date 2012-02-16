@@ -1,27 +1,53 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'Zend/Loader.php';
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
 
+/**
+ * Class to perform operations that deal with external services data, such as YouTube Data API
+ * 
+ * @author Babelium Team
+ *
+ */
 class YouTubeDAO {
-
+	
 	// Enter your Google account credentials
 	private $email;
 	private $passwd;
 	private $devKey;
-
+	
 	// Video duration size
 	private $maxDuration;
-
+	
 	private $filePath;
 	private $imagePath;
 	private $red5Path;
 	private $exerciseFolder;
 	private $conn;
-	private $mediaHelper;
-
+	
 	function YouTubeDAO() {
 		Zend_Loader::loadClass ( 'Zend_Gdata_YouTube' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_ClientLogin' );
@@ -32,12 +58,12 @@ class YouTubeDAO {
 		Zend_Loader::loadClass ( 'Zend_Gdata_App_AuthException' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_YouTube_VideoEntry' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_App_Entry' );
-
+		
 		try {
 			$verifySession = new SessionHandler();
-
+		
 			$settings = new Config();
-
+		
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
 			$this->red5Path = $settings->red5Path;
@@ -114,15 +140,6 @@ class YouTubeDAO {
 
 		}catch (Exception $e){
 			throw new Exception($e->getMessage());
-		}
-	}
-
-	private function _singleQuery() {
-
-		$result = $this->conn->_execute ( func_get_args() );
-		$row = $this->conn->_nextRow($result);
-		if ($row){
-			return $row[0];
 		}
 	}
 }

@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
@@ -9,6 +30,12 @@ require_once 'vo/MotdVO.php';
 require_once 'EvaluationDAO.php';
 require_once 'ExerciseDAO.php';
 
+/**
+ * Class to perform user's recent activity or homepage activy operations
+ * 
+ * @author Babelium Team
+ *
+ */
 class HomepageDAO{
 
 	private $conn;
@@ -24,52 +51,67 @@ class HomepageDAO{
 
 	}
 
-	public function unsignedMessagesOfTheDay($messageLocale){
+	public function unsignedMessagesOfTheDay($messageLocale = 0){
 
-		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = false ) ";
+		if(!$messageLocale)
+			return false;
+		$sql = "SELECT title, 
+					   message, 
+					   code, 
+					   language, 
+					   resource as resourceUrl
+				FROM motd 
+				WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = false ) ";
 
-		$searchResults = $this->_listMessagesOfTheDayQuery($sql, $messageLocale);
-
-		return $searchResults;
-
-	}
-
-	public function signedMessagesOfTheDay($messageLocale){
-
-		$sql = "SELECT title, message, code, language, resource FROM motd WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = true ) ";
-
-		$searchResults = $this->_listMessagesOfTheDayQuery($sql, $messageLocale);
+		$searchResults = $this->conn->multipleRecast('MotdVO',$this->conn->_multipleSelect($sql, $messageLocale));
 
 		return $searchResults;
 
 	}
 
-	private function _listMessagesOfTheDayQuery($query){
+	public function signedMessagesOfTheDay($messageLocale = 0){
 
-		$searchResults = array();
-		$result = $this->conn->_execute ( func_get_args() );
+		if(!$messageLocale)
+			return false;
+		$sql = "SELECT title, 
+					   message, 
+					   code, 
+					   language, 
+					   resource as resourceUrl 
+				FROM motd 
+				WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = true ) ";
 
-		while ( $row = $this->conn->_nextRow($result)){
-			$temp = new MotdVO();
-			$temp->title = $row[0];
-			$temp->message = $row[1];
-			$temp->code = $row[2];
-			$temp->language = $row[3];
-			$temp->resourceUrl = $row[4];
-
-			array_push ( $searchResults, $temp );
-		}
+		$searchResults = $this->conn->multipleRecast('MotdVO',$this->conn->_multipleSelect($sql, $messageLocale));
 
 		return $searchResults;
-	}
 
+	}
 
 	public function usersLatestReceivedAssessments(){
-		$sql = "SELECT D.file_identifier, D.id, D.rating_amount, D.character_name, D.fk_subtitle_id,
-		               D.adding_date, D.source, D.thumbnail_uri, D.duration,
-		               C.name, A.score_overall, A.score_intonation, A.score_fluency, A.score_rhythm,
-		               A.score_spontaneity, A.comment, A.adding_date,
-		               E.id, E.name, E.duration, E.language, E.thumbnail_uri, E.title, E.source 
+		$sql = "SELECT D.file_identifier as responseFileIdentifier, 
+					   D.id as responseId, 
+					   D.rating_amount as responseRatingAmount, 
+					   D.character_name as responseCharacterName, 
+					   D.fk_subtitle_id as responseSubtitleId,
+		               D.adding_date as responseAddingDate, 
+		               D.source as responseSource, 
+		               D.thumbnail_uri as responseThumbnailUri, 
+		               D.duration as responseDuration,
+		               C.name as responseUserName, 
+		               A.score_overall as overallScore, 
+		               A.score_intonation as intonationScore, 
+		               A.score_fluency as fluencyScore, 
+		               A.score_rhythm as rhythmScore,
+		               A.score_spontaneity as spontaneityScore, 
+		               A.comment, 
+		               A.adding_date as addingDate,
+		               E.id as exerciseId, 
+		               E.name as exerciseName, 
+		               E.duration as exerciseDuration, 
+		               E.language as exerciseLanguage, 
+		               E.thumbnail_uri as exerciseThumbnailUri, 
+		               E.title as exerciseTitle, 
+		               E.source as exerciseSource 
 			    FROM evaluation A 
 			    	 INNER JOIN response D ON A.fk_response_id = D.id
 			    	 INNER JOIN exercise E ON D.fk_exercise_id = E.id
@@ -84,50 +126,11 @@ class HomepageDAO{
 		 * LEFT OUTER JOIN evaluation_video B ON A.id = B.fk_evaluation_id 
 		 */
 
-		$searchResults = $this->_listAssessedResponsesQuery ( $sql, $_SESSION['uid'] );
+		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
 
 		return $this->sliceResultsByNumber($searchResults,5);
 	}
 
-	private function _listAssessedResponsesQuery(){
-		$searchResults = array();
-		$result = $this->conn->_execute(func_get_args());
-
-		while ($row = $this->conn->_nextRow($result)){
-			$temp = new EvaluationVO();
-
-			$temp->responseFileIdentifier = $row[0];
-			$temp->responseId = $row[1];
-			$temp->responseRatingAmount = $row[2];
-			$temp->responseCharacterName = $row[3];
-			$temp->responseSubtitleId = $row[4];
-			$temp->responseAddingDate = $row[5];
-			$temp->responseSource = $row[6];
-			$temp->responseThumbnailUri = $row[7];
-			$temp->responseDuration = $row[8];
-			$temp->responseUserName = $row[9];
-
-			$temp->overallScore = $row[10];
-			$temp->intonationScore = $row[11];
-			$temp->fluencyScore = $row[12];
-			$temp->rhythmScore = $row[13];
-			$temp->spontaneityScore = $row[14];
-			$temp->comment = $row[15];
-			$temp->addingDate = $row[16];
-
-			$temp->exerciseId = $row[17];
-			$temp->exerciseName = $row[18];
-			$temp->exerciseDuration = $row[19];
-			$temp->exerciseLanguage = $row[20];
-			$temp->exerciseThumbnailUri = $row[21];
-			$temp->exerciseTitle = $row[22];
-			$temp->exerciseSource = $row[23];
-
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
-	}
 
 	public function usersLatestGivenAssessments(){
 
@@ -165,13 +168,27 @@ class HomepageDAO{
 	}
 
 	public function usersLatestUploadedVideos(){
-
+		return 0;
 	}
 
 	public function topScoreMostViewedVideos(){
-		
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete
+		$exercise = new ExerciseDAO();
+		$sql = "SELECT e.id, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri, 
+					   e.adding_date as addingDate,
+		               e.duration, 
+		               u.name as userName, 
+		               avg (suggested_level) as avgDifficulty, 
+		               e.status, 
+		               e.license, 
+		               e.reference, 
+		               a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -180,48 +197,18 @@ class HomepageDAO{
        			WHERE e.status = 'Available'
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
-
-		$searchResults = $this->_exerciseListQuery($sql);
-		$exercise = new ExerciseDAO();
-		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
+		
+		$searchResults = $this->conn->_multipleSelect($sql);
+		foreach($searchResults as $searchResult){
+			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+		}
+		$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
+		$filteredResults = $exercise->filterByLanguage($rSearchResults, 'practice');
 		
 		usort($filteredResults, array($this, 'sortResultsByScore'));
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
 		
 		return $slicedResults;
-	}
-	
-	private function _exerciseListQuery() {
-		$exercise = new ExerciseDAO();
-		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new ExerciseVO ( );
-
-			$temp->id = $row[0];
-			$temp->title = $row[1];
-			$temp->description = $row[2];
-			$temp->language = $row[3];
-			$temp->tags = $row[4];
-			$temp->source = $row[5];
-			$temp->name = $row[6];
-			$temp->thumbnailUri = $row[7];
-			$temp->addingDate = $row[8];
-			$temp->duration = $row[9];
-			$temp->userName = $row[10];
-			$temp->avgDifficulty = $row[11];
-			$temp->status = $row[12];
-			$temp->license = $row[13];
-			$temp->reference = $row[14];
-			$temp->isSubtitled = $row[15] ? true : false;
-
-			$temp->avgRating = $exercise->getExerciseAvgBayesianScore($temp->id)->avgRating;
-
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
 	}
 	
 	private function sortResultsByScore($exerciseA, $exerciseB){
@@ -232,8 +219,23 @@ class HomepageDAO{
 	}
 
 	public function latestAvailableVideos(){
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference, a.complete
+		$exercise = new ExerciseDAO();
+		$sql = "SELECT e.id, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri, 
+					   e.adding_date as addingDate,
+		               e.duration, 
+		               u.name as userName, 
+		               avg (suggested_level) as avgDifficulty, 
+		               e.status, 
+		               e.license, 
+		               e.reference, 
+		               a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -242,10 +244,13 @@ class HomepageDAO{
        			WHERE e.status = 'Available'
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
-
-		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
-		$exercise = new ExerciseDAO();
-		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
+		
+		$searchResults = $this->conn->_multipleSelect($sql);
+		foreach($searchResults as $searchResult){
+			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+		}
+		$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
+		$filteredResults = $exercise->filterByLanguage($rSearchResults, 'practice');
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
 		return $slicedResults;
 	}

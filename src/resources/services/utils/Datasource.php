@@ -92,12 +92,12 @@ class Datasource
 	/**
 	 * Analyzes the parameters of the caller and decides which way to handle them in the database query.
 	 */
-	public function _execute()
-	{
-		if ( is_array(func_get_arg(0)) )
-			return $this->_vexecute(func_get_arg(0)); // Gets an array of parameters
+	private function _execute($params)
+	{	
+		if ( is_array($params[0]) )
+			return $this->_vexecute($params[0]); // Gets an array of parameters
 		else
-			return $this->_vexecute(func_get_args()); // Gets separate parameters
+			return $this->_vexecute($params); // Gets separate parameters
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Datasource
 	 * @return mixed $result
 	 * 		The resultset containing the query results
 	 */
-	public function _vexecute($params)
+	private function _vexecute($params)
 	{
 		$query = array_shift($params);
 
@@ -116,7 +116,6 @@ class Datasource
 		$params[$i] = mysqli_real_escape_string($this->dbLink, $params[$i]);
 
 		$query = vsprintf($query, $params);
-
 		$result = mysqli_query($this->dbLink, $query);
 		if(!$result)
 			$this->_checkErrors($query);
@@ -132,7 +131,7 @@ class Datasource
 	 * @return mixed $row
 	 * 		Returns an array of strings that corresponds to the fetched row or NULL if there are no more rows in resultset. 
 	 */
-	public function _nextRow ($result)
+	private function _nextRow ($result)
 	{
 		$row = mysqli_fetch_array($result);
 		return $row;
@@ -146,7 +145,7 @@ class Datasource
 	 * @return mixed $row
 	 * 		Returns an associative array with the data of the next row of the resultSet or NULL if there are no more rows in resultset. 
 	 */
-	public function _nextRowAssoc($result){
+	private function _nextRowAssoc($result){
 		$row = mysqli_fetch_assoc($result);
 		return $row;
 	}
@@ -159,13 +158,13 @@ class Datasource
 	 * @return mixed $row
 	 * 		Returns an object with the data of the next row of the resultSet or NULL if there are no more rows in resultset. 
 	 */
-	public function _nextRowObject($result){
+	private function _nextRowObject($result){
 		$row = mysqli_fetch_object($result);
 		return $row;
 	}
 	
 	/**
-	 * Perform a SQL Insert operation against the database
+	 * Perform a SQL INSERT operation against the database
 	 * 
 	 * @return mixed $row
 	 * 		Return the last id of the inserted data or false when no data was inserted at all
@@ -173,8 +172,11 @@ class Datasource
 	public function _insert (){
 		$this->_execute ( func_get_args() );
 
+		//Execute expects an array of some kind because func_get_args() wraps the parameters in an array each time it is called
 		$sql = "SELECT last_insert_id()";
-		$result = $this->_execute ( $sql );
+		$params = array();
+		$params[] = $sql;
+		$result = $this->_execute ( $params );
 
 		$row = $this->_nextRow ( $result );
 		if ($row) {
@@ -185,12 +187,53 @@ class Datasource
 	}
 	
 	/**
-	 * Perform a SQL Select operation against the database
-	 * @return mixed $result
-	 * 		Returns an array of objects if the query had more than one row, an object if the query had only one row
-	 *		and false if the query had no results at all.
+	 * Perform a SQL UPDATE operation against the database
+	 * 
+	 * @return int $affectedRows
+	 * 		Returns the number of rows affected by the update operation
 	 */
-	public function _select(){
+	public function _update(){
+		$this->_execute( func_get_args() );
+		$affectedRows =  $this->_affectedRows();
+		return $affectedRows;
+	}
+	
+	/**
+	 * Perform a SQL DELETE operation against the database
+	 * 
+	 * @return int $affectedRows
+	 * 		Returns the number of rows affected by the update operation
+	 */
+	public function _delete(){
+		$this->_execute( func_get_args() );
+		$affectedRows =  $this->_affectedRows();
+		return $affectedRows;
+	}
+	
+	/**
+	 * Perform a SQL SELECT operation whose result is expected to have a single row
+	 * @return mixed $result
+	 * 		Returns an object if the query was sucessful, and false if the query had no results at all.
+	 */
+	public function _singleSelect(){
+		$result = $this->_execute ( func_get_args() );
+		$count = mysqli_num_rows($result);
+		$row = $this->_nextRowObject($result);
+		//Check that the result is defined and has only one row
+		if($row && is_object($row) && $count == 1){
+			$result = $row;	
+		} else {
+			$result = false;
+		}
+		return $result;
+	}
+	
+	/**
+	 * Perform a SQL SELECT operation whose result is expected to have one or more rows
+	 * @return mixed $result
+	 * 		Returns an array of objects if the query was successful, and false if the query had no results at all.
+	 */
+	public function _multipleSelect(){
 		$rowList = array();
 		$result = $this->_execute ( func_get_args() );
 		while($row = $this->_nextRowObject($result)){
@@ -200,9 +243,6 @@ class Datasource
 		}
 		if(!$rowList || count($rowList) == 0){
 			$result = false;
-		} 
-		elseif (count($rowList) == 1){
-			$result = $rowList[0];
 		} else {
 			$result = $rowList;
 		}
@@ -229,7 +269,7 @@ class Datasource
 		$errno = mysqli_connect_errno();
 		if($errno){
 			error_log("Database connection error #".$errno.": ".mysqli_connect_error()."\n",3,"/tmp/db_error.log");
-			throw new Exception("Database connection error.\n");
+			throw new Exception("Database connection error\n");
 		} else {
 			return;
 		}
@@ -255,13 +295,51 @@ class Datasource
 			error_log("Database error #" .$errno. " (".$sqlstate."): ".$error."\n",3,"/tmp/db_error.log");
 			if($sql != "")
 				error_log("Caused by the following SQL command: ".$sql."\n",3,"/tmp/db_error.log");
-			throw new Exception("Database operation error.\n");
+			throw new Exception("Database operation error\n");
 		}
 		else
 		{
 			return;
 		}
 	}
+	
+	public function multipleRecast($className, $objects){
+		if(!$objects)
+			return false;
+		$recasted = array();
+		foreach($objects as $object){
+			$recasted[] = $this->recast($className, $object);
+		}
+		return $recasted;
+	}
+
+	/**
+	 * recast stdClass object to an object with type
+	 *
+	 * @param string $className
+	 * @param stdClass $object
+	 * @throws InvalidArgumentException
+	 * @return mixed new, typed object
+	 * see also: http://stackoverflow.com/a/8946599
+	 */
+	public function recast($className, stdClass &$object)
+	{
+		if (!$object)
+			return false;
+		if (!class_exists($className))
+			throw new InvalidArgumentException(sprintf('Inexistant class %s.', $className));
+
+		$new = new $className();
+
+		foreach($object as $property => &$value)
+		{
+			$new->$property = &$value;
+			unset($object->$property);
+		}
+		unset($value);
+		$object = (unset) $object;
+		return $new;
+	}	
 }
 
 ?>

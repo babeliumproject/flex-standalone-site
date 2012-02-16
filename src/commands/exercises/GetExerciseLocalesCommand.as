@@ -27,12 +27,15 @@ package commands.exercises
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			
 			if (result is Array && (result as Array).length > 0 )
 			{
-				//Set the data to the application's model
-				DataModel.getInstance().availableExerciseLocales = result as Array;
-				//Reflect the visual changes
+				var resultList:Array = result as Array;
+				var localeList:Array = new Array();
+				for each (var item:Object in resultList){
+					localeList.push(item.locale);
+				}
+				
+				DataModel.getInstance().availableExerciseLocales = localeList;
 				DataModel.getInstance().availableExerciseLocalesRetrieved = true;
 			} else {
 				//Set the data to the application's model

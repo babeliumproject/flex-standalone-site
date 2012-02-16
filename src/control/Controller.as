@@ -99,7 +99,6 @@ package control {
 
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
-			addCommand(SearchEvent.GET_TAG_CLOUD, GetTagCloudCommand);
 
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);

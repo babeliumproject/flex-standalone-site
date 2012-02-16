@@ -6,7 +6,7 @@ class UserLanguageVO{
 	const PURPOSE_PRACTICE = 'practice';
 	
 	public $id;
-	public $userId;
+	//public $userId;
 	public $language; //Use the language's two digit code: ES, EU, FR, EN...
 	public $level; //Level goes from 1 to 6. 7 used for mother tongue
 	public $purpose;

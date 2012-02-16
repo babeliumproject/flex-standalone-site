@@ -36,11 +36,13 @@
 						 showBusyCursor="true"
 						 source="SubtitleDAO"/>
 
+		<!--
 		<mx:RemoteObject id="rolRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="ExerciseRoleDAO"/>
-
+		-->
+		
 		<mx:RemoteObject id="exerciseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
@@ -50,11 +52,6 @@
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="SearchDAO"/>
-
-		<mx:RemoteObject id="tagCloudRO"
-						 destination="babeliumService"
-						 showBusyCursor="true"
-						 source="TagCloudDAO"/>
 
 		<mx:RemoteObject id="youtubeRO"
 						 destination="babeliumService"

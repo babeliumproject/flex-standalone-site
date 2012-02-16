@@ -1,5 +1,25 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
@@ -12,6 +32,11 @@ require_once 'vo/SubtitleLineVO.php';
 require_once 'vo/SubtitleAndSubtitleLinesVO.php';
 require_once 'vo/UserVO.php';
 
+/**
+ * This class performs subtitle related operations
+ * 
+ * @author Babelium Team
+ */
 class SubtitleDAO {
 
 	private $conn;
@@ -26,28 +51,39 @@ class SubtitleDAO {
 		}
 	}
 
-	public function getExerciseRoles($exerciseId) {
-
-		$sql = "SELECT MAX(id),fk_exercise_id,character_name
+	public function getExerciseRoles($exerciseId = 0) {
+		if(!$exerciseId)
+			return false;
+			
+		$sql = "SELECT MAX(id) as id,
+					   fk_exercise_id as exerciseId,
+					   character_name as characterName
 				FROM exercise_role WHERE (fk_exercise_id = %d) 
 				GROUP BY exercise_role.character_name ";
 
-		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId );
+		$searchResults = $this->conn->_multipleSelect( $sql, $exerciseId );
 
-		return $searchResults;
+		return $this->conn->multipleRecast('ExerciseRoleVO',$searchResults);
 	}
 
-
-	public function getSubtitlesSubtitleLines($subtitleId) {
-		$sql = "SELECT SL.id, SL.show_time, SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id
+	public function getSubtitlesSubtitleLines($subtitleId = 0) {
+		if(!$subtitleId)
+			return false;
+		$sql = "SELECT SL.id, 
+					   SL.show_time as showTime, 
+					   SL.hide_time as hideTime, 
+					   SL.text, 
+					   SL.fk_exercise_role_id as exerciseRoleId, 
+					   ER.character_name as exerciseRoleName, 
+					   S.id as subtitleId
 				FROM subtitle_line AS SL INNER JOIN subtitle AS S ON SL.fk_subtitle_id = S.id 
 				INNER JOIN exercise AS E ON E.id = S.fk_exercise_id 
 				RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id
 				WHERE (SL.fk_subtitle_id = %d)";
 
-		$searchResults = $this->_listSubtitleLinesQuery ($sql, $subtitleId);
+		$searchResults = $this->conn->_multipleSelect($sql, $subtitleId);
 
-		return $searchResults;
+		return $this->conn->multipleRecast('SubtitleLineVO', $searchResults);
 	}
 
 	/**
@@ -57,15 +93,22 @@ class SubtitleDAO {
 	 * When subtitleId is set the returned lines are the ones of that particular subtitle.
 	 * @param SubtitleAndSubtitleLineVO $subtitle
 	 */
-	public function getSubtitleLines($subtitle) {
-
+	public function getSubtitleLines($subtitle=null) {
+		if(!$subtitle)
+			return false;
 		$subtitleId = $subtitle->id;
 		$exerciseId = $subtitle->exerciseId;
 		$language = $subtitle->language;
 
 		if(!$subtitleId){
 
-			$sql = "SELECT  SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id
+			$sql = "SELECT  SL.id,
+							SL.show_time as showTime,
+							SL.hide_time as hideTime, 
+							SL.text, 
+							SL.fk_exercise_role_id as exerciseRoleId, 
+							ER.character_name as exerciseRoleName, 
+							S.id as subtitleId
             		FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON 
 						 SL.fk_subtitle_id = S.id) INNER JOIN exercise AS E ON E.id = 
 						 S.fk_exercise_id RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id
@@ -74,45 +117,61 @@ class SubtitleDAO {
 						       	   WHERE SS.fk_exercise_id ='%d' AND SS.language = '%s') ";
 
 
-			$searchResults = $this->_listSubtitleLinesQuery ( $sql, $exerciseId, $language );
+			$searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId, $language );
 		} else {
-			$sql = "SELECT  SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id
+			$sql = "SELECT  SL.id,
+							SL.show_time as showTime,
+							SL.hide_time as hideTime, 
+							SL.text, 
+							SL.fk_exercise_role_id as exerciseRoleId, 
+							ER.character_name as exerciseRoleName, 
+							S.id as subtitleId
             		FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON 
 						 SL.fk_subtitle_id = S.id) INNER JOIN exercise AS E ON E.id = 
 						 S.fk_exercise_id RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id
 					WHERE  S.id='%d'";	
-			$searchResults = $this->_listSubtitleLinesQuery ( $sql, $subtitleId );
+			$searchResults = $this->conn->_multipleSelect ( $sql, $subtitleId );
 		}
 
 		//Store the last retrieved subtitle lines to check if there are changes when saving the subtitles.
 		$_SESSION['unmodified-subtitles'] = $searchResults;
 
-		return $searchResults;
+		return $this->conn->multipleRecast('SubtitleLineVO', $searchResults);
 	}
+	
 
-	public function getSubtitleLinesUsingId($subtitleId) {
-		$sql = "SELECT SL.id,SL.show_time,SL.hide_time, SL.text, SL.fk_exercise_role_id, ER.character_name, S.id
+	public function getSubtitleLinesUsingId($subtitleId = 0) {
+		if(!$subtitleId)
+			return false;
+		$sql = "SELECT SL.id,
+					   SL.show_time as showTime,
+					   SL.hide_time as hideTime, 
+					   SL.text, 
+					   SL.fk_exercise_role_id as exerciseRoleId, 
+					   ER.character_name as exerciseRoleName, 
+					   S.id as subtitleId
             	FROM (subtitle_line AS SL INNER JOIN subtitle AS S ON SL.fk_subtitle_id = S.id) 
             		 RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id 
 				WHERE ( S.id = %d )";
 
-		$searchResults = $this->_listSubtitleLinesQuery ( $sql, $subtitleId );
+		$searchResults = $this->conn->_multipleSelect( $sql, $subtitleId );
 
-		return $searchResults;
+		return $this->conn->multipleRecast('SubtitleLineVO', $searchResults);
 	}
 
 
-	public function saveSubtitles($subtitleData){
+	public function saveSubtitles($subtitleData = null){
 		try {
 			$verifySession = new SessionHandler(true);
-			return $this->saveSubtitlesAuth($subtitleData);
+			if(!$subtitleData)
+				return false;
+			else
+				return $this->saveSubtitlesAuth($subtitleData);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 	}
 
-
-	//We retrieve an instance of SubtitleAndSubtitleLinesVO
 	private function saveSubtitlesAuth($subtitles) {
 
 		$result = 0;
@@ -157,7 +216,7 @@ class SubtitleDAO {
 		$er_sql = substr($er_sql,0,-1);
 		// put sql query and all params in one array
 		$merge = array_merge((array)$er_sql, $params);
-		$lastRoleId = $this->_vcreate($merge);
+		$lastRoleId = $this->conn->_insert($merge);
 		if(!lastRoleId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Subtitle save failed");
@@ -227,18 +286,16 @@ class SubtitleDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue 
 				WHERE (u.ID=%d AND p.prefName='subtitleAdditionCredits') ";
-		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
+		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addSubtitlingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='subtitleAdditionCredits' )";
-		$result = $this->conn->_execute ( $sql );
-		$row = $this->conn->_nextRow($result);
-		if($row){
-
+		$result = $this->conn->_singleSelect ( $sql );
+		if($result){
 			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
 			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
-			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'subtitling', $row[0]);
+			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'subtitling', $result->prefValue);
 		} else {
 			return false;
 		}
@@ -246,28 +303,13 @@ class SubtitleDAO {
 
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, creditCount, joiningDate, isAdmin FROM users WHERE (id = %d) ";
+		$sql = "SELECT name, 
+					   creditCount, 
+					   joiningDate, 
+					   isAdmin
+				FROM users WHERE (id = %d) ";
 
-		return $this->_singleQuery($sql, $_SESSION['uid']);
-	}
-
-	private function _singleQuery(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->name = $row[0];
-			$valueObject->creditCount = $row[1];
-			$valueObject->joiningDate = $row[2];
-			$valueObject->isAdmin = $row[3]==1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
+		return $this->conn->recast('UserVO', $this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
 	private function _subtitlesWereModified($compareSubject)
@@ -275,7 +317,7 @@ class SubtitleDAO {
 		$modified=false;
 		$unmodifiedSubtitlesLines = $_SESSION['unmodified-subtitles'];
 		if (count($unmodifiedSubtitlesLines) != count($compareSubject))
-		$modified=true;
+			$modified=true;
 		else
 		{
 			for ($i=0; $i < count($unmodifiedSubtitlesLines); $i++)
@@ -330,14 +372,21 @@ class SubtitleDAO {
 	}
 	
 
-	public function getExerciseSubtitles($exerciseId){
-		$sql = "SELECT s.id, s.fk_exercise_id, u.name, s.language, s.translation, s.adding_date
+	public function getExerciseSubtitles($exerciseId = 0){
+		if(!$exerciseId)
+			return false;
+		$sql = "SELECT s.id, 
+					   s.fk_exercise_id as exerciseId, 
+					   u.name as userName, 
+					   s.language, 
+					   s.translation, 
+					   s.adding_date as addingDate
 				FROM subtitle s inner join users u on s.fk_user_id=u.ID
 				WHERE fk_exercise_id='%d'
 				ORDER BY s.adding_date DESC";
-		$searchResults = $this->_listSubtitlesQuery ( $sql, $exerciseId );
+		$searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId );
 
-		return $searchResults;
+		return $this->conn->multipleRecast('SubtitleAndSubtitleLinesVO', $searchResults);
 	}
 
 	private function _deletePreviousSubtitles($exerciseId){
@@ -346,102 +395,23 @@ class SubtitleDAO {
 				FROM subtitle_line sl INNER JOIN subtitle s ON sl.fk_subtitle_id = s.id
 				WHERE (s.fk_exercise_id= '%d' )";
 
-		$subtitleIdToDelete = $this->_singleSubtitleIdQuery($sql, $exerciseId);
+		$subtitleIdToDelete = $this->conn->_singleSelect($sql, $exerciseId);
 
-		if($subtitleIdToDelete){
+		if($subtitleIdToDelete && $subtitleIdToDelete->id){
 			//Delete the subtitle_line entries ->
 			$sl_delete = "DELETE FROM subtitle_line WHERE (fk_subtitle_id = '%d')";
-			$this->conn->_execute($sl_delete, $subtitleIdToDelete);
+			$result = $this->conn->_delete($sl_delete, $subtitleIdToDelete->id);
 
 			//The first query should suffice to delete all due to ON DELETE CASCADE clauses but
 			//as it seems this doesn't work we delete the rest manually.
 
 			//Delete the exercise_role entries
 			$er_delete = "DELETE FROM exercise_role WHERE (fk_exercise_id = '%d')";
-			$this->conn->_execute($er_delete, $exerciseId);
+			$result = $this->conn->_delete($er_delete, $exerciseId);
 
 			//Delete the subtitle entry
 			$s_delete = "DELETE FROM subtitle WHERE (id ='%d')";
-			$this->conn->_execute($s_delete, $subtitleIdToDelete);
-		}
-	}
-
-	private function _singleSubtitleIdQuery(){
-		$subtitleId = 0;
-		$result = $this->conn->_execute(func_get_args());
-		$row = $this->conn->_nextRow($result);
-		if ($row){
-			$subtitleId = $row[0];
-		} else {
-			return false;
-		}
-		return $subtitleId;
-	}
-
-	private function _listSubtitlesQuery(){
-		$searchResults = array();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow($result)){
-			$temp = new SubtitleAndSubtitleLinesVO();
-			$temp->id = $row[0];
-			$temp->exerciseId = $row[1];
-			$temp->userName = $row[2];
-			$temp->language = $row[3];
-			$temp->translation = $row[4];
-			$temp->addingDate = $row[5];
-			array_push($searchResults, $temp);
-		}
-
-		return $searchResults;
-	}
-
-	private function _listSubtitleLinesQuery() {
-		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new SubtitleLineVO ( );
-			$temp->id = $row [0];
-			$temp->showTime = $row [1];
-			$temp->hideTime = $row [2];
-			$temp->text=$row [3];
-			$temp->exerciseRoleId=$row[4];
-			$temp->exerciseRoleName=$row[5];
-			$temp->subtitleId=$row[6];
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
-	}
-
-	private function _listRolesQuery() {
-		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new ExerciseRoleVO ( );
-			$temp->id = $row [0];
-			$temp->exerciseId = $row [1];
-			$temp->characterName = $row [2];
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
-	}
-
-	private function _vcreate($params) {
-
-		$this->conn->_execute ( $params );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
+			$result = $this->conn->_delete($s_delete, $subtitleIdToDelete->id);
 		}
 	}
 }

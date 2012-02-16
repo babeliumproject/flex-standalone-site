@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ *
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ *
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/Mailer.php';
@@ -9,10 +30,21 @@ require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
 require_once 'vo/LoginVO.php';
 
+/**
+ * Allows the user to authenticate on the Babelium system
+ *
+ * @author Babelium Team
+ *
+ */
 class LoginDAO{
 
 	private $conn;
-
+	
+	/**
+	 * Constructor method
+	 * @throws Exception
+	 * 		Throws an error if the session couldn't be set or the database connection couldn't be established
+	 */
 	public function LoginDAO(){
 		try {
 			$verifySession = new SessionHandler();
@@ -22,21 +54,61 @@ class LoginDAO{
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	/**
+	 *
+	 */
+	public function getCommunicationToken($secretKey = 0){
+		if(!$secretKey)
+			return FALSE;
+			
+		//Check if the request if made via HTTPS or not
+		//TODO
 
-	public function processLogin($user){
-		if($user != null){
+		$length = 13;
+
+		if(session_id() != "" && md5(session_id()) == $secretKey){
+			$commToken = $this->_generateRandomCommunicationToken($length);
+			$_SESSION['commToken'] = $commToken;
+			return $commToken;
+		} else {
+			return FALSE;
+		}
+	}
+
+	private function _generateRandomCommunicationToken($length){
+		$token = '';
+		$i = 0;
+		while ($i < $length){
+			$token = $token . dechex(floor((rand(0,1000000) * 16)/1000000));
+			$i++;
+		}
+		return $token;
+	}
+
+
+	/**
+	 * Checks the provided authentication data and logs the user in the system if everything is ok
+	 *
+	 * @param stdClass $user
+	 * 		An object with the following properties: (name, pass)
+	 * @return mixed $result
+	 * 		Returns the current user data. Or an error message when wrong login data is provided
+	 */
+	public function processLogin($user = null){
+		if($user != null && is_object($user)){
 			//Check if the given username exists
 			if($this->getUserInfo($user->name)==false){
 				return "wrong_user";
 			} else {
 				//Check whether the user is active or not
 				$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
-				$result = $this->_singleQuery($sql, $user->name);
+				$result = $this->conn->_singleSelect($sql, $user->name);
 				if ( $result )
 				return "inactive_user";
 				//Check if the user provided correct authentication data
 				$sql = "SELECT id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
-				$result = $this->_singleQuery($sql, $user->name, $user->pass);
+				$result = $this->conn->_singleSelect($sql, $user->name, $user->pass);
 				if($result){
 					$userId = $result->id;
 					$userLanguages = $this->_getUserLanguages($userId);
@@ -69,12 +141,18 @@ class LoginDAO{
 		}
 	}
 
+	/**
+	 * Checks if the session data is set for this user
+	 *
+	 * @return boolean $isuserLogged
+	 * 		Returns whether the user is logged or not based on the session data
+	 */
 	private function checkSessionLogin(){
 
 		$isUserLogged = false;
 
 		//The user authenticated on this session and still hasn't asked for logout
-		if(isset($_COOKIE['PHPSESSID']) &&  $_COOKIE['PHPSESSID'] == session_id() && $_SESSION['logged'] == true){
+		if(isset($_COOKIE['PHPSESSID']) &&  $_COOKIE['PHPSESSID'] == session_id() && isset($_SESSION['logged']) && $_SESSION['logged'] == true){
 			$isUserLogged = true;
 		}
 		//The user has a cookie with a valid expiry date and there's a record on the database that remembers this user token
@@ -82,6 +160,13 @@ class LoginDAO{
 		return $isUserLogged;
 	}
 
+	/**
+	 * Retrieves the data for the given user name
+	 *
+	 * @param string $username
+	 * @return mixed $result
+	 * 		Returns an object with the user data or false when no user with that username is found in the database.
+	 */
 	private function getUserInfo($username){
 		if (!$username)
 		{
@@ -90,32 +175,16 @@ class LoginDAO{
 
 		$sql = "SELECT id, name, realName, realSurname, email, creditCount FROM users WHERE (name = '%s') ";
 
-		return $this->_singleQuery($sql, $username);
+		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $username));
 	}
 
-	private function _singleQuery(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->id = $row[0];
-			$valueObject->name = $row[1];
-			$valueObject->realName = $row[2];
-			$valueObject->realSurname = $row[3];
-			$valueObject->email = $row[4];
-			$valueObject->creditCount = $row[5];
-			$valueObject->joiningDate = $row[6];
-			$valueObject->isAdmin = $row[7] == 1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
-	}
-
+	/**
+	 * Logs the user out and clears the session data
+	 * @return boolean
+	 * 		Returns true if the logout when alright
+	 * @throws Exception
+	 * 		Throws an exception when the logout couldn't be properly done
+	 */
 	public function doLogout(){
 		try {
 			$verifySession = new SessionHandler(true);
@@ -126,20 +195,34 @@ class LoginDAO{
 		}
 	}
 
-	public function resendActivationEmail($user){
+	/**
+	 * Sends again the account activation email if the provided user is valid and not active.
+	 *
+	 * @param stdClass $user
+	 * 		An object with the following properties: (name, email)
+	 * @return string $mailSent
+	 * 		Returns a string telling whether the mail sending operation went well or not
+	 */
+	public function resendActivationEmail($user = null){
+		if(!$user)
+			return null;
+		
 		if($this->getUserInfo($user->name)==false){
 			return "wrong_user";
 		} else {
 			$sql = "SELECT id, activation_hash FROM users WHERE (name= '%s' AND email= '%s' AND active = 0 AND activation_hash <> '')";
-			$inactiveUserExists = $this->_singleQueryInactiveUser($sql, $user->name, $user->email);
+			$inactiveUserExists = $this->conn->_singleSelect($sql, $user->name, $user->email);
 			if ($inactiveUserExists){
+				$usersFirstMotherTongue = 'en_US';
 				$userId = $inactiveUserExists->id;
-				$activationHash = $inactiveUserExists->hash;
+				$activationHash = $inactiveUserExists->activation_hash;
 				$userLanguages = $this->_getUserLanguages($userId);
-				foreach($userLanguages as $lang){
-					if($lang->level == 7){
-						$usersFirstMotherTongue = $lang->language;
-						break;
+				if($userLanguages){
+					foreach($userLanguages as $lang){
+						if($lang->level == 7){
+							$usersFirstMotherTongue = $lang->language;
+							break;
+						}
 					}
 				}
 				// Submit activation email
@@ -154,31 +237,24 @@ class LoginDAO{
 						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$activationHash.'&user='.$user->name,
 						'SIGNATURE' => 'The Babelium Project Team');
 
-				if ( !$mail->makeTemplate("mail_activation", $args, $usersFirstMotherTongue) ) return null;
+				if ( !$mail->makeTemplate("mail_activation", $args, $usersFirstMotherTongue) )
+					return null;
 
 				return $mail->send($mail->txtContent, $subject, $mail->htmlContent);
 			} else {
 				return "user_active_wrong_email";
 			}
 		}
-
 	}
 
-	private function _singleQueryInactiveUser(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->id = $row[0];
-			$valueObject->hash = $row[1];
-		} else {
-			return false;
-		}
-		return $valueObject;
-	}
-
+	/**
+	 * Initializes a session for this user.
+	 *
+	 * @param stdClass $userData
+	 * 		An object with the following properties: (id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin, userLanguages[])
+	 * @return int $result
+	 * 		Returns the last insert id if the session storing went well or false when something went wrong
+	 */
 	private function _startUserSession($userData){
 
 		$this->_setSessionData($userData);
@@ -188,9 +264,16 @@ class LoginDAO{
 		return $this->conn->_insert($sql, $_SESSION['uid'], session_id());
 	}
 
+	/**
+	 * Stores current user's data in the session variable
+	 *
+	 * @param stdClass $userData
+	 * 		An object with the following properties: (id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin, userLanguages[])
+	 */
 	private function _setSessionData($userData){
 		//We are changing the privilege level, so we generate a new session id
-		session_regenerate_id();
+		if(!headers_sent())
+			session_regenerate_id();
 		$_SESSION['logged'] = true;
 		$_SESSION['uid'] = $userData->id;
 		$_SESSION['user-agent-hash'] = sha1($_SERVER['HTTP_USER_AGENT']);
@@ -199,9 +282,13 @@ class LoginDAO{
 		$_SESSION['user-languages'] = $userData->userLanguages;
 	}
 
+	/**
+	 * Clears the user data from the session variable
+	 */
 	private function _resetSessionData(){
 		//We are changing the privilege level, so first we generate a new session id
-		session_regenerate_id();
+		if(!headers_sent())
+			session_regenerate_id();
 		$_SESSION['logged'] = false;
 		$_SESSION['uid'] = 0;
 		$_SESSION['user-agent-hash'] = '';
@@ -210,28 +297,20 @@ class LoginDAO{
 		$_SESSION['user-languages'] = null;
 	}
 
+	/**
+	 * Retrieves the languages the user choose to use in Babelium
+	 * @param int $userId
+	 * 		The user identification number
+	 * @return array $result
+	 * 		Returns an array of languages or null when nothing found
+	 */
 	private function _getUserLanguages($userId){
-		$sql = "SELECT language, level, positives_to_next_level, purpose
+		$sql = "SELECT language,
+					   level, 
+					   positives_to_next_level as positivesToNextLevel, 
+					   purpose
 				FROM user_languages WHERE (fk_user_id='%d')";
-		return $this->_listUserLanguagesQuery($sql, $userId);
-	}
-
-
-
-	private function _listUserLanguagesQuery(){
-		$searchResults = array();
-
-		$result = $this->conn->_execute(func_get_args());
-		while($row = $this->conn->_nextRow($result)){
-			$temp = new UserLanguageVO();
-			$temp->language = $row[0];
-			$temp->level = $row[1];
-			$temp->positivesToNextLevel = $row[2];
-			$temp->purpose = $row[3];
-
-			array_push($searchResults, $temp);
-		}
-		return $searchResults;
+		return $this->conn->multipleRecast('UserLanguageVO',$this->conn->_multipleSelect($sql, $userId));
 	}
 
 }

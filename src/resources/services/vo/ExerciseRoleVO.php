@@ -4,7 +4,7 @@ class ExerciseRoleVO {
 	
 	public $id;
 	public $exerciseId;
-	public $userId;		
+	//public $userId;		
 	
 	public $characterName;
 		

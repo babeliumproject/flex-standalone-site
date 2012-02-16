@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
@@ -8,6 +29,12 @@ require_once 'utils/VideoProcessor.php';
 require_once 'vo/ResponseVO.php';
 require_once 'vo/UserVO.php';
 
+/**
+ * This class performs exercise response related operations
+ * 
+ * @author Babelium Team
+ *
+ */
 class ResponseDAO {
 
 	private $conn;
@@ -39,8 +66,12 @@ class ResponseDAO {
 		}
 	}
 
-	public function saveResponse($data){
-	set_time_limit(0);
+	public function saveResponse($data = null){
+		
+		if(!$data)
+			return false;
+		
+		set_time_limit(0);
 		$this->_getResourceDirectories();
 		$thumbnail = 'nothumb.png';
 		
@@ -67,6 +98,9 @@ class ResponseDAO {
 
 	public function makePublic($data)
 	{
+		if(!$data)
+			return false;
+		
 		$result = 0;
 		$responseId = $data->id;
 		
@@ -74,7 +108,7 @@ class ResponseDAO {
 		
 		$sql = "UPDATE response SET is_private = 0 WHERE (id = '%d' ) ";
 
-		$update = $this->conn->_execute ( $sql, $responseId );
+		$update = $this->conn->_update ( $sql, $responseId );
 		if(!$update){
 			$this->conn->_failedTransaction();
 			throw new Exception("Response publication failed");
@@ -108,20 +142,18 @@ class ResponseDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount-p.prefValue 
 			WHERE (u.ID=%d AND p.prefName='evaluationRequestCredits') ";
-		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
+		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addEvalRequestToCreditHistory($responseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='evaluationRequestCredits' )";
-		$result = $this->conn->_execute ( $sql );
-		$row = $this->conn->_nextRow($result);
+		$row = $this->conn->_singleSelect ( $sql );
 		if($row){
-			$changeAmount = $row[0];
+			$changeAmount = $row->prefValue;
 			$sql = "SELECT fk_exercise_id FROM response WHERE (id='%d')";
-			$result = $this->conn->_execute($sql, $responseId);
-			$row = $this->conn->_nextRow($result);
+			$row = $this->conn->_singleSelect($sql, $responseId);
 			if($row){
-				$exerciseId = $row[0];
+				$exerciseId = $row->fk_exercise_id;
 				$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, fk_response_id, changeDate, changeType, changeAmount) ";
 				$sql = $sql . "VALUES ('%d', '%d', '%d', NOW(), '%s', '%d') ";
 				return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, $responseId, 'eval_request', $changeAmount);
@@ -135,42 +167,26 @@ class ResponseDAO {
 
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, creditCount, joiningDate, isAdmin FROM users WHERE (id = %d) ";
+		$sql = "SELECT name, 
+					   creditCount, 
+					   joiningDate, 
+					   isAdmin 
+				FROM users WHERE (id = %d) ";
 
-		return $this->_singleQuery($sql, $_SESSION['uid']);
-	}
-
-	private function _singleQuery(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->name = $row[0];
-			$valueObject->creditCount = $row[1];
-			$valueObject->joiningDate = $row[2];
-			$valueObject->isAdmin = $row[3]==1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
+		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
 	private function _getResourceDirectories(){
-		$sql = "SELECT prefValue FROM preferences
+		$sql = "SELECT prefValue 
+				FROM preferences
 				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
 				ORDER BY prefName";
-		$result = $this->conn->_execute($sql);
-
-		$row = $this->conn->_nextRow($result);
-		$this->evaluationFolder = $row ? $row[0] : '';
-		$row = $this->conn->_nextRow($result);
-		$this->exerciseFolder = $row ? $row[0] : '';
-		$row = $this->conn->_nextRow($result);
-		$this->responseFolder = $row ? $row[0] : '';
+		$result = $this->conn->_multipleSelect($sql);
+		if($result){
+			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
+			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
+			$this->responseFolder = $result[2] ? $result[2]->prefValue : '';
+		}
 	}
 
 }

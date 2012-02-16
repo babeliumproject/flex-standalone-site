@@ -21,11 +21,12 @@ package business
 		
 		public function getExerciseRoles(rol:ExerciseRoleVO):void
 		{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("rolRO");
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getExerciseRoles(rol.exerciseId);
 			pendingCall.addResponder(responder);			
 		}
 		
+		/*
 		public function deleteSingleExerciseRol(rol:ExerciseRoleVO):void
 		{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("rolRO");			
@@ -46,6 +47,7 @@ package business
 			var pendingCall:AsyncToken = service.saveExerciseRoles(roles);
 			pendingCall.addResponder(responder);
 		}
+		*/
 
 	}
 }

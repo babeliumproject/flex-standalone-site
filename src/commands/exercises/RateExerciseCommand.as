@@ -30,7 +30,7 @@ package commands.exercises
 		public function result(data:Object):void
 		{
 			//Should be the id of the added rate
-			if (!data.result is ExerciseVO)
+			if (!data.result)
 			{
 				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_SCORE_COULDNT_BE_SAVED'));
 			}

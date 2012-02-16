@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ *
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ *
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/SessionHandler.php';
@@ -12,9 +33,14 @@ require_once 'vo/ExerciseLevelVO.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
 
+/**
+ * Class to perform exercise related operations
+ *
+ * @author Babelium Team
+ *
+ */
 class ExerciseDAO {
 
-	
 	private $filePath;
 	private $imagePath;
 	private $red5Path;
@@ -26,7 +52,7 @@ class ExerciseDAO {
 
 	private $exerciseGlobalAvgRating;
 	private $exerciseMinRatingCount;
-	
+
 	private $conn;
 	private $mediaHelper;
 
@@ -47,15 +73,18 @@ class ExerciseDAO {
 		}
 	}
 
-	public function addUnprocessedExercise($exercise) {
+	public function addUnprocessedExercise($exercise = null) {
 
 		try {
 			$verifySession = new SessionHandler(true);
 
-			$exerciseLevel = new ExerciseLevelVO();
+			if(!$exercise)
+				return false;
+
+			$exerciseLevel = new stdClass();
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-			
+
 			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
 				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status) ";
 				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s') ";
@@ -79,32 +108,34 @@ class ExerciseDAO {
 
 	}
 
-	public function addWebcamExercise($exercise) {
+	public function addWebcamExercise($exercise = null) {
 
 		try {
 
 			$verifySession = new SessionHandler(true);
+			
+			if(!$exercise)
+				return false;
 
 			$result = 0;
 
 			set_time_limit(0);
 			$this->_getResourceDirectories();
-			
-			
+
+
 			$videoPath = $this->red5Path .'/'. $this->exerciseFolder .'/'. $exercise->name . '.flv';
 			$destPath = $this->red5Path . '/' . $this->responseFolder . '/' . $exercise->name . '.flv';
-			
+
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
 			$this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
 
-			$exerciseLevel = new ExerciseLevelVO();
+			$exerciseLevel = new stdClass();
 			$exerciseLevel->userId = $_SESSION['uid'];
 			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
 
 			$this->conn->_startTransaction();
 
-			
 			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
 			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
 
@@ -122,12 +153,12 @@ class ExerciseDAO {
 				$this->conn->_failedTransaction();
 				throw new Exception ("Exercise level save failed.");
 			}
-			
+
 			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
 
 				$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
-				$this->conn->_execute($sql,$lastExerciseId);
-				if(!$this->conn->_affectedRows()){
+				$update = $this->conn->_update($sql,$lastExerciseId);
+				if(!$update){
 					$this->conn->_failedTransaction();
 					throw new Exception("Couldn't update no-practice exercise. Changes rollbacked.");
 				}
@@ -153,7 +184,6 @@ class ExerciseDAO {
 					$this->conn->_failedTransaction();
 					throw new Exception("Credit addition failed");
 				}
-
 				//Update the credit history
 				$creditHistoryInsert = $this->_addUploadingToCreditHistory($lastExerciseId);
 				if(!$creditHistoryInsert){
@@ -182,17 +212,16 @@ class ExerciseDAO {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
 				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
-		return $this->conn->_execute ( $sql, $_SESSION['uid'] );
+		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
 	private function _addUploadingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='uploadExerciseCredits' )";
-		$result = $this->conn->_execute ( $sql );
-		$row = $this->conn->_nextRow($result);
-		if($row){
+		$result = $this->conn->_singleSelect ( $sql );
+		if($result){
 			$sql = "INSERT INTO credithistory (fk_user_id, fk_exercise_id, changeDate, changeType, changeAmount) ";
 			$sql = $sql . "VALUES ('%d', '%d', NOW(), '%s', '%d') ";
-			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'exercise_upload', $row[0]);
+			return $this->conn->_insert($sql, $_SESSION['uid'], $exerciseId, 'exercise_upload', $result->prefValue);
 		} else {
 			return false;
 		}
@@ -202,46 +231,38 @@ class ExerciseDAO {
 
 		$sql = "SELECT name, creditCount, joiningDate, isAdmin FROM users WHERE (id = %d) ";
 
-		return $this->_singleQuery($sql, $_SESSION['uid']);
-	}
-
-	private function _singleQuery(){
-		$valueObject = new UserVO();
-		$result = $this->conn->_execute(func_get_args());
-
-		$row = $this->conn->_nextRow($result);
-		if ($row)
-		{
-			$valueObject->name = $row[0];
-			$valueObject->creditCount = $row[1];
-			$valueObject->joiningDate = $row[2];
-			$valueObject->isAdmin = $row[3]==1;
-		}
-		else
-		{
-			return false;
-		}
-		return $valueObject;
+		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
 	private function _getResourceDirectories(){
-		$sql = "SELECT prefValue FROM preferences
+		$sql = "SELECT prefValue 
+				FROM preferences
 				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
 				ORDER BY prefName";
-		$result = $this->conn->_execute($sql);
-
-		$row = $this->conn->_nextRow($result);
-		$this->evaluationFolder = $row ? $row[0] : '';
-		$row = $this->conn->_nextRow($result);
-		$this->exerciseFolder = $row ? $row[0] : '';
-		$row = $this->conn->_nextRow($result);
-		$this->responseFolder = $row ? $row[0] : '';
+		$result = $this->conn->_multipleSelect($sql);
+		if($result){
+			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
+			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
+			$this->responseFolder = $result[2] ? $result[2]->prefValue : '';
+		}
 	}
 
 	public function getExercises(){
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       				   e.adding_date, e.duration, u.name, 
-       				   avg (suggested_level) as avgLevel, e.status, license, reference
+		$sql = "SELECT e.id, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri,
+       				   e.adding_date as addingDate, 
+       				   e.duration, 
+       				   u.name, 
+       				   avg (suggested_level) as avgDifficulty, 
+       				   e.status, 
+       				   e.license, 
+       				   e.reference
 				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
@@ -249,83 +270,50 @@ class ExerciseDAO {
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 
-		$searchResults = $this->_exerciseListQuery($sql);
+		$searchResults = $this->conn->_multipleSelect($sql);
+		foreach($searchResults as $searchResult){
+			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+		}
 
-		return $searchResults;
+		return $this->conn->multipleRecast('ExerciseVO',$searchResults);
 	}
-
-	/*
-	 public function getExercisesWithoutSubtitles(){
-		try {
-		$verifySession = new SessionHandler(true);
-
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-		e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
-		FROM exercise e
-		INNER JOIN users u ON e.fk_user_id= u.ID
-		LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-		LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-		LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-		WHERE e.status = 'Available' AND a.id IS NULL
-		GROUP BY e.id
-		ORDER BY e.adding_date DESC";
-
-		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
-		//Filter searchResults to include only the "evaluate" languages of the user
-		//$this->filterResults($searchResults, $languagePurpose);
-
-		return $searchResults;
-		} catch (Exception $e){
-		throw new Exception($e->getMessage());
-		}
-		}
-
-		public function getExercisesToReviewSubtitles(){
-		try {
-		$verifySession = new SessionHandler(true);
-
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-		e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
-		FROM exercise e
-		INNER JOIN users u ON e.fk_user_id= u.ID
-		LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-		LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-		INNER JOIN subtitle a ON a.fk_exercise_id=e.id
-		WHERE e.status = 'Available'
-		GROUP BY e.id
-		ORDER BY e.adding_date DESC";
-
-		$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
-			
-		//Filter searchResults to include only the "evaluate" languages of the user
-		//$this->filterResults($searchResults, $languagePurpose);
-
-		return $searchResults;
-		} catch (Exception $e){
-		throw new Exception($e->getMessage());
-		}
-		}
-		*/
 
 	public function getExercisesUnfinishedSubtitling(){
 		try {
 			$verifySession = new SessionHandler(true);
 
-			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					   e.adding_date, e.duration, u.name, avg (suggested_level) as avgLevel, e.status, license, reference
+			$sql = "SELECT e.id, 
+						   e.title, 
+						   e.description, 
+						   e.language, 
+						   e.tags, 
+						   e.source, 
+						   e.name, 
+						   e.thumbnail_uri as thumbnailUri,
+       					   e.adding_date as addingDate, 
+       					   e.duration, 
+       					   u.name as userName, 
+       					   avg (suggested_level) as avgDifficulty, 
+       					   e.status, 
+       					   e.license, 
+       					   e.reference
 					FROM exercise e 
 					 	 INNER JOIN users u ON e.fk_user_id= u.ID
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			 	 	 WHERE e.status = 'Available'
+       			 	 	 WHERE (e.status = 'Available' AND a.complete = 0)
 				 	GROUP BY e.id
 				 	ORDER BY e.adding_date DESC";
 
-			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
+			$searchResults = $this->conn->_multipleSelect($sql);
+			foreach($searchResults as $searchResult){
+				$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			}
+			$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
 
 			//Filter searchResults to include only the "evaluate" languages of the user
-			$filteredResults = $this->filterByLanguage($searchResults, 'evaluate');
+			$filteredResults = $this->filterByLanguage($rSearchResults, 'evaluate');
 			return $filteredResults;
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
@@ -333,26 +321,42 @@ class ExerciseDAO {
 	}
 
 	public function getRecordableExercises(){
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri,
-       					e.adding_date, e.duration, u.name, 
-       					avg (suggested_level) as avgLevel, e.status, license, reference
-				 FROM   exercise e 
+		$sql = "SELECT e.id, 
+			       e.title, 
+			       e.description, 
+			       e.language, 
+			       e.tags, 
+			       e.source, 
+			       e.name, 
+			       e.thumbnail_uri as thumbnailUri,
+       			       e.adding_date as addingDate, 
+			       e.duration, 
+			       u.name as userName, 
+       			       avg (suggested_level) as avgDifficulty,
+			       e.status, 
+			       e.license, 
+			       e.reference
+			       FROM   exercise e 
 				 		INNER JOIN users u ON e.fk_user_id= u.ID
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE (e.status = 'Available' AND t.complete = 1)
+       			 WHERE e.status = 'Available' AND t.complete = 1
 				 GROUP BY e.id
 				 ORDER BY e.adding_date DESC, e.language DESC";
-
-		$searchResults = $this->_exerciseListQuery($sql);
+		
+		$searchResults = $this->conn->_multipleSelect($sql);
+		foreach($searchResults as $searchResult){
+			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+		}
+		$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
 
 		try {
 			$verifySession = new SessionHandler(true);
-			$filteredResults = $this->filterByLanguage($searchResults, 'practice');
+			$filteredResults = $this->filterByLanguage($rSearchResults, 'practice');
 			return $filteredResults;
 		} catch (Exception $e) {
-			return $searchResults;
+			return $rSearchResults;
 		}
 
 	}
@@ -378,22 +382,24 @@ class ExerciseDAO {
 
 	}
 
-	public function getExerciseLocales($exerciseId) {
-		$sql = "SELECT DISTINCT language FROM subtitle
+	public function getExerciseLocales($exerciseId=0) {
+		if(!$exerciseId)
+			return false;
+
+		$sql = "SELECT DISTINCT language as locale FROM subtitle
 				WHERE fk_exercise_id = %d";
 
-		$searchResults = array ();
-		$result = $this->conn->_execute ( $sql, $exerciseId );
+		$results = $this->conn->_multipleSelect ( $sql, $exerciseId );
 
-		while ( $row = $this->conn->_nextRow ( $result ) )
-		array_push($searchResults, $row[0]);
-
-		return $searchResults; // return languages
+		return $results; // return languages
 	}
 
-	public function addInappropriateExerciseReport($report){
+	public function addInappropriateExerciseReport($report = null){
 		try {
 			$verifySession = new SessionHandler(true);
+
+			if(!$report)
+				return false;
 
 			$result = $this->userReportedExercise($report);
 
@@ -401,7 +407,7 @@ class ExerciseDAO {
 				// The user is reporting an innapropriate exercise
 				$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date)
 				    VALUES ('%d', '%d', '%s', NOW() )";
-				
+
 				$result = $this->conn->_insert($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
 				//$this->notifyExerciseReported($report);
 				return $result;
@@ -412,18 +418,20 @@ class ExerciseDAO {
 			throw new Exception($e->getMessage());
 		}
 	}
-	
-	private function notifyExerciseReported($report){
-			$mail = new Mailer();
-			$subject = 'Babelium Project: Exercise reported';
-			$text = sprintf("Exercise (id=%d) has been reported to be %s by the user (id=%d)", $report->exerciseId, $report->reason, $_SESSION['uid']);
-			return ($mail->send($text, $subject, null));
-	}
-	
 
-	public function addExerciseScore($score){
+	private function notifyExerciseReported($report){
+		$mail = new Mailer();
+		$subject = 'Babelium Project: Exercise reported';
+		$text = sprintf("Exercise (id=%d) has been reported to be %s by the user (id=%d)", $report->exerciseId, $report->reason, $_SESSION['uid']);
+		return ($mail->send($text, $subject, null));
+	}
+
+	public function addExerciseScore($score = null){
 		try {
 			$verifySession = new SessionHandler(true);
+			
+			if(!$score)
+				return false;
 
 			$result = $this->userRatedExercise($score);
 			if (!$result){
@@ -435,7 +443,7 @@ class ExerciseDAO {
 				$insert_result = $this->conn->_insert($sql, $score->exerciseId, $_SESSION['uid'], $score->suggestedScore);
 
 				//return $this->getExerciseAvgScore($score->exerciseId);
-				return $this->getExerciseAvgBayesianScore($score->exerciseId);
+				return $this->conn->recast('ExerciseVO',$this->getExerciseAvgBayesianScore($score->exerciseId));
 
 			} else {
 				//The user has already given a score ignore the input.
@@ -448,23 +456,20 @@ class ExerciseDAO {
 
 	/**
 	 * Check if the user has already rated this exercise today
-	 * @param ExerciseScoreVO $score
+	 * @param stdClass $score
 	 * @throws Exception
 	 */
-	public function userRatedExercise($score){
+	public function userRatedExercise($score = null){
 		try {
 			$verifySession = new SessionHandler(true);
-
-			$sql = "SELECT *
-		        FROM exercise_score 
-		        WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
-			$result = $this->conn->_execute ( $sql, $score->exerciseId, $_SESSION['uid']);
-			$row = $this->conn->_nextRow ($result);
-			if ($row){
-				return true;
-			} else {
+	
+			if(!$score)
 				return false;
-			}
+			
+			$sql = "SELECT *
+		        	FROM exercise_score 
+		        	WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
+			return $this->conn->_singleSelect ( $sql, $score->exerciseId, $_SESSION['uid']);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -472,22 +477,18 @@ class ExerciseDAO {
 
 	/**
 	 * Check if the user has already reported about this exercise
-	 * @param ExerciseReportVO $report
+	 * @param stdClass $report
 	 */
-	public function userReportedExercise($report){
+	public function userReportedExercise($report = null){
 		try {
 			$verifySession = new SessionHandler(true);
-
+			if(!$report)
+				return false;
+				
 			$sql = "SELECT *
 				FROM exercise_report 
 				WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' )";
-			$result = $this->conn->_execute ($sql, $report->exerciseId, $_SESSION['uid']);
-			$row = $this->conn->_nextRow ($result);
-			if ($row){
-				return true;
-			} else {
-				return false;
-			}
+			return $this->conn->_singleSelect ($sql, $report->exerciseId, $_SESSION['uid']);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -495,29 +496,33 @@ class ExerciseDAO {
 
 	private function getExerciseAvgScore($exerciseId){
 
-		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
+		$sql = "SELECT e.id, 
+					   avg (suggested_score) as avgRating, 
+					   count(suggested_score) as ratingCount
 				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
 				WHERE (e.id = '%d' ) GROUP BY e.id";
 
-		return $this->_singleScoreQuery($sql, $exerciseId);
+		return $this->conn->_singleSelect($sql, $exerciseId);
 	}
 
 	/**
 	 * The average score is not accurate information in statistical terms, so we use a weighted value
 	 * @param int $exerciseId
 	 */
-	public function getExerciseAvgBayesianScore($exerciseId){
-
+	public function getExerciseAvgBayesianScore($exerciseId = 0){
+		if(!$exerciseId)
+			return false;
+		
+		
 		if(!isset($this->exerciseMinRatingCount)){
 			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
 
-			$result = $this->conn->_execute($sql);
-			$row = $this->conn->_nextRow($result);
+			$result = $this->conn->_singleSelect($sql);
 
-			if($row)
-			$this->exerciseMinRatingCount = $row[0];
+			if($result)
+				$this->exerciseMinRatingCount = $result->prefValue;
 			else
-			$this->exerciseMinRatingCount = 0;
+				$this->exerciseMinRatingCount = 0;
 		}
 
 		if(!isset($this->exerciseGlobalAvgRating)){
@@ -533,7 +538,7 @@ class ExerciseDAO {
 		if ($exerciseRatingCount == 0) $exerciseRatingCount = 1;
 
 		$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
-		($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
+							   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
 
 		$exerciseRatingData->avgRating = $exerciseBayesianAvg;
 
@@ -544,59 +549,9 @@ class ExerciseDAO {
 	private function getExercisesGlobalAvgScore(){
 		$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
 
-		$result = $this->conn->_execute($sql);
-		$row = $this->conn->_nextRow($result);
-		if($row)
-		return $row[0]; //The avg of all the exercises so far
-		else
-		return 0;
+		return ($result = $this->conn->_singleSelect($sql)) ? $result->globalAvgScore : 0;
 	}
 
-	private function _singleScoreQuery(){
-		$exercise = new ExerciseVO ( );
-		$result = $this->conn->_execute(func_get_args());
-		$row = $this->conn->_nextRow ($result);
-		if ($row){
-			$exercise->id = $row[0];
-			$exercise->avgRating = $row[1];
-			$exercise->ratingCount = $row[2];
-		} else {
-			return false;
-		}
-		return $exercise;
-
-	}
-
-	private function _exerciseListQuery() {
-		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new ExerciseVO ( );
-
-			$temp->id = $row[0];
-			$temp->title = $row[1];
-			$temp->description = $row[2];
-			$temp->language = $row[3];
-			$temp->tags = $row[4];
-			$temp->source = $row[5];
-			$temp->name = $row[6];
-			$temp->thumbnailUri = $row[7];
-			$temp->addingDate = $row[8];
-			$temp->duration = $row[9];
-			$temp->userName = $row[10];
-			$temp->avgDifficulty = $row[11];
-			$temp->status = $row[12];
-			$temp->license = $row[13];
-			$temp->reference = $row[14];
-
-			$temp->avgRating = $this->getExerciseAvgBayesianScore($temp->id)->avgRating;
-
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
-	}
 
 }
 

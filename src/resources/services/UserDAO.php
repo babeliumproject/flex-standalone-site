@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
+ * 
+ * Copyright (c) 2011 GHyM and by respective authors (see below).
+ * 
+ * This file is part of Babelium Project.
+ *
+ * Babelium Project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Babelium Project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
 require_once 'utils/SessionHandler.php';
@@ -12,12 +33,9 @@ require_once 'ExerciseDAO.php';
 
 
 /**
- * This class is used to make queries related to an VO object. When the results
- * are stored on our VO class AMFPHP parses this data and makes it available for
- * AS3/Flex use.
- *
- * It must be placed under amfphp's services folder, once we have successfully
- * installed amfphp's files in apache's web folder.
+ * This class performs user related operations
+ * 
+ * @author Babelium Team
  *
  */
 class UserDAO {
@@ -35,11 +53,13 @@ class UserDAO {
 
 	public function getTopTenCredited()
 	{
-		$sql = "SELECT name, creditCount FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
+		$sql = "SELECT name, 
+					   creditCount 
+				FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
 
-		$searchResults = $this->_listQuery($sql);
+		$searchResults = $this->conn->_multipleSelect($sql);
 
-		return (count($searchResults))? $searchResults : false ;
+		return $this->conn->multipleRecast('UserVO',$searchResults);
 	}
 
 	public function keepAlive(){
@@ -53,46 +73,51 @@ class UserDAO {
 
 			//Check that there's not another active session for this user
 			$sql = "SELECT * FROM user_session WHERE ( session_id = '%s' AND fk_user_id = '%d' AND closed = 0 )";
-			$result = $this->conn->_execute ( $sql, $sessionId, $_SESSION['uid'] );
-			$row = $this->conn->_nextRow($result);
-			if($row){
+			$result = $this->conn->_singleSelect ( $sql, $sessionId, $_SESSION['uid'] );
+			if($result){
 				$sql = "UPDATE user_session SET keep_alive = 1 WHERE fk_user_id = '%d' AND closed=0";
 
-				return $this->conn->_execute($sql, $_SESSION['uid']);
+				return $this->conn->_update($sql, $_SESSION['uid']);
 			}
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 	}
 
-	public function changePass($oldpass, $newpass)
+	public function changePass($oldpass = null, $newpass = null)
 	{
 		try {
 			$verifySession = new SessionHandler(true);
 
+			if(!$oldpass || !$newpass)
+				return false;
+			
 			$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
-			$result = $this->conn->_execute($sql, $_SESSION['uid'], $oldpass);
-			$row = $this->conn->_nextRow($result);
-			if (!$row)
-			return false;
+			$result = $this->conn->_singleSelect($sql, $_SESSION['uid'], $oldpass);
+			if (!$result)
+				return false;
 
 			$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
-			$result = $this->conn->_execute($sql, $newpass, $_SESSION['uid'], $oldpass);
+			$result = $this->conn->_update($sql, $newpass, $_SESSION['uid'], $oldpass);
 
-			return true;
+			return $result;
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 	}
 
 	//The parameter should be an array of UserLanguageVO
-	public function modifyUserLanguages($languages) {
+	public function modifyUserLanguages($languages = null) {
 
 		try {
 			$verifySession = new SessionHandler(true);
+			
+			if(!$languages)
+				return false;
 
 			$sql = "SELECT prefValue FROM preferences WHERE ( prefName='positives_to_next_level' )";
-			$positivesToNextLevel = $this->_getPositivesToNextLevel($sql);
+			$result = $this->conn->_singleSelect($sql);
+			$positivesToNextLevel = $result ? $result->prefValue : 15;
 
 			$currentLanguages = $_SESSION['user-languages'];
 
@@ -100,11 +125,11 @@ class UserDAO {
 
 			//Delete the languages that have changed
 			$sql = "DELETE FROM user_languages WHERE fk_user_id = '%d'";
-			$result = $this->conn->_execute($sql, $_SESSION['uid']);
+			$result = $this->conn->_delete($sql, $_SESSION['uid']);
 
-			if(!$result || !$this->conn->_affectedRows()){
+			if(!$result){
 				$this->conn->_failedTransaction();
-				throw new Exception("Language modify failed");
+				throw new Exception("Language modification failed");
 			}
 
 			//Insert the new languages
@@ -120,11 +145,11 @@ class UserDAO {
 			// put sql query and all params in one array
 			$merge = array_merge((array)$sql, $params);
 
-			$result = $this->_vcreate($merge);
+			$result = $this->conn->_insert($merge);
 
 			if (!$result){
 				$this->conn->_failedTransaction();
-				throw new Exception("Language modify failed");
+				throw new Exception("Language modification failed");
 			} else {
 				$this->conn->_endTransaction();
 			}
@@ -141,9 +166,12 @@ class UserDAO {
 
 	}
 	
-	public function modifyUserPersonalData($personalData){
+	public function modifyUserPersonalData($personalData = null){
 		try {
 			$verifySession = new SessionHandler(true);
+			
+			if(!$personalData)
+				return false;
 			
 			$validator = new EmailAddressValidator();
 			if(!$validator->check_email_address($personalData->email)){
@@ -154,7 +182,7 @@ class UserDAO {
 			
 				$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'";
 			
-				$updateData = $this->conn->_execute($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
+				$updateData = $this->conn->_update($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
 				if($updateData){
 					$currentPersonalData->realName = $personalData->realName;
 					$currentPersonalData->realSurname = $personalData->realSurname;
@@ -175,8 +203,21 @@ class UserDAO {
 		try {
 			$verifySession = new SessionHandler(true);
 			
-			$sql = "SELECT e.id, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri, e.adding_date,
-		               e.duration, avg (suggested_level) as avgLevel, e.status, license, reference, a.id
+			$sql = "SELECT e.id, 
+						   e.title, 
+						   e.description, 
+						   e.language, 
+						   e.tags, 
+						   e.source, 
+						   e.name, 
+						   e.thumbnail_uri as thumbnailUri, 
+						   e.adding_date as addingDate,
+		               	   e.duration, 
+		               	   avg (suggested_level) as avgDifficulty, 
+		               	   e.status, 
+		               	   license, 
+		               	   reference, 
+		               	   a.complete as isSubtitled
 				FROM exercise e 
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
@@ -185,50 +226,28 @@ class UserDAO {
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 			
-			$searchResults = $this->_exerciseListQuery($sql, $_SESSION['uid']);
 			
-			return $searchResults;
+			
+			$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
+			$exercise = new ExerciseDAO();
+			foreach($searchResults as $searchResult){
+				$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
+				$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			}
+			
+			return $this->conn->multipleRecast('ExerciseVO', $searchResults);
 			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}	
 	}
 	
-	private function _exerciseListQuery() {
-		$exercise = new ExerciseDAO();
-		$searchResults = array ();
-		$result = $this->conn->_execute ( func_get_args() );
-
-		while ( $row = $this->conn->_nextRow ( $result ) ) {
-			$temp = new ExerciseVO ( );
-
-			$temp->id = $row[0];
-			$temp->title = $row[1];
-			$temp->description = $row[2];
-			$temp->language = $row[3];
-			$temp->tags = $row[4];
-			$temp->source = $row[5];
-			$temp->name = $row[6];
-			$temp->thumbnailUri = $row[7];
-			$temp->addingDate = $row[8];
-			$temp->duration = $row[9];
-			$temp->avgDifficulty = $row[10];
-			$temp->status = $row[11];
-			$temp->license = $row[12];
-			$temp->reference = $row[13];
-			$temp->isSubtitled = $row[14] ? true : false;
-
-			$temp->avgRating = $exercise->getExerciseAvgBayesianScore($temp->id)->avgRating;
-
-			array_push ( $searchResults, $temp );
-		}
-
-		return $searchResults;
-	}
-	
-	public function deleteSelectedVideos($selectedVideos){
+	public function deleteSelectedVideos($selectedVideos = null){
 		try {
 			$verifySession = new SessionHandler(true);
+			
+			if(!$selectedVideos)
+				return false;
 			
 			$whereClause = '';
 			$names = array();
@@ -244,7 +263,7 @@ class UserDAO {
 				$sql = "UPDATE exercise SET status='Unavailable' WHERE ( fk_user_id=%d AND" . $whereClause ." )";
 				
 				$merge = array_merge((array)$sql, (array)$_SESSION['uid'], $names);
-				$updateData = $this->conn->_execute($merge);
+				$updateData = $this->conn->_update($merge);
 
 				return $updateData ? true : false;
 			}
@@ -254,18 +273,21 @@ class UserDAO {
 		}	
 	}
 	
-	public function modifyVideoData($videoData){
+	public function modifyVideoData($videoData = null){
 		try{
 			$verifySession = new SessionHandler(true);
+			
+			if(!$videoData)
+				return false;
 			
 			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s' 
 					WHERE ( name='%s' AND fk_user_id=%d )";
 			
-			$updateData = $this->conn->_execute($sql, $videoData->title, $videoData->description, $videoData->tags, $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
+			$updateData = $this->conn->_update($sql, $videoData->title, $videoData->description, $videoData->tags, $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
 			
 			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
 			
-			$insertData = $this->conn->_execute($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
+			$insertData = $this->conn->_insert($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
 			
 			return $updateData && $insertData ? true : false;
 			
@@ -275,40 +297,20 @@ class UserDAO {
 		}
 	}
 
-	private function _getPositivesToNextLevel(){
-		$result = $this->conn->_execute(func_get_args());
-		if($row = $this->conn->_nextRow($result))
-		return $row[0];
-		else
-		return 0;
-	}
-
 	private function _getUserLanguages(){
-		$sql = "SELECT language, level, positives_to_next_level, purpose
+		$sql = "SELECT language, 
+					   level, 
+					   positives_to_next_level as positivesToNextLevel, 
+					   purpose
 				FROM user_languages WHERE (fk_user_id='%d')";
-		return $this->_listUserLanguagesQuery($sql, $_SESSION['uid']);
+		return $this->conn->_multipleSelect($sql, $_SESSION['uid']);
 	}
 
-
-
-	private function _listUserLanguagesQuery(){
-		$searchResults = array();
-
-		$result = $this->conn->_execute(func_get_args());
-		while($row = $this->conn->_nextRow($result)){
-			$temp = new UserLanguageVO();
-			$temp->language = $row[0];
-			$temp->level = $row[1];
-			$temp->positivesToNextLevel = $row[2];
-			$temp->purpose = $row[3];
-
-			array_push($searchResults, $temp);
-		}
-		return $searchResults;
-	}
-
-	public function restorePass($username)
+	public function restorePass($username = 0)
 	{
+		if(!$username)
+			return false;
+		
 		$id = -1;
 		$email = "";
 		$user = "";
@@ -320,21 +322,19 @@ class UserDAO {
 
 		// Username or email checking
 		$sql = "SELECT id, name, email, realName FROM users WHERE $aux = '%s'";
-		$result = $this->conn->_execute($sql, $username);
-		$row = $this->conn->_nextRow($result);
-
-		if ($row)
+		$result = $this->conn->_singleSelect($sql, $username);
+		if ($result)
 		{
-			$id = $row[0];
-			$user = $row[1];
-			$email = $row[2];
-			$realName = $row[3];
+			$id = $result->id;
+			$user = $result->name;
+			$email = $result->email;
+			$realName = $result->realName;
 		}
 
 		if ( $realName == '' || $realName == 'unknown' ) 
 			$realName = $user;
 
-		// User dont exists
+		//User doesn't exist
 		if ( $id == -1 ) 
 			return "Unregistered user";
 
@@ -343,9 +343,9 @@ class UserDAO {
 		$this->conn->_startTransaction();
 
 		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
-		$result = $this->conn->_execute($sql, sha1($newPassword), $id);
+		$result = $this->conn->_update($sql, sha1($newPassword), $id);
 		
-		if($this->conn->_affectedRows() == 1){
+		if($result == 1){
 
 			$args = array(
 							'REAL_NAME' => $realName,
@@ -355,7 +355,8 @@ class UserDAO {
 
 			$mail = new Mailer($email);
 
-			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) return null;
+			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) 
+				return null;
 
 			$subject = "Your password has been reseted";
 
@@ -370,23 +371,6 @@ class UserDAO {
 		}
 	}
 
-	// Returns an array of Users
-	private function _listQuery()
-	{
-		$searchResults = array();
-		$result = $this->conn->_execute(func_get_args());
-
-		while ($row = $this->conn->_nextRow($result))
-		{
-			$temp = new UserVO();
-			$temp->name = $row[0];
-			$temp->creditCount = $row[1];
-			array_push($searchResults, $temp);
-		}
-
-		return $searchResults;
-	}
-
 	private function _createNewPassword()
 	{
 		$pass = "";
@@ -398,21 +382,6 @@ class UserDAO {
 		$pass .= substr($chars, rand(0, strlen($chars)-1), 1);  // java: chars.charAt( random );
 
 		return $pass;
-	}
-
-	private function _vcreate($params) {
-
-		$this->conn->_execute ( $params );
-
-		$sql = "SELECT last_insert_id()";
-		$result = $this->conn->_execute ( $sql );
-
-		$row = $this->conn->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
 	}
 
 }
