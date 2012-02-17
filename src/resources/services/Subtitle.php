@@ -37,11 +37,11 @@ require_once 'vo/UserVO.php';
  * 
  * @author Babelium Team
  */
-class SubtitleDAO {
+class Subtitle {
 
 	private $conn;
 
-	public function SubtitleDAO() {
+	public function Subtitle() {
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config ( );
@@ -133,10 +133,12 @@ class SubtitleDAO {
 			$searchResults = $this->conn->_multipleSelect ( $sql, $subtitleId );
 		}
 
+		$recastedResults = $this->conn->multipleRecast('SubtitleLineVO',$searchResults);
 		//Store the last retrieved subtitle lines to check if there are changes when saving the subtitles.
-		$_SESSION['unmodified-subtitles'] = $searchResults;
+		if($recastedResults)
+			$_SESSION['unmodified-subtitles'] = $recastedResults;
 
-		return $this->conn->multipleRecast('SubtitleLineVO', $searchResults);
+		return $recastedResults;
 	}
 	
 
@@ -257,7 +259,7 @@ class SubtitleDAO {
 
 		//Update the credit history
 		$creditHistoryInsert = $this->_addSubtitlingToCreditHistory($exerciseId);
-		if(!creditHistoryInsert){
+		if(!$creditHistoryInsert){
 			$this->conn->_failedTransaction();
 			throw new Exception("Credit history update failed");
 		}
@@ -351,7 +353,7 @@ class SubtitleDAO {
 				$errorMessage.="The text on the line " . ($i + 1) . " is empty.\n";
 			if ($i > 0)
 			{
-				if ($subtitleCollection[($i-1)]->hideTime >= $subtitleCollection[$i]->showTime)
+				if ($subtitleCollection[($i-1)]->hideTime + 0.2 >= $subtitleCollection[$i]->showTime)
 					$errorMessage.="The subtitle on the line " . $i . " overlaps with the next subtitle.\n";
 			}
 		}

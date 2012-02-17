@@ -36,12 +36,12 @@ require_once 'vo/UserVO.php';
  * @author Babelium Team
  *
  */
-class RegisterUser{
+class Register{
 
 	private $conn;
 	private $settings;
 
-	public function RegisterUser(){
+	public function Register(){
 		try{
 			$verifySession = new SessionHandler();
 			$this->settings = new Config();

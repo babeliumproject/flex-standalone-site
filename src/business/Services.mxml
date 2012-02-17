@@ -9,79 +9,79 @@
 		<mx:RemoteObject id="userRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="UserDAO"/>
+						 source="User"/>
 
 		<mx:RemoteObject id="registerRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="RegisterUser"/>
+						 source="Register"/>
 
 		<mx:RemoteObject id="creditRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="CreditDAO"/>
+						 source="Credit"/>
 
 		<mx:RemoteObject id="prefRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="PreferenceDAO"/>
+						 source="Preference"/>
 
 		<mx:RemoteObject id="loginRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="LoginDAO"/>
+						 source="Auth"/>
 
 		<mx:RemoteObject id="subtitleRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="SubtitleDAO"/>
+						 source="Subtitle"/>
 
 		<!--
 		<mx:RemoteObject id="rolRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="ExerciseRoleDAO"/>
+						 source="ExerciseRole"/>
 		-->
 		
 		<mx:RemoteObject id="exerciseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="ExerciseDAO"/>
+						 source="Exercise"/>
 
 		<mx:RemoteObject id="searchRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="SearchDAO"/>
+						 source="Search"/>
 
 		<mx:RemoteObject id="youtubeRO"
 						 destination="babeliumService"
 						 showBusyCursor="false"
-						 source="YouTubeDAO"/>
+						 source="External"/>
 
 		<mx:RemoteObject id="autoevaluationRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="TranscriptionsDAO"/>
+						 source="Transcriptions"/>
 
 		<mx:RemoteObject id="evaluationRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="EvaluationDAO"/>
+						 source="Evaluation"/>
 
 		<mx:RemoteObject id="responseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="ResponseDAO"/>
+						 source="Response"/>
 		
 		<mx:RemoteObject id="videoHistoryRO"
 						 destination="babeliumService"
 						 showBusyCursor="false"
-						 source="UserVideoHistoryDAO"/>
+						 source="UserVideoHistory"/>
 
 		<mx:RemoteObject id="homepageRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="HomepageDAO"/>
+						 source="Home"/>
 
 	</fx:Declarations>
 

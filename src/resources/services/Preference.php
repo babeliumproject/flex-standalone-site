@@ -33,11 +33,11 @@ require_once 'vo/PreferenceVO.php';
  * @author Babelium Team
  *
  */
-class PreferenceDAO {
+class Preference {
 
 	private $conn;
 
-	public function PreferenceDAO(){
+	public function Preference(){
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config();

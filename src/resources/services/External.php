@@ -32,7 +32,7 @@ require_once 'utils/SessionHandler.php';
  * @author Babelium Team
  *
  */
-class YouTubeDAO {
+class External {
 	
 	// Enter your Google account credentials
 	private $email;
@@ -48,7 +48,7 @@ class YouTubeDAO {
 	private $exerciseFolder;
 	private $conn;
 	
-	function YouTubeDAO() {
+	function External() {
 		Zend_Loader::loadClass ( 'Zend_Gdata_YouTube' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_ClientLogin' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_App_Exception' );

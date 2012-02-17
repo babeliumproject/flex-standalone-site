@@ -92,7 +92,8 @@
 									dataProvider="{availableSubtitleVersions}"
 									change="{onSubtitleVersionChange(event)}"
 									labelFunction="{subtitleVersionComboLabelFunction}"
-									minWidth="250"/>
+									minWidth="250"
+									requireSelection="true"/>
 					</s:HGroup>
 				</s:VGroup>
 

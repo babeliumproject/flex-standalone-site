@@ -27,8 +27,8 @@ require_once 'utils/SessionHandler.php';
 
 require_once 'vo/MotdVO.php';
 
-require_once 'EvaluationDAO.php';
-require_once 'ExerciseDAO.php';
+require_once 'Evaluation.php';
+require_once 'Exercise.php';
 
 /**
  * Class to perform user's recent activity or homepage activy operations
@@ -36,11 +36,11 @@ require_once 'ExerciseDAO.php';
  * @author Babelium Team
  *
  */
-class HomepageDAO{
+class Home{
 
 	private $conn;
 
-	public function HomepageDAO(){
+	public function Home(){
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config ();
@@ -63,9 +63,9 @@ class HomepageDAO{
 				FROM motd 
 				WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = false ) ";
 
-		$searchResults = $this->conn->multipleRecast('MotdVO',$this->conn->_multipleSelect($sql, $messageLocale));
+		$searchResults = $this->conn->_multipleSelect($sql, $messageLocale);
 
-		return $searchResults;
+		return $this->conn->multipleRecast('MotdVO', $searchResults);
 
 	}
 
@@ -81,9 +81,9 @@ class HomepageDAO{
 				FROM motd 
 				WHERE ( CURDATE() >= displayDate AND language='%s' AND displaywhenloggedin = true ) ";
 
-		$searchResults = $this->conn->multipleRecast('MotdVO',$this->conn->_multipleSelect($sql, $messageLocale));
+		$searchResults = $this->conn->_multipleSelect($sql, $messageLocale);
 
-		return $searchResults;
+		return $this->conn->multipleRecast('MotdVO', $searchResults);
 
 	}
 
@@ -126,9 +126,11 @@ class HomepageDAO{
 		 * LEFT OUTER JOIN evaluation_video B ON A.id = B.fk_evaluation_id 
 		 */
 
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
+		$searchResults = $this->conn->_multipleSelect ( $sql, $_SESSION['uid'] );
 
-		return $this->sliceResultsByNumber($searchResults,5);
+		$slicedResults = $this->sliceResultsByNumber($searchResults,5);
+
+		return $this->conn->multipleRecast('EvaluationVO', $slicedResults);
 	}
 
 
@@ -137,7 +139,7 @@ class HomepageDAO{
 		$results = array();
 
 		//List of all the assessments done by the user
-		$evaluation = new EvaluationDAO();
+		$evaluation = new Evaluation();
 		$givenAssessments = $evaluation->getResponsesAssessedByCurrentUser();
 
 		return $this->sliceResultsByNumber($givenAssessments, 5);
@@ -172,7 +174,7 @@ class HomepageDAO{
 	}
 
 	public function topScoreMostViewedVideos(){
-		$exercise = new ExerciseDAO();
+		$exercise = new Exercise();
 		$sql = "SELECT e.id, 
 					   e.title, 
 					   e.description, 
@@ -202,13 +204,13 @@ class HomepageDAO{
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 		}
-		$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
-		$filteredResults = $exercise->filterByLanguage($rSearchResults, 'practice');
+
+		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
 		
 		usort($filteredResults, array($this, 'sortResultsByScore'));
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
 		
-		return $slicedResults;
+		return $this->conn->multipleRecast('ExerciseVO', $slicedResults);
 	}
 	
 	private function sortResultsByScore($exerciseA, $exerciseB){
@@ -219,7 +221,7 @@ class HomepageDAO{
 	}
 
 	public function latestAvailableVideos(){
-		$exercise = new ExerciseDAO();
+		$exercise = new Exercise();
 		$sql = "SELECT e.id, 
 					   e.title, 
 					   e.description, 
@@ -249,10 +251,10 @@ class HomepageDAO{
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 		}
-		$rSearchResults = $this->conn->multipleRecast('ExerciseVO', $searchResults);
-		$filteredResults = $exercise->filterByLanguage($rSearchResults, 'practice');
+
+		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
 		$slicedResults = $this->sliceResultsByNumber($filteredResults, 10);
-		return $slicedResults;
+		return $this->conn->multipleRecast('ExerciseVO', $slicedResults);
 	}
 
 

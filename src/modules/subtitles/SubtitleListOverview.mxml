@@ -146,30 +146,32 @@
 
 			private function onRemoteUpdate(event:SyncEvent):void
 			{
-				var simultaneousEdit:Boolean=false;
-				var remoteData:Object=rso.data;
-				var timestamp:uint=new Date().getTime();
-				for (var item:Object in remoteData)
+				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name)
 				{
-					//If other than yourself is editing this exercise's subtitles display a notification
-					var ex:String=remoteData[item].exercise;
-					var ts:uint=remoteData[item].timestamp;
-					var dif:uint=(timestamp - ts) / 1000;
+					var simultaneousEdit:Boolean=false;
+					var remoteData:Object=rso.data;
+					var timestamp:uint=new Date().getTime();
 
-
-					if (item.toString() != dataModel.loggedUser.name && ex == currentExercise.name && dif < 20)
+					for (var item:Object in remoteData)
 					{
-						simultaneousEdit=true;
+						//If other than yourself is editing this exercise's subtitles display a notification
+						var ex:String=remoteData[item].exercise;
+						var ts:uint=remoteData[item].timestamp;
+						var dif:uint=(timestamp - ts) / 1000;
+						if (item.toString() != dataModel.loggedUser.name && ex == currentExercise.name && dif < 20)
+						{
+							simultaneousEdit=true;
+						}
 					}
+					subtitleEditor.simultaneousEditNotice.includeInLayout=simultaneousEdit;
+					subtitleEditor.simultaneousEditNotice.visible=simultaneousEdit;
 				}
-				subtitleEditor.simultaneousEditNotice.includeInLayout=simultaneousEdit;
-				subtitleEditor.simultaneousEditNotice.visible=simultaneousEdit;
 			}
 
 
 			private function reserveRemoteSlot(event:TimerEvent):void
 			{
-				if (dataModel.loggedUser.name && currentExercise && currentExercise.name)
+				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name)
 				{
 					var date:Date=new Date();
 					rso.setProperty(dataModel.loggedUser.name, {exercise: currentExercise.name, timestamp: date.getTime()});

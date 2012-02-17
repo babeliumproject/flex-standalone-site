@@ -179,7 +179,7 @@ class VideoProcessor{
 	 * @param string $ffmpegOutput
 	 */
 	private function retrieveAudioInfo($ffmpegOutput){
-		if(preg_match('/Audio: (([\w\s\/\[\]:]+), ([\w\s\/\[\]:]+), ([\w\s\/\[\]:\.]+), ([\w\s\/\[\]:]+)(, \w+\s\w+\/s)?)/s', $ffmpegOutput, $audioinfo)){
+		if(preg_match('/Audio: (([\w]+)[^,]*, ([\w\s\/\[\]:]+), ([\w\s\/\[\]:\.]+), ([\w\s\/\[\]:]+)(, \w+\s\w+\/s)?)/s', $ffmpegOutput, $audioinfo)){
 			$this->mediaContainer->hasAudio = true;
 			$this->mediaContainer->audioCodec = trim($audioinfo[2]);
 			$this->mediaContainer->audioRate = trim($audioinfo[3]);
@@ -202,7 +202,8 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoInfo($ffmpegOutput){
 		
-		if(preg_match('/Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
+		if(preg_match('/Stream \#\d:\d: Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
+		//if(preg_match('/Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
 			$this->mediaContainer->hasVideo = true;
 			$this->mediaContainer->videoCodec = trim($result[2]);
 			$this->mediaContainer->videoColorspace = trim($result[3]);
@@ -457,6 +458,151 @@ class VideoProcessor{
 		} else {
 			throw new Exception("Non-valid preset was chosen. Transcode aborted.");
 		}
+	}
+	
+	public function demuxEncodeAudio($inputFilePath, $outputFilePath, $audioChannels = 2, $audioSamplerate = 44100){
+		
+		//TODO check ffmpeg is able to encode in the format denoted in the output file ffmpeg -formats E
+		//TODO check the specified audio channel and samplerate are supported by the codec 
+		$preset_demux_encode_audio = "ffmpeg -y -i %s -ac %d -ar %d %s 2>&1";
+		
+		$cleanInputPath = escapeshellcmd($inputFilePath);
+		$cleanOutputPath = escapeshellcmd($outputFilePath);
+		
+		if(!is_readable($cleanInputPath) || !is_file($cleanInputPath))
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+		if(!is_writable(dirname($cleanOutputPath)))
+			throw new Exception("You don't have enough permissions to write to the output");
+			
+		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+			try {
+				//This file hasn't been scanned yet
+				$this->retrieveMediaInfo($cleanInputPath);
+			} catch (Exception $e) {
+				throw new Exception($e->getMessage());
+			}
+		}
+		
+		if($this->mediaContainer->hasAudio){
+			$sysCall = sprintf($preset_demux_encode_audio,$cleanInputPath,$audioChannels,$audioSamplerate,$outputFilePath);
+			$result = (exec($sysCall,$output));
+			return $result;
+		} else {
+			throw new Exception("The provided file does not have any valid audio streams");
+		}
+		
+	}
+	
+	public function muxEncodeAudio($inputVideoPath, $outputVideoPath, $inputAudioPath){
+		$preset = "ffmpeg -i '%s' -i '%s' -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
+		
+		$cleanInputVideoPath = escapeshellcmd($inputVideoPath);
+		$cleanOutputVideoPath = escapeshellcmd($outputVideoPath);
+		$cleanInputAudioPath = escapeshellcmd($inputAudioPath);
+	
+		//TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
+		
+		if(!is_readable($cleanInputVideoPath) || !is_file($cleanInputVideoPath) || !is_readable($cleanInputAudioPath) || !is_file($cleanInputAudioPath))
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+		if(!is_writable(dirname($cleanOutputVideoPath)))
+			throw new Exception("You don't have enough permissions to write to the output");
+		
+		$sysCall = sprintf($preset, $cleanInputVideoPath, $cleanInputAudioPath, $cleanOutputVideoPath);
+		$result = (exec($sysCall,$output));
+		return $result;
+	}
+	
+	public function audioSubsample($inputFilePath, $outputFilePath, $startTime = 0, $endTime = -1, $volume = -1){
+		
+		$preset = "ffmpeg -y -i '%s' -ss '%s'";
+		if($endTime>0 && $endTime>$startTime){
+			$duration = $endTime - $startTime;
+			$preset .= " -t ".$duration;
+		}
+		//Not sure if ffmpeg sets the int size on the basis of your system's architecture (32bit/64bit) but just in case I set it to 32bit
+		if($volume>=0 && $volume<=2600){
+			$bin_vol = round($volume*2.56);
+			$preset .= " -vol ".$bin_vol;
+		}
+		$preset .= " '%s' 2>&1";
+		
+		$cleanInputPath = escapeshellcmd($inputFilePath);
+		$cleanOutputPath = escapeshellcmd($outputFilePath);
+		
+		if(!is_readable($cleanInputPath) || !is_file($cleanInputPath))
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+		if(!is_writable(dirname($cleanOutputPath)))
+			throw new Exception("You don't have enough permissions to write to the output");
+			
+		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+			try {
+				//This file hasn't been scanned yet
+				$this->retrieveMediaInfo($cleanInputPath);
+			} catch (Exception $e) {
+				throw new Exception($e->getMessage());
+			}
+		}
+		
+		if($this->mediaContainer->hasAudio){
+			$sysCall = sprintf($preset,$cleanInputPath,$startTime,$outputFilePath);
+			$result = (exec($sysCall,$output));
+			return $result;
+		} else {
+			throw new Exception("The provided file does not have any valid audio streams");
+		}
+		
+	}
+
+	public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $width = 320, $height = 240){
+		$cleanInputVideoPath1 = escapeshellcmd($inputVideoPath1);
+		$cleanInputVideoPath2 = escapeshellcmd($inputVideoPath2);
+		$cleanOutputVideoPath = escapeshellcmd($outputVideoPath);
+	
+		//TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
+		
+		if($width<5 || $height<5)
+			throw new Exception("Specified size is too small");
+		
+		if( !is_readable($cleanInputVideoPath1) || !is_readable($cleanInputVideoPath2) )
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+		if( !is_writable(dirname($cleanOutputVideoPath)) )
+			throw new Exception("You don't have enough permissions to write to the output");
+			
+		if($inputAudioPath){
+			$cleanAudioPath = escapeshellcmd($inputAudioPath);
+			if(!is_readable($cleanAudioPath))
+				throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+		}
+		
+		
+		/**
+		  * This preset takes two inputs: the original exercise video and the audio collage
+		  * The filters separated by commas between [in] and [out] are the main filter chain
+		  * [T0] and [T1] are alternate separated chains. In this script the main chain waits for each alternate chain to finish before it applies the overlay.
+		  * After resizing and applying the overlays we encode the input audio to mp3 and exchange the original exercise's audio with the reencoded audio collage
+		  * using stream index mapping. -map <input_number>:<stream_index>
+		  */
+		$preset_merge_videos = "ffmpeg -y -i '%s' -i '%s' -vf \"[in]settb=1/25,setpts=N/(25*TB),pad=%d:%d:0:0:0x000000, [T1]overlay=W/2:0 [out]; movie='%s':f=flv:si=0,scale=%d:%d,setpts=PTS-STARTPTS[T1]\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
+		
+		$sysCall = sprintf($preset_merge_videos,$cleanInputVideoPath1, $inputAudioPath, 2*$width, $height, $cleanInputVideoPath2, $width, $height, $cleanOutputVideoPath);
+		$result = (exec($sysCall,$output));
+		return $result;
+		
+	}
+	
+	public function concatAudio($inputPath, $filePrefix, $outputPath){
+		$cleanInputPath = escapeshellcmd($inputPath);
+		$cleanOutputPath = escapeshellcmd($outputPath);
+		if(!is_readable($cleanInputPath))
+			throw new Exception("You don't have enough permissions to read from the input");
+		if(!is_writable($cleanOutputPath))
+			throw new Exception("You don't have enough permissions to write to the output");
+		
+		//TODO  should check the presecence of sox in the $PATH first and throw an error elseways
+		$preset = "sox '%s/%s_*' '%s/%scollage.wav' 2>&1";
+		$sysCall = sprintf($preset,$cleanInputPath,$filePrefix,$cleanOutputPath,$filePrefix);
+		$result = (exec($sysCall, $output));
+		return $result;
 	}
 
 

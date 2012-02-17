@@ -188,7 +188,7 @@ package modules.subtitles
 				for each (var subtVer:Object in availableSubtitleVersions)
 				{
 					if (subtVer.id == activeSubtitleId)
-					{
+					{	
 						subtitleVersionSelector.selectedItem=subtVer;
 						break;
 					}

@@ -35,7 +35,7 @@ require_once 'vo/UserVO.php';
  * @author Babelium Team
  *
  */
-class ResponseDAO {
+class Response {
 
 	private $conn;
 	private $filePath;
@@ -49,7 +49,7 @@ class ResponseDAO {
 	
 	private $mediaHelper;
 
-	public function ResponseDAO() {
+	public function Response() {
 		try {
 			$verifySession = new SessionHandler(true);
 			$settings = new Config ( );

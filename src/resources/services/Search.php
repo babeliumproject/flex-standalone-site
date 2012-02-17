@@ -33,7 +33,7 @@ require_once 'Zend/Search/Lucene.php';
  * @author Babelium Team
  *
  */
-class SearchDAO {
+class Search {
 	private $conn;
 	private $indexPath;
 	private $index;
@@ -43,7 +43,7 @@ class SearchDAO {
 	
 	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
 
-	public function SearchDAO() {
+	public function Search() {
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config ( );

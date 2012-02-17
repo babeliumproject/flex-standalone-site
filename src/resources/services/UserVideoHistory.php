@@ -33,11 +33,11 @@ require_once 'vo/UserVideoHistoryVO.php';
  * @author Babelium Team
  *
  */
-class UserVideoHistoryDAO{
+class UserVideoHistory{
 
 	private $conn;
 
-	public function UserVideoHistoryDAO(){
+	public function UserVideoHistory(){
 		try {
 			$verifySession = new SessionHandler(true);
 			$settings = new Config ( );

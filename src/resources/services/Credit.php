@@ -33,7 +33,7 @@ require_once 'vo/CreditHistoryVO.php';
  * 
  * @author Babelium Team
  */
-class CreditDAO {
+class Credit {
 	
 	private $conn;
 	
@@ -44,7 +44,7 @@ class CreditDAO {
 	 * 		Throws an error if the one trying to access this class is not successfully logged in on the system 
 	 * 		or there was any problem establishing a connection with the database.
 	 */
-	public function CreditDAO() {
+	public function Credit() {
 
 		try {
 			$verifySession = new SessionHandler(true);

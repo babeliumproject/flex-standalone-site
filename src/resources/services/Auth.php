@@ -36,7 +36,7 @@ require_once 'vo/LoginVO.php';
  * @author Babelium Team
  *
  */
-class LoginDAO{
+class Auth{
 
 	private $conn;
 	
@@ -45,7 +45,7 @@ class LoginDAO{
 	 * @throws Exception
 	 * 		Throws an error if the session couldn't be set or the database connection couldn't be established
 	 */
-	public function LoginDAO(){
+	public function Auth(){
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config();
@@ -96,7 +96,7 @@ class LoginDAO{
 	 * 		Returns the current user data. Or an error message when wrong login data is provided
 	 */
 	public function processLogin($user = null){
-		if($user != null && is_object($user)){
+		if($user && is_object($user)){
 			//Check if the given username exists
 			if($this->getUserInfo($user->name)==false){
 				return "wrong_user";
@@ -110,31 +110,26 @@ class LoginDAO{
 				$sql = "SELECT id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
 				$result = $this->conn->_singleSelect($sql, $user->name, $user->pass);
 				if($result){
-					$userId = $result->id;
-					$userLanguages = $this->_getUserLanguages($userId);
+					$userLanguages = $this->_getUserLanguages($result->id);
 					$result->userLanguages = $userLanguages;
-					$this->_startUserSession($result);
+					
+					$userData = $this->conn->recast('UserVO', $result);
+					
+					$this->_startUserSession($userData);
 
-					$filteredResult = new UserVO();
-					$filteredResult->name = $result->name;
-					$filteredResult->realName = $result->realName;
-					$filteredResult->realSurname = $result->realSurname;
-					$filteredResult->email = $result->email;
-					$filteredResult->creditCount = $result->creditCount;
-					$filteredResult->joiningDate = $result->joiningDate;
-					$filteredResult->isAdmin = $result->isAdmin;
-					$filteredResult->userLanguages = $userLanguages;
+					//Don't send back the user's id
+					$userData->id = null;
 
-					return $filteredResult;
+					return $userData;
 				} else {
 					return "wrong_password";
 				}
 			}
 		} else {
-			if( $this->checkSessionLogin() && isset($_SESSION['user-data']) && !empty($_SESSION['user-data']) ){
+			if( $this->checkSessionLogin() && isset($_SESSION['user-data']) && !empty($_SESSION['user-data']) && is_object($_SESSION['user-data']) ){
 				$loggedUser = $_SESSION['user-data'];
 				$loggedUser->id = 0;
-				return $this->conn->recast('UserVO',$loggedUser);
+				return $loggedUser;
 			} else {
 				return "unauthorized";
 			}
@@ -175,7 +170,7 @@ class LoginDAO{
 
 		$sql = "SELECT id, name, realName, realSurname, email, creditCount FROM users WHERE (name = '%s') ";
 
-		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $username));
+		return $this->conn->_singleSelect($sql, $username);
 	}
 
 	/**

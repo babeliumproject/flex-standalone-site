@@ -35,7 +35,7 @@ require_once 'vo/UserVO.php';
  * 
  * @author Babelium Team
  */
-class EvaluationDAO {
+class Evaluation {
 
 	private $conn;
 
@@ -56,7 +56,7 @@ class EvaluationDAO {
 	 * 		Throws an error if the one trying to access this class is not successfully logged in on the system 
 	 * 		or there was any problem establishing a connection with the database.
 	 */
-	public function EvaluationDAO(){
+	public function Evaluation(){
 		try {
 			$verifySession = new SessionHandler(true);
 			$settings = new Config ( );

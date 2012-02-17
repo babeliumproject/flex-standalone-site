@@ -322,9 +322,9 @@ class Datasource
 	 * @return mixed new, typed object
 	 * see also: http://stackoverflow.com/a/8946599
 	 */
-	public function recast($className, stdClass &$object)
+	public function recast($className, &$object)
 	{
-		if (!$object)
+		if (!is_object($object))
 			return false;
 		if (!class_exists($className))
 			throw new InvalidArgumentException(sprintf('Inexistant class %s.', $className));

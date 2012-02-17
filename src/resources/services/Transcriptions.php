@@ -34,11 +34,11 @@ require_once 'vo/TranscriptionsVO.php';
  * @author Babelium Team
  *
  */
-class TranscriptionsDAO {
+class Transcriptions {
 
 	private $conn;
 
-	public function TranscriptionsDAO() {
+	public function Transcriptions() {
 		try {
 			$verifySession = new SessionHandler(true);
 

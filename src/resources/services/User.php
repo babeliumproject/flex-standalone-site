@@ -29,8 +29,7 @@ require_once 'utils/Mailer.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/ExerciseVO.php';
 
-require_once 'ExerciseDAO.php';
-
+require_once 'Exercise.php';
 
 /**
  * This class performs user related operations
@@ -38,10 +37,10 @@ require_once 'ExerciseDAO.php';
  * @author Babelium Team
  *
  */
-class UserDAO {
+class User {
 	private $conn;
 
-	public function UserDAO(){
+	public function User(){
 		$settings = new Config();
 		try {
 			$verifySession = new SessionHandler();
@@ -229,7 +228,7 @@ class UserDAO {
 			
 			
 			$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-			$exercise = new ExerciseDAO();
+			$exercise = new Exercise();
 			foreach($searchResults as $searchResult){
 				$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
 				$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;

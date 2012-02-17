@@ -21,10 +21,10 @@ $server->setProduction(false);
  * and no other problems should arise.
  */
 
-require_once dirname(__FILE__) . SERVICE_PATH . 'EvaluationDAO.php';
-require_once dirname(__FILE__) . SERVICE_PATH . 'ExerciseDAO.php';
-$server->setClass('EvaluationDAO');
-$server->setClass('ExerciseDAO');
+require_once dirname(__FILE__) . SERVICE_PATH . 'Evaluation.php';
+require_once dirname(__FILE__) . SERVICE_PATH . 'Exercise.php';
+$server->setClass('Evaluation');
+$server->setClass('Exercise');
 
 
 //Add directories reachable for Zend AMF

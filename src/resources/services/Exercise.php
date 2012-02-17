@@ -39,7 +39,7 @@ require_once 'vo/UserLanguageVO.php';
  * @author Babelium Team
  *
  */
-class ExerciseDAO {
+class Exercise {
 
 	private $filePath;
 	private $imagePath;
@@ -56,7 +56,7 @@ class ExerciseDAO {
 	private $conn;
 	private $mediaHelper;
 
-	public function ExerciseDAO() {
+	public function Exercise() {
 
 		try {
 			$verifySession = new SessionHandler();
