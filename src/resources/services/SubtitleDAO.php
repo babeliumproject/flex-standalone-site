@@ -199,7 +199,7 @@ class SubtitleDAO {
 		//Insert the new exercise_roles
 		$er_sql = "INSERT INTO exercise_role (fk_exercise_id, fk_user_id, character_name) VALUES ";
 		$params = array();
-			
+		$distinctRoles = array();	
 		foreach($subtitleLines as $line){
 			if(count($distinctRoles)==0){
 				$distinctRoles[] = $line->exerciseRoleName;
@@ -217,7 +217,7 @@ class SubtitleDAO {
 		// put sql query and all params in one array
 		$merge = array_merge((array)$er_sql, $params);
 		$lastRoleId = $this->conn->_insert($merge);
-		if(!lastRoleId){
+		if(!$lastRoleId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Subtitle save failed");
 		}
@@ -242,7 +242,7 @@ class SubtitleDAO {
 		$sl_sql = substr($sl_sql,0,-1);
 		// put sql query and all params in one array
 		$merge = array_merge((array)$sl_sql, $params);
-		$lastSubtitleLineId = $this->_vcreate($merge);
+		$lastSubtitleLineId = $this->conn->_insert($merge);
 		if(!$lastSubtitleLineId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Subtitle save failed");
@@ -273,11 +273,13 @@ class SubtitleDAO {
 	}
 
 	private function _getUserRoles($exerciseId, $userId){
-		$sql = "SELECT MAX(id),fk_exercise_id, character_name
+		$sql = "SELECT MAX(id) as id,
+					   fk_exercise_id as exerciseId, 
+					   character_name as characterName
 		    	FROM exercise_role WHERE (fk_exercise_id = %d AND fk_user_id= %d) 
 		    	GROUP BY exercise_role.character_name ";
 
-		$searchResults = $this->_listRolesQuery ( $sql, $exerciseId, $userId );
+		$searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId, $userId );
 
 		return $searchResults;
 	}

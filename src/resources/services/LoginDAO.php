@@ -134,7 +134,7 @@ class LoginDAO{
 			if( $this->checkSessionLogin() && isset($_SESSION['user-data']) && !empty($_SESSION['user-data']) ){
 				$loggedUser = $_SESSION['user-data'];
 				$loggedUser->id = 0;
-				return $loggedUser;
+				return $this->conn->recast('UserVO',$loggedUser);
 			} else {
 				return "unauthorized";
 			}

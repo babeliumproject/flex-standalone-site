@@ -88,10 +88,11 @@
 					<s:HGroup verticalAlign="middle"
 							  width="100%">
 						<s:Label text="{resourceManager.getString('myResources','LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION')}"/>
-						<s:ComboBox id="subtitleVersionSelector"
+						<s:DropDownList id="subtitleVersionSelector"
 									dataProvider="{availableSubtitleVersions}"
 									change="{onSubtitleVersionChange(event)}"
-									labelFunction="{subtitleVersionComboLabelFunction}"/>
+									labelFunction="{subtitleVersionComboLabelFunction}"
+									minWidth="250"/>
 					</s:HGroup>
 				</s:VGroup>
 

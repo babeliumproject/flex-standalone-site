@@ -30,6 +30,7 @@ package modules.subtitles
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.utils.ObjectUtil;
 	import mx.utils.StringUtil;
 	
 	import skins.CustomTitleWindow;
@@ -37,6 +38,7 @@ package modules.subtitles
 	
 	import spark.components.Button;
 	import spark.components.ComboBox;
+	import spark.components.DropDownList;
 	import spark.components.HGroup;
 	import spark.components.Label;
 	import spark.components.VGroup;
@@ -119,7 +121,7 @@ package modules.subtitles
 		public var guestEditWarningBox:HGroup;
 
 		public var subtitleVersionBox:VGroup;
-		public var subtitleVersionSelector:ComboBox;
+		public var subtitleVersionSelector:DropDownList;
 
 		public var saveSubtitleButton:IconButton;
 		public var saveSubtitleSeparator:VRule;
@@ -207,7 +209,7 @@ package modules.subtitles
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
 		{
-			if (subtitleCollection.length > 0)
+			if (subtitleCollection && subtitleCollection.length > 0)
 			{
 				subtitleEndTime=e.time;
 				endEntry=new CueObject(0, subtitleStartTime, subtitleEndTime, '', 0, '');
@@ -383,7 +385,7 @@ package modules.subtitles
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'TEXT_EMPTY') + "\n", i + 1);
 				if (i > 0)
 				{
-					if (subtitleCollection.getItemAt((i - 1)).endTime >= subtitleCollection.getItemAt(i).startTime)
+					if (( subtitleCollection.getItemAt((i - 1)).endTime + 0.2 ) >= subtitleCollection.getItemAt(i).startTime)
 						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAPS') + "\n", i);
 				}
 			}

@@ -42,35 +42,31 @@ package commands.subtitles
 
 			var untouchedSubtitles:ArrayCollection=new ArrayCollection();
 
-			if (result is Array)
+			resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
+			if (resultCollection.length > 0)
 			{
-				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-
-				if (resultCollection.length > 0)
+				if (resultCollection[0] is SubtitleLineVO)
 				{
-					if (resultCollection[0] is SubtitleLineVO)
+					cueManager.colorDictionary = new Array();
+					for (var i:int=0; i < resultCollection.length; i++)
 					{
-						cueManager.colorDictionary = new Array();
-						for (var i:int=0; i < resultCollection.length; i++)
-						{
-							var item:SubtitleLineVO=resultCollection.getItemAt(i) as SubtitleLineVO;
-							generateRoleArray(item);
-							untouchedSubtitles.addItem(new CueObject(item.subtitleId, item.showTime, item.hideTime, item.text, item.exerciseRoleId, item.exerciseRoleName));
-							
-							cueManager.addCueFromSubtitleLine(item);
-						}
+						var item:SubtitleLineVO=resultCollection.getItemAt(i) as SubtitleLineVO;
+						generateRoleArray(item);
+						untouchedSubtitles.addItem(new CueObject(item.subtitleId, item.showTime, item.hideTime, item.text, item.exerciseRoleId, item.exerciseRoleName));
+						
+						cueManager.addCueFromSubtitleLine(item);
 					}
 				}
-				//Exercise Role bindings
-				DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBTITLE_MODULE);
-				DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.RECORDING_MODULE);
-				DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
-				
-				
-				//Subtitle editor bindings
-				DataModel.getInstance().unmodifiedAvailableSubtitleLines=untouchedSubtitles;
-				DataModel.getInstance().availableSubtitleLinesRetrieved=true;
 			}
+			//Exercise Role bindings
+			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBTITLE_MODULE);
+			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.RECORDING_MODULE);
+			DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
+			
+			
+			//Subtitle editor bindings
+			DataModel.getInstance().unmodifiedAvailableSubtitleLines=untouchedSubtitles;
+			DataModel.getInstance().availableSubtitleLinesRetrieved=true;
 		}
 
 		private function generateRoleArray(subtitleLine:SubtitleLineVO):void
