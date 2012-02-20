@@ -6,9 +6,9 @@
  * 
  */
 
-require_once 'PeriodicTaskDAO.php';
+require_once 'CleanupTask.php';
 
-$periodicTaskDAO = new PeriodicTaskDAO();
-$periodicTaskDAO->monitorizeSessionKeepAlive();
+$ct = new CleanupTask();
+$ct->monitorizeSessionKeepAlive();
 
 ?>

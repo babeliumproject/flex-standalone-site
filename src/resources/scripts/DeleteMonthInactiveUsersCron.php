@@ -6,11 +6,11 @@
  * 
  */
 
-require_once 'PeriodicTaskDAO.php';
+require_once 'CleanupTask.php';
 
-$periodicTaskDAO = new PeriodicTaskDAO();
+$ct = new CleanupTask();
 
 //Removes the users that haven't activated their account for the period of time given as a parameter.
-$periodicTaskDAO->deleteInactiveUsers(30);
+$ct->deleteInactiveUsers(30);
 
 ?>

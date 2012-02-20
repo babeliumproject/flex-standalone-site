@@ -6,9 +6,9 @@
  */
 
 define('SERVICE_PATH', '/var/www/babelium/services');
-require_once SERVICE_PATH . '/SearchDAO.php';
+require_once SERVICE_PATH . '/Search.php';
 
-$searchCron = new SearchDAO();
+$searchCron = new Search();
 $searchCron->reCreateIndex();
 
 ?>

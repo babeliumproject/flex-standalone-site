@@ -1,9 +1,9 @@
 
 <?php 
 
-require_once 'PeriodicTaskDAO.php';
+require_once 'CleanupTask.php';
 
-$periodicTask = new PeriodicTaskDAO();
-$periodicTask->deactivateReportedVideos(); 
+$ct = new CleanupTask();
+$ct->deactivateReportedVideos(); 
       
 ?>
