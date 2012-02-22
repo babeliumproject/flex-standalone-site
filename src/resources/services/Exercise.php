@@ -404,7 +404,7 @@ class Exercise {
 			if (!$result){
 				// The user is reporting an innapropriate exercise
 				$sql = "INSERT INTO exercise_report (fk_exercise_id, fk_user_id, reason, report_date)
-				    VALUES ('%d', '%d', '%s', NOW() )";
+				    	VALUES ('%d', '%d', '%s', NOW() )";
 
 				$result = $this->conn->_insert($sql, $report->exerciseId, $_SESSION['uid'], $report->reason);
 				//$this->notifyExerciseReported($report);

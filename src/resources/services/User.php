@@ -302,7 +302,7 @@ class User {
 					   positives_to_next_level as positivesToNextLevel, 
 					   purpose
 				FROM user_languages WHERE (fk_user_id='%d')";
-		return $this->conn->_multipleSelect($sql, $_SESSION['uid']);
+		return $this->conn->multipleRecast('UserLanguageVO', $this->conn->_multipleSelect($sql, $_SESSION['uid']));
 	}
 
 	public function restorePass($username = 0)

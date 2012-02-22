@@ -87,8 +87,10 @@ class Mailer
 
 	public function send($body, $subject, $htmlBody = null)
 	{
-		if ( !$this->_validUser )
+		if ( !$this->_validUser ){
+			error_log("[".date("d/m/Y H:i:s")."] Problem while sending notification mail. The provided username is not correct or it's duplicated in the database\n",3,$this->_settings->logPath.'/mail_smtp.log');
 			return false;
+		}
 
 		// SMTP Server config
 		$config = array('auth' => 'login',
