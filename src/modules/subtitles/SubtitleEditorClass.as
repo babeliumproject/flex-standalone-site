@@ -221,15 +221,16 @@ package modules.subtitles
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			if(VPSubtitle.playbackState == videoPlaybackStartedState)
+			if(VPSubtitle.playbackState == videoPlaybackStartedState){
 				VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
-			else{
+			}else{
 				if(subtitleCollection && subtitleCollection.length > 0){
-					var lastSub:CueObject = subtitleCollection[subtitleCollection.length-1] as CueObject;
+					var lastSub:CueObject = subtitleCollection.getItemAt(subtitleCollection.length-1) as CueObject;
 					var time:Number = lastSub.endTime + 0.25;
-					VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START,time));
+					trace(time);
+					this.subtitleStartHandler((new SubtitlingEvent(SubtitlingEvent.START,time)));
 				} else {
-					VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
+					this.subtitleStartHandler((new SubtitlingEvent(SubtitlingEvent.START)));
 				}
 			}
 		}
@@ -388,7 +389,6 @@ package modules.subtitles
 			{
 				if (subtitleCollection.getItemAt(i).roleId < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY') + "\n", i + 1);
-				var test:String = StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY'), DataModel.getInstance().maxFileSize, DataModel.getInstance().maxExerciseDuration);
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)
@@ -398,6 +398,10 @@ package modules.subtitles
 					if (( subtitleCollection.getItemAt((i - 1)).endTime + 0.2 ) >= subtitleCollection.getItemAt(i).startTime)
 						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAPS') + "\n", i);
 				}
+				var endTime:Number = subtitleCollection.getItemAt(i).endTime;
+				var startTime:Number = subtitleCollection.getItemAt(i).startTime;
+				if((endTime > VPSubtitle.duration - 0.5) || endTime < 0.5 || startTime < 0.5 || startTime > VPSubtitle.duration - 0.5 )
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_TIME_OUT_OF_BOUNDS') + "\n", i+1);
 			}
 			return errorMessage;
 		}
