@@ -198,7 +198,7 @@ package modules.subtitles
 
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
-			subtitleStartTime=e.time;
+			subtitleStartTime= (e.time < 0.5) ? 0.5 : e.time;
 			startEntry=new CueObject(0, subtitleStartTime, subtitleStartTime + 0.5, '', 0, '');
 			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry, VPSubtitle));
 			startEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
@@ -211,7 +211,7 @@ package modules.subtitles
 		{
 			if (subtitleCollection && subtitleCollection.length > 0)
 			{
-				subtitleEndTime=e.time;
+				subtitleEndTime= (e.time < (VPSubtitle.duration - 0.5)) ? e.time : VPSubtitle.duration - 0.5;
 				endEntry=new CueObject(0, subtitleStartTime, subtitleEndTime, '', 0, '');
 				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry, VPSubtitle));
 				endEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
@@ -221,7 +221,17 @@ package modules.subtitles
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
+			if(VPSubtitle.playbackState == videoPlaybackStartedState)
+				VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
+			else{
+				if(subtitleCollection && subtitleCollection.length > 0){
+					var lastSub:CueObject = subtitleCollection[subtitleCollection.length-1] as CueObject;
+					var time:Number = lastSub.endTime + 0.25;
+					VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START,time));
+				} else {
+					VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
+				}
+			}
 		}
 
 		public function subtitleRemoveHandler():void

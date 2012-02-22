@@ -12,6 +12,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import model.DataModel;
 			public function get value():Number
 			{
 				return (data.endTime);
@@ -19,6 +20,8 @@
 
 			override public function set data(value:Object):void
 			{
+				if(value && value.startTime < HideTimeStepper.minimum)
+					value.startTime = HideTimeStepper.minimum;
 				super.data=value;
 				HideTimeStepper.value=data.endTime;
 			}
@@ -28,7 +31,8 @@
 						  height="100%"
 						  stepSize="0.01"
 						  width="81"
-						  maximum="250000"
+						  minimum="0.5"
+						  maximum="{DataModel.getInstance().maxExerciseDuration}"
 						  formatter="{formater1}"
 						  valueCommit="{data.endTime = Number(HideTimeStepper.value); }"/>
 

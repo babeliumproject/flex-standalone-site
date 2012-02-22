@@ -168,8 +168,9 @@
 				<s:HGroup height="40"
 						  width="100%"
 						  horizontalAlign="center">
+					<!-- enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}" -->
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
-									  enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}"
+									  
 									  click="{subtitleInsertHandler(event)}"
 									  id="addSubtitleLine"
 									  skinClass="skins.IconButtonSkin"
