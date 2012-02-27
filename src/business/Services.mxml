@@ -61,7 +61,7 @@
 		<mx:RemoteObject id="autoevaluationRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="Transcriptions"/>
+						 source="Transcription"/>
 
 		<mx:RemoteObject id="evaluationRO"
 						 destination="babeliumService"

@@ -258,7 +258,7 @@ class Exercise {
 					   e.thumbnail_uri as thumbnailUri,
        				   e.adding_date as addingDate, 
        				   e.duration, 
-       				   u.name, 
+       				   u.name as userName, 
        				   avg (suggested_level) as avgDifficulty, 
        				   e.status, 
        				   e.license, 
@@ -276,6 +276,78 @@ class Exercise {
 		}
 
 		return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+	}
+	
+	/**
+	 * Return exercise by id
+	 */
+	public function getExerciseById($id = 0){
+		if(!$id)
+			return;
+			
+		$sql = "SELECT e.id, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri,
+       				   e.adding_date as addingDate, 
+       				   e.duration, 
+       				   u.name as userName, 
+       				   avg (suggested_level) as avgDifficulty, 
+       				   e.status, 
+       				   e.license, 
+       				   e.reference
+				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			WHERE (e.id = %d)
+				GROUP BY e.id
+				LIMIT 1";
+		
+		$result = $this->conn->_singleSelect($sql,$id);
+		if($result)
+			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+
+		return $this->conn->recast('ExerciseVO',$result);
+	}
+
+	/**
+	 * Return exercise by name
+	 */
+	public function getExerciseByName($name = null){
+		if(!$name)
+			return;
+			
+		$sql = "SELECT e.id, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri,
+       				   e.adding_date, 
+       				   e.duration, 
+       				   u.name as userName, 
+       				   avg (suggested_level) as avgDifficulty, 
+       				   e.status, 
+       				   e.license, 
+       				   e.reference
+				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
+       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+       			WHERE (e.name = '%s')
+				GROUP BY e.id
+				LIMIT 1";
+
+		$result = $this->conn->_singleSelect($sql,$name);
+		if($result)
+			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+
+		return $this->conn->recast('ExerciseVO',$result);
 	}
 
 	public function getExercisesUnfinishedSubtitling(){

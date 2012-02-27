@@ -88,10 +88,10 @@ class VideoProcessor{
 				$this->retrieveVideoAspectRatio();
 				return $this->mediaContainer;
 			} else {
-				throw new Exception("Unknown media format");
+				throw new Exception("Unknown media format\n");
 			}
 		} else {
-			throw new Exception("Not a file");
+			throw new Exception("Not a file\n");
 		}
 	}
 
@@ -133,7 +133,7 @@ class VideoProcessor{
 
 			return $validMime ? $fileMimeType : "Not valid mime type";
 		} else {
-			throw new Exception("Not a file");
+			throw new Exception("Not a file\n");
 		}
 	}
 
@@ -261,7 +261,7 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoAspectRatio(){
 		if(!$this->mediaContainer->hasVideo || !$this->mediaContainer->videoHeight || !$this->mediaContainer->videoWidth)
-			throw new Exception("Operation not allowed on non-video files");
+			throw new Exception("Operation not allowed on non-video files\n");
 			
 		if($this->mediaContainer->videoWidth > $this->mediaContainer->videoHeight){
 			$originalRatio = $this->mediaContainer->videoWidth / $this->mediaContainer->videoHeight;
@@ -290,9 +290,9 @@ class VideoProcessor{
 		$cleanImagePath = escapeshellcmd($outputImagePath);
 
 		if(!is_readable($cleanPath))
-			throw new Exception("You don't have enough permissions to read from the input: ".$cleanPath);
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanPath."\n");
 		if(!is_writable(dirname($cleanImagePath)))
-			throw new Exception("You don't have enough permissions to write to the output: ".$cleanImagePath);
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanImagePath."\n");
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanPath)) ){
 			try {
 				//This file hasn't been scanned yet
@@ -325,9 +325,9 @@ class VideoProcessor{
 		$cleanPosterPath = realpath(escapeshellcmd($posterPath));
 
 		if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
-			throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath);
+			throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath."\n");
 		if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
-			throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath." | ".$cleanPosterPath);
+			throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath.", ".$cleanPosterPath."\n");
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanVideoPath)) ){
 			try {
 				//This file hasn't been scanned yet
@@ -348,20 +348,20 @@ class VideoProcessor{
 
 			if(!is_dir($cleanThumbPath)){
 				if(!mkdir($cleanThumbPath)){
-					throw new Exception("You don't have enough permissions to create a thumbnail folder");
+					throw new Exception("You don't have enough permissions to create a thumbnail folder\n");
 				}
 			}
 			if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
-				throw new Exception("Yon don't have enough permissions to write to the thumbnail folder");
+				throw new Exception("Yon don't have enough permissions to write to the thumbnail folder\n");
 			}
 
 			if(!is_dir($cleanPosterPath)){
 				if(!mkdir($cleanPosterPath)){
-					throw new Exception("You don't have enough permissions to create a poster folder");
+					throw new Exception("You don't have enough permissions to create a poster folder\n");
 				}
 			}
 			if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
-				throw new Exception("Yon don't have enough permissions to write to the poster folder");
+				throw new Exception("Yon don't have enough permissions to write to the poster folder\n");
 			}
 
 			//Default thumbnail time
@@ -391,10 +391,10 @@ class VideoProcessor{
 				unlink($cleanPosterPath.'/default.jpg');
 			}
 			if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg')  ){
-				throw new Exception ("Couldn't create link for the thumbnail");
+				throw new Exception ("Couldn't create link for the thumbnail\n");
 			}
 			if( !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
-				throw new Exception ("Couldn't create link for the poster");
+				throw new Exception ("Couldn't create link for the poster\n");
 			}
 		}
 		return $resultsnap;
@@ -417,9 +417,9 @@ class VideoProcessor{
 		$cleanOutputPath = escapeshellcmd($outputFilepath);
 			
 		if(!is_readable($cleanInputPath))
-			throw new Exception("You don't have enough permissions to read from the input: ".$cleanInputPath);
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanInputPath."\n");
 		if(!is_writable(dirname($cleanOutputPath)))
-			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath);
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {
@@ -447,7 +447,7 @@ class VideoProcessor{
 				 * transcoding this MKV using our regular transcoding preset. For now, we will cancel the
 				 * transcoding process and raise an exception.
 				 */
-				throw new Exception("Non-transcodable audio. Transcode aborted.");
+				throw new Exception("Non-transcodable audio. Transcode aborted.\n");
 			}
 		}
 
@@ -456,7 +456,7 @@ class VideoProcessor{
 			$result = (exec($sysCall,$output));
 			return $result;
 		} else {
-			throw new Exception("Non-valid preset was chosen. Transcode aborted.");
+			throw new Exception("Non-valid preset was chosen. Transcode aborted.\n");
 		}
 	}
 	
@@ -470,9 +470,9 @@ class VideoProcessor{
 		$cleanOutputPath = escapeshellcmd($outputFilePath);
 		
 		if(!is_readable($cleanInputPath) || !is_file($cleanInputPath))
-			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanInputPath."\n");
 		if(!is_writable(dirname($cleanOutputPath)))
-			throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 			
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {
@@ -488,7 +488,7 @@ class VideoProcessor{
 			$result = (exec($sysCall,$output));
 			return $result;
 		} else {
-			throw new Exception("The provided file does not have any valid audio streams");
+			throw new Exception("The provided file does not have any valid audio streams\n");
 		}
 		
 	}
@@ -503,9 +503,9 @@ class VideoProcessor{
 		//TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
 		
 		if(!is_readable($cleanInputVideoPath) || !is_file($cleanInputVideoPath) || !is_readable($cleanInputAudioPath) || !is_file($cleanInputAudioPath))
-			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanInputVideoPath.", ".$cleanInputAudioPath."\n");
 		if(!is_writable(dirname($cleanOutputVideoPath)))
-			throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputVideoPath."\n");
 		
 		$sysCall = sprintf($preset, $cleanInputVideoPath, $cleanInputAudioPath, $cleanOutputVideoPath);
 		$result = (exec($sysCall,$output));
@@ -530,9 +530,9 @@ class VideoProcessor{
 		$cleanOutputPath = escapeshellcmd($outputFilePath);
 		
 		if(!is_readable($cleanInputPath) || !is_file($cleanInputPath))
-			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ". $cleanInputPath ."\n");
 		if(!is_writable(dirname($cleanOutputPath)))
-			throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ". $cleanOutputPath."\n");
 			
 		if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
 			try {
@@ -548,7 +548,7 @@ class VideoProcessor{
 			$result = (exec($sysCall,$output));
 			return $result;
 		} else {
-			throw new Exception("The provided file does not have any valid audio streams");
+			throw new Exception("The provided file does not have any valid audio streams\n");
 		}
 		
 	}
@@ -561,17 +561,17 @@ class VideoProcessor{
 		//TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
 		
 		if($width<5 || $height<5)
-			throw new Exception("Specified size is too small");
+			throw new Exception("Specified size is too small\n");
 		
 		if( !is_readable($cleanInputVideoPath1) || !is_readable($cleanInputVideoPath2) )
-			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+			throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanInputVideoPath1 .", ".$cleanInputVideoPath2."\n");
 		if( !is_writable(dirname($cleanOutputVideoPath)) )
-			throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputVideoPath."\n");
 			
 		if($inputAudioPath){
 			$cleanAudioPath = escapeshellcmd($inputAudioPath);
 			if(!is_readable($cleanAudioPath))
-				throw new Exception("You don't have enough permissions to read from the input, or the input is not a file");
+				throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanAudioPath."\n");
 		}
 		
 		
@@ -594,9 +594,9 @@ class VideoProcessor{
 		$cleanInputPath = escapeshellcmd($inputPath);
 		$cleanOutputPath = escapeshellcmd($outputPath);
 		if(!is_readable($cleanInputPath))
-			throw new Exception("You don't have enough permissions to read from the input");
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanInputPath."\n");
 		if(!is_writable($cleanOutputPath))
-			throw new Exception("You don't have enough permissions to write to the output");
+			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 		
 		//TODO  should check the presecence of sox in the $PATH first and throw an error elseways
 		$preset = "sox '%s/%s_*' '%s/%scollage.wav' 2>&1";

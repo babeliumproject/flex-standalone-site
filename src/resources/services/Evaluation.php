@@ -437,7 +437,6 @@ class Evaluation {
 		$sql = $sql . "'%s', ";
 		$sql = $sql . "'Red5', ";
 		$sql = $sql . "'%s')";
-
 		$evaluationVideoId = $this->conn->_insert ( $sql, $evaluationId, $evalData->evaluationVideoFileIdentifier, $thumbnail );
 		if(!$evaluationVideoId){
 			$this->conn->_failedTransaction();
