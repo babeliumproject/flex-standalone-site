@@ -37,7 +37,7 @@ class UserVideoHistory{
 
 	private $conn;
 
-	public function UserVideoHistory(){
+	public function __construct(){
 		try {
 			$verifySession = new SessionHandler(true);
 			$settings = new Config ( );

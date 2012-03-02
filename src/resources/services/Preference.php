@@ -37,7 +37,7 @@ class Preference {
 
 	private $conn;
 
-	public function Preference(){
+	public function __construct(){
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config();

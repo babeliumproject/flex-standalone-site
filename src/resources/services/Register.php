@@ -41,7 +41,7 @@ class Register{
 	private $conn;
 	private $settings;
 
-	public function Register(){
+	public function __construct(){
 		try{
 			$verifySession = new SessionHandler();
 			$this->settings = new Config();
@@ -94,8 +94,11 @@ class Register{
 
 					$subject = 'Babelium Project: Account Activation';
 
+					//$params = new stdClass();
+					//$params->name = $user->name;
+					//$params->activationHash = $hash;
 					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name);	
-					
+
 					$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->name,

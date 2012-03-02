@@ -40,7 +40,7 @@ require_once 'Exercise.php';
 class User {
 	private $conn;
 
-	public function User(){
+	public function __construct(){
 		$settings = new Config();
 		try {
 			$verifySession = new SessionHandler();

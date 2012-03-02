@@ -48,7 +48,7 @@ class External {
 	private $exerciseFolder;
 	private $conn;
 	
-	function External() {
+	public function __construct() {
 		Zend_Loader::loadClass ( 'Zend_Gdata_YouTube' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_ClientLogin' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_App_Exception' );

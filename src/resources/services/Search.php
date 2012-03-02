@@ -43,7 +43,7 @@ class Search {
 	
 	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
 
-	public function Search() {
+	public function __construct() {
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config ( );

@@ -66,7 +66,7 @@
 		 */ 
 		public $webRootPath = "/var/www/babelium";
 		
-		public function Config(){
+		public function __construct(){
 			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
 				$this->imagePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/images/thumbs";

@@ -45,7 +45,7 @@ class Auth{
 	 * @throws Exception
 	 * 		Throws an error if the session couldn't be set or the database connection couldn't be established
 	 */
-	public function Auth(){
+	public function __construct(){
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config();

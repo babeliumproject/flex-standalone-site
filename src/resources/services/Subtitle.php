@@ -41,7 +41,7 @@ class Subtitle {
 
 	private $conn;
 
-	public function Subtitle() {
+	public function __construct() {
 		try {
 			$verifySession = new SessionHandler();
 			$settings = new Config ( );

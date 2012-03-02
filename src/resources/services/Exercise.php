@@ -56,7 +56,7 @@ class Exercise {
 	private $conn;
 	private $mediaHelper;
 
-	public function Exercise() {
+	public function __construct() {
 
 		try {
 			$verifySession = new SessionHandler();

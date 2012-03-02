@@ -47,7 +47,7 @@ class Datasource
 	 * @param string $dbpasswd
 	 * 		Password to access database
 	 */
-	public function Datasource($dbHost, $dbName, $dbuser, $dbpasswd)
+	public function __construct($dbHost, $dbName, $dbuser, $dbpasswd)
 	{
 		$this->dbLink = mysqli_connect ($dbHost, $dbuser, $dbpasswd);
 		if(!$this->dbLink)

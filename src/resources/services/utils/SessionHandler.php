@@ -40,7 +40,7 @@ class SessionHandler{
 	//When an exception is thrown on the services side we should consider automatically
 	//logging out the users for security purposes.
 	
-	public function SessionHandler($restrictedArea = false){
+	public function __construct($restrictedArea = false){
 		if(session_id() == ''){
 			session_start();
 			$_SESSION['initiated'] = true;

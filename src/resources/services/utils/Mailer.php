@@ -52,7 +52,7 @@ class Mailer
 	public $txtContent;
 	public $htmlContent;
 
-	public function Mailer($username)
+	public function __construct($username)
 	{
 		$this->_settings = new Config();
 		$this->_conn = new DataSource($this->_settings->host, $this->_settings->db_name, $this->_settings->db_username, $this->_settings->db_password);
