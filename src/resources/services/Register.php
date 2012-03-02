@@ -78,7 +78,7 @@ class Register{
 					$motherTongueLocale = 'en_US';
 					$languages = $user->languages;
 					if ($languages && is_array($languages) && count($languages) > 0){
-						$languageInsertResult = $this->addUserLanguages($languages, $result);
+						$languageInsertResult = $this->addUserLanguages($languages, $result->ID);
 						//We get the first mother tongue as message locale
 						$motherTongueLocale = $languages[0]->language;
 					}
@@ -94,11 +94,8 @@ class Register{
 
 					$subject = 'Babelium Project: Account Activation';
 
-					$params = new stdClass();
-					$params->name = $user->name;
-					$params->activationHash = $hash;
-					$activation_link = urlencode(htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/?module=register&action=activate&params='.base64_encode(json_encode($params))));
-
+					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name);	
+					
 					$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->name,
@@ -107,7 +104,7 @@ class Register{
 						'SIGNATURE' => 'The Babelium Project Team');
 
 					if ( !$mail->makeTemplate("mail_activation", $args, $motherTongueLocale) )
-						return false;
+						return "mail_send_error";
 
 					$mail = $mail->send($mail->txtContent, $subject, $mail->htmlContent);
 
@@ -164,16 +161,20 @@ class Register{
 
 
 	private function _create($insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash) {
-
 		// Check user with same name or same email
 		$sql = "SELECT ID FROM users WHERE (name='%s' OR email = '%s' ) ";
 		$result = $this->conn->_singleSelect($sql, $userName, $userEmail);
 		if ($result)
-		return false;
-
-		$result = $this->conn->_insert( $insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash );
-
-		return $result;
+			return false;
+		
+		$userId = $this->conn->_insert( $insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash );
+		if($userId){
+			$sql = "SELECT ID, name, email, password, creditCount FROM users WHERE (ID=%d) ";
+			$result = $this->conn->_singleSelect($sql,$userId);
+			return $result;
+		} else {
+			return false;
+		}
 	}
 
 	private function _createRegistrationHash()

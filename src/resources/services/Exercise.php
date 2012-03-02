@@ -432,7 +432,7 @@ class Exercise {
 	}
 
 	public function filterByLanguage($searchList, $languagePurpose){
-		if(count($_SESSION['user-languages']) < 1)
+		if(!isset($_SESSION['user-languages']) || !is_array($_SESSION['user-languages']) || count($_SESSION['user-languages']) < 1)
 			return $searchList;
 		if($languagePurpose != 'evaluate' && $languagePurpose != 'practice')
 			return $searchList;
