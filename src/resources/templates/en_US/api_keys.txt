@@ -1,0 +1,18 @@
+Hello {USERNAME}!
+
+
+These are your personal keys for accessing {PROJECT_NAME}'s API from the {DOMAIN} domain.
+
+	Access Key:{ACCESS_KEY}
+	Secret Access Key:{SECRET_ACCESS_KEY}
+
+Notice:
+- The keys will be emailed ONLY ONCE, so keep them somewhere safe.
+- Never use your 'Secret Access Key' on the clear, it should only be stored in a server you trust, and not available to user-agent
+
+
+
+Thank you for choosing {PROJECT_NAME},
+
+
+{SIGNATURE}
