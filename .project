@@ -21,4 +21,11 @@
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>bin-release</name>
+			<type>2</type>
+			<location>/var/www/babelium</location>
+		</link>
+	</linkedResources>
 </projectDescription>

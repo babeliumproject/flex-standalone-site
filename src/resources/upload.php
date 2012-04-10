@@ -1,151 +1,198 @@
 <?php
 
-/*
- * Remember to set your php.ini's post_max_size to a size that meets your expected uploads' 
- * size otherways your POST will be truncated and the file won't be saved. Also, remember
- * to restart your Apache server after you've saved your new configuration.
+/**
+ * Remember to set php.ini's post_max_size and upload_max_size to a size larger than the 
+ * values of Config.php and/or or those of the preference table in the database. 
+ * Otherways your POST will be truncated and the file won't be saved. 
  * 
- * Example: post_max_size = 200M
- * 
- * If you're using Linux, Adobe Flash Player 10.1.51.000+ is needed since previous versions
+ * If you're using Linux, Adobe Flash Player 10.1.51.000+ is required since previous versions
  * had a bug that caused a browser freeze/crash when uploading.
  * 
- * This file should be placed on %WEB_ROOT%/babelia
- * 
+ * This file should be placed under <BABELIUM_ROOT>/upload.php
  */
 
+global $result;
+global $file_name;
+global $file_size;
 
-$errors = array ();
-$data = "";
-$success = "false";
-
-function return_result($success, $errors, $data) {
-	echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-	echo "<results>";
-		echo "<success>".$success."</success>";
-		echo "<data>";
-			echo "<filename>".$data[0]."</filename>";
-			echo "<filemimetype>".$data[1]."</filemimetype>";
-		echo "</data>";
-		echo_errors($errors);
-	echo "</results>";
-}
-
-function echo_errors($errors) {
-	
-	for($i = 0; $i < count ( $errors ); $i ++) { ?>
-		<error><?=$errors [$i];?></error>
-	<?}
-}
-
-function check_duration($path, $maxDuration){
-	$total = 200;
-	$resultduration = (exec("ffmpeg -i '$path' 2>&1",$cmd));
-	if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', implode($cmd), $time)){
-		$total = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
-	}
-	return ($total <= $maxDuration);
-}
-
-switch ($_REQUEST ['action']) {
-	
-	case "upload" :
-		define ('SERVICE_PATH', '/services/');
-		include_once dirname(__FILE__) . SERVICE_PATH . "utils/Config.php";
-		include_once dirname(__FILE__) . SERVICE_PATH . "utils/VideoProcessor.php";
-
-		$settings = new Config();
-		$vp = new VideoProcessor();
+if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
+	try{
+		define('UTIL_PATH', dirname(__FILE__) . "/services/utils/");
 		
-		$file_temp = $_FILES ['file'] ['tmp_name'];
-		$file_name = $_FILES ['file'] ['name'];
-		$file_size = $_FILES ['file'] ['size'];
-		
-		$file_name = str_replace(' ', '_', $file_name);
-		$file_name = preg_replace("/[^A-Za-z0-9\._]/","",$file_name);
-		
-		//Filter the filename just in case someone wants to launch some cmd using trickery
-		$escaped_file_name = escapeshellcmd($file_name);
-		
-		$file_path = $settings->filePath;
-		
-		$file_max_size = ($settings->maxSize)*1024*1024;
-		$file_max_duration = $settings->maxDuration;
-		
-		//checks for duplicate files
-		if (! file_exists ( $file_path . "/" . $escaped_file_name )) {
-			
-			//complete upload
-			$filestatus = move_uploaded_file ( $file_temp, $file_path . "/" . $escaped_file_name );
-			
-			//Retrieve the mime type of the uploaded file
-			$cleanPath = $file_path . "/" . $escaped_file_name;
-			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
-			$file_mime = implode($cmd);
-			
-			//$finfo = finfo_open(FILEINFO_MIME_TYPE);
-    		//$file_mime = finfo_file($finfo, $file_path . "/" . $file_name);
-			//finfo_close($finfo);
-			
-			if (! $filestatus) {
-				$success = "false";
-				array_push ( $errors, "Upload failed." );
-			} else if (!check_duration($file_path . "/" . $escaped_file_name, $file_max_duration)){
-				$success = "false";
-				array_push ( $errors, "Maximum video duration exceeded. Should be less than ".$file_max_duration." seconds");
-				//@unlink($file_path . "/" . $escaped_file_name);
-			} else if ($file_size > $file_max_size){
-				$success = "false";
-				array_push ( $errors, "Maximum video size exceeded. Should be less than ".$settings->maxSize."MB");
-				//@unlink($file_path . "/" . $escaped_file_name);
-			} else if (strpos($file_mime, 'video') === false){
-				$success = "false";
-				array_push ( $errors, "Provided file is not a video file.");
-				@unlink($file_path . "/" . $escaped_file_name);
-			} else{
-				try{
-					//The videoProcessor class does the shell escaping on it's own so you must provide the raw filename instead of the escaped one
-					$media = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
-					$data = array($escaped_file_name, $file_mime);
-					$success = "true";
-                    @chmod($file_path . "/" . $escaped_file_name, 0644);
-                }
-                catch (Exception $e){
-					$success = "false";
-					array_push($errors, $e->getMessage());
-					@unlink($file_path . "/" . $escaped_file_name);
-                }
-			}
-		
+		//Ensure all the classes exist and are readable
+		$c_path = UTIL_PATH . 'Config.php';
+		$d_path = UTIL_PATH . 'Datasource.php';
+		$m_path = UTIL_PATH . 'VideoProcessor.php';
+		if( !is_readable($c_path) || !is_readable($d_path) || !is_readable($m_path) ){
+			fault_result(500, "classesmissing","Required classes are missing");
 		} else {
-			$success = "false";
-			array_push ( $errors, "File already exists on server." );
+			//Require the RPC services classes
+			require_once $c_path; 
+			require_once $d_path; 
+			require_once $m_path;
+	
+			$cfg = new Config();
+			$vp = new VideoProcessor();
+			$db = new Datasource($cfg->host, $cfg->db_name, $cfg->db_username, $cfg->db_password);
+			
+			$file_temp = $_FILES ['file'] ['tmp_name'];
+			$file_name = $_FILES ['file'] ['name'];
+			$file_size = $_FILES ['file'] ['size'];
+			
+			$file_name = str_replace(' ', '_', $file_name);
+			$file_name = preg_replace("/[^A-Za-z0-9\._]/","",$file_name);
+			$file_name = time() . "_" . $file_name;
+			
+			//Filter the filename just in case someone wants to launch some cmd using trickery
+			$escaped_file_name = escapeshellcmd($file_name);
+			
+			$file_path = $cfg->filePath;
+			
+			$file_max_size = min(return_bytes(ini_get('post_max_size')),return_bytes(ini_get('upload_max_size')));
+			
+			$result = $db->_singleSelect("SELECT DISTINCT(prefName), prefValue FROM preferences WHERE (prefName='maxExerciseDuration')");
+			if($result)
+				$file_max_duration = $result->prefValue;
+			else
+				$file_max_duration = $cfg->maxDuration; //If there's no preference set, use the value on the config file
+			
+			//Check if the filename is duplicated by chance
+			$clean_path = $file_path . "/" . $escaped_file_name;
+			if (file_exists ( $clean_path )){
+				fault_result(400, "duplicatedfilename","A file with that name already exists on the server. Please choose other name");
+			}else{
+				//Move the file from the tmp location to uploads folder
+				if (!$filestatus = move_uploaded_file ( $file_temp, $clean_path ) ){
+					fault_result(500, "uploadfailed", "The file upload failed. Please try again");
+				}else {		
+					$media_data = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
+					$validMime = $vp->checkMimeType($file_path . "/" . $file_name);
+							
+					//Check if the video lasts longer than the allowed duration
+					if($media_data->duration > $file_max_duration){
+						fault_result(400, "videotoolong","Maximum video duration exceeded. Should be less than ".$file_max_duration." seconds");
+					} else if (!$validMime || !$media_data->hasVideo){
+						fault_result(400, "notvideomedia","Provided file is not a video file");	
+					} else if ($file_size > $file_max_size){
+						fault_result(400, "videotoobig", "Maximum video size exceeded. Should be less than ".($file_max_size/1048576)."MB");
+					} else {
+						success_result($clean_path);
+					}
+				}
+			}
 		}
 		
-		break;
-	
-	default :
-		$success = "false";
-		array_push ( $errors, "No action was requested." );
-
+	} catch(Exception $e){
+		fault_result(500,"exception",$e->getMessage());
+	}
+}else{
+	fault_result(400,"noaction","No action was requested or the POST request was truncated due to unknown reasons");
 }
 
+echo $result;
 
+/**
+ * HELPER FUNCTIONS
+ */
 
-// We log the upload process so that we can check periodically if something went wrong.
+/**
+ * Logs unsuccessful file uploads to the local filesystem
+ * @param String $code
+ * 			A code to identify the problem
+ * @param String $description
+ * 			A description of the problem
+ * @param String $filename
+ * 			The name of the file that had the problem (Not always available)
+ * @param int $filesize
+ * 			The size of the file that had the problem (Not always available)
+ */
+function log_fault_result($code,$description,$filename,$filesize){
+	global $file_name, $file_size;
+	
+	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD ERROR\n";
+	$message .= "\tError Code: ".$code."\n";
+	$message .= "\tError description: ".$description."\n";
+	$message .= "\tUnescaped filename: ".$file_name."\n";
+	$message .= "\tFilesize: ".$file_size."\n";
+	
+	$log_file = ($cfg && isset($cfg->logPath)) ? $cfg->logPath . '/upload.log' : '/tmp/upload.log';
+	error_log($message,3,$log_file);
+}
 
-error_log("success = ".$success."\n", 3, $settings->logPath."/upload.log");
-for($i=0; $i<count($errors); $i++)
-	error_log("error[".$i."] = ".$errors[$i]."\n", 3, $settings->logPath."/upload.log");
-for($j=0; $j<count($data); $j++)
-	error_log("data[".$j."] = ".$data[$j]."\n", 3, $settings->logPath."/upload.log");
-error_log("file name = ". $file_name."\n", 3, $settings->logPath."/upload.log");
-error_log("file name (escaped) = ". $escaped_file_name."\n", 3, $settings->logPath."/upload.log");
-error_log("file temp = ". $file_temp."\n", 3, $settings->logPath."/upload.log");
-error_log("file mime = ". $file_mime."\n", 3, $settings->logPath."/upload.log");
-error_log("file size = ". $file_size."\n\n", 3, $settings->logPath."/upload.log");
+/**
+ * Sends a notification e-mail to Babelium's staff, so that they get in touch with the user to solve the problem
+ * @param String $message
+ * 			A copy of the message that's being recorded in the server's log file
+ */
+function notify_fault_result($message){
+	//TODO
+}
 
+/**
+ * The upload process failed in some step, make a fault response to inform the user about this fact
+ * @param int $header
+ * 			An HTTP status code (can be useful for future iterations if REST-like script is implemented)
+ * @param String $code
+ * 			A code to identify the problem
+ * @param String $description
+ * 			A description of the problem
+ */
+function fault_result($header, $code, $description){
+	$status = 'failure';
+	$httpstatus = '<httpstatus>'.$header.'</httpstatus>';
+	$message = '<message>'.$description.'</message>';
+	$errorcode = '<code>'.$code.'</code>';
+	$response = $message.$errorcode;
+	build_result_xml($httpstatus,$status,$response);
+}
 
-return_result ( $success, $errors, $data );
+/**
+ * The upload process finished without errors. Return the uploaded filename to the client to mark the video
+ * for transcoding.
+ * @param String $filename
+ * 		The file name of the video before the transcoding stage
+ */
+function success_result($filename){
+	$status = 'success';
+	$httpstatus = '<httpstatus>200</httpstatus>';
+	$response = '<filename>'.$filename.'</filename>';
+	build_result_xml($httpstatus,$status,$response);
+}
+
+/**
+ * Builds and XML response that needs to be parsed by the client
+ * @param String $header
+ * 			The response headers as seen in the HTTP protocol
+ * @param String $status
+ * 			Tells whether the request was a successful or not
+ * @param String $response
+ * 			Information about either the failure or the file when the upload is successful
+ */
+function build_result_xml($header, $status, $response) {
+	global $result;
+	$result = "<?xml version=\"1.0\" encoding=\"utf-8\"?><result><header>".$header."</header><status>".$status."</status><response>".$response."</response></result>";
+}
+
+/**
+ * Returns the byte representation of a configuration directive
+ * @param mixed $val
+ * 		Either a byte or shorthand notation of a directive (K for kilobytes, M for megabytes, G for gigabytes)
+ * @return int $val
+ * 		Byte notation of the directive
+ */
+function return_bytes($val) {
+    $val = trim($val);
+    $last = strtolower($val[strlen($val)-1]);
+    switch($last) {
+    	// The 'G' modifier is available since PHP 5.1.0
+       	case 'g':
+           	$val *= 1024;
+       	case 'm':
+           	$val *= 1024;
+       	case 'k':
+           	$val *= 1024;
+    }
+    return $val;
+}
 
 ?>

@@ -96,19 +96,21 @@ class VideoProcessor{
 	}
 
 	/**
-	 * Checks if the provided file has an acceptable mimeType.
+	 * Checks if the provided file pertains to a certain mime type category
 	 *
-	 * @param string $filePath
+	 * @param String $filePath
+	 * 		The absolute path of the file you want to check
+	 * @param int $type
+	 * 		The kind of mime you expect for this file. 0 for video, 1 for audio
+	 * @return boolean $validMime
+	 * 		Returns true if the file's mime fits the expected category or false if not.
+	 * @throws Exception
+	 * 		The provided file or path does not exist
 	 */
-	private function checkMimeType($filePath){
+	public function checkMimeType($filePath,$type=0){
+		$mimeCategory = $type ? 'video' : 'audio';
 		$cleanPath = escapeshellcmd($filePath);
-		if(is_file($cleanPath) && filesize($cleanPath)>0){
-
-			//Not always returns accurate info on the mime type
-			//$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			//$file_mime = finfo_file($finfo, $file_path);
-			//finfo_close($finfo);
-
+		if(is_readable($cleanPath)){
 			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
 
 			$implodedOutput = implode($cmd);
@@ -117,21 +119,11 @@ class VideoProcessor{
 
 			$validMime = false;
 
-			/*
-			 foreach($this->mimeTypes as $mimeType ){
-				if($mimeType == $fileMimeType){
-				//The mime of this file is among the accepted mimes list
-				$validMime = true;
-				break;
-				}
-				}
-				*/
-
-			if(strpos($implodedOutput,'video') !== false){
+			if(strpos($implodedOutput,$mimeCategory) !== false){
 				$validMime = true;
 			}
 
-			return $validMime ? $fileMimeType : "Not valid mime type";
+			return $validMime;
 		} else {
 			throw new Exception("Not a file\n");
 		}
