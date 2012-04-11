@@ -66,6 +66,7 @@ class CleanupTask{
 		$this->_deleteUnreferencedResponses();
 		$this->_deleteUnreferencedEvaluations();
 		$this->_deleteConfigs();
+		$this->_deleteMoodleDemoResponses('moodledemo');
 	}
 
 	/**
@@ -191,20 +192,87 @@ class CleanupTask{
 	}
 	
 	/**
+	 * Delete the responses that were made using the moodledemo user during this day
+	 */
+	private function _deleteMoodleDemoResponses($username){
+		$sql = "SELECT r.file_identifier FROM users u INNER JOIN response r ON u.ID=r.fk_user_id WHERE (u.name='%s')";
+		
+		$moodle_responses = $this->_listFiles($this->conn->_multipleSelect($sql,$username), 'file_identifier', 1);
+		print_r($moodle_responses);
+		if($this->responseFolder && !empty($this->responseFolder)){
+			$responsesPath = $this->red5Path .'/'.$this->responseFolder;
+			$this->_deleteSelectedFiles($responsesPath, $moodle_responses);
+		}
+		
+		$sql = "DELETE FROM response WHERE fk_user_id = (SELECT id FROM users WHERE name='%s')";
+		$this->conn->_delete($sql,$username);
+	}
+	
+	/**
 	 * Takes an object resultSet and appends the flv extension to the selected object's property
 	 * @param array $data
 	 * 		An array of stdClass objects which contain a single property
 	 * @param String $property
 	 * 		The property of the object we want to append something to
+	 * @param int $include_merges
+	 * 		Tells the function if it should include the merged versions of the provided names
 	 * @return array $files
 	 * 		Returns an array of String with filenames or false no data was found
 	 */
-	private function _listFiles($data, $property){
+	private function _listFiles($data, $property, $include_merges=0){
 		$files = array();
-		foreach($data as $d){
-			$files[] = $d->$property . '.flv';
+		if( $data && is_array($data) ){
+			foreach($data as $d){
+				$files[] = $d->$property . '.flv';
+				if($include_merges)
+					$files[] = $d->$property . '_merge.flv';
+			}
 		}
 		return count($files)>0 ? $files : false;
+	}
+	
+	/**
+	 * Moves the selected files to the 'unreferenced' folder
+	 * 
+	 * @param String $filePath
+	 * 			Folder in which the files are going to be searched
+	 * @param mixed $files
+	 * 			An array of files that you want to move
+	 */
+	private function _deleteSelectedFiles($filePath, $files){
+		if($files){
+			$folder = dir($filePath);
+			while (false !== ($entry = $folder->read())) {
+				$entryFullPath = $filePath.'/'.$entry;
+				if(!is_dir($entryFullPath)){
+					$entryInfo = pathinfo($entryFullPath);
+					if( $entryInfo['extension'] == 'flv' && in_array($entry, $files) ){
+						//Delete only if the last access time was 2 hours ago
+						if( ($mtime = filemtime ($entryFullPath)) && ((time()-$mtime)/3600 > 2) ){						
+							//Unlink video metadata that's no longer needed
+							if(is_file($entryFullPath.'.meta')){
+								if(unlink($entryFullPath.'.meta')){
+									echo "Successfully DELETED meta file: ".$entryFullPath.".meta\n";
+								} else {
+									echo "Error while DELETING meta file: ".$entryFullPath.".meta\n";
+								}
+							}
+
+							//If possible, move the file to the unrefenced folder
+							$unrefPath = $this->red5Path.'/unreferenced';
+							if(is_dir($unrefPath) && is_readable($unrefPath) && is_writable($unrefPath)){
+								if(rename($entryFullPath,$unrefPath.'/'.$entry)){
+									echo "Successfully MOVED from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
+								} else {
+									echo "Error while MOVING from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
+								}
+							}
+						}		
+					}
+				}
+			}
+			$folder->close();
+		}
 	}
 
 	/**
