@@ -12,6 +12,7 @@ package commands.videoUpload
 	
 	import model.DataModel;
 	
+	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
@@ -49,7 +50,8 @@ package commands.videoUpload
 					_dataModel.uploadFileName = messageXML.response.filename;
 				}
 				else{
-					_dataModel.uploadErrors=messageXML.response.code;
+					//_dataModel.uploadErrors=messageXML.response.code;
+					_dataModel.uploadErrors=messageXML.response.message;
 					_dataModel.uploadFileName = '';
 				}
 				_dataModel.uploadFinishedData=true;

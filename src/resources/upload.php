@@ -14,6 +14,7 @@
 global $result;
 global $file_name;
 global $file_size;
+global $cfg;
 
 if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
 	try{
@@ -48,7 +49,7 @@ if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
 			
 			$file_path = $cfg->filePath;
 			
-			$file_max_size = min(return_bytes(ini_get('post_max_size')),return_bytes(ini_get('upload_max_size')));
+			$file_max_size = min(return_bytes(ini_get('post_max_size')),return_bytes(ini_get('upload_max_filesize')));
 			
 			$result = $db->_singleSelect("SELECT DISTINCT(prefName), prefValue FROM preferences WHERE (prefName='maxExerciseDuration')");
 			if($result)
@@ -107,7 +108,7 @@ echo $result;
  * 			The size of the file that had the problem (Not always available)
  */
 function log_fault_result($code,$description,$filename,$filesize){
-	global $file_name, $file_size;
+	global $file_name, $file_size, $cfg;
 	
 	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD ERROR\n";
 	$message .= "\tError Code: ".$code."\n";
@@ -139,9 +140,9 @@ function notify_fault_result($message){
  */
 function fault_result($header, $code, $description){
 	$status = 'failure';
-	$httpstatus = '<httpstatus>'.$header.'</httpstatus>';
-	$message = '<message>'.$description.'</message>';
-	$errorcode = '<code>'.$code.'</code>';
+	$httpstatus = '<httpstatus>'. str_replace(array("\r","\n"),"",$header) .'</httpstatus>';
+	$message = '<message>'. str_replace(array("\r","\n"),"",$description) .'</message>';
+	$errorcode = '<code>'. str_replace(array("\r","\n"),"",$code) .'</code>';
 	$response = $message.$errorcode;
 	build_result_xml($httpstatus,$status,$response);
 }
@@ -155,7 +156,7 @@ function fault_result($header, $code, $description){
 function success_result($filename){
 	$status = 'success';
 	$httpstatus = '<httpstatus>200</httpstatus>';
-	$response = '<filename>'.$filename.'</filename>';
+	$response = '<filename>'. str_replace(array("\r","\n"),"",$filename) .'</filename>';
 	build_result_xml($httpstatus,$status,$response);
 }
 

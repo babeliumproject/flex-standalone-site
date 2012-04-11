@@ -108,7 +108,7 @@ class VideoProcessor{
 	 * 		The provided file or path does not exist
 	 */
 	public function checkMimeType($filePath,$type=0){
-		$mimeCategory = $type ? 'video' : 'audio';
+		$mimeCategory = $type ? 'audio' : 'video';
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_readable($cleanPath)){
 			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
@@ -194,7 +194,7 @@ class VideoProcessor{
 	 */
 	private function retrieveVideoInfo($ffmpegOutput){
 		
-		if(preg_match('/Stream \#\d:\d: Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
+		if(preg_match('/Stream .+: Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
 		//if(preg_match('/Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
 			$this->mediaContainer->hasVideo = true;
 			$this->mediaContainer->videoCodec = trim($result[2]);

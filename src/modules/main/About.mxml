@@ -113,18 +113,34 @@
 
 	<fx:Binding source="{DataModel.getInstance().preferencesRetrieved}"
 				destination="onPreferencesRetrieved"/>
+	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-
+			
+			import mx.collections.ArrayCollection;
 			import mx.controls.LinkButton;
-
+			
+			import vo.ThirdPartySoftwareVO;
+			
 			[Bindable]
-			public var productData:Array=new Array(
-
-				{product: 'MySQL Server Community Edition', licenseName: 'GNU General Public License v2', licenseUrl: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', productUrl: 'http://www.mysql.com'}, {product: 'PHP', licenseName: 'The PHP License v3.01', licenseUrl: 'http://www.php.net/license/3_01.txt', productUrl: 'http://www.php.net'}, {product: 'Zend Framework', licenseName: 'New BSD License', licenseUrl: 'http://framework.zend.com/license', productUrl: 'http://framework.zend.com/'}, {product: 'Red5', licenseName: 'GNU Lesser General Public License', licenseUrl: 'http://www.gnu.org/licenses/lgpl.html', productUrl: 'http://code.google.com/p/red5/'}, {product: 'Adobe Flex SDK 4.0', licenseName: 'Adobe Flex SDK License', licenseUrl: 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', productUrl: 'http://www.adobe.com/products/flex/'}, {product: 'Cairngorm v2', licenseName: 'Cairngorm License', licenseUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/License', productUrl: 'http://opensource.adobe.com/wiki/display/cairngorm/About'}, {product: 'AS3CoreLib', licenseName: 'New BSD License', licenseUrl: 'http://www.opensource.org/licenses/bsd-license.php', productUrl: 'http://code.google.com/p/as3corelib/'}, {product: 'RTMP Video Player', licenseName: 'MIT License', licenseUrl: 'http://www.opensource.org/licenses/mit-license.php', productUrl: 'http://lelandcope.com/flex-video-player-red5-compatable/'}, {product: 'Hulstkamp Rating Component', licenseName: 'The Apache License v2', licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0', productUrl: 'http://www.hulstkamp.com/2009/03/12/skinning-and-creating-custom-rating-component-in-flex-4-gumbo/329'}, {product: 'Silk Icons v1.03', licenseName: 'Creative Commons Attribution 2.5 License', licenseUrl: 'http://creativecommons.org/licenses/by/2.5/', productUrl: 'http://www.famfamfam.com/lab/icons/silk/'}
-
-				);
+			public var productData:ArrayCollection=new ArrayCollection(new Array(
+				new ThirdPartySoftwareVO('MySQL Server Community Edition', 'GNU General Public License v2', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', 'http://www.mysql.com'), 
+				new ThirdPartySoftwareVO('PHP', 'The PHP License v3.01', 'http://www.php.net/license/3_01.txt', 'http://www.php.net'), 
+				new ThirdPartySoftwareVO('Zend Framework', 'New BSD License', 'http://framework.zend.com/license', 'http://framework.zend.com/'), 
+				new ThirdPartySoftwareVO('Red5', 'GNU Lesser General Public License', 'http://www.gnu.org/licenses/lgpl.html', 'http://code.google.com/p/red5/'), 
+				new ThirdPartySoftwareVO('Adobe Flex SDK 4.0', 'Adobe Flex SDK License', 'http://www.adobe.com/products/eulas/pdfs/Adobe_Flex_Software_Development_Kit-en_US-20071221_1748.pdf', 'http://www.adobe.com/products/flex/'), 
+				new ThirdPartySoftwareVO('Cairngorm v2', 'Cairngorm License', 'http://opensource.adobe.com/wiki/display/cairngorm/License', 'http://opensource.adobe.com/wiki/display/cairngorm/About'), 
+				new ThirdPartySoftwareVO('AS3CoreLib', 'New BSD License', 'http://www.opensource.org/licenses/bsd-license.php', 'http://code.google.com/p/as3corelib/'), 
+				new ThirdPartySoftwareVO('RTMP Video Player', 'MIT License', 'http://www.opensource.org/licenses/mit-license.php', 'http://lelandcope.com/flex-video-player-red5-compatable/'), 
+				new ThirdPartySoftwareVO('Hulstkamp Rating Component', 'The Apache License v2', 'http://www.apache.org/licenses/LICENSE-2.0', 'http://www.hulstkamp.com/2009/03/12/skinning-and-creating-custom-rating-component-in-flex-4-gumbo/329'), 
+				new ThirdPartySoftwareVO('Silk Icons v1.03', 'Creative Commons Attribution 2.5 License', 'http://creativecommons.org/licenses/by/2.5/', 'http://www.famfamfam.com/lab/icons/silk/')
+			));
+			
 
 			public function set onPreferencesRetrieved(flag:Boolean):void
 			{

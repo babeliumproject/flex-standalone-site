@@ -56,8 +56,8 @@ class Preference {
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
 			//Override the value for maxFileSize that comes from the DB, if it is set
-			//if($searchResult->prefName == 'maxFileSize')
-			//	$searchResult->prefValue = $maxFileSize;
+			if($searchResult->prefName == 'maxFileSize')
+				$searchResult->prefValue = $maxFileSize;
 			$preferenceData[$searchResult->prefName] = $searchResult->prefValue;
 		}
 		$_SESSION['preferenceData'] = $preferenceData;
