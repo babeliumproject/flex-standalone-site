@@ -201,6 +201,35 @@ class Exercise {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	/**
+	 * Parses the tags that were sent with the upload form
+	 * @param String $tags
+	 * 		A set of comma-sepparated tags
+	 */
+	public function parseExerciseTags($tags){
+		
+		//Remove odd symbols
+		//TODO $ptags = str_replace(array(':',';','{','}','[',']'),'',$tags);
+	
+		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',strtolower(escapeshellcmd(strip_tags(trim($tags))))));
+		
+		$cleanTags = array();
+		
+		foreach($ptags as $tag){
+			
+			$cleanTag = trim($tag);
+			//Remove links to avoid spam
+			if(strlen($cleanTag) > 0 && !preg_match("/^http[s]?\:\\/\\/([^\\/]+)/",$cleanTag,$matches)){
+				
+				//Cut long words 20 chars max
+				//TODO
+				$cleanTags[] = $cleanTag;
+			}
+		}
+		unset($tag);
+		return $cleanTags;
+	}
 
 	private function addExerciseLevel($exerciseLevel){
 		$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level, suggest_date)

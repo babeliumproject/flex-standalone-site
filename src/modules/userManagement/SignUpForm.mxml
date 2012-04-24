@@ -246,6 +246,7 @@
 
 			protected function resetToInitialStatus():void
 			{
+				saveButton.enabled = true;
 				username.text='';
 				email.text='';
 				password.text='';
@@ -288,6 +289,7 @@
 			
 			private function processNewUser():void
 			{
+				saveButton.enabled = false;
 				
 				var mLangCollection:ArrayCollection=new ArrayCollection();
 				var kLangCollection:ArrayCollection=new ArrayCollection();
@@ -325,11 +327,13 @@
 					}
 					else
 					{
+						saveButton.enabled=true;
 						CustomAlert.error(resourceManager.getString('myResources','WRONG_FIELDS_IN_FORM'));
 					}
 				}
 				else
 				{
+					saveButton.enabled=true;
 					CustomAlert.error(resourceManager.getString('myResources','MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
 				}
 			}
