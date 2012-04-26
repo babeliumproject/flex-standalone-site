@@ -3,20 +3,12 @@ package modules.videoPlayer.controls.babelia
 	import flash.display.BlendMode;
 	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
-	import flash.text.FontStyle;
-	import flash.text.engine.FontWeight;
-	
-	import flashx.textLayout.formats.TextAlign;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	
 	import modules.videoPlayer.controls.SkinableComponent;
 	
-	import mx.controls.Text;
 	
-	import spark.components.HGroup;
-	import spark.components.Label;
-	import spark.layouts.HorizontalAlign;
-	import spark.layouts.VerticalAlign;
-
 	public class SubtitleTextBox extends SkinableComponent
 	{
 		/**
@@ -26,20 +18,22 @@ package modules.videoPlayer.controls.babelia
 		public static const BOX_COLOR:String="boxColor";
 		public static const BORDER_COLOR:String="borderColor";
 		public static const BG_COLOR:String="bgColor";
-
-		//private var _box:Sprite;
-		//private var _bg:Sprite;
-		private var _textBox:Label;
+		
+		private var _textBox:TextField;
+		private var _textFormat:TextFormat;
 		private var _boxWidth:Number=100;
 		private var _boxHeight:Number=40;
+		private var _defaultWidth:Number = 100;
 		private var _defaultHeight:Number=40;
 		
 		private var _dropShadowFilter:DropShadowFilter;
-		private var _group:HGroup;
-
+		
 		public function SubtitleTextBox()
 		{
 			super("SubtitleTextBox"); // Required for setup skinable component
+			
+			height = _defaultHeight;
+			width = _defaultWidth;
 			
 			_dropShadowFilter = new DropShadowFilter();
 			_dropShadowFilter.alpha = 1;
@@ -49,68 +43,59 @@ package modules.videoPlayer.controls.babelia
 			_dropShadowFilter.blurX = 6;
 			_dropShadowFilter.blurY = 6;
 			
-			_group = new HGroup();
-			_group.verticalAlign = VerticalAlign.BOTTOM;
-			_group.horizontalAlign = HorizontalAlign.CENTER;
-			_group.paddingBottom = 6;
-
-			_textBox=new Label();
-			_textBox.setStyle("textAlign", "center");
-			_textBox.setStyle("fontWeight", FontWeight.BOLD);
-			_textBox.setStyle("fontSize", 14);
+			_textFormat = new TextFormat();
+			_textFormat.align = "center";
+			_textFormat.font = "Arial";
+			_textFormat.bold = true;
+			_textFormat.size = 14;
+			
+			_textBox=new TextField();
+			_textBox.multiline = true;
+			_textBox.wordWrap = true;
+			_textBox.selectable = false;
 			_textBox.filters = [_dropShadowFilter];
+			_textBox.setTextFormat(_textFormat);
 			
-			_group.addElement(_textBox);
-			
-			addChild(_group);
 
-			resize(_boxWidth, _boxHeight);
+			addChild(_textBox);
 		}
-
+		
 		override public function availableProperties(obj:Array=null):void
 		{
 			super.availableProperties([BG_COLOR, BORDER_COLOR, BOX_COLOR, TEXT_COLOR]);
 		}
-
+		
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			super.updateDisplayList( unscaledWidth, unscaledHeight );
+			
+			if( height == 0 ) 
+				height = _defaultHeight;
+			if( width == 0 ) 
+				width = _defaultWidth;
+			
+			_textFormat.color = getSkinColor(TEXT_COLOR);
+			_textBox.width = width*0.9;
+			_textBox.x = this.width / 2 - _textBox.width/2;
+			_textBox.y = this.height - (_textBox.textHeight) - 6;
+			
+			_textBox.setTextFormat(_textFormat);
+			
+			
+		}
+		
 		public function resize(width:Number, height:Number):void
 		{
 			this.width=width;
 			this.height=height;
-			
-			_group.width = width;
-			_group.height = height;
-			
-			_textBox.width=_group.width*0.9;
-		
-			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));
 		}
-
+		
 		public function setText(text:String,textColor:uint=0xffffff):void
 		{
-			_textBox.setStyle("color", textColor);
+			_textFormat.color = textColor;
 			_textBox.text=text;
+			_textBox.setTextFormat(_textFormat);
+			_textBox.y = this.height - (_textBox.textHeight) - 6;
 		}
-
-		/*
-		private function CreateBG(bgWidth:Number, bgHeight:Number):void
-		{
-			_bg.graphics.clear();
-			//_bg.graphics.beginFill(getSkinColor(BG_COLOR));
-			_bg.graphics.beginFill(getSkinColor(BG_COLOR),0.0);
-			_bg.graphics.drawRect(0, 0, bgWidth, bgHeight);
-			_bg.graphics.endFill();
-		}
-
-		private function CreateBox(b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean=false, borderColor:uint=0, borderSize:Number=1):void
-		{
-			b.graphics.clear();
-			//b.graphics.beginFill(color as uint);
-			b.graphics.beginFill(color as uint, 0.0);
-			if (border)
-				b.graphics.lineStyle(borderSize, borderColor);
-			b.graphics.drawRect(0, 0, bWidth, bHeight);
-			b.graphics.endFill();
-		}
-		*/
 	}
 }

@@ -1,6 +1,13 @@
 package modules.videoPlayer.controls.babelia
 {
+	import flash.display.Bitmap;
+	import flash.display.Loader;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.net.URLRequest;
+	
+	import model.DataModel;
 	
 	import modules.videoPlayer.controls.SkinableComponent;
 	
@@ -28,6 +35,8 @@ package modules.videoPlayer.controls.babelia
 		private var _boxWidth:Number=500;
 		private var _boxHeight:Number=50;
 		private var _highlight:Boolean=false;
+		
+		private var selectedRoleArrow:Bitmap;
 
 		public function ArrowPanel(state:Boolean=false)
 		{
@@ -102,14 +111,30 @@ package modules.videoPlayer.controls.babelia
 			_highlight = flag;
 			refresh();
 		}
+		
+		private function drawArrowSprite():Sprite
+		{
+			var arrow2:Sprite = new Sprite();
+			arrow2.graphics.clear();
+			arrow2.graphics.beginFill(0xa12829);
+			arrow2.graphics.moveTo(4,0);
+			arrow2.graphics.lineTo(4,26);
+			arrow2.graphics.lineTo(0,26);
+			arrow2.graphics.lineTo(8,34);
+			arrow2.graphics.lineTo(16,26);
+			arrow2.graphics.lineTo(12,26);
+			arrow2.graphics.lineTo(12,0);
+			arrow2.graphics.lineTo(4,0);
+			arrow2.graphics.endFill();
+			return arrow2;
+		}
 
 		private function doShowArrow(time:Number, duration:Number, flag:Boolean):void
-		{
-			var arrow:Image=new Image();
-			if (flag)
-				arrow.source="resources/images/fletxa_gorri.png";
-			else return;
-			//	arrow.source="resources/images/fletxa_beltza.png";
+		{	
+			if(flag)
+				var arrow:Sprite = drawArrowSprite();
+			else
+				return;
 
 			/*************************************
 			 *    \/  (0)
@@ -117,18 +142,17 @@ package modules.videoPlayer.controls.babelia
 			 * |__|______________________________|
 			 * 0                               duration
 			 * 
-			 * arrow's width: 17px
+			 * arrow's width: 16px
 			 * scrubber's width: 10px
 			 * margins: ~5px (left) ~5px (right)
 			 * ***********************************/
 			var margin:int = 5;
 			var scrubberW:int = 10;
 			
-			arrow.width=17;
-			arrow.height=35;
-			arrow.x=time * (width-scrubberW - margin*2) / duration + 
-							(margin + scrubberW - arrow.width/2 -1); // -1 
-			arrow.y=4;
+			arrow.width = 16;
+			arrow.height = 34;
+			arrow.x = time * (width-scrubberW - margin*2) / duration + (margin + scrubberW - arrow.width/2); // -1 
+			arrow.y = 4;
 
 			_arrows.addItem(arrow);
 			addChild(arrow);

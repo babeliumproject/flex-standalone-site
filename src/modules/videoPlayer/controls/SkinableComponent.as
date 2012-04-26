@@ -1,9 +1,10 @@
 package modules.videoPlayer.controls
 {
+	import flash.utils.Dictionary;
+	
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
-	import flash.utils.Dictionary;
 
 	public class SkinableComponent extends UIComponent
 	{
@@ -24,13 +25,13 @@ package modules.videoPlayer.controls
 		{
 			Alert.show(ObjectUtil.toString(obj));
 		}
-		
+	
 		/**
 		 * Sets color for a skinProperty
 		 */
-		public function setSkinColor(propertyName:String, color:uint) : void
+		public function setSkinProperty(propertyName:String, propertyValue:String) : void
 		{
-			skinColors[propertyName] = color;
+			skinColors[propertyName] = propertyValue;
 		}
 		
 		/**
@@ -38,7 +39,15 @@ package modules.videoPlayer.controls
 		 */
 		public function getSkinColor(propertyName:String) : uint
 		{
-			return skinColors[propertyName] as uint;
+			return new uint(skinColors[propertyName]);
+		}
+		
+		/** 
+		 * Returns the value of a property of this skin
+		 */
+		public function getSkinProperty(propertyName:String) : String
+		{
+			return skinColors[propertyName];
 		}
 		
 		public function refresh() : void

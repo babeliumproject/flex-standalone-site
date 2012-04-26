@@ -14,6 +14,7 @@ package modules.videoPlayer.controls
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
+	import mx.utils.ObjectUtil;
 
 	public class ScrubberBar extends SkinableComponent
 	{
@@ -26,7 +27,7 @@ package modules.videoPlayer.controls
 		public static const SCRUBBER_COLOR:String = "scrubberColor";
 		public static const SCRUBBERBORDER_COLOR:String = "scrubberBorderColor";
 		public static const LOADEDBAR_COLOR:String = "loadedColor";
-		
+
 		public static const BG_GRADIENT_ANGLE:String = "bgGradientAngle";
 		public static const BG_GRADIENT_START_COLOR:String = "bgGradientStartColor";
 		public static const BG_GRADIENT_END_COLOR:String = "bgGradientEndColor";
@@ -36,7 +37,7 @@ package modules.videoPlayer.controls
 		public static const BG_GRADIENT_END_RATIO:String = "bgGradientEndRatio";
 		public static const BORDER_COLOR:String = "borderColor";
 		public static const BORDER_WEIGHT:String = "borderWeight";
-		
+			
 		/**
 		 * Variables
 		 * 
@@ -135,7 +136,8 @@ package modules.videoPlayer.controls
 			
 			this.graphics.clear();
 			
-			createBox( _bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight );
+			//createBox( _bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight );
+			createBox(_bar, 0x333333, _barWidth, _barHeight, false, 0, 0, 0.85);
 			_bar.y = height/2 - _bar.height/2;
 			_bar.x = width/2 - _bar.width/2;
 			
@@ -143,7 +145,8 @@ package modules.videoPlayer.controls
 			_loadedBar.x = _bar.x;
 			_loadedBar.y = _bar.y;
 			
-			createBox( _progBar, getSkinColor(BAR_COLOR), 1, _barHeight );
+			//createBox( _progBar, getSkinColor(BAR_COLOR), 1, _barHeight );
+			createBox(_progBar, 0x000000, 1, _barHeight, false, 0, 0, 0.65);
 			_progBar.x = _bar.x;
 			_progBar.y = _bar.y;			
 			
@@ -158,7 +161,7 @@ package modules.videoPlayer.controls
 			// set marks
 			_marks.graphics.clear();
 			for each (var obj:Object in _dataProvider)
-				doShowMark(obj.startTime, _duration);
+				doShowMark(obj.startTime, obj.endTime, _duration);
 		}
 		
 		private function onBarClick( e:MouseEvent ) : void
@@ -224,11 +227,12 @@ package modules.videoPlayer.controls
 		
 		
 		
-		private function createBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1 ):void
+		private function createBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1, alpha:Number = 1 ):void
 		{
 			b.graphics.clear();
-			b.graphics.beginFill( color as uint );
-			if( border ) b.graphics.lineStyle( borderSize, borderColor );
+			b.graphics.beginFill( color as uint, alpha );
+			if( border ) 
+				b.graphics.lineStyle( borderSize, borderColor );
 			b.graphics.drawRect( 0, 0, bWidth, bHeight );
 			b.graphics.endFill();
 		}
@@ -277,11 +281,11 @@ package modules.videoPlayer.controls
 			refresh();
 		}
 		
-		private function doShowMark(time:Number, duration:Number) : void
+		private function doShowMark(startTime:Number, endTime:Number, duration:Number) : void
 		{
-			_marks.graphics.beginFill(0xFF0000);
-			_marks.graphics.drawRect( time*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2,
-											2, 2, _defaultHeight-4 );
+			_marks.graphics.beginFill(0xa12829,0.85);
+			//_marks.graphics.drawRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, 2, _defaultHeight-4 );
+			_marks.graphics.drawRoundRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, (endTime-startTime)*(_bar.width)/duration, _defaultHeight-4,2);
 			_marks.graphics.endFill();
 		}
 		

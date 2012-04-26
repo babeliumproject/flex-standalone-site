@@ -56,7 +56,7 @@ package modules.videoPlayer.controls.babelia
 			_textBox.setStyle("fontSize", 10);
 			_textBox.selectable = false;
 			
-			addChild( _bg );;
+			addChild( _bg );
 			addChild( _sliderArea );
 			addChild( _amount );
 			addChild( _textBox );

@@ -351,7 +351,7 @@ package modules.videoPlayer
 
 			var xmlURL:URLRequest=new URLRequest(fileName);
 			_skinLoader=new URLLoader(xmlURL);
-			_skinLoader.addEventListener(Event.COMPLETE, onSkinFileReaded);
+			_skinLoader.addEventListener(Event.COMPLETE, onSkinFileRead);
 			_skinLoader.addEventListener(IOErrorEvent.IO_ERROR, onSkinFileReadingError);
 			_loadingSkin=true;
 		}
@@ -359,7 +359,7 @@ package modules.videoPlayer
 		/**
 		 * Parses Skin file
 		 */
-		public function onSkinFileReaded(e:Event):void
+		public function onSkinFileRead(e:Event):void
 		{
 		
 			var xml:XML=new XML(_skinLoader.data);
@@ -371,13 +371,11 @@ package modules.videoPlayer
 
 				if (cmp == null)
 					continue;
-
 				for each (var xElement:XML in xChild.child("Property"))
 				{
 					var propertyName:String=xElement.attribute("name").toString();
-					var propertyColor:String=xElement.toString();
-
-					cmp.setSkinColor(propertyName, new uint(propertyColor));
+					var propertyValue:String=xElement.toString();
+					cmp.setSkinProperty(propertyName, propertyValue);
 				}
 			}
 

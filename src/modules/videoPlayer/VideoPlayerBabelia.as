@@ -219,13 +219,17 @@ package modules.videoPlayer
 			removeChild(_videoBarPanel); // order
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
-			addChild(_videoBarPanel);
+			
 		
 			addChild(_micImage);
 			addChild(_camVideo);
-	
+			
 			addChild(_countdownTxt);
 			addChild(_subtitlePanel);
+			
+			addChild(_videoBarPanel);
+	
+			
 			
 			addChild(_overlayButton);
 			

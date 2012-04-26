@@ -4,6 +4,7 @@
 		<Property name="bgColor">0xFFFFFF</Property>
 		<Property name="roleBgColor">0xFFFFFF</Property>
 		<Property name="roleBorderColor">0xa7a7a7</Property>
+		<Property name="fontFamily">Arial</Property>
 	</Component>
 	<Component name="ArrowPanel">
 		<Property name="bgColor">0xdbd7bf</Property>
@@ -21,10 +22,13 @@
 		<Property name="textColor">0xfcfaeb</Property>
 		<Property name="roleColor">0x783101</Property>
 		<Property name="barColor">0xdf5c02</Property>
+		<Property name="barFillColor">0xffffff</Property>
+		<Property name="barBorderColor">0xa7a7a7</Property>
 		<Property name="hlColor">0xFFCB99</Property>
 		<Property name="borderColor">0x913b01</Property>
 		<Property name="borderWeight">1</Property>
 		<Property name="cornerRadius">0</Property>
+		<Property name="fontFamily">Arial</Property>
 	</Component>
 	<Component name="SubtitleButton">
 		<Property name="bgColor">0xFFFFFF</Property>
