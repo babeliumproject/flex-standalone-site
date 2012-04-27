@@ -145,7 +145,6 @@
 			[Bindable]
 			private var _licenseData:LicenseVO=new LicenseVO();
 			
-			[Bindable]
 			private var _tags:Array;
 
 			[Bindable]
@@ -342,7 +341,7 @@
 			
 			private function removeTagLinkButtons():void
 			{
-				if(exerciseTagsBox.numChildren > 0)
+				if(exerciseTagsBox.numElements > 0)
 					exerciseTagsBox.removeAllElements();
 				_tags=null;
 			}

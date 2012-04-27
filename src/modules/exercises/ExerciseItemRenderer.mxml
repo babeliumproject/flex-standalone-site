@@ -151,8 +151,7 @@
 			private var _data:Object;
 
 			private var _creationComplete:Boolean=false;
-			
-			[Bindable]
+		
 			private var _tags:Array;
 
 			[Bindable]
@@ -273,7 +272,7 @@
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
-				_tags=_data.tags.split(',');
+				_tags=data.tags.split(',');
 				
 				for each (var tag:String in _tags)
 				{
@@ -287,7 +286,7 @@
 			
 			private function removeTagLinkButtons():void
 			{
-				if(exerciseTagsBox.numChildren > 0)
+				if(exerciseTagsBox.numElements > 0)
 					exerciseTagsBox.removeAllElements();
 				_tags=null;
 			}
