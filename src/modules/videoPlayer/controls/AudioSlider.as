@@ -9,7 +9,6 @@ package modules.videoPlayer.controls
 	
 	import modules.videoPlayer.events.VolumeEvent;
 	
-	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
 

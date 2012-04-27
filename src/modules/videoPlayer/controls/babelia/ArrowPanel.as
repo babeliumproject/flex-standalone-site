@@ -12,10 +12,6 @@ package modules.videoPlayer.controls.babelia
 	import modules.videoPlayer.controls.SkinableComponent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
-	import mx.controls.Image;
-	import mx.core.UIComponent;
-
 
 	public class ArrowPanel extends SkinableComponent
 	{

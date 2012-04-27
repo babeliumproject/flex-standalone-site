@@ -10,14 +10,6 @@ package modules.videoPlayer.controls.babelia
 	
 	import modules.videoPlayer.controls.SkinableComponent;
 	
-	import mx.controls.Alert;
-	import mx.controls.ProgressBar;
-	import mx.controls.ProgressBarMode;
-	import mx.controls.Text;
-	import mx.core.UIComponent;
-	import mx.skins.halo.ProgressBarSkin;
-	import mx.skins.spark.ProgressBarSkin;
-	
 	public class RoleTalkingPanel extends SkinableComponent
 	{
 		/**

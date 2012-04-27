@@ -8,10 +8,6 @@ package modules.videoPlayer.controls
 	import flash.filters.BitmapFilterQuality;
 	import flash.filters.DropShadowFilter;
 	import flash.geom.Matrix;
-	
-	import mx.core.UIComponent;
-	
-	import spark.primitives.Graphic;
 
 	public class SkinableButton extends SkinableComponent
 	{

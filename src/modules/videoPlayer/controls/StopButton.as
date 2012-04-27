@@ -4,8 +4,6 @@ package modules.videoPlayer.controls
 	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	
-	import mx.core.UIComponent;
 
 	public class StopButton extends SkinableButton
 	{		

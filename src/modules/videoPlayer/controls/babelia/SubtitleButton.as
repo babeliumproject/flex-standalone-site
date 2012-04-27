@@ -8,8 +8,6 @@ package modules.videoPlayer.controls.babelia
 	import modules.videoPlayer.controls.SkinableComponent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
 	
-	import mx.core.UIComponent;
-	
 	import spark.components.ToggleButton;
 	
 	public class SubtitleButton extends SkinableComponent

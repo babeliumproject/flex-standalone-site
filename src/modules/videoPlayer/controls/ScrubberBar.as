@@ -10,11 +10,8 @@ package modules.videoPlayer.controls
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
-	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
-	import mx.utils.ObjectUtil;
 
 	public class ScrubberBar extends SkinableComponent
 	{

@@ -5,9 +5,6 @@ package modules.videoPlayer.controls
 	import flash.geom.Matrix;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-	
-	import mx.controls.Alert;
-	import mx.core.UIComponent;
 
 	public class ElapsedTime extends SkinableComponent
 	{

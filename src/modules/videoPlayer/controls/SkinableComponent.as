@@ -2,7 +2,6 @@ package modules.videoPlayer.controls
 {
 	import flash.utils.Dictionary;
 	
-	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
 
@@ -23,7 +22,7 @@ package modules.videoPlayer.controls
 		 */
 		public function availableProperties(obj:Array = null) : void
 		{
-			Alert.show(ObjectUtil.toString(obj));
+			trace(ObjectUtil.toString(obj));
 		}
 	
 		/**
