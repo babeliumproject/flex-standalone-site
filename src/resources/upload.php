@@ -77,7 +77,7 @@ if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
 					} else if ($file_size > $file_max_size){
 						fault_result(400, "videotoobig", "Maximum video size exceeded. Should be less than ".($file_max_size/1048576)."MB");
 					} else {
-						success_result($clean_path);
+						success_result($escaped_file_name);
 					}
 				}
 			}
