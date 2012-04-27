@@ -54,6 +54,13 @@ class Search {
 		}
 	}
 
+	/**
+	 * Opens the Lucene search index file. The index file is periodically refreshed grabbing database data.
+	 * See the cron scripts to know how often this index is refreshed
+	 * 
+	 * @throws Exception
+	 * 		The index file could not be found or there was a problem opening the index file
+	 */
 	private function initialize(){
 		try{
 			$this->index = Zend_Search_Lucene::open($this->indexPath);
@@ -62,6 +69,17 @@ class Search {
 		}
 	}
 
+	/**
+	 * Searches the provided term throughout all the indexed fields of the index file
+	 * 
+	 * @param String $search
+	 * 		The user's search term
+	 * @return mixed
+	 * 		An array of stdClass objects with information of exercises that match the search criteria in 
+	 * 		any of the indexed fields or false on error or empty search
+	 * @throws Exception
+	 * 		There was an error searching the index file
+	 */
 	public function launchSearch($search) {
 		//Return empty array if empty query
 		if($search == '')
