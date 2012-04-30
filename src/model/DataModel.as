@@ -136,7 +136,8 @@ package model
 		[Bindable] public var server: String = "babelium";
 		[Bindable] public var red5Port: String = "1935";
 		[Bindable] public var uploadDomain:String = "http://"+server+"/";
-		[Bindable] public var streamingResourcesPath:String = "rtmp://" + server + "/oflaDemo";
+		[Bindable] public var streamingApp:String = "vod";
+		[Bindable] public var streamingResourcesPath:String = "rtmp://" + server + "/" + streamingApp;
 		[Bindable] public var evaluationStreamsFolder:String="evaluations";
 		[Bindable] public var responseStreamsFolder:String="responses";
 		[Bindable] public var exerciseStreamsFolder:String="exercises";

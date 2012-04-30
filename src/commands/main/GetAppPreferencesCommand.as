@@ -66,7 +66,7 @@ package commands.main
 			{
 				dataModel.server=server;
 				dataModel.uploadDomain="http://" + server + "/";
-				dataModel.streamingResourcesPath="rtmp://" + server + "/oflaDemo";
+				dataModel.streamingResourcesPath="rtmp://" + server + "/" + dataModel.streamingApp;
 				dataModel.uploadURL="http://" + server + "/upload.php";
 				dataModel.thumbURL="http://" + server + "/resources/images/thumbs";
 			}

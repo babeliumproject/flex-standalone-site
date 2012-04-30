@@ -41,6 +41,9 @@ class Search {
 	private $exerciseMinRatingCount;
 	private $exerciseGlobalAvgRating;
 	
+	/**
+	 * These fields won't be included in the search queries
+	 */
 	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
 
 	public function __construct() {
@@ -125,6 +128,18 @@ class Search {
 		}
 	}
 
+	/**
+	 * Removes all search wildcards provided by the user and replaces them with individual term fuzzy search modifiers. 
+	 * Each requested term is appended with the '~' modifier that tells lucene to do a fuzzy search. 
+	 * 
+	 * The Lucene fuzzy search is performed using similarity measurement provided by Levenshtein's distance algorithm.
+	 * http://en.wikipedia.org/wiki/Levenshtein_distance 
+	 * 
+	 * @param String $search
+	 * 			The term (or terms) of the search query
+	 * @return String $finalSearch
+	 * 			The parsed search query with fuzzy search modifiers applied
+	 */
 	public function fuzzySearch($search){
 		//Decide whether to make the fuzzy search
 		$auxSearch=$search;
@@ -146,12 +161,20 @@ class Search {
 		return $finalSearch;
 	}
 
-
+	/**
+	 * Deletes the previous search indexing file and generates a new one using the most up-to-date data available on the database
+	 */
 	public function reCreateIndex(){
 		$this->deleteIndexRecursive($this->indexPath);
 		$this->createIndex();
 	}
 
+	/**
+	 * Deletes all the contents of the requested folder, if that folder exists. If the provided path is a file or a symbolic link it is deleted as well.
+	 * 
+	 * @param String $dirname
+	 * 		Absolute path of the directory whose files are going to be deleted
+	 */
 	private function deleteIndexRecursive($dirname){
 		// Sanity check
 		if (!file_exists($dirname)) {
@@ -180,6 +203,10 @@ class Search {
 		//return rmdir($dirname);
 	}
 
+	/**
+	 * Creates a new search index file with the current contents of the database's exercise table.
+	 * The fields that won't be indexed are specified in the unidexedFields array of the class
+	 */
 	public function createIndex() {
 		//Query for the index
 		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
@@ -212,8 +239,10 @@ class Search {
 	}
 	
 	/**
-	 *	Adds a new document entry (exercise data set) to the search index file
+	 *	Adds a new document entry (exercise data set) to the already existing search index file
 	 *
+	 *	@param int $idDB
+	 *		An exercise identifier to query the database for exercise data.
 	 */
 	public function addDocumentIndex($idDB){
 
@@ -244,6 +273,12 @@ class Search {
 
 	}
 
+	/**
+	 * Delete a document entry (exercise data set) from an already existing search index file
+	 * 
+	 * @param int $idDB
+	 * 		The search index identifier (and also exercise identifier) that's going to be removed from the index file
+	 */
 	public function deleteDocumentIndex($idDB){
 		//Opens the index
 		$this->initialize();
@@ -259,6 +294,14 @@ class Search {
 		$this->index->optimize();
 	}
 
+	/**
+	 * Adds several document entries (exercise data sets) to the already existing (usually empty) search index file
+	 * 
+	 * @param array $documentData
+	 * 		An array of stdClass with data about exercises of the database
+	 * @param array $unindexedFields
+	 * 		The fields thath won't be used to build the searchable item index
+	 */
 	private function addDoc($documentData, $unindexedFields){
 		
 		$doc = new Zend_Search_Lucene_Document();
