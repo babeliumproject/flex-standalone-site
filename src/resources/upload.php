@@ -14,6 +14,7 @@
 global $result;
 global $file_name;
 global $file_size;
+global $media_data;
 global $cfg;
 
 if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
@@ -107,14 +108,15 @@ echo $result;
  * @param int $filesize
  * 			The size of the file that had the problem (Not always available)
  */
-function log_fault_result($code,$description,$filename,$filesize){
-	global $file_name, $file_size, $cfg;
+function log_fault_result($code,$description){
+	global $file_name, $file_size, $media_data, $cfg;
 	
 	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD ERROR\n";
 	$message .= "\tError Code: ".$code."\n";
 	$message .= "\tError description: ".$description."\n";
 	$message .= "\tUnescaped filename: ".$file_name."\n";
 	$message .= "\tFilesize: ".$file_size."\n";
+	$message .= "\tMediainfo: ".print_r($media_data,true)."\n";
 	
 	$log_file = ($cfg && isset($cfg->logPath)) ? $cfg->logPath . '/upload.log' : '/tmp/upload.log';
 	error_log($message,3,$log_file);
@@ -144,6 +146,7 @@ function fault_result($header, $code, $description){
 	$message = '<message>'. str_replace(array("\r","\n"),"",$description) .'</message>';
 	$errorcode = '<code>'. str_replace(array("\r","\n"),"",$code) .'</code>';
 	$response = $message.$errorcode;
+	log_fault_result($code,$description);
 	build_result_xml($httpstatus,$status,$response);
 }
 

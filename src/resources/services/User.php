@@ -226,14 +226,14 @@ class User {
 				ORDER BY e.adding_date DESC";
 			
 			
-			
-			$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-			$exercise = new Exercise();
-			foreach($searchResults as $searchResult){
-				$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
-				$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$searchResults = array();
+			if($searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'])){
+				$exercise = new Exercise();
+				foreach($searchResults as $searchResult){
+					$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
+					$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+				}
 			}
-			
 			return $this->conn->multipleRecast('ExerciseVO', $searchResults);
 			
 		} catch (Exception $e) {
