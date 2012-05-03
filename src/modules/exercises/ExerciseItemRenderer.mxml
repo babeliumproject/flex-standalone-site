@@ -5,6 +5,7 @@
 				xmlns:hulstkamp="com.hulstkamp.*"
 				autoDrawBackground="true"
 				creationComplete="completeHandler()"
+				dataChange="dataChangeHandler()"
 				xmlns:skins="skins.*">
 
 	<s:layout>
@@ -81,9 +82,19 @@
 			<skins:IconButton label="{data.userName}"
 							  styleName="commonLinkButton"/>
 		</s:HGroup>
-		<s:HGroup width="320" verticalAlign="middle" paddingBottom="4">
+		<s:HGroup width="320"
+				  verticalAlign="middle"
+				  paddingBottom="4">
 			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
-			<s:TileGroup id="exerciseTagsBox" width="280" horizontalGap="1" verticalGap="1" rowHeight="14" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
+			<s:TileGroup id="exerciseTagsBox"
+						 width="280"
+						 horizontalGap="1"
+						 verticalGap="1"
+						 rowHeight="14"
+						 paddingBottom="0"
+						 paddingLeft="0"
+						 paddingRight="0"
+						 paddingTop="0"/>
 			<!--<s:HGroup id="tagRow"/>-->
 		</s:HGroup>
 		<s:HGroup verticalAlign="middle"
@@ -148,11 +159,10 @@
 
 			private const MAX_DESCRIPTION_CHARS:int=120;
 
+			[Bindable]
 			private var _data:Object;
 
 			private var _creationComplete:Boolean=false;
-		
-			private var _tags:Array;
 
 			[Bindable]
 			private var _licenseData:LicenseVO=new LicenseVO();
@@ -163,10 +173,12 @@
 			public function completeHandler():void
 			{
 				_data=data;
-				_creationComplete=true;
-
-				setupReferenceComponent();
+				_creationComplete=true;				
+			}
+			
+			public function dataChangeHandler():void{
 				addTagLinkButtons();
+				setupReferenceComponent();
 			}
 
 			private function setupReferenceComponent():void
@@ -177,6 +189,7 @@
 				}
 				else
 				{
+					referenceUrl.setStyle('textDecoration', 'none');
 					referenceUrl.setStyle('skin', null);
 					referenceUrl.useHandCursor=false;
 				}
@@ -231,7 +244,7 @@
 			{
 				var url:String='';
 				if (temp.source == "Red5")
-					if(temp.thumbnailUri != 'nothumb.png')
+					if (temp.thumbnailUri != 'nothumb.png')
 						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
 					else
 						url=DataModel.getInstance().thumbURL + '/nothumb.png';
@@ -268,13 +281,15 @@
 				}
 				return (true);
 			}
-			
+
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
-				_tags=data.tags.split(',');
-				
-				for each (var tag:String in _tags)
+				var tags:String = data.tags;
+				trace(tags);
+				var taglist:Array=tags.split(',');
+
+				for each (var tag:String in taglist)
 				{
 					var linkTag:IconButton=new IconButton();
 					linkTag.styleName="commonLinkButton";
@@ -283,14 +298,13 @@
 					exerciseTagsBox.addElement(linkTag);
 				}
 			}
-			
+
 			private function removeTagLinkButtons():void
 			{
-				if(exerciseTagsBox.numElements > 0)
+				if (exerciseTagsBox.numElements > 0)
 					exerciseTagsBox.removeAllElements();
-				_tags=null;
 			}
-			
+
 			protected function tagClickHandler(event:MouseEvent):void
 			{
 				DataModel.getInstance().searchField=(event.target as IconButton).label;
@@ -298,7 +312,6 @@
 				new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
-			
 		]]>
 	</fx:Script>
 
