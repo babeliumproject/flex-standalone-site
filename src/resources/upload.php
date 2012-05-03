@@ -66,7 +66,8 @@ if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
 				//Move the file from the tmp location to uploads folder
 				if (!$filestatus = move_uploaded_file ( $file_temp, $clean_path ) ){
 					fault_result(500, "uploadfailed", "The file upload failed. Please try again");
-				}else {		
+				}else {
+					@chmod($clean_path, 0644);
 					$media_data = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
 					$validMime = $vp->checkMimeType($file_path . "/" . $file_name);
 							
@@ -98,24 +99,21 @@ echo $result;
  */
 
 /**
- * Logs unsuccessful file uploads to the local filesystem
+ * Logs file upload activity to the local filesystem
  * @param String $code
  * 			A code to identify the problem
  * @param String $description
  * 			A description of the problem
- * @param String $filename
- * 			The name of the file that had the problem (Not always available)
- * @param int $filesize
- * 			The size of the file that had the problem (Not always available)
  */
-function log_fault_result($code,$description){
-	global $file_name, $file_size, $media_data, $cfg;
+function log_result($code,$description){
+	global $file_name, $file_size, $result, $media_data, $cfg;
 	
 	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD ERROR\n";
 	$message .= "\tError Code: ".$code."\n";
 	$message .= "\tError description: ".$description."\n";
 	$message .= "\tUnescaped filename: ".$file_name."\n";
 	$message .= "\tFilesize: ".$file_size."\n";
+	$message .= "\tResponse: ".$result."\n";
 	$message .= "\tMediainfo: ".print_r($media_data,true)."\n";
 	
 	$log_file = ($cfg && isset($cfg->logPath)) ? $cfg->logPath . '/upload.log' : '/tmp/upload.log';
@@ -146,8 +144,8 @@ function fault_result($header, $code, $description){
 	$message = '<message>'. str_replace(array("\r","\n"),"",$description) .'</message>';
 	$errorcode = '<code>'. str_replace(array("\r","\n"),"",$code) .'</code>';
 	$response = $message.$errorcode;
-	log_fault_result($code,$description);
 	build_result_xml($httpstatus,$status,$response);
+	log_result($code,$description);
 }
 
 /**
@@ -161,6 +159,7 @@ function success_result($filename){
 	$httpstatus = '<httpstatus>200</httpstatus>';
 	$response = '<filename>'. str_replace(array("\r","\n"),"",$filename) .'</filename>';
 	build_result_xml($httpstatus,$status,$response);
+	log_result($code,$description);
 }
 
 /**
