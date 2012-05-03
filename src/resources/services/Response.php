@@ -66,6 +66,16 @@ class Response {
 		}
 	}
 
+	/**
+	 * Saves a response attempt of the user so that other users can assess his/her work
+	 * 
+	 * @param stdClass $data
+	 * 		The data of the newly recorded response media file
+	 * @return int
+	 * 		The id of the latest inserted response
+	 * @throws Exception
+	 * 		There was a problem with the database
+	 */
 	public function saveResponse($data = null){
 		
 		if(!$data)
@@ -96,6 +106,14 @@ class Response {
 
 	}
 
+	/**
+	 * Makes a response public which means it can be assessed by other users with enough knowledge of the target language
+	 * 
+	 * @param stdClass $data
+	 * 		An object with data about the response
+	 * @throws Exception
+	 * 		There was a problem with the database
+	 */
 	public function makePublic($data)
 	{
 		if(!$data)
@@ -138,6 +156,12 @@ class Response {
 		
 	}
 
+	/**
+	 * Rests an amount of credits to the currently logged-in user for asking other user's collaboration
+	 * 
+	 * @return int
+	 * 		The amount of rows affected by the update operation
+	 */
 	private function _subCreditsForEvalRequest() {
 		$sql = "UPDATE (users u JOIN preferences p)
 			SET u.creditCount=u.creditCount-p.prefValue 
@@ -145,6 +169,14 @@ class Response {
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
+	/**
+	 * Adds an entry to the currently logged-in user's credit history stating he/she has requested to be assessed by other users
+	 * 
+	 * @param int $responseId
+	 * 		The response id the user wants to be assesssed by other users
+	 * @return
+	 * 		The latest credit history id. False on error.
+	 */
 	private function _addEvalRequestToCreditHistory($responseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='evaluationRequestCredits' )";
 		$row = $this->conn->_singleSelect ( $sql );
@@ -165,6 +197,12 @@ class Response {
 		}
 	}
 
+	/**
+	 * Returns profile information of the currently logged-in user
+	 * 
+	 * @return mixed
+	 * 		An object with the currently logged-in user data. False on empty set or error
+	 */
 	private function _getUserInfo(){
 
 		$sql = "SELECT name, 
@@ -176,6 +214,9 @@ class Response {
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
+	/**
+	 * Retrieves the directory names of several media resources
+	 */
 	private function _getResourceDirectories(){
 		$sql = "SELECT prefValue 
 				FROM preferences

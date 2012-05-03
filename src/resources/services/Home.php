@@ -51,6 +51,14 @@ class Home{
 
 	}
 
+	/**
+	 * Returns the messages of the day (in the specified language) that visitor users can see 
+	 * 
+	 * @param String $messageLocale
+	 * 		The locale of the messages that are going to be retrieved in the IETF language format (http://en.wikipedia.org/wiki/BCP_47). For example, en_US
+	 * @return mixed
+	 * 		An array of stdClass with message of the day data. False on empty set or error
+	 */
 	public function unsignedMessagesOfTheDay($messageLocale = 0){
 
 		if(!$messageLocale)
@@ -69,6 +77,14 @@ class Home{
 
 	}
 
+	/**
+	 * Returns the messages of the day (in the specified language) that a logged-in user can see
+	 * 
+	 * @param String $messageLocale
+	 * 		The locale of the messages that are going to be retrieved in the IETF language format (http://en.wikipedia.org/wiki/BCP_47). For example, en_US
+	 * @return mixed
+	 * 		An array of stdClass with message of the day data. False on empty set or error
+	 */
 	public function signedMessagesOfTheDay($messageLocale = 0){
 
 		if(!$messageLocale)
@@ -87,6 +103,12 @@ class Home{
 
 	}
 
+	/**
+	 * Returns the latest 5 assessments the currently logged-in user has received
+	 * 
+	 * @return mixed
+	 * 		An array of stdClass with evaluation data. False on empty set or error.
+	 */
 	public function usersLatestReceivedAssessments(){
 		$sql = "SELECT D.file_identifier as responseFileIdentifier, 
 					   D.id as responseId, 
@@ -133,7 +155,12 @@ class Home{
 		return $this->conn->multipleRecast('EvaluationVO', $slicedResults);
 	}
 
-
+	/**
+	 * Returns the latest 5 assessments the currently logged-in user has done to other users
+	 
+	 * @return mixed
+	 * 		An array of stdClass with evaluation data. False on empty set or error.
+	 */
 	public function usersLatestGivenAssessments(){
 
 		$results = array();
@@ -145,6 +172,16 @@ class Home{
 		return $this->sliceResultsByNumber($givenAssessments, 5);
 	}
 	
+	/**
+	 * Returns the first $length positions of the provided data array
+	 * 
+	 * @param mixed $searchResults
+	 * 		The array of data to be cut
+	 * @param int $length
+	 * 		How many positions from the start are going to be returned
+	 * @return array $results
+	 * 		A subset of the provided array
+	 */
 	private function sliceResultsByNumber($searchResults, $length){
 		$results = array();
 		
@@ -156,6 +193,16 @@ class Home{
 		return $results;
 	}
 	
+	/**
+	 * Returns only the items whose date is newer than the provided time interval
+	 * 
+	 * @param array $searchResults
+	 * @param int $timeInterval
+	 * 		A time interval measured in seconds the item needs to meet in order to be returned. 
+	 * 		For example, 3600 will give you the items that were added less than an hour ago
+	 * @return array $results
+	 * 		An array of items that are more recent than the specified time interval
+	 */
 	private function sliceResultsByDate($searchResults, $timeInterval){
 		$results = array();
 		$currentTime = time();
@@ -169,10 +216,24 @@ class Home{
 		return $results;
 	}
 
+	/**
+	 * TODO
+	 * Returns the latest videos uplodaded by the currently logged-in user
+	 * 
+	 * @return array $results
+	 * 		An array of stdClass with info about the latest uploaded exercises
+	 */
 	public function usersLatestUploadedVideos(){
-		return 0;
+		$results = array();
+		return $results;
 	}
 
+	/**
+	 * Returns a list of the exercises with best scores and most views
+	 * 
+	 * @return mixed
+	 * 		An array of stdClass with info about the exercise. False on empty set or error.
+	 */
 	public function topScoreMostViewedVideos(){
 		$exercise = new Exercise();
 		$sql = "SELECT e.id, 
@@ -213,6 +274,16 @@ class Home{
 		return $this->conn->multipleRecast('ExerciseVO', $slicedResults);
 	}
 	
+	/**
+	 * Compares two exercises and sorts them using their average rating
+	 * 
+	 * @param stdClass $exerciseA
+	 * 		An object with exercise data
+	 * @param stdClass $exerciseB
+	 * 		An object with exercise data
+	 * @return int
+	 * 		A number that tells the caller which of the exercises had a better average rating
+	 */
 	private function sortResultsByScore($exerciseA, $exerciseB){
 		if ($exerciseA->avgRating == $exerciseB->avgRating) {
         	return 0;
@@ -220,6 +291,12 @@ class Home{
     	return ($exerciseA->avgRating < $exerciseB->avgRating) ? -1 : 1;
 	}
 
+	/**
+	 * Returns a list of the most recently uploaded videos that are available to be subtitled or practiced
+	 * 
+	 * @return mixed
+	 * 		An array of stdClass with info about the exercises. False on empty set or error.
+	 */
 	public function latestAvailableVideos(){
 		$exercise = new Exercise();
 		$sql = "SELECT e.id, 

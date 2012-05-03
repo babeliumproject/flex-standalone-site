@@ -51,6 +51,14 @@ class Register{
 		}
 	}
 
+	/**
+	 * Sign-up a new user in the system
+	 * 
+	 * @param stdClass $user
+	 * 		An object with the new user's data
+	 * @throws Exception
+	 * 		There was a problem inserting the data on the database or while sending the activation email to the user. Changes are rollbacked.
+	 */
 	public function register($user = null)
 	{
 		if(!$user)
@@ -121,7 +129,17 @@ class Register{
 		}
 	}
 
-	//The parameter should be an array of UserLanguageVO
+	/**
+	 * Adds a set of languages to the user's profile
+	 * 
+	 * @param array $languages
+	 * 		An array of stdClass with information about each language the user has added to his/her profile
+	 * @param int $userId
+	 * 		The user id for the provided languages
+	 * 
+	 * @return int $result
+	 * 		The user language id of the latest added user language. False on error.
+	 */
 	private function addUserLanguages($languages, $userId) {
 		$positivesToNextLevel = $this->_getPositivesToNextLevel();
 
@@ -142,6 +160,15 @@ class Register{
 
 	}
 
+	/**
+	 * Activates the user profile so that the user is able to use the system
+	 * 
+	 * @param stdClass $user
+	 * 		An object with user data that allows us to enable it's profile
+	 * 
+	 * @result mixed
+	 * 		The prefered interface language of the just-activated user. Null on error.
+	 */
 	public function activate($user = null){
 
 		if(!$user)
@@ -163,6 +190,21 @@ class Register{
 	}
 
 
+	/**
+	 * Inserts the new user data while checking of the username or email is duplicated
+	 * 
+	 * @param String $insert
+	 * @param String $userName
+	 * @param String $userPass
+	 * @param String $userEmail
+	 * @param String $userRealName
+	 * @param String $userRealSurname
+	 * @param int $userInitialCredits
+	 * @param String $userHash
+	 * 
+	 * @return int $result
+	 * 		The latest inserted user id. False on error.
+	 */
 	private function _create($insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash) {
 		// Check user with same name or same email
 		$sql = "SELECT ID FROM users WHERE (name='%s' OR email = '%s' ) ";
@@ -180,6 +222,12 @@ class Register{
 		}
 	}
 
+	/**
+	 * Generates a pseudo-random activation hash for the activation process
+	 * 
+	 * @return String $hash
+	 * 		The random activation hash
+	 */
 	private function _createRegistrationHash()
 	{
 		$hash = "";
@@ -193,6 +241,12 @@ class Register{
 		return $hash;
 	}
 
+	/**
+	 * Retrieves the activation hash length from the preferences table of the application
+	 *
+	 * @return int $result
+	 * 		Returns the value of the preference table. Returns 20 by default when the query fails
+	 */
 	private function _getHashLength()
 	{
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName = 'hashLength' ) ";
@@ -200,6 +254,12 @@ class Register{
 		return $result ? $result->prefValue : 20;
 	}
 
+	/**
+	 * Retrieves the subset of characters allowed to create the activation hash
+	 * 
+	 * @return String $result
+	 * 		Returns the value of the preference table. Returns a default set of characters when the query fails.
+	 */
 	private function _getHashChars()
 	{
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName = 'hashChars' ) ";
@@ -207,6 +267,14 @@ class Register{
 		return $result ? $result->prefValue : "abcdefghijklmnopqrstuvwxyz0123456789-_"; // Default: avoiding crashes
 	}
 
+	/**
+	 * Get the initial amount of credits granted to new users
+	 * 
+	 * @return int
+	 * 		The initial amount of credits granted to the user
+	 * @throws Exception
+	 * 		There was a problem while querying the database
+	 */
 	private function _getInitialCreditsQuery(){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='initialCredits' )";
 		$result = $this->conn->_singleSelect($sql);
@@ -217,6 +285,14 @@ class Register{
 		}
 	}
 
+	/**
+	 * Retrieves the amount of positive assessments an user has to receive in order to increase the knowledge level he/she has in a particular language
+	 * 
+	 * @return int
+	 * 		The amount of positive reviews needed to get to the next level of a language
+	 * @throws Exception
+	 * 		There was a problem while querying the database
+	 */
 	private function _getPositivesToNextLevel(){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='positives_to_next_level' )";
 		$result = $this->conn->_singleSelect($sql);

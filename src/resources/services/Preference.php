@@ -47,6 +47,12 @@ class Preference {
 		}
 	}
 
+	/**
+	 * Retrieve the application preferences in a key=value fashion
+	 * 
+	 * @return mixed
+	 * 		An array of stdClass with preference data. False on empty set or error.
+	 */
 	public function getAppPreferences(){
 
 		//Retrieve the actual php.ini configuration	
@@ -65,6 +71,13 @@ class Preference {
 		return $this->conn->multipleRecast('PreferenceVO',$searchResults);
 	}
 	
+	/**
+ 	 * Returns the byte representation of a configuration directive
+     * @param mixed $val
+     * 		Either a byte or shorthand notation of a directive (K for kilobytes, M for megabytes, G for gigabytes)
+     * @return int $val
+     * 		Byte notation of the directive
+     */
 	private function return_bytes($val) {
     	$val = trim($val);
     	$last = strtolower($val[strlen($val)-1]);
