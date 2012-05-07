@@ -56,7 +56,14 @@ class Auth{
 	}
 	
 	/**
-	 *
+	 * Generates a random communication token that will be used in the following API calls.
+	 * This is loosely-based on the JS authentication protocol used by Grooveshark
+	 * 
+	 * @param String $secretKey
+	 * 		The client sends a MD5 hash of the PHPSESSID, which should be 13 characters long
+	 * @return boolean|string
+	 * 		The random communication token. False when there's no active session or the $secretKey
+	 * 		has the wrong length, it's not of this session
 	 */
 	public function getCommunicationToken($secretKey = 0){
 		if(!$secretKey)
@@ -76,6 +83,14 @@ class Auth{
 		}
 	}
 
+	/**
+	 * Returns an hexadecimal random token of the specified length
+	 * 
+	 * @param int $length
+	 * 		The length of the token to generate
+	 * @return String $token
+	 * 		A random token of the specified length
+	 */
 	private function _generateRandomCommunicationToken($length){
 		$token = '';
 		$i = 0;

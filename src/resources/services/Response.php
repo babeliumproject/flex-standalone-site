@@ -49,6 +49,13 @@ class Response {
 	
 	private $mediaHelper;
 
+	/**
+	 * Constructor function
+	 *
+	 * @throws Exception
+	 * 		Throws an error if the one trying to access this class is not successfully logged in on the system
+	 * 		or there was any problem establishing a connection with the database.
+	 */
 	public function __construct() {
 		try {
 			$verifySession = new SessionHandler(true);
