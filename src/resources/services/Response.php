@@ -162,6 +162,33 @@ class Response {
 		return $result;
 		
 	}
+	
+	public function addDummyVideo($responseId){
+		if(!$responseId)
+			return;
+			
+		$this->_getResourceDirectories();
+		
+		try{
+			$dummyImagePath = $this->imagePath.'/8x8.png';
+			$basePath = $this->red5Path .'/'. $this->responseFolder;
+			$suffix = "_v";
+			$inputPath = $basePath .'/'. $responseId . '.flv';
+			$outputPath = $basePath .'/'. $responseId . $suffix . '.flv'; 
+			$mediaData = $this->mediaHelper->retrieveMediaInfo($inputPath);
+
+			if(!$mediaData->hasVideo){
+				@rename($inputPath,$outputPath);
+				$output = $this->mediaHelper->addDummyVideo($dummyImagePath,$outputPath,$inputPath);
+				//TODO rename the response with dummy video to the original response identifier
+				return $responseId;
+			} else {
+				return;
+			}
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
 
 	/**
 	 * Rests an amount of credits to the currently logged-in user for asking other user's collaboration
@@ -181,7 +208,7 @@ class Response {
 	 * 
 	 * @param int $responseId
 	 * 		The response id the user wants to be assesssed by other users
-	 * @return
+	 * @return int
 	 * 		The latest credit history id. False on error.
 	 */
 	private function _addEvalRequestToCreditHistory($responseId){

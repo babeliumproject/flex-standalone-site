@@ -18,7 +18,7 @@ package vo
 		public var subtitleId:int;
 		
 		
-		public function ResponseVO(id:int, exerciseId:int, fileIdentifier:String, isPrivate:Boolean, thumbnailUri:String, source:String, duration:int, addingDate:String, ratingAmount:int, characterName:String, transcriptionId:int, subtitleId:int){
+		public function ResponseVO(id:int=0, exerciseId:int=0, fileIdentifier:String=null, isPrivate:Boolean=false, thumbnailUri:String=null, source:String=null, duration:int=0, addingDate:String=null, ratingAmount:int=0, characterName:String=null, transcriptionId:int=0, subtitleId:int=0){
 			this.id = id;
 			this.exerciseId = exerciseId;
 			this.fileIdentifier = fileIdentifier;

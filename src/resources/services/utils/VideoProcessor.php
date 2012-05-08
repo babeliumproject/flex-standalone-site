@@ -545,6 +545,25 @@ class VideoProcessor{
 		
 	}
 
+	/**
+	 * Merges two videos in one. The first input is padded to double its width, then the second video is overlayed in the black space left by the padding.
+	 * The original audio is substituted with the provided audio 
+	 * 
+	 * @param String $inputVideoPath1
+	 * 		Absolute path of the video that's going to be padded to double its width
+	 * @param String $inputVideoPath2
+	 * 		Absolute path of the video that's going to be overlayed to the right of the first input video
+	 * @param String $outputVideoPath
+	 * 		Absolute path of the reencoded video
+	 * @param String $inputAudioPath
+	 * 		Absolute path of the audio stream that's going to replace the original audio streams
+	 * @param int $width
+	 * 		The width of the original input video
+	 * @param int $height
+	 * 		The height of the original input video
+	 * @throws Exception
+	 * 		One of the provided paths was unreachable for the script (read/write-wise)
+	 */
 	public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $width = 320, $height = 240){
 		$cleanInputVideoPath1 = escapeshellcmd($inputVideoPath1);
 		$cleanInputVideoPath2 = escapeshellcmd($inputVideoPath2);
@@ -552,7 +571,7 @@ class VideoProcessor{
 	
 		//TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
 		
-		if($width<5 || $height<5)
+		if($width<8 || $height<8)
 			throw new Exception("Specified size is too small\n");
 		
 		if( !is_readable($cleanInputVideoPath1) || !is_readable($cleanInputVideoPath2) )
@@ -582,6 +601,19 @@ class VideoProcessor{
 		
 	}
 	
+	/**
+	 * Concatenates the wav files of the provided path that begin with the provided prefix and puts the concatenated wav file
+	 * in the provided path. Uses 'sox' to concatenate the files. 
+	 * 
+	 * @param String $inputPath
+	 * 		Absolute path of the audio files
+	 * @param String $filePrefix
+	 * 		Take into account only the audio files that begin with this prefix
+	 * @param String $outputPath
+	 * 		Absolute path of the concatenated audio file
+	  * @throws Exception
+	 * 		Any of the provided paths is not readable by the script
+	 */
 	public function concatAudio($inputPath, $filePrefix, $outputPath){
 		$cleanInputPath = escapeshellcmd($inputPath);
 		$cleanOutputPath = escapeshellcmd($outputPath);
@@ -594,6 +626,39 @@ class VideoProcessor{
 		$preset = "sox '%s/%s_*' '%s/%scollage.wav' 2>&1";
 		$sysCall = sprintf($preset,$cleanInputPath,$filePrefix,$cleanOutputPath,$filePrefix);
 		$result = (exec($sysCall, $output));
+		return $result;
+	}
+	
+	/**
+	 * Fixes the Flash Player 11.2.x bug that makes audio-only FLV files non-playable by adding a 8x8px black image for the video stream.
+	 * Thus the FLV is no longer audio-only and Flash has no problem with it.
+	 * 
+	 * @param String $dummyImagePath
+	 * 		Absolute path of the 8x8px black image file to make the fake video stream
+	 * @param String $inputPath
+	 * 		Absolute path of the audio-only FLV that needs to be reencoded
+	 * @param String $outputPath
+	 * 		Absolute path of the reencoded video & audio FLV file
+	 * @return String $result
+	 * 		The output of the system call to ffmpeg
+	 * @throws Exception
+	 * 		Any of the provided paths is not readable by the script
+	 */
+	public function addDummyVideo($dummyImagePath, $inputPath, $outputPath){
+		$cleanDummyImagePath = escapeshellcmd($dummyImagePath);
+		$cleanInputPath = escapeshellcmd($inputPath);
+		$cleanOutputPath = escapeshellcmd($outputPath);
+		if(!is_readable($cleanDummyImagePath))
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanDummyImagePath."\n");
+		if(!is_readable($cleanInputPath))
+			throw new Exception("You don't have enough permissions to read from the input: ".$cleanInputPath."\n");
+		//For some reason is_writable returns false on Red5 folders for the www-data user, maybe it's because of the openbasedir directive
+		//if(!is_writable($cleanOutputPath))
+		//	throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
+			
+		$preset_dummy_video = "ffmpeg -loop 1 -shortest -y -f image2 -i '%s' -i '%s' -acodec copy -map 0:0 -map 1:1 -f flv '%s' 2>&1";
+		$sysCall = sprintf($preset_dummy_video,$cleanDummyImagePath, $cleanInputPath, $cleanOutputPath);
+		$result = (exec($sysCall,$output));
 		return $result;
 	}
 

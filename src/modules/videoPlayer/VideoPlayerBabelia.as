@@ -5,6 +5,8 @@
 
 package modules.videoPlayer
 {
+	import events.ResponseEvent;
+	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.Matrix;
@@ -49,6 +51,8 @@ package modules.videoPlayer
 	
 	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
+	
+	import vo.ResponseVO;
 
 	public class VideoPlayerBabelia extends VideoPlayer
 	{
@@ -596,7 +600,7 @@ package modules.videoPlayer
 			_bg.graphics.clear();
 
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
-			_bg.graphics.drawRoundRect(0, 0, width, height, 12, 12);
+			_bg.graphics.drawRect(0, 0, width, height);
 			_bg.graphics.endFill();
 		}
 
@@ -1153,11 +1157,11 @@ package modules.videoPlayer
 		 **/
 		override protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
-			
 			super.onVideoFinishedPlaying(e);
 
 			if (state & RECORD_FLAG)
 			{
+				addDummyVideo();
 				unattachUserDevices();
 
 				trace("Recording of " + _fileName + " has been finished");
@@ -1166,6 +1170,16 @@ package modules.videoPlayer
 			}
 			else
 				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
+		}
+		
+		/**
+		 * Flash 11.2.x has a bug that makes audio only FLV files non-playable. This workaround adds a dummy video stream to those files to recover
+		 * the playback functionality while Adobe fixes this bug.
+		 */
+		protected function addDummyVideo():void{
+			var r:ResponseVO = new ResponseVO();
+			r.fileIdentifier = _fileName;
+			new ResponseEvent(ResponseEvent.ADD_DUMMY_VIDEO,r).dispatch();
 		}
 		
 		public function unattachUserDevices():void{

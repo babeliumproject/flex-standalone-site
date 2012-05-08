@@ -399,7 +399,7 @@ package modules.videoPlayer
 
 			_bgVideo.graphics.clear();
 			_bgVideo.graphics.beginFill(getSkinColor(VIDEOBG_COLOR));
-			_bgVideo.graphics.drawRoundRect(_defaultMargin, _defaultMargin, _videoWidth, _videoHeight, 5, 5);
+			_bgVideo.graphics.drawRect(_defaultMargin, _defaultMargin, _videoWidth, _videoHeight);
 			_bgVideo.graphics.endFill();
 
 			_videoBarPanel.width=_videoWidth;
@@ -473,10 +473,10 @@ package modules.videoPlayer
 			_bg.graphics.clear();
 
 			_bg.graphics.beginFill(getSkinColor(BORDER_COLOR));
-			_bg.graphics.drawRoundRect(0, 0, width, height, 15, 15);
+			_bg.graphics.drawRect(0, 0, width, height);
 			_bg.graphics.endFill();
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
-			_bg.graphics.drawRoundRect(3, 3, width - 6, height - 6, 12, 12);
+			_bg.graphics.drawRect(3, 3, width - 6, height - 6);
 			_bg.graphics.endFill();
 		}
 
