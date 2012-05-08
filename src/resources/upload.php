@@ -108,7 +108,7 @@ echo $result;
 function log_result($code,$description){
 	global $file_name, $file_size, $result, $media_data, $cfg;
 	
-	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD ERROR\n";
+	$message = "[".date("d/m/Y H:i:s")."] VIDEO UPLOAD LOG\n";
 	$message .= "\tError Code: ".$code."\n";
 	$message .= "\tError description: ".$description."\n";
 	$message .= "\tUnescaped filename: ".$file_name."\n";

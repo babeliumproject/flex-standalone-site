@@ -7,7 +7,6 @@ package modules.subtitles
 	import control.CuePointManager;
 	
 	import events.ExerciseEvent;
-	import events.ExerciseRoleEvent;
 	import events.SubtitleEvent;
 	import events.ViewChangeEvent;
 	

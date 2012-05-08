@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
-				  xmlns:s="library://ns.adobe.com/flex/spark"
-				  xmlns:mx="library://ns.adobe.com/flex/mx"
-				  xmlns:hulstkamp="com.hulstkamp.*"
-				  autoDrawBackground="true"
-				  creationComplete="completeHandler()"
-				  xmlns:skins="skins.*">
+						  xmlns:s="library://ns.adobe.com/flex/spark"
+						  xmlns:mx="library://ns.adobe.com/flex/mx"
+						  xmlns:hulstkamp="com.hulstkamp.*"
+						  autoDrawBackground="true"
+						  creationComplete="completeHandler()"
+						  dataChange="dataChangeHandler()"
+						  xmlns:skins="skins.*">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="top"
@@ -67,6 +68,18 @@
 				 maxDisplayedLines="3"
 				 toolTip="{data.description}"
 				 width="850"/>
+		<s:HGroup width="850" paddingTop="4" paddingBottom="4" verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
+			<s:TileGroup id="exerciseTagsBox"
+						 width="750"
+						 horizontalGap="1"
+						 verticalGap="1"
+						 rowHeight="14"
+						 paddingBottom="0"
+						 paddingLeft="0"
+						 paddingRight="0"
+						 paddingTop="0"/>
+		</s:HGroup>
 		<s:HGroup verticalAlign="middle"
 				  width="100%">
 			<mx:Image id="license"
@@ -110,23 +123,26 @@
 
 	<fx:Script>
 		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			
 			import control.CuePointManager;
-
+			
 			import events.ExerciseEvent;
-			import events.ExerciseRoleEvent;
+			import events.SearchEvent;
 			import events.SubtitleEvent;
-
+			import events.ViewChangeEvent;
+			
 			import model.DataModel;
-
+			
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
-
+			
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-
+			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
@@ -150,6 +166,10 @@
 				_data=data;
 				_creationComplete=true;
 
+			}
+			
+			public function dataChangeHandler():void{
+				addTagLinkButtons();
 				setupReferenceComponent();
 			}
 
@@ -167,6 +187,7 @@
 				}
 				else
 				{
+					referenceUrl.setStyle('textDecoration', 'none');
 					referenceUrl.setStyle('skin', null);
 					referenceUrl.useHandCursor=false;
 				}
@@ -221,12 +242,12 @@
 			{
 				var url:String='';
 				if (temp.source == "Red5")
-					if(temp.thumbnailUri != 'nothumb.png')
+					if (temp.thumbnailUri != 'nothumb.png')
 						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
 					else
 						url=DataModel.getInstance().thumbURL + '/nothumb.png';
-					else
-						url=temp.thumbnailUri;
+				else
+					url=temp.thumbnailUri;
 				return url;
 			}
 
@@ -257,6 +278,36 @@
 					return (false);
 				}
 				return (true);
+			}
+			
+			private function addTagLinkButtons():void
+			{
+				removeTagLinkButtons();
+				var tags:String = data.tags;
+				var taglist:Array=tags.split(',');
+				
+				for each (var tag:String in taglist)
+				{
+					var linkTag:IconButton=new IconButton();
+					linkTag.styleName="commonLinkButton";
+					linkTag.label=StringUtil.trim(tag);
+					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+					exerciseTagsBox.addElement(linkTag);
+				}
+			}
+			
+			private function removeTagLinkButtons():void
+			{
+				if (exerciseTagsBox.numElements > 0)
+					exerciseTagsBox.removeAllElements();
+			}
+			
+			protected function tagClickHandler(event:MouseEvent):void
+			{
+				DataModel.getInstance().searchField=(event.target as IconButton).label;
+				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 
 			protected function itemSelected_changeHandler(event:Event):void

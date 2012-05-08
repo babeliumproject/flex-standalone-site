@@ -135,7 +135,6 @@
 			import control.CuePointManager;
 			
 			import events.ExerciseEvent;
-			import events.ExerciseRoleEvent;
 			import events.SearchEvent;
 			import events.SubtitleEvent;
 			import events.ViewChangeEvent;

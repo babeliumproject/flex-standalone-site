@@ -55,7 +55,7 @@ class Search {
 	public function __construct() {
 		try {
 			$verifySession = new SessionHandler();
-			$settings = new Config ( );
+			$settings = new Config();
 			$this->indexPath = $settings->indexPath;
 			$this->conn = new Datasource ($settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 		} catch (Exception $e) {
@@ -74,7 +74,7 @@ class Search {
 		try{
 			$this->index = Zend_Search_Lucene::open($this->indexPath);
 		}catch (Zend_Search_Lucene_Exception $ex){
-			throw new Exception($e->getMessage());
+			throw new Exception($ex->getMessage());
 		}
 	}
 
