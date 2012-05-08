@@ -48,6 +48,13 @@ class External {
 	private $exerciseFolder;
 	private $conn;
 	
+	/**
+	 * Constructor function
+	 * Loads the set of classes required to interact with YouTube's API
+	 * 
+	 * @throws Exception
+	 * 		There was a problem while connecting to the database
+	 */
 	public function __construct() {
 		Zend_Loader::loadClass ( 'Zend_Gdata_YouTube' );
 		Zend_Loader::loadClass ( 'Zend_Gdata_ClientLogin' );
@@ -79,7 +86,15 @@ class External {
 			throw new Exception($e->getMessage());
 		}
 	}
-
+	
+	/**
+	 * Authenticates the user to be able to query YouTube's GData API
+	 * 
+	 * @return $client
+	 * 		An object that enables to query the YouTube API
+	 * @throws Exception
+	 * 		There was a problem with the authentication process or a captcha is required to continue
+	 */
 	private function authenticate() {
 		try {
 			$client = Zend_Gdata_ClientLogin::getHttpClient ( $this->email, $this->passwd, 'youtube' );
@@ -92,7 +107,16 @@ class External {
 		$client->setHeaders ( 'X-GData-Key', 'key=' . $this->devKey );
 		return $client;
 	}
-
+	
+	
+	/**
+	 * Parses a YouTube url to retrieve the video identifier
+	 *
+	 * @param String $data
+	 * 		A YouTube url that needs to be parsed
+	 * @return String $result
+	 * 		The YouTube video identifier for the provided url
+	 */
 	public function retrieveVideo($data) {
 
 		$url = escapeshellcmd($data);
@@ -103,6 +127,14 @@ class External {
 		return $result;
 	}
 
+	/**
+	 * Returns the last part of a YouTube URL
+	 * 
+	 * @param String $data
+	 * 		An unparsed YouTube URL
+	 * @return String $result
+	 * 		The URL part after the last '/' of a YouTube URL 
+	 */
 	public function retrieveUserVideo($data) {
 
 		$url = escapeshellcmd($data);
@@ -113,6 +145,20 @@ class External {
 		return $result;
 	}
 
+	/**
+	 * Adds a new exercise to the database. The exercise comes from YouTube and needs to be sliced at
+	 * certain points. So it is also scheduled to be reencoded using ffmpeg using a cron task.
+	 * 
+	 * @param stdClass $data
+	 * 		An object with info about a YouTube video
+	 * @param stdClass $data2
+	 * 		Info of the exercise that the user wants to add to the database
+	 * @return int $result
+	 * 		The exercise id of the latest inserted exercise. False on error
+	 * @throws Exception
+	 * 		Throws an error if the one trying to access this class is not successfully logged in on the system
+	 * 		or there was any problem establishing a connection with the database.
+	 */
 	public function insertVideoSlice($data, $data2) {
 
 		set_time_limit(0); // Bypass the execution time limit

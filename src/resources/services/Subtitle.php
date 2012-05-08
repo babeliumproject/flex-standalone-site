@@ -41,6 +41,12 @@ class Subtitle {
 
 	private $conn;
 
+	/**
+	 * Constructor function
+	 *
+	 * @throws Exception
+	 * 		Thrown if there is a problem establishing a connection with the database
+	 */
 	public function __construct() {
 		try {
 			$verifySession = new SessionHandler();
@@ -51,7 +57,15 @@ class Subtitle {
 		}
 	}
 
-	public function getExerciseRoles($exerciseId = 0) {
+	/**
+	 * Gets the exercise roles of the provided exercise
+	 * 
+	 * @param int $exerciseId
+	 * 		An exercise identificator
+	 * @return mixed
+	 * 		An array of stdClass with information about this exercise's roles. False on error or empty set.
+	 */
+	private function getExerciseRoles($exerciseId = 0) {
 		if(!$exerciseId)
 			return false;
 			
@@ -66,32 +80,16 @@ class Subtitle {
 		return $this->conn->multipleRecast('ExerciseRoleVO',$searchResults);
 	}
 
-	public function getSubtitlesSubtitleLines($subtitleId = 0) {
-		if(!$subtitleId)
-			return false;
-		$sql = "SELECT SL.id, 
-					   SL.show_time as showTime, 
-					   SL.hide_time as hideTime, 
-					   SL.text, 
-					   SL.fk_exercise_role_id as exerciseRoleId, 
-					   ER.character_name as exerciseRoleName, 
-					   S.id as subtitleId
-				FROM subtitle_line AS SL INNER JOIN subtitle AS S ON SL.fk_subtitle_id = S.id 
-				INNER JOIN exercise AS E ON E.id = S.fk_exercise_id 
-				RIGHT OUTER JOIN exercise_role AS ER ON ER.id=SL.fk_exercise_role_id
-				WHERE (SL.fk_subtitle_id = %d)";
-
-		$searchResults = $this->conn->_multipleSelect($sql, $subtitleId);
-
-		return $this->conn->multipleRecast('SubtitleLineVO', $searchResults);
-	}
 
 	/**
 	 * Returns an array of subtitle lines for the given exercise.
-	 *
 	 * When subtitleId is not set the returned lines are the latest available ones.
 	 * When subtitleId is set the returned lines are the ones of that particular subtitle.
-	 * @param SubtitleAndSubtitleLineVO $subtitle
+	 * 
+	 * @param stdClass $subtitle
+	 * 		An object with info about a subtitle such as the language and the exercise it should be used with
+	 * @return mixed
+	 * 		An array of stdClass with info about the subtitle lines. False on error or empty set.
 	 */
 	public function getSubtitleLines($subtitle=null) {
 		if(!$subtitle)
@@ -141,7 +139,14 @@ class Subtitle {
 		return $recastedResults;
 	}
 	
-
+	/**
+	 * Gets the lines of the provided subtitle identificator
+	 * 
+	 * @param int $subtitleId
+	 * 		The subtitle idenntificator
+	 * @return mixed
+	 * 		An array of stdClass with info about the subtitle lines. False on error or empty set.
+	 */
 	public function getSubtitleLinesUsingId($subtitleId = 0) {
 		if(!$subtitleId)
 			return false;
@@ -162,6 +167,18 @@ class Subtitle {
 	}
 
 
+	/**
+	 * Wrapper function for adding a new subtitle and subtitle lines to the database.
+	 * Checks if the user is currently logged-in and if so calls the actual subtitle saving method.
+	 * 
+	 * @param stdClass $subtitleData
+	 * 		An object with data about the new subtitle and its subtitle lines 
+	 * @return mixed
+	 * 		An object with data of the currently logged in user. False on error.
+	 * @throws Exception
+	 * 		Throws an error if the one trying to access this class is not successfully logged in on the system 
+	 * 		or there was any problem querying the database.
+	 */
 	public function saveSubtitles($subtitleData = null){
 		try {
 			$verifySession = new SessionHandler(true);
@@ -174,6 +191,16 @@ class Subtitle {
 		}
 	}
 
+	/**
+	 * Adds a new subtitle and subtitle lines to the database for the currently logged-in user
+	 * 
+	 * @param stdClass $subtitles
+	 * 		An object with data about the new subtitle and it subtitle lines
+	 * @return mixed $return
+	 * 		An object with data of the currently logged-in user. False on error.
+	 * @throws Exception
+	 * 		Throws an error if there was a problem querying the database
+	 */
 	private function saveSubtitlesAuth($subtitles) {
 
 		$result = 0;
@@ -274,6 +301,16 @@ class Subtitle {
 
 	}
 
+	/**
+	 * Gets the roles the currently logged-in user has added for the current exercise
+	 * 
+	 * @param int $exerciseId
+	 * 		An exercise identificator
+	 * @param int $userId
+	 * 		An user identificator
+	 * @return mixed $searchResults
+	 * 		An array of user role ids. False on error.
+	 */
 	private function _getUserRoles($exerciseId, $userId){
 		$sql = "SELECT MAX(id) as id,
 					   fk_exercise_id as exerciseId, 
@@ -286,6 +323,12 @@ class Subtitle {
 		return $searchResults;
 	}
 
+	/**
+	 * Adds some credits to the currently logged-in user to award its collaboration
+	 * 
+	 * @return int
+	 * 		Returns the number of rows affected by the latest database update
+	 */
 	private function _addCreditsForSubtitling() {
 		$sql = "UPDATE (users u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue 
@@ -293,6 +336,14 @@ class Subtitle {
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
+	/**
+	 * Adds an entry to the credits history so the user is able to review when he/she got credits for subtitling an exercise
+	 * 
+	 * @param int $exerciseId
+	 * 		An exercise identificator
+	 * @return int
+	 * 		The id of the latest inserted credit history row. False on error
+	 */
 	private function _addSubtitlingToCreditHistory($exerciseId){
 		$sql = "SELECT prefValue FROM preferences WHERE ( prefName='subtitleAdditionCredits' )";
 		$result = $this->conn->_singleSelect ( $sql );
@@ -305,6 +356,11 @@ class Subtitle {
 		}
 	}
 
+	/**
+	 * Retrieves the information of the currently logged-in user (via session variables)
+	 * @return stdClass
+	 * 		An object with information about the currently logged in user or false on error
+	 */
 	private function _getUserInfo(){
 
 		$sql = "SELECT name, 
@@ -316,6 +372,15 @@ class Subtitle {
 		return $this->conn->recast('UserVO', $this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
+	/**
+	 * Compares the subtitles the user is adding with the latest available subtitles since last database query.
+	 * Determines if they were modified using a set of checks, such as time differences and text differences.
+	 * 
+	 * @param array $compareSubject
+	 * 		A list of subtitle lines to be compared
+	 * @return boolean $modified
+	 * 		True if the new subtitles are a modified version of the latest available subtitles. False when not.
+	 */
 	private function _subtitlesWereModified($compareSubject)
 	{
 		$modified=false;
@@ -338,6 +403,14 @@ class Subtitle {
 		return $modified;
 	}
 
+	/**
+	 * Checks if the provided subtitle lines have invalid characters or errors such as time overlaps or empty lines
+	 * 
+	 * @param array $subtitleCollection
+	 * 		A list of subtitle lines to check for errors
+	 * @return String $errorMessage
+	 * 		Returns the errors found during the subtitle line check, empty string when the strings have no errors
+	 */
 	private function _checkSubtitleErrors($subtitleCollection)
 	{
 		$errorMessage="";
@@ -360,6 +433,15 @@ class Subtitle {
 		return $errorMessage;
 	}
 
+	/**
+	 * TODO
+	 * Returns the modification rate of the provided subtitle lines compared to the latest subtitles from the database
+	 * 
+	 * @param array $compareSubject
+	 * 		A list of subtitle lines to compare to the latest subtitle lines
+	 * @return double $modificationRate
+	 * 		Returns the modification rate of the new subtitles using the cosine measure
+	 */
 	private function _modificationRate($compareSubject){
 		$unmodifiedSubtitlesLines = $_SESSION['unmodified-subtitles'];
 		$currentText = '';
@@ -375,7 +457,14 @@ class Subtitle {
 		
 	}
 	
-
+	/**
+	 * Returns all the subtitles available to the provided exercise
+	 * 
+	 * @param int $exerciseId
+	 * 		An exercise identificator
+	 * @return mixed
+	 * 		An array of stdClass with info about the subtitles of an exercise. False on error
+	 */
 	public function getExerciseSubtitles($exerciseId = 0){
 		if(!$exerciseId)
 			return false;
@@ -393,6 +482,14 @@ class Subtitle {
 		return $this->conn->multipleRecast('SubtitleAndSubtitleLinesVO', $searchResults);
 	}
 
+	/**
+	 * Removes all the previous versions of a subtitle, removing all the old subitle lines
+	 * 
+	 * @param int $exerciseId
+	 * 		An exercise identificator
+	 * @return int
+	 * 		Returns the amount of rows affected by the latest delete
+	 */
 	private function _deletePreviousSubtitles($exerciseId){
 		//Retrieve the subtitle id to be deleted
 		$sql = "SELECT DISTINCT s.id

@@ -46,6 +46,12 @@ class Search {
 	 */
 	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
 
+	/**
+	 * Constructor function
+	 *
+	 * @throws Exception
+	 * 		Thrown if there is a problem establishing a connection with the database
+	 */
 	public function __construct() {
 		try {
 			$verifySession = new SessionHandler();
