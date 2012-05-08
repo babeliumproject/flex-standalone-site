@@ -286,7 +286,6 @@
 			{
 				removeTagLinkButtons();
 				var tags:String = data.tags;
-				trace(tags);
 				var taglist:Array=tags.split(',');
 
 				for each (var tag:String in taglist)

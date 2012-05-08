@@ -10,3 +10,5 @@ syntax: regexp
 ^build\.espantapajaros\.properties$
 syntax: regexp
 ^build\.local\.properties$
+syntax: regexp
+^bin-debug$

@@ -38,6 +38,7 @@
 			import modules.videoPlayer.events.babelia.StreamEvent;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.managers.BrowserManager;
@@ -169,9 +170,9 @@
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 
 				// Retrieving roles for selected exercise
-				var auxExRol:ExerciseRoleVO=new ExerciseRoleVO();
-				auxExRol.exerciseId=_exerciseId;
-				new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, auxExRol).dispatch();
+				//var auxExRol:ExerciseRoleVO=new ExerciseRoleVO();
+				//auxExRol.exerciseId=_exerciseId;
+				//new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, auxExRol).dispatch();
 
 				// Retrieving available locales for selected exercise's subtitles
 				var auxEx:ExerciseVO=new ExerciseVO();
@@ -209,6 +210,7 @@
 			/**
 			 * On roles retrieved
 			 **/
+			/*
 			private function set onRolesRetrieved(value:Boolean):void
 			{
 				if (value)
@@ -234,6 +236,27 @@
 					}
 
 					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
+				}
+			}
+			*/
+			
+			private function prepareRoles(subtitleLines:ArrayCollection):void{
+				_characterNames.removeAll();
+				
+				if (subtitleLines.length <= 0) {
+					availableRoles.enabled=false;
+					_rolesReady=false;
+				} else {
+					var _roles:ArrayCollection = new ArrayCollection();
+					for each (var cueobj:CueObject in subtitleLines)
+					{
+						if(cueobj.role != "NPC" && !_roles.contains(cueobj.role) )
+							_roles.addItem(cueobj.role);
+					}
+					_characterNames.addAll(_roles);
+					_characterNames.refresh();
+					availableRoles.enabled=true;
+					_rolesReady=true;
 				}
 			}
 
@@ -279,6 +302,8 @@
 
 				if (auxList.length <= 0)
 					return;
+				
+				prepareRoles(auxList);
 
 				for each (var cueobj:CueObject in auxList)
 				{
@@ -749,8 +774,10 @@
 				destination="this.onTabChange"/>
 	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved"/>
+	<!--
 	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
 				destination="this.onRolesRetrieved"/>
+	-->
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
 	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"

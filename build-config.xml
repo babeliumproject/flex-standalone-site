@@ -2,6 +2,12 @@
 	<compiler>
 		<!-- Compile a release build with no debugging capabilites -->
 		<debug>false</debug>
+		
+		<!-- New compiler versions are capable of omitting trace messages -->
+		<omit-trace-statements>false</omit-trace-statements>
+		
+		<!-- Turns on the display of stack traces for uncaught runtime errors. -->
+      	<verbose-stacktraces>true</verbose-stacktraces>
 
 		<show-shadowed-device-font-warnings>false</show-shadowed-device-font-warnings>
 
