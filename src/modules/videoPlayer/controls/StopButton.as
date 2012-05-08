@@ -24,6 +24,9 @@ package modules.videoPlayer.controls
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
 			createStopBtn();
+			btn.x = this.width/2 - btn.width/2;
+			btn.y = this.height/2 - btn.height/2;
+			addChild(btn);
 		}
 		
 		

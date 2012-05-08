@@ -20,12 +20,14 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.PlayButton;
 	import modules.videoPlayer.controls.babelia.ArrowPanel;
 	import modules.videoPlayer.controls.babelia.MicActivityBar;
+	import modules.videoPlayer.controls.babelia.RecStopButton;
 	import modules.videoPlayer.controls.babelia.RoleTalkingPanel;
 	import modules.videoPlayer.controls.babelia.SubtitleButton;
 	import modules.videoPlayer.controls.babelia.SubtitleStartEndButton;
 	import modules.videoPlayer.controls.babelia.SubtitleTextBox;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
+	import modules.videoPlayer.events.babelia.RecStopButtonEvent;
 	import modules.videoPlayer.events.babelia.RecordingEvent;
 	import modules.videoPlayer.events.babelia.StreamEvent;
 	import modules.videoPlayer.events.babelia.SubtitleButtonEvent;
@@ -51,7 +53,7 @@ package modules.videoPlayer
 	
 	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
-	
+
 	import vo.ResponseVO;
 
 	public class VideoPlayerBabelia extends VideoPlayer
@@ -88,13 +90,15 @@ package modules.videoPlayer
 		 * XXXX XXX1: split video panel into 2 views
 		 * XXXX XX1X: recording modes
 		 */
-		public static const PLAY_STATE:int=0; // 0000 0000
-		public static const PLAY_BOTH_STATE:int=1; // 0000 0001
-		public static const RECORD_MIC_STATE:int=2; // 0000 0010
+		public static const PLAY_STATE:int=0;        // 0000 0000
+		public static const PLAY_BOTH_STATE:int=1;   // 0000 0001
+		public static const RECORD_MIC_STATE:int=2;  // 0000 0010
 		public static const RECORD_BOTH_STATE:int=3; // 0000 0011
+		public static const UPLOAD_MODE_STATE:int=4; // 0000 0100
 
 		private const SPLIT_FLAG:int=1; // XXXX XXX1
 		private const RECORD_FLAG:int=2; // XXXX XX1X
+		private const UPLOAD_FLAG:int=4; // XXXX X1XX
 
 		private var _state:int;
 
@@ -216,7 +220,8 @@ package modules.videoPlayer
 			_subtitleButton.addEventListener(SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
-
+			//_recStopBtn.addEventListener(RecStopButtonEvent.BUTTON_CLICK, onRecStopEvent);
+			
 			/**
 			 * Adds components to player
 			 */
@@ -332,6 +337,30 @@ package modules.videoPlayer
 			return _subtitlingControls.visible;
 		}
 		
+		/*
+		public function set recControls(value:Boolean):void
+		{
+			_recStopBtn.recMode=value;	
+		}
+		
+		public function get recControls():Boolean
+		{
+			return _recStopBtn.recMode;
+		}
+		
+		public function onRecStopEvent(event:RecStopButtonEvent):void{
+			if(recControls){
+				if(event.state==RecStopButton.REC_STATE){
+					state=UPLOAD_MODE_STATE;
+				}else{
+					Alert.show("Stop recording");
+					onVideoFinishedPlaying(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_FINISHED_PLAYING));
+				}
+			} else {
+				stopVideo();
+			}
+		}
+		*/
 		
 		/**
 		 * Autoplay
@@ -480,6 +509,7 @@ package modules.videoPlayer
 
 			_subtitleButton.resize(45, 20);
 			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - 45;
+			//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width - 45;
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
 			_sBar.refresh();
@@ -535,6 +565,10 @@ package modules.videoPlayer
 				_ppBtn.x=0;
 				_ppBtn.refresh();
 				
+				//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
+				//_recStopBtn.refresh();
+				
+				//_subtitleStartEnd.x = _recStopBtn.x + _recStopBtn.width;
 				_stopBtn.x=_ppBtn.x + _ppBtn.width;
 				_stopBtn.refresh();
 				
@@ -551,7 +585,8 @@ package modules.videoPlayer
 				_subtitleButton.includeInLayout = false;
 				_subtitleButton.visible = false;
 				
-				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
+				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;				
+				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
 				
 				_eTime.x=_sBar.x + _sBar.width;
 				_audioSlider.x=_eTime.x + _eTime.width;
@@ -564,6 +599,10 @@ package modules.videoPlayer
 				_stopBtn.refresh();
 				
 				_sBar.x=_stopBtn.x + _stopBtn.width;
+				//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
+				//_recStopBtn.refresh();
+				
+				//_sBar.x=_recStopBtn.x + _recStopBtn.width;
 				_sBar.refresh();
 				
 				_eTime.refresh();
@@ -574,6 +613,7 @@ package modules.videoPlayer
 				_subtitleButton.visible = true;
 				
 				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
+				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
 				
 				_eTime.x=_sBar.x + _sBar.width;
 				_audioSlider.x=_eTime.x + _eTime.width;
@@ -804,10 +844,14 @@ package modules.videoPlayer
 					break;
 
 				case RECORD_MIC_STATE:
-
 					recoverVideoPanel(); // original size
 					prepareDevices();
-
+					break;
+				
+				case UPLOAD_MODE_STATE:
+					recoverVideoPanel();
+					scaleCamVideo(_videoWidth,_videoHeight,false);
+					prepareDevices();
 					break;
 
 				case PLAY_BOTH_STATE:
@@ -853,7 +897,7 @@ package modules.videoPlayer
 				_countdownTxt.visible=false;
 				_video.visible=true;
 
-				if (state == RECORD_BOTH_STATE){
+				if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE){
 					_camVideo.visible=true;
 					_micImage.visible=true;
 				}
@@ -877,13 +921,15 @@ package modules.videoPlayer
 		{
 	
 			//The devices are permitted and initialized. Time to configure them
-			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || (state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
+			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || 
+				(state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()) ||
+				(state == UPLOAD_MODE_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
 			{
 				configureDevices();
 			}
 			else
 			{
-				if (state == RECORD_BOTH_STATE)
+				if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
 					PrivacyRights.useMicAndCamera=true;
 				if (state == RECORD_MIC_STATE)
 					PrivacyRights.useMicAndCamera=false;
@@ -897,7 +943,7 @@ package modules.videoPlayer
 		private function configureDevices():void
 		{
 		
-			if (state == RECORD_BOTH_STATE)
+			if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
 			{
 				_camera=DataModel.getInstance().camera;
 				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
@@ -915,6 +961,7 @@ package modules.videoPlayer
 			startCountdown();
 		}
 
+		/*
 		public function micActivityHandler(event:ActivityEvent):void
 		{
 	
@@ -926,6 +973,7 @@ package modules.videoPlayer
 				DataModel.getInstance().microphone.removeEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 			}
 		}
+		*/
 
 		private function privacyBoxClosed(event:Event):void
 		{
@@ -939,7 +987,7 @@ package modules.videoPlayer
 				else
 					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 			}
-			if (state == RECORD_BOTH_STATE)
+			if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
 			{
 				if (_micCamEnabled && PrivacyRights.microphoneFound && PrivacyRights.cameraFound)
 					configureDevices();
@@ -965,14 +1013,25 @@ package modules.videoPlayer
 				splitVideoPanel();
 				_camVideo.visible=false;
 				_micImage.visible=false;
+				disableControls();
 			}
 
 			if (state & RECORD_FLAG)
 			{
 				_outNs=new NetStream(_nc);
+				disableControls();
 			}
-
-			disableControls();
+			
+			if(state & UPLOAD_FLAG){
+				// Attach Camera
+				_camVideo.attachCamera(_camera);
+				_camVideo.smoothing=true;
+				
+				//	splitVideoPanel();
+				_camVideo.visible=false;
+				_micImage.visible=false;
+				_outNs=new NetStream(_nc);
+			}
 
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
@@ -1080,7 +1139,7 @@ package modules.videoPlayer
 		}
 
 		// Aux: scaling cam image
-		private function scaleCamVideo(w:Number, h:Number):void
+		private function scaleCamVideo(w:Number, h:Number,split:Boolean=true):void
 		{
 		
 			var scaleY:Number=h / _defaultCamHeight;
@@ -1090,16 +1149,24 @@ package modules.videoPlayer
 			_camVideo.width=_defaultCamWidth * scaleC;
 			_camVideo.height=_defaultCamHeight * scaleC;
 
-			_camVideo.y=Math.floor(h / 2 - _camVideo.height / 2);
-			_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
-			_camVideo.y+=_defaultMargin;
-			_camVideo.x+=(w + _defaultMargin);
-
-			// 1 black pixel, being smarter
-			_camVideo.y+=1;
-			_camVideo.height-=2;
-			_camVideo.x+=1;
-			_camVideo.width-=2;
+			if(split){
+				_camVideo.y=Math.floor(h / 2 - _camVideo.height / 2);
+				_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
+				_camVideo.y+=_defaultMargin;
+				_camVideo.x+=(w + _defaultMargin);
+				
+				// 1 black pixel, being smarter
+				_camVideo.y+=1;
+				_camVideo.height-=2;
+				_camVideo.x+=1;
+				_camVideo.width-=2;
+			} else {
+				_camVideo.y=_defaultMargin + 2;
+				_camVideo.height-=4;
+				_camVideo.x=_defaultMargin + 2;
+				_camVideo.width-=4;
+			}
+		
 			
 			_micImage.y = (_videoHeight - _micImage.height)/2;
 			_micImage.x = _videoWidth - _micImage.width - (_camVideo.width - _micImage.width)/2;
@@ -1157,9 +1224,10 @@ package modules.videoPlayer
 		 **/
 		override protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
+			
 			super.onVideoFinishedPlaying(e);
 
-			if (state & RECORD_FLAG)
+			if (state & RECORD_FLAG || state == UPLOAD_MODE_STATE)
 			{
 				addDummyVideo();
 				unattachUserDevices();

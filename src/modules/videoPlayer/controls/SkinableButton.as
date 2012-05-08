@@ -55,7 +55,7 @@ package modules.videoPlayer.controls
 			addChild( bgOver );
 			addChild( bg );
 			
-			addChild( btn );
+			//addChild( btn );
 			
 			this.buttonMode = true;
 			this.useHandCursor = true;
@@ -139,8 +139,8 @@ package modules.videoPlayer.controls
 //			bgClick.graphics.copyFrom(bg.graphics);
 //			bgClick.filters = myFilters;
 
-			btn.x = this.width/2 - btn.width/2;
-			btn.y = this.height/2 - btn.height/2;
+			//btn.x = this.width/2 - btn.width/2;
+			//btn.y = this.height/2 - btn.height/2;
 		}
 				
 		

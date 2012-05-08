@@ -35,11 +35,13 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.ScrubberBar;
 	import modules.videoPlayer.controls.SkinableComponent;
 	import modules.videoPlayer.controls.StopButton;
+	//import modules.videoPlayer.controls.babelia.RecStopButton;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
+	//import modules.videoPlayer.events.babelia.RecStopButtonEvent;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.controls.Alert;
@@ -84,6 +86,7 @@ package modules.videoPlayer
 		private var _bgVideo:Sprite;
 		public var _ppBtn:PlayButton;
 		public var _stopBtn:StopButton;
+		//public var _recStopBtn:RecStopButton;
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
@@ -125,9 +128,11 @@ package modules.videoPlayer
 
 			_ppBtn=new PlayButton();
 			_stopBtn=new StopButton();
+			//_recStopBtn=new RecStopButton();
 
 			_videoBarPanel.addChild(_ppBtn);
 			_videoBarPanel.addChild(_stopBtn);
+			//_videoBarPanel.addChild(_recStopBtn);
 
 			_sBar=new ScrubberBar();
 
@@ -147,6 +152,7 @@ package modules.videoPlayer
 			addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying);
 			_ppBtn.addEventListener(PlayPauseEvent.STATE_CHANGED, onPPBtnChanged);
 			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick);
+			//_recStopBtn.addEventListener(RecStopButtonEvent.CLICK, onStopBtnClick);
 			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange);
 
 			/**
@@ -166,6 +172,7 @@ package modules.videoPlayer
 			putSkinableComponent(_ppBtn.COMPONENT_NAME, _ppBtn);
 			putSkinableComponent(_sBar.COMPONENT_NAME, _sBar);
 			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
+			//putSkinableComponent(_recStopBtn.COMPONENT_NAME, _recStopBtn);
 
 			// Loads default skin
 			skin="default";
@@ -298,6 +305,7 @@ package modules.videoPlayer
 		
 			_ppBtn.enabled=true;
 			_stopBtn.enabled=true;
+			//_recStopBtn.enabled=true;
 		}
 
 		public function disableControls():void
@@ -305,6 +313,7 @@ package modules.videoPlayer
 		
 			_ppBtn.enabled=false;
 			_stopBtn.enabled=false;
+			//_recStopBtn.enabled=false;
 		}
 
 		/**
@@ -410,6 +419,10 @@ package modules.videoPlayer
 			_ppBtn.x=0;
 			_ppBtn.refresh();
 
+			//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
+			//_recStopBtn.refresh();
+			//_sBar.x=_recStopBtn.x + _recStopBtn.width;
+
 			_stopBtn.x=_ppBtn.x + _ppBtn.width;
 			_stopBtn.refresh();
 
@@ -421,6 +434,7 @@ package modules.videoPlayer
 			_audioSlider.refresh();
 
 			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width;
+			//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width;
 
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
