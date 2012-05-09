@@ -77,7 +77,7 @@
 			private var _locales:Array;
 			[Bindable]
 			private var _characterNames:ArrayCollection=new ArrayCollection();
-			private var _roles:ArrayCollection;
+			private var _roles:ArrayCollection = new ArrayCollection();
 			private var _exerciseName:String;
 			private var _exerciseId:int;
 
@@ -242,18 +242,20 @@
 			
 			private function prepareRoles(subtitleLines:ArrayCollection):void{
 				_characterNames.removeAll();
-				
+				_roles.removeAll();
 				if (subtitleLines.length <= 0) {
 					availableRoles.enabled=false;
 					_rolesReady=false;
 				} else {
-					var _roles:ArrayCollection = new ArrayCollection();
+					var tmpRoles:ArrayCollection = new ArrayCollection();
 					for each (var cueobj:CueObject in subtitleLines)
 					{
-						if(cueobj.role != "NPC" && !_roles.contains(cueobj.role) )
-							_roles.addItem(cueobj.role);
+						if(cueobj.role != "NPC" && !tmpRoles.contains(cueobj.role) ){
+							tmpRoles.addItem(cueobj.role);
+							_roles.addItem(new ExerciseRoleVO(cueobj.roleId,_exerciseId,cueobj.role));
+						}
 					}
-					_characterNames.addAll(_roles);
+					_characterNames.addAll(tmpRoles);
 					_characterNames.refresh();
 					availableRoles.enabled=true;
 					_rolesReady=true;

@@ -516,7 +516,7 @@ class Exercise {
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			 	 	 WHERE (e.status = 'Available' AND a.complete IS NULL OR a.complete=0)
+       			 	 	 WHERE (e.status = 'Available')
 				 	GROUP BY e.id
 				 	ORDER BY e.adding_date DESC";
 
