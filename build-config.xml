@@ -14,6 +14,9 @@
 		<!-- compiler.use-resource-bundle-metadata: determina si se incluyen los paquetes de recursos en la aplicación. -->
 		<use-resource-bundle-metadata>true</use-resource-bundle-metadata>
 	</compiler>
+	
+	<!-- Avoid Flash bug of 17 reloads lead to wrong signature error. More weight in the final swf -->
+	<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
 
 	<!-- default-background-color: color de fondo predeterminado (el código de la aplicación lo puede sobrescribir) -->
 	<default-background-color>0xFFFFFF</default-background-color>
