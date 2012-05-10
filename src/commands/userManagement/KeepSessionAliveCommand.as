@@ -7,9 +7,11 @@ package commands.userManagement
 	
 	import events.UserEvent;
 	
+	import mx.messaging.messages.RemotingMessage;
 	import mx.resources.ResourceManager;
 	import mx.rpc.Fault;
 	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
@@ -29,9 +31,10 @@ package commands.userManagement
 		
 		public function fault(info:Object):void
 		{
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
-			//CustomAlert.error(info.result); 
-			trace(ObjectUtil.toString(info));
+			var faultEvent:FaultEvent=FaultEvent(info);
+			trace("[ERROR] operation: "+(faultEvent.token.message as RemotingMessage).operation+", code: "+faultEvent.fault.faultCode+", name: "+faultEvent.fault.faultString+", detail: "+faultEvent.fault.faultDetail);
+			//trace(ObjectUtil.toString(info));
+			//CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_KEEPING_SESSION'));
 		}
 	}
 }

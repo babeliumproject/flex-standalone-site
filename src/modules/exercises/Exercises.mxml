@@ -39,11 +39,15 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
+			import mx.collections.ICollectionView;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.utils.ObjectUtil;
+			
+			import spark.collections.Sort;
+			import spark.collections.SortField;
 			
 			import view.common.*;
 			
@@ -255,6 +259,14 @@
 							_roles.addItem(new ExerciseRoleVO(cueobj.roleId,_exerciseId,cueobj.role));
 						}
 					}
+					
+					var sort:Sort = new Sort();
+					var sortfield:SortField = new SortField(null,false);
+					sort.fields = [sortfield];
+					addStyleClient(sortfield);
+					tmpRoles.sort=sort;
+					tmpRoles.refresh();
+					
 					_characterNames.addAll(tmpRoles);
 					_characterNames.refresh();
 					availableRoles.enabled=true;
