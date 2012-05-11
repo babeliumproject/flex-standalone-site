@@ -19,10 +19,10 @@
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
-			
+
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
 			import events.ExerciseRoleEvent;
@@ -30,13 +30,13 @@
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.videoPlayer.events.VideoPlayerEvent;
 			import modules.videoPlayer.events.babelia.RecordingEvent;
 			import modules.videoPlayer.events.babelia.StreamEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
@@ -45,12 +45,12 @@
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.collections.Sort;
 			import spark.collections.SortField;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -63,9 +63,9 @@
 			 **/
 			private const SELECT_EXERCISE:String="SELECT_EXERCISE";
 
-			private var _creationComplete:Boolean = false;
-			
-			
+			private var _creationComplete:Boolean=false;
+
+
 			/**
 			 * Exercise Related variables
 			 **/
@@ -81,7 +81,7 @@
 			private var _locales:Array;
 			[Bindable]
 			private var _characterNames:ArrayCollection=new ArrayCollection();
-			private var _roles:ArrayCollection = new ArrayCollection();
+			private var _roles:ArrayCollection=new ArrayCollection();
 			private var _exerciseName:String;
 			private var _exerciseId:int;
 
@@ -131,9 +131,9 @@
 			{
 				setupVideoPlayer();
 				setupResponseOptions();
-				if(_exerciseTitle == null)
+				if (_exerciseTitle == null)
 					_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
-				_creationComplete = true;
+				_creationComplete=true;
 			}
 
 			/**
@@ -195,12 +195,12 @@
 
 					if (_locales == null)
 					{
-						availableLocales.enabled=false;
+						//availableLocales.enabled=false;
 						_localesReady=false;
 					}
 					else
 					{
-						availableLocales.enabled=true;
+						//availableLocales.enabled=true;
 						_localesReady=true;
 
 						// Preparing subtitles
@@ -243,30 +243,35 @@
 				}
 			}
 			*/
-			
-			private function prepareRoles(subtitleLines:ArrayCollection):void{
+
+			private function prepareRoles(subtitleLines:ArrayCollection):void
+			{
 				_characterNames.removeAll();
 				_roles.removeAll();
-				if (subtitleLines.length <= 0) {
+				if (subtitleLines.length <= 0)
+				{
 					availableRoles.enabled=false;
 					_rolesReady=false;
-				} else {
-					var tmpRoles:ArrayCollection = new ArrayCollection();
+				}
+				else
+				{
+					var tmpRoles:ArrayCollection=new ArrayCollection();
 					for each (var cueobj:CueObject in subtitleLines)
 					{
-						if(cueobj.role != "NPC" && !tmpRoles.contains(cueobj.role) ){
+						if (cueobj.role != "NPC" && !tmpRoles.contains(cueobj.role))
+						{
 							tmpRoles.addItem(cueobj.role);
-							_roles.addItem(new ExerciseRoleVO(cueobj.roleId,_exerciseId,cueobj.role));
+							_roles.addItem(new ExerciseRoleVO(cueobj.roleId, _exerciseId, cueobj.role));
 						}
 					}
-					
-					var sort:Sort = new Sort();
-					var sortfield:SortField = new SortField(null,false);
-					sort.fields = [sortfield];
+
+					var sort:Sort=new Sort();
+					var sortfield:SortField=new SortField(null, false);
+					sort.fields=[sortfield];
 					addStyleClient(sortfield);
 					tmpRoles.sort=sort;
 					tmpRoles.refresh();
-					
+
 					_characterNames.addAll(tmpRoles);
 					_characterNames.refresh();
 					availableRoles.enabled=true;
@@ -293,7 +298,8 @@
 				var cached:Boolean=_cueManager.setVideo(_exerciseId);
 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
+				//_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
+				_cueManager.setCuesFromSubtitleUsingLocale(_locales[0]);
 
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
@@ -316,7 +322,7 @@
 
 				if (auxList.length <= 0)
 					return;
-				
+
 				prepareRoles(auxList);
 
 				for each (var cueobj:CueObject in auxList)
@@ -571,7 +577,7 @@
 			 **/
 			private function set onTabChange(value:Boolean):void
 			{
-				if(_creationComplete && DataModel.getInstance().oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
+				if (_creationComplete && DataModel.getInstance().oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX)
 					resetComponent();
 			}
 
@@ -588,8 +594,8 @@
 				_currentExercise=null; // Reset current exercise
 
 				hideSelectedExercise(); // Information of selected exercise
-				
-				exerciseList.exerciseListDataGroup.selectedIndex = -1;
+
+				exerciseList.exerciseListDataGroup.selectedIndex=-1;
 
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
@@ -817,7 +823,8 @@
 	</s:BorderContainer>
 
 
-	<s:HGroup id="videoPlayerAndRecordingControls"
+
+	<s:VGroup id="videoPlayerAndRecordingControls"
 			  width="100%"
 			  horizontalAlign="center"
 			  verticalAlign="middle"
@@ -827,14 +834,16 @@
 			  paddingLeft="16"
 			  paddingRight="16">
 
+		<s:Label id="exerciseTitle"
+				 text="{_exerciseTitle}"
+				 width="100%"
+				 styleName="sectionTitleLabel"/>
 
-		<!-- Video Player -->
-		<s:VGroup>
-			<s:Label id="exerciseTitle"
-					 text="{_exerciseTitle}"
-					 width="100%"
-					 styleName="sectionTitleLabel"/>
-			<!-- w/h = 16:10 -->
+		<s:VGroup width="100%"
+				  horizontalAlign="center"
+				  verticalAlign="middle">
+
+			<!-- Video Player -->
 			<videoPlayer:VideoPlayerBabelia id="VP"
 											layoutDirection="ltr"
 											autoPlay="true"
@@ -844,82 +853,57 @@
 											autoScale="false"
 											arrows="false"
 											subtitlingControls="false"
-											width="500"
-											height="{Math.floor(VP.width * 9 / 16)}"
+											width="640"
+											height="380"
 											streamSource="{_streamSource}"
 											controlsEnabled="{_exerciseSelected}"/>
-			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
-												 width="100%"/>
-		</s:VGroup>
-		<mx:Spacer width="20"/>
 
-		<s:BorderContainer id="guestEditWarningBox"
-						   cornerRadius="8"
-						   borderColor="#FFFFFF"
-						   dropShadowVisible="true">
-			<s:BitmapImage source="@Embed('/resources/images/popup_bgr_excl.png')"
-						   right="0"
-						   top="0"/>
-			<s:VGroup width="100%"
-					  height="100%"
-					  paddingBottom="16"
-					  paddingLeft="16"
-					  paddingRight="16"
-					  paddingTop="16"
-					  verticalAlign="middle">
-				<s:Label id="notLoggedWarning"
-						 styleName="guestVersionWarningLabel"
-						 text="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"/>
-			</s:VGroup>
-		</s:BorderContainer>
 
-		<!-- Selected Exercise Panel -->
-		<s:BorderContainer id="panelSelectedExercise"
-						   includeInLayout="false"
-						   visible="false"
-						   width="400"
-						   backgroundAlpha="0"
-						   cornerRadius="8">
-			<s:layout>
-				<s:VerticalLayout paddingTop="10"
-								  paddingLeft="10"
-								  paddingRight="10"
-								  paddingBottom="10"/>
-			</s:layout>
 
-			<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_SELECTED_EXERCISE')}"/>
+			<s:HGroup id="guestEditWarningBox"
+					  width="{VP.width}"
+					  verticalAlign="middle"
+					  paddingTop="20"
+					  paddingBottom="20">
+				<mx:Image id="groupLogo"
+						  source="resources/images/about_section_title_icon.png"/>
+				<mx:Text htmlText="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"
+						 width="100%"
+						 fontSize="14"/>
+			</s:HGroup>
 
-			<s:BorderContainer borderWeight="5"
-							   width="100%"
-							   cornerRadius="8"
-							   borderColor="#38babc"
-							   backgroundAlpha="0">
+			<!-- Selected Exercise Panel -->
+			<s:BorderContainer id="panelSelectedExercise"
+							   includeInLayout="false"
+							   visible="false"
+							   borderVisible="false"
+							   backgroundAlpha="0"
+							   width="{VP.width}">
 				<s:layout>
-					<s:VerticalLayout paddingBottom="16"
-									  paddingLeft="16"
-									  paddingRight="16"
-									  paddingTop="16"/>
+					<s:HorizontalLayout paddingTop="20"
+										paddingLeft="0"
+										paddingRight="0"
+										paddingBottom="5"
+										verticalAlign="middle"/>
 				</s:layout>
-				<s:HGroup>
-					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
-					<mx:ComboBox id="availableRoles"
-								 dataProvider="{_characterNames}"
-								 enabled="{!DataModel.getInstance().recordingExercise}"/>
-				</s:HGroup>
 
-				<s:HGroup>
-					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_LOCALE')}"/>
-					<common:LanguageComboBox id="availableLocales"
-											 useCustomDataProvider="true"
-											 customDataProvider="{_locales}"
-											 displayPrompt="false"
-											 change="this.onLocaleComboChanged(event)"
-											 enabled="{!DataModel.getInstance().recordingExercise}"/>
-				</s:HGroup>
-				<mx:Spacer height="5"/>
-				<s:HGroup>
-					<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
-					<s:VGroup>
+				<s:VGroup width="100%">
+
+
+					<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+							 fontWeight="bold"
+							 fontSize="14"/>
+
+
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
+						<mx:ComboBox id="availableRoles"
+									 dataProvider="{_characterNames}"
+									 enabled="{!DataModel.getInstance().recordingExercise}"/>
+					</s:HGroup>
+
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
 						<s:RadioButton id="micOnly"
 									   selected="true"
 									   groupName="recMode"
@@ -927,27 +911,35 @@
 						<s:RadioButton id="micAndCam"
 									   groupName="recMode"
 									   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
-					</s:VGroup>
-				</s:HGroup>
-			</s:BorderContainer>
+					</s:HGroup>
 
-			<s:HGroup horizontalAlign="right"
-					  width="100%">
+				</s:VGroup>
+
 				<skins:IconButton id="startRecordingButton"
 								  styleName="recStartLinkButton"
 								  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
 								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'BUTTON_START_RECORDING') }"
 								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
 								  click="onStartRecordingClicked(event)"/>
-			</s:HGroup>
 
-		</s:BorderContainer>
-		<exercises:RecordingEndOptions id="recordingEndOptions"
-									   includeInLayout="false"
-									   visible="false"
-									   width="400"/>
 
-	</s:HGroup>
+
+			</s:BorderContainer>
+			<exercises:RecordingEndOptions id="recordingEndOptions"
+										   includeInLayout="false"
+										   visible="false"
+										   width="{VP.width}"
+										   backgroundAlpha="0"
+										   borderVisible="false"/>
+
+			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
+												 borderVisible="false"
+												 backgroundAlpha="0"
+												 width="{VP.width}"/>
+		</s:VGroup>
+
+
+	</s:VGroup>
 
 	<s:VGroup width="100%"
 			  horizontalAlign="left"
