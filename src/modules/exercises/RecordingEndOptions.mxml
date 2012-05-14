@@ -4,7 +4,7 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:skins="skins.*">
 	<s:layout>
-		<s:VerticalLayout paddingTop="10"
+		<s:VerticalLayout paddingTop="20"
 						  paddingLeft="0"
 						  paddingRight="0"
 						  paddingBottom="10"
@@ -31,43 +31,32 @@
 
 			<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
-							  styleName="watchRecordedButton"
+							  styleName="commonLinkButton"
 							  width="100%"
 							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  skinClass="skins.IconLinkSkin"
 							  icon="@Embed('/resources/images/eo_save_response.png')"/>
 			<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
-							  styleName="watchRecordedButton"
+							  styleName="commonLinkButton"
 							  width="100%"
 							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  skinClass="skins.IconLinkSkin"
 							  icon="@Embed('/resources/images/eo_watch_sim.png')"/>
-			<!--
-			<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
-							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_RESPONSE))"
-							  styleName="watchRecordedButton"
-							  width="100%"
-							  skinClass="skins.IconButtonSkin"
-							  icon="@Embed('/resources/images/eo_watch_resp.png')"/>
-			-->
 		</s:VGroup>
-		<s:VGroup horizontalAlign="left"
+		<s:VGroup horizontalAlign="right"
 				  verticalAlign="middle"
 				  width="100%">
 			<skins:IconButton label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
-							  styleName="watchRecordedButton"
+							  styleName="commonLinkButton"
 							  width="100%"
 							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  skinClass="skins.IconLinkSkin"
 							  icon="@Embed('/resources/images/button_rec.png')"/>
 
+			<!-- styleName="watchRecordedButton" -->
 			<skins:IconButton label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
-							  styleName="watchRecordedButton"
+							  styleName="commonLinkButton"
 							  width="100%"
-							  skinClass="skins.IconLinkSkin"
 							  icon="@Embed('/resources/images/button_abort.png')"/>
 
 		</s:VGroup>

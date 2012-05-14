@@ -47,6 +47,9 @@
 
 			[Bindable]
 			private var _dataAvailable:Boolean=false;
+			
+			[Bindable]
+			private var _lessAdtInfoStatus:Boolean=false;
 
 			private var reportPopUp:ReportInappropriatePopUp;
 
@@ -74,6 +77,9 @@
 			private function updateComponents():void
 			{
 				rating.rating=_exerciseRating;
+				additionalInfoBox.visible=false;
+				additionalInfoBox.includeInLayout=false;
+				_lessAdtInfoStatus = false;
 				addTagLinkButtons();
 
 				var score:ExerciseScoreVO=new ExerciseScoreVO();
@@ -81,8 +87,10 @@
 				score.exerciseId=_exercise.id;
 				report.exerciseId=_exercise.id;
 
-				new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
-				new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
+				if(DataModel.getInstance().isLoggedIn){
+					new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
+					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
+				}
 			}
 
 			private function disableComponents():void
@@ -90,6 +98,9 @@
 				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
 				{
 					_exerciseRating=0;
+					additionalInfoBox.visible=false;
+					additionalInfoBox.includeInLayout=false;
+					_lessAdtInfoStatus = false;
 					removeTagLinkButtons();
 				}
 			}
@@ -97,7 +108,7 @@
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
-				tagBoxSeparator.height=1;
+				//tagBoxSeparator.height=1;
 				_tags=_exercise.tags.split(',');
 				for each (var tag:String in _tags)
 				{
@@ -113,7 +124,7 @@
 
 			private function removeTagLinkButtons():void
 			{
-				tagBoxSeparator.height=0;
+				//tagBoxSeparator.height=0;
 				//exerciseTagsBox.removeAllChildren();
 				exerciseTagsBox.removeAllElements();
 				_tags=null;
@@ -147,6 +158,12 @@
 					reportPopUp.exerciseData=_exercise;
 				}
 			}
+			
+			protected function lessAdtInfoClickHandler(event:MouseEvent):void{
+				additionalInfoBox.visible=!additionalInfoBox.visible;
+				additionalInfoBox.includeInLayout=!additionalInfoBox.includeInLayout;
+				_lessAdtInfoStatus = !_lessAdtInfoStatus;
+			}
 		]]>
 	</fx:Script>
 
@@ -176,13 +193,21 @@
 							  click="reportVideoClickHandler(event)"/>
 		</s:HGroup>
 	</s:HGroup>
-	<s:VGroup horizontalAlign="left"
-			  width="100%">
-		<mx:HRule id="tagBoxSeparator"
-				  width="100%"
-				  height="0"/>
+	<s:VGroup id="additionalInfoBox" width="100%" horizontalAlign="left" paddingTop="10" paddingLeft="5" paddingRight="5" visible="false" includeInLayout="false">
 		<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}" fontWeight="bold" fontSize="11"/>
 		<s:TileGroup id="exerciseTagsBox" width="100%" horizontalGap="0" minHeight="0"/>
+	</s:VGroup>
+
+	<s:VGroup id="saiBox" width="100%" horizontalAlign="center" gap="0">
+		<s:Line width="100%">
+			<s:filters>
+				<s:DropShadowFilter distance="0" angle="0"/>
+			</s:filters>
+			<s:stroke>
+				<s:SolidColorStroke color="#666666" weight="1" alpha="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Button id="showLessAdtInfo" fontSize="10" label="{_lessAdtInfoStatus ? resourceManager.getString('myResources','LESS_INFO'): resourceManager.getString('myResources','MORE_INFO') }" cornerRadius="0" skinClass="skins.LessAdtInfoButtonSkin" click="lessAdtInfoClickHandler(event)"/>
 	</s:VGroup>
 
 </s:BorderContainer>

@@ -436,10 +436,10 @@
 					_localesReady=false;
 					_cueManagerReady=false;
 
-					if (DataModel.getInstance().isLoggedIn)
-					{
+					//if (DataModel.getInstance().isLoggedIn)
+					//{
 						ratingShareReport.exerciseData=tmp;
-					}
+					//}
 					showSelectedExercise();
 					prepareExercise();
 					resetCueManager();
@@ -832,69 +832,70 @@
 			  visible="false"
 			  paddingTop="16"
 			  paddingLeft="16"
-			  paddingRight="16">
+			  paddingRight="16"
+			  gap="2">
 
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"
-				 width="100%"
+				 width="{VP.width}"
 				 styleName="sectionTitleLabel"/>
+		<!-- Video Player -->
+		<videoPlayer:VideoPlayerBabelia id="VP"
+										layoutDirection="ltr"
+										autoPlay="true"
+										skin="white"
+										seek="true"
+										subtitles="true"
+										autoScale="false"
+										arrows="false"
+										subtitlingControls="false"
+										width="640"
+										height="380"
+										streamSource="{_streamSource}"
+										controlsEnabled="{_exerciseSelected}"/>
 
-		<s:VGroup width="100%"
-				  horizontalAlign="center"
-				  verticalAlign="middle">
+		<s:VGroup id="guestEditWarningBox"
+				  width="{VP.width}"
+				  paddingTop="5"
+				  paddingBottom="20">
 
-			<!-- Video Player -->
-			<videoPlayer:VideoPlayerBabelia id="VP"
-											layoutDirection="ltr"
-											autoPlay="true"
-											skin="white"
-											seek="true"
-											subtitles="true"
-											autoScale="false"
-											arrows="false"
-											subtitlingControls="false"
-											width="640"
-											height="380"
-											streamSource="{_streamSource}"
-											controlsEnabled="{_exerciseSelected}"/>
+			<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+					 fontWeight="bold"
+					 fontSize="14"/>
 
-
-
-			<s:HGroup id="guestEditWarningBox"
-					  width="{VP.width}"
-					  verticalAlign="middle"
-					  paddingTop="20"
-					  paddingBottom="20">
+			<s:HGroup width="100%"
+					  verticalAlign="middle">
 				<mx:Image id="groupLogo"
-						  source="resources/images/about_section_title_icon.png"/>
+						  source="resources/images/about_section_title_icon.png"
+						  height="30"
+						  width="30"/>
 				<mx:Text htmlText="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"
 						 width="100%"
 						 fontSize="14"/>
 			</s:HGroup>
+		</s:VGroup>
 
-			<!-- Selected Exercise Panel -->
-			<s:BorderContainer id="panelSelectedExercise"
-							   includeInLayout="false"
-							   visible="false"
-							   borderVisible="false"
-							   backgroundAlpha="0"
-							   width="{VP.width}">
-				<s:layout>
-					<s:HorizontalLayout paddingTop="20"
-										paddingLeft="0"
-										paddingRight="0"
-										paddingBottom="5"
-										verticalAlign="middle"/>
-				</s:layout>
+		<!-- Selected Exercise Panel -->
+		<s:BorderContainer id="panelSelectedExercise"
+						   includeInLayout="false"
+						   visible="false"
+						   borderVisible="false"
+						   backgroundAlpha="0"
+						   width="{VP.width}">
+			<s:layout>
+				<s:VerticalLayout paddingTop="5"
+								  paddingLeft="0"
+								  paddingRight="0"
+								  paddingBottom="5"
+								  verticalAlign="middle"/>
+			</s:layout>
 
-				<s:VGroup width="100%">
+			<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+					 fontWeight="bold"
+					 fontSize="14"/>
 
-
-					<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
-							 fontWeight="bold"
-							 fontSize="14"/>
-
-
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:VGroup width="100%" verticalAlign="middle">
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
 						<mx:ComboBox id="availableRoles"
@@ -912,7 +913,6 @@
 									   groupName="recMode"
 									   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 					</s:HGroup>
-
 				</s:VGroup>
 
 				<skins:IconButton id="startRecordingButton"
@@ -921,22 +921,19 @@
 								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'BUTTON_START_RECORDING') }"
 								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
 								  click="onStartRecordingClicked(event)"/>
+			</s:HGroup>
+		</s:BorderContainer>
+		<exercises:RecordingEndOptions id="recordingEndOptions"
+									   includeInLayout="false"
+									   visible="false"
+									   width="{VP.width}"
+									   backgroundAlpha="0"
+									   borderVisible="false"/>
 
-
-
-			</s:BorderContainer>
-			<exercises:RecordingEndOptions id="recordingEndOptions"
-										   includeInLayout="false"
-										   visible="false"
-										   width="{VP.width}"
-										   backgroundAlpha="0"
-										   borderVisible="false"/>
-
-			<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
-												 borderVisible="false"
-												 backgroundAlpha="0"
-												 width="{VP.width}"/>
-		</s:VGroup>
+		<videoPlayerControls:ExerciseInfoBox id="ratingShareReport"
+											 borderVisible="false"
+											 backgroundAlpha="0"
+											 width="{VP.width}"/>
 
 
 	</s:VGroup>
