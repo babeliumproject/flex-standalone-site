@@ -4,7 +4,8 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:hulstkamp="com.hulstkamp.*"
 				   xmlns:skins="skins.*"
-				   minHeight="0">
+				   minHeight="0"
+				   creationComplete="completeHandler(event)">
 
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="left"
@@ -18,23 +19,26 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-			
+
 			import events.ExerciseEvent;
 			import events.SearchEvent;
 			import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.LinkButton;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import view.common.ReportInappropriatePopUp;
-			
+
 			import vo.ExerciseReportVO;
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
+
+			private var _creationComplete:Boolean=false;
 
 			[Bindable]
 			private var _exercise:ExerciseVO=null;
@@ -47,25 +51,34 @@
 
 			[Bindable]
 			private var _dataAvailable:Boolean=false;
-			
+
 			[Bindable]
 			private var _lessAdtInfoStatus:Boolean=false;
 
 			private var reportPopUp:ReportInappropriatePopUp;
 
+			public function completeHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				exerciseData=_exercise;
+			}
+
 			public function set exerciseData(exercise:ExerciseVO):void
 			{
-				if (exercise)
+				_exercise=exercise;
+				if (_creationComplete)
 				{
-					_exercise=exercise;
-					_exerciseRating=exercise.avgRating;
-					_dataAvailable=true;
-					updateComponents();
-				}
-				else
-				{
-					_dataAvailable=false;
-					disableComponents();
+					if (_exercise)
+					{
+						_exerciseRating=_exercise.avgRating;
+						_dataAvailable=true;
+						updateComponents();
+					}
+					else
+					{
+						_dataAvailable=false;
+						disableComponents();
+					}
 				}
 			}
 
@@ -77,9 +90,10 @@
 			private function updateComponents():void
 			{
 				rating.rating=_exerciseRating;
+				exDescription.text=_exercise.description;
 				additionalInfoBox.visible=false;
 				additionalInfoBox.includeInLayout=false;
-				_lessAdtInfoStatus = false;
+				_lessAdtInfoStatus=false;
 				addTagLinkButtons();
 
 				var score:ExerciseScoreVO=new ExerciseScoreVO();
@@ -87,7 +101,8 @@
 				score.exerciseId=_exercise.id;
 				report.exerciseId=_exercise.id;
 
-				if(DataModel.getInstance().isLoggedIn){
+				if (DataModel.getInstance().isLoggedIn)
+				{
 					new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
 					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
 				}
@@ -98,9 +113,10 @@
 				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
 				{
 					_exerciseRating=0;
+					exDescription.text="";
 					additionalInfoBox.visible=false;
 					additionalInfoBox.includeInLayout=false;
-					_lessAdtInfoStatus = false;
+					_lessAdtInfoStatus=false;
 					removeTagLinkButtons();
 				}
 			}
@@ -114,8 +130,8 @@
 				{
 					var linkTag:IconButton=new IconButton();
 					linkTag.styleName="commonLinkButton";
-					linkTag.setStyle("fontSize",11);
-					linkTag.setStyle("fontWeight","normal");
+					linkTag.setStyle("fontSize", 11);
+					linkTag.setStyle("fontWeight", "normal");
 					linkTag.label=StringUtil.trim(tag);
 					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
 					exerciseTagsBox.addElement(linkTag);
@@ -126,7 +142,8 @@
 			{
 				//tagBoxSeparator.height=0;
 				//exerciseTagsBox.removeAllChildren();
-				exerciseTagsBox.removeAllElements();
+				if(exerciseTagsBox.numElements > 0)
+					exerciseTagsBox.removeAllElements();
 				_tags=null;
 			}
 
@@ -158,11 +175,12 @@
 					reportPopUp.exerciseData=_exercise;
 				}
 			}
-			
-			protected function lessAdtInfoClickHandler(event:MouseEvent):void{
+
+			protected function lessAdtInfoClickHandler(event:MouseEvent):void
+			{
 				additionalInfoBox.visible=!additionalInfoBox.visible;
 				additionalInfoBox.includeInLayout=!additionalInfoBox.includeInLayout;
-				_lessAdtInfoStatus = !_lessAdtInfoStatus;
+				_lessAdtInfoStatus=!_lessAdtInfoStatus;
 			}
 		]]>
 	</fx:Script>
@@ -193,21 +211,48 @@
 							  click="reportVideoClickHandler(event)"/>
 		</s:HGroup>
 	</s:HGroup>
-	<s:VGroup id="additionalInfoBox" width="100%" horizontalAlign="left" paddingTop="10" paddingLeft="5" paddingRight="5" visible="false" includeInLayout="false">
-		<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}" fontWeight="bold" fontSize="11"/>
-		<s:TileGroup id="exerciseTagsBox" width="100%" horizontalGap="0" minHeight="0"/>
+	<s:VGroup id="additionalInfoBox"
+			  width="100%"
+			  horizontalAlign="left"
+			  paddingTop="10"
+			  paddingLeft="5"
+			  paddingRight="5"
+			  paddingBottom="5"
+			  visible="false"
+			  includeInLayout="false">
+		<s:Label id="exDescription"
+				 fontSize="11"
+				 width="100%"/>
+		<s:Label text="{resourceManager.getString('myResources','LABEL_TAGS')}"
+				 fontWeight="bold"
+				 fontSize="11"/>
+		<s:TileGroup id="exerciseTagsBox"
+					 width="100%"
+					 horizontalGap="0"
+					 minHeight="0"/>
 	</s:VGroup>
 
-	<s:VGroup id="saiBox" width="100%" horizontalAlign="center" gap="0">
+	<s:VGroup id="saiBox"
+			  width="100%"
+			  horizontalAlign="center"
+			  gap="0">
 		<s:Line width="100%">
 			<s:filters>
-				<s:DropShadowFilter distance="0" angle="0"/>
+				<s:DropShadowFilter distance="0"
+									angle="0"/>
 			</s:filters>
 			<s:stroke>
-				<s:SolidColorStroke color="#666666" weight="1" alpha="1"/>
+				<s:SolidColorStroke color="#666666"
+									weight="1"
+									alpha="1"/>
 			</s:stroke>
 		</s:Line>
-		<s:Button id="showLessAdtInfo" fontSize="10" label="{_lessAdtInfoStatus ? resourceManager.getString('myResources','LESS_INFO'): resourceManager.getString('myResources','MORE_INFO') }" cornerRadius="0" skinClass="skins.LessAdtInfoButtonSkin" click="lessAdtInfoClickHandler(event)"/>
+		<s:Button id="showLessAdtInfo"
+				  fontSize="10"
+				  label="{_lessAdtInfoStatus ? resourceManager.getString('myResources','LESS_INFO'): resourceManager.getString('myResources','MORE_INFO') }"
+				  cornerRadius="0"
+				  skinClass="skins.LessAdtInfoButtonSkin"
+				  click="lessAdtInfoClickHandler(event)"/>
 	</s:VGroup>
 
 </s:BorderContainer>
