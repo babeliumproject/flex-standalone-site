@@ -867,7 +867,7 @@
 										arrows="false"
 										subtitlingControls="false"
 										width="640"
-										height="380"
+										height="360"
 										streamSource="{_streamSource}"
 										controlsEnabled="{_exerciseSelected}"/>
 

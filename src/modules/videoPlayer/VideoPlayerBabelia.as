@@ -53,7 +53,7 @@ package modules.videoPlayer
 	
 	import view.common.CustomAlert;
 	import view.common.PrivacyRights;
-
+	
 	import vo.ResponseVO;
 
 	public class VideoPlayerBabelia extends VideoPlayer
@@ -118,7 +118,9 @@ package modules.videoPlayer
 		private var _camVideo:Video;
 		private var _defaultCamWidth:Number=DataModel.getInstance().cameraWidth;
 		private var _defaultCamHeight:Number=DataModel.getInstance().cameraHeight;
-
+		private var _blackPixelsBetweenVideos:uint = 0;
+		private var _lastVideoHeight:Number=0;
+		
 		private var _micCamEnabled:Boolean=false;
 
 		private var privacyRights:PrivacyRights;
@@ -129,7 +131,7 @@ package modules.videoPlayer
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
 
-		private var _lastVideoHeight:Number=0;
+	
 
 		public static const SECONDSTREAM_READY_STATE:int=0;
 		public static const SECONDSTREAM_STARTED_STATE:int=1;
@@ -431,7 +433,7 @@ package modules.videoPlayer
 		 **/
 		public function set secondSource(source:String):void
 		{
-			trace("Second video added to player stage")
+			trace("[INFO] Video player: Second video added to stage")
 			if (state != PLAY_BOTH_STATE)
 				return;
 
@@ -860,7 +862,6 @@ package modules.videoPlayer
 					break;
 
 				default: // PLAY_STATE
-
 					recoverVideoPanel();
 					_camVideo.attachCamera(null); // TODO: deattach camera
 					_camVideo.visible=false;
@@ -1070,7 +1071,7 @@ package modules.videoPlayer
 
 			_outNs.publish(responseFilename, "record");
 
-			trace("Recording of " + _fileName + " file has started");
+			trace("[INFO] Response stream: Recording of file " + _fileName + " started");
 
 			//TODO: new feature - enableControls();
 		}
@@ -1081,20 +1082,19 @@ package modules.videoPlayer
 		 */
 		private function splitVideoPanel():void
 		{
-		
+			//The stage should be splitted only when the right state is set
 			if (!(state & SPLIT_FLAG))
-				return; // security check
-
-			/*
-			 * Resize video image
-			 */
-			var w:Number=_videoWidth / 2 - 2;
-			var h:int=w * _video.height / _video.width;
+				return;
+			
+			var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
+			var h:int=Math.ceil(w * _video.height / _video.width);
 
 			if (_videoHeight != h) // cause we can call twice to this method
 				_lastVideoHeight=_videoHeight; // store last value
 
 			_videoHeight=h;
+			
+			//trace("[INFO] Video player Babelium: BEFORE SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
 
 			var scaleY:Number=h / _video.height;
 			var scaleX:Number=w / _video.width;
@@ -1108,10 +1108,9 @@ package modules.videoPlayer
 			_video.width*=scaleC;
 			_video.height*=scaleC;
 			
-
-			/*
-			 * Resize cam image
-			 */
+			//trace("[INFO] Video player Babelium: BEFORE SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
+			
+			//Resize the cam display
 			scaleCamVideo(w,h);
 
 			updateDisplayList(0, 0); // repaint
@@ -1124,7 +1123,7 @@ package modules.videoPlayer
 		 */
 		private function recoverVideoPanel():void
 		{
-		
+			trace("[INFO] Video player Babelium: Recover video panel");
 			// NOTE: problems with _videoWrapper.width
 			if (_lastVideoHeight > _videoHeight)
 				_videoHeight=_lastVideoHeight;
@@ -1155,11 +1154,14 @@ package modules.videoPlayer
 				_camVideo.y+=_defaultMargin;
 				_camVideo.x+=(w + _defaultMargin);
 				
+				//trace("[INFO] Video player Babelium: CAM SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" cam dimensions: "+_camVideo.width+"x"+_camVideo.height+" cam placement: x="+_camVideo.x+" y="+_camVideo.y+" last video area heigth: "+_lastVideoHeight);
+				
+				
 				// 1 black pixel, being smarter
-				_camVideo.y+=1;
-				_camVideo.height-=2;
-				_camVideo.x+=1;
-				_camVideo.width-=2;
+				//_camVideo.y+=1;
+				//_camVideo.height-=2;
+				//_camVideo.x+=1;
+				//_camVideo.width-=2;
 			} else {
 				_camVideo.y=_defaultMargin + 2;
 				_camVideo.height-=4;
@@ -1179,11 +1181,8 @@ package modules.videoPlayer
 			super.scaleVideo();
 			if (state & SPLIT_FLAG)
 			{
-				/*
-				 * Resize video image
-				 */
-				var w:Number=_videoWidth / 2 - 2;
-				var h:int=w * _video.height / _video.width;
+				var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
+				var h:int=Math.ceil(w * _video.height / _video.width);
 
 				if (_videoHeight != h) // cause we can call twice to this method
 					_lastVideoHeight=_videoHeight; // store last value
@@ -1201,6 +1200,7 @@ package modules.videoPlayer
 
 				_video.width*=scaleC;
 				_video.height*=scaleC;
+				//trace("[INFO] Video player babelia: AFTER SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
 			}
 		}
 
@@ -1232,7 +1232,7 @@ package modules.videoPlayer
 				addDummyVideo();
 				unattachUserDevices();
 
-				trace("Recording of " + _fileName + " has been finished");
+				trace("[INFO] Response stream: Recording of file " + _fileName + " finished");
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
 			}
@@ -1370,7 +1370,7 @@ package modules.videoPlayer
 					break;
 			}
 			
-			trace("Response status: " + event.info.code);
+			//trace("[INFO] Response stream: Status " + event.info.code);
 		}
 
 	}

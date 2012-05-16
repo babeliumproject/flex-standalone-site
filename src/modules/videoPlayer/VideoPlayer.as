@@ -557,12 +557,11 @@ package modules.videoPlayer
 
 		private function netStatus(e:NetStatusEvent):void
 		{
-			trace("Exercise status: " + e.info.code);
-	
+			//trace("[INFO] Exercise stream: Status code " + e.info.code);
 			switch (e.info.code)
 			{
 				case "NetStream.Play.StreamNotFound":
-					trace("Stream not found code: " + e.info.code + " for video " + _videoSource);
+					trace("[ERROR] Exercise stream: Stream " + _videoSource + " could not be found");
 					break;
 				case "NetStream.Play.Stop":
 					playbackState=PLAYBACK_STOPPED_STATE;
@@ -645,12 +644,12 @@ package modules.videoPlayer
 			{
 				try
 				{
-					trace("NetStream Play: " + _videoSource);
+					trace("[INFO] Exercise stream: Selected video " + _videoSource);
 					_ns.play(_videoSource);
 				}
 				catch (e:Error)
 				{
-					trace("Error: Can't play. Not connected to the server");
+					trace("[ERROR] Exercise stream: Can't play. Not connected to the server");
 					return;
 				}
 
@@ -751,17 +750,11 @@ package modules.videoPlayer
 		 */
 		public function onSourceChange(e:VideoPlayerEvent):void
 		{
-			trace("Requested to play another video");
-			//trace(e.currentTarget);
+			playVideo();
+			_ppBtn.State=PlayButton.PAUSE_STATE;
 
-			//if (_ns)
-			//{
-				playVideo();
-				_ppBtn.State=PlayButton.PAUSE_STATE;
-
-				if (!autoPlay)
-					pauseVideo();
-			//}
+			if (!autoPlay)
+				pauseVideo();
 		}
 
 		/**
@@ -860,7 +853,7 @@ package modules.videoPlayer
 		 */
 		protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
-			trace("onVideoFinishedPlaying");
+			trace("[INFO] Exercise stream: Finished playing video "+_videoSource);
 			stopVideo();
 		}
 
@@ -885,23 +878,32 @@ package modules.videoPlayer
 		{
 			if (!autoScale)
 			{
+				//trace("[INFO] Video player: BEFORE SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y);
+				
+				//If the scalation is different in height and width take the smaller one
 				var scaleY:Number=_videoHeight / _video.height;
 				var scaleX:Number=_videoWidth / _video.width;
 				var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
 
+				//Center the video in the stage
 				_video.y=Math.floor(_videoHeight / 2 - (_video.height * scaleC) / 2);
 				_video.x=Math.floor(_videoWidth / 2 - (_video.width * scaleC) / 2);
+
+				//Leave space for the margins
 				_video.y+=_defaultMargin;
 				_video.x+=_defaultMargin;
 
+				//Scale the video
 				_video.width*=scaleC;
 				_video.height*=scaleC;
+				
+				//trace("[INFO] Video player: AFTER SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y);
 
 				// 1 black pixel, being smarter
-				_video.y+=1;
-				_video.height-=2;
-				_video.x+=1;
-				_video.width-=2;
+				//_video.y+=1;
+				//_video.height-=2;
+				//_video.x+=1;
+				//_video.width-=2;
 			}
 			else
 			{

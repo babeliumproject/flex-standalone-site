@@ -1028,8 +1028,8 @@
 											autoScale="false"
 											arrows="false"
 											subtitlingControls="false"
-											width="500"
-											height="{Math.floor(VP.width * 9 / 16)}"
+											width="640"
+											height="360"
 											streamSource="{_streamSource}"
 											controlsEnabled="{_evaluationSelected}"/>
 		</s:HGroup>
