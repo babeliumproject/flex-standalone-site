@@ -1071,7 +1071,7 @@ package modules.videoPlayer
 
 			_outNs.publish(responseFilename, "record");
 
-			trace("[INFO] Response stream: Recording of file " + _fileName + " started");
+			trace("[INFO] Response stream: Started recording " + _fileName);
 
 			//TODO: new feature - enableControls();
 		}
@@ -1087,7 +1087,7 @@ package modules.videoPlayer
 				return;
 			
 			var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
-			var h:int=Math.ceil(w * _video.height / _video.width);
+			var h:int=Math.ceil(w * 0.75);//_video.height / _video.width);
 
 			if (_videoHeight != h) // cause we can call twice to this method
 				_lastVideoHeight=_videoHeight; // store last value
@@ -1108,7 +1108,7 @@ package modules.videoPlayer
 			_video.width*=scaleC;
 			_video.height*=scaleC;
 			
-			//trace("[INFO] Video player Babelium: BEFORE SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
+			//trace("[INFO] Video player Babelium: AFTER SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
 			
 			//Resize the cam display
 			scaleCamVideo(w,h);
@@ -1182,7 +1182,7 @@ package modules.videoPlayer
 			if (state & SPLIT_FLAG)
 			{
 				var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
-				var h:int=Math.ceil(w * _video.height / _video.width);
+				var h:int=Math.ceil(w * 0.75);
 
 				if (_videoHeight != h) // cause we can call twice to this method
 					_lastVideoHeight=_videoHeight; // store last value
@@ -1232,7 +1232,7 @@ package modules.videoPlayer
 				addDummyVideo();
 				unattachUserDevices();
 
-				trace("[INFO] Response stream: Recording of file " + _fileName + " finished");
+				trace("[INFO] Response stream: Finished recording " + _fileName);
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); // TODO: new feature - enable controls while recording
 			}

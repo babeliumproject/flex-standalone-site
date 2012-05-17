@@ -894,8 +894,8 @@ package modules.videoPlayer
 				_video.x+=_defaultMargin;
 
 				//Scale the video
-				_video.width*=scaleC;
-				_video.height*=scaleC;
+				_video.width=Math.ceil(_video.width*scaleC);
+				_video.height=Math.ceil(_video.height*scaleC);
 				
 				//trace("[INFO] Video player: AFTER SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y);
 
