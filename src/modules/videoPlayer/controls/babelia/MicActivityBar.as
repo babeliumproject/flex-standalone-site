@@ -4,11 +4,14 @@ package modules.videoPlayer.controls.babelia
 	import flash.events.TimerEvent;
 	import flash.media.Microphone;
 	import flash.text.FontStyle;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.utils.Timer;
 	
 	import modules.videoPlayer.controls.SkinableComponent;
 	
-	import mx.controls.Text;
+	import mx.resources.ResourceManager;
+	
 
 	/**
 	 * Merged from iñigo's:
@@ -35,7 +38,8 @@ package modules.videoPlayer.controls.babelia
 		private var _bg:Sprite;
 		private var _sliderArea:Sprite;
 		private var _amount:Sprite;
-		private var _textBox:Text;
+		private var _textBox:TextField;
+		private var _textFormat:TextFormat;
 		
 		private var _mic:Microphone;
 		private var _micTimer:Timer;
@@ -50,11 +54,18 @@ package modules.videoPlayer.controls.babelia
 			_bg = new Sprite();
 			_sliderArea = new Sprite();
 			_amount = new Sprite();
-			_textBox = new Text();
-			_textBox.setStyle("textAlign", "center");
-			_textBox.setStyle("fontWeight", FontStyle.BOLD);
-			_textBox.setStyle("fontSize", 10);
+			
+			
+			_textFormat = new TextFormat();
+			_textFormat.align = "center";
+			_textFormat.font = "Arial";
+			_textFormat.bold = true;
+			_textFormat.size = 10;
+			
+			_textBox = new TextField();
 			_textBox.selectable = false;
+			_textBox.setTextFormat(_textFormat);
+			
 			
 			addChild( _bg );
 			addChild( _sliderArea );
@@ -84,8 +95,13 @@ package modules.videoPlayer.controls.babelia
 		
 		private function onGainTick(e:TimerEvent) : void
 		{
-			this.setProgress(_mic.activityLevel, 100);
-			this.label=resourceManager.getString('myResources','LABEL_MIC_INPUT_LEVEL')+":   " + _mic.activityLevel+"%";
+			if(_mic.activityLevel >= 0){
+				this.setProgress(_mic.activityLevel, 100);
+				this.label = ResourceManager.getInstance().getString('myResources','LABEL_MIC_INPUT_LEVEL') != null ? ResourceManager.getInstance().getString('myResources','LABEL_MIC_INPUT_LEVEL')+":   " + _mic.activityLevel+"%" : "Mic activity level:   " + _mic.activityLevel+"%";
+			} else {
+				this.setProgress(0, 100);
+				this.label = ResourceManager.getInstance().getString('myResources','LABEL_MIC_WAITING_FOR_INPUT') != null ? ResourceManager.getInstance().getString('myResources','LABEL_MIC_WAITING_FOR_INPUT') : "Waiting for mic input";
+			}
 		}
 		
 		/** Overriden */
@@ -124,8 +140,9 @@ package modules.videoPlayer.controls.babelia
 		
 		private function set label(text:String) : void
 		{
-			_textBox.setStyle("color", getSkinColor(TEXT_COLOR));
+			_textFormat.color = getSkinColor(TEXT_COLOR);
 			_textBox.text = text;
+			_textBox.setTextFormat(_textFormat);
 		}
 		
 		

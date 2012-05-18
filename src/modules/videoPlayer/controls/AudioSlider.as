@@ -8,7 +8,7 @@ package modules.videoPlayer.controls
 	import flash.geom.Rectangle;
 	
 	import modules.videoPlayer.events.VolumeEvent;
-	
+
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
 
@@ -208,7 +208,7 @@ package modules.videoPlayer.controls
 			if(getSkinColor(BORDER_WEIGHT) > 0)
 				_bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT),getSkinColor(BORDER_COLOR));
 			_bg.graphics.drawRect( 0, 0, width, height );
-			_bg.graphics.endFill();		
+			_bg.graphics.endFill();
 			
 			// mute button
 			_mutOverBg.graphics.clear();

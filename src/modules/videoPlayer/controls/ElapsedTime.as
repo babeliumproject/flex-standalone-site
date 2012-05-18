@@ -13,7 +13,7 @@ package modules.videoPlayer.controls
 		 */
 		public static const BG_COLOR:String = "bgColor";
 		public static const TEXT_COLOR:String = "textColor";
-		
+
 		public static const BG_GRADIENT_ANGLE:String = "bgGradientAngle";
 		public static const BG_GRADIENT_START_COLOR:String = "bgGradientStartColor";
 		public static const BG_GRADIENT_END_COLOR:String = "bgGradientEndColor";
