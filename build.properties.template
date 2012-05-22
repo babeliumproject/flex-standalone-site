@@ -23,8 +23,8 @@
 
 #Flex build tool paths
 FLEX_HOME=/path/to/flex/4.6/sdk
-FLEX_ANT_LIB =	${FLEX_HOME}/ant/lib/flexTasks.jar
-FLEX_LIB = ${FLEX_HOME}/lib
+FLEX_ANT_LIB=${FLEX_HOME}/ant/lib/flexTasks.jar
+FLEX_LIB=${FLEX_HOME}/lib
 
 #Compilation options
 #These flags decide how the app is compiled. Depending on what you choose some parts of the app will be left out or will work in another way. To see what each option is about see the code.
@@ -90,7 +90,7 @@ SQL_EXAMPLE_DATA_SCRIPT=${SQL_SCRIPT_ROOT}/full-example_data.sql
 WEB_DOMAIN=your_domain
 WEB_ROOT=your_web_root_path
 SERVICE_PATH=${WEB_DOMAIN}/services
-RED5_PATH = /path/to/red5/instance
+RED5_PATH=/path/to/red5/instance
 RED5_APPNAME=app_name_for_streaming_service
 
 ########################################
@@ -98,31 +98,30 @@ RED5_APPNAME=app_name_for_streaming_service
 ########################################
 
 #Service data
-services.srcdir = /path/to/services/inside/flex/project
-services.dstdir = /path/to/webroot
+services.srcdir=/path/to/services/inside/flex/project
+services.dstdir=/path/to/webroot
 
 #Image resource data
-images.srcdir = ${APP_ROOT}/resources/images
-images.dstdir = ${DEPLOY_DIR}/resources/images
+images.srcdir=${APP_ROOT}/resources/images
+images.dstdir=${DEPLOY_DIR}/resources/images
 
 #Red5 server data
-red5.path = /path/to/red5/instance
+red5.path=/path/to/red5/instance
 
 #Video content data
-videos.dstdir = ${red5.path}/path/to/video/streaming/app
-videos.srcdir = /path/to/video/resources
+videos.dstdir=${red5.path}/path/to/video/streaming/app
+videos.srcdir=/path/to/video/resources
 
 #Remote host data
 server.username=
 server.password=
-server.host= #Host name
-server.home= #SSH home
-server.path= #Webroot path
+server.host=#Host name
+server.home=#SSH home
+server.path=#Webroot path
 
 #Local host data
-local.server.path= #Webroot path
+local.server.path=#Webroot path
 
 #Google code's mercurial repository data
 HG_SRC=https://babeliumproject.googlecode.com/hg/
 HG_DEST=
-
