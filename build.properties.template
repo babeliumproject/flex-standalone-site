@@ -22,7 +22,7 @@
 # @author: Juanan Pereira, Inko Perurena
 
 #Flex build tool paths
-FLEX_HOME=/path/to/flex/4/sdk
+FLEX_HOME=/path/to/flex/4.6/sdk
 FLEX_ANT_LIB =	${FLEX_HOME}/ant/lib/flexTasks.jar
 FLEX_LIB = ${FLEX_HOME}/lib
 
@@ -69,30 +69,29 @@ VIDEO_EVAL_MIN_DURATION=5
 LOG_PATH=your_log_folder_path
 SCRIPT_PATH=your_script_folder_path
 BACKUP_PATH=your_backup_folder_path
-WEBROOT_PATH=your_webroot_folder_path
 
 #Database data
-SQL_DRIVER = com.mysql.jdbc.Driver
-SQL_DBMS = mysql
-SQL_DB_NAME = babeliumproject
-SQL_HOST = 
-SQL_PORT = 3306
-SQL_URL = jdbc\:${SQL_DBMS}\://${SQL_HOST}:${SQL_PORT}
-SQL_ROOT_USER = #Needed only if you want to fill the database
-SQL_ROOT_USER_PASS = #Needed only if you want to fill the database
-SQL_BABELIUM_USER =
-SQL_BABELIUM_USER_PASS = 
-SQL_SCRIPT_ROOT = ${APP_ROOT}/resources/sql
-SQL_SCHEMA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-schema.sql
-SQL_MINIMUM_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-minimum_data.sql
-SQL_EXAMPLE_DATA_SCRIPT = ${SQL_SCRIPT_ROOT}/full-example_data.sql
+SQL_DRIVER=com.mysql.jdbc.Driver
+SQL_DBMS=mysql
+SQL_DB_NAME=babeliumproject
+SQL_HOST=localhost
+SQL_PORT=3306
+SQL_URL=jdbc\:${SQL_DBMS}\://${SQL_HOST}:${SQL_PORT}
+SQL_ROOT_USER=#Needed only if you want to fill the database
+SQL_ROOT_USER_PASS=#Needed only if you want to fill the database
+SQL_BABELIUM_USER=
+SQL_BABELIUM_USER_PASS=
+SQL_SCRIPT_ROOT=${APP_ROOT}/resources/sql
+SQL_SCHEMA_SCRIPT=${SQL_SCRIPT_ROOT}/full-schema.sql
+SQL_MINIMUM_DATA_SCRIPT=${SQL_SCRIPT_ROOT}/full-minimum_data.sql
+SQL_EXAMPLE_DATA_SCRIPT=${SQL_SCRIPT_ROOT}/full-example_data.sql
 
 #Deploy paths
 WEB_DOMAIN=your_domain
 WEB_ROOT=your_web_root_path
 SERVICE_PATH=${WEB_DOMAIN}/services
 RED5_PATH = /path/to/red5/instance
-
+RED5_APPNAME=app_name_for_streaming_service
 
 ########################################
 #LEGACY PROPERTIES USE AT YOUR OWN RISK#
