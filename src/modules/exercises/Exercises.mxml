@@ -412,8 +412,17 @@
 				videoPlayerAndRecordingControls.visible=false;
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
-				panelSelectedExercise.includeInLayout=true;
-				panelSelectedExercise.visible=true;
+				if(DataModel.getInstance().isLoggedIn){
+					panelSelectedExercise.visible=true;
+					panelSelectedExercise.includeInLayout=true;
+					guestEditWarningBox.visible=false;
+					guestEditWarningBox.includeInLayout=false;
+				} else {
+					guestEditWarningBox.visible=true;
+					guestEditWarningBox.includeInLayout=true;
+					panelSelectedExercise.visible=false;
+					panelSelectedExercise.includeInLayout=false;
+				}
 				_exerciseSelected=false;
 			}
 
@@ -556,9 +565,13 @@
 				if(DataModel.getInstance().isLoggedIn){
 					panelSelectedExercise.visible=true;
 					panelSelectedExercise.includeInLayout=true;
+					guestEditWarningBox.visible=false;
+					guestEditWarningBox.includeInLayout=false;
 				} else {
 					guestEditWarningBox.visible=true;
 					guestEditWarningBox.includeInLayout=true;
+					panelSelectedExercise.visible=false;
+					panelSelectedExercise.includeInLayout=false;
 				}
 
 			}
