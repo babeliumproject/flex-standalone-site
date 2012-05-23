@@ -5,8 +5,9 @@
  *  can search the latest exercises added to the database.
  */
 
-define('SERVICE_PATH', '/var/www/babelium/services');
-require_once SERVICE_PATH . '/Search.php';
+if(!defined('CLI_SERVICE_PATH'))
+	define('CLI_SERVICE_PATH', '/var/www/babelium/services');
+require_once CLI_SERVICE_PATH . '/Search.php';
 
 $searchCron = new Search();
 $searchCron->reCreateIndex();
