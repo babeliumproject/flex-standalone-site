@@ -21,11 +21,14 @@
 			
 			import model.DataModel;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
-			import mx.controls.*;
 			import mx.events.*;
 			import mx.managers.*;
+			import mx.resources.IResourceBundle;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
 			import mx.validators.Validator;
 			
@@ -37,6 +40,8 @@
 			import vo.EvaluationVO;
 			import vo.ExerciseLevelVO;
 			import vo.ExerciseVO;
+			
+			private var _dataModel:DataModel = DataModel.getInstance();
 
 			private var _strUploadUrl:String;
 
@@ -274,6 +279,42 @@
 
 					DataModel.getInstance().unprocessedExerciseSaved=false;
 				}
+			}
+			
+			private function onDifficultyChange(event:ListEvent):void{
+				var dispatchingItem:DifficultyLevelComboBox=DifficultyLevelComboBox(event.target);
+				var levelIndex:int = dispatchingItem.selectedIndex;
+				if (levelIndex != -1)
+				{
+					addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(levelIndex+1));
+				}
+			}
+			
+			private function addLevelDescriptors(levelcode:String):void{
+				trace("indexchanged");
+				//First remove the previous elements of the container
+				removeLevelDescriptors();
+				//Then add the new set of elements
+				var resources:Object = resourceManager.getResourceBundle("en_US","myResources").content;
+				var descriptorPattern:RegExp = /D\d{3}_(\w{2})_(\w{2})\d{2}/;
+				for (var item:Object in resources){
+					var key:String = item as String;
+					//Filter the strings that have to do with the descriptors
+					var matches:Array = key.match(descriptorPattern);
+					if(matches && matches.length && matches[1] == levelcode){
+						var chkBox:CheckBox = new CheckBox();
+						chkBox.id = key;
+						//chkBox.label = resourceManager.getString('myResources',key);
+						
+
+						BindingUtils.bindProperty( chkBox, "label", resourceManager, "getString" );
+						//descriptorContainer.addElement(chkBox);
+					}
+				}
+			}
+			
+			private function removeLevelDescriptors():void{
+				
 			}
 
 			private function changeUploadMethod(event:ItemClickEvent):void
@@ -717,7 +758,11 @@
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
 							 styleName="boldLabel"
 							 required="true">
-					<common:DifficultyLevelComboBox id="difficultySelector"/>
+					<s:HGroup>
+						<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
+						<skins:IconButton styleName="commonLinkButton" label="Advanced"/>
+					</s:HGroup>
+					<s:VGroup id="descriptorContainer" width="100%"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
 							 styleName="boldLabel"

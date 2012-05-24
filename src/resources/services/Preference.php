@@ -78,6 +78,16 @@ class Preference {
 	}
 	
 	/**
+	 * Retrieve the exercise descriptors in all the available languages
+	 */
+	public function getExerciseDescriptors(){
+		$sql = "SELECT ed.*, edt.locale, edt.name
+				FROM exercise_descriptor ed INNER JOIN exercise_descriptor_i18n edt ON ed.id=edt.fk_exercise_descriptor_id";
+		$results = $this->conn->_multipleSelect($sql);
+		return $results;
+	}
+	
+	/**
  	 * Returns the byte representation of a configuration directive
      * @param mixed $val
      * 		Either a byte or shorthand notation of a directive (K for kilobytes, M for megabytes, G for gigabytes)
