@@ -23,11 +23,13 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
+			import mx.core.IVisualElement;
 			import mx.events.*;
 			import mx.managers.*;
 			import mx.resources.IResourceBundle;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
+			import mx.utils.ObjectProxy;
 			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
 			import mx.validators.Validator;
@@ -78,6 +80,7 @@
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
+				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex+1));
 
 				if (DataModel.getInstance().loggedUser != null && DataModel.getInstance().loggedUser.isAdmin)
 				{
@@ -291,7 +294,6 @@
 			}
 			
 			private function addLevelDescriptors(levelcode:String):void{
-				trace("indexchanged");
 				//First remove the previous elements of the container
 				removeLevelDescriptors();
 				//Then add the new set of elements
@@ -303,18 +305,28 @@
 					var matches:Array = key.match(descriptorPattern);
 					if(matches && matches.length && matches[1] == levelcode){
 						var chkBox:CheckBox = new CheckBox();
-						chkBox.id = key;
-						//chkBox.label = resourceManager.getString('myResources',key);
-						
-
-						BindingUtils.bindProperty( chkBox, "label", resourceManager, "getString" );
-						//descriptorContainer.addElement(chkBox);
+						chkBox.id=key;
+						chkBox.percentWidth=100;
+						chkBox.label=resourceManager.getString("myResources",chkBox.id);
+						descriptorContainer.addElement(chkBox);					
+						//BindingUtils.bindProperty(
+						//	chkBox,
+						//	"label",
+						//	resourceManager,
+						//	{ name: "getString", getter: function(resourceManager:IResourceManager):String { return resourceManager.getString("myResources",key);} }
+						//);
 					}
 				}
 			}
 			
 			private function removeLevelDescriptors():void{
-				
+				if(descriptorContainer.numElements)
+					descriptorContainer.removeAllElements();
+			}
+			
+			private function showHideDescriptorsClickHandler(e:MouseEvent):void{
+				descriptorContainer.visible = !descriptorContainer.visible;
+				descriptorContainer.includeInLayout = !descriptorContainer.includeInLayout;
 			}
 
 			private function changeUploadMethod(event:ItemClickEvent):void
@@ -374,6 +386,16 @@
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					
+					//If the user chose any level descriptors, those must be saved too
+					var descriptors:Array();
+					for(var i:int=0; i<descriptorContainer.numElements; i++){
+						var item:IVisualElement = descriptorContainer.getElementAt(i);
+						if((item is CheckBox) && (item as CheckBox).selected){
+							var descriptor:String = (item as CheckBox).id;
+							descriptors.push(descriptor);
+						}
+					}
 					
 					if(CONFIG::noPracticeUpload){
 						if(DataModel.getInstance().loggedUser.isAdmin){
@@ -757,12 +779,13 @@
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
 							 styleName="boldLabel"
-							 required="true">
-					<s:HGroup>
+							 required="true"
+							 width="100%">
+					<s:HGroup width="100%">
 						<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
-						<skins:IconButton styleName="commonLinkButton" label="Advanced"/>
+						<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)"/>
 					</s:HGroup>
-					<s:VGroup id="descriptorContainer" width="100%"/>
+					<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
 							 styleName="boldLabel"
