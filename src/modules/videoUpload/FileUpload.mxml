@@ -20,6 +20,7 @@
 			import flash.net.*;
 			
 			import model.DataModel;
+			import model.ResourceSubscriber;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -44,6 +45,7 @@
 			import vo.ExerciseVO;
 			
 			private var _dataModel:DataModel = DataModel.getInstance();
+			private var _descriptors:Array;
 
 			private var _strUploadUrl:String;
 
@@ -76,6 +78,9 @@
 				_arrUploadFiles=new Array();
 				enableUI();
 				uploadCheck();
+				
+				//Retrieve all the availabla descriptor codes and store them in an associative array for convenience
+				getDescriptorCodesFromResourceFile();
 
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
@@ -293,35 +298,53 @@
 				}
 			}
 			
-			private function addLevelDescriptors(levelcode:String):void{
-				//First remove the previous elements of the container
-				removeLevelDescriptors();
-				//Then add the new set of elements
+			private function getDescriptorCodesFromResourceFile():void{
 				var resources:Object = resourceManager.getResourceBundle("en_US","myResources").content;
 				var descriptorPattern:RegExp = /D\d{3}_(\w{2})_(\w{2})\d{2}/;
 				for (var item:Object in resources){
 					var key:String = item as String;
 					//Filter the strings that have to do with the descriptors
 					var matches:Array = key.match(descriptorPattern);
-					if(matches && matches.length && matches[1] == levelcode){
+					if(matches && matches.length){
+						if(!_descriptors)
+							_descriptors = new Array();
+						_descriptors[key] = matches[1];
+					}
+				}
+			}
+			
+			private function addLevelDescriptors(levelcode:String):void{
+				//First remove the previous elements of the container
+				removeLevelDescriptors();
+				//Then add the new set of elements
+				
+				for (var item:Object in _descriptors){
+					//Get only the descriptors of the chosen difficulty level
+					if(_descriptors[item] == levelcode){
 						var chkBox:CheckBox = new CheckBox();
-						chkBox.id=key;
+						chkBox.id=item as String;
 						chkBox.percentWidth=100;
+						
 						chkBox.label=resourceManager.getString("myResources",chkBox.id);
+						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item as String);
 						descriptorContainer.addElement(chkBox);					
-						//BindingUtils.bindProperty(
-						//	chkBox,
-						//	"label",
-						//	resourceManager,
-						//	{ name: "getString", getter: function(resourceManager:IResourceManager):String { return resourceManager.getString("myResources",key);} }
-						//);
+						/*
+						BindingUtils.bindProperty(
+							chkBox,
+							"label",
+							resourceManager,
+							{ name: "getString", getter: function(resourceManager:IResourceManager):String { return resourceManager.getString("myResources",item as String);} }
+						);
+						*/
 					}
 				}
 			}
 			
 			private function removeLevelDescriptors():void{
-				if(descriptorContainer.numElements)
+				if(descriptorContainer.numElements){
+					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
 					descriptorContainer.removeAllElements();
+				}
 			}
 			
 			private function showHideDescriptorsClickHandler(e:MouseEvent):void{
@@ -388,7 +411,7 @@
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
 					
 					//If the user chose any level descriptors, those must be saved too
-					var descriptors:Array();
+					var descriptors:Array=new Array();
 					for(var i:int=0; i<descriptorContainer.numElements; i++){
 						var item:IVisualElement = descriptorContainer.getElementAt(i);
 						if((item is CheckBox) && (item as CheckBox).selected){
@@ -683,6 +706,7 @@
 				new VideoSliceEvent(VideoSliceEvent.CREATE_SLICE).dispatch();
 				infoMessage.visible=true;
 			}
+			
 		]]>
 	</fx:Script>
 
@@ -783,7 +807,7 @@
 							 width="100%">
 					<s:HGroup width="100%">
 						<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
-						<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)"/>
+						<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="false"/>
 					</s:HGroup>
 					<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
 				</mx:FormItem>
