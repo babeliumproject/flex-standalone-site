@@ -216,10 +216,12 @@ package modules.videoPlayer.controls.babelia
 			var w:Number = (width - 4*_defaultMargin) * actual / max;
 			
 			_pBarFill.graphics.clear();
-			_pBarFill.graphics.lineStyle(1,0x757575,1);
-			_pBarFill.graphics.beginFill( 0xffffff );
-			_pBarFill.graphics.drawRect( 0, 0, w, 6 );
-			_pBarFill.graphics.endFill();
+			if(!isNaN(w) && w >= 0){
+				_pBarFill.graphics.lineStyle(1,0x757575,1);
+				_pBarFill.graphics.beginFill( 0xffffff );
+				_pBarFill.graphics.drawRect( 0, 0, w, 6 );
+				_pBarFill.graphics.endFill();
+			}
 		}
 		
 		private function set label(text:String) : void

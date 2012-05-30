@@ -153,6 +153,7 @@ package control {
 			//Response management commands
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
 			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
+			addCommand(ResponseEvent.ADD_DUMMY_VIDEO, AddDummyVideoCommand);
 			
 			//Roles management commands
 			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
