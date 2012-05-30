@@ -1209,6 +1209,7 @@ package modules.videoPlayer
 
 			if (state & RECORD_FLAG || state == UPLOAD_MODE_STATE)
 			{
+				addDummyVideo();
 				unattachUserDevices();
 
 				trace("[INFO] Response stream: Finished recording " + _fileName);
@@ -1217,6 +1218,16 @@ package modules.videoPlayer
 			}
 			else
 				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
+		}
+
+		/**
+		 * Flash 11.2.x has a bug that makes audio only FLV files non-playable. This workaround adds a dummy video stream to those files to recover
+		 * the playback functionality while Adobe fixes this bug.
+		 */
+		protected function addDummyVideo():void{
+			var r:ResponseVO = new ResponseVO();
+			r.fileIdentifier = _fileName;
+			new ResponseEvent(ResponseEvent.ADD_DUMMY_VIDEO,r).dispatch();
 		}
 		
 		public function unattachUserDevices():void{

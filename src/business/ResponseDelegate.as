@@ -32,5 +32,13 @@ package business
 			pendingCall.addResponder(responder);
 		}
 
+		public function addDummyVideo(response:ResponseVO):void
+		{
+			var responseId:String=response.fileIdentifier;
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("responseRO");
+			var pendingCall:AsyncToken=service.addDummyVideo(responseId);
+			pendingCall.addResponder(responder);
+		}
+
 	}
 }
