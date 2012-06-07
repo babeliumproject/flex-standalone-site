@@ -1,15 +1,16 @@
 package modules.videoPlayer
 {
 	import flash.events.AsyncErrorEvent;
-	import flash.events.DRMAuthenticateEvent;
 	import flash.events.DRMErrorEvent;
 	import flash.events.DRMStatusEvent;
+	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.NetDataEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.StatusEvent;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
+	import flash.net.NetStreamInfo;
 	import flash.utils.ByteArray;
 	
 	import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
@@ -18,11 +19,14 @@ package modules.videoPlayer
 	
 	//http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/NetStream.html
 
-	public class NetStreamClient implements INetStreamCallbacks extends NetStream
+	public class NetStreamClient extends EventDispatcher implements INetStreamCallbacks
 	{
-		
-		public static const TRACE_INFO:uint = 0x0001;
-		public static const TRACE_ERROR:uint = 0x0002;
+		//Consider using a logging api such as as3commons
+		public static const DEBUG:int=0x0020;
+		public static const ERROR:int=0x0004;
+		public static const FATAL:int=0x0002;
+		public static const INFO:int=0x0010;
+		public static const WARN:int=0x0008;
 		
 		public static const STREAM_READY:int=0;
 		public static const STREAM_STARTED:int=1;
@@ -32,91 +36,140 @@ package modules.videoPlayer
 		public static const STREAM_UNPAUSED:int=5;
 		public static const STREAM_BUFFERING:int=6;
 		
-		//private var ns:NetStream;
+		private var _ns:NetStream;
 		private var _nc:NetConnection;
+		private var _name:String;
 		private var _connected:Boolean;
 		private var _streamStatus:uint;
+		private var _videoWidth:uint;
+		private var _videoHeight:uint;
+		private var _duration:Number;
+		private var _hasVideo:Boolean;
+		private var _hasAudio:Boolean;
+		private var _metaData:Object;
 		
-		public function NetStreamClient(connection:NetConnection)
+		/*
+		 * Functions
+		 */
+		public function NetStreamClient(connection:NetConnection, name:String)
 		{
 			try{
-				super(connection);
+				super();
+				_ns = new NetStream(connection);
+				_ns.client = this;	
+				_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
+				_ns.addEventListener(DRMErrorEvent.DRM_ERROR, onDrmError);
+				_ns.addEventListener(DRMStatusEvent.DRM_STATUS, onDrmStatus);
+				_ns.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+				_ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, onMediaTypeData);
+				_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+				_ns.addEventListener(StatusEvent.STATUS, onStatus);
+			
 				_nc = connection;
-				this.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
-				this.addEventListener(DRMAuthenticateEvent.DRM_AUTHENTICATE, onDrmAuthenticate);
-				this.addEventListener(DRMErrorEvent.DRM_ERROR, onDrmError);
-				this.addEventListener(DRMStatusEvent.DRM_STATUS, onDrmStatus);
-				this.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
-				this.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, onMediaTypeData);
-				this.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
-				this.addEventListener(StatusEvent.STATUS, onStatus);
-				this.client = this;
+				_name=name;
 				_connected=true;
-			} catch(exception:ArgumentError){
+				
+			} catch(e:Error){
 				//netconnection is not connected
 				_connected=false;
+				displayTrace("Error ["+e.name+"] "+e.message);
 			}
 		}
 		
-		public function setTraceLevel(level:uint):void{
-			
+		private function displayTrace(message:String, level:uint=0x0001):void{
+			var msg:String = message;
+			if(_name)
+				msg = "["+_name+"] "+message;
+			trace(msg);
 		}
 		
-		override public function play(...parameters):void{
+		public function play(...parameters):void{
 			try{
-				super.play(parameters);	
+				displayTrace("Play "+parameters);
+				_ns.play(parameters);	
 			} 
 			catch(e:SecurityError){
-				
+				displayTrace("SecurityError ["+e.name+"] "+e.message);
 			}
 			catch(e:ArgumentError){
-				
+				displayTrace("ArgumentError ["+e.name+"] "+e.message);
 			}
 			catch(e:Error){
+				displayTrace("Error ["+e.name+"] "+e.message);
 				_connected=false;
 			}
+		}
+		
+		/*
+		 * Getters and setters
+		 */
+		public function get netStream():NetStream{
+			return (_ns && _connected) ? _ns : null;		
+		}
+		
+		public function get hasVideo():Boolean{
+			return _hasVideo;
+		}
+		
+		public function get hasAudio():Boolean{
+			return _hasAudio;
+		}
+		
+		public function get videoWidth():uint{
+			return _videoWidth;
+		}
+		
+		public function get videoHeight():uint{
+			return _videoHeight;
+		}
+		
+		public function get duration():Number{
+			return _duration;
+		}
+		
+		public function get metaData():Object{
+			return _metaData;
 		}
 		
 		/*
 		 * Event listeners
 		 */
 		public function onAsyncError(event:AsyncErrorEvent):void{
-			trace(event.error.name+" "+event.error.message);
-		}
-		
-		public function onDrmAuthenticate(event:DRMAuthenticateEvent):void{
-			
+			displayTrace("AsyncError "+event.error.name+" "+event.error.message);
 		}
 		
 		public function onDrmError(event:DRMErrorEvent):void{
-			
+			displayTrace("DRMError");
 		}
 		
 		public function onDrmStatus(event:DRMStatusEvent):void{
-			
+			displayTrace("DRMStatus");
 		}
 		
 		public function onIoError(event:IOErrorEvent):void{
-			trace(event.target.toString() + " " + event.text);
+			displayTrace("IOError "+event.target.toString() + " " + event.text);
 		}
 		
 		public function onMediaTypeData(event:NetDataEvent):void{
-			
+			displayTrace("MediaTypeData event listener",INFO);
 		}
 		
 		public function onNetStatus(event:NetStatusEvent):void{
 			var info:Object=event.info;
+			var messageClientId:int=info.clientid?info.clientid:-1;
 			var messageCode:String=info.code;
+			var messageDescription:String=info.description?info.description:null;
+			var messageDetails:String=info.details?info.details:null;
 			var messageLevel:String=info.level;
 			
-			trace("["+messageLevel+"] "+messageCode);
+			displayTrace("NetStatus ["+messageLevel+"] "+messageCode+" "+messageDescription);
 			switch (messageCode)
 			{
 				case "NetStream.Buffer.Empty":
 					if (_streamStatus == STREAM_STOPPED)
 					{
 						_streamStatus=STREAM_FINISHED;
-						super.dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING));
+						this.dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING));
 					}
 					else
 						_streamStatus=STREAM_BUFFERING;
@@ -175,7 +228,7 @@ package modules.videoPlayer
 		}
 		
 		public function onStatus(event:StatusEvent):void{
-			
+			displayTrace(ObjectUtil.toString(event));
 		}
 		
 		
@@ -183,36 +236,42 @@ package modules.videoPlayer
 		 * Client object callbacks
 		 */
 		public function onCuePoint(cuePoint:Object):void{
-			trace(ObjectUtil.toString(cuePoint));
+			displayTrace(ObjectUtil.toString(cuePoint));
 		}
 		
 		public function onImageData(imageData:Object):void{
-			//data
 			var rawData:ByteArray = imageData.data as ByteArray;
+			displayTrace("ImageData callback",INFO);
 		}
 		
 		public function onMetaData(metaData:Object):void{
-			//height, widht, duration
-			trace(ObjectUtil.toString(metaData));
+			_metaData=metaData;
+			_duration=metaData.duration;
+			_videoWidth=metaData.width?metaData.width:0;
+			_videoHeight=metaData.height?metaData.height:0;
+			_hasVideo=(metaData.videocodecid&&metaData.videocodecid!=-1)?true:false;
+			_hasAudio=(metaData.audiocodecid&&metaData.audiocodecid!=-1)?true:false;
+			displayTrace("MetaData callback",INFO);
+			displayTrace(ObjectUtil.toString(metaData),DEBUG);
 		}
 		
 		public function onPlayStatus(playStatus:Object):void{
 			//level, code
-			trace(ObjectUtil.toString(playStatus));
+			displayTrace(ObjectUtil.toString(playStatus));
 		}
 		
 		public function onSeekPoint(seekPoint:Object):void{
-			trace(ObjectUtil.toString(seekPoint));
+			displayTrace(ObjectUtil.toString(seekPoint));
 		}
 		
 		public function onTextData(textData:Object):void{
-			trace(ObjectUtil.toString(textData));
+			displayTrace(ObjectUtil.toString(textData));
 		}
 		
 		public function onXMPData(xmpData:Object):void{
 			//data, a string The string is generated from a top-level UUID box. 
 			//(The 128-bit UUID of the top level box is BE7ACFCB-97A9-42E8-9C71-999491E3AFAC.) This top-level UUID box contains exactly one XML document represented as a null-terminated UTF-8 string.
-			trace(ObjectUtil.toString(xmpData));
+			displayTrace(ObjectUtil.toString(xmpData));
 		}
 	}
 }

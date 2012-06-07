@@ -436,7 +436,6 @@
 				{
 					//Reset the videoplayer and the panels
 					recordingError();
-					
 
 					// Retrieving selected exercise information
 					var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;

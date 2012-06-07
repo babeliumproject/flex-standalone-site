@@ -104,8 +104,8 @@ package modules.videoPlayer
 		private const DEFAULT_VOLUME:Number=40;
 		private const COUNTDOWN_TIMER_SECS:int=5;
 
-		private var _outNs:NetStream;
-		private var _inNs:NetStream;
+		private var _outNs:NetStreamClient;
+		private var _inNs:NetStreamClient;
 		private var _secondStreamSource:String;
 
 		private var _mic:Microphone;
@@ -420,10 +420,11 @@ package modules.videoPlayer
 				(flag) ? _mic.gain=0 : _mic.gain=DEFAULT_VOLUME;
 			else if (state == PLAY_BOTH_STATE)
 			{
-				if (flag && _inNs != null)
-					_inNs.soundTransform=new SoundTransform(0);
-				else if (_inNs != null)
-					_inNs.soundTransform=new SoundTransform(DEFAULT_VOLUME / 100);
+				if (flag && _inNs && _inNs.netStream){
+					_inNs.netStream.soundTransform=new SoundTransform(0);
+				}else if (_inNs && _inNs.netStream){
+					_inNs.netStream.soundTransform=new SoundTransform(DEFAULT_VOLUME / 100);
+				}
 			}
 		}
 
@@ -689,10 +690,11 @@ package modules.videoPlayer
 				_roleTalkingPanel.pauseTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
-				_outNs.pause();
+				_outNs.netStream.pause();
 
-			if (state == PLAY_BOTH_STATE)
-				_inNs.pause();
+			if (state == PLAY_BOTH_STATE){
+				_inNs.netStream.pause();
+			}
 		}
 
 		/**
@@ -708,10 +710,11 @@ package modules.videoPlayer
 				_roleTalkingPanel.resumeTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
-				_outNs.resume();
+				_outNs.netStream.resume();
 
-			if (state == PLAY_BOTH_STATE)
-				_inNs.resume();
+			if (state == PLAY_BOTH_STATE){
+				_inNs.netStream.resume();
+			}
 		}
 
 		/**
@@ -727,13 +730,13 @@ package modules.videoPlayer
 				_roleTalkingPanel.stopTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled)
-				_outNs.close();
+				_outNs.netStream.close();
 
 			if (state == PLAY_BOTH_STATE)
 			{
-				if (_inNs != null)
+				if (_inNs && _inNs.netStream)
 				{
-					_inNs.play(false);
+					_inNs.netStream.play(false);
 				}
 			}
 
@@ -744,9 +747,9 @@ package modules.videoPlayer
 		{
 			super.endVideo();
 
-			if (state == PLAY_BOTH_STATE && _inNs != null)
+			if (state == PLAY_BOTH_STATE && _inNs && _inNs.netStream)
 			{
-				_inNs.close();
+				_inNs.netStream.dispose();
 				_inNs=null;
 			}
 		}
@@ -1005,7 +1008,7 @@ package modules.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				_outNs=new NetStream(_nc);
+				_outNs=new NetStreamClient(_nc,"outNs");
 				disableControls();
 			}
 			
@@ -1017,7 +1020,7 @@ package modules.videoPlayer
 				//	splitVideoPanel();
 				_camVideo.visible=false;
 				_micImage.visible=false;
-				_outNs=new NetStream(_nc);
+				_outNs=new NetStreamClient(_nc,"outNs");
 			}
 
 			_micActivityBar.visible=true;
@@ -1044,16 +1047,16 @@ package modules.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				_outNs.attachAudio(_mic);
+				_outNs.netStream.attachAudio(_mic);
 				muteRecording(true); // mic starts muted
 			}
 
 			if (state == RECORD_BOTH_STATE)
-				_outNs.attachCamera(_camera);
+				_outNs.netStream.attachCamera(_camera);
 
 			_ppBtn.State=PlayButton.PAUSE_STATE;
 
-			_outNs.publish(responseFilename, "record");
+			_outNs.netStream.publish(responseFilename, "record");
 
 			trace("[INFO] Response stream: Started recording " + _fileName);
 
@@ -1233,10 +1236,10 @@ package modules.videoPlayer
 		*/
 		
 		public function unattachUserDevices():void{
-			if (_outNs)
+			if (_outNs && _outNs.netStream)
 			{
-				_outNs.attachCamera(null);
-				_outNs.attachAudio(null);
+				_outNs.netStream.attachCamera(null);
+				_outNs.netStream.attachAudio(null);
 				_camVideo.clear();
 				_camVideo.attachCamera(null);
 			}
@@ -1247,35 +1250,21 @@ package modules.videoPlayer
 		 **/
 		private function playSecondStream():void
 		{
-			if (_inNs != null)
-				_inNs.close();
+			if (_inNs && _inNs.netStream){
+				_inNs.netStream.dispose();
+			}
 
-			//if (_inNc.connected)
-			//{
 			if (_nc.connected)
 			{
-				//_inNs=new NetStream(_inNc);
-				_inNs=new NetStream(_nc);
-				_inNs.addEventListener(NetStatusEvent.NET_STATUS, onSecondStreamNetStream);
-				_inNs.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
+				_inNs=new NetStreamClient(_nc,"inNs");
+				_inNs.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
 
-				// Not metadata nor cuepoint manage needed, so
-				// create an empty client for the second stream
-				// Avoids debbuger messages
-				var nsClient:Object=new Object();
-				nsClient.onMetaData=function():void
-				{
-				};
-				nsClient.onCuePoint=function():void
-				{
-				};
-
-				_inNs.client=nsClient;
-				_camVideo.attachNetStream(_inNs);
+				_camVideo.clear();
+				_camVideo.attachNetStream(_inNs.netStream);
 				_camVideo.visible=true;
 				_micImage.visible=true;
 
-				_inNs.play(_secondStreamSource);
+				_inNs.netStream.play(_secondStreamSource);
 
 				// Needed for video mute
 				muteRecording(false);
@@ -1289,74 +1278,5 @@ package modules.videoPlayer
 				_ppBtn.State=PlayButton.PAUSE_STATE;
 			}
 		}
-
-		private function onSecondStreamNetStream(event:NetStatusEvent):void
-		{
-
-			var info:Object=event.info;
-			switch (info.code)
-			{
-				case "NetStream.Buffer.Empty":
-					if (secondStreamState == SECONDSTREAM_STOPPED_STATE)
-					{
-						secondStreamState=SECONDSTREAM_FINISHED_STATE;
-						dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING));
-					}
-					else
-						secondStreamState=SECONDSTREAM_BUFFERING_STATE;
-					break;
-				case "NetStream.Buffer.Full":
-					if (secondStreamState == SECONDSTREAM_READY_STATE)
-						secondStreamState=SECONDSTREAM_STARTED_STATE;
-					if (secondStreamState == SECONDSTREAM_BUFFERING_STATE)
-						secondStreamState=SECONDSTREAM_STARTED_STATE;
-					if (secondStreamState == SECONDSTREAM_UNPAUSED_STATE)
-						secondStreamState=SECONDSTREAM_STARTED_STATE;
-
-					break;
-				case "NetStream.Buffer.Flush":
-					break;
-				case "NetStream.Publish.Start":
-					break;
-				case "NetStream.Publish.Idle":
-					break;
-				case "NetStream.Unpublish.Success":
-					break;
-				case "NetStream.Play.Start":
-					secondStreamState=SECONDSTREAM_READY_STATE;
-					break;
-				case "NetStream.Play.Stop":
-					secondStreamState=SECONDSTREAM_STOPPED_STATE;
-					break;
-				case "NetStream.Play.Reset":
-					break;
-				case "NetStream.Play.PublishNotify":
-					break;
-				case "NetStream.Play.UnpublishNotify":
-					break;
-				case "NetStream.Pause.Notify":
-					secondStreamState=SECONDSTREAM_PAUSED_STATE;
-					break;
-				case "NetStream.Unpause.Notify":
-					secondStreamState=SECONDSTREAM_UNPAUSED_STATE;
-					break;
-				case "NetStream.Record.Start":
-					break;
-				case "NetStream.Record.Stop":
-					break;
-				case "NetStream.Seek.Notify":
-					break;
-				case "NetStream.Connect.Closed":
-					break;
-				case "NetStream.Connect.Success":
-					break;
-				default:
-					//trace("Second NetStream Error: " + info.code);
-					break;
-			}
-
-			//trace("[INFO] Response stream: Status " + event.info.code);
-		}
-
 	}
 }
