@@ -207,7 +207,7 @@ package model
 		[Bindable]
 		public var uploadDomain:String="http://" + server + "/";
 		[Bindable]
-		public var streamingApp:String="vod";
+		public var streamingApp:String="oflaDemo";
 		[Bindable]
 		public var streamingResourcesPath:String="rtmp://" + server + "/" + streamingApp;
 		[Bindable]
