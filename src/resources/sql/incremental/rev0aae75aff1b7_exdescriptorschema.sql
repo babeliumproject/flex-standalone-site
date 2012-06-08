@@ -13,10 +13,10 @@ CREATE  TABLE `exercise_descriptor_i18n` (
   `locale` VARCHAR(8) NOT NULL ,
   `name` TEXT NOT NULL ,
   INDEX `fk_exercise_descriptor_i18n_1` (`fk_exercise_descriptor_id` ASC) ,
-  UNIQUE KEY (`fk_exercise_descriptor_id`,`locale`),
+  PRIMARY KEY (`fk_exercise_descriptor_id`,`locale`),
   CONSTRAINT `fk_exercise_descriptor_i18n_1`
     FOREIGN KEY (`fk_exercise_descriptor_id` )
-    REFERENCES `babeliumproject`.`exercise_descriptor` (`id` )
+    REFERENCES `exercise_descriptor` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
