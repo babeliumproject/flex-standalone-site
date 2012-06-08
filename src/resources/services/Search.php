@@ -236,6 +236,11 @@ class Search {
 				
 				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->exerciseId);
 				$line->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
+				$descriptors = $this->getExerciseDescriptors($line->exerciseId,$line->language);
+				if($descriptors)
+					$line->descriptors = implode(', ',$descriptors);
+				else
+					$line->descriptors = '';
 				
 				$this->addDoc($line,$this->unindexedFields);
 			}
@@ -271,6 +276,11 @@ class Search {
 			
 			$lineAvgScore = $this->getExerciseAvgBayesianScore($result->id);
 			$result->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
+			$descriptors = $this->getExerciseDescriptors($result->exerciseId,$result->language);
+			if($descriptors)
+				$result->descriptors = implode(', ',$descriptors);
+			else
+				$result->descriptors = '';
 			
 			$this->addDoc($result,$this->unindexedFields);
 			$this->index->commit();
@@ -319,6 +329,34 @@ class Search {
 			}
 		}
 		$this->index->addDocument($doc);
+	}
+	
+	
+	/**
+	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
+	 * @param int $exerciseId
+	 * 		The exercise id to check for descriptors
+	 * @return mixed $dcodes
+	 * 		An array of descriptor codes. False when the exercise has no descriptors at all.
+	 */
+	private function getExerciseDescriptors($exerciseId,$exerciseLanguage){
+		if(!$exerciseId)
+			return false;
+		$dcodes = false;
+		$sql = "SELECT ed.*, ed18n.name
+				FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
+     			     INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
+				WHERE (red.fk_exercise_id=%d AND ed18n.locale='%s')";
+		$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
+		if($results){
+			$dcodes = array();
+			foreach($results as $result){
+				$dcode = sprintf("D%03d%s%s%02d %s", $result->id, $result->level, $result->type, $result->number, $result->name);
+				$dcodes[] = $dcode;
+			}
+			unset($result);
+		}
+		return $dcodes;
 	}
 	
 	

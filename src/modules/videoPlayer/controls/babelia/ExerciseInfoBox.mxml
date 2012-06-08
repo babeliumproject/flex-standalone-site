@@ -19,21 +19,22 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-
+			
 			import events.ExerciseEvent;
 			import events.SearchEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			import model.ResourceSubscriber;
+			
 			import mx.controls.LinkButton;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import view.common.ReportInappropriatePopUp;
-
+			
 			import vo.ExerciseReportVO;
 			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
@@ -94,6 +95,7 @@
 				additionalInfoBox.visible=false;
 				additionalInfoBox.includeInLayout=false;
 				_lessAdtInfoStatus=false;
+				addDescriptors();
 				addTagLinkButtons();
 
 				var score:ExerciseScoreVO=new ExerciseScoreVO();
@@ -118,6 +120,38 @@
 					additionalInfoBox.includeInLayout=false;
 					_lessAdtInfoStatus=false;
 					removeTagLinkButtons();
+				}
+			}
+			
+			private function addDescriptors():void{
+				removeDescriptors()
+				if(_exercise.descriptors && _exercise.descriptors.length){
+					var sectTitle:Label=new Label();
+					sectTitle.setStyle("fontWeight","bold");
+					sectTitle.setStyle("fontSize",11);
+					sectTitle.text=resourceManager.getString('myResources','DESCRIPTORS');
+					ResourceSubscriber.getInstance().subscribeElement(sectTitle, "text", "myResources", 'DESCRIPTORS');
+					
+					descriptorContainer.addElement(sectTitle);
+					for each(var d:String in _exercise.descriptors){
+						var dlabel:IconButton=new IconButton();
+						dlabel.id=d;
+						dlabel.percentWidth=100;
+						dlabel.styleName="commonLinkButton";
+						dlabel.setStyle("fontSize", 11);
+						dlabel.setStyle("fontWeight", "normal");
+						dlabel.label=resourceManager.getString('myResources',d);
+						ResourceSubscriber.getInstance().subscribeElement(dlabel, "label", "myResources", d);
+						dlabel.addEventListener(MouseEvent.CLICK, tagClickHandler);
+						descriptorContainer.addElement(dlabel);
+					}
+				}
+			}
+			
+			private function removeDescriptors():void{
+				if(descriptorContainer.numElements){
+					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
+					descriptorContainer.removeAllElements();
 				}
 			}
 
@@ -223,6 +257,7 @@
 		<s:Label id="exDescription"
 				 fontSize="11"
 				 width="100%"/>
+		<s:VGroup id="descriptorContainer" minHeight="0"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_TAGS')}"
 				 fontWeight="bold"
 				 fontSize="11"/>

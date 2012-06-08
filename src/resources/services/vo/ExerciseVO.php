@@ -28,6 +28,8 @@ class ExerciseVO {
 	
 	public $isSubtitled;
 	
+	public $descriptors;
+	
 	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
 	public $score;
 	public $idIndex;

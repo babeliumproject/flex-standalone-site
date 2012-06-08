@@ -104,6 +104,8 @@ class Exercise {
 			$parsedTags = array();
 			$parsedTags = $this->parseExerciseTags($exercise->tags);
 			
+			$parsedDescriptors = $this->parseDescriptors($exercise->descriptors);
+			
 			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
 				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status) ";
 				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s') ";
@@ -120,6 +122,8 @@ class Exercise {
 				$exerciseLevel->exerciseId = $lastExerciseId;
 				//Add the tags
 				$this->insertTags($parsedTags, $lastExerciseId);
+				//Add the descriptors, if any
+				$this->insertDescriptors($parsedDescriptors,$lastExerciseId);
 				//Set the level of the exercise
 				if($this->addExerciseLevel($exerciseLevel))
 					return $lastExerciseId;
@@ -169,6 +173,9 @@ class Exercise {
 
 			$parsedTags = array();
 			$parsedTags = $this->parseExerciseTags($exercise->tags);
+			
+			$parsedDescriptors = array();
+			$parsedDescriptors = $this->parseDescriptors($exercise->descriptors);
 
 			$this->conn->_startTransaction();
 
@@ -185,6 +192,9 @@ class Exercise {
 
 			//The exercise is being successfully added, now set the tags
 			$this->insertTags($parsedTags, $lastExerciseId);
+			
+			//Add the descriptors, if any
+			$this->insertDescriptors($parsedDescriptors,$lastExerciseId);
 			
 			//Set the exercise's level
 			$exerciseLevel->exerciseId = $lastExerciseId;
@@ -295,6 +305,48 @@ class Exercise {
 		}
 		unset($tag);
 	}
+	
+	/**
+	 * Parses a list of language common framework descriptors using their id
+	 * @param array $descriptors
+	 * 		An array of descriptor codes
+	 * @return array $descriptorIds
+	 * 		An array of descriptor ids (recognizable by the database)
+	 */
+	private function parseDescriptors($descriptors){
+		$descriptorIds = array();
+		$pattern = "/D(\d{3})_(\w{2})_(\w{2})(\d{2})/"; //D000_A1_SP00
+		foreach($descriptors as $d){
+			if(preg_match($pattern,$d,$matches)){
+				// id(1),level(2),type(3),number(4)
+				$descriptorIds[] = $matches[1];
+			}
+		}
+		return $descriptorIds;
+	}
+	
+	/**
+	 * Add the descriptors this exercise helps to achieve
+	 * @param array $descriptorIds
+	 * 		The ids of the descriptors we want to associate with an exercise
+	 * @param int $exerciseId
+	 * 		The id of the exercise whose descriptors we are adding
+	 */
+	private function insertDescriptors($descriptorIds,$exerciseId){
+		if($descriptorIds && is_array($descriptorIds) && count($descriptorIds)){
+			$sql = "INSERT INTO rel_exercise_descriptor VALUES ";
+			$params = array();
+			foreach($descriptorIds as $dId){
+				$sql.= " ('%d','%d' ),";
+				array_push($params, $exerciseId,$dId);
+			}
+			unset($dId);
+			$sql = substr($sql,0,-1);
+			// put sql query and all params in one array
+			$merge = array_merge((array)$sql, $params);
+			$result = $this->conn->_insert($merge);
+		}
+	}
 
 	/**
 	 * Adds a difficulty level for the provided exercise_id
@@ -402,6 +454,7 @@ class Exercise {
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
 		}
 
 		return $this->conn->multipleRecast('ExerciseVO',$searchResults);
@@ -439,8 +492,10 @@ class Exercise {
 				LIMIT 1";
 		
 		$result = $this->conn->_singleSelect($sql,$id);
-		if($result)
+		if($result){
 			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+			$result->descriptors = $this->getExerciseDescriptors($result->id);
+		}
 
 		return $this->conn->recast('ExerciseVO',$result);
 	}
@@ -477,8 +532,10 @@ class Exercise {
 				LIMIT 1";
 
 		$result = $this->conn->_singleSelect($sql,$name);
-		if($result)
+		if($result){
 			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+			$result->descriptors = $this->getExerciseDescriptors($result->id);
+		}
 
 		return $this->conn->recast('ExerciseVO',$result);
 	}
@@ -523,6 +580,7 @@ class Exercise {
 			$searchResults = $this->conn->_multipleSelect($sql);
 			foreach($searchResults as $searchResult){
 				$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+				$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
 			}
 
 			//Filter searchResults to include only the "evaluate" languages of the user
@@ -568,6 +626,7 @@ class Exercise {
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
 		}
 
 		try {
@@ -609,6 +668,31 @@ class Exercise {
 		}
 		return $filteredList;
 
+	}
+	
+	/**
+	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
+	 * @param int $exerciseId
+	 * 		The exercise id to check for descriptors
+	 * @return mixed $dcodes
+	 * 		An array of descriptor codes. False when the exercise has no descriptors at all.
+	 */
+	private function getExerciseDescriptors($exerciseId){
+		if(!$exerciseId)
+			return false;
+		$dcodes = false;
+		$sql = "SELECT ed.* FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id 
+				WHERE red.fk_exercise_id=%d";
+		$results = $this->conn->_multipleSelect($sql,$exerciseId);
+		if($results && count($results)){
+			$dcodes = array();
+			foreach($results as $result){
+					$dcode = sprintf("D%03d_%s_%s%02d", $result->id, $result->level, $result->type, $result->number);
+					$dcodes[] = $dcode;
+			}
+			unset($result);
+		}
+		return $dcodes;
 	}
 
 	/**

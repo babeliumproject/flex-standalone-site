@@ -79,7 +79,7 @@
 				enableUI();
 				uploadCheck();
 				
-				//Retrieve all the availabla descriptor codes and store them in an associative array for convenience
+				//Retrieve all the available descriptor codes and store them in an associative array for convenience
 				getDescriptorCodesFromResourceFile();
 
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
@@ -231,63 +231,6 @@
 				progBar.setProgress(numPerc, 100);
 				progBar.validateNow();
 			}
-
-			private function set onUploadCompleteData(value:Boolean):void
-			{
-				if (DataModel.getInstance().uploadFinishedData)
-				{
-					if (DataModel.getInstance().uploadErrors == '')
-					{
-						uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD');
-
-						red5VideoData=new ExerciseVO();
-						red5VideoData.title=videoTitle.text;
-						red5VideoData.description=videoDescription.text;
-						red5VideoData.tags=parseTags(videoTags.text);
-						red5VideoData.language=languageSelector.selectedItem.code;
-						red5VideoData.name=DataModel.getInstance().uploadFileName;
-
-						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
-						red5VideoData.reference=referenceUrl.text;
-
-						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
-						
-						if(CONFIG::noPracticeUpload){
-							if(DataModel.getInstance().loggedUser.isAdmin){
-								if(uploadTypeGroup.selection == uploadType2){
-									red5VideoData.status = "evaluation-video";
-								}
-							} else {
-								red5VideoData.status = "evaluation-video";
-							}
-						}
-						
-						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
-					}
-					else
-						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
-					DataModel.getInstance().uploadFinishedData=false;
-					clearUpload();
-				}
-			}
-
-			private function set onUnprocessedExerciseComplete(value:Boolean):void
-			{
-				if (DataModel.getInstance().unprocessedExerciseSaved)
-				{
-					_arrUploadFiles.pop();
-					listFiles.dataProvider=_arrUploadFiles;
-					clearUpload();
-					resetComponent();
-
-					//Enable automatic evaluation if the option was selected
-					if (DataModel.getInstance().loggedUser.isAdmin && autoevaluateCheckbox.selected)
-						enableAutoevaluation(DataModel.getInstance().historicData.videoExerciseId);
-
-					DataModel.getInstance().unprocessedExerciseSaved=false;
-				}
-			}
 			
 			private function onDifficultyChange(event:ListEvent):void{
 				var dispatchingItem:DifficultyLevelComboBox=DifficultyLevelComboBox(event.target);
@@ -317,7 +260,6 @@
 				//First remove the previous elements of the container
 				removeLevelDescriptors();
 				//Then add the new set of elements
-				
 				for (var item:Object in _descriptors){
 					//Get only the descriptors of the chosen difficulty level
 					if(_descriptors[item] == levelcode){
@@ -390,6 +332,74 @@
 					vSliceWidget.visible=true;
 				}
 			}
+			
+			private function set onUploadCompleteData(value:Boolean):void
+			{
+				if (DataModel.getInstance().uploadFinishedData)
+				{
+					if (DataModel.getInstance().uploadErrors == '')
+					{
+						uploadInformationLabel.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD');
+						
+						red5VideoData=new ExerciseVO();
+						red5VideoData.title=videoTitle.text;
+						red5VideoData.description=videoDescription.text;
+						red5VideoData.tags=parseTags(videoTags.text);
+						red5VideoData.language=languageSelector.selectedItem.code;
+						red5VideoData.name=DataModel.getInstance().uploadFileName;
+						
+						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+						red5VideoData.reference=referenceUrl.text;
+						
+						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
+						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+						
+						//If the user chose any level descriptors, those must be saved too
+						var descriptors:Array=new Array();
+						for(var i:int=0; i<descriptorContainer.numElements; i++){
+							var item:IVisualElement = descriptorContainer.getElementAt(i);
+							if((item is CheckBox) && (item as CheckBox).selected){
+								var descriptor:String = (item as CheckBox).id;
+								descriptors.push(descriptor);
+							}
+						}
+						red5VideoData.descriptors=descriptors;
+						
+						if(CONFIG::noPracticeUpload){
+							if(DataModel.getInstance().loggedUser.isAdmin){
+								if(uploadTypeGroup.selection == uploadType2){
+									red5VideoData.status = "evaluation-video";
+								}
+							} else {
+								red5VideoData.status = "evaluation-video";
+							}
+						}
+						
+						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
+					}
+					else
+						uploadInformationLabel.text=DataModel.getInstance().uploadErrors;
+					DataModel.getInstance().uploadFinishedData=false;
+					clearUpload();
+				}
+			}
+			
+			private function set onUnprocessedExerciseComplete(value:Boolean):void
+			{
+				if (DataModel.getInstance().unprocessedExerciseSaved)
+				{
+					_arrUploadFiles.pop();
+					listFiles.dataProvider=_arrUploadFiles;
+					clearUpload();
+					resetComponent();
+					
+					//Enable automatic evaluation if the option was selected
+					if (DataModel.getInstance().loggedUser.isAdmin && autoevaluateCheckbox.selected)
+						enableAutoevaluation(DataModel.getInstance().historicData.videoExerciseId);
+					
+					DataModel.getInstance().unprocessedExerciseSaved=false;
+				}
+			}
 
 			private function saveRecordedExercise():void
 			{
@@ -419,6 +429,7 @@
 							descriptors.push(descriptor);
 						}
 					}
+					red5VideoData.descriptors=descriptors;
 					
 					if(CONFIG::noPracticeUpload){
 						if(DataModel.getInstance().loggedUser.isAdmin){
@@ -453,6 +464,9 @@
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
+				
+				//Reset the descriptors
+				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex+1));
 
 				//Reset the webcam-based upload components
 				recFromWebcamBox.resetComponent();
@@ -477,12 +491,17 @@
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
+				
+				descriptorContainer.visible = false;
+				descriptorContainer.includeInLayout = false;
 
 				uploadOptionsGroup.selectedValue=null;
 				uploadChoice.selected=false;
 				recordChoice.selected=false;
 				youtubeChoice.selected=false;
 				uploadFileBox.visible=false;
+				webcamWidget.includeInLayout=false;
+				webcamWidget.visible=false;
 				recFromWebcamBox.visible=false;
 				vSliceWidget.visible=false;
 			}
@@ -807,7 +826,7 @@
 							 width="100%">
 					<s:HGroup width="100%">
 						<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
-						<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="false"/>
+						<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="true"/>
 					</s:HGroup>
 					<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
 				</mx:FormItem>
