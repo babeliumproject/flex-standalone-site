@@ -8,6 +8,7 @@ package commands.search{
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
+	import mx.messaging.messages.RemotingMessage;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -20,9 +21,10 @@ package commands.search{
 	
 	public class LaunchSearchCommand implements IResponder, ICommand{
 		
+		private var dataModel:DataModel=DataModel.getInstance();
 			
 		public function execute(event:CairngormEvent):void{
-			new SearchDelegate(this).launchSearch(DataModel.getInstance().searchField);
+			new SearchDelegate(this).launchSearch(dataModel.searchField);
 		}
 		
 		public function result(data:Object):void{
@@ -31,30 +33,26 @@ package commands.search{
 
 			if (result is Array){
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				try{
-					if (!(resultCollection[0] is ExerciseVO)){
-						CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PERFORMING_SEARCH'));
-					}else{
-						//Matches found
-						//Set the data to the application's model
-						DataModel.getInstance().videoSearches=resultCollection;
-						//Reflect the visual changes
-						DataModel.getInstance().videoSearchesRetrieved =true;
-					}
-				}catch(e:Error){
-						//No matches found
-						//Set the data to the application's model
-						DataModel.getInstance().videoSearches=resultCollection;
-						//Reflect the visual changes
-						DataModel.getInstance().videoSearchesRetrieved =true;
-				}		
-			}else{}
+				//There are matches and the data is well-formed
+				if (resultCollection[0] is ExerciseVO)
+					dataModel.videoSearches=resultCollection;		
+				else
+					dataModel.videoSearches=new ArrayCollection();
+			} else {
+				dataModel.videoSearches=new ArrayCollection();
+			}
+			//Binding watchers are notified of a possible value change
+			dataModel.videoSearchesRetrieved=!dataModel.videoSearchesRetrieved;
 		}
 		
 		public function fault(info:Object):void{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PERFORMING_SEARCH'));
-			trace(ObjectUtil.toString(info));
+			trace("[ERROR] operation: "+(faultEvent.token.message as RemotingMessage).operation+", code: "+faultEvent.fault.faultCode+", name: "+faultEvent.fault.faultString+", detail: "+faultEvent.fault.faultDetail);
+			
+			//We don't need to display an error, just display no matches for the searched term
+			//CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_PERFORMING_SEARCH'));
+			dataModel.videoSearches=new ArrayCollection();
+			dataModel.videoSearchesRetrieved=!dataModel.videoSearchesRetrieved;
 		}
 		
 	}

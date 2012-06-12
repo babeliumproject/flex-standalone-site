@@ -70,26 +70,22 @@
 
 			public function set onSearchRetrieved(value:Boolean):void
 			{
-				if (DataModel.getInstance().videoSearchesRetrieved)
+				dataProvider=DataModel.getInstance().videoSearches;
+				DataModel.getInstance().currentPage=1;
+				sort.selectedIndex=0;
+				if (dataProvider.length > 0)
 				{
-					dataProvider=DataModel.getInstance().videoSearches;
-					DataModel.getInstance().currentPage=1;
-					sort.selectedIndex=0;
-					if (dataProvider.length > 0)
-					{
-						labelSort.enabled=true;
-						sort.enabled=true;
-					}
-					else
-					{
-						labelSort.enabled=false;
-						sort.enabled=false;
-					}
-					createPagination();
-					DataModel.getInstance().videoSearchesRetrieved=false;
-					descendingCB=true;
-					currentCBIndex=0;
+					labelSort.enabled=true;
+					sort.enabled=true;
 				}
+				else
+				{
+					labelSort.enabled=false;
+					sort.enabled=false;
+				}
+				createPagination();
+				descendingCB=true;
+				currentCBIndex=0;
 			}
 
 			public function createPagination():void

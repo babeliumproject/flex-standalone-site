@@ -147,6 +147,8 @@ class Search {
 	 * 			The parsed search query with fuzzy search modifiers applied
 	 */
 	public function fuzzySearch($search){
+		return $search;
+		/* We won't be using the fuzzy search for the time being
 		//Decide whether to make the fuzzy search
 		$auxSearch=$search;
 		$finalSearch=$search;
@@ -165,6 +167,7 @@ class Search {
 		}
 		//error_log("replace: " . $auxSearch."\nreplaceCount:".$count."\nfinalSearch: ".$finalSearch."\n",3,"/tmp/search.log");
 		return $finalSearch;
+		*/
 	}
 
 	/**
@@ -241,7 +244,6 @@ class Search {
 					$line->descriptors = implode(', ',$descriptors);
 				else
 					$line->descriptors = '';
-				
 				$this->addDoc($line,$this->unindexedFields);
 			}
 			$this->index->commit();
@@ -351,7 +353,7 @@ class Search {
 		if($results){
 			$dcodes = array();
 			foreach($results as $result){
-				$dcode = sprintf("D%03d%s%s%02d %s", $result->id, $result->level, $result->type, $result->number, $result->name);
+				$dcode = sprintf("D%03d_%s_%s%02d %s", $result->id, $result->level, $result->type, $result->number, $result->name);
 				$dcodes[] = $dcode;
 			}
 			unset($result);
