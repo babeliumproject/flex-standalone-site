@@ -207,7 +207,9 @@
 		<s:VGroup width="100%">
 			<s:Label id="resultsOf"
 					 styleName="sectionTitleLabel"
-					 text="{resourceManager.getString('myResources','SEARCH_RESULTS_FOR') ? resourceManager.getString('myResources','SEARCH_RESULTS_FOR') +' '+DataModel.getInstance().searchField : 'Search results for '+DataModel.getInstance().searchField}"/>
+					 text="{resourceManager.getString('myResources','SEARCH_RESULTS_FOR') ? resourceManager.getString('myResources','SEARCH_RESULTS_FOR') +' '+DataModel.getInstance().searchField : 'Search results for '+DataModel.getInstance().searchField}"
+					 width="900"
+					 maxDisplayedLines="1"/>
 			<s:Line width="{resultsOf.width}">
 				<s:stroke>
 					<mx:SolidColorStroke weight="3"

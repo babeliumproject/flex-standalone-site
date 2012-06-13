@@ -617,6 +617,7 @@
 				hideSelectedExercise(); // Information of selected exercise
 
 				exerciseList.exerciseListDataGroup.selectedIndex=-1;
+				exerciseList.removeFilters();
 
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);

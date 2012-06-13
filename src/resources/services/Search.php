@@ -124,6 +124,8 @@ class Search {
 					} else {
 						$searchResult->$field = $hit->$field;
 					}
+					if($field == "descriptors")
+						$searchResult->descriptors = $this->parseHitDescriptors($hit->$field);
 				}
 				array_push($searchResults,$searchResult);
 			}
@@ -132,6 +134,27 @@ class Search {
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());
 		}
+	}
+	
+	private function parseHitDescriptors($descriptors){
+		$dlist = array();
+		if($descriptors)
+			$dlist = explode("\n",$descriptors);
+		
+		if(count($dlist)){
+			$dlistformatted = array();
+			$pattern = "/(D\d{3}_\w{2}_\w{2}\d{2})/"; //D000_A1_SP00
+			foreach($dlist as $d){
+				if(preg_match($pattern,$d,$matches)){
+					$dlistformatted[] = $matches[1];
+				}
+			}
+			unset($d);
+			if(count($dlistformatted))
+				$dlist = $dlistformatted;
+		}
+		
+		return $dlist;
 	}
 
 	/**
@@ -241,7 +264,7 @@ class Search {
 				$line->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
 				$descriptors = $this->getExerciseDescriptors($line->exerciseId,$line->language);
 				if($descriptors)
-					$line->descriptors = implode(', ',$descriptors);
+					$line->descriptors = implode("\n",$descriptors);
 				else
 					$line->descriptors = '';
 				$this->addDoc($line,$this->unindexedFields);
@@ -339,7 +362,7 @@ class Search {
 	 * @param int $exerciseId
 	 * 		The exercise id to check for descriptors
 	 * @return mixed $dcodes
-	 * 		An array of descriptor codes. False when the exercise has no descriptors at all.
+	 * 		An array of descriptor data. False when the exercise has no descriptors at all.
 	 */
 	private function getExerciseDescriptors($exerciseId,$exerciseLanguage){
 		if(!$exerciseId)

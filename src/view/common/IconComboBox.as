@@ -69,7 +69,6 @@ package view.common
 		override public function set selectedIndex(value:int):void
 		{
 			super.selectedIndex=value;
-
 			if (value != -1 && dataProvider != null)
 			{
 				showIcon();
@@ -81,7 +80,8 @@ package view.common
 				{
 					removeChild(getChildByName("displayIconObject"));
 				}
-				textInput.x=0;
+				if(textInput)
+					textInput.x=0;
 			}
 
 		}
@@ -103,8 +103,9 @@ package view.common
 			//if no icon then return
 			if (!displayIcon)
 			{
-				//move the textinput to 0 as there is no icon			
-				textInput.x=0;
+				//move the textinput to 0 as there is no icon
+				if(textInput)
+					textInput.x=0;
 				return;
 			}
 			//add and size the obejct
@@ -118,10 +119,9 @@ package view.common
 			//set the y pos of the icon based on height
 			DisplayObject(displayIconObject).y=(height - DisplayObject(displayIconObject).height) / 2;
 
-			//move the textinput to make room for the icon			
-			textInput.x=DisplayObject(displayIconObject).width + getStyle("cornerRadius");
-
-
+			//move the textinput to make room for the icon
+			if(textInput)
+				textInput.x=DisplayObject(displayIconObject).width + getStyle("cornerRadius");
 		}
 
 		/**

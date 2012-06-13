@@ -5,6 +5,7 @@ package view.common
 	
 	import model.DataModel;
 	import model.LocalesAndFlags;
+	import model.ResourceSubscriber;
 	
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
@@ -31,6 +32,10 @@ package view.common
 		{
 			super();
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
+			if(_displayPrompt){
+				this.prompt=_promptMessage;
+				ResourceSubscriber.getInstance().subscribeElement(this, "prompt", "myResources", 'PROMPT_SELECT_LANGUAGE');
+			}
 		}
 
 		public function onCreationComplete(event:FlexEvent):void
@@ -46,8 +51,10 @@ package view.common
 
 			this.labelFunction=languageComboBoxLabelFunction;
 			this.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
-			if(_displayPrompt)
-				this.prompt=_promptMessage;
+			//if(_displayPrompt){
+			//	this.prompt=_promptMessage;
+			//	ResourceSubscriber.getInstance().subscribeElement(this, "prompt", "myResources", 'PROMPT_SELECT_LANGUAGE');
+			//}
 			updateLanguageComboBox();
 		}
 

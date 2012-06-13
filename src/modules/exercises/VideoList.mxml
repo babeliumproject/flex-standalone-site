@@ -4,29 +4,35 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:exercises="modules.main.*"
 		  width="100%"
-		  horizontalAlign="center"
 		  creationComplete="onComplete()"
-		  xmlns:exercises1="commands.exercises.*">
+		  xmlns:exercises1="commands.exercises.*"
+		  xmlns:common="view.common.*"
+		  xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.main.VideoPaginator;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
-			
+			import mx.events.ListEvent;
+
 			import spark.components.Button;
-			
+
 			import vo.ExerciseVO;
 
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
+
+			private var _filteredResults:ArrayCollection;
+			private var _filterLang:String;
+			private var _filterDif:int;
 
 			[Bindable]
 			private var _currentPage:int=1;
@@ -36,6 +42,8 @@
 			public function onComplete():void
 			{
 				thumbURL=DataModel.getInstance().thumbURL;
+				filterLanguage.selectedIndex=-1;
+				filterDifficulty.selectedIndex=-1;
 				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
@@ -51,8 +59,9 @@
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
 			}
-			
-			public function set retrieveCustomizedExercises(value:Boolean):void{
+
+			public function set retrieveCustomizedExercises(value:Boolean):void
+			{
 				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
@@ -75,16 +84,13 @@
 				var current:int=_currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-//				exerciseListDatagrid.rowCount=dataTemp.length;
-//				exerciseListDatagrid.dataProvider=dataTemp;
 				exerciseListDataGroup.dataProvider=dataTemp;
 			}
 
 			private function changeHandler(event:Event):void
 			{
-//				var obj:ExerciseVO=DataGrid(event.target).selectedItem as ExerciseVO;
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
-				
+
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
 				callLater(updateVerticalScroll);
 			}
@@ -98,6 +104,78 @@
 			{
 				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
 			}
+
+			protected function filterLanguage_changeHandler(event:ListEvent):void
+			{
+				//Store the chosen language code
+				var lCode:String=(event.target as LanguageComboBox).selectedItem.code as String;
+				_filterLang=lCode;
+				filterExerciseList(_filterLang, _filterDif);
+			}
+
+			protected function filterDifficulty_changeHandler(event:ListEvent):void
+			{
+				//Store the chosen difficulty level
+				var dLevel:int=(event.target as DifficultyLevelComboBox).selectedIndex + 1;
+				_filterDif=dLevel;
+				filterExerciseList(_filterLang, _filterDif);
+			}
+
+			protected function filterExerciseList(lFilter:String, dFilter:int):void
+			{
+
+				var fullList:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
+				var filteredList:ArrayCollection=new ArrayCollection();
+				for each (var e:ExerciseVO in fullList)
+				{
+					if (lFilter && !dFilter)
+					{
+						if (e.language == lFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+					else if (dFilter && !lFilter)
+					{
+						if (e.avgDifficulty == dFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+					else if (dFilter && lFilter)
+					{
+						if (e.avgDifficulty == dFilter && e.language == lFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+				}
+				_dataProvider=filteredList;
+				_currentPage=1;
+				createPagination();
+			}
+
+			protected function unfilterExerciseList():void
+			{
+				filterLanguage.selectedIndex=-1;
+				filterDifficulty.selectedIndex=-1;
+				_filterLang=null;
+				_filterDif=0;
+				_dataProvider=DataModel.getInstance().availableRecordableExercises;
+				_currentPage=1;
+				createPagination();
+			}
+
+			protected function filterRemoveButton_clickHandler(event:MouseEvent):void
+			{
+				unfilterExerciseList();
+			}
+
+			public function removeFilters():void
+			{
+				unfilterExerciseList();
+				filterButton.selected=false;
+			}
 		]]>
 	</fx:Script>
 
@@ -106,15 +184,50 @@
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>
 
+	<s:ToggleButton id="filterButton"
+					label="{resourceManager.getString('myResources','FILTER')}"
+					cornerRadius="0"/>
+	<s:BorderContainer id="filterGroup"
+					   visible="{filterButton.selected}"
+					   includeInLayout="{filterButton.selected}"
+					   width="100%"
+					   backgroundAlpha="0.25"
+					   backgroundColor="#666666"
+					   cornerRadius="8"
+					   borderVisible="false">
+		
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle"
+								paddingLeft="10"
+								paddingRight="10"
+								paddingTop="10"
+								paddingBottom="10"/>
+		</s:layout>
+		
+		<s:Label text="{resourceManager.getString('myResources','FILTER_BY_LANGUAGE')}"
+				 verticalAlign="middle"/>
+		<common:LanguageComboBox id="filterLanguage"
+								 change="filterLanguage_changeHandler(event)"/>
+		<s:Label text="{resourceManager.getString('myResources', 'FILTER_BY_DIFFICULTY')}"
+				 verticalAlign="middle"/>
+		<common:DifficultyLevelComboBox id="filterDifficulty"
+										change="filterDifficulty_changeHandler(event)"
+										prompt="{resourceManager.getString('myResources','PROMPT_SELECT_DIFFICULTY')}"/>
+		<skins:IconButton id="filterRemoveButton"
+						  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
+						  styleName="commonLinkButton"
+						  click="filterRemoveButton_clickHandler(event)"/>
+	</s:BorderContainer>
+
 	<s:List id="exerciseListDataGroup"
-				 width="100%"
-				 minHeight="0"
-				 change="changeHandler(event)"
-				 borderVisible="false"
-				 skinClass="skins.TransparentBgListSkin"
-				 enabled="{!DataModel.getInstance().recordingExercise}"
-				 itemRenderer="modules.exercises.ExerciseItemRenderer"
-				 dataProvider="{_dataProvider}">
+			width="100%"
+			minHeight="0"
+			change="changeHandler(event)"
+			borderVisible="false"
+			skinClass="skins.TransparentBgListSkin"
+			enabled="{!DataModel.getInstance().recordingExercise}"
+			itemRenderer="modules.exercises.ExerciseItemRenderer"
+			dataProvider="{_dataProvider}">
 		<s:layout>
 			<s:TileLayout horizontalAlign="justify"
 						  verticalAlign="middle"
@@ -123,30 +236,6 @@
 		</s:layout>
 	</s:List>
 
-	<!--
-		 <mx:DataGrid id="exerciseListDatagrid"
-		 verticalAlign="middle"
-		 width="100%"
-		 height="100%"
-		 dataProvider="{_dataProvider}"
-		 enabled="{!DataModel.getInstance().recordingExercise}"
-		 change="changeHandler(event)"
-		 sortableColumns="false"
-		 draggableColumns="false"
-		 contentBackgroundAlpha="0"
-		 borderStyle="none"
-		 useHandCursor="true">
-		 <mx:columns>
-		 <mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'MESSAGE_EXERCISE_LIST')}"
-		 editable="false">
-		 <mx:itemRenderer>
-		 <fx:Component>
-		 <exercises:ExerciseListItem specificClickListeners="false"/>
-		 </fx:Component>
-		 </mx:itemRenderer>
-		 </mx:DataGridColumn>
-		 </mx:columns>
-		 </mx:DataGrid>-->
 	<s:HGroup id="paginationBox"
 			  horizontalAlign="center"
 			  verticalAlign="middle"
