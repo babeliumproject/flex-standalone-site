@@ -1,5 +1,7 @@
 package view.common
 {
+	import flash.events.Event;
+	
 	import mx.controls.ComboBox;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;

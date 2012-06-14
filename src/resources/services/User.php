@@ -232,6 +232,7 @@ class User {
 				foreach($searchResults as $searchResult){
 					$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
 					$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+					$searchResult->descriptors = $exercise->getExerciseDescriptors($searchResult->id);
 				}
 			}
 			return $this->conn->multipleRecast('ExerciseVO', $searchResults);
@@ -279,19 +280,49 @@ class User {
 			if(!$videoData)
 				return false;
 			
-			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s' 
+			$exercise = new Exercise();
+			$parsedTags = $exercise->parseExerciseTags($videoData->tags);
+			$parsedDescriptors = $exercise->parseDescriptors($videoData->descriptors);
+			
+			//Turn off the autocommit
+			//$this->conn->_startTransaction();
+			
+			//Remove previous exercise_level
+			$sql = "DELETE FROM exercise_level WHERE fk_exercise_id=%d";
+			$arows2 = $this->conn->_delete($sql,$videoData->id);
+			
+			//Insert new exercise level
+			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
+			$lii1 = $this->conn->_insert($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
+			
+			//Remove previous exercise_descriptors (if any)
+			$sql = "DELETE FROM rel_exercise_descriptor WHERE fk_exercise_id=%d";
+			$arows4 = $this->conn->_delete($sql,$videoData->id);
+			
+			//Insert new exercise descriptors (if any)
+			$exercise->insertDescriptors($parsedDescriptors,$videoData->id);
+			
+			//Remove previous exercise_tags
+			$sql = "DELETE FROM rel_exercise_tag WHERE fk_exercise_id=%d";
+			$arows3 = $this->conn->_delete($sql,$videoData->id);
+			
+			//Insert new exercise tags
+			$exercise->insertTags($parsedTags,$videoData->id);
+			
+			//Update the fields of the exercise
+			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s'
 					WHERE ( name='%s' AND fk_user_id=%d )";
 			
-			$updateData = $this->conn->_update($sql, $videoData->title, $videoData->description, $videoData->tags, $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
+			$arows1 = $this->conn->_update($sql, $videoData->title, $videoData->description, implode(',',$parsedTags), $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
 			
-			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
+			//Turn on the autocommit, there was no errors modifying the database
+			//$this->conn->_endTransaction();
 			
-			$insertData = $this->conn->_insert($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
-			
-			return $updateData && $insertData ? true : false;
+			return true;
 			
 			
 		} catch (Exception $e){
+			//$this->conn->_failedTransaction();
 			throw new Exception ($e->getMessage());
 		}
 	}

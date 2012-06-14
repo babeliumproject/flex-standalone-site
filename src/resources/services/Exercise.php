@@ -285,25 +285,27 @@ class Exercise {
 	 * Inserts a list of tags in the database. The tags must be cleaned beforehand using the parseExerciseTags method
 	 * @param array $tags
 	 */
-	private function insertTags($tags, $exerciseId){
-		foreach($tags as $tag){
-			//Check if this tag exists in the `tag` table
-			$sql = "SELECT id FROM tag WHERE name='%s'";
-			$exists = $this->conn->_singleSelect($sql, $tag);
-			if(!$exists){
-				$insert = "INSERT INTO tag SET name='%s'";
-				$tagId = $this->conn->_insert($insert, $tag);
-			} else {
-				$tagId = $exists->id;
+	public function insertTags($tags, $exerciseId){
+		if($tags && is_array($tags) && count($tags) && $exerciseId){
+			foreach($tags as $tag){
+				//Check if this tag exists in the `tag` table
+				$sql = "SELECT id FROM tag WHERE name='%s'";
+				$exists = $this->conn->_singleSelect($sql, $tag);
+				if(!$exists){
+					$insert = "INSERT INTO tag SET name='%s'";
+					$tagId = $this->conn->_insert($insert, $tag);
+				} else {
+					$tagId = $exists->id;
+				}
+				$sql = "SELECT fk_tag_id FROM rel_exercise_tag WHERE (fk_exercise_id=%d AND fk_tag_id=%d)";
+				$exist = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
+				if(!$exists){
+					$relInsert = "INSERT INTO rel_exercise_tag SET fk_exercise_id=%d, fk_tag_id=%d";
+					$this->conn->_insert($relInsert, $exerciseId, $tagId);
+				} 
 			}
-			$sql = "SELECT fk_tag_id FROM rel_exercise_tag WHERE (fk_exercise_id=%d AND fk_tag_id=%d)";
-			$exist = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
-			if(!$exists){
-				$relInsert = "INSERT INTO rel_exercise_tag SET fk_exercise_id=%d, fk_tag_id=%d";
-				$this->conn->_insert($relInsert, $exerciseId, $tagId);
-			} 
+			unset($tag);
 		}
-		unset($tag);
 	}
 	
 	/**
@@ -313,7 +315,7 @@ class Exercise {
 	 * @return array $descriptorIds
 	 * 		An array of descriptor ids (recognizable by the database)
 	 */
-	private function parseDescriptors($descriptors){
+	public function parseDescriptors($descriptors){
 		$descriptorIds = array();
 		$pattern = "/D(\d{3})_(\w{2})_(\w{2})(\d{2})/"; //D000_A1_SP00
 		foreach($descriptors as $d){
@@ -332,16 +334,16 @@ class Exercise {
 	 * @param int $exerciseId
 	 * 		The id of the exercise whose descriptors we are adding
 	 */
-	private function insertDescriptors($descriptorIds,$exerciseId){
+	public function insertDescriptors($descriptorIds,$exerciseId){
 		if($descriptorIds && is_array($descriptorIds) && count($descriptorIds)){
 			$sql = "INSERT INTO rel_exercise_descriptor VALUES ";
 			$params = array();
 			foreach($descriptorIds as $dId){
-				$sql.= " ('%d','%d' ),";
+				$sql.= " (%d,%d),";
 				array_push($params, $exerciseId,$dId);
 			}
 			unset($dId);
-			$sql = substr($sql,0,-1);
+			$sql = substr($sql,0,-1).";";
 			// put sql query and all params in one array
 			$merge = array_merge((array)$sql, $params);
 			$result = $this->conn->_insert($merge);
@@ -677,7 +679,7 @@ class Exercise {
 	 * @return mixed $dcodes
 	 * 		An array of descriptor codes. False when the exercise has no descriptors at all.
 	 */
-	private function getExerciseDescriptors($exerciseId){
+	public function getExerciseDescriptors($exerciseId){
 		if(!$exerciseId)
 			return false;
 		$dcodes = false;
