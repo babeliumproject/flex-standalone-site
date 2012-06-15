@@ -7,14 +7,13 @@ package view.common
 	import model.LocalesAndFlags;
 	import model.ResourceSubscriber;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.resources.ResourceManager;
 
 	public class LanguageComboBox extends IconComboBox
 	{
-
-		private var _promptMessage:String=ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
 
 		private var _displayPrompt:Boolean = true;
 		
@@ -32,15 +31,12 @@ package view.common
 		{
 			super();
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
-			if(_displayPrompt){
-				this.prompt=_promptMessage;
-				ResourceSubscriber.getInstance().subscribeElement(this, "prompt", "myResources", 'PROMPT_SELECT_LANGUAGE');
-			}
+			ResourceManager.getInstance().addEventListener(Event.CHANGE, onLocaleChainChange);
+			
 		}
 
 		public function onCreationComplete(event:FlexEvent):void
 		{
-
 			_creationComplete=true;
 
 			this.setStyle('fontWeight', 'normal');
@@ -51,11 +47,16 @@ package view.common
 
 			this.labelFunction=languageComboBoxLabelFunction;
 			this.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
-			//if(_displayPrompt){
-			//	this.prompt=_promptMessage;
-			//	ResourceSubscriber.getInstance().subscribeElement(this, "prompt", "myResources", 'PROMPT_SELECT_LANGUAGE');
-			//}
+			
+			if(_displayPrompt){
+				this.prompt=ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
+			}
 			updateLanguageComboBox();
+		}
+		
+		public function onLocaleChainChange(e:Event):void
+		{
+			updateLanguageComboBox();	
 		}
 
 		public function set useCustomDataProvider(value:Boolean):void
@@ -99,15 +100,13 @@ package view.common
 		{
 			var language1:String=languageComboBoxLabelFunction(item1);
 			var language2:String=languageComboBoxLabelFunction(item2);
-			if (language1 < language2)
-				return -1;
-			if (language1 > language2)
-				return 1;
-			return 0;
+			return language1.localeCompare(language2);
 		}
 
-		private function updateLanguageComboBox():void
+		private function updateLanguageComboBox(value:Boolean=true):void
 		{
+			if(_displayPrompt)
+				this.prompt = ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
 			if (_currentDataProvider.length > 0)
 			{
 				var oldSelectedItem:Object=this.selectedItem;
