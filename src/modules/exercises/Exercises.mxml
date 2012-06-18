@@ -48,6 +48,7 @@
 			
 			import spark.collections.Sort;
 			import spark.collections.SortField;
+			import spark.globalization.SortingCollator;
 			
 			import view.common.*;
 			
@@ -86,6 +87,8 @@
 			private var _exerciseId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
+			
+			private var sorter:SortingCollator=new SortingCollator();
 
 			/**
 			 * Recording related variables
@@ -265,18 +268,35 @@
 						}
 					}
 
-					var sort:Sort=new Sort();
-					var sortfield:SortField=new SortField(null, false);
-					sort.fields=[sortfield];
-					addStyleClient(sortfield);
-					tmpRoles.sort=sort;
-					tmpRoles.refresh();
+					//var sort:Sort=new Sort();
+					//var sortfield:SortField=new SortField(null, false);
+					//sort.fields=[sortfield];
+					//sort.compareFunction=localeCompareFunction;
+					tmpRoles.source.sort(localeCompareFunction);
+					//tmpRoles.refresh();
 
 					_characterNames.addAll(tmpRoles);
 					_characterNames.refresh();
 					availableRoles.enabled=true;
 					_rolesReady=true;
 				}
+			}
+			
+			private function localeCompareFunction(item1:Object, item2:Object):int
+			{
+				//trace(ObjectUtil.toString(item1));
+				//trace(ObjectUtil.toString(item2));
+				
+				
+				//var sorter:SortingCollator=new SortingCollator();
+				sorter.setStyle('locale',resourceManager.localeChain[0]);
+				sorter.ignoreCase=true;
+				sorter.ignoreSymbols=false;
+				
+				//trace(sorter.compare(item1.toString(),item2.toString()));
+				
+				return sorter.compare(item1.toString(),item2.toString());
+				//return language1.localeCompare(language2);
 			}
 
 			/**

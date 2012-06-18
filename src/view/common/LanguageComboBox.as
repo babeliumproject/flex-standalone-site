@@ -2,6 +2,8 @@ package view.common
 {
 
 	import flash.events.Event;
+	import flash.system.Capabilities;
+	import flash.system.System;
 	
 	import model.DataModel;
 	import model.LocalesAndFlags;
@@ -11,6 +13,8 @@ package view.common
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.resources.ResourceManager;
+	
+	import spark.globalization.SortingCollator;
 
 	public class LanguageComboBox extends IconComboBox
 	{
@@ -26,6 +30,8 @@ package view.common
 		private var _currentDataProvider:Array = new Array();
 		
 		private var _prefixedValue:Object;
+		
+		private var sorter:SortingCollator = new SortingCollator();
 
 		public function LanguageComboBox()
 		{
@@ -100,7 +106,12 @@ package view.common
 		{
 			var language1:String=languageComboBoxLabelFunction(item1);
 			var language2:String=languageComboBoxLabelFunction(item2);
-			return language1.localeCompare(language2);
+			
+			
+			sorter.setStyle('locale',resourceManager.localeChain[0]);
+			sorter.ignoreCase=true;
+			return sorter.compare(language1,language2);
+			//return language1.localeCompare(language2);
 		}
 
 		private function updateLanguageComboBox(value:Boolean=true):void
