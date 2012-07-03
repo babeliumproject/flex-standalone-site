@@ -287,6 +287,15 @@
 				resetToInitialStatus();
 			}
 			
+			protected function set displayErrorMessage(value:String):void{
+				trace(value);
+				saveButton.enabled=true;
+				if(value.length)
+					errorInfo.text = resourceManager.getString('myResources',value.toUpperCase());
+				else
+					errorInfo.text = "";
+			}
+			
 			private function processNewUser():void
 			{
 				saveButton.enabled = false;
@@ -349,6 +358,8 @@
 
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
+	<fx:Binding source="{DataModel.getInstance().registrationErrorMessage}"
+				destination="displayErrorMessage"/>
 
 	<s:BorderContainer styleName="sectionInfoBox"
 					   width="100%"
@@ -371,7 +382,7 @@
 	<s:Label id="errorInfo"
 			 styleName="errorLabel"
 			 width="100%"
-			 text="{DataModel.getInstance().registrationErrorMessage}"
+			 
 			 paddingBottom="16"
 			 paddingLeft="16"
 			 paddingRight="16"/>

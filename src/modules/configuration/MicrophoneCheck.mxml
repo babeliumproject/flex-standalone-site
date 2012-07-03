@@ -85,7 +85,8 @@
 				else if (timerRec.currentCount > 10)
 				{
 					DataModel.getInstance().recording=false;
-					oflaDemoRed5Sentences.rec_ns.attachAudio(null);
+					oflaDemoRed5Sentences.rec_ns.netStream.close();
+					oflaDemoRed5Sentences.rec_ns.netStream.attachAudio(null);
 					hideInfo();
 					rec=true;
 					timerRec.reset(); //Prepare for the next recording
@@ -181,7 +182,7 @@
 				onMic=false;
 				barraSonido.giveMicrophone(mic);
 				mic.addEventListener(ActivityEvent.ACTIVITY, onMicActivity);
-				oflaDemoRed5Sentences.rec_ns.attachAudio(mic);
+				oflaDemoRed5Sentences.rec_ns.netStream.attachAudio(mic);
 				statusText.visible=true;
 				DataModel.getInstance().audioRec=true;
 				DataModel.getInstance().recording=true;

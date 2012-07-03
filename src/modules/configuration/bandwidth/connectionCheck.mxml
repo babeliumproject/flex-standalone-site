@@ -12,12 +12,12 @@
 		<![CDATA[
 			import flash.events.NetStatusEvent;
 			import flash.net.NetConnection;
-
+			
 			import model.DataModel;
-
+			
 			import modules.configuration.ConfigurationResultEvent;
 			import modules.configuration.Red5Connection;
-
+			
 			import mx.charts.series.ColumnSeries;
 			import mx.collections.ArrayCollection;
 
@@ -61,6 +61,10 @@
 						serverClient.connection=nc;
 						serverClient.service="bwCheckService.onServerClientBWCheck";
 						serverClient.addEventListener(BandwidthDetectEvent.DETECT_COMPLETE, onServerClientComplete);
+						break;
+					default:
+						trace(event.info.code);
+						break;
 				} //switch	
 			}
 
@@ -85,8 +89,18 @@
 			}
 
 			private function startCheck():void
-			{
-				serverClient.start();
+			{	
+				if(DataModel.getInstance().bandwidthInfo){
+					var ev:BandwidthDetectEvent = new BandwidthDetectEvent(BandwidthDetectEvent.DETECT_COMPLETE);
+					ev.info = DataModel.getInstance().bandwidthInfo;
+					onServerClientComplete(ev);
+				} else {
+					if(serverClient){
+						serverClient.start();
+					} else {
+						trace("Can't check the bandwidth right now. Please try again later.");
+					}
+				}
 			}
 		]]>
 	</fx:Script>

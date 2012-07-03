@@ -11,13 +11,15 @@ package modules.configuration
 	
 	import model.DataModel;
 	
+	import modules.videoPlayer.NetStreamClient;
+	
 	import mx.binding.utils.BindingUtils;
 	
 	public class OflaDemoRed5Sentences
 	{
 		
-		public var rec_ns:NetStream;
-		public var play_ns:NetStream;
+		public var rec_ns:NetStreamClient;
+		public var play_ns:NetStreamClient;
 		public var nc:NetConnection;
 		
 		public var audioFilename:String;
@@ -41,24 +43,26 @@ package modules.configuration
 			if (DataModel.getInstance().netConnected == true)
 			{
 				nc = DataModel.getInstance().netConnection;
-				rec_ns = new NetStream(nc);
-				play_ns = new NetStream(nc); 
-				rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-				rec_ns.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-				play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
-				play_ns.addEventListener(IOErrorEvent.IO_ERROR,ioErrorHandler);
 				
-				var nsClient:Object=new Object();
-				nsClient.onMetaData=function():void{};
-				nsClient.onCuePoint=function():void{};
-				nsClient.onPlayStatus=function():void{};
-				play_ns.client = nsClient;
+				rec_ns = new NetStreamClient(nc,"Config Rec NetStream");
+				play_ns = new NetStreamClient(nc,"Config Play NetStream"); 
+				//rec_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+				//rec_ns.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+				//play_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrrorHandler);
+				//play_ns.addEventListener(IOErrorEvent.IO_ERROR,ioErrorHandler);
+				
+				//var nsClient:Object=new Object();
+				//nsClient.onMetaData=function():void{};
+				//nsClient.onCuePoint=function():void{};
+				//nsClient.onPlayStatus=function():void{};
+				//play_ns.client = nsClient;
 				
 			} else {
 				//Streaming server connection = false;
 			}
 		}
 		
+		/*
 		private function ioErrorHandler(e:IOErrorEvent):void{
 			//Avoid flash debugger error messages
 		}	
@@ -66,17 +70,17 @@ package modules.configuration
 		private function asyncErrrorHandler(e:AsyncErrorEvent):void{
 			//Avoid flash debugger error messages
 		}
-		
+		*/
 		public function closeNetStreamObjects():void{
-			rec_ns.close();
-			play_ns.close();
+			rec_ns.netStream.close();
+			play_ns.netStream.close();
 		}
 		
 		public function play(mediaType:String):void{
 			if (mediaType=='video'){
-				play_ns.play(videoFilename+'.flv');
+				play_ns.netStream.play(videoFilename+'.flv');
 			}else{
-				play_ns.play(audioFilename+'.flv');
+				play_ns.netStream.play(audioFilename+'.flv');
 			}
 		}
 		
@@ -88,11 +92,11 @@ package modules.configuration
 			if(mediaType == 'video') {
 				fileName = "conf-video-" + d.getTime().toString();
 				videoFilename=CONFIG_FOLDER + "/" + fileName;
-				rec_ns.publish(videoFilename, 'record');
+				rec_ns.netStream.publish(videoFilename, 'record');
 			} else {
 				fileName = "conf-audio-" + d.getTime().toString();
 				audioFilename=CONFIG_FOLDER + "/" + fileName;
-				rec_ns.publish(audioFilename, 'record');
+				rec_ns.netStream.publish(audioFilename, 'record');
 			}
 		}
 

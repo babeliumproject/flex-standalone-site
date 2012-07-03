@@ -1254,7 +1254,7 @@ package modules.videoPlayer
 				_inNs.netStream.dispose();
 			}
 
-			if (_nc.connected)
+			if (_nc && _nc.connected)
 			{
 				_inNs=new NetStreamClient(_nc,"inNs");
 				_inNs.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());

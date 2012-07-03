@@ -31,8 +31,10 @@ package modules.configuration.bandwidth
 		
 		public function start():void
 		{
-			nc.client = this;
-			nc.call(_service,res);
+			if(nc && nc.connected){
+				nc.client = this;
+				nc.call(_service,res);
+			}
 		}
 		
 		

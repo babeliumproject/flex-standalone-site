@@ -52,7 +52,7 @@
 					initCont();
 					statusTextFunc("playing");
 					oflaDemoRed5Sentences.play('video');
-					video.attachNetStream(oflaDemoRed5Sentences.play_ns);
+					video.attachNetStream(oflaDemoRed5Sentences.play_ns.netStream);
 					videoHolder.addChild(video);
 					timerPlay.start();
 				}
@@ -120,10 +120,12 @@
 			private function endRec():void
 			{
 				DataModel.getInstance().recording=false;
-				oflaDemoRed5Sentences.rec_ns.attachCamera(null);
-				oflaDemoRed5Sentences.rec_ns.attachAudio(null);
-				video.attachCamera(null);
+				oflaDemoRed5Sentences.rec_ns.netStream.close();
+				oflaDemoRed5Sentences.rec_ns.netStream.attachCamera(null);
+				oflaDemoRed5Sentences.rec_ns.netStream.attachAudio(null);
 				video.clear();
+				video.attachCamera(null);
+			
 			}
 
 			private function statusTextFunc(s:String):void
@@ -134,7 +136,7 @@
 
 			private function prepareRecording():void
 			{
-				oflaDemoRed5Sentences.rec_ns.attachCamera(cam);
+				oflaDemoRed5Sentences.rec_ns.netStream.attachCamera(cam);
 				DataModel.getInstance().videoRec=true;
 				DataModel.getInstance().recording=true;
 				statusTextFunc("recording");
@@ -142,7 +144,7 @@
 				video.attachCamera(cam);
 				videoHolder.addChild(video);
 				timerRec.start();
-				oflaDemoRed5Sentences.rec_ns.attachAudio(mic);
+				oflaDemoRed5Sentences.rec_ns.netStream.attachAudio(mic);
 				oflaDemoRed5Sentences.publish('video');
 				initCont();
 			}

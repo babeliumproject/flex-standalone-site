@@ -1,22 +1,22 @@
 package model
 {
 	import business.NetConnectionDelegate;
-
+	
 	import com.adobe.cairngorm.model.IModelLocator;
-
+	
 	import flash.media.Camera;
 	import flash.media.Microphone;
 	import flash.net.FileReference;
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
-
+	
 	import modules.autoevaluation.Evaluation;
 	import modules.main.Body;
 	import modules.userManagement.KeepAliveTimer;
 	import modules.userManagement.LoginRestorePassForm;
-
+	
 	import mx.collections.ArrayCollection;
-
+	
 	import vo.CreditHistoryVO;
 	import vo.ExerciseVO;
 	import vo.UserVO;
@@ -48,6 +48,8 @@ package model
 		public var netConnected:Boolean;
 		[Bindable]
 		public var netConnectOngoingAttempt:Boolean;
+		
+		public var bandwidthInfo:Object;
 
 		//ViewStack management variables
 		[Bindable]
@@ -207,7 +209,7 @@ package model
 		[Bindable]
 		public var uploadDomain:String="http://" + server + "/";
 		[Bindable]
-		public var streamingApp:String="oflaDemo";
+		public var streamingApp:String="vod";
 		[Bindable]
 		public var streamingResourcesPath:String="rtmp://" + server + "/" + streamingApp;
 		[Bindable]
