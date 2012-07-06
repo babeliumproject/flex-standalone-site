@@ -652,6 +652,9 @@ class Exercise {
 	 * 		The list filtered with the languages of the user that meet the provided purpose
 	 */
 	public function filterByLanguage($searchList, $languagePurpose){
+		return $searchList;
+		/* Won't be using this feature for the time being */
+		/*
 		if(!isset($_SESSION['user-languages']) || !is_array($_SESSION['user-languages']) || count($_SESSION['user-languages']) < 1)
 			return $searchList;
 		if($languagePurpose != 'evaluate' && $languagePurpose != 'practice')
@@ -669,7 +672,7 @@ class Exercise {
 			}
 		}
 		return $filteredList;
-
+		*/
 	}
 	
 	/**

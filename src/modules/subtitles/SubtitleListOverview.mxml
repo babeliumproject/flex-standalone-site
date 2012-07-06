@@ -172,7 +172,7 @@
 
 			private function reserveRemoteSlot(event:TimerEvent):void
 			{
-				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name)
+				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name && rso)
 				{
 					var date:Date=new Date();
 					rso.setProperty(dataModel.loggedUser.name, {exercise: currentExercise.name, timestamp: date.time});
