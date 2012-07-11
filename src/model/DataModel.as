@@ -130,6 +130,8 @@ package model
 		[Bindable]
 		public var registrationErrorMessage:String="";
 		[Bindable]
+		public var registrationResponse:Boolean=false;
+		[Bindable]
 		public var restorePassErrorMessage:String="";
 		[Bindable]
 		public var accountActivationRetrieved:Boolean=false;

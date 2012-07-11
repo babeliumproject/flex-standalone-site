@@ -21,6 +21,8 @@ package commands.userManagement
 
 	public class RegisterUserCommand implements ICommand, IResponder
 	{
+		
+		private var _dataModel:DataModel = DataModel.getInstance();
 
 		public function execute(event:CairngormEvent):void
 		{
@@ -32,22 +34,25 @@ package commands.userManagement
 			var result:Object = data.result;
 			//If the login is successful it will return the user data
 			if(result is UserVO){
-				DataModel.getInstance().loggedUser = null;
-				DataModel.getInstance().isSuccessfullyLogged = false;
-				DataModel.getInstance().isLoggedIn = false;
+				_dataModel.loggedUser = null;
+				_dataModel.registrationErrorMessage = null;
+				_dataModel.isSuccessfullyLogged = false;
+				_dataModel.isLoggedIn = false;
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else {
 				//Inform about the error
 				var error:String = result.toString();
-				DataModel.getInstance().registrationErrorMessage = error;
-				DataModel.getInstance().isSuccessfullyLogged = false;
-				DataModel.getInstance().isLoggedIn = false;
+				_dataModel.registrationErrorMessage = error;
+				_dataModel.isSuccessfullyLogged = false;
+				_dataModel.isLoggedIn = false;
 			}
+			_dataModel.registrationResponse = !_dataModel.registrationResponse;
 		}
 		
 		public function fault(info:Object):void
 		{
+			_dataModel.registrationResponse = !_dataModel.registrationResponse;
 			var faultEvent:FaultEvent = FaultEvent(info);
 			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_REGISTERING'));
 			trace(ObjectUtil.toString(info));

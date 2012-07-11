@@ -68,10 +68,10 @@ class Register{
 	public function register($user = null)
 	{
 		if(!$user)
-			return 'error_no_parameters';
+			return 'empty_parameter';
 		$validator = new EmailAddressValidator();
 		if(!$validator->check_email_address($user->email)){
-			return 'wrong_email';
+			return 'invalid_email';
 		} else {
 			$initialCredits = $this->_getInitialCreditsQuery();
 			$hash = $this->_createRegistrationHash();
@@ -121,13 +121,13 @@ class Register{
 						'SIGNATURE' => 'The Babelium Project Team');
 
 					if ( !$mail->makeTemplate("mail_activation", $args, $motherTongueLocale) )
-						return "mail_send_error";
+						return "error_sending_email";
 
 					$mail = $mail->send($mail->txtContent, $subject, $mail->htmlContent);
 
 					return $this->conn->recast('UserVO',$result);
 				}
-				return "user_email_already_registered";
+				return "error_user_email_exists";
 			} catch (Exception $e){
 				$this->conn->_failedTransaction();
 				return "error_registering_user";
