@@ -343,11 +343,13 @@
 						}
 						else
 						{
+							registerOngoing=false;
 							CustomAlert.error(resourceManager.getString('myResources', 'WRONG_FIELDS_IN_FORM'));
 						}
 					}
 					else
 					{
+						registerOngoing=false;
 						CustomAlert.error(resourceManager.getString('myResources', 'MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
 					}
 				}
