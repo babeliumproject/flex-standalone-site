@@ -98,7 +98,8 @@
 					if(serverClient){
 						serverClient.start();
 					} else {
-						trace("Can't check the bandwidth right now. Please try again later.");
+						errorMessageBox.visible=true;
+						errorMessageBox.includeInLayout=true;
 					}
 				}
 			}
@@ -130,6 +131,30 @@
 						  enabled="{!DataModel.getInstance().playing &amp;&amp; !DataModel.getInstance().recording}"
 						  click="startCheck()"/>
 			</s:HGroup>
+			<s:VGroup id="errorMessageBox" width="100%" paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"
+					  includeInLayout="false"
+					  visible="false">
+				<s:BorderContainer minHeight="0"
+								   cornerRadius="8"
+								   borderWeight="2"
+								   backgroundAlpha="0.5"
+								   backgroundColor="#FFBABA"
+								   borderColor="#D8000C"
+								   width="100%">
+					<s:layout>
+						<s:HorizontalLayout verticalAlign="middle"
+											paddingBottom="16"
+											paddingLeft="16"
+											paddingRight="16"
+											paddingTop="16"/>
+					</s:layout>
+					<s:Label id="errorInfo"
+							 width="500"
+							 fontSize="14"
+							 color="#D8000C"
+							 text="{resourceManager.getString('myResources', 'ERROR_BANDWIDTH_FIREWALL')}"/>
+				</s:BorderContainer>
+			</s:VGroup>
 		</s:VGroup>
 
 		<s:VGroup width="100%"

@@ -38,6 +38,31 @@ package model
 
 		public static const PURPOSE_EVALUATE:String='evaluate';
 		public static const PURPOSE_PRACTICE:String='practice';
+		
+		/**
+		 * RTMP: The "plain" variant of the protocol that uses TCP port 1935 by default
+		 */
+		public static const RTMP:String = "rtmp";
+		
+		/**
+		 * RTMPT (Tunnelized RTMP): Encapsulates the protocol's messages into HTTP requests to traverse firewalls. 
+		 * Often used to send messages in the clear over TCP to ports 80 and 443. The encapsulated session can contain RTMP, RTMPS or RTMPE packets within.
+		 */
+		public static const RTMPT:String = "rtmpt";
+		
+		/**
+		 * RTMPS (Secure RTMP): Is RTMP over a secure SSL connection using HTTPS
+		 */
+		public static const RTMPS:String = "rtmps";
+		
+		/**
+		 * RTMPE (Encrypted RTMP): Is RTMP encrypted using Adobe's own security mechanism. 
+		 * While the details of the implementation are proprietary, the mechanism uses industry standard cryptography primitive.
+		 */
+		public static const RTMPE:String = "rtmpe";
+		
+		public static const RTMP_PORT:uint=1935;
+		public static const RTMPT_PORT:uint=80;
 
 		//NetConnection management variables
 		[Bindable]
@@ -206,23 +231,19 @@ package model
 		//Exercise uploading related data
 		[Bindable]
 		public var server:String="babelium";
-		[Bindable]
-		public var red5Port:String="1935";
+		
+		public var streamingProtocol:String=RTMP;
+		public var streamingPort:uint=1935;
+		public var streamingApp:String="vod";
+		[Bindable] public var streamingResourcesPath:String=streamingProtocol+"://" + server + ":"+ streamingPort + "/" + streamingApp;
+	
+		[Bindable] public var evaluationStreamsFolder:String="evaluations";
+		[Bindable] public var responseStreamsFolder:String="responses";
+		[Bindable] public var exerciseStreamsFolder:String="exercises";
+		[Bindable] public var configStreamsFolder:String="config";
+
 		[Bindable]
 		public var uploadDomain:String="http://" + server + "/";
-		[Bindable]
-		public var streamingApp:String="vod";
-		[Bindable]
-		public var streamingResourcesPath:String="rtmp://" + server + "/" + streamingApp;
-		[Bindable]
-		public var evaluationStreamsFolder:String="evaluations";
-		[Bindable]
-		public var responseStreamsFolder:String="responses";
-		[Bindable]
-		public var exerciseStreamsFolder:String="exercises";
-		[Bindable]
-		public var configStreamsFolder:String="config";
-
 		[Bindable]
 		public var uploadURL:String=uploadDomain + "upload.php";
 		[Bindable]

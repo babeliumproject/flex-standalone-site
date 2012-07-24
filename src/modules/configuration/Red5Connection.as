@@ -23,7 +23,7 @@ package modules.configuration
 			nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError);
 			try
 			{
-				uri = "rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().red5Port + "/" + app;
+				uri = "rtmp://" + DataModel.getInstance().server + ":" + DataModel.getInstance().streamingPort + "/" + app;
 				nc.connect(uri);
 			}
 			catch (e:ArgumentError)

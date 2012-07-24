@@ -505,15 +505,15 @@ package modules.videoPlayer
 			else{
 				disableControls();
 				if (_streamSource){
-					connectToStreamingServer(_streamSource);
+					connectToStreamingServer();
 				}
 			}
 		}
 		
-		public function connectToStreamingServer(streamSource:String):void
+		public function connectToStreamingServer():void
 		{
 			if (!DataModel.getInstance().netConnection.connected)
-				new StartConnectionEvent(streamSource).dispatch();
+				new StartConnectionEvent().dispatch();
 			else
 				onStreamNetConnect(true);
 		}

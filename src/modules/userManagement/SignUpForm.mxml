@@ -413,7 +413,7 @@
 					 width="900"
 					 fontSize="14"
 					 color="#D8000C"
-					 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBTITLE_EDITION')}"/>
+					 text="Unknown error"/>
 		</s:BorderContainer>
 	</s:VGroup>
 
