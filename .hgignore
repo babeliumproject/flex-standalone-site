@@ -1,8 +1,8 @@
 
 syntax: regexp
-^build\.properties$
+build\.properties$
 syntax: regexp
-^src/resources/services/utils/Config\.php$
+Config\.php$
 syntax: regexp
 ^dist$
 

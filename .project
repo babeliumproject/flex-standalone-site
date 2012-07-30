@@ -4,28 +4,4 @@
 	<comment></comment>
 	<projects>
 	</projects>
-	<buildSpec>
-		<buildCommand>
-			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>com.adobe.flexbuilder.project.flexbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-	</buildSpec>
-	<natures>
-		<nature>com.adobe.flexbuilder.project.flexnature</nature>
-		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
-		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
-	</natures>
-	<linkedResources>
-		<link>
-			<name>bin-release</name>
-			<type>2</type>
-			<location>/var/www/babelium</location>
-		</link>
-	</linkedResources>
 </projectDescription>
