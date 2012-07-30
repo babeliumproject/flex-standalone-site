@@ -3,12 +3,13 @@ syntax: regexp
 build\.properties$
 syntax: regexp
 Config\.php$
-syntax: regexp
-^dist$
 
 syntax: regexp
-^build\.espantapajaros\.properties$
+dist$
 syntax: regexp
-^build\.local\.properties$
+bin-debug$
+
 syntax: regexp
-^bin-debug$
+build\.espantapajaros\.properties$
+syntax: regexp
+build\.local\.properties$
