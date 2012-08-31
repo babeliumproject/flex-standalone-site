@@ -2,12 +2,18 @@
 	
 	//This file stores the info needed to connect to the application's database
 	class Config{
-		public $host = "";
-		public $db_username = "";
-		public $db_password = "";
-		public $db_name = "babeliumproject";
+		public $host = '';
+		public $db_username = '';
+		public $db_password = '';
+		public $db_name = 'babelium';
 		
-		public $red5Path = '/opt/red5/webapps/oflaDemo/streams';
+		//Fill when you have an alternative DB using the same red5 instance
+		public $alt_db_host = '';
+		public $alt_db_username = '';
+		public $alt_db_password = '';
+		public $alt_db_name = '';
+		
+		public $red5Path = '/opt/red5/webapps/vod/streams';
 		
 		//Youtube authentication data
 		public $yt_user = '';

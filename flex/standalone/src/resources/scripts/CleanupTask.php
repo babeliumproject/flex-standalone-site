@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('CLI_SERVICE_PATH', '/var/www/babelium/services');
+define('CLI_SERVICE_PATH', '/var/www/vhosts/babeliumproject.com/httpdocs/services');
 
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
@@ -34,7 +34,8 @@ require_once CLI_SERVICE_PATH . '/utils/Config.php';
  */
 class CleanupTask{
 
-	private $conn;
+	private $db;
+	private $alt_db;
 	private $filePath;
 	private $red5Path;
 
@@ -50,11 +51,23 @@ class CleanupTask{
 	 * 		Throws an error if there was any problem establishing a connection with the database.
 	 */
 	public function CleanupTask(){
-		$settings = new Config ( );
-		$this->filePath = $settings->filePath;
-		$this->red5Path = $settings->red5Path;
-		$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
+		$cfg = new Config ( );
+		$this->filePath = $cfg->filePath;
+		$this->red5Path = $cfg->red5Path;
+		$this->db = new Datasource ( $cfg->host, $cfg->db_name, $cfg->db_username, $cfg->db_password );
+		if ($this->isAltDbSet($cfg)){
+			$this->alt_db = new Datasource($cfg->alt_db_host, $cfg->alt_db_name, $cfg->alt_db_username, $cfg->alt_db_password);
+		}
 		$this->_getResourceDirectories();
+	}
+
+	private function isAltDbSet($cfg){
+		if( isset($cfg->alt_db_host) &&  isset($cfg->alt_db_name) &&  isset($cfg->alt_db_username) &&  isset($cfg->alt_db_password) &&
+		   !empty($cfg->alt_db_host) && !empty($cfg->alt_db_name) && !empty($cfg->alt_db_username) && !empty($cfg->alt_db_password)){
+			return true;
+		} else{	
+			return false;
+		}
 	}
 
 	/**
@@ -66,7 +79,6 @@ class CleanupTask{
 		$this->_deleteUnreferencedResponses();
 		$this->_deleteUnreferencedEvaluations();
 		$this->_deleteConfigs();
-		$this->_deleteMoodleDemoResponses('moodledemo');
 	}
 
 	/**
@@ -82,7 +94,7 @@ class CleanupTask{
 		else{
 			$sql = "DELETE FROM users
 					WHERE (DATE_SUB(CURDATE(),INTERVAL '%d' DAY) > joiningDate AND active = 0 AND activation_hash <> '')";
-			$result = $this->conn->_delete($sql,$days);
+			$result = $this->db->_delete($sql,$days);
 		}
 	}
 
@@ -93,14 +105,14 @@ class CleanupTask{
 	public function deactivateReportedVideos(){
 
 		$sql = "SELECT prefValue FROM preferences WHERE (prefName='reports_to_delete')";
-		$result = $this->conn->_singleSelect($sql);
+		$result = $this->db->_singleSelect($sql);
 		if ($result){
 			$reportsToDeletion = $result->prefValue;
 
 			$sql = "UPDATE exercise AS E SET status='Unavailable'
 		       	    WHERE '%d' <= (SELECT count(*) 
 		        		           FROM exercise_report WHERE fk_exercise_id=E.id ) ";
-			return $this->conn->_update($sql, $reportsToDeletion);
+			return $this->db->_update($sql, $reportsToDeletion);
 		}
 	}
 	
@@ -111,12 +123,12 @@ class CleanupTask{
 		$sql = "UPDATE user_session SET duration = TIMESTAMPDIFF(SECOND,session_date,CURRENT_TIMESTAMP), closed=1
 				WHERE (keep_alive = 0 AND closed=0 AND duration=0)";
 
-		$result = $this->conn->_update($sql);
+		$result = $this->db->_update($sql);
 
 		$sql = "UPDATE user_session SET keep_alive = 0
 				WHERE (keep_alive = 1 AND closed = 0)";
 
-		$result = $this->conn->_update($sql);
+		$result = $this->db->_update($sql);
 	}
 	
 	/**
@@ -127,7 +139,7 @@ class CleanupTask{
 				FROM preferences
 				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
 				ORDER BY prefName";
-		$result = $this->conn->_multipleSelect($sql);
+		$result = $this->db->_multipleSelect($sql);
 		if($result){
 			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
 			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
@@ -136,12 +148,19 @@ class CleanupTask{
 	}
 
 	/**
-	 * Deletes the files under RED5_HOME/webapps/oflaDemo/streams/exercises that are not referenced in the database
+	 * Deletes the files under <RED5_APP_PATH>/streams/exercises that are not referenced in the database
 	 */
 	private function _deleteUnreferencedExercises(){
 		$sql = "SELECT name FROM exercise";
 		
-		$exercises = $this->_listFiles($this->conn->_multipleSelect($sql), 'name');
+		$exercises = $this->_listFiles($this->db->_multipleSelect($sql), 'name');
+		
+		//When we have an alternative DB using the same red5 instance
+		if($this->alt_db){
+			$alt_exercises = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'name');
+			if ($alt_exercises)
+				$exercises = array_merge($exercises, $alt_exercises);
+		}
 
 		if($this->exerciseFolder && !empty($this->exerciseFolder)){
 			$exercisesPath = $this->red5Path .'/'.$this->exerciseFolder;
@@ -151,12 +170,19 @@ class CleanupTask{
 	}
 
 	/**
-	 * Deletes the files under RED5_HOME/webapps/oflaDemo/streams/responses that are not referenced in the database
+	 * Deletes the files under <RED5_APP_PATH>/streams/responses that are not referenced in the database
 	 */
 	private function _deleteUnreferencedResponses(){
 		$sql = "SELECT file_identifier FROM response";
 
-		$responses = $this->_listFiles($this->conn->_multipleSelect($sql), 'file_identifier');
+		$responses = $this->_listFiles($this->db->_multipleSelect($sql), 'file_identifier');
+
+		//When we have an alternative DB using the same red5 instance
+		if($this->alt_db){
+			$alt_responses = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'file_identifier');
+			if ($alt_responses)
+				$responses = array_merge($responses, $alt_responses);
+		}
 
 		if($this->responseFolder && !empty($this->responseFolder)){
 			$responsesPath = $this->red5Path .'/'.$this->responseFolder;
@@ -166,12 +192,19 @@ class CleanupTask{
 	}
 
 	/**
-	 * Deletes the files under RED5_HOME/webapps/oflaDemo/streams/evaluations that are not referenced in the database
+	 * Deletes the files under <RED5_APP_PATH>/streams/evaluations that are not referenced in the database
 	 */
 	private function _deleteUnreferencedEvaluations(){
 		$sql = "SELECT video_identifier FROM evaluation_video";
 
-		$evaluations = $this->_listFiles($this->conn->_multipleSelect($sql), 'video_identifier');
+		$evaluations = $this->_listFiles($this->db->_multipleSelect($sql), 'video_identifier');
+		
+		//When we have an alternative DB using the same red5 instance
+		if($this->alt_db){
+			$alt_evaluations = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'video_identifier');
+			if ($alt_evaluations)
+				$evaluations = array_merge($evaluations, $alt_evaluations);
+		}
 
 		if($this->evaluationFolder && !empty($this->evaluationFolder)){
 			$evaluationsPath = $this->red5Path .'/'.$this->evaluationFolder;
@@ -180,7 +213,7 @@ class CleanupTask{
 	}
 	
 	/**
-	 * Deletes the files under RED5_HOME/webapps/oflaDemo/streams/config to avoid wasting space
+	 * Deletes the files under <RED5_APP_PATH>/streams/config to avoid wasting space
 	 */
 	private function _deleteConfigs(){
 		if($this->configFolder && !empty($this->configFolder)){
@@ -192,87 +225,22 @@ class CleanupTask{
 	}
 	
 	/**
-	 * Delete the responses that were made using the moodledemo user during this day
-	 */
-	private function _deleteMoodleDemoResponses($username){
-		$sql = "SELECT r.file_identifier FROM users u INNER JOIN response r ON u.ID=r.fk_user_id WHERE (u.name='%s')";
-		
-		$moodle_responses = $this->_listFiles($this->conn->_multipleSelect($sql,$username), 'file_identifier', 1);
-		print_r($moodle_responses);
-		if($this->responseFolder && !empty($this->responseFolder)){
-			$responsesPath = $this->red5Path .'/'.$this->responseFolder;
-			$this->_deleteSelectedFiles($responsesPath, $moodle_responses);
-		}
-		
-		$sql = "DELETE FROM response WHERE fk_user_id = (SELECT id FROM users WHERE name='%s')";
-		$this->conn->_delete($sql,$username);
-	}
-	
-	/**
 	 * Takes an object resultSet and appends the flv extension to the selected object's property
 	 * @param array $data
 	 * 		An array of stdClass objects which contain a single property
 	 * @param String $property
 	 * 		The property of the object we want to append something to
-	 * @param int $include_merges
-	 * 		Tells the function if it should include the merged versions of the provided names
 	 * @return array $files
 	 * 		Returns an array of String with filenames or false no data was found
 	 */
-	private function _listFiles($data, $property, $include_merges=0){
+	private function _listFiles($data, $property){
 		$files = array();
-		if( $data && is_array($data) ){
+		if($data && is_array($data)){
 			foreach($data as $d){
 				$files[] = $d->$property . '.flv';
-				if($include_merges)
-					$files[] = $d->$property . '_merge.flv';
 			}
 		}
 		return count($files)>0 ? $files : false;
-	}
-	
-	/**
-	 * Moves the selected files to the 'unreferenced' folder
-	 * 
-	 * @param String $filePath
-	 * 			Folder in which the files are going to be searched
-	 * @param mixed $files
-	 * 			An array of files that you want to move
-	 */
-	private function _deleteSelectedFiles($filePath, $files){
-		if($files){
-			$folder = dir($filePath);
-			while (false !== ($entry = $folder->read())) {
-				$entryFullPath = $filePath.'/'.$entry;
-				if(!is_dir($entryFullPath)){
-					$entryInfo = pathinfo($entryFullPath);
-					if( $entryInfo['extension'] == 'flv' && in_array($entry, $files) ){
-						//Delete only if the last access time was 2 hours ago
-						if( ($mtime = filemtime ($entryFullPath)) && ((time()-$mtime)/3600 > 2) ){						
-							//Unlink video metadata that's no longer needed
-							if(is_file($entryFullPath.'.meta')){
-								if(unlink($entryFullPath.'.meta')){
-									echo "Successfully DELETED meta file: ".$entryFullPath.".meta\n";
-								} else {
-									echo "Error while DELETING meta file: ".$entryFullPath.".meta\n";
-								}
-							}
-
-							//If possible, move the file to the unrefenced folder
-							$unrefPath = $this->red5Path.'/unreferenced';
-							if(is_dir($unrefPath) && is_readable($unrefPath) && is_writable($unrefPath)){
-								if(rename($entryFullPath,$unrefPath.'/'.$entry)){
-									echo "Successfully MOVED from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
-								} else {
-									echo "Error while MOVING from: ".$entryFullPath." to: ". $unrefPath."/".$entry."\n";
-								}
-							}
-						}		
-					}
-				}
-			}
-			$folder->close();
-		}
 	}
 
 	/**
