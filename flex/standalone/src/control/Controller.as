@@ -140,7 +140,8 @@ package control {
 			addCommand(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER, GetResponsesAssessedByCurrentUserCommand);
 			addCommand(EvaluationEvent.ADD_ASSESSMENT, AddAssessmentCommand);
 			addCommand(EvaluationEvent.ADD_VIDEO_ASSESSMENT, AddVideoAssessmentCommand);
-			addCommand(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, DetailsOfAssessedResponseCommand);
+			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, DetailsOfAssessedResponseCommand);
+			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER, DetailsOfAssessedResponseCommand);
 			addCommand(EvaluationEvent.GET_EVALUATION_CHART_DATA, GetEvaluationChartDataCommand);
 			
 			//Autoevaluation management commands

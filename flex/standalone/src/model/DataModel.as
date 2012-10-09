@@ -378,7 +378,9 @@ package model
 		[Bindable]
 		public var detailsOfAssessedResponseData:ArrayCollection;
 		[Bindable]
-		public var detailsOfAssessedResponseDataRetrieved:Boolean=false;
+		public var detailsOfResponseAssessedToUserRetrieved:Boolean=false;
+		[Bindable]
+		public var detailsOfResponseAssessedByUserRetrieved:Boolean=false;
 
 		[Bindable]
 		public var addAssessmentRetrieved:Boolean=false;

@@ -148,8 +148,11 @@
 			private var assessedToCurrentUserBoxNavContent:NavigatorContent;
 
 
-			private var assessedByUserDetail:EvaluationDetailBox;
-			private var assessedByUserDetailContainer:BorderContainer;
+			private var assessedByUserDetailTabBar:TabBar;
+			private var assessedByUserDetailHead:HGroup;
+			private var assessedByUserDetailViewStack:ViewStack;
+			private var assessedByUserDetailBox:BorderContainer;
+			private var assessedByUserDetail:VGroup;
 			private var assessedByUserListTitleLabel:Label;
 			private var assessedByUserListTitleStroke:SolidColorStroke;
 			private var assessedByUserListTitleLine:Line;
@@ -247,18 +250,35 @@
 			{
 				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
 				assessmentDetailList=doaDataprovider;
-				buildEvaluationDetailNavigation();
+				buildEvaluationDetailNavigation(0);
+			}
+			
+			private function set detailsOfAssessedByUserRetrievedHandler(flag:Boolean):void
+			{
+				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
+				assessmentDetailList=doaDataprovider;
+				buildEvaluationDetailNavigation(1);
 			}
 
-			private function buildEvaluationDetailNavigation():void
+			private function buildEvaluationDetailNavigation(mode:int=0):void
 			{
-				for each (var eval:EvaluationVO in assessmentDetailList)
-				{
-					var evaldataBox:EvaluationDetailBox=new EvaluationDetailBox();
-					evaluationDetailViewStack.addChild(evaldataBox);
-					evaldataBox.evaluationData=eval;
+				if(!mode){
+					for each (var e1:EvaluationVO in assessmentDetailList)
+					{
+						var eb1:EvaluationDetailBox=new EvaluationDetailBox();
+						evaluationDetailViewStack.addChild(eb1);
+						eb1.evaluationData=e1;
+					}
+					evaluationDetailViewStack.selectedIndex=0;
+				} else {
+					for each (var e2:EvaluationVO in assessmentDetailList)
+					{
+						var eb2:EvaluationDetailBox=new EvaluationDetailBox();
+						assessedByUserDetailViewStack.addChild(eb2);
+						eb2.evaluationData=e2;
+					}
+					assessedByUserDetailViewStack.selectedIndex=0;
 				}
-				evaluationDetailViewStack.selectedIndex=0;
 			}
 
 			private function set assessmentSavedHandler(value:Boolean):void
@@ -494,7 +514,7 @@
 				//Clear the previous assessment detail data, if any
 				evaluationDetailViewStack.removeAllChildren();
 
-				new EvaluationEvent(EvaluationEvent.DETAILS_OF_ASSESSED_RESPONSE, null, _responseId).dispatch();
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, null, _responseId).dispatch();
 
 				//Get the autoevaluation info if available
 				if (!computerEvaluation.initialized)
@@ -504,13 +524,15 @@
 
 			private function assessedByCurrentUserChangeHandler(event:Event):void
 			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+				if(DataGrid(event.target).selectedItem is EvaluationVO){
+					var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 
-				prepareAssessedByCurrentUser(selectedItem);
+					prepareAssessedByCurrentUser(selectedItem);
 
-				var urlResponseName:String=_responseName.replace("audio/", "");
+					var urlResponseName:String=_responseName.replace("audio/", "");
 
-				BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
+					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
+				}
 			}
 
 			private function prepareAssessedByCurrentUser(selectedItem:EvaluationVO):void
@@ -534,10 +556,19 @@
 				//Visualize the video player component
 				videoPlayerBox.includeInLayout=true;
 				videoPlayerBox.visible=true;
-
-				assessedByUserDetail.evaluationData=selectedItem;
-				assessedByUserDetailContainer.visible=true;
-				assessedByUserDetailContainer.includeInLayout=true;
+				
+				assessedByUserDetail.visible=true;
+				assessedByUserDetail.includeInLayout=true;
+				
+				//Clear the previous assessment detail data, if any
+				assessedByUserDetailViewStack.removeAllChildren();
+				
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER, null, _responseId).dispatch();
+				
+				//Get the autoevaluation info if available
+				//if (!computerEvaluation.initialized)
+				//	computerEvaluation.initialize();
+				//computerEvaluation.setResponseID(_responseId);
 
 			}
 
@@ -576,8 +607,8 @@
 						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
-						assessedByUserDetailContainer.includeInLayout=false;
-						assessedByUserDetailContainer.visible=false;
+						assessedByUserDetail.includeInLayout=false;
+						assessedByUserDetail.visible=false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -594,8 +625,8 @@
 						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
-						assessedByUserDetailContainer.includeInLayout=false;
-						assessedByUserDetailContainer.visible=false;
+						assessedByUserDetail.includeInLayout=false;
+						assessedByUserDetail.visible=false;
 
 						_currentPageWaitingForAssessment=1;
 						_currentPageAssessedByCurrentUser=1;
@@ -908,19 +939,35 @@
 
 			private function createAssessedByCurrentUser():void
 			{
-
-				assessedByUserDetail=new EvaluationDetailBox();
+				
+				assessedByUserDetailViewStack=new ViewStack();
+				assessedByUserDetailViewStack.percentWidth=100;
+				assessedByUserDetailViewStack.resizeToContent=true;
+				
+				assessedByUserDetailBox=new BorderContainer();
+				assessedByUserDetailBox.percentWidth=100;
+				assessedByUserDetailBox.minHeight=0;
+				assessedByUserDetailBox.minWidth=900;
+				assessedByUserDetailBox.setStyle('cornerRadius', 8);
+				assessedByUserDetailBox.setStyle('backgroundAlpha', 0);
+				assessedByUserDetailBox.addElement(assessedByUserDetailViewStack);
+				
+				assessedByUserDetailTabBar=new TabBar();
+				assessedByUserDetailTabBar.dataProvider=assessedByUserDetailViewStack;
+				
+				assessedByUserDetailHead=new HGroup();
+				assessedByUserDetailHead.horizontalAlign=HorizontalAlign.RIGHT;
+				assessedByUserDetailHead.percentWidth=100;
+				assessedByUserDetailHead.paddingRight=16;
+				assessedByUserDetailHead.addElement(assessedByUserDetailTabBar);
+				
+				assessedByUserDetail=new VGroup();
 				assessedByUserDetail.percentWidth=100;
-
-				assessedByUserDetailContainer=new BorderContainer();
-				assessedByUserDetailContainer.percentWidth=100;
-				assessedByUserDetailContainer.minHeight=0;
-				assessedByUserDetailContainer.minWidth=900;
-				assessedByUserDetailContainer.includeInLayout=false;
-				assessedByUserDetailContainer.visible=false;
-				assessedByUserDetailContainer.setStyle('cornerRadius', 8);
-				assessedByUserDetailContainer.setStyle('backgroundAlpha', 0);
-				assessedByUserDetailContainer.addElement(assessedByUserDetail);
+				assessedByUserDetail.horizontalAlign=HorizontalAlign.RIGHT;
+				assessedByUserDetail.gap=0;
+				assessedByUserDetail.addElement(assessedByUserDetailHead);
+				assessedByUserDetail.addElement(assessedByUserDetailBox);
+				
 
 				assessedByUserListTitleLabel=new Label();
 				assessedByUserListTitleLabel.text=resourceManager.getString('myResources', 'RESPONSES_ASSESSED_BY_USER_LIST');
@@ -943,7 +990,7 @@
 
 				assessedByCurrentUserBox=new VGroup();
 				assessedByCurrentUserBox.percentWidth=100;
-				assessedByCurrentUserBox.addElement(assessedByUserDetailContainer);
+				assessedByCurrentUserBox.addElement(assessedByUserDetail);
 				assessedByCurrentUserBox.addElement(assessedByUserListTitleLabel);
 				assessedByCurrentUserBox.addElement(assessedByUserListTitleLine);
 				assessedByCurrentUserBox.addElement(assessedByCurrentUserListAndPagination);
@@ -969,8 +1016,10 @@
 				destination="assessedToCurrentUserRetrievedHandler"/>
 	<fx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
 				destination="assessedByCurrentUserRetrievedHandler"/>
-	<fx:Binding source="{dataModel.detailsOfAssessedResponseDataRetrieved}"
+	<fx:Binding source="{dataModel.detailsOfResponseAssessedToUserRetrieved}"
 				destination="detailsOfAssessmentRetrievedHandler"/>
+	<fx:Binding source="{dataModel.detailsOfResponseAssessedByUserRetrieved}"
+				destination="detailsOfAssessedByUserRetrievedHandler"/>
 
 	<fx:Binding source="{dataModel.addAssessmentRetrieved}"
 				destination="assessmentSavedHandler"/>

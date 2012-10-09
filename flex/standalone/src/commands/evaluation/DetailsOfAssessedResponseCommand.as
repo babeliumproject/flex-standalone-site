@@ -20,9 +20,11 @@ package commands.evaluation
 	public class DetailsOfAssessedResponseCommand implements ICommand, IResponder
 	{
 		private var dataModel:DataModel = DataModel.getInstance();
+		private var cgEvent:CairngormEvent;
 		
 		public function execute(event:CairngormEvent):void
 		{
+			cgEvent = event;
 			new EvaluationDelegate(this).detailsOfAssessedResponse((event as EvaluationEvent).responseId);
 		}
 		
@@ -39,7 +41,10 @@ package commands.evaluation
 			} else {
 				dataModel.detailsOfAssessedResponseData = new ArrayCollection();
 			}
-			dataModel.detailsOfAssessedResponseDataRetrieved = !dataModel.detailsOfAssessedResponseDataRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER)
+				dataModel.detailsOfResponseAssessedToUserRetrieved = !dataModel.detailsOfResponseAssessedToUserRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER)
+				dataModel.detailsOfResponseAssessedByUserRetrieved = !dataModel.detailsOfResponseAssessedByUserRetrieved;
 		}
 		
 		public function fault(info:Object):void

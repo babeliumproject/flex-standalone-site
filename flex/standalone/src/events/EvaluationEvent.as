@@ -14,7 +14,8 @@ package events {
 		public static const ADD_ASSESSMENT:String="addAssessment";
 		public static const ADD_VIDEO_ASSESSMENT:String="addVideoAssessment";
 		
-		public static const DETAILS_OF_ASSESSED_RESPONSE:String="detailsOfAssessedResponse";
+		public static const DETAILS_OF_RESPONSE_ASSESSED_TO_USER:String="detailsOfResponseAssessedToUser";
+		public static const DETAILS_OF_RESPONSE_ASSESSED_BY_USER:String="detailsOfResponseAssessedByUser";
 		public static const UPDATE_RESPONSE_RATING_AMOUNT:String="updateResponseRatingAmount";
 		
 		public static const GET_EVALUATION_CHART_DATA:String = "getEvaluationChartData";

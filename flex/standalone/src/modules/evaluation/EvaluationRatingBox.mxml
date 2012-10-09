@@ -249,7 +249,7 @@
 							<mx:TextArea id="textComment"
 										 width="100%"
 										 height="100"
-										 maxChars="500"/>
+										 maxChars="16383"/>
 						</s:VGroup>
 					</s:NavigatorContent>
 
