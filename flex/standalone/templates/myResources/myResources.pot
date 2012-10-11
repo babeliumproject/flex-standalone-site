@@ -1,0 +1,3203 @@
+#. extracted from babeliumproject/flex/standalone/locale/en_US/myResources.properties
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-11 09:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 1.9.0\n"
+
+#: ABORT_RECORDING
+msgid "Abort recording"
+msgstr ""
+
+#: ABOUT_SECTION_DESCRIPTION
+msgid ""
+"Want to know a little about us and the technologies that make Babelium "
+"possible? You're at the right place!"
+msgstr ""
+
+#: ABOUT_US
+msgid "About us"
+msgstr ""
+
+#: ACCOUNT_ACTIVATION
+msgid "Acount Activation"
+msgstr ""
+
+#: ACTIVATING
+msgid "activating"
+msgstr ""
+
+#: ACTIVATION_EMAIL_SENT
+msgid "An activation email has been sent to the email you specified."
+msgstr ""
+
+#: ADDVIDEO
+msgid "Add a video"
+msgstr ""
+
+#: ALERT_SUCCESSFUL_FILE_UPLOAD_RED5
+msgid ""
+"The file you chose has been successfully uploaded and will be available "
+"soon. Thanks for your collaboration."
+msgstr ""
+
+#: ALERT_SUCCESSFUL_WEBCAM_UPLOAD_RED5
+msgid ""
+"The exercise you recorded has been successfully uploaded and will be "
+"available soon. Thanks for your collaboration."
+msgstr ""
+
+#: ASSESSMENT_PENDING_RESPONSES_LIST
+msgid "List of assessment pending responses"
+msgstr ""
+
+#: AUKERATUBIDEOA
+msgid "Select a video from the list"
+msgstr ""
+
+#: AUTHOR_PROVIDED_BY
+msgid "Author/Provider:"
+msgstr ""
+
+#: AUTOEVALUATION_NOT_AVAILABLE
+msgid "Autoevaluation not available"
+msgstr ""
+
+#: AVG
+msgid "Average"
+msgstr ""
+
+#: BALORAZIOKOP
+msgid "Assessment count"
+msgstr ""
+
+#: BANDWIDTH
+msgid "Bandwidth"
+msgstr ""
+
+#: BIAKBATERAIKUSI
+msgid "Watch simultaneously"
+msgstr ""
+
+#: BIDALI
+msgid "Send"
+msgstr ""
+
+#: BLOG
+msgid "Blog"
+msgstr ""
+
+#: BUTTON_ADD_ANOTHER
+msgctxt "BUTTON_ADD_ANOTHER"
+msgid "Add"
+msgstr ""
+
+#: BUTTON_BROWSE
+msgid "Browse..."
+msgstr ""
+
+#: BUTTON_CANCEL
+msgctxt "BUTTON_CANCEL"
+msgid "Cancel"
+msgstr ""
+
+#: BUTTON_CLOSE
+msgid "Close"
+msgstr ""
+
+#: BUTTON_CREATE
+msgid "Create Slice"
+msgstr ""
+
+#: BUTTON_CUEVIDEO
+msgid "Cue Video"
+msgstr ""
+
+#: BUTTON_DISCARD_RESPONSE
+msgid "Discard Response"
+msgstr ""
+
+#: BUTTON_HERE
+msgid "here"
+msgstr ""
+
+#: BUTTON_NO_THANKS
+msgid "No, thanks!"
+msgstr ""
+
+#: BUTTON_OK
+msgid "Ok"
+msgstr ""
+
+#: BUTTON_PAUSE
+msgid "Pause"
+msgstr ""
+
+#: BUTTON_PLAY
+msgid "Play"
+msgstr ""
+
+#: BUTTON_PLAYSLICE
+msgid "Play Slice"
+msgstr ""
+
+#: BUTTON_PLAY_PAUSE
+msgid "Play/Pause"
+msgstr ""
+
+#: BUTTON_REC
+msgid "Rec"
+msgstr ""
+
+#: BUTTON_RECORD
+msgctxt "BUTTON_RECORD"
+msgid "Record"
+msgstr ""
+
+#: BUTTON_RECORD_AGAIN
+msgid "Record Again"
+msgstr ""
+
+#: BUTTON_REPORT
+msgctxt "BUTTON_REPORT"
+msgid "Report"
+msgstr ""
+
+#: BUTTON_RETRY
+msgid "Retry"
+msgstr ""
+
+#: BUTTON_SAVE_NEWPASS
+msgid "Save Changes"
+msgstr ""
+
+#: BUTTON_SAVE_RESPONSE
+msgid "Publish Response"
+msgstr ""
+
+#: BUTTON_SAVE_STREAMING_UPLOAD
+msgid "Save Recorded Exercise"
+msgstr ""
+
+#: BUTTON_SEARCH
+msgctxt "BUTTON_SEARCH"
+msgid "Search"
+msgstr ""
+
+#: BUTTON_SELECT_ANOTHER_EXERCISE
+msgid "Choose Another Exercise"
+msgstr ""
+
+#: BUTTON_SHOW_AVAILABLE_OPTIONS
+msgid "Show Available Options"
+msgstr ""
+
+#: BUTTON_SOMEONE_EVALUATE_ME
+msgid "Someone evaluate me!"
+msgstr ""
+
+#: BUTTON_START_RECORDING
+msgid "Start Recording"
+msgstr ""
+
+#: BUTTON_STOP
+msgid "Stop"
+msgstr ""
+
+#: BUTTON_UPLOAD
+msgctxt "BUTTON_UPLOAD"
+msgid "Upload"
+msgstr ""
+
+#: BUTTON_WATCH_EXERCISE
+msgid "Watch Exercise"
+msgstr ""
+
+#: BUTTON_WATCH_EXERCISE_AND_RESPONSE
+msgid "Watch Simultaneously"
+msgstr ""
+
+#: BUTTON_WATCH_RESPONSE
+msgid "Watch Response"
+msgstr ""
+
+#: CANCEL
+msgctxt "CANCEL"
+msgid "Cancel"
+msgstr ""
+
+#: CC-BY
+msgid "Attribution"
+msgstr ""
+
+#: CC-BY-NC
+msgid "Attribution Non-Commercial"
+msgstr ""
+
+#: CC-BY-NC-ND
+msgid "Attribution Non-Commercial No Derivative"
+msgstr ""
+
+#: CC-BY-NC-SA
+msgid "Attribution Non-Commercial Share Alike"
+msgstr ""
+
+#: CC-BY-ND
+msgid "Attribution No Derivative"
+msgstr ""
+
+#: CC-BY-SA
+msgid "Attribution Share Alike"
+msgstr ""
+
+#: CHECK_YES_PLEASE
+msgid "Yes, please."
+msgstr ""
+
+#: COLUMNHEAD_HIDE
+msgid "End"
+msgstr ""
+
+#: COLUMNHEAD_NUMBER
+msgid "Number"
+msgstr ""
+
+#: COLUMNHEAD_ROLE
+msgid "Role"
+msgstr ""
+
+#: COLUMNHEAD_SHOW
+msgid "Begin"
+msgstr ""
+
+#: COLUMNHEAD_TEXT
+msgid "Text"
+msgstr ""
+
+#: COLUMNLABEL_FILE
+msgid "File"
+msgstr ""
+
+#: COLUMNLABEL_SIZE
+msgid "Size"
+msgstr ""
+
+#: COMMA_SEPARATED_WORDS
+msgid "Comma separated words"
+msgstr ""
+
+#: COMMENTS
+msgid "Comment"
+msgstr ""
+
+#: COMPLETE_SUBTITLE_INFO
+msgid ""
+"<b>NOTE:</b> Only the videos whose subtitles cover the entire video will be "
+"available in the practice module."
+msgstr ""
+
+#: CONFIGURATION_BW_MESSAGE1
+msgid "Use this test to check whether your bandwidth is enough"
+msgstr ""
+
+#: CONFIGURATION_BW_MESSAGE2
+msgid "to properly use the services of Babelium."
+msgstr ""
+
+#: CONFIGURATION_BW_MESSAGE3
+msgid "Click the button above to perform the test"
+msgstr ""
+
+#: CONFIGURATION_BW_MESSAGE4
+msgid "and check the results in the graph."
+msgstr ""
+
+#: CONFIGURATION_BW_TITTLE
+msgid "Bandwidth Test"
+msgstr ""
+
+#: CONFIGURATION_MICRO_TITTLE
+msgid "Microphone Test"
+msgstr ""
+
+#: CONFIGURATION_MIC_MESSAGE1
+msgid "You can check if your microphone works"
+msgstr ""
+
+#: CONFIGURATION_MIC_MESSAGE2
+msgid "correctly recording a test sound file."
+msgstr ""
+
+#: CONFIGURATION_MIC_MESSAGE3
+msgid "Click REC button and record your voice (10 seconds)"
+msgstr ""
+
+#: CONFIGURATION_MIC_MESSAGE4
+msgid "After, you can listen the sound file clicking PLAY button."
+msgstr ""
+
+#: CONFIGURATION_NOT_CAM_TEXT
+msgid "No webcam was found"
+msgstr ""
+
+#: CONFIGURATION_NOT_MIC_TEXT
+msgid "No microphone was found"
+msgstr ""
+
+#: CONFIGURATION_NO_FILE_EXISTS
+msgid "You haven't recorded any file yet"
+msgstr ""
+
+#: CONFIGURATION_NO_MIC_SIGNAL
+msgid "Sound signal not found!"
+msgstr ""
+
+#: CONFIGURATION_NO_PERMISSIONS
+msgid "You must give flash permissions"
+msgstr ""
+
+#: CONFIGURATION_SECTION_DESCRIPTION
+msgid ""
+"In this section you can check if your multimedia devices work correctly and "
+"you can also know if your current bandwidth is enough to experience all the "
+"features of the web"
+msgstr ""
+
+#: CONFIGURATION_VIDEO_MESSAGE1
+msgid "You can check if your webcam works"
+msgstr ""
+
+#: CONFIGURATION_VIDEO_MESSAGE2
+msgid "correctly recording a video file."
+msgstr ""
+
+#: CONFIGURATION_VIDEO_MESSAGE3
+msgid "Click REC button and record your video (10 seconds)"
+msgstr ""
+
+#: CONFIGURATION_VIDEO_MESSAGE4
+msgid "After, you can watch the video clicking PLAY button."
+msgstr ""
+
+#: CONFIGURATION_WEBCAM_TITTLE
+msgid "Webcam Test"
+msgstr ""
+
+#: CONFIRMATION_COMPLETE_SUBTITLE
+msgid "Do these subtitles cover all dialog in the entire video?"
+msgstr ""
+
+#: CONFIRM_VIDEO_DELETE
+msgid "Are you sure you want to delete the selected videos?"
+msgstr ""
+
+#: CONVERTED
+msgid "converted"
+msgstr ""
+
+#: COPYRIGHTED
+msgid "Other (Copyrighted)"
+msgstr ""
+
+#: CURRENT_EMAIL
+msgid "Current email address"
+msgstr ""
+
+#: D001_A1_SI01
+msgid ""
+"I can introduce somebody and use basic greetings and leave-taking "
+"expressions."
+msgstr ""
+
+#: D002_A1_SI02
+msgid ""
+"I can ask and answer simple questions, initiate and respond to simple "
+"statements in areas of immediate need or on very familiar topics."
+msgstr ""
+
+#: D003_A1_SI03
+msgid ""
+"I can make myself understood in a simple way but I am dependent on my "
+"partner being prepared to repeat more slowly and rephrase what I say and to "
+"help me to say what I want."
+msgstr ""
+
+#: D004_A1_SI04
+msgid ""
+"I can make simple purchases where pointing or other gestures can support "
+"what I say."
+msgstr ""
+
+#: D005_A1_SI05
+msgid "I can handle numbers, quantities, cost and time."
+msgstr ""
+
+#: D006_A1_SI06
+msgid "I can ask people for things and give people things."
+msgstr ""
+
+#: D007_A1_SI07
+msgid ""
+"I can ask people questions about where they live, people they know, things "
+"they have etc. and answer such questions addressed to me provided they are "
+"articulated slowly and clearly."
+msgstr ""
+
+#: D008_A1_SI08
+msgid ""
+"I can indicate time by such phrases as \"next week\", \"last Friday\", \"in "
+"November\", \"three o’clock\"."
+msgstr ""
+
+#: D009_A1_SP01
+msgid ""
+"I can give personal information (address, telephone number, nationality, "
+"age, family, and hobbies)."
+msgstr ""
+
+#: D010_A1_SP02
+msgid "I can describe where I live."
+msgstr ""
+
+#: D011_A2_SI01
+msgid "I can make simple transactions in shops, post offices or banks."
+msgstr ""
+
+#: D012_A2_SI02
+msgid ""
+"I can use public transport: buses, trains, and taxis, ask for basic "
+"information and buy tickets."
+msgstr ""
+
+#: D013_A2_SI03
+msgid "I can get simple information about travel."
+msgstr ""
+
+#: D014_A2_SI04
+msgid "I can order something to eat or drink."
+msgstr ""
+
+#: D015_A2_SI05
+msgid ""
+"I can make simple purchases by stating what I want and asking the price."
+msgstr ""
+
+#: D016_A2_SI06
+msgid "I can ask for and give directions referring to a map or plan."
+msgstr ""
+
+#: D017_A2_SI07
+msgid "I can ask how people are and react to news."
+msgstr ""
+
+#: D018_A2_SI08
+msgid "I can make and respond to invitations."
+msgstr ""
+
+#: D019_A2_SI09
+msgid "I can make and accept apologies."
+msgstr ""
+
+#: D020_A2_SI10
+msgid "I can say what I like and dislike."
+msgstr ""
+
+#: D021_A2_SI11
+msgid ""
+"I can discuss with other people what to do, where to go, and make "
+"arrangements to meet."
+msgstr ""
+
+#: D022_A2_SI12
+msgid ""
+"I can ask people questions about what they do at work and in free time, and "
+"answer such questions addressed to me."
+msgstr ""
+
+#: D023_A2_SP01
+msgid "I can describe myself, my family and other people."
+msgstr ""
+
+#: D024_A2_SP02
+msgid "I can describe where 1 live."
+msgstr ""
+
+#: D025_A2_SP03
+msgid "I can give short, basic descriptions of events."
+msgstr ""
+
+#: D026_A2_SP04
+msgid ""
+"I can describe my educational background, my present or most recent job."
+msgstr ""
+
+#: D027_A2_SP05
+msgid "I can describe my hobbies and interests in a simple way."
+msgstr ""
+
+#: D028_A2_SP06
+msgid ""
+"I can describe past experiences and personal experiences (e.g. the last "
+"weekend, my last holiday)."
+msgstr ""
+
+#: D029_B1_SI01
+msgid ""
+"I can start, maintain and close simple face-to-face conversation on topics "
+"that are familiar or of personal interest."
+msgstr ""
+
+#: D030_B1_SI02
+msgid ""
+"I can maintain a conversation or discussion but may sometimes be difficult "
+"to follow when trying to say exactly what I would like to."
+msgstr ""
+
+#: D031_B1_SI03
+msgid ""
+"I can deal with most situations likely to arise when making travel "
+"arrangements through an agent or when actually travelling."
+msgstr ""
+
+#: D032_B1_SI04
+msgid "I can ask for and follow detailed directions."
+msgstr ""
+
+#: D033_B1_SI05
+msgid ""
+"I can express and respond to feelings such as surprise, happiness, sadness, "
+"interest and indifference."
+msgstr ""
+
+#: D034_B1_SI06
+msgid ""
+"I can give or seek personal views and opinions in an informal discussion "
+"with friends."
+msgstr ""
+
+#: D035_B1_SI07
+msgid "I can agree and disagree politely."
+msgstr ""
+
+#: D036_B1_SP01
+msgid "I can narrate a story."
+msgstr ""
+
+#: D037_B1_SP02
+msgid ""
+"I can give detailed accounts of experiences, describing feelings and "
+"reactions."
+msgstr ""
+
+#: D038_B1_SP03
+msgid "I can describe dreams, hopes and ambitions."
+msgstr ""
+
+#: D039_B1_SP04
+msgid "I can explain and give reasons for my plans, intentions and actions."
+msgstr ""
+
+#: D040_B1_SP05
+msgid "I can relate the plot of a book or film and describe my reactions."
+msgstr ""
+
+#: D041_B1_SP06
+msgid ""
+"I can paraphrase short written passages orally in a simple fashion, using "
+"the original text wording and ordering."
+msgstr ""
+
+#: D042_B2_SI01
+msgid ""
+"I can initiate, maintain and end discourse naturally with effective turn-"
+"taking."
+msgstr ""
+
+#: D043_B2_SI02
+msgid ""
+"I can exchange considerable quantities of detailed factual information on "
+"matters within my fields of interest."
+msgstr ""
+
+#: D044_B2_SI03
+msgid ""
+"I can convey degrees of emotion and highlight the personal significance of "
+"events and experiences."
+msgstr ""
+
+#: D045_B2_SI04
+msgid ""
+"I can engage in extended conversation in a clearly participatory fashion on "
+"most general topics."
+msgstr ""
+
+#: D046_B2_SI05
+msgid ""
+"I can account for and sustain my opinions in discussion by providing "
+"relevant explanations, arguments and comments."
+msgstr ""
+
+#: D047_B2_SI06
+msgid ""
+"I can help a discussion along on familiar ground confirming comprehension, "
+"inviting others in etc."
+msgstr ""
+
+#: D048_B2_SI07
+msgid ""
+"I can carry out a prepared interview, checking and confirming information, "
+"following up interesting replies."
+msgstr ""
+
+#: D049_B2_SP01
+msgid ""
+"I can give clear, detailed descriptions on a wide range of subjects related "
+"to my fields of interest."
+msgstr ""
+
+#: D050_B2_SP02
+msgid ""
+"I can understand and summarise orally short extracts from news items, "
+"interviews or documentaries containing opinions, argument and discussion."
+msgstr ""
+
+#: D051_B2_SP03
+msgid ""
+"I can understand and summarise orally the plot and sequence of events in an "
+"extract from a film or play."
+msgstr ""
+
+#: D052_B2_SP04
+msgid ""
+"I can construct a chain of reasoned argument, linking my ideas logically."
+msgstr ""
+
+#: D053_B2_SP05
+msgid ""
+"I can explain a viewpoint on a topical issue giving the advantages and "
+"disadvantages of various options."
+msgstr ""
+
+#: D054_B2_SP06
+msgid "I can speculate about causes, consequences, hypothetical situations."
+msgstr ""
+
+#: D055_C1_SI01
+msgid "I can keep up with an animated conversation between native speakers."
+msgstr ""
+
+#: D056_C1_SI02
+msgid ""
+"I can use the language fluently, accurately and effectively on a wide range "
+"of general, professional or academic topics."
+msgstr ""
+
+#: D057_C1_SI03
+msgid ""
+"I can use language flexibly and effectively for social purposes, including "
+"emotional, allusive and joking usage."
+msgstr ""
+
+#: D058_C1_SI04
+msgid ""
+"I can express my ideas and opinions clearly and precisely, and can present "
+"and respond to complex lines of reasoning convincingly."
+msgstr ""
+
+#: D059_C1_SP01
+msgid "I can give clear, detailed descriptions of complex subjects."
+msgstr ""
+
+#: D060_C1_SP02
+msgid "I can orally summarise long, demanding texts."
+msgstr ""
+
+#: D061_C1_SP03
+msgid ""
+"I can give an extended description or account of something, integrating "
+"themes, developing particular points and concluding appropriately."
+msgstr ""
+
+#: D062_C1_SP04
+msgid ""
+"I can give a clearly developed presentation on a subject in my fields of "
+"personal or professional interest, departing when necessary from the "
+"prepared text and following up spontaneously points raised by members of the "
+"audience."
+msgstr ""
+
+#: D063_C2_SI01
+msgid ""
+"I can take part effortlessly in all conversations and discussions with "
+"native speakers."
+msgstr ""
+
+#: D064_C2_SP01
+msgid ""
+"I can summarise orally information from different sources, reconstructing "
+"arguments and accounts in a coherent presentation."
+msgstr ""
+
+#: D065_C2_SP02
+msgid ""
+"I can present ideas and viewpoints in a very flexible manner in order to "
+"give emphasis, to differentiate and to eliminate ambiguity."
+msgstr ""
+
+#: DATE
+msgctxt "DATE"
+msgid "Date"
+msgstr ""
+
+#: DATE_FORMAT
+msgid "YYYY/MM/DD"
+msgstr ""
+
+#: DELETE
+msgid "Delete"
+msgstr ""
+
+#: DESCRIPTORS
+msgid "Descriptors"
+msgstr ""
+
+#: DEVELOPERS
+msgid "Developers"
+msgstr ""
+
+#: DEVICES_NOT_ALLOWED_ERROR
+msgid ""
+"In order to record something you must 'Allow' the access to your devices."
+msgstr ""
+
+#: DEVICES_NOT_WORKING
+msgid ""
+"Your devices are not working properly or are not allowed. The recording has "
+"been aborted."
+msgstr ""
+
+#: DISPLAYGRAPH
+msgid "View the Graphic"
+msgstr ""
+
+#: EDIT
+msgctxt "EDIT"
+msgid "Edit"
+msgstr ""
+
+#: EDIT_VIDEO_INFO
+msgid "Edit video information"
+msgstr ""
+
+#: EMAIL_ACTIVACION
+msgid "An activation email has been sent."
+msgstr ""
+
+#: EMPTY_NEWROLE
+msgid "The role name cannot be empty."
+msgstr ""
+
+#: EMPTY_PARAMETER
+msgid "The service data cannot be empty."
+msgstr ""
+
+#: EMPTY_PASSWORD
+msgid "The password cannot be empty."
+msgstr ""
+
+#: EMPTY_USERNAME
+msgid "The username cannot be empty."
+msgstr ""
+
+#: EPAITUGABEDAUDENAK
+msgid "Waiting for assessment"
+msgstr ""
+
+#: ERROR_BANDWIDTH_FIREWALL
+msgid "Can't test bandwidth. Port 1935 is closed. RTMPT mode is active."
+msgstr ""
+
+#: ERROR_SENDING_EMAIL
+msgid "There was an error while sending the activation e-mail."
+msgstr ""
+
+#: ERROR_USER_EMAIL_EXISTS
+msgid ""
+"The specified username or email already exists. Please choose another one."
+msgstr ""
+
+#: ERROR_REGISTERING_USER
+msgid ""
+"There was an error while registering in the system. Please try again later."
+msgstr ""
+
+#: ERROR_EVALUATION_DATA_NOT_SPECIFIED
+msgid "You must specify a response to evaluate before sending an evaluation."
+msgstr ""
+
+#: ERROR_FILL_COMPULSORY_DATA
+msgid "You must fill all the compulsory data in order to save your evaluation."
+msgstr ""
+
+#: ERROR_INSUFICCIENT_CREDITS
+msgid ""
+"You don't have enough credits to perform this task. This video will remain "
+"privately available to you."
+msgstr ""
+
+#: ERROR_SCORE_COULDNT_BE_SAVED
+msgid "Your score couldn't be saved."
+msgstr ""
+
+#: ERROR_SELECTED_TEXT_COMMENT_NO_FILL
+msgid ""
+"You selected to add a text comment to this evaluation, but added none. "
+"Please add a text comment or uncheck 'Include text comment' if you don't "
+"want text comments to be saved."
+msgstr ""
+
+#: ERROR_SELECTED_VIDEO_COMMENT_NO_FILL
+msgid ""
+"You selected to record a video comment for this evaluation, but recorded "
+"none. Please record a video comment or uncheck 'Include video comment' if "
+"you don't want video comments to be saved."
+msgstr ""
+
+#: ERROR_SIGN_IN_TO_REQUEST
+msgid "You must Sign In to request an evaluation."
+msgstr ""
+
+#: ERROR_WHILE_ACTIVATING_ACCOUNT
+msgid "Error while activating your account."
+msgstr ""
+
+#: ERROR_WHILE_ADDING_VIDEOHISTORY_ITEM
+msgid "Error while adding item to your video history."
+msgstr ""
+
+#: ERROR_WHILE_CHANGING_PASSWORD
+msgid "Error while changing your password. Try again later."
+msgstr ""
+
+#: ERROR_WHILE_CHECKING_ALREADY_RATED
+msgid "Error while checking if you've rated this exercise."
+msgstr ""
+
+#: ERROR_WHILE_CHECKING_ALREADY_REPORTED
+msgid "Error while checking if you've reported this exercise."
+msgstr ""
+
+#: ERROR_WHILE_CHECKING_AUTOEVALUATION_SUPPORT
+msgid "Error while checking for autoevaluation support."
+msgstr ""
+
+#: ERROR_WHILE_DELETING_VIDEOS
+msgid "Error while deleting the selected videos."
+msgstr ""
+
+#: ERROR_WHILE_ENABLING_AUTOEVALUATION
+msgid "Error while enabling the autoevaluation on this video."
+msgstr ""
+
+#: ERROR_WHILE_KEEPING_SESSION
+msgid "Error while trying to keep your session active."
+msgstr ""
+
+#: ERROR_WHILE_LOGGING_IN
+msgctxt "ERROR_WHILE_LOGGING_IN"
+msgid "Error while authenticating you in the system."
+msgstr ""
+
+#: ERROR_WHILE_LOGGING_OUT
+msgid "Error while logging you out."
+msgstr ""
+
+#: ERROR_WHILE_LOGGIN_IN
+msgctxt "ERROR_WHILE_LOGGIN_IN"
+msgid "Error while authenticating you in the system."
+msgstr ""
+
+#: ERROR_WHILE_MAKING_RESPONSE_PUBLIC
+msgid "Error while making your response publicly available."
+msgstr ""
+
+#: ERROR_WHILE_MODIFYING_LANGUAGES
+msgid "Error while modifying your languages."
+msgstr ""
+
+#: ERROR_WHILE_MODIFYING_PERSONAL_DATA
+msgid "Error while modifying your personal data."
+msgstr ""
+
+#: ERROR_WHILE_MODIFYING_VIDEO_DATA
+msgid "Error while modifying video data."
+msgstr ""
+
+#: ERROR_WHILE_PERFORMING_SEARCH
+msgid "Error while searching the requested data."
+msgstr ""
+
+#: ERROR_WHILE_PROCESSING_AUTOEVALUATION_REQUEST
+msgid "Error while processing autoevaluation request."
+msgstr ""
+
+#: ERROR_WHILE_RATING
+msgid "Error while rating the exercise."
+msgstr ""
+
+#: ERROR_WHILE_REGISTERING
+msgid "Error while registering new user."
+msgstr ""
+
+#: ERROR_WHILE_REPORTING_EXERCISE
+msgid "Error while reporting inappropriate exercise."
+msgstr ""
+
+#: ERROR_WHILE_RESTORING_PASSWORD
+msgid "Error while trying to restore your password."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_CHART_DATA
+msgid "Error while trying to get the chart data. Please try again later."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_CREDIT_HISTORY
+msgid "Error while retrieving your credit history,"
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_EXERCISES
+msgid "Error while retreiving the exercises."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_EXERCISE_SUBTITLES
+msgid "Error while retrieving this exercise's subtitles"
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_LATEST_ACTIVITY
+msgid "Error while retrieving your latest activity."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_MOTD
+msgid "Error while retrieving the messages of the day."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_PREFERENCES
+msgid "Error while retrieving application's preference data."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSED_BY_OTHERS
+msgid ""
+"Error while retrieving your responses that have been assessed by other "
+"users."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSMENTS
+msgid "Error while retrieving this response's assessments."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_WAITING
+msgid "Error while retrieving responses waiting assessment."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_YOU_ASSESSED
+msgid "Error while retrieving the responses you assessed."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_ROLES
+msgid "Error while retrieving exercise's roles"
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLES
+msgid "Error while retrieving unfinished subtitle exercise list."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLE_LANGUAGES
+msgid "Error while retrieving exercise's available subtitle languages."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLE_LINES
+msgid "Error while retrieving current subtitle's subtitle lines."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_TAG_CLOUD
+msgid "Error while building the tag cloud."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_TOPSCORE_VIDEOS
+msgid "Error while retrieving top scored videos."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_TOP_USERS
+msgid "Error while retrieving top user list."
+msgstr ""
+
+#: ERROR_WHILE_RETRIEVING_USER_VIDEOS
+msgid "Error while retrieving your videos."
+msgstr ""
+
+#: ERROR_WHILE_SAVING_EXERCISE_DATA
+msgid "Error while saving exercise data."
+msgstr ""
+
+#: ERROR_WHILE_SAVING_RESPONSE
+msgid "Error while saving your response."
+msgstr ""
+
+#: ERROR_WHILE_SAVING_SUBTITLES
+msgid "Error while saving your subtitles. Try again later."
+msgstr ""
+
+#: ERROR_WHILE_SAVING_YOUR_ASSESSMENT
+msgid "Error while trying to save your assessment."
+msgstr ""
+
+#: ERROR_WHILE_SENDING_ACTIVATION_MAIL
+msgid "Error while trying to send the activation email."
+msgstr ""
+
+#: ERROR_WHILE_UPDATING_RESPONSE
+msgid "A problem occurred while trying to update your response."
+msgstr ""
+
+#: ERROR_WHILE_UPLOADING_FILE
+msgid "Error while uploading file."
+msgstr ""
+
+#: EVALUATION_DATE
+msgid "Assessment date"
+msgstr ""
+
+#: EXERCISE_ALREADY_REPORTED
+msgid "You already reported about this exercise."
+msgstr ""
+
+#: EXERCISE_LIST
+msgid "Practice exercise list"
+msgstr ""
+
+#: EXERCISE_MIC_TEST
+msgid "Click here for checking your mic"
+msgstr ""
+
+#: EXERCISE_SUCCESSFULLY_REPORTED
+msgid "Your report has been successfully saved. Thank you."
+msgstr ""
+
+#: FAQ
+msgid "FAQ"
+msgstr ""
+
+#: FILTER
+msgid "Filter"
+msgstr ""
+
+#: FILTER_BY_LANGUAGE
+msgid "Filter by language"
+msgstr ""
+
+#: FILTER_BY_DIFFICULTY
+msgid "Filter by difficulty level"
+msgstr ""
+
+#: FILTER_REMOVE_ALL
+msgid "Remove filters"
+msgstr ""
+
+#: GRABADOR
+msgid "Recorder"
+msgstr ""
+
+#: GRAFTEXT
+msgid "Ratings of different users"
+msgstr ""
+
+#: HEADERTEXT_CHANGE_AMOUNT_CREDIT_TABLE
+msgid "Credit Amount"
+msgstr ""
+
+#: HEADERTEXT_CHANGE_TYPE_CREDIT_TABLE
+msgid "Change Type"
+msgstr ""
+
+#: HEADERTEXT_DATE_CREDIT_TABLE
+msgctxt "HEADERTEXT_DATE_CREDIT_TABLE"
+msgid "Date"
+msgstr ""
+
+#: HEADERTEXT_EVALUATION_NAME_CREDIT_TABLE
+msgid "Evaluation Name"
+msgstr ""
+
+#: HEADERTEXT_EXERCISE_NAME_CREDIT_TABLE
+msgid "Exercise Name"
+msgstr ""
+
+#: HEADERTEXT_RESPONSE_NAME_CREDIT_TABLE
+msgid "Response Name"
+msgstr ""
+
+#: HELLO
+msgid "Hello"
+msgstr ""
+
+#: HELP_FAQ
+msgid "Help/FAQ"
+msgstr ""
+
+#: HELP_FAQ_SECTION_DESCRIPTION
+msgid ""
+"In this section you can find help for the most common topics regarding the "
+"use of the application"
+msgstr ""
+
+#: HIDE_SUBTITLES
+msgid "Hide subtitles"
+msgstr ""
+
+#: HOME_LOGGED_IN_STATIC_MESSAGE
+msgid ""
+"<b><font size =\"24\" color =\"#972c0a\">Welcome to "
+"Babelium</font></b><br/><p>Babelium is a community of people who likes to "
+"learn and teach languages.</p><p>Babelium is a collaborative language "
+"practising environment. Here you'll be able to improve your speaking skills "
+"with the help of other users, which are native or fluent in the language "
+"you're practicing, whilst you help other users providing knowledge and "
+"assessment around your own mother language.</p><p>Just record or grab a "
+"video that you think could be interesting to practice a language and upload "
+"it so that other users can practice with it. You can also dub the exercises "
+"that other users uploaded. On top of this you can also assess the work of "
+"other people and be assessed.</p>"
+msgstr ""
+
+#: HOW_ASSESS_OTHER_USERS_WORK
+msgid "How to assess other users' work"
+msgstr ""
+
+#: HOW_TO_CONFIGURE_YOUR_DEVICES
+msgid "How to configure your video/audio devices"
+msgstr ""
+
+#: HOW_TO_PRACTICE_A_LANGUAGE
+msgid "How to practice a language"
+msgstr ""
+
+#: HOW_TO_SUBTITLE_A_VIDEO
+msgid "How to subtitle a video"
+msgstr ""
+
+#: INFO_SCORE_SUCCESSFULLY_SAVED
+msgid "Your score has been successfully saved. Thank you."
+msgstr ""
+
+#: INVALID_EMAIL
+msgid "Invalid e-mail."
+msgstr ""
+
+#: INVALID_PASSWORD
+msgid "The password contains invalid characters."
+msgstr ""
+
+#: INVALID_REPASSWORD
+msgid "The passwords do not match."
+msgstr ""
+
+#: INVALID_USERNAME
+msgid "The username contains invalid characters."
+msgstr ""
+
+#: IRAUPENA
+msgctxt "IRAUPENA"
+msgid "Duration"
+msgstr ""
+
+#: JATORRIZKOA
+msgid "Original Video"
+msgstr ""
+
+#: JOIN_US
+msgid "Join us now!"
+msgstr ""
+
+#: JUDGE
+msgid "Assessor"
+msgstr ""
+
+#: LABEL_ABOUT
+msgid "About"
+msgstr ""
+
+#: LABEL_ABOUT_SECTION
+msgid "About Babelium Project"
+msgstr ""
+
+#: LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE
+msgid "Add automatic evaluation support if possible"
+msgstr ""
+
+#: LABEL_ALL_TIME_CREDITS
+msgid "All-time"
+msgstr ""
+
+#: LABEL_APPLICATION_INFO
+msgid "Application Info"
+msgstr ""
+
+#: LABEL_APPLICATION_LICENSE
+msgid "Application License:"
+msgstr ""
+
+#: LABEL_APPLICATION_VERSION
+msgid "Application Version:"
+msgstr ""
+
+#: LABEL_AUTOEVAL_ERROR
+msgid "ERROR"
+msgstr ""
+
+#: LABEL_AUTOEVAL_SCORE
+msgid "Score:"
+msgstr ""
+
+#: LABEL_AUTOMATIC_EVALUATION
+msgid "Automatic Evaluation:"
+msgstr ""
+
+#: LABEL_BANDWIDTH_CHECK
+msgid "Bandwidth check"
+msgstr ""
+
+#: LABEL_CHOOSE_TRANSCRIPTION_SYSTEM
+msgid "Choose System:"
+msgstr ""
+
+#: LABEL_CHOOSE_UPLOADING_METHOD
+msgid "Choose an uploading method:"
+msgstr ""
+
+#: LABEL_CLICK_HERE
+msgid "Click"
+msgstr ""
+
+#: LABEL_CONFIGURATION
+msgid "Configure"
+msgstr ""
+
+#: LABEL_CONTACT_INFO
+msgid "Contact Info"
+msgstr ""
+
+#: LABEL_CREDIT_HISTORY
+msgid "Credit History"
+msgstr ""
+
+#: LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION
+msgid "Currently selected subtitle version:"
+msgstr ""
+
+#: LABEL_DESCRIPTION
+msgid "Description:"
+msgstr ""
+
+#: LABEL_DIFFICULTY_LEVEL
+msgid "Difficulty Level:"
+msgstr ""
+
+#: LABEL_EDIT
+msgctxt "LABEL_EDIT"
+msgid "Edit"
+msgstr ""
+
+#: LABEL_EMAIL
+msgid "eMail:"
+msgstr ""
+
+#: LABEL_ERROR_WRONG_ACTIVATION_RESEND_DATA
+msgid "Wrong activation."
+msgstr ""
+
+#: LABEL_EVALUATE_LANGUAGE
+msgid "Languages I know"
+msgstr ""
+
+#: LABEL_EVALUATIONS
+msgid "Evaluate"
+msgstr ""
+
+#: LABEL_EXERCISES
+msgid "Practice"
+msgstr ""
+
+#: LABEL_EXERCISE_TITLE
+msgid "Exercise Title"
+msgstr ""
+
+#: LABEL_EXERCISE_TRANSCRIPTION
+msgid "Exercise transcription:"
+msgstr ""
+
+#: LABEL_FEEDBACK
+msgid "Feel free to send us your comments, questions or suggestions to:"
+msgstr ""
+
+#: LABEL_FIRST
+msgid "First"
+msgstr ""
+
+#: LABEL_FIRST_LANGUAGE
+msgid "First Language (Mother Tongue):"
+msgstr ""
+
+#: LABEL_FLUENCY_SCORE
+msgid "Fluency"
+msgstr ""
+
+#: LABEL_GUEST_EDIT_WARNING
+msgid ""
+"You are not logged in so the changes you make to this subtitle won't be "
+"saved"
+msgstr ""
+
+#: LABEL_GUEST_RECORD_WARNING
+msgid "You must be logged to record an exercise"
+msgstr ""
+
+#: LABEL_HELP
+msgid "Help"
+msgstr ""
+
+#: LABEL_HOME
+msgid "Home"
+msgstr ""
+
+#: LABEL_INACTIVE_USER
+msgid "User account not activated"
+msgstr ""
+
+#: LABEL_INCLUDE_TEXT_COMMENT
+msgid "Include a text comment"
+msgstr ""
+
+#: LABEL_INCLUDE_VIDEO_COMMENT
+msgid "Include a video comment"
+msgstr ""
+
+#: LABEL_INPUT_USER_AND_EMAIL
+msgid "Input your username and your email"
+msgstr ""
+
+#: LABEL_INTEREST_LANGUAGES
+msgid "Languages you're interested in:"
+msgstr ""
+
+#: LABEL_INTONATION_SCORE
+msgid "Intonation"
+msgstr ""
+
+#: LABEL_I_FORGOT_MY_PASSWORD
+msgid "I forgot my password"
+msgstr ""
+
+#: LABEL_LANGUAGE
+msgid "Language:"
+msgstr ""
+
+#: LABEL_LANGUAGES
+msgid "Languages"
+msgstr ""
+
+#: LABEL_LANGUAGE_KNOWLEDGE
+msgid "Knowledge:"
+msgstr ""
+
+#: LABEL_LAST
+msgid "Last"
+msgstr ""
+
+#: LABEL_LAST_HOURS_CREDITS
+msgid "Last Hours"
+msgstr ""
+
+#: LABEL_LAST_MONTH_CREDITS
+msgid "Last Month"
+msgstr ""
+
+#: LABEL_LAST_WEEK_CREDITS
+msgid "Last Week"
+msgstr ""
+
+#: LABEL_MIC_INPUT_LEVEL
+msgid "Mic Input Level"
+msgstr ""
+
+#: LABEL_MIC_SETUP
+msgid "Microphone check"
+msgstr ""
+
+#: LABEL_MODIFY_PASSWORD
+msgid "Modify Password"
+msgstr ""
+
+#: LABEL_MOST_RECENT_ONE
+msgid "The most recent subtitle"
+msgstr ""
+
+#: LABEL_MY_PROFILE
+msgid "My Profile"
+msgstr ""
+
+#: LABEL_NEEDED_BW
+msgid "Needed"
+msgstr ""
+
+#: LABEL_NEW_ROLE
+msgid "New Role"
+msgstr ""
+
+#: LABEL_NEXT
+msgid "Next"
+msgstr ""
+
+#: LABEL_OLDPASSWORD
+msgid "Old Password:"
+msgstr ""
+
+#: LABEL_OTHER_AVAILABLE_SUBTITLE_VERSIONS
+msgid "Other available subtitle versions:"
+msgstr ""
+
+#: LABEL_OTHER_LANGUAGES
+msgid "Other Languages:"
+msgstr ""
+
+#: LABEL_OVERALL_SCORE
+msgid "Overall"
+msgstr ""
+
+#: LABEL_PASSWORD
+msgid "Password:"
+msgstr ""
+
+#: LABEL_PENDING_SUBTITLES
+msgid "Subtitle exercises"
+msgstr ""
+
+#: LABEL_PERSONAL_INFO
+msgid "Personal Information"
+msgstr ""
+
+#: LABEL_PRACTICE_LANGUAGE
+msgid "Languages I'm practicing"
+msgstr ""
+
+#: LABEL_PREVIOUS
+msgid "Prev"
+msgstr ""
+
+#: LABEL_REAL_BW
+msgid "Current"
+msgstr ""
+
+#: LABEL_REAL_NAME
+msgid "Real Name:"
+msgstr ""
+
+#: LABEL_REAL_SURNAME
+msgid "Real Surname:"
+msgstr ""
+
+#: LABEL_REMEMBER_ME
+msgid "Remember Me!"
+msgstr ""
+
+#: LABEL_REPASSWORD
+msgid "Re-enter password:"
+msgstr ""
+
+#: LABEL_RESET_EVALUATION
+msgid "Reset Data"
+msgstr ""
+
+#: LABEL_RESTORE_PASSWORD
+msgid "Restore password"
+msgstr ""
+
+#: LABEL_REVIEW_SUBTITLES
+msgid "Review subtitles"
+msgstr ""
+
+#: LABEL_RHYTHM_SCORE
+msgctxt "LABEL_RHYTHM_SCORE"
+msgid "Rhythm"
+msgstr ""
+
+#: LABEL_ROLE_CURRENTLY_TALKING
+msgid "Talking"
+msgstr ""
+
+#: LABEL_SEARCH
+msgctxt "LABEL_SEARCH"
+msgid "Search"
+msgstr ""
+
+#: LABEL_SECURITY
+msgid "Security"
+msgstr ""
+
+#: LABEL_SEND_EMAIL_AGAIN
+msgid "Resend activation email"
+msgstr ""
+
+#: LABEL_SEND_EVALUATION
+msgid "Send Evaluation"
+msgstr ""
+
+#: LABEL_SIGN_IN
+msgid "Login"
+msgstr ""
+
+#: LABEL_SIGN_OUT
+msgid "Sign Out"
+msgstr ""
+
+#: LABEL_SIGN_UP
+msgid "Register"
+msgstr ""
+
+#: LABEL_SPECIFY_LICENSE
+msgid "Specify video license:"
+msgstr ""
+
+#: LABEL_SPONTANEITY_SCORE
+msgctxt "LABEL_SPONTANEITY_SCORE"
+msgid "Spontaneity"
+msgstr ""
+
+#: LABEL_STATUS
+msgid "Status:"
+msgstr ""
+
+#: LABEL_SUBTITLE
+msgctxt "LABEL_SUBTITLE"
+msgid "Subtitle"
+msgstr ""
+
+#: LABEL_TAGS
+msgid "Tags:"
+msgstr ""
+
+#: LABEL_TEXT_COMMENT
+msgid "Text Comment"
+msgstr ""
+
+#: LABEL_THIRD_PARTY_STUFF
+msgid "Third-party resources"
+msgstr ""
+
+#: LABEL_TITLE
+msgid "Title:"
+msgstr ""
+
+#: LABEL_TOP_COLLABORATORS
+msgid "Top Collaborators"
+msgstr ""
+
+#: LABEL_UNKOWN_FLASH_VERSION
+msgid "Unknown flash version"
+msgstr ""
+
+#: LABEL_UPLOAD
+msgctxt "LABEL_UPLOAD"
+msgid "Upload"
+msgstr ""
+
+#: LABEL_UPLOADSTATUS_NOACTIVITY
+msgid "No Activity"
+msgstr ""
+
+#: LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD
+msgid "Successful Upload"
+msgstr ""
+
+#: LABEL_UPLOADSTATUS_UPLOADFINISHED
+msgid "Upload Finished!"
+msgstr ""
+
+#: LABEL_UPLOADSTATUS_UPLOADINPROGRESS
+msgid "Uploading File..."
+msgstr ""
+
+#: LABEL_UPLOAD_FILE
+msgid "Upload a video file from your computer"
+msgstr ""
+
+#: LABEL_UPLOAD_NEW_EXERCISE
+msgid "Upload New Exercise"
+msgstr ""
+
+#: LABEL_UPLOAD_STREAMING
+msgid "Record an exercise with the webcam and save it"
+msgstr ""
+
+#: LABEL_UPLOAD_YOUTUBE
+msgid "Slice up a video from YouTube and save it"
+msgstr ""
+
+#: LABEL_USERS_FLASH_VERSION
+msgid "Your current Flash Version:"
+msgstr ""
+
+#: LABEL_USER_ACCOUNT
+msgid "Account"
+msgstr ""
+
+#: LABEL_USER_NAME
+msgid "User Name:"
+msgstr ""
+
+#: LABEL_USER_OR_EMAIL
+msgid "Username or email"
+msgstr ""
+
+#: LABEL_VIDEO_COMMENT
+msgid "Video Comment"
+msgstr ""
+
+#: LABEL_VIDEO_OWNER_AUTHOR
+msgid "Author's Name/URL:"
+msgstr ""
+
+#: LABEL_WEBCAM_SETUP
+msgid "Webcam check"
+msgstr ""
+
+#: LABEL_WELCOME
+msgid "Welcome,"
+msgstr ""
+
+#: LABEL_WHO_ARE_WE
+msgid "Who are we?"
+msgstr ""
+
+#: LABEL_WRONG_PASSWORD
+msgid "Wrong Password"
+msgstr ""
+
+#: LABEL_WRONG_USER
+msgid "User doesn't exist!"
+msgstr ""
+
+#: LABEL_YOUR_TRANSCRIPTION
+msgid "Your transcription:"
+msgstr ""
+
+#: LANGUAGES_SUCCESSFULLY_MODIFIED
+msgid "Your languages have been successfully modified."
+msgstr ""
+
+#: LAST_ASSESSMENT_DATE
+msgid "Last Assessment date"
+msgstr ""
+
+#: LATEST_BEST_RATED_VIDEOS
+msgid "Best rated videos"
+msgstr ""
+
+#: LATEST_UPLOADED_VIDEOS
+msgid "Latest uploaded videos"
+msgstr ""
+
+#: LESS_INFO
+msgid "Less info"
+msgstr ""
+
+#: LEVEL_A1
+msgid "A1 Beginner"
+msgstr ""
+
+#: LEVEL_A2
+msgid "A2 Elementary"
+msgstr ""
+
+#: LEVEL_B1
+msgid "B1 Pre-intermediate"
+msgstr ""
+
+#: LEVEL_B11
+msgid "B1.1 Intermediate"
+msgstr ""
+
+#: LEVEL_B12
+msgid "B1.2 Intermediate"
+msgstr ""
+
+#: LEVEL_B2
+msgid "B2 Intermediate"
+msgstr ""
+
+#: LEVEL_B21
+msgid "B2.1 Advanced"
+msgstr ""
+
+#: LEVEL_B22
+msgid "B2.2 Advanced"
+msgstr ""
+
+#: LEVEL_C1
+msgid "C1 Upper intermediate"
+msgstr ""
+
+#: LOCALE_AF_ZA
+msgid "Afrikaans (South Africa)"
+msgstr ""
+
+#: LOCALE_AR_AE
+msgid "Arabic (United Arab Emirates)"
+msgstr ""
+
+#: LOCALE_AR_BH
+msgid "Arabic (Bahrain)"
+msgstr ""
+
+#: LOCALE_AR_DZ
+msgid "Arabic (Algeria)"
+msgstr ""
+
+#: LOCALE_AR_EG
+msgid "Arabic (Egypt)"
+msgstr ""
+
+#: LOCALE_AR_IQ
+msgid "Arabic (Iraq)"
+msgstr ""
+
+#: LOCALE_AR_JO
+msgid "Arabic (Jordan)"
+msgstr ""
+
+#: LOCALE_AR_KW
+msgid "Arabic (Kuwait)"
+msgstr ""
+
+#: LOCALE_AR_LB
+msgid "Arabic (Lebanon)"
+msgstr ""
+
+#: LOCALE_AR_LY
+msgid "Arabic (Libya)"
+msgstr ""
+
+#: LOCALE_AR_MA
+msgid "Arabic (Morocco)"
+msgstr ""
+
+#: LOCALE_AR_OM
+msgid "Arabic (Oman)"
+msgstr ""
+
+#: LOCALE_AR_QA
+msgid "Arabic (Qatar)"
+msgstr ""
+
+#: LOCALE_AR_SA
+msgid "Arabic (Saudi Arabia)"
+msgstr ""
+
+#: LOCALE_AR_SY
+msgid "Arabic (Syria)"
+msgstr ""
+
+#: LOCALE_AR_TN
+msgid "Arabic (Tunisia)"
+msgstr ""
+
+#: LOCALE_AR_YE
+msgid "Arabic (Yemen)"
+msgstr ""
+
+#: LOCALE_AZ_AZ
+msgid "Azeri (Azerbaijan)"
+msgstr ""
+
+#: LOCALE_BE_BY
+msgid "Belarusian (Belarus)"
+msgstr ""
+
+#: LOCALE_BG_BG
+msgid "Bulgarian (Bulgaria)"
+msgstr ""
+
+#: LOCALE_CA_ES
+msgid "Catalan"
+msgstr ""
+
+#: LOCALE_CS_CZ
+msgid "Czech (Czech Republic)"
+msgstr ""
+
+#: LOCALE_DA_DK
+msgid "Danish (Denmark)"
+msgstr ""
+
+#: LOCALE_DE_AT
+msgid "German (Austria)"
+msgstr ""
+
+#: LOCALE_DE_CH
+msgid "German (Switzerland)"
+msgstr ""
+
+#: LOCALE_DE_DE
+msgid "German (Germany)"
+msgstr ""
+
+#: LOCALE_DE_LI
+msgid "German (Liechtenstein)"
+msgstr ""
+
+#: LOCALE_DE_LU
+msgid "German (Luxembourg)"
+msgstr ""
+
+#: LOCALE_EL_GR
+msgid "Greek (Greece)"
+msgstr ""
+
+#: LOCALE_EN_AU
+msgid "English (Australia)"
+msgstr ""
+
+#: LOCALE_EN_BZ
+msgid "English (Belize)"
+msgstr ""
+
+#: LOCALE_EN_CA
+msgid "English (Canada)"
+msgstr ""
+
+#: LOCALE_EN_CB
+msgid "English (Caribbean)"
+msgstr ""
+
+#: LOCALE_EN_GB
+msgid "English (United Kingdom)"
+msgstr ""
+
+#: LOCALE_EN_IE
+msgid "English (Ireland)"
+msgstr ""
+
+#: LOCALE_EN_JM
+msgid "English (Jamaica)"
+msgstr ""
+
+#: LOCALE_EN_NZ
+msgid "English (New Zealand)"
+msgstr ""
+
+#: LOCALE_EN_PH
+msgid "English (Philippines)"
+msgstr ""
+
+#: LOCALE_EN_TT
+msgid "English (Trinidad and Tobago)"
+msgstr ""
+
+#: LOCALE_EN_US
+msgid "English (United States)"
+msgstr ""
+
+#: LOCALE_EN_ZA
+msgid "English (South Africa)"
+msgstr ""
+
+#: LOCALE_EN_ZW
+msgid "English (Zimbabwe)"
+msgstr ""
+
+#: LOCALE_ES_AR
+msgid "Spanish (Argentina)"
+msgstr ""
+
+#: LOCALE_ES_BO
+msgid "Spanish (Bolivia)"
+msgstr ""
+
+#: LOCALE_ES_CL
+msgid "Spanish (Chile)"
+msgstr ""
+
+#: LOCALE_ES_CO
+msgid "Spanish (Colombia)"
+msgstr ""
+
+#: LOCALE_ES_CR
+msgid "Spanish (Costa Rica)"
+msgstr ""
+
+#: LOCALE_ES_DO
+msgid "Spanish (Dominican Republic)"
+msgstr ""
+
+#: LOCALE_ES_EC
+msgid "Spanish (Ecuador)"
+msgstr ""
+
+#: LOCALE_ES_ES
+msgid "Spanish (Spain)"
+msgstr ""
+
+#: LOCALE_ES_GT
+msgid "Spanish (Guatemala)"
+msgstr ""
+
+#: LOCALE_ES_HN
+msgid "Spanish (Honduras)"
+msgstr ""
+
+#: LOCALE_ES_MX
+msgid "Spanish (Mexico)"
+msgstr ""
+
+#: LOCALE_ES_NI
+msgid "Spanish (Nicaragua)"
+msgstr ""
+
+#: LOCALE_ES_PA
+msgid "Spanish (Panama)"
+msgstr ""
+
+#: LOCALE_ES_PE
+msgid "Spanish (Peru)"
+msgstr ""
+
+#: LOCALE_ES_PR
+msgid "Spanish (Puerto Rico)"
+msgstr ""
+
+#: LOCALE_ES_PY
+msgid "Spanish (Paraguay)"
+msgstr ""
+
+#: LOCALE_ES_SV
+msgid "Spanish (El Salvador)"
+msgstr ""
+
+#: LOCALE_ES_UY
+msgid "Spanish (Uruguay)"
+msgstr ""
+
+#: LOCALE_ES_VE
+msgid "Spanish (Venezuela)"
+msgstr ""
+
+#: LOCALE_ET_EE
+msgid "Estonian (Estonia)"
+msgstr ""
+
+#: LOCALE_EU_ES
+msgid "Basque"
+msgstr ""
+
+#: LOCALE_FA_IR
+msgid "Farsi (Iran)"
+msgstr ""
+
+#: LOCALE_FI_FI
+msgid "Finnish (Finland)"
+msgstr ""
+
+#: LOCALE_FO_FO
+msgid "Faroese (Faroe Islands)"
+msgstr ""
+
+#: LOCALE_FR_BE
+msgid "French (Belgium)"
+msgstr ""
+
+#: LOCALE_FR_CA
+msgid "French (Canada)"
+msgstr ""
+
+#: LOCALE_FR_CH
+msgid "French (Switzerland)"
+msgstr ""
+
+#: LOCALE_FR_FR
+msgid "French (France)"
+msgstr ""
+
+#: LOCALE_FR_LU
+msgid "French (Luxembourg)"
+msgstr ""
+
+#: LOCALE_FR_MC
+msgid "French (Monaco)"
+msgstr ""
+
+#: LOCALE_GL_ES
+msgid "Galician"
+msgstr ""
+
+#: LOCALE_GU_IN
+msgid "Gujarati (India)"
+msgstr ""
+
+#: LOCALE_HE_IL
+msgid "Hebrew (Israel)"
+msgstr ""
+
+#: LOCALE_HI_IN
+msgid "Hindi (India)"
+msgstr ""
+
+#: LOCALE_HR_HR
+msgid "Croatian (Croatia)"
+msgstr ""
+
+#: LOCALE_HU_HU
+msgid "Hungarian (Hungary)"
+msgstr ""
+
+#: LOCALE_HY_AM
+msgid "Armenian (Armenia)"
+msgstr ""
+
+#: LOCALE_ID_ID
+msgid "Indonesian (Indonesia)"
+msgstr ""
+
+#: LOCALE_IS_IS
+msgid "Icelandic (Iceland)"
+msgstr ""
+
+#: LOCALE_IT_CH
+msgid "Italian (Switzerland)"
+msgstr ""
+
+#: LOCALE_IT_IT
+msgid "Italian (Italy)"
+msgstr ""
+
+#: LOCALE_JA_JP
+msgid "Japanese (Japan)"
+msgstr ""
+
+#: LOCALE_KA_GE
+msgid "Georgian (Georgia)"
+msgstr ""
+
+#: LOCALE_KK_KZ
+msgid "Kazakh (Kazakhstan)"
+msgstr ""
+
+#: LOCALE_KN_IN
+msgid "Kannada (India)"
+msgstr ""
+
+#: LOCALE_KO_KR
+msgid "Korean (Korea)"
+msgstr ""
+
+#: LOCALE_KY_KG
+msgid "Kyrgyz (Kyrgyzstan)"
+msgstr ""
+
+#: LOCALE_LT_LT
+msgid "Lithuanian (Lithuania)"
+msgstr ""
+
+#: LOCALE_LV_LV
+msgid "Latvian (Latvia)"
+msgstr ""
+
+#: LOCALE_MN_MN
+msgid "Mongolian (Mongolia)"
+msgstr ""
+
+#: LOCALE_MR_IN
+msgid "Marathi (India)"
+msgstr ""
+
+#: LOCALE_MS_BN
+msgid "Malay (Brunei)"
+msgstr ""
+
+#: LOCALE_MS_MY
+msgid "Malay (Malaysia)"
+msgstr ""
+
+#: LOCALE_NB_NO
+msgid "Norwegian (Bokmål) (Norway)"
+msgstr ""
+
+#: LOCALE_NL_BE
+msgid "Dutch (Belgium)"
+msgstr ""
+
+#: LOCALE_NL_NL
+msgid "Dutch (The Netherlands)"
+msgstr ""
+
+#: LOCALE_NN_NO
+msgid "Norwegian (Nynorsk) (Norway)"
+msgstr ""
+
+#: LOCALE_PA_IN
+msgid "Punjabi (India)"
+msgstr ""
+
+#: LOCALE_PL_PL
+msgid "Polish (Poland)"
+msgstr ""
+
+#: LOCALE_PT_BR
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+#: LOCALE_PT_PT
+msgid "Portuguese (Portugal)"
+msgstr ""
+
+#: LOCALE_RO_RO
+msgid "Romanian (Romania)"
+msgstr ""
+
+#: LOCALE_RU_RU
+msgid "Russian (Russia)"
+msgstr ""
+
+#: LOCALE_SA_IN
+msgid "Sanskrit (India)"
+msgstr ""
+
+#: LOCALE_SK_SK
+msgid "Slovak (Slovakia)"
+msgstr ""
+
+#: LOCALE_SL_SI
+msgid "Slovenian (Slovenia)"
+msgstr ""
+
+#: LOCALE_SQ_AL
+msgid "Albanian (Albania)"
+msgstr ""
+
+#: LOCALE_SR_SP
+msgid "Serbian (Serbia)"
+msgstr ""
+
+#: LOCALE_SV_FI
+msgid "Swedish (Finland)"
+msgstr ""
+
+#: LOCALE_SV_SE
+msgid "Swedish (Sweden)"
+msgstr ""
+
+#: LOCALE_SW_KE
+msgid "Swahili (Kenya)"
+msgstr ""
+
+#: LOCALE_TA_IN
+msgid "Tamil (India)"
+msgstr ""
+
+#: LOCALE_TE_IN
+msgid "Telugu (India)"
+msgstr ""
+
+#: LOCALE_TH_TH
+msgid "Thai (Thailand)"
+msgstr ""
+
+#: LOCALE_TR_TR
+msgid "Turkish (Turkey)"
+msgstr ""
+
+#: LOCALE_TT_RU
+msgid "Tatar (Russia)"
+msgstr ""
+
+#: LOCALE_UK_UA
+msgid "Ukrainian (Ukraine)"
+msgstr ""
+
+#: LOCALE_ZH_CN
+msgid "Chinese Simplified (China)"
+msgstr ""
+
+#: LOCALE_ZH_HK
+msgid "Chinese (Hong Kong)"
+msgstr ""
+
+#: LOCALE_ZH_MO
+msgid "Chinese (Macao)"
+msgstr ""
+
+#: LOCALE_ZH_SG
+msgid "Chinese (Singapore)"
+msgstr ""
+
+#: LOCALE_ZH_TW
+msgid "Chinese Traditional (Taiwan)"
+msgstr ""
+
+#: LONG_NEWROLE
+msgid "The role name can't be longer than {0} characters."
+msgstr ""
+
+#: MAXIMUM_FILESIZE_EXCEEDED
+msgid "The file you selected exceeds the maximum allowed filesize."
+msgstr ""
+
+#: MESSAGE_ADD_VIDEO_EVALUATION
+msgid "Add video evaluation:"
+msgstr ""
+
+#: MESSAGE_ASK_COMPUTER_EVALUATION
+msgid "Do you want to be evaluated by a computer?"
+msgstr ""
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_1
+msgid "If you ask for an evaluation, your video will be publicly available"
+msgstr ""
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_2
+msgid "for the users of Babelium Project. Otherways, you will be the"
+msgstr ""
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_3
+msgid "only one who can see it."
+msgstr ""
+
+#: MESSAGE_ASK_USERS_EVALUATION
+msgid "Do you want to ask the users for an evaluation?"
+msgstr ""
+
+#: MESSAGE_AUTOMATIC_EVALUATION_NOT_SUPPORTED
+msgid "This video doesn't support automatic evaluations."
+msgstr ""
+
+#: MESSAGE_CHOOSE_LOCALE
+msgid "Choose a language"
+msgstr ""
+
+#: MESSAGE_CHOOSE_REC_METHOD
+msgid "Choose recording method"
+msgstr ""
+
+#: MESSAGE_CHOOSE_ROLE
+msgid "Choose a role"
+msgstr ""
+
+#: MESSAGE_CHOOSE_SUBTITLE_LANGUAGE
+msgid "Select subtitle language"
+msgstr ""
+
+#: MESSAGE_COMPULSORY_EVALUATION_DATA
+msgid "Compulsory evaluation data"
+msgstr ""
+
+#: MESSAGE_DURATION
+msgctxt "MESSAGE_DURATION"
+msgid "Duration"
+msgstr ""
+
+#: MESSAGE_EXERCISE_CHOOSE_A_ROLE
+msgid "Choose the role you want to impersonate:"
+msgstr ""
+
+#: MESSAGE_EXERCISE_LIST
+msgid "Available Exercise List"
+msgstr ""
+
+#: MESSAGE_EXERCISE_ROLES
+msgid "From the roles available in this exercise,"
+msgstr ""
+
+#: MESSAGE_EXERCISE_ROLES_SELECT
+msgid "choose the one you want to impersonate:"
+msgstr ""
+
+#: MESSAGE_FILL_THE_REQUIRED_FIELDS
+msgid "You must fill all the required fields to save the exercise."
+msgstr ""
+
+#: MESSAGE_MAIN_LANGUAGE
+msgid "Tell us which is your main language or mother tongue"
+msgstr ""
+
+#: MESSAGE_OPTIONAL_EVALUATION_DATA
+msgid "Optional text and/or video comment to improve user feedback"
+msgstr ""
+
+#: MESSAGE_OTHER_LANGUAGE
+msgid ""
+"Do you know any other language(s) with enough level to assess other peoples' "
+"pronouncing etc.?"
+msgstr ""
+
+#: MESSAGE_PRACTICE_LANGUAGE
+msgid "Which languages would you like to practice?"
+msgstr ""
+
+#: MESSAGE_RATE_THE_USERS_RESPONSE
+msgid "Rate the user's response"
+msgstr ""
+
+#: MESSAGE_RATE_USER_FLUENCY
+msgid "Pronunciation"
+msgstr ""
+
+#: MESSAGE_RATE_USER_INTONATION
+msgid "Intonation & accent"
+msgstr ""
+
+#: MESSAGE_RATE_USER_OVERALL_SCORE
+msgid "Overall Score"
+msgstr ""
+
+#: MESSAGE_RATE_USER_PERFORMANCE
+msgid ""
+"PERFORMS in the conversation with ease and skill catching non-verbal keys "
+"and waiting for his turn in a NATURAL WAY"
+msgstr ""
+
+#: MESSAGE_RATE_USER_RHYTHM
+msgctxt "MESSAGE_RATE_USER_RHYTHM"
+msgid "Rhythm"
+msgstr ""
+
+#: MESSAGE_RATE_USER_SPONTANEITY
+msgctxt "MESSAGE_RATE_USER_SPONTANEITY"
+msgid "Spontaneity"
+msgstr ""
+
+#: MESSAGE_REPORT_INAPPROPRIATE
+msgid "Report Inappropriate Exercise"
+msgstr ""
+
+#: MESSAGE_REPORT_SPECIFY_ISSUE
+msgid "Report an issue with this video:"
+msgstr ""
+
+#: MESSAGE_ROLE_ALREADY_EXISTS
+msgid "That role already exists!"
+msgstr ""
+
+#: MESSAGE_SECONDS
+msgid "seconds"
+msgstr ""
+
+#: MESSAGE_SELECTED_EXERCISE
+msgid "Selected Exercise"
+msgstr ""
+
+#: MESSAGE_SELECT_ROL_TO_DELETE
+msgid "You must select the role you want to delete."
+msgstr ""
+
+#: MESSAGE_SIGN_UP
+msgid "Sign up on Babelium Project"
+msgstr ""
+
+#: MESSAGE_STATUS_BUFFERING
+msgid "Buffering..."
+msgstr ""
+
+#: MESSAGE_STATUS_FINISHED
+msgid "Finished"
+msgstr ""
+
+#: MESSAGE_STATUS_PAUSED
+msgid "Paused"
+msgstr ""
+
+#: MESSAGE_STATUS_PLAYING
+msgid "Playing..."
+msgstr ""
+
+#: MESSAGE_STATUS_RECORDING
+msgid "Recording..."
+msgstr ""
+
+#: MESSAGE_STATUS_STOPPED
+msgid "Stopped"
+msgstr ""
+
+#: MESSAGE_SUBTITLING_CONTROLS
+msgid "Subtitling Controls:"
+msgstr ""
+
+#: MESSAGE_SUCCESSFULLY_SAVED
+msgid "Your response has been successfully saved!"
+msgstr ""
+
+#: MESSAGE_TO_SIGN_IN_TO_SIGN_UP
+msgid "to sign in. You can sign-up for free"
+msgstr ""
+
+#: MESSAGE_UPLOADER
+msgid "Uploader"
+msgstr ""
+
+#: MESSAGE_YOU_MUST_BE_REGISTERED
+msgid "You must be registered to see this area"
+msgstr ""
+
+#: MICROPHONE
+msgid "Microphone"
+msgstr ""
+
+#: MODIFY_USER_INFO_DESCRIPTION
+msgid ""
+"In this section you can modify all the data and customize your experience in "
+"the application."
+msgstr ""
+
+#: MORE_INFO
+msgid "More info"
+msgstr ""
+
+#: MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED
+msgid ""
+"You must choose at least one mother tongue and a language you want to "
+"practice."
+msgstr ""
+
+#: MY_ACTIVITY
+msgid "My recent activity"
+msgstr ""
+
+#: MY_VIDEOS
+msgid "My Videos"
+msgstr ""
+
+#: MY_VIDEOS_DESCRIPTION
+msgid ""
+"In this section you can manage all the videos you've provided to the "
+"application."
+msgstr ""
+
+#: NEW_MAIL
+msgid "New email address"
+msgstr ""
+
+#: NEW_PASSWORD_SENT
+msgid "The new password has been sent to your email."
+msgstr ""
+
+#: NIKEPAITUTAKOAK
+msgid "Responses I assessed"
+msgstr ""
+
+#: NIRIPAITUTAKOAK
+msgid "My assessed responses"
+msgstr ""
+
+#: NO_COMMENT_AVAILABLE
+msgid "No comment was added"
+msgstr ""
+
+#: OBTAIN_CREDITS
+msgid "Obtain Credits"
+msgstr ""
+
+#: OLD_PASSWORD_WRONG
+msgid ""
+"The old password you provided did not match our records. Password change "
+"aborted."
+msgstr ""
+
+#: OPTION_ADD_ROLES_TO_EXERCISE
+msgid "Roles"
+msgstr ""
+
+#: OPTION_ADD_SUBTITLES_TO_EXERCISE
+msgctxt "OPTION_ADD_SUBTITLES_TO_EXERCISE"
+msgid "Subtitle"
+msgstr ""
+
+#: OPTION_ADD_SUBTITLE_LINE
+msgctxt "OPTION_ADD_SUBTITLE_LINE"
+msgid "Add"
+msgstr ""
+
+#: OPTION_CLEAR_SUBTITLE_LINES
+msgid "Clear"
+msgstr ""
+
+#: OPTION_DELETE_A_ROLE
+msgid "Delete A Role"
+msgstr ""
+
+#: OPTION_INSERT_NEW_ROLE
+msgid "Insert New Role..."
+msgstr ""
+
+#: OPTION_MIC_ONLY
+msgid "Microphone only"
+msgstr ""
+
+#: OPTION_RECORD_RESPONSE
+msgctxt "OPTION_RECORD_RESPONSE"
+msgid "Record"
+msgstr ""
+
+#: OPTION_REMEMBER_SETTINGS
+msgid "Remember settings"
+msgstr ""
+
+#: OPTION_REMOVE_SUBTITLE_LINE
+msgid "Remove"
+msgstr ""
+
+#: OPTION_SAVE_SUBTITLE_LINES
+msgid "Publish"
+msgstr ""
+
+#: OPTION_SOUND_BAR
+msgid "Mic Test"
+msgstr ""
+
+#: OPTION_WEBCAM_AND_MIC
+msgid "Webcam and microphone"
+msgstr ""
+
+#: OWNER
+msgctxt "OWNER"
+msgid "Recorded by"
+msgstr ""
+
+#: PASSWORD_SUCCESSFULLY_CHANGED
+msgid "Your password has been successfully changed."
+msgstr ""
+
+#: PENDING
+msgid "pending"
+msgstr ""
+
+#: PERSONAL_DATA_SUCCESSFULLY_MODIFIED
+msgid "Your personal data has been successfully changed."
+msgstr ""
+
+#: PROCESSING
+msgid "processing"
+msgstr ""
+
+#: PROMPT_CHOOSE_ISSUE
+msgid "Choose an Issue"
+msgstr ""
+
+#: PROMPT_SELECT_LANGUAGE
+msgid "Select a language"
+msgstr ""
+
+#: PROMPT_SELECT_DIFFICULTY
+msgid "Select a difficulty"
+msgstr ""
+
+#: RECORDED_BY
+msgctxt "RECORDED_BY"
+msgid "Recorded by"
+msgstr ""
+
+#: RECORDING_SETTINGS
+msgid "Recording settings"
+msgstr ""
+
+#: RECORD_DATE
+msgid "Record date"
+msgstr ""
+
+#: RENDERER_NO_INPUT_DATA
+msgid "None"
+msgstr ""
+
+#: REPEAT_NEW_EMAIL
+msgid "Re-enter new email address"
+msgstr ""
+
+#: REPORT
+msgctxt "REPORT"
+msgid "Report"
+msgstr ""
+
+#: REPORT_18_PLUS
+msgid "Video is not suitable for underages"
+msgstr ""
+
+#: REPORT_COPYRIGHTED
+msgid "Video is copyrighted material"
+msgstr ""
+
+#: REPORT_DUPLICATED
+msgid "Video already exists in Babelium Project"
+msgstr ""
+
+#: REPORT_INNAPROPRIATE_VIDEO
+msgid "Report an innapropriate video"
+msgstr ""
+
+#: REPORT_OBSCENE
+msgid "Video is pornographic or obscene"
+msgstr ""
+
+#: REPORT_OFFENSIVE
+msgid "Video is offensive"
+msgstr ""
+
+#: REPORT_TECHNICAL
+msgid "Report technical problems"
+msgstr ""
+
+#: REPORT_TERMS
+msgid "Video violates terms & conditions"
+msgstr ""
+
+#: REPORT_VIOLENCE
+msgid "Video contains graphic violence"
+msgstr ""
+
+#: RESET
+msgid "Reset"
+msgstr ""
+
+#: RESPONSES_ASSESSED_BY_USER_LIST
+msgid "List of done assessments"
+msgstr ""
+
+#: RESPONSES_ASSESSED_TO_USER_LIST
+msgid "List of received assessments"
+msgstr ""
+
+#: RESULTS
+msgid "Results"
+msgstr ""
+
+#: ROLE_EMPTY
+msgid "The role on the line {0} is empty."
+msgstr ""
+
+#: SAVEVIDEO
+msgid "Save video"
+msgstr ""
+
+#: SEARCH
+msgctxt "SEARCH"
+msgid "Search"
+msgstr ""
+
+#: SEARCH_CB_AUTOMATIC
+msgid "Automatic"
+msgstr ""
+
+#: SEARCH_CB_DATE
+msgctxt "SEARCH_CB_DATE"
+msgid "Date"
+msgstr ""
+
+#: SEARCH_CB_DIFFICULTY
+msgid "Difficulty"
+msgstr ""
+
+#: SEARCH_CB_LANGUAGE
+msgid "Language"
+msgstr ""
+
+#: SEARCH_CB_RATING
+msgid "Rating"
+msgstr ""
+
+#: SEARCH_CB_USER
+msgid "User"
+msgstr ""
+
+#: SEARCH_ORDERBY
+msgid "Order by"
+msgstr ""
+
+#: SEARCH_RESULTSFOUND
+msgid "Matches found"
+msgstr ""
+
+#: SEARCH_RESULTS_FOR
+msgid "Search results for:"
+msgstr ""
+
+#: SEARCH_SECTION_DESCRIPTION
+msgid "Use this module to find the exercise you are looking for."
+msgstr ""
+
+#: SEARCH_TAGCLOUD
+msgid "Tag Cloud"
+msgstr ""
+
+#: SELECTEDCHAR
+msgid "Selected role"
+msgstr ""
+
+#: SHORT_NEWROLE
+msgid "The role name must have at least {0} characters."
+msgstr ""
+
+#: SHORT_PASSWORD
+msgid "The password must have at least 6 characters."
+msgstr ""
+
+#: SHORT_USERNAME
+msgid "The username must have at least 4 characters."
+msgstr ""
+
+#: SHOW_SUBTITLES
+msgid "Show subtitles"
+msgstr ""
+
+#: SIGNUP_SECTION_DESCRIPTION
+msgid ""
+"Use this section to sign up on Babelium and thus start practicing your "
+"favorite languages in no time. It's free."
+msgstr ""
+
+#: SIMULTANEOUS_SUBTITLE_EDITION
+msgid "Someone else is editing this very same subtitles."
+msgstr ""
+
+#: SLICEABORT_TEXT
+msgid "The video's duration exceeds the limit, the video can't be downloaded"
+msgstr ""
+
+#: SLICEEND_TEXT
+msgid ""
+"Your slice request has been successfully created, the video will be uploaded "
+"soon if duration requirements are fulfilled. Thank you!"
+msgstr ""
+
+#: SLICEPROGRESS_TEXT
+msgid "The slice request is being processed. Please wait..."
+msgstr ""
+
+#: SLICEREQUEST_TEXT
+msgid ""
+"WARNING:\n"
+"You must fill the following form with information \n"
+"on the new video to register your slice request correctly."
+msgstr ""
+
+#: SORT_BY
+msgid "Sort by"
+msgstr ""
+
+#: SPEND_CREDITS
+msgid "Use Credits"
+msgstr ""
+
+#: STEP_BY_STEP
+msgid "Step by step"
+msgstr ""
+
+#: SUBITLE_START_TIME_TOOLTIP
+msgid "Start subtitle line"
+msgstr ""
+
+#: SUBTITLE_OVERLAPS
+msgid "The subtitle on the line {0} overlaps with the next subtitle."
+msgstr ""
+
+#: SUBTITLE_SECTION_DESCRIPTION
+msgid ""
+"The freshly uploaded videos are not very useful until somebody establishes "
+"who says what on them. Just grab a video and transcript the dialogue so that "
+"other users can practice with this exercise."
+msgstr ""
+
+#: SUBTITLE_STOP_TIME_TOOLTIP
+msgid "Stop subtitle line"
+msgstr ""
+
+#: SUBTITLE_TIME_OUT_OF_BOUNDS
+msgid ""
+"One or more subtitle times on the line {0} are out of the video boundaries"
+msgstr ""
+
+#: TAGS
+msgid "tags"
+msgstr ""
+
+#: TERMS_OF_USE
+msgid "Terms of use"
+msgstr ""
+
+#: TEXT_ADMINISTRATIVELY_DISABLED
+msgid ""
+"An administrative rule forbids the access to camera and microphone. Please "
+"contact your system administrator."
+msgstr ""
+
+#: TEXT_CAMERA_NOT_FOUND
+msgid ""
+"Your camera device couldn't be detected. Please make sure the device is "
+"correctly plugged and then click 'Retry' or click 'Cancel' to abort the "
+"recording."
+msgstr ""
+
+#: TEXT_CREDIT_COUNT
+msgid "Credits:"
+msgstr ""
+
+#: TEXT_EMPTY
+msgid "The text on the line {0} is empty."
+msgstr ""
+
+#: TEXT_MIC_NOT_FOUND
+msgid ""
+"Your microphone device couldn't be detected. Please make sure the device is "
+"correctly plugged and then click 'Retry' or click 'Cancel' to abort the "
+"recording."
+msgstr ""
+
+#: TEXT_MIC_TEST_EXPLAIN
+msgid ""
+"This test will ensure that your microphone works as excepted and has the "
+"minimum required volume to record an exercise."
+msgstr ""
+
+#: TEXT_MODULE_INFO_SUBTITLE
+msgid "Enter a short description of the things you can do with this module."
+msgstr ""
+
+#: TEXT_PRIVACY_RIGHTS_EXPLAIN
+msgid ""
+"Please click 'Allow' when you see this window. Also click on 'Remember' to "
+"skip this step the next time you want to record something."
+msgstr ""
+
+#: TEXT_RECORD_VIDEO_UPLOAD
+msgid ""
+"Use the controls in the right to record an exercise using your webcam. You "
+"can record as many times as you want and preview the videos before actually "
+"saving them in the system."
+msgstr ""
+
+#: TEXT_USER_ACCOUNT
+msgid "User Account"
+msgstr ""
+
+#: TEXT_WHO_ARE_WE
+msgid ""
+"We are a group of researchers and students from the Basque Country's Public "
+"University (UPV/EHU) hypermedia and multimedia research group (GHyM). This "
+"group is primarily focused on developing innovative web-based educational "
+"applications and services. You can follow us on Twitter @babelium :-)"
+msgstr ""
+
+#: TITLE_AVAILABLE_ACTIONS
+msgid "Available Actions"
+msgstr ""
+
+#: TITLE_BANDWIDTH_CHART
+msgid "Current bandwidth chart"
+msgstr ""
+
+#: TITLE_CHOOSE_ROLE
+msgid "CHOOSE A ROLE:"
+msgstr ""
+
+#: TITLE_CHOOSE_ROLE_REC_METHOD
+msgid "CHOOSE ROLE AND RECORDING METHOD"
+msgstr ""
+
+#: TITLE_CONFIRMATION
+msgid "Confirmation"
+msgstr ""
+
+#: TITLE_CONFIRM_ACTION
+msgid "Confirm action"
+msgstr ""
+
+#: TITLE_ERROR
+msgid "Error"
+msgstr ""
+
+#: TITLE_GRANTED_SCORE
+msgid "Granted score"
+msgstr ""
+
+#: TITLE_INFORMATION
+msgid "Information"
+msgstr ""
+
+#: TITLE_INFORMATION_MESSAGE
+msgid "Information Message"
+msgstr ""
+
+#: TITLE_INSERT_NEW_ROL
+msgid "Insert a new Role"
+msgstr ""
+
+#: TITLE_LOGIN_FORM
+msgid "Please enter your login information"
+msgstr ""
+
+#: TITLE_MACHINE_EVALUATION
+msgid "Automatic evaluation"
+msgstr ""
+
+#: TITLE_PRIVACY_SETTINGS
+msgid "Privacy Settings"
+msgstr ""
+
+#: TITLE_REPORT_INAPPROPRIATE
+msgid "Report Inappropriate Exercises"
+msgstr ""
+
+#: TITLE_RESTORE_PASS_FORM
+msgid "Please enter your username or email"
+msgstr ""
+
+#: TITLE_SUBTITLE_EDITOR
+msgid "Subtitle Editor"
+msgstr ""
+
+#: TITLE_URLSEARCH
+msgid "Enter video's URL..."
+msgstr ""
+
+#: TITLE_USERS_CREDIT_HISTORY
+msgid "User's Credit History"
+msgstr ""
+
+#: TITLE_USER_EVALUATION
+msgid "{0}'s evaluation"
+msgstr ""
+
+#: TITLE_VIEW_VIDEO_COMMENT
+msgid "View video comment"
+msgstr ""
+
+#: TOOLTIP_ADD_FILES
+msgid "Add file(s)"
+msgstr ""
+
+#: TOOLTIP_ADD_ROLES_TO_EXERCISE
+msgid "Define the characters/roles appearing on this exercise"
+msgstr ""
+
+#: TOOLTIP_ADD_SUBTITLES_TO_EXERCISE
+msgid "Add your own subtitles to this exercise"
+msgstr ""
+
+#: TOOLTIP_CANCEL_UPLOAD
+msgid "Cancel upload"
+msgstr ""
+
+#: TOOLTIP_END_SUBTITLE_LINE
+msgid "Subtitle end"
+msgstr ""
+
+#: TOOLTIP_NEXT_SUBTITLE_LINE
+msgid "Next subtitle line"
+msgstr ""
+
+#: TOOLTIP_PREVIOUS_SUBTITLE_LINE
+msgid "Previous subtitle line"
+msgstr ""
+
+#: TOOLTIP_RECORD_RESPONSE
+msgid "Record a video response following this exercise"
+msgstr ""
+
+#: TOOLTIP_SEEK_TO_LINE
+msgid "Click here to seek the video to the start time of this subtitle line"
+msgstr ""
+
+#: TOOLTIP_START_SUBTITLE_LINE
+msgid "Subtitle start"
+msgstr ""
+
+#: TOOLTIP_UPLOAD_FILES
+msgid "Upload file(s)"
+msgstr ""
+
+#: TOOLTIP_VIDEO_OWNER_AUTHOR
+msgid ""
+"If the video you're uploading is created by someone else please refer here "
+"the author's name or webpage."
+msgstr ""
+
+#: UPLOAD_EVALUATION_EXERCISE
+msgid ""
+"Evaluation exercise: the video can't be used by others to practice and is "
+"only available in the evaluation area"
+msgstr ""
+
+#: UPLOAD_EXERCISE_TYPE
+msgid "Choose exercise type"
+msgstr ""
+
+#: UPLOAD_LIMITS_INFO
+msgid ""
+"<b>NOTE:</b> The maximum allowed video size is <b>{0}MB</b>. In addition, "
+"the videos shouldn't be shorter than <b>{1} seconds</b> or longer than "
+"<b>{2} seconds</b>, otherwise they will be rejected."
+msgstr ""
+
+#: UPLOAD_LIMITS_REASONING
+msgid ""
+"In our research we've found that the user's concentration level drops "
+"significantly when dubbing videos longer than {0} seconds.<br>Also, since "
+"live dubbing is an stressful task, we limit the duration in hopes to keep a "
+"ballance between the amount of speaking practice the user achieves and the "
+"frustation he/she gets along the process."
+msgstr ""
+
+#: UPLOAD_PRACTICE_EXERCISE
+msgid ""
+"Practice exercise: users can practice an record responses following this "
+"video"
+msgstr ""
+
+#: USER
+msgid "user"
+msgstr ""
+
+#: USER_ERROR
+msgid "The username or the email already exists."
+msgstr ""
+
+#: USER_LATEST_DONE_ASSESSMENTS
+msgid "Assessments I recently done"
+msgstr ""
+
+#: USER_LATEST_RECEIVED_ASSESSMENTS
+msgid "Assessments I recently received"
+msgstr ""
+
+#: USER_LATEST_UPLOADED_VIDEOS
+msgid "Videos I recently uploaded"
+msgstr ""
+
+#: VALID_CHARACTERS
+msgid "Valid characters: [a-zA-Z0-9_]"
+msgstr ""
+
+#: VALID_URL_ALERT
+msgid "You must enter a valid URL!"
+msgstr ""
+
+#: VALUATION
+msgid "Evaluation"
+msgstr ""
+
+#: VIDEOCOMMENT
+msgid "Video comment"
+msgstr ""
+
+#: VIDEO_COUNT_MANY
+msgid "{0} videos"
+msgstr ""
+
+#: VIDEO_COUNT_SINGLE
+msgid "{0} video"
+msgstr ""
+
+#: VIDEO_DATA_SUCCESSFULLY_MODIFIED
+msgid "Video data successfully modified."
+msgstr ""
+
+#: VIDEO_STATUS
+msgid "Video status"
+msgstr ""
+
+#: VIDEO_TUTORIALS
+msgid "Video tutorials"
+msgstr ""
+
+#: VIDEO_TUTORIALS_DESCRIPTION
+msgid ""
+"The following videos explain how to use some of Babelium's features [In "
+"English]"
+msgstr ""
+
+#: VOLUME
+msgid "Volume"
+msgstr ""
+
+#: WARNING_CLEAR_SUBTITLE_LINES
+msgid "Are you sure you want to delete ALL the subtitle lines?"
+msgstr ""
+
+#: WARNING_EMPTY_SUBTITLE
+msgid "You can't save the subtitle. You haven't added any lines yet."
+msgstr ""
+
+#: WARNING_NOT_MODIFIED_SUBTITLES
+msgid "You can't save the subtitle. You haven't modified any part of it."
+msgstr ""
+
+#: WARNING_ROLE_PANEL_1
+msgid "You must fill all the options"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_2
+msgid "You must fill the method and pass the sound test"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_3
+msgid "You must select a role and pass the sound test"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_4
+msgid "You must select a role and the method"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_5
+msgid "You must pass the sound test"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_6
+msgid "You must select a recording method"
+msgstr ""
+
+#: WARNING_ROLE_PANEL_7
+msgid "You must select a role"
+msgstr ""
+
+#: WARNING_SUBTITLE_HAS_ERRORS
+msgid "Subtitle Has Errors"
+msgstr ""
+
+#: WEBCAM
+msgid "Webcam"
+msgstr ""
+
+#: WRONG_FIELDS_IN_FORM
+msgid "Some form fields are wrong. Fix the errors to proceed."
+msgstr ""
+
+#: YOURCHARACTER
+msgid "Your role is the red arrow"
+msgstr ""
+
+#: YOUR_ASSESSMENT_COULDNT_BE_SAVE
+msgid "Your assessment couldn't be properly saved."
+msgstr ""
+
+#: YOUR_ASSESSMENT_HAS_BEEN_SAVED
+msgid "Your assessment has been saved. Thanks for your collaboration."
+msgstr ""
+
+#: YOUR_AUTOEVALUATION_REQUEST_IS_BEING_PROCESSED
+msgid "Your autoevaluation request is being processed"
+msgstr ""
+
+#: YOUR_AUTOEVALUATION_REQUEST_IS_PENDING
+msgid "Your autoevaluation request is pending"
+msgstr ""

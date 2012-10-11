@@ -1,0 +1,3425 @@
+#. extracted from babeliumproject/flex/standalone/locale/en_US/myResources.properties, babeliumproject/flex/standalone/locale/eu_ES/myResources.properties
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-11 09:46+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 1.9.0\n"
+
+#: ABORT_RECORDING
+msgid "Abort recording"
+msgstr "Grabaketa bertan behera utzi"
+
+#: ABOUT_SECTION_DESCRIPTION
+msgid ""
+"Want to know a little about us and the technologies that make Babelium "
+"possible? You're at the right place!"
+msgstr ""
+"Guri buruz eta Babeliumen funtzionamendua ahalbidetzen duten teknologiei "
+"buruz zerbait gehiago jakin nahi duzu? Toki aproposean zaude!"
+
+#: ABOUT_US
+msgid "About us"
+msgstr "Guri buruz"
+
+#: ACCOUNT_ACTIVATION
+msgid "Acount Activation"
+msgstr "Kontu Aktibaketa"
+
+#: ACTIVATING
+msgid "activating"
+msgstr "aktibatzen"
+
+#: ACTIVATION_EMAIL_SENT
+msgid "An activation email has been sent to the email you specified."
+msgstr "Eposta bat bidali da adierazitako helbidera."
+
+#: ADDVIDEO
+msgid "Add a video"
+msgstr "Bideoa gehitu"
+
+#: ALERT_SUCCESSFUL_FILE_UPLOAD_RED5
+msgid ""
+"The file you chose has been successfully uploaded and will be available "
+"soon. Thanks for your collaboration."
+msgstr ""
+"Aukeratutako fitxategia ondo bidali da eta aurki eskuragarri egongo da. "
+"Eskerrikasko zure kolaborazioarengatik."
+
+#: ALERT_SUCCESSFUL_WEBCAM_UPLOAD_RED5
+msgid ""
+"The exercise you recorded has been successfully uploaded and will be "
+"available soon. Thanks for your collaboration."
+msgstr ""
+"Grabatu duzun ariketa ondo bidali da eta aurki eskuragarri egongo da. "
+"Eskerrikasko zure kolaborazioarengatik."
+
+#: ASSESSMENT_PENDING_RESPONSES_LIST
+msgid "List of assessment pending responses"
+msgstr "Ebaluaketaren zain dauden erantzunen zerrenda"
+
+#: AUKERATUBIDEOA
+msgid "Select a video from the list"
+msgstr "aukeratu bideo bat zerrendan"
+
+#: AUTHOR_PROVIDED_BY
+msgid "Author/Provider:"
+msgstr "Egilea/Iturburua:"
+
+#: AUTOEVALUATION_NOT_AVAILABLE
+msgid "Autoevaluation not available"
+msgstr "Autoebaluazioa ez dago erabilgarri"
+
+#: AVG
+msgid "Average"
+msgstr "Batazbesteko"
+
+#: BALORAZIOKOP
+msgid "Assessment count"
+msgstr "Ebaluazio kopurua"
+
+#: BANDWIDTH
+msgid "Bandwidth"
+msgstr "Banda zabalera"
+
+#: BIAKBATERAIKUSI
+msgid "Watch simultaneously"
+msgstr "Biak Batera Ikusi"
+
+#: BIDALI
+msgid "Send"
+msgstr "Bidali"
+
+#: BLOG
+msgid "Blog"
+msgstr "Bloga"
+
+#: BUTTON_ADD_ANOTHER
+msgctxt "BUTTON_ADD_ANOTHER"
+msgid "Add"
+msgstr "Gehitu"
+
+#: BUTTON_BROWSE
+msgid "Browse..."
+msgstr "Arakatu..."
+
+#: BUTTON_CANCEL
+msgctxt "BUTTON_CANCEL"
+msgid "Cancel"
+msgstr "Utzi"
+
+#: BUTTON_CLOSE
+msgid "Close"
+msgstr "Itxi"
+
+#: BUTTON_CREATE
+msgid "Create Slice"
+msgstr "Mozketa sortu"
+
+#: BUTTON_CUEVIDEO
+msgid "Cue Video"
+msgstr "Bideoa Prestatu"
+
+#: BUTTON_DISCARD_RESPONSE
+msgid "Discard Response"
+msgstr "Erantzuna Baztertu"
+
+#: BUTTON_HERE
+msgid "here"
+msgstr "hemen"
+
+#: BUTTON_NO_THANKS
+msgid "No, thanks!"
+msgstr "Ez, eskerrik asko!"
+
+#: BUTTON_OK
+msgid "Ok"
+msgstr "Ados"
+
+#: BUTTON_PAUSE
+msgid "Pause"
+msgstr "Pause"
+
+#: BUTTON_PLAY
+msgid "Play"
+msgstr "Play"
+
+#: BUTTON_PLAYSLICE
+msgid "Play Slice"
+msgstr "Mozketa ikusi"
+
+#: BUTTON_PLAY_PAUSE
+msgid "Play/Pause"
+msgstr "Play/Pause"
+
+#: BUTTON_REC
+msgid "Rec"
+msgstr "Rec"
+
+#: BUTTON_RECORD
+msgctxt "BUTTON_RECORD"
+msgid "Record"
+msgstr "Grabatu"
+
+#: BUTTON_RECORD_AGAIN
+msgid "Record Again"
+msgstr "Berriro Grabatu"
+
+#: BUTTON_REPORT
+msgctxt "BUTTON_REPORT"
+msgid "Report"
+msgstr "Berri Eman"
+
+#: BUTTON_RETRY
+msgid "Retry"
+msgstr "Saiatu Berriz"
+
+#: BUTTON_SAVE_NEWPASS
+msgid "Save Changes"
+msgstr "Aldaketak gorde"
+
+#: BUTTON_SAVE_RESPONSE
+msgid "Publish Response"
+msgstr "Erantzuna Argitaratu"
+
+#: BUTTON_SAVE_STREAMING_UPLOAD
+msgid "Save Recorded Exercise"
+msgstr "Grabatutako Ariketa Gorde"
+
+#: BUTTON_SEARCH
+msgctxt "BUTTON_SEARCH"
+msgid "Search"
+msgstr "Bilatu"
+
+#: BUTTON_SELECT_ANOTHER_EXERCISE
+msgid "Choose Another Exercise"
+msgstr "Beste Ariketa bat Aukeratu"
+
+#: BUTTON_SHOW_AVAILABLE_OPTIONS
+msgid "Show Available Options"
+msgstr "Aukerak Ikusi"
+
+#: BUTTON_SOMEONE_EVALUATE_ME
+msgid "Someone evaluate me!"
+msgstr "Norbaitek ebaluatu nazala!"
+
+#: BUTTON_START_RECORDING
+msgid "Start Recording"
+msgstr "Grabatzen Hasi"
+
+#: BUTTON_STOP
+msgid "Stop"
+msgstr "Stop"
+
+#: BUTTON_UPLOAD
+msgctxt "BUTTON_UPLOAD"
+msgid "Upload"
+msgstr "Igo"
+
+#: BUTTON_WATCH_EXERCISE
+msgid "Watch Exercise"
+msgstr "Ariketa Ikusi"
+
+#: BUTTON_WATCH_EXERCISE_AND_RESPONSE
+msgid "Watch Simultaneously"
+msgstr "Biak Batera Ikusi"
+
+#: BUTTON_WATCH_RESPONSE
+msgid "Watch Response"
+msgstr "Erantzuna Ikusi"
+
+#: CANCEL
+msgctxt "CANCEL"
+msgid "Cancel"
+msgstr "Utzi"
+
+#: CC-BY
+msgid "Attribution"
+msgstr "Aintzatespena"
+
+#: CC-BY-NC
+msgid "Attribution Non-Commercial"
+msgstr "Aintzatespena Ez-Komertziala"
+
+#: CC-BY-NC-ND
+msgid "Attribution Non-Commercial No Derivative"
+msgstr "Aintzatespena Ez-Komertziala Ez-Eratorrigarria"
+
+#: CC-BY-NC-SA
+msgid "Attribution Non-Commercial Share Alike"
+msgstr "Aintzatespena Ez-Komertziala Era Berean Banatua"
+
+#: CC-BY-ND
+msgid "Attribution No Derivative"
+msgstr "Aintzatespena Ez-Eratorrigarria"
+
+#: CC-BY-SA
+msgid "Attribution Share Alike"
+msgstr "Aintzatespena Era Berean Banatua"
+
+#: CHECK_YES_PLEASE
+msgid "Yes, please."
+msgstr "Bai, mesedez."
+
+#: COLUMNHEAD_HIDE
+msgid "End"
+msgstr "Bukatu"
+
+#: COLUMNHEAD_NUMBER
+msgid "Number"
+msgstr "Zenbakia"
+
+#: COLUMNHEAD_ROLE
+msgid "Role"
+msgstr "Rola"
+
+#: COLUMNHEAD_SHOW
+msgid "Begin"
+msgstr "Hasi"
+
+#: COLUMNHEAD_TEXT
+msgid "Text"
+msgstr "Testua"
+
+#: COLUMNLABEL_FILE
+msgid "File"
+msgstr "Fitxategia"
+
+#: COLUMNLABEL_SIZE
+msgid "Size"
+msgstr "Tamaina"
+
+#: COMMA_SEPARATED_WORDS
+msgid "Comma separated words"
+msgstr "Komaz banandutako hitzak"
+
+#: COMMENTS
+msgid "Comment"
+msgstr "Iruzkinak"
+
+#: COMPLETE_SUBTITLE_INFO
+msgid ""
+"<b>NOTE:</b> Only the videos whose subtitles cover the entire video will be "
+"available in the practice module."
+msgstr ""
+"<b>OHARRA:</b> Bideoaren osotasuna estaltzen duten azpitituluak dituzten "
+"bideoak soilik azalduko dira praktika moduluan"
+
+#: CONFIGURATION_BW_MESSAGE1
+msgid "Use this test to check whether your bandwidth is enough"
+msgstr "Test hau erabili zure banda zabalera Babelium-eko"
+
+#: CONFIGURATION_BW_MESSAGE2
+msgid "to properly use the services of Babelium."
+msgstr "zerbitzuak era egokian erabiltzeko nahikoa den jakiteko."
+
+#: CONFIGURATION_BW_MESSAGE3
+msgid "Click the button above to perform the test"
+msgstr "Goiko botoia sakatu froga hasteko."
+
+#: CONFIGURATION_BW_MESSAGE4
+msgid "and check the results in the graph."
+msgstr "Emaitzak grafikoan ikus ditzakezu."
+
+#: CONFIGURATION_BW_TITTLE
+msgid "Bandwidth Test"
+msgstr "Banda Zabalera egiaztapena"
+
+#: CONFIGURATION_MICRO_TITTLE
+msgid "Microphone Test"
+msgstr "Mikrofono Egiaztapena"
+
+#: CONFIGURATION_MIC_MESSAGE1
+msgid "You can check if your microphone works"
+msgstr "Zure mikrofonoa konprobatu dezakezu"
+
+#: CONFIGURATION_MIC_MESSAGE2
+msgid "correctly recording a test sound file."
+msgstr "zure ahotsa grabatuz."
+
+#: CONFIGURATION_MIC_MESSAGE3
+msgid "Click REC button and record your voice (10 seconds)"
+msgstr "REC botoia sakatu grabaketa hasteko"
+
+#: CONFIGURATION_MIC_MESSAGE4
+msgid "After, you can listen the sound file clicking PLAY button."
+msgstr "Ondoren, grabatutako soinuak entzun ditzakezu PLAY botoia sakatuz."
+
+#: CONFIGURATION_NOT_CAM_TEXT
+msgid "No webcam was found"
+msgstr "Dirudienez web kamerarik ez daukazu"
+
+#: CONFIGURATION_NOT_MIC_TEXT
+msgid "No microphone was found"
+msgstr "Dirudienez microfonorik ez daukazu"
+
+#: CONFIGURATION_NO_FILE_EXISTS
+msgid "You haven't recorded any file yet"
+msgstr "Ez duzu fitxategirik grabatu!"
+
+#: CONFIGURATION_NO_MIC_SIGNAL
+msgid "Sound signal not found!"
+msgstr "Ezin izan da audio seinalerik detektatu!"
+
+#: CONFIGURATION_NO_PERMISSIONS
+msgid "You must give flash permissions"
+msgstr "Flash-i baimenak eman behar dizkiozu"
+
+#: CONFIGURATION_SECTION_DESCRIPTION
+msgid ""
+"In this section you can check if your multimedia devices work correctly and "
+"you can also know if your current bandwidth is enough to experience all the "
+"features of the web"
+msgstr ""
+"Atal honetan zure multimedia gailuak era egokian dabiltzan konprobatu "
+"dezakezu. Era berean zure uneko banda zabalera web-orriko ezaugarri guztiak "
+"bere osotasunean erabiltzeko nahikoa den jakin dezakezu"
+
+#: CONFIGURATION_VIDEO_MESSAGE1
+msgid "You can check if your webcam works"
+msgstr "Zure web-kamera konprobatu dezakezu"
+
+#: CONFIGURATION_VIDEO_MESSAGE2
+msgid "correctly recording a video file."
+msgstr "bideo proba bat grabatuz!"
+
+#: CONFIGURATION_VIDEO_MESSAGE3
+msgid "Click REC button and record your video (10 seconds)"
+msgstr "REC botoia sakatu grabaketa hasteko"
+
+#: CONFIGURATION_VIDEO_MESSAGE4
+msgid "After, you can watch the video clicking PLAY button."
+msgstr "Ondoren, grabatutako bideoa ikus dezakezu PLAY botoia sakatuz."
+
+#: CONFIGURATION_WEBCAM_TITTLE
+msgid "Webcam Test"
+msgstr "Web-kamera Egiaztapena"
+
+#: CONFIRMATION_COMPLETE_SUBTITLE
+msgid "Do these subtitles cover all dialog in the entire video?"
+msgstr ""
+"Azpititulu hauek bideoaren osotasuneko dialogo guztiak estaltzen dituzte?"
+
+#: CONFIRM_VIDEO_DELETE
+msgid "Are you sure you want to delete the selected videos?"
+msgstr "Ziur zaude aukeratutako bideoak ezabatu nahi dituzula?"
+
+#: CONVERTED
+msgid "converted"
+msgstr "bihurtua"
+
+#: COPYRIGHTED
+msgid "Other (Copyrighted)"
+msgstr "Bestelakoa (Copyright-duna)"
+
+#: CURRENT_EMAIL
+msgid "Current email address"
+msgstr "Uneko eposta helbidea"
+
+#: D001_A1_SI01
+msgid ""
+"I can introduce somebody and use basic greetings and leave-taking "
+"expressions."
+msgstr ""
+"Gai naiz norbait aurkezteko eta oinarrizko agurrak erabiltzeko (\"kaixo\", "
+"\"agur\")."
+
+#: D002_A1_SI02
+msgid ""
+"I can ask and answer simple questions, initiate and respond to simple "
+"statements in areas of immediate need or on very familiar topics."
+msgstr ""
+"Gai naiz galdera errazak egiteko eta erantzuteko; baieztapenak egiteko eta "
+"erantzuteko gai arrunt eta ezagunetan."
+
+#: D003_A1_SI03
+msgid ""
+"I can make myself understood in a simple way but I am dependent on my "
+"partner being prepared to repeat more slowly and rephrase what I say and to "
+"help me to say what I want."
+msgstr ""
+"Gai naiz modu sinplean komunikatzeko, baina nire solaskidearen menpe nago, "
+"berak prest ego n behar baitu nik esandakoa astiro errepikatzeko, "
+"birformulatzeko edo nahi dudana esaten laguntzeko."
+
+#: D004_A1_SI04
+msgid ""
+"I can make simple purchases where pointing or other gestures can support "
+"what I say."
+msgstr "Erosketa errazak egin ditzaket keinuz lagunduta edo eskuaz seinalatuta."
+
+#: D005_A1_SI05
+msgid "I can handle numbers, quantities, cost and time."
+msgstr "Gai naiz zenbakiak, zenbatekoak, salneurriak eta orduak erabiltzeko."
+
+#: D006_A1_SI06
+msgid "I can ask people for things and give people things."
+msgstr "Gai naiz jendeari gauzak eskatu eta emateko."
+
+#: D007_A1_SI07
+msgid ""
+"I can ask people questions about where they live, people they know, things "
+"they have etc. and answer such questions addressed to me provided they are "
+"articulated slowly and clearly."
+msgstr ""
+"Gai naiz jendeari galdera sinpleak egiteko (non bizi diren, ezagutzen duten "
+"jendea, dauzkaten gauzak etab.); eta galdera hauek niri poliki eta argi "
+"eginez gero, gai naiz erantzuteko."
+
+#: D008_A1_SI08
+msgid ""
+"I can indicate time by such phrases as \"next week\", \"last Friday\", \"in "
+"November\", \"three o’clock\"."
+msgstr ""
+"Gai naiz denbora adierazteko, \"hurrengo astean\", \"joan den ostiralean\", "
+"\"azaroan\", \"hiruretan\" bezalako esamoldeekin."
+
+#: D009_A1_SP01
+msgid ""
+"I can give personal information (address, telephone number, nationality, "
+"age, family, and hobbies)."
+msgstr ""
+"Gai naiz neure berri emateko: helbidea, telefono-zenbakia, herritartasuna, "
+"adina, familia, eta zaletasunak."
+
+#: D010_A1_SP02
+msgid "I can describe where I live."
+msgstr "Gai naiz non bizi naizen deskribatzeko."
+
+#: D011_A2_SI01
+msgid "I can make simple transactions in shops, post offices or banks."
+msgstr ""
+"Gai naiz salerosketa sinpleak egiteko dendetan, posta bulegoan edo bankuan."
+
+#: D012_A2_SI02
+msgid ""
+"I can use public transport: buses, trains, and taxis, ask for basic "
+"information and buy tickets."
+msgstr ""
+"Gai naiz garraio publikoak erabiltzeko (autobusak, trenak eta taxiak), "
+"oinarrizko argibideak eskatzeko edo txartelak erosteko."
+
+#: D013_A2_SI03
+msgid "I can get simple information about travel."
+msgstr "Gai naiz bidaiari buruzko informazio sinplea lortzeko."
+
+#: D014_A2_SI04
+msgid "I can order something to eat or drink."
+msgstr "Gai naiz edatekoa edo jatekoa eskatzeko."
+
+#: D015_A2_SI05
+msgid ""
+"I can make simple purchases by stating what I want and asking the price."
+msgstr ""
+"Gai naiz erosketa sinpleak egiteko, zer nahi dudan esanez eta prezioa "
+"galdetuz."
+
+#: D016_A2_SI06
+msgid "I can ask for and give directions referring to a map or plan."
+msgstr ""
+"Gai naiz mapa edo plano baten gainean bidea galdetzeko edota adierazteko."
+
+#: D017_A2_SI07
+msgid "I can ask how people are and react to news."
+msgstr ""
+"Gai naiz jendea agurtzeko, nola dauden galdetzeko eta ematen dizkidaten "
+"berrien aurrean zerbait esateko."
+
+#: D018_A2_SI08
+msgid "I can make and respond to invitations."
+msgstr "Gai naiz gonbitak egiteko edo gonbitei erantzuteko."
+
+#: D019_A2_SI09
+msgid "I can make and accept apologies."
+msgstr "Gai naiz aitzakiakjartzeko edota onartzeko."
+
+#: D020_A2_SI10
+msgid "I can say what I like and dislike."
+msgstr "Gai naiz zer gustatzen zaidan eta zer gustatzen ez zaidan esateko."
+
+#: D021_A2_SI11
+msgid ""
+"I can discuss with other people what to do, where to go, and make "
+"arrangements to meet."
+msgstr ""
+"Gai naiz beste batzuekin zer egin eta nora joan eztabaidatzeko eta "
+"elkartzeko ordua eta tokia adosteko."
+
+#: D022_A2_SI12
+msgid ""
+"I can ask people questions about what they do at work and in free time, and "
+"answer such questions addressed to me."
+msgstr ""
+"Gai naiz jendeari lanean eta aisialdian zer egiten duen galdetzeko; baita "
+"galdera horiei erantzuteko ere, niri egiten dizkidatenean."
+
+#: D023_A2_SP01
+msgid "I can describe myself, my family and other people."
+msgstr "Gai naiz neure burua, familia eta bestelako jendea ere deskribatzeko."
+
+#: D024_A2_SP02
+msgid "I can describe where 1 live."
+msgstr "Gai naiz non bizi naizen deskribatzeko."
+
+#: D025_A2_SP03
+msgid "I can give short, basic descriptions of events."
+msgstr "Gai naiz gertaeren deskribapen labur eta oinarrizkoak egiteko."
+
+#: D026_A2_SP04
+msgid ""
+"I can describe my educational background, my present or most recent job."
+msgstr ""
+"Gai naiz jasotako heziketa eta nire lehengo nahiz oraingo lana "
+"deskribatzeko."
+
+#: D027_A2_SP05
+msgid "I can describe my hobbies and interests in a simple way."
+msgstr "Gai naiz nire zaletasunak eta interesak sinpleki deskribatzeko."
+
+#: D028_A2_SP06
+msgid ""
+"I can describe past experiences and personal experiences (e.g. the last "
+"weekend, my last holiday)."
+msgstr ""
+"Gai naiz izandako pasadizoak eta esperientzia pertsonalak deskribatzeko "
+"(adib. azken asteburua, azken oporrak)."
+
+#: D029_B1_SI01
+msgid ""
+"I can start, maintain and close simple face-to-face conversation on topics "
+"that are familiar or of personal interest."
+msgstr ""
+"Gai naiz aurrez aurreko elkarrizketa sinpleak hasi, mantendu eta amaitzeko, "
+"gaia ezaguna edo interes pertsonalekoa denean."
+
+#: D030_B1_SI02
+msgid ""
+"I can maintain a conversation or discussion but may sometimes be difficult "
+"to follow when trying to say exactly what I would like to."
+msgstr ""
+"Gai naiz elkarrizketan edo eztabaidan jarduteko, baina batzuetan zaila izan "
+"liteke esan nahi nukeena ulertzea."
+
+#: D031_B1_SI03
+msgid ""
+"I can deal with most situations likely to arise when making travel "
+"arrangements through an agent or when actually travelling."
+msgstr ""
+"Gai naiz txukun moldatzeko bidaia baten erreserba agentzian egiterakoan edo "
+"bidaian bertan gerta daitezkeen gorabeheretan."
+
+#: D032_B1_SI04
+msgid "I can ask for and follow detailed directions."
+msgstr ""
+"Gai naiz helbide bati buruzko xehetasunak galdetzeko eta ematen dizkidaten "
+"azalpen xeheak jarraitzeko."
+
+#: D033_B1_SI05
+msgid ""
+"I can express and respond to feelings such as surprise, happiness, sadness, "
+"interest and indifference."
+msgstr ""
+"Gai naiz sentimenduak adierazteko, hala nola harridura, poza, tristura, "
+"jakin-mina edo ezaxola. Halaber, sentimenduok beste norbaitek adierazten "
+"dizkidanean, gai naiz erantzuna emateko."
+
+#: D034_B1_SI06
+msgid ""
+"I can give or seek personal views and opinions in an informal discussion "
+"with friends."
+msgstr ""
+"Gai naiz neure ikuspuntu eta iritziak azaltzeko, lagunekin edo ezagunekin "
+"hitz egiten dudanean."
+
+#: D035_B1_SI07
+msgid "I can agree and disagree politely."
+msgstr "Gai naiz ados nagoela edo ez nagoela edukazioz adierazteko."
+
+#: D036_B1_SP01
+msgid "I can narrate a story."
+msgstr "Gai naiz istorioak kontatzeko."
+
+#: D037_B1_SP02
+msgid ""
+"I can give detailed accounts of experiences, describing feelings and "
+"reactions."
+msgstr ""
+"Gai naiz esperientziak zehatz azaltzeko, aldi berean nire sentimenduak eta "
+"erreakzioak deskribatuz."
+
+#: D038_B1_SP03
+msgid "I can describe dreams, hopes and ambitions."
+msgstr "Gai naiz nire ametsak, itxaropenak eta helburuak azaltzeko."
+
+#: D039_B1_SP04
+msgid "I can explain and give reasons for my plans, intentions and actions."
+msgstr ""
+"Gai naiz nire planak, asmoak eta ekintzak azaltzeko eta horien zergatiak "
+"emateko."
+
+#: D040_B1_SP05
+msgid "I can relate the plot of a book or film and describe my reactions."
+msgstr ""
+"Gai naiz liburuen edo filmen argumentuak kontatzeko eta nire inpresioak "
+"deskribatzeko."
+
+#: D041_B1_SP06
+msgid ""
+"I can paraphrase short written passages orally in a simple fashion, using "
+"the original text wording and ordering."
+msgstr ""
+"Gai naiz testu idatzien pasarte laburrak sinpleki ahoz kontatzeko, "
+"jatorrizko testuaren hitzak eta ordena erabiliz."
+
+#: D042_B2_SI01
+msgid ""
+"I can initiate, maintain and end discourse naturally with effective turn-"
+"taking."
+msgstr ""
+"Gai naiz norbaitekin naturaltasunez hizketan hasi, jardun eta bukatzeko, "
+"hitz egiteko txandak hartuz eta emanez."
+
+#: D043_B2_SI02
+msgid ""
+"I can exchange considerable quantities of detailed factual information on "
+"matters within my fields of interest."
+msgstr ""
+"Gai naiz nire intereseko edo nire arloko informazio zehatz ugari beste "
+"norbaitekin trukatzeko."
+
+#: D044_B2_SI03
+msgid ""
+"I can convey degrees of emotion and highlight the personal significance of "
+"events and experiences."
+msgstr ""
+"Gai naiz emozio-graduak adierazteko eta esperientzietan edo gertaeretan "
+"axola zaidana azpimarratzeko."
+
+#: D045_B2_SI04
+msgid ""
+"I can engage in extended conversation in a clearly participatory fashion on "
+"most general topics."
+msgstr ""
+"Gai naiz iraupen jakineko elkarrizketan era aktiboan jarduteko, mintzagaiak "
+"interes orokorrekoak direnean."
+
+#: D046_B2_SI05
+msgid ""
+"I can account for and sustain my opinions in discussion by providing "
+"relevant explanations, arguments and comments."
+msgstr ""
+"Gai naiz eztabaidetan neure iritziak arrazoitu eta defenditzeko, horretarako "
+"argibideak, argudioak eta iruzkinak eskainiz."
+
+#: D047_B2_SI06
+msgid ""
+"I can help a discussion along on familiar ground confirming comprehension, "
+"inviting others in etc."
+msgstr ""
+"Gai naiz elkarrizketari laguntzeko, gaia ezaguna denean, ulertzen dudala "
+"baieztatuz edo gainerako solaskideak hitz egitera gonbidatuz etab."
+
+#: D048_B2_SI07
+msgid ""
+"I can carry out a prepared interview, checking and confirming information, "
+"following up interesting replies."
+msgstr ""
+"Gai naiz aldez aurretik prestatutako elkarrizketa bati aurre egiteko, ulertu "
+"dudana zuzena ote den baieztatzeko eskatuz eta erantzun batzuetan sakonduz."
+
+#: D049_B2_SP01
+msgid ""
+"I can give clear, detailed descriptions on a wide range of subjects related "
+"to my fields of interest."
+msgstr ""
+"Gai naiz deskribapen argi eta zehatzak egiteko nire gustuko arlo gehienen "
+"gainean."
+
+#: D050_B2_SP02
+msgid ""
+"I can understand and summarise orally short extracts from news items, "
+"interviews or documentaries containing opinions, argument and discussion."
+msgstr ""
+"Gai naiz aldizkari, elkarrizketa edo erreportajeetatik ateratako testu-"
+"zatiak irakurri eta ahoz laburtzeko, ikuspuntuak, argudioak eta eztabaidak "
+"islatuz."
+
+#: D051_B2_SP03
+msgid ""
+"I can understand and summarise orally the plot and sequence of events in an "
+"extract from a film or play."
+msgstr ""
+"Gai naiz film edo antzerki-Ianen argumentua eta gertakizunen sekuentzia "
+"ulertzeko eta ahoz laburtzeko."
+
+#: D052_B2_SP04
+msgid ""
+"I can construct a chain of reasoned argument, linking my ideas logically."
+msgstr "Gai naiz arrazonamendu logikoak eraikitzeko eta nire ideiak uztartzeko."
+
+#: D053_B2_SP05
+msgid ""
+"I can explain a viewpoint on a topical issue giving the advantages and "
+"disadvantages of various options."
+msgstr ""
+"Gai naiz arazoen gainean dudan ikuspuntua azaltzeko, aukeren arteko "
+"abantailak eta desabantailak agertuz."
+
+#: D054_B2_SP06
+msgid "I can speculate about causes, consequences, hypothetical situations."
+msgstr ""
+"Gai naiz gauzen zergatiez, ondorioez edota balizko egoerez ditudan "
+"irudipenak eta gogoetak azaltzeko."
+
+#: D055_C1_SI01
+msgid "I can keep up with an animated conversation between native speakers."
+msgstr ""
+"Gai naiz jatorrizko hiztunen arteko elkarrizketa bizi-bizietan zuzenean "
+"parte hartzeko."
+
+#: D056_C1_SI02
+msgid ""
+"I can use the language fluently, accurately and effectively on a wide range "
+"of general, professional or academic topics."
+msgstr ""
+"Gai naiz erraz, zuzen eta egoki hitz egiteko gai askoren gainean: gai "
+"orokorrak, lan-esparrukoak, akademikoak, zientifikoak."
+
+#: D057_C1_SI03
+msgid ""
+"I can use language flexibly and effectively for social purposes, including "
+"emotional, allusive and joking usage."
+msgstr ""
+"Gai naiz jendartean modu malgu eta eraginkorrean hitz egiteko, sentimenduak "
+"azalduz, zeharkako aipamenak eginez edo umorea erabiliz."
+
+#: D058_C1_SI04
+msgid ""
+"I can express my ideas and opinions clearly and precisely, and can present "
+"and respond to complex lines of reasoning convincingly."
+msgstr ""
+"Gai naiz nire ideiak eta iritziak eztabaidan argi eta zuzen emateko, "
+"konbentzitzeko moduan argudiatzeko, baita arrazonamendu zail eta bihurriei "
+"erantzuteko ere."
+
+#: D059_C1_SP01
+msgid "I can give clear, detailed descriptions of complex subjects."
+msgstr ""
+"Gai naiz argi eta zehatz hitz egiteko, xehetasun eta guzti, gaiak zailak eta "
+"bihurriak badira ere."
+
+#: D060_C1_SP02
+msgid "I can orally summarise long, demanding texts."
+msgstr "Gai naiz testu luze eta bihurriak ahoz laburtzeko."
+
+#: D061_C1_SP03
+msgid ""
+"I can give an extended description or account of something, integrating "
+"themes, developing particular points and concluding appropriately."
+msgstr ""
+"Gai naiz zerbait luze eta zabal azaltzeko, gaiak uztartuz, zenbait aspektu "
+"bereziki garatuz eta nire hizketaldia egoki amaituz."
+
+#: D062_C1_SP04
+msgid ""
+"I can give a clearly developed presentation on a subject in my fields of "
+"personal or professional interest, departing when necessary from the "
+"prepared text and following up spontaneously points raised by members of the "
+"audience."
+msgstr ""
+"Gai naiz lan-esparruko edo arlo pertsonaleko gaiak argi egituratuta "
+"aurkezteko, beharrezkoa denean, prestatutako testutik aldenduz eta entzuleen "
+"galderei bat-batean erantzunez."
+
+#: D063_C2_SI01
+msgid ""
+"I can take part effortlessly in all conversations and discussions with "
+"native speakers."
+msgstr ""
+"Gai naiz jatorrizko hiztunekin edozein elkarrizketa edo eztabaidatan "
+"ahaleginik gabe parte hartzeko."
+
+#: D064_C2_SP01
+msgid ""
+"I can summarise orally information from different sources, reconstructing "
+"arguments and accounts in a coherent presentation."
+msgstr ""
+"Gai naiz hainbat iturburutako informazioa ulertu eta ahoz laburtzeko, "
+"argudioak eta edukiak aurkezpen argi eta koherentean berreraikiz."
+
+#: D065_C2_SP02
+msgid ""
+"I can present ideas and viewpoints in a very flexible manner in order to "
+"give emphasis, to differentiate and to eliminate ambiguity."
+msgstr ""
+"Gai naiz kontzeptuak eta ikuspuntuak malgu adierazteko, horrela informazioak "
+"nabarmenduz edo bereiztuz eta zalantzak ezabatuz."
+
+#: DATE
+msgctxt "DATE"
+msgid "Date"
+msgstr "Data"
+
+#: DATE_FORMAT
+msgid "YYYY/MM/DD"
+msgstr "YYYY/MM/DD"
+
+#: DELETE
+msgid "Delete"
+msgstr "Ezabatu"
+
+#: DESCRIPTORS
+msgid "Descriptors"
+msgstr "Adierazleak"
+
+#: DEVELOPERS
+msgid "Developers"
+msgstr "Garatzaileak"
+
+#: DEVICES_NOT_ALLOWED_ERROR
+msgid ""
+"In order to record something you must 'Allow' the access to your devices."
+msgstr ""
+"Zerbait grabatzeko zure gailuak atzitzeko baimena 'ematea' beharrezkoa da."
+
+#: DEVICES_NOT_WORKING
+msgid ""
+"Your devices are not working properly or are not allowed. The recording has "
+"been aborted."
+msgstr ""
+"Zure gailuak gaizki funtzionatzen dute edo ez daude baimenduta. Grabaketa "
+"bertan behera utzi da."
+
+#: DISPLAYGRAPH
+msgid "View the Graphic"
+msgstr "Grafikoa ikusi"
+
+#: EDIT
+msgctxt "EDIT"
+msgid "Edit"
+msgstr "Editatu"
+
+#: EDIT_VIDEO_INFO
+msgid "Edit video information"
+msgstr "Bideoaren informazioa editatu"
+
+#: EMAIL_ACTIVACION
+msgid "An activation email has been sent."
+msgstr "Mezu bat bidali da zure ePostara kontua balioztatzeko."
+
+#: EMPTY_NEWROLE
+msgid "The role name cannot be empty."
+msgstr "Rol izena ezin da hutsa izan."
+
+#: EMPTY_PARAMETER
+msgid "The service data cannot be empty."
+msgstr "Zerbitzuak ezin ditu parametro hutsik jaso."
+
+#: EMPTY_PASSWORD
+msgid "The password cannot be empty."
+msgstr "Pasahitza ezin da hutsik utzi."
+
+#: EMPTY_USERNAME
+msgid "The username cannot be empty."
+msgstr "Erabiltzaile izena ezin da hutsik utzi."
+
+#: EPAITUGABEDAUDENAK
+msgid "Waiting for assessment"
+msgstr "Ebaluazio baten zain daudenak"
+
+#: ERROR_BANDWIDTH_FIREWALL
+msgid "Can't test bandwidth. Port 1935 is closed. RTMPT mode is active."
+msgstr ""
+"Ezin da banda zabalera egiaztatu. 1935 portua itxita dago. RTMPT modua "
+"aktibo dago."
+
+#: ERROR_SENDING_EMAIL
+msgid "There was an error while sending the activation e-mail."
+msgstr "Errore bat egon da aktibazio eposta bidaltzerakoan."
+
+#: ERROR_USER_EMAIL_EXISTS
+msgid ""
+"The specified username or email already exists. Please choose another one."
+msgstr ""
+"Emandako erabiltzaile izena edo eposta dagoeneko hartuta dago. Mesedez, "
+"aukeratu beste bat."
+
+#: ERROR_REGISTERING_USER
+msgid ""
+"There was an error while registering in the system. Please try again later."
+msgstr "Errore bat egon da sisteman izena ematean. Mesedez, saiatu beranduago."
+
+#: ERROR_EVALUATION_DATA_NOT_SPECIFIED
+msgid "You must specify a response to evaluate before sending an evaluation."
+msgstr ""
+"Ebaluazio bat bidali baino lehen ebaluatu beharreko erantzuna zehaztu behar "
+"duzu."
+
+#: ERROR_FILL_COMPULSORY_DATA
+msgid "You must fill all the compulsory data in order to save your evaluation."
+msgstr ""
+"Derrigorrezko datu guztiak bete behar dituzu ebaluazioa gorde ahal izateko."
+
+#: ERROR_INSUFICCIENT_CREDITS
+msgid ""
+"You don't have enough credits to perform this task. This video will remain "
+"privately available to you."
+msgstr ""
+"Ataza hau aurrera eramateko beharrezkoa den kreditu kopurua ez duzu. Bideo "
+"hau zuretzat soilik ikusgarri mantenduko da."
+
+#: ERROR_SCORE_COULDNT_BE_SAVED
+msgid "Your score couldn't be saved."
+msgstr "Zure puntuazioa ezin izan da gorde."
+
+#: ERROR_SELECTED_TEXT_COMMENT_NO_FILL
+msgid ""
+"You selected to add a text comment to this evaluation, but added none. "
+"Please add a text comment or uncheck 'Include text comment' if you don't "
+"want text comments to be saved."
+msgstr ""
+"Ebaluazio honetan testu iruzkin bat gehitzea aukeratu duzu, baina ez duzu "
+"testurik idatzi. Mesedez testu iruzkin bat idatzi edo 'Testu iruzkina "
+"erantsi' desgaitu testu iruzkinik gordetzea nahi ez baduzu."
+
+#: ERROR_SELECTED_VIDEO_COMMENT_NO_FILL
+msgid ""
+"You selected to record a video comment for this evaluation, but recorded "
+"none. Please record a video comment or uncheck 'Include video comment' if "
+"you don't want video comments to be saved."
+msgstr ""
+"Ebaluazio honetan bideo iruzkin baat gehitzea aukeratu duzu, baina ez duzu "
+"bideorik grabatu. Mesedez bideo iruzkin bat grabatu edo 'Bideo iruzkina "
+"erantsi' desgaitu bideo iruzkinik gordetzea nahi ez baduzu."
+
+#: ERROR_SIGN_IN_TO_REQUEST
+msgid "You must Sign In to request an evaluation."
+msgstr "Ebaluaketa bat eskatzeko kautotuta egon behar zara"
+
+#: ERROR_WHILE_ACTIVATING_ACCOUNT
+msgid "Error while activating your account."
+msgstr "Errorea zure kontua aktibatzerakoan."
+
+#: ERROR_WHILE_ADDING_VIDEOHISTORY_ITEM
+msgid "Error while adding item to your video history."
+msgstr "Errorea elementu hau zure bideo historiara gehitzerakoan."
+
+#: ERROR_WHILE_CHANGING_PASSWORD
+msgid "Error while changing your password. Try again later."
+msgstr "Errorea zure pasahitza aldatzerakoan. Mesedez, saiatu berriz."
+
+#: ERROR_WHILE_CHECKING_ALREADY_RATED
+msgid "Error while checking if you've rated this exercise."
+msgstr "Errorea ariketa honi puntuazioa eman diozun konprobatzerakoan."
+
+#: ERROR_WHILE_CHECKING_ALREADY_REPORTED
+msgid "Error while checking if you've reported this exercise."
+msgstr "Errorea ariketa hau salatu duzun konprobatzerakoan."
+
+#: ERROR_WHILE_CHECKING_AUTOEVALUATION_SUPPORT
+msgid "Error while checking for autoevaluation support."
+msgstr "Errorea autoebaluazio egiteko aukera dagoen egiaztatzerakoan."
+
+#: ERROR_WHILE_DELETING_VIDEOS
+msgid "Error while deleting the selected videos."
+msgstr "Errorea aukeratutako bideoak ezabatzerakoan."
+
+#: ERROR_WHILE_ENABLING_AUTOEVALUATION
+msgid "Error while enabling the autoevaluation on this video."
+msgstr "Errorea bideo honentzat autoebaluazioa aktibatzerakoan."
+
+#: ERROR_WHILE_KEEPING_SESSION
+msgid "Error while trying to keep your session active."
+msgstr "Errorea zure saioa aktibo mantentzen saiatzerakoan."
+
+#: ERROR_WHILE_LOGGING_IN
+msgctxt "ERROR_WHILE_LOGGING_IN"
+msgid "Error while authenticating you in the system."
+msgstr "Errorea sisteman kautotzerakoan."
+
+#: ERROR_WHILE_LOGGING_OUT
+msgid "Error while logging you out."
+msgstr "Errorea saioa amaitzerakoan."
+
+#: ERROR_WHILE_LOGGIN_IN
+msgctxt "ERROR_WHILE_LOGGIN_IN"
+msgid "Error while authenticating you in the system."
+msgstr "Errorea sisteman kautotzerakoan."
+
+#: ERROR_WHILE_MAKING_RESPONSE_PUBLIC
+msgid "Error while making your response publicly available."
+msgstr "Errorea zure erantzuna beste erabiltzaileentzako ikusgarri egiterakoan."
+
+#: ERROR_WHILE_MODIFYING_LANGUAGES
+msgid "Error while modifying your languages."
+msgstr "Errorea zure hizkuntzak aldatzerakoan."
+
+#: ERROR_WHILE_MODIFYING_PERSONAL_DATA
+msgid "Error while modifying your personal data."
+msgstr "Errorea zure datu pertsonalak aldatzerakoan."
+
+#: ERROR_WHILE_MODIFYING_VIDEO_DATA
+msgid "Error while modifying video data."
+msgstr "Errorea bideoaren datuak aldatzerakoan."
+
+#: ERROR_WHILE_PERFORMING_SEARCH
+msgid "Error while searching the requested data."
+msgstr "Errorea emandako datuak bilatzerakoan."
+
+#: ERROR_WHILE_PROCESSING_AUTOEVALUATION_REQUEST
+msgid "Error while processing autoevaluation request."
+msgstr "Errorea autoebaluazio eskaera prozesatzerakoan."
+
+#: ERROR_WHILE_RATING
+msgid "Error while rating the exercise."
+msgstr "Errorea ariketari puntuazioa ematerakoan."
+
+#: ERROR_WHILE_REGISTERING
+msgid "Error while registering new user."
+msgstr "Errorea erabiltzailearen izen emate prozesuan."
+
+#: ERROR_WHILE_REPORTING_EXERCISE
+msgid "Error while reporting inappropriate exercise."
+msgstr "Errorea ariketa desegoki baten berri ematerakoan."
+
+#: ERROR_WHILE_RESTORING_PASSWORD
+msgid "Error while trying to restore your password."
+msgstr "Errorea zure pasahitza berrezartzean."
+
+#: ERROR_WHILE_RETRIEVING_CHART_DATA
+msgid "Error while trying to get the chart data. Please try again later."
+msgstr "Errorea grafikoko datuak lortzerakoan. Mesedez, saiatu berriz."
+
+#: ERROR_WHILE_RETRIEVING_CREDIT_HISTORY
+msgid "Error while retrieving your credit history,"
+msgstr "Errorea zure kreditu historia lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_EXERCISES
+msgid "Error while retreiving the exercises."
+msgstr "Errorea ariketak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_EXERCISE_SUBTITLES
+msgid "Error while retrieving this exercise's subtitles"
+msgstr "Errorea ariketaren azpitituluak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_LATEST_ACTIVITY
+msgid "Error while retrieving your latest activity."
+msgstr "Errorea zure azkeneko aktibitatea lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_MOTD
+msgid "Error while retrieving the messages of the day."
+msgstr "Errorea eguneko mezuak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_PREFERENCES
+msgid "Error while retrieving application's preference data."
+msgstr "Errorea aplikazioko hobespenak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSED_BY_OTHERS
+msgid ""
+"Error while retrieving your responses that have been assessed by other "
+"users."
+msgstr "Errorea beste erabiltzaileek ebaluatutako zure erantzunak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSMENTS
+msgid "Error while retrieving this response's assessments."
+msgstr "Errorea erantzun honen ebaluazioak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_WAITING
+msgid "Error while retrieving responses waiting assessment."
+msgstr "Errorea ebaluazioaren zain dauden erantzunak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_RESPONSES_YOU_ASSESSED
+msgid "Error while retrieving the responses you assessed."
+msgstr "Errorea ebaluatu dituzun erantzunak lortzen saiatzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_ROLES
+msgid "Error while retrieving exercise's roles"
+msgstr "Errorea ariketaren rolak lortzerakoan"
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLES
+msgid "Error while retrieving unfinished subtitle exercise list."
+msgstr ""
+"Errorea bukatu gabeko azpitituluak dituzten ariketen zerrenda lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLE_LANGUAGES
+msgid "Error while retrieving exercise's available subtitle languages."
+msgstr ""
+"Errorea ariketa honentzako erabilgarri dauden azpititulu hizkuntzak "
+"lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_SUBTITLE_LINES
+msgid "Error while retrieving current subtitle's subtitle lines."
+msgstr "Errorea uneko azpitituluaren azpititulu lerroak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_TAG_CLOUD
+msgid "Error while building the tag cloud."
+msgstr "Errorea etiketa hodeia eraikitzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_TOPSCORE_VIDEOS
+msgid "Error while retrieving top scored videos."
+msgstr "Errorea puntuazio hoberena duten bideoak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_TOP_USERS
+msgid "Error while retrieving top user list."
+msgstr "Errorea erabiltzaile esanguratsuenak lortzerakoan."
+
+#: ERROR_WHILE_RETRIEVING_USER_VIDEOS
+msgid "Error while retrieving your videos."
+msgstr "Errorea zure bideoak lortzerakoan."
+
+#: ERROR_WHILE_SAVING_EXERCISE_DATA
+msgid "Error while saving exercise data."
+msgstr "Errorea ariketaren datuak gordetzerakoan."
+
+#: ERROR_WHILE_SAVING_RESPONSE
+msgid "Error while saving your response."
+msgstr "Errorea zure erantzuna gordetzerakoan."
+
+#: ERROR_WHILE_SAVING_SUBTITLES
+msgid "Error while saving your subtitles. Try again later."
+msgstr "Errorea zure azpitituluak gordetzerakoan. Mesedez, saiatu berriz."
+
+#: ERROR_WHILE_SAVING_YOUR_ASSESSMENT
+msgid "Error while trying to save your assessment."
+msgstr "Errorea zure ebaluazioa gordetzerakoan."
+
+#: ERROR_WHILE_SENDING_ACTIVATION_MAIL
+msgid "Error while trying to send the activation email."
+msgstr "Errorea aktibazio eposta bidaltzerakoan."
+
+#: ERROR_WHILE_UPDATING_RESPONSE
+msgid "A problem occurred while trying to update your response."
+msgstr "Arazo bat egon da zure erantzuna eguneratzen saiatzerakoan."
+
+#: ERROR_WHILE_UPLOADING_FILE
+msgid "Error while uploading file."
+msgstr "Errorea fitxategia igotzerakoan."
+
+#: EVALUATION_DATE
+msgid "Assessment date"
+msgstr "Ebaluazio data"
+
+#: EXERCISE_ALREADY_REPORTED
+msgid "You already reported about this exercise."
+msgstr "Ariketa hau dagoeneko salatu duzu."
+
+#: EXERCISE_LIST
+msgid "Practice exercise list"
+msgstr "Praktikatzeko ariketa zerrenda"
+
+#: EXERCISE_MIC_TEST
+msgid "Click here for checking your mic"
+msgstr "Sakatu hemen zure mikrofonoa probatzeko"
+
+#: EXERCISE_SUCCESSFULLY_REPORTED
+msgid "Your report has been successfully saved. Thank you."
+msgstr "Zure salaketa ondo gorde da."
+
+#: FAQ
+msgid "FAQ"
+msgstr "FAQ"
+
+#: FILTER
+msgid "Filter"
+msgstr "Iragazi"
+
+#: FILTER_BY_LANGUAGE
+msgid "Filter by language"
+msgstr "Hizkuntzaren arabera iragazi"
+
+#: FILTER_BY_DIFFICULTY
+msgid "Filter by difficulty level"
+msgstr "Zailtasun mailaren arabera iragazi"
+
+#: FILTER_REMOVE_ALL
+msgid "Remove filters"
+msgstr "Iragazkiak ezabatu"
+
+#: GRABADOR
+msgid "Recorder"
+msgstr "Grabatzailea"
+
+#: GRAFTEXT
+msgid "Ratings of different users"
+msgstr "Erabiltzaile ezberdinen balorazioak"
+
+#: HEADERTEXT_CHANGE_AMOUNT_CREDIT_TABLE
+msgid "Credit Amount"
+msgstr "Kreditu Kantitatea"
+
+#: HEADERTEXT_CHANGE_TYPE_CREDIT_TABLE
+msgid "Change Type"
+msgstr "Aldaketa Mota"
+
+#: HEADERTEXT_DATE_CREDIT_TABLE
+msgctxt "HEADERTEXT_DATE_CREDIT_TABLE"
+msgid "Date"
+msgstr "Data"
+
+#: HEADERTEXT_EVALUATION_NAME_CREDIT_TABLE
+msgid "Evaluation Name"
+msgstr "Ebaluazio Izena"
+
+#: HEADERTEXT_EXERCISE_NAME_CREDIT_TABLE
+msgid "Exercise Name"
+msgstr "Ariketa Izena"
+
+#: HEADERTEXT_RESPONSE_NAME_CREDIT_TABLE
+msgid "Response Name"
+msgstr "Erantzun Izena"
+
+#: HELLO
+msgid "Hello"
+msgstr "Kaixo"
+
+#: HELP_FAQ
+msgid "Help/FAQ"
+msgstr "Laguntza/FAQ"
+
+#: HELP_FAQ_SECTION_DESCRIPTION
+msgid ""
+"In this section you can find help for the most common topics regarding the "
+"use of the application"
+msgstr ""
+"Atal honetan aplikaziaren erabilerarekin erlazionatutako gai ohikoenei "
+"buruzko laguntza aurkituko duzu"
+
+#: HIDE_SUBTITLES
+msgid "Hide subtitles"
+msgstr "Azpitituluak izkutatu"
+
+#: HOME_LOGGED_IN_STATIC_MESSAGE
+msgid ""
+"<b><font size =\"24\" color =\"#972c0a\">Welcome to "
+"Babelium</font></b><br/><p>Babelium is a community of people who likes to "
+"learn and teach languages.</p><p>Babelium is a collaborative language "
+"practising environment. Here you'll be able to improve your speaking skills "
+"with the help of other users, which are native or fluent in the language "
+"you're practicing, whilst you help other users providing knowledge and "
+"assessment around your own mother language.</p><p>Just record or grab a "
+"video that you think could be interesting to practice a language and upload "
+"it so that other users can practice with it. You can also dub the exercises "
+"that other users uploaded. On top of this you can also assess the work of "
+"other people and be assessed.</p>"
+msgstr ""
+"<b><font size =\"24\" color =\"#972c0a\">Ongietorri "
+"Babeliumera</font></b><br/><p>Babelium hizkuntzak ikastea eta irakastea "
+"gustoko duten pertsonen komunitate bat da.</p><p>Babelium mintzapraktika "
+"ingurune kolaboratibo bat da. Berton, zure ahozkotasun gaitasunak hobetezeko "
+"aukera izango duzu praktikatzen ari zaren hizkuntzan natiboak edo hitz "
+"jario ona duten beste erabiltzaileen laguntzarekin, beste erabiltzaile "
+"batzuei zure ama hizkuntzaren gaineko ezagutza eta ebaluazioa emanda "
+"laguntzen diezun bitartean.</p><p>Grabatu edo aukera ezazu hizkuntza bat "
+"praktikatzeko interesgarria izan daitekeen bideo bat eta igo ezazu beste "
+"erabiltzaileek praktika dezaten. Beste erabiltzaileek igotako ariketen "
+"bikoizketa ere egin dezakezu. Eta honez gain besteen lana ebaluatu dezakezu "
+"eta baita besteen ebaluazioa jaso.</p>"
+
+#: HOW_ASSESS_OTHER_USERS_WORK
+msgid "How to assess other users' work"
+msgstr "Beste erabiltzaileen lana nola ebaluatu"
+
+#: HOW_TO_CONFIGURE_YOUR_DEVICES
+msgid "How to configure your video/audio devices"
+msgstr "Zure bideo/audio gailuak nola konfiguratu"
+
+#: HOW_TO_PRACTICE_A_LANGUAGE
+msgid "How to practice a language"
+msgstr "Hizkuntza bat nola praktikatu"
+
+#: HOW_TO_SUBTITLE_A_VIDEO
+msgid "How to subtitle a video"
+msgstr "Bideo bati azpitituluak nola gehitu"
+
+#: INFO_SCORE_SUCCESSFULLY_SAVED
+msgid "Your score has been successfully saved. Thank you."
+msgstr "Zure puntuazioa ondo gorde da."
+
+#: INVALID_EMAIL
+msgid "Invalid e-mail."
+msgstr "ePosta helbide baliaezina."
+
+#: INVALID_PASSWORD
+msgid "The password contains invalid characters."
+msgstr "Pasahitzak karaktere baliaezinak dauzka."
+
+#: INVALID_REPASSWORD
+msgid "The passwords do not match."
+msgstr "Pasahitzak ez dira bat etortzen."
+
+#: INVALID_USERNAME
+msgid "The username contains invalid characters."
+msgstr "Erabiltzaile izenak karaktere baliaezinak dauzka."
+
+#: IRAUPENA
+msgctxt "IRAUPENA"
+msgid "Duration"
+msgstr "Iraupena"
+
+#: JATORRIZKOA
+msgid "Original Video"
+msgstr "Jatorrizko Bideoa"
+
+#: JOIN_US
+msgid "Join us now!"
+msgstr "Izena eman!"
+
+#: JUDGE
+msgid "Assessor"
+msgstr "Ebaluatzailea"
+
+#: LABEL_ABOUT
+msgid "About"
+msgstr "Babelium-i buruz"
+
+#: LABEL_ABOUT_SECTION
+msgid "About Babelium Project"
+msgstr "Babelium Project-i Buruz"
+
+#: LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE
+msgid "Add automatic evaluation support if possible"
+msgstr "Ebaluaketa automatikoa gehitu aukera baldin badago"
+
+#: LABEL_ALL_TIME_CREDITS
+msgid "All-time"
+msgstr "Dena"
+
+#: LABEL_APPLICATION_INFO
+msgid "Application Info"
+msgstr "Aplikazioari buruzko informazioa"
+
+#: LABEL_APPLICATION_LICENSE
+msgid "Application License:"
+msgstr "Lizentzia:"
+
+#: LABEL_APPLICATION_VERSION
+msgid "Application Version:"
+msgstr "Bertsioa:"
+
+#: LABEL_AUTOEVAL_ERROR
+msgid "ERROR"
+msgstr "ERROREA"
+
+#: LABEL_AUTOEVAL_SCORE
+msgid "Score:"
+msgstr "Puntuazioa:"
+
+#: LABEL_AUTOMATIC_EVALUATION
+msgid "Automatic Evaluation:"
+msgstr "Ebaluazio Automatikoa:"
+
+#: LABEL_BANDWIDTH_CHECK
+msgid "Bandwidth check"
+msgstr "Banda zabalera egiaztapena"
+
+#: LABEL_CHOOSE_TRANSCRIPTION_SYSTEM
+msgid "Choose System:"
+msgstr "Sistema Aukeratu:"
+
+#: LABEL_CHOOSE_UPLOADING_METHOD
+msgid "Choose an uploading method:"
+msgstr "Igoera metodo bat aukeratu:"
+
+#: LABEL_CLICK_HERE
+msgid "Click"
+msgstr "Klik"
+
+#: LABEL_CONFIGURATION
+msgid "Configure"
+msgstr "Konfiguratu"
+
+#: LABEL_CONTACT_INFO
+msgid "Contact Info"
+msgstr "Harreman Informazioa"
+
+#: LABEL_CREDIT_HISTORY
+msgid "Credit History"
+msgstr "Kreditu Historia"
+
+#: LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION
+msgid "Currently selected subtitle version:"
+msgstr "Orain gaituta dagoen bertsioa:"
+
+#: LABEL_DESCRIPTION
+msgid "Description:"
+msgstr "Deskribapena:"
+
+#: LABEL_DIFFICULTY_LEVEL
+msgid "Difficulty Level:"
+msgstr "Zailtasun maila:"
+
+#: LABEL_EDIT
+msgctxt "LABEL_EDIT"
+msgid "Edit"
+msgstr "Aldatu"
+
+#: LABEL_EMAIL
+msgid "eMail:"
+msgstr "ePosta:"
+
+#: LABEL_ERROR_WRONG_ACTIVATION_RESEND_DATA
+msgid "Wrong activation."
+msgstr "Aktibazioa da ondo joan."
+
+#: LABEL_EVALUATE_LANGUAGE
+msgid "Languages I know"
+msgstr "Ezagutzen ditudan hizkuntzak"
+
+#: LABEL_EVALUATIONS
+msgid "Evaluate"
+msgstr "Ebaluatu"
+
+#: LABEL_EXERCISES
+msgid "Practice"
+msgstr "Praktikatu"
+
+#: LABEL_EXERCISE_TITLE
+msgid "Exercise Title"
+msgstr "Ariketa Izenburua"
+
+#: LABEL_EXERCISE_TRANSCRIPTION
+msgid "Exercise transcription:"
+msgstr "Ariketa transkripzioa:"
+
+#: LABEL_FEEDBACK
+msgid "Feel free to send us your comments, questions or suggestions to:"
+msgstr ""
+"Bidali iezazkiguzu zure komentario, galdera edo gomendioak ondoko helbidera:"
+
+#: LABEL_FIRST
+msgid "First"
+msgstr "Lehena"
+
+#: LABEL_FIRST_LANGUAGE
+msgid "First Language (Mother Tongue):"
+msgstr "Lehen Hizkuntza (Ama hizkuntza):"
+
+#: LABEL_FLUENCY_SCORE
+msgid "Fluency"
+msgstr "Hitz-jarioa"
+
+#: LABEL_GUEST_EDIT_WARNING
+msgid ""
+"You are not logged in so the changes you make to this subtitle won't be "
+"saved"
+msgstr ""
+"Kautotu gabe zaude. Azpititulu hauetan egiten dituzun aldaketak ez dira "
+"gordeko."
+
+#: LABEL_GUEST_RECORD_WARNING
+msgid "You must be logged to record an exercise"
+msgstr "Ariketa bat grabatu ahal izateko kautotuta egon behar zara"
+
+#: LABEL_HELP
+msgid "Help"
+msgstr "Laguntza"
+
+#: LABEL_HOME
+msgid "Home"
+msgstr "Hasiera"
+
+#: LABEL_INACTIVE_USER
+msgid "User account not activated"
+msgstr "Erabiltzaile kontua aktibatu gabe dago"
+
+#: LABEL_INCLUDE_TEXT_COMMENT
+msgid "Include a text comment"
+msgstr "Testu iruzkina erantsi"
+
+#: LABEL_INCLUDE_VIDEO_COMMENT
+msgid "Include a video comment"
+msgstr "Bideo iruzkina erantsi"
+
+#: LABEL_INPUT_USER_AND_EMAIL
+msgid "Input your username and your email"
+msgstr "Idatzi zure erabiltzaile izena eta eposta"
+
+#: LABEL_INTEREST_LANGUAGES
+msgid "Languages you're interested in:"
+msgstr "Interesatzen zaizkizun hizkuntzak:"
+
+#: LABEL_INTONATION_SCORE
+msgid "Intonation"
+msgstr "Intonazioa"
+
+#: LABEL_I_FORGOT_MY_PASSWORD
+msgid "I forgot my password"
+msgstr "Nire pasahitza ahaztu dut"
+
+#: LABEL_LANGUAGE
+msgid "Language:"
+msgstr "Hizkuntza:"
+
+#: LABEL_LANGUAGES
+msgid "Languages"
+msgstr "Hizkuntzak"
+
+#: LABEL_LANGUAGE_KNOWLEDGE
+msgid "Knowledge:"
+msgstr "Ezagutza"
+
+#: LABEL_LAST
+msgid "Last"
+msgstr "Azkena"
+
+#: LABEL_LAST_HOURS_CREDITS
+msgid "Last Hours"
+msgstr "Azken Orduak"
+
+#: LABEL_LAST_MONTH_CREDITS
+msgid "Last Month"
+msgstr "Azken Hilabetea"
+
+#: LABEL_LAST_WEEK_CREDITS
+msgid "Last Week"
+msgstr "Azken Astea"
+
+#: LABEL_MIC_INPUT_LEVEL
+msgid "Mic Input Level"
+msgstr "Mikrofono sarrera maila"
+
+#: LABEL_MIC_SETUP
+msgid "Microphone check"
+msgstr "Mikrofono egiaztapena"
+
+#: LABEL_MODIFY_PASSWORD
+msgid "Modify Password"
+msgstr "Pasahitza Aldatu"
+
+#: LABEL_MOST_RECENT_ONE
+msgid "The most recent subtitle"
+msgstr "Azpititulurik berriena"
+
+#: LABEL_MY_PROFILE
+msgid "My Profile"
+msgstr "Nire Profila"
+
+#: LABEL_NEEDED_BW
+msgid "Needed"
+msgstr "Derrigorrezkoa"
+
+#: LABEL_NEW_ROLE
+msgid "New Role"
+msgstr "Rol Berria"
+
+#: LABEL_NEXT
+msgid "Next"
+msgstr "Hurrengoa"
+
+#: LABEL_OLDPASSWORD
+msgid "Old Password:"
+msgstr "Pasahitz zaharra:"
+
+#: LABEL_OTHER_AVAILABLE_SUBTITLE_VERSIONS
+msgid "Other available subtitle versions:"
+msgstr "Azpititulu hauen beste bertsioak:"
+
+#: LABEL_OTHER_LANGUAGES
+msgid "Other Languages:"
+msgstr "Bestelako Hizkuntzak:"
+
+#: LABEL_OVERALL_SCORE
+msgid "Overall"
+msgstr "Orokorra"
+
+#: LABEL_PASSWORD
+msgid "Password:"
+msgstr "Pasahitza"
+
+#: LABEL_PENDING_SUBTITLES
+msgid "Subtitle exercises"
+msgstr "Ariketak azpititulatu"
+
+#: LABEL_PERSONAL_INFO
+msgid "Personal Information"
+msgstr "Informazio Pertsonala"
+
+#: LABEL_PRACTICE_LANGUAGE
+msgid "Languages I'm practicing"
+msgstr "Praktikatzen ari naizen hizkuntzak"
+
+#: LABEL_PREVIOUS
+msgid "Prev"
+msgstr "Aurrekoa"
+
+#: LABEL_REAL_BW
+msgid "Current"
+msgstr "Unekoa"
+
+#: LABEL_REAL_NAME
+msgid "Real Name:"
+msgstr "Zure Izena:"
+
+#: LABEL_REAL_SURNAME
+msgid "Real Surname:"
+msgstr "Zure Abizena:"
+
+#: LABEL_REMEMBER_ME
+msgid "Remember Me!"
+msgstr "Saioa Gogoratu!"
+
+#: LABEL_REPASSWORD
+msgid "Re-enter password:"
+msgstr "Pasahitza berriz sartu"
+
+#: LABEL_RESET_EVALUATION
+msgid "Reset Data"
+msgstr "Datuak Garbitu"
+
+#: LABEL_RESTORE_PASSWORD
+msgid "Restore password"
+msgstr "Pasahitza berrezarri"
+
+#: LABEL_REVIEW_SUBTITLES
+msgid "Review subtitles"
+msgstr "Azpitituluak berrikusi"
+
+#: LABEL_RHYTHM_SCORE
+msgctxt "LABEL_RHYTHM_SCORE"
+msgid "Rhythm"
+msgstr "Erritmoa"
+
+#: LABEL_ROLE_CURRENTLY_TALKING
+msgid "Talking"
+msgstr "Hizketan"
+
+#: LABEL_SEARCH
+msgctxt "LABEL_SEARCH"
+msgid "Search"
+msgstr "Bilatu"
+
+#: LABEL_SECURITY
+msgid "Security"
+msgstr "Segurtasuna"
+
+#: LABEL_SEND_EMAIL_AGAIN
+msgid "Resend activation email"
+msgstr "Aktibazio eposta berriz bidali"
+
+#: LABEL_SEND_EVALUATION
+msgid "Send Evaluation"
+msgstr "Ebaluazioa Bidali"
+
+#: LABEL_SIGN_IN
+msgid "Login"
+msgstr "Sartu"
+
+#: LABEL_SIGN_OUT
+msgid "Sign Out"
+msgstr "Irten"
+
+#: LABEL_SIGN_UP
+msgid "Register"
+msgstr "Erregistratu"
+
+#: LABEL_SPECIFY_LICENSE
+msgid "Specify video license:"
+msgstr "Bideoaren lizentzia zehaztu:"
+
+#: LABEL_SPONTANEITY_SCORE
+msgctxt "LABEL_SPONTANEITY_SCORE"
+msgid "Spontaneity"
+msgstr "Berezkotasuna"
+
+#: LABEL_STATUS
+msgid "Status:"
+msgstr "Egoera:"
+
+#: LABEL_SUBTITLE
+msgctxt "LABEL_SUBTITLE"
+msgid "Subtitle"
+msgstr "Azpititulatu"
+
+#: LABEL_TAGS
+msgid "Tags:"
+msgstr "Etiketak:"
+
+#: LABEL_TEXT_COMMENT
+msgid "Text Comment"
+msgstr "Testu Iruzkina"
+
+#: LABEL_THIRD_PARTY_STUFF
+msgid "Third-party resources"
+msgstr "Bestelako baliabideak:"
+
+#: LABEL_TITLE
+msgid "Title:"
+msgstr "Izenburua:"
+
+#: LABEL_TOP_COLLABORATORS
+msgid "Top Collaborators"
+msgstr "Kolaboratzaile Hoberenak"
+
+#: LABEL_UNKOWN_FLASH_VERSION
+msgid "Unknown flash version"
+msgstr "Flash bertsio ezezaguna"
+
+#: LABEL_UPLOAD
+msgctxt "LABEL_UPLOAD"
+msgid "Upload"
+msgstr "Bidali"
+
+#: LABEL_UPLOADSTATUS_NOACTIVITY
+msgid "No Activity"
+msgstr "Aktibitaterik Ez"
+
+#: LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD
+msgid "Successful Upload"
+msgstr "Baliozko Igoera"
+
+#: LABEL_UPLOADSTATUS_UPLOADFINISHED
+msgid "Upload Finished!"
+msgstr "Igoera amaitu da!"
+
+#: LABEL_UPLOADSTATUS_UPLOADINPROGRESS
+msgid "Uploading File..."
+msgstr "Fitxategia Igotzen..."
+
+#: LABEL_UPLOAD_FILE
+msgid "Upload a video file from your computer"
+msgstr "Zure konputagailutik hartutako bideo fitxategi bat igo"
+
+#: LABEL_UPLOAD_NEW_EXERCISE
+msgid "Upload New Exercise"
+msgstr "Ariketa Berria Igo"
+
+#: LABEL_UPLOAD_STREAMING
+msgid "Record an exercise with the webcam and save it"
+msgstr "Web-kamerarekin ariketa bat grabatu eta hau gorde"
+
+#: LABEL_UPLOAD_YOUTUBE
+msgid "Slice up a video from YouTube and save it"
+msgstr "YouTube bideo bat moztu eta hau gorde"
+
+#: LABEL_USERS_FLASH_VERSION
+msgid "Your current Flash Version:"
+msgstr "Zure uneko Flash bertsioa:"
+
+#: LABEL_USER_ACCOUNT
+msgid "Account"
+msgstr "Nire Kontua"
+
+#: LABEL_USER_NAME
+msgid "User Name:"
+msgstr "Erabiltzaile Izena"
+
+#: LABEL_USER_OR_EMAIL
+msgid "Username or email"
+msgstr "Erabiltzaile izena edo ePosta helbidea"
+
+#: LABEL_VIDEO_COMMENT
+msgid "Video Comment"
+msgstr "Bideo Iruzkina"
+
+#: LABEL_VIDEO_OWNER_AUTHOR
+msgid "Author's Name/URL:"
+msgstr "Egilea/Helbidea:"
+
+#: LABEL_WEBCAM_SETUP
+msgid "Webcam check"
+msgstr "Web-kamera egiaztapena"
+
+#: LABEL_WELCOME
+msgid "Welcome,"
+msgstr "Kaixo,"
+
+#: LABEL_WHO_ARE_WE
+msgid "Who are we?"
+msgstr "Nortzuk gara?"
+
+#: LABEL_WRONG_PASSWORD
+msgid "Wrong Password"
+msgstr "Pasahitz desegokia"
+
+#: LABEL_WRONG_USER
+msgid "User doesn't exist!"
+msgstr "Erabiltzailea ez da existitzen"
+
+#: LABEL_YOUR_TRANSCRIPTION
+msgid "Your transcription:"
+msgstr "Zure transkripzioa:"
+
+#: LANGUAGES_SUCCESSFULLY_MODIFIED
+msgid "Your languages have been successfully modified."
+msgstr "Zure hizkuntzak era egokian aldatu dira."
+
+#: LAST_ASSESSMENT_DATE
+msgid "Last Assessment date"
+msgstr "Azken ebaluazioaren data"
+
+#: LATEST_BEST_RATED_VIDEOS
+msgid "Best rated videos"
+msgstr "Balorazio hobereneko bideoak"
+
+#: LATEST_UPLOADED_VIDEOS
+msgid "Latest uploaded videos"
+msgstr "Igotako azkeneko bideoak"
+
+#: LESS_INFO
+msgid "Less info"
+msgstr "Informazio gutxiago"
+
+#: LEVEL_A1
+msgid "A1 Beginner"
+msgstr "A1 Hasiberria"
+
+#: LEVEL_A2
+msgid "A2 Elementary"
+msgstr "A2 Oinarrizkoa"
+
+#: LEVEL_B1
+msgid "B1 Pre-intermediate"
+msgstr "B1 Behe erdi-mailakoa"
+
+#: LEVEL_B11
+msgid "B1.1 Intermediate"
+msgstr "B1.1 Erdi-mailakoa"
+
+#: LEVEL_B12
+msgid "B1.2 Intermediate"
+msgstr "B1.2 Erdi-mailakoa"
+
+#: LEVEL_B2
+msgid "B2 Intermediate"
+msgstr "B2 Erdi-mailakoa"
+
+#: LEVEL_B21
+msgid "B2.1 Advanced"
+msgstr "B2.1 Aurreratua"
+
+#: LEVEL_B22
+msgid "B2.2 Advanced"
+msgstr "B2.2 Aurreratua"
+
+#: LEVEL_C1
+msgid "C1 Upper intermediate"
+msgstr "C1 Goi erdi-mailakoa"
+
+#: LOCALE_AF_ZA
+msgid "Afrikaans (South Africa)"
+msgstr "Afrikaans (Hegoafrika)"
+
+#: LOCALE_AR_AE
+msgid "Arabic (United Arab Emirates)"
+msgstr "Arabiera (Arabiar Emirerri Batuak)"
+
+#: LOCALE_AR_BH
+msgid "Arabic (Bahrain)"
+msgstr "Arabiera (Bahrain)"
+
+#: LOCALE_AR_DZ
+msgid "Arabic (Algeria)"
+msgstr "Arabiera (Algeria)"
+
+#: LOCALE_AR_EG
+msgid "Arabic (Egypt)"
+msgstr "Arabiera (Egipto)"
+
+#: LOCALE_AR_IQ
+msgid "Arabic (Iraq)"
+msgstr "Arabiera (Irak)"
+
+#: LOCALE_AR_JO
+msgid "Arabic (Jordan)"
+msgstr "Arabiera (Jordania)"
+
+#: LOCALE_AR_KW
+msgid "Arabic (Kuwait)"
+msgstr "Arabiera (Kuwait)"
+
+#: LOCALE_AR_LB
+msgid "Arabic (Lebanon)"
+msgstr "Arabiera (Libano)"
+
+#: LOCALE_AR_LY
+msgid "Arabic (Libya)"
+msgstr "Arabiera (Libia)"
+
+#: LOCALE_AR_MA
+msgid "Arabic (Morocco)"
+msgstr "Arabiera (Maroko)"
+
+#: LOCALE_AR_OM
+msgid "Arabic (Oman)"
+msgstr "Arabiera (Oman)"
+
+#: LOCALE_AR_QA
+msgid "Arabic (Qatar)"
+msgstr "Arabiera (Katar)"
+
+#: LOCALE_AR_SA
+msgid "Arabic (Saudi Arabia)"
+msgstr "Arabiera (Saudi Arabia)"
+
+#: LOCALE_AR_SY
+msgid "Arabic (Syria)"
+msgstr "Arabiera (Siria)"
+
+#: LOCALE_AR_TN
+msgid "Arabic (Tunisia)"
+msgstr "Arabiera (Tunisia)"
+
+#: LOCALE_AR_YE
+msgid "Arabic (Yemen)"
+msgstr "Arabiera (Yemen)"
+
+#: LOCALE_AZ_AZ
+msgid "Azeri (Azerbaijan)"
+msgstr "Azeri (Azerbaijan)"
+
+#: LOCALE_BE_BY
+msgid "Belarusian (Belarus)"
+msgstr "Bielorrusiera (Bielorrusia)"
+
+#: LOCALE_BG_BG
+msgid "Bulgarian (Bulgaria)"
+msgstr "Bulgariera (Bulgaria)"
+
+#: LOCALE_CA_ES
+msgid "Catalan"
+msgstr "Katalana"
+
+#: LOCALE_CS_CZ
+msgid "Czech (Czech Republic)"
+msgstr "Txekiera (Txekiar Errepublika)"
+
+#: LOCALE_DA_DK
+msgid "Danish (Denmark)"
+msgstr "Daniera (Danimarka)"
+
+#: LOCALE_DE_AT
+msgid "German (Austria)"
+msgstr "Alemana (Austria)"
+
+#: LOCALE_DE_CH
+msgid "German (Switzerland)"
+msgstr "Alemana (Suitza)"
+
+#: LOCALE_DE_DE
+msgid "German (Germany)"
+msgstr "Alemana (Alemania)"
+
+#: LOCALE_DE_LI
+msgid "German (Liechtenstein)"
+msgstr "Alemana (Liechtenstein)"
+
+#: LOCALE_DE_LU
+msgid "German (Luxembourg)"
+msgstr "Alemana (Luxemburgo)"
+
+#: LOCALE_EL_GR
+msgid "Greek (Greece)"
+msgstr "Greziera (Grezia)"
+
+#: LOCALE_EN_AU
+msgid "English (Australia)"
+msgstr "Ingelesa (Australia)"
+
+#: LOCALE_EN_BZ
+msgid "English (Belize)"
+msgstr "Ingelesa (Belize)"
+
+#: LOCALE_EN_CA
+msgid "English (Canada)"
+msgstr "Ingelesa (Kanada)"
+
+#: LOCALE_EN_CB
+msgid "English (Caribbean)"
+msgstr "Ingelesa (Karibe)"
+
+#: LOCALE_EN_GB
+msgid "English (United Kingdom)"
+msgstr "Ingelesa (Erresuma Batua)"
+
+#: LOCALE_EN_IE
+msgid "English (Ireland)"
+msgstr "Ingelesa (Irlanda)"
+
+#: LOCALE_EN_JM
+msgid "English (Jamaica)"
+msgstr "Ingelesa (Jamaika)"
+
+#: LOCALE_EN_NZ
+msgid "English (New Zealand)"
+msgstr "Ingelesa (Zeelanda Berria)"
+
+#: LOCALE_EN_PH
+msgid "English (Philippines)"
+msgstr "Ingelesa (Filipinak)"
+
+#: LOCALE_EN_TT
+msgid "English (Trinidad and Tobago)"
+msgstr "Ingelesa (Trinidad eta Tobago)"
+
+#: LOCALE_EN_US
+msgid "English (United States)"
+msgstr "Ingelesa (Estatu Batuak)"
+
+#: LOCALE_EN_ZA
+msgid "English (South Africa)"
+msgstr "Ingelesa (Hegoafrika)"
+
+#: LOCALE_EN_ZW
+msgid "English (Zimbabwe)"
+msgstr "Ingelesa (Zimbabwe)"
+
+#: LOCALE_ES_AR
+msgid "Spanish (Argentina)"
+msgstr "Espainiera (Argentina)"
+
+#: LOCALE_ES_BO
+msgid "Spanish (Bolivia)"
+msgstr "Espainiera (Bolibia)"
+
+#: LOCALE_ES_CL
+msgid "Spanish (Chile)"
+msgstr "Espainiera (Txile)"
+
+#: LOCALE_ES_CO
+msgid "Spanish (Colombia)"
+msgstr "Espainiera (Kolonbia)"
+
+#: LOCALE_ES_CR
+msgid "Spanish (Costa Rica)"
+msgstr "Espainiera (Costa Rica)"
+
+#: LOCALE_ES_DO
+msgid "Spanish (Dominican Republic)"
+msgstr "Espainiera (Dominikar Errepublika)"
+
+#: LOCALE_ES_EC
+msgid "Spanish (Ecuador)"
+msgstr "Espainiera (Ekuador)"
+
+#: LOCALE_ES_ES
+msgid "Spanish (Spain)"
+msgstr "Espainiera (Espainia)"
+
+#: LOCALE_ES_GT
+msgid "Spanish (Guatemala)"
+msgstr "Espainiera (Guatemala)"
+
+#: LOCALE_ES_HN
+msgid "Spanish (Honduras)"
+msgstr "Espainiera (Honduras)"
+
+#: LOCALE_ES_MX
+msgid "Spanish (Mexico)"
+msgstr "Espainiera (Mexico)"
+
+#: LOCALE_ES_NI
+msgid "Spanish (Nicaragua)"
+msgstr "Espainiera (Nicaragua)"
+
+#: LOCALE_ES_PA
+msgid "Spanish (Panama)"
+msgstr "Espainiera (Panama)"
+
+#: LOCALE_ES_PE
+msgid "Spanish (Peru)"
+msgstr "Espainiera (Peru)"
+
+#: LOCALE_ES_PR
+msgid "Spanish (Puerto Rico)"
+msgstr "Espainiera (Puerto Rico)"
+
+#: LOCALE_ES_PY
+msgid "Spanish (Paraguay)"
+msgstr "Espainiera (Paraguay)"
+
+#: LOCALE_ES_SV
+msgid "Spanish (El Salvador)"
+msgstr "Espainiera (El Salvador)"
+
+#: LOCALE_ES_UY
+msgid "Spanish (Uruguay)"
+msgstr "Espainiera (Uruguay)"
+
+#: LOCALE_ES_VE
+msgid "Spanish (Venezuela)"
+msgstr "Espainiera (Venezuela)"
+
+#: LOCALE_ET_EE
+msgid "Estonian (Estonia)"
+msgstr "Estoniera (Estonia)"
+
+#: LOCALE_EU_ES
+msgid "Basque"
+msgstr "Euskara"
+
+#: LOCALE_FA_IR
+msgid "Farsi (Iran)"
+msgstr "Farsi (Iran)"
+
+#: LOCALE_FI_FI
+msgid "Finnish (Finland)"
+msgstr "Finlandiera (Finlandia)"
+
+#: LOCALE_FO_FO
+msgid "Faroese (Faroe Islands)"
+msgstr "Faroese (Faroe Irlak)"
+
+#: LOCALE_FR_BE
+msgid "French (Belgium)"
+msgstr "Frantsesa (Belgika)"
+
+#: LOCALE_FR_CA
+msgid "French (Canada)"
+msgstr "Frantsesa (Kanada)"
+
+#: LOCALE_FR_CH
+msgid "French (Switzerland)"
+msgstr "Frantsesa (Suitza)"
+
+#: LOCALE_FR_FR
+msgid "French (France)"
+msgstr "Frantsesa (Frantzia)"
+
+#: LOCALE_FR_LU
+msgid "French (Luxembourg)"
+msgstr "Frantsesa (Luxemburgo)"
+
+#: LOCALE_FR_MC
+msgid "French (Monaco)"
+msgstr "Frantsesa (Monako)"
+
+#: LOCALE_GL_ES
+msgid "Galician"
+msgstr "Galiziera"
+
+#: LOCALE_GU_IN
+msgid "Gujarati (India)"
+msgstr "Gujarati (India)"
+
+#: LOCALE_HE_IL
+msgid "Hebrew (Israel)"
+msgstr "Hebrew (Israel)"
+
+#: LOCALE_HI_IN
+msgid "Hindi (India)"
+msgstr "Hindi (India)"
+
+#: LOCALE_HR_HR
+msgid "Croatian (Croatia)"
+msgstr "Kroaziera (Kroazia)"
+
+#: LOCALE_HU_HU
+msgid "Hungarian (Hungary)"
+msgstr "Hungariera (Hungaria)"
+
+#: LOCALE_HY_AM
+msgid "Armenian (Armenia)"
+msgstr "Armeniera (Armenia)"
+
+#: LOCALE_ID_ID
+msgid "Indonesian (Indonesia)"
+msgstr "Indonesian (Indonesia)"
+
+#: LOCALE_IS_IS
+msgid "Icelandic (Iceland)"
+msgstr "Islandiera (Islandia)"
+
+#: LOCALE_IT_CH
+msgid "Italian (Switzerland)"
+msgstr "Italiera (Suitza)"
+
+#: LOCALE_IT_IT
+msgid "Italian (Italy)"
+msgstr "Italiera (Italia)"
+
+#: LOCALE_JA_JP
+msgid "Japanese (Japan)"
+msgstr "Japoniera (Japonia)"
+
+#: LOCALE_KA_GE
+msgid "Georgian (Georgia)"
+msgstr "Georgiera (Georgia)"
+
+#: LOCALE_KK_KZ
+msgid "Kazakh (Kazakhstan)"
+msgstr "Kazakhera (Kazakhstan)"
+
+#: LOCALE_KN_IN
+msgid "Kannada (India)"
+msgstr "Kannada (India)"
+
+#: LOCALE_KO_KR
+msgid "Korean (Korea)"
+msgstr "Koreera (Korea)"
+
+#: LOCALE_KY_KG
+msgid "Kyrgyz (Kyrgyzstan)"
+msgstr "Kirgizera (Kirgizistan)"
+
+#: LOCALE_LT_LT
+msgid "Lithuanian (Lithuania)"
+msgstr "Lituaniera (Lituania)"
+
+#: LOCALE_LV_LV
+msgid "Latvian (Latvia)"
+msgstr "Letoniera (Letonia)"
+
+#: LOCALE_MN_MN
+msgid "Mongolian (Mongolia)"
+msgstr "Mongoliera (Mongolia)"
+
+#: LOCALE_MR_IN
+msgid "Marathi (India)"
+msgstr "Marathi (India)"
+
+#: LOCALE_MS_BN
+msgid "Malay (Brunei)"
+msgstr "Malaysiera (Brunei)"
+
+#: LOCALE_MS_MY
+msgid "Malay (Malaysia)"
+msgstr "Malaysiera (Malaysia)"
+
+#: LOCALE_NB_NO
+msgid "Norwegian (Bokmål) (Norway)"
+msgstr "Norbegiera (Bokmål) (Norbegia)"
+
+#: LOCALE_NL_BE
+msgid "Dutch (Belgium)"
+msgstr "Neerlandera (Belgika)"
+
+#: LOCALE_NL_NL
+msgid "Dutch (The Netherlands)"
+msgstr "Neerlandera (Herbeereak)"
+
+#: LOCALE_NN_NO
+msgid "Norwegian (Nynorsk) (Norway)"
+msgstr "Norbegiera (Nynorsk) (Norbegia)"
+
+#: LOCALE_PA_IN
+msgid "Punjabi (India)"
+msgstr "Punjabi (India)"
+
+#: LOCALE_PL_PL
+msgid "Polish (Poland)"
+msgstr "Poloniera (Polonia)"
+
+#: LOCALE_PT_BR
+msgid "Portuguese (Brazil)"
+msgstr "Portugesa (Brasil)"
+
+#: LOCALE_PT_PT
+msgid "Portuguese (Portugal)"
+msgstr "Portugesa (Portugal)"
+
+#: LOCALE_RO_RO
+msgid "Romanian (Romania)"
+msgstr "Errumaniera (Errumania)"
+
+#: LOCALE_RU_RU
+msgid "Russian (Russia)"
+msgstr "Errusiera (Errusia)"
+
+#: LOCALE_SA_IN
+msgid "Sanskrit (India)"
+msgstr "Sanskrit (India)"
+
+#: LOCALE_SK_SK
+msgid "Slovak (Slovakia)"
+msgstr "Eslovakiera (Eslovakia)"
+
+#: LOCALE_SL_SI
+msgid "Slovenian (Slovenia)"
+msgstr "Esloveniera (Eslovenia)"
+
+#: LOCALE_SQ_AL
+msgid "Albanian (Albania)"
+msgstr "Albaniera (Albania)"
+
+#: LOCALE_SR_SP
+msgid "Serbian (Serbia)"
+msgstr "Serbiera (Serbia)"
+
+#: LOCALE_SV_FI
+msgid "Swedish (Finland)"
+msgstr "Suediera (Finlandia)"
+
+#: LOCALE_SV_SE
+msgid "Swedish (Sweden)"
+msgstr "Suediera (Suedia)"
+
+#: LOCALE_SW_KE
+msgid "Swahili (Kenya)"
+msgstr "Swahili (Kenia)"
+
+#: LOCALE_TA_IN
+msgid "Tamil (India)"
+msgstr "Tamil (India)"
+
+#: LOCALE_TE_IN
+msgid "Telugu (India)"
+msgstr "Telugu (India)"
+
+#: LOCALE_TH_TH
+msgid "Thai (Thailand)"
+msgstr "Tailandera (Tailandia)"
+
+#: LOCALE_TR_TR
+msgid "Turkish (Turkey)"
+msgstr "Turkiera (Turkia)"
+
+#: LOCALE_TT_RU
+msgid "Tatar (Russia)"
+msgstr "Tatar (Errusia)"
+
+#: LOCALE_UK_UA
+msgid "Ukrainian (Ukraine)"
+msgstr "Ukraniera (Ukrania)"
+
+#: LOCALE_ZH_CN
+msgid "Chinese Simplified (China)"
+msgstr "Txinera Simplifikatua (Txina)"
+
+#: LOCALE_ZH_HK
+msgid "Chinese (Hong Kong)"
+msgstr "Txinera (Hong Kong)"
+
+#: LOCALE_ZH_MO
+msgid "Chinese (Macao)"
+msgstr "Txinera (Macao)"
+
+#: LOCALE_ZH_SG
+msgid "Chinese (Singapore)"
+msgstr "Txinera (Singapur)"
+
+#: LOCALE_ZH_TW
+msgid "Chinese Traditional (Taiwan)"
+msgstr "Txinera Tradizionala (Taiwan)"
+
+#: LONG_NEWROLE
+msgid "The role name can't be longer than {0} characters."
+msgstr "Rol izena ezin da {0} karaktere baino luzeagoa izan."
+
+#: MAXIMUM_FILESIZE_EXCEEDED
+msgid "The file you selected exceeds the maximum allowed filesize."
+msgstr ""
+"Aukeratu duzun fitxategiak onartutako tamaina maximoa baino handiagoa da."
+
+#: MESSAGE_ADD_VIDEO_EVALUATION
+msgid "Add video evaluation:"
+msgstr "Bideoa gehitu:"
+
+#: MESSAGE_ASK_COMPUTER_EVALUATION
+msgid "Do you want to be evaluated by a computer?"
+msgstr "Konputagailu bat ebalua zaitzan nahi duzu?"
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_1
+msgid "If you ask for an evaluation, your video will be publicly available"
+msgstr ""
+"Ebaluazio bat eskatzen baldin baduzu, zure bideoa publikoa izango da eta"
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_2
+msgid "for the users of Babelium Project. Otherways, you will be the"
+msgstr ""
+"Babelium Project-eko beste erabiltzaileek ikusi ahal izango dute. Bestela, "
+"zeuk"
+
+#: MESSAGE_ASK_EVALUATION_EXPLAIN_3
+msgid "only one who can see it."
+msgstr "bakarrik ikusi ahalko duzu."
+
+#: MESSAGE_ASK_USERS_EVALUATION
+msgid "Do you want to ask the users for an evaluation?"
+msgstr "Erabiltzaileei ebalua zaitzaten eskatu nahi duzu?"
+
+#: MESSAGE_AUTOMATIC_EVALUATION_NOT_SUPPORTED
+msgid "This video doesn't support automatic evaluations."
+msgstr "Bideo honek ez du ebaluazio automatikorik onartzen."
+
+#: MESSAGE_CHOOSE_LOCALE
+msgid "Choose a language"
+msgstr "Hizkuntza bat aukeratu"
+
+#: MESSAGE_CHOOSE_REC_METHOD
+msgid "Choose recording method"
+msgstr "Aukeratu grabaketa modua"
+
+#: MESSAGE_CHOOSE_ROLE
+msgid "Choose a role"
+msgstr "Aukeratu pertsonaia"
+
+#: MESSAGE_CHOOSE_SUBTITLE_LANGUAGE
+msgid "Select subtitle language"
+msgstr "Azpitituluen hizkuntza aukeratu"
+
+#: MESSAGE_COMPULSORY_EVALUATION_DATA
+msgid "Compulsory evaluation data"
+msgstr "Derrigorrezko ebaluazio datuak"
+
+#: MESSAGE_DURATION
+msgctxt "MESSAGE_DURATION"
+msgid "Duration"
+msgstr "Iraupena"
+
+#: MESSAGE_EXERCISE_CHOOSE_A_ROLE
+msgid "Choose the role you want to impersonate:"
+msgstr "Ordezkatu nahi duzun pertsonaia aukeratu ezazu:"
+
+#: MESSAGE_EXERCISE_LIST
+msgid "Available Exercise List"
+msgstr "Eskuragarri dauden ariketen zerrenda"
+
+#: MESSAGE_EXERCISE_ROLES
+msgid "From the roles available in this exercise,"
+msgstr "Aukeratu berri duzun bideoko pertsonaietatik,"
+
+#: MESSAGE_EXERCISE_ROLES_SELECT
+msgid "choose the one you want to impersonate:"
+msgstr "ordezkatu nahi duzuna aukeratu ezazu:"
+
+#: MESSAGE_FILL_THE_REQUIRED_FIELDS
+msgid "You must fill all the required fields to save the exercise."
+msgstr "Beharrezko eremu guztiak bete behar dituzu ariketa gorde ahal izateko."
+
+#: MESSAGE_MAIN_LANGUAGE
+msgid "Tell us which is your main language or mother tongue"
+msgstr "Esaiguzu zure hizkuntza nagusi edo ama hizkuntza zein den"
+
+#: MESSAGE_OPTIONAL_EVALUATION_DATA
+msgid "Optional text and/or video comment to improve user feedback"
+msgstr ""
+"Hautazko testu edo/eta bideozko iruzkina erabiltzailearen feedback-a "
+"hobetzeko"
+
+#: MESSAGE_OTHER_LANGUAGE
+msgid ""
+"Do you know any other language(s) with enough level to assess other peoples' "
+"pronouncing etc.?"
+msgstr ""
+"Beste pertsonen ahoskapena etab. ebaluatzeko adina maila daukazun beste "
+"hizkuntzarik ezagutzen duzu?"
+
+#: MESSAGE_PRACTICE_LANGUAGE
+msgid "Which languages would you like to practice?"
+msgstr "Zein hizkuntza praktikatzea gustatuko litzaizuke?"
+
+#: MESSAGE_RATE_THE_USERS_RESPONSE
+msgid "Rate the user's response"
+msgstr "Erabiltzailearen erantzuna kalifikatu"
+
+#: MESSAGE_RATE_USER_FLUENCY
+msgid "Pronunciation"
+msgstr "Ahoskakuntza"
+
+#: MESSAGE_RATE_USER_INTONATION
+msgid "Intonation & accent"
+msgstr "Intonazioa eta doinua"
+
+#: MESSAGE_RATE_USER_OVERALL_SCORE
+msgid "Overall Score"
+msgstr "Kalifikazio OROKORRA"
+
+#: MESSAGE_RATE_USER_PERFORMANCE
+msgid ""
+"PERFORMS in the conversation with ease and skill catching non-verbal keys "
+"and waiting for his turn in a NATURAL WAY"
+msgstr ""
+"Elkarrizketan erraztasunez eta trebetasunez PARTE HARTZEN DU gako ez-"
+"ahozkoak identifikatuz eta bere txandari ERA NATURALEAN itxaroten"
+
+#: MESSAGE_RATE_USER_RHYTHM
+msgctxt "MESSAGE_RATE_USER_RHYTHM"
+msgid "Rhythm"
+msgstr "Erritmoa"
+
+#: MESSAGE_RATE_USER_SPONTANEITY
+msgctxt "MESSAGE_RATE_USER_SPONTANEITY"
+msgid "Spontaneity"
+msgstr "Berezkotasuna"
+
+#: MESSAGE_REPORT_INAPPROPRIATE
+msgid "Report Inappropriate Exercise"
+msgstr "Ariketa Desegokiaren Berri Eman"
+
+#: MESSAGE_REPORT_SPECIFY_ISSUE
+msgid "Report an issue with this video:"
+msgstr "Bideo honen arazoari buruz berri eman:"
+
+#: MESSAGE_ROLE_ALREADY_EXISTS
+msgid "That role already exists!"
+msgstr "Rol hori dagoeneko existitzen da!"
+
+#: MESSAGE_SECONDS
+msgid "seconds"
+msgstr "segundo"
+
+#: MESSAGE_SELECTED_EXERCISE
+msgid "Selected Exercise"
+msgstr "Aukeratutako Ariketa"
+
+#: MESSAGE_SELECT_ROL_TO_DELETE
+msgid "You must select the role you want to delete."
+msgstr "Ezabatu nahi duzun rola aukeratu behar duzu."
+
+#: MESSAGE_SIGN_UP
+msgid "Sign up on Babelium Project"
+msgstr "Babelium Project-en Izena eman"
+
+#: MESSAGE_STATUS_BUFFERING
+msgid "Buffering..."
+msgstr "Buffering..."
+
+#: MESSAGE_STATUS_FINISHED
+msgid "Finished"
+msgstr "Amaituta"
+
+#: MESSAGE_STATUS_PAUSED
+msgid "Paused"
+msgstr "Pausatuta"
+
+#: MESSAGE_STATUS_PLAYING
+msgid "Playing..."
+msgstr "Erreproduzitzen..."
+
+#: MESSAGE_STATUS_RECORDING
+msgid "Recording..."
+msgstr "Grabatzen..."
+
+#: MESSAGE_STATUS_STOPPED
+msgid "Stopped"
+msgstr "Geldituta"
+
+#: MESSAGE_SUBTITLING_CONTROLS
+msgid "Subtitling Controls:"
+msgstr "Azpititulatze Kontrolak:"
+
+#: MESSAGE_SUCCESSFULLY_SAVED
+msgid "Your response has been successfully saved!"
+msgstr "Zure erantzuna era egokian gorde da!"
+
+#: MESSAGE_TO_SIGN_IN_TO_SIGN_UP
+msgid "to sign in. You can sign-up for free"
+msgstr "kautotzeko. Dohan erregistratzeko sakatu"
+
+#: MESSAGE_UPLOADER
+msgid "Uploader"
+msgstr "Argitaratzailea"
+
+#: MESSAGE_YOU_MUST_BE_REGISTERED
+msgid "You must be registered to see this area"
+msgstr "Gune hau ikusteko erregistratuta eta kautotuta egon behar zara"
+
+#: MICROPHONE
+msgid "Microphone"
+msgstr "Mikrofonoa"
+
+#: MODIFY_USER_INFO_DESCRIPTION
+msgid ""
+"In this section you can modify all the data and customize your experience in "
+"the application."
+msgstr ""
+"Atal honetan zure datu guztiak aldatu eta aplikazioan duzun esperientzia "
+"egokitu dezakezu."
+
+#: MORE_INFO
+msgid "More info"
+msgstr "Informazio gehiago"
+
+#: MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED
+msgid ""
+"You must choose at least one mother tongue and a language you want to "
+"practice."
+msgstr ""
+"Gutxienez ama hizkuntza bat eta praktikatu nahi duzun hizkuntza bat aukeratu "
+"behar duzu."
+
+#: MY_ACTIVITY
+msgid "My recent activity"
+msgstr "Nire azkeneko aktibitatea"
+
+#: MY_VIDEOS
+msgid "My Videos"
+msgstr "Nire Bideoak"
+
+#: MY_VIDEOS_DESCRIPTION
+msgid ""
+"In this section you can manage all the videos you've provided to the "
+"application."
+msgstr ""
+"Atal honetan aplikazioan gehitu dituzun bideo guztiak kudeatu ditzakezu."
+
+#: NEW_MAIL
+msgid "New email address"
+msgstr "Eposta helbide berria"
+
+#: NEW_PASSWORD_SENT
+msgid "The new password has been sent to your email."
+msgstr "Pasahitz berria zure eposta helbidera bidali da."
+
+#: NIKEPAITUTAKOAK
+msgid "Responses I assessed"
+msgstr "Nik ebaluatutako erantzunak"
+
+#: NIRIPAITUTAKOAK
+msgid "My assessed responses"
+msgstr "Niri ebaluatutako erantzunak"
+
+#: NO_COMMENT_AVAILABLE
+msgid "No comment was added"
+msgstr "Komentariorik ez da gehitu"
+
+#: OBTAIN_CREDITS
+msgid "Obtain Credits"
+msgstr "Kredituak Lortu"
+
+#: OLD_PASSWORD_WRONG
+msgid ""
+"The old password you provided did not match our records. Password change "
+"aborted."
+msgstr ""
+"Emandako pasahitz zaharra ez dato bat. Pasahitz aldaketa bertan behera utzi "
+"da."
+
+#: OPTION_ADD_ROLES_TO_EXERCISE
+msgid "Roles"
+msgstr "Rolak"
+
+#: OPTION_ADD_SUBTITLES_TO_EXERCISE
+msgctxt "OPTION_ADD_SUBTITLES_TO_EXERCISE"
+msgid "Subtitle"
+msgstr "Azpititulatu"
+
+#: OPTION_ADD_SUBTITLE_LINE
+msgctxt "OPTION_ADD_SUBTITLE_LINE"
+msgid "Add"
+msgstr "Gehitu"
+
+#: OPTION_CLEAR_SUBTITLE_LINES
+msgid "Clear"
+msgstr "Garbitu"
+
+#: OPTION_DELETE_A_ROLE
+msgid "Delete A Role"
+msgstr "Rol Bat Ezabatu"
+
+#: OPTION_INSERT_NEW_ROLE
+msgid "Insert New Role..."
+msgstr "Rol Berria Gehitu..."
+
+#: OPTION_MIC_ONLY
+msgid "Microphone only"
+msgstr "Mikronoa soilik"
+
+#: OPTION_RECORD_RESPONSE
+msgctxt "OPTION_RECORD_RESPONSE"
+msgid "Record"
+msgstr "Grabatu"
+
+#: OPTION_REMEMBER_SETTINGS
+msgid "Remember settings"
+msgstr "Konfigurazioa gogoratu"
+
+#: OPTION_REMOVE_SUBTITLE_LINE
+msgid "Remove"
+msgstr "Kendu"
+
+#: OPTION_SAVE_SUBTITLE_LINES
+msgid "Publish"
+msgstr "Argitaratu"
+
+#: OPTION_SOUND_BAR
+msgid "Mic Test"
+msgstr "Mikrofono egiaztapena"
+
+#: OPTION_WEBCAM_AND_MIC
+msgid "Webcam and microphone"
+msgstr "Web-kamera eta mikrofonoa"
+
+#: OWNER
+msgctxt "OWNER"
+msgid "Recorded by"
+msgstr "Grabatzailea"
+
+#: PASSWORD_SUCCESSFULLY_CHANGED
+msgid "Your password has been successfully changed."
+msgstr "Zure pasahitza ondo aldatu da."
+
+#: PENDING
+msgid "pending"
+msgstr "egiteke"
+
+#: PERSONAL_DATA_SUCCESSFULLY_MODIFIED
+msgid "Your personal data has been successfully changed."
+msgstr "Zure datu pertsonalak era egokian aldatu dira."
+
+#: PROCESSING
+msgid "processing"
+msgstr "prozesatzen"
+
+#: PROMPT_CHOOSE_ISSUE
+msgid "Choose an Issue"
+msgstr "Arazo mota aukeratu"
+
+#: PROMPT_SELECT_LANGUAGE
+msgid "Select a language"
+msgstr "Hizkuntza aukeratu"
+
+#: PROMPT_SELECT_DIFFICULTY
+msgid "Select a difficulty"
+msgstr "Zailtasun maila aukeratu"
+
+#: RECORDED_BY
+msgctxt "RECORDED_BY"
+msgid "Recorded by"
+msgstr "Grabatzailea"
+
+#: RECORDING_SETTINGS
+msgid "Recording settings"
+msgstr "Grabaketa ezarpenak"
+
+#: RECORD_DATE
+msgid "Record date"
+msgstr "Grabatze data"
+
+#: RENDERER_NO_INPUT_DATA
+msgid "None"
+msgstr "Ezer"
+
+#: REPEAT_NEW_EMAIL
+msgid "Re-enter new email address"
+msgstr "Eposta helbide berria berriz sartu"
+
+#: REPORT
+msgctxt "REPORT"
+msgid "Report"
+msgstr "Salatu"
+
+#: REPORT_18_PLUS
+msgid "Video is not suitable for underages"
+msgstr "Adingabeentzat egokia ez den bideoa"
+
+#: REPORT_COPYRIGHTED
+msgid "Video is copyrighted material"
+msgstr "Bideoak copyright dauka"
+
+#: REPORT_DUPLICATED
+msgid "Video already exists in Babelium Project"
+msgstr "Bideoa Babelium Project-en dagoeneko badago"
+
+#: REPORT_INNAPROPRIATE_VIDEO
+msgid "Report an innapropriate video"
+msgstr "Bideo desegoki baten berri eman"
+
+#: REPORT_OBSCENE
+msgid "Video is pornographic or obscene"
+msgstr "Bideoa pornografikoa edo lizuna da"
+
+#: REPORT_OFFENSIVE
+msgid "Video is offensive"
+msgstr "Bideo iraingarria"
+
+#: REPORT_TECHNICAL
+msgid "Report technical problems"
+msgstr "Arazo teknikoei buruz berri eman"
+
+#: REPORT_TERMS
+msgid "Video violates terms & conditions"
+msgstr "Bideoak mugak eta baldintzak hausten ditu"
+
+#: REPORT_VIOLENCE
+msgid "Video contains graphic violence"
+msgstr "Bideoak biolentzia grafikoa dauka"
+
+#: RESET
+msgid "Reset"
+msgstr "Berrezarri"
+
+#: RESPONSES_ASSESSED_BY_USER_LIST
+msgid "List of done assessments"
+msgstr "Egindako ebaluaketen zerrenda"
+
+#: RESPONSES_ASSESSED_TO_USER_LIST
+msgid "List of received assessments"
+msgstr "Jasotako ebaluaketen zerrenda"
+
+#: RESULTS
+msgid "Results"
+msgstr "Emaitzak"
+
+#: ROLE_EMPTY
+msgid "The role on the line {0} is empty."
+msgstr "{0}. lerroko rola hutsik dago."
+
+#: SAVEVIDEO
+msgid "Save video"
+msgstr "Bideoa gorde"
+
+#: SEARCH
+msgctxt "SEARCH"
+msgid "Search"
+msgstr "Bilatu"
+
+#: SEARCH_CB_AUTOMATIC
+msgid "Automatic"
+msgstr "Automatikoa"
+
+#: SEARCH_CB_DATE
+msgctxt "SEARCH_CB_DATE"
+msgid "Date"
+msgstr "Data"
+
+#: SEARCH_CB_DIFFICULTY
+msgid "Difficulty"
+msgstr "Zailtasuna"
+
+#: SEARCH_CB_LANGUAGE
+msgid "Language"
+msgstr "Hizkuntza"
+
+#: SEARCH_CB_RATING
+msgid "Rating"
+msgstr "Balorazioa"
+
+#: SEARCH_CB_USER
+msgid "User"
+msgstr "Erabiltzailea"
+
+#: SEARCH_ORDERBY
+msgid "Order by"
+msgstr "Ordenatzeko irizpidea"
+
+#: SEARCH_RESULTSFOUND
+msgid "Matches found"
+msgstr "Aurkitutako emaitzak"
+
+#: SEARCH_RESULTS_FOR
+msgid "Search results for:"
+msgstr "Bilaketa emaitzak termino honentzako:"
+
+#: SEARCH_SECTION_DESCRIPTION
+msgid "Use this module to find the exercise you are looking for."
+msgstr "Erabili modulu hau bilatzen ari zaren ariketa hori aurkitzeko."
+
+#: SEARCH_TAGCLOUD
+msgid "Tag Cloud"
+msgstr "Etiketa-Hodeia"
+
+#: SELECTEDCHAR
+msgid "Selected role"
+msgstr "Aukeratutako pertsonaia"
+
+#: SHORT_NEWROLE
+msgid "The role name must have at least {0} characters."
+msgstr "Rol izenak gutxienez {0} karaktere izan behar ditu."
+
+#: SHORT_PASSWORD
+msgid "The password must have at least 6 characters."
+msgstr "Pasahitzak 6 karaktere izan behar ditu gutxienez."
+
+#: SHORT_USERNAME
+msgid "The username must have at least 4 characters."
+msgstr "Erabiltzaile izenak 4 karaktere izan behar ditu gutxienez."
+
+#: SHOW_SUBTITLES
+msgid "Show subtitles"
+msgstr "Azpitituluak agertarazi"
+
+#: SIGNUP_SECTION_DESCRIPTION
+msgid ""
+"Use this section to sign up on Babelium and thus start practicing your "
+"favorite languages in no time. It's free."
+msgstr ""
+"Atal hau erabili Babeliumen izena emateko eta horrela zure gustoko "
+"hizkuntzak praktikatzen hasteko. Dohakoa da."
+
+#: SIMULTANEOUS_SUBTITLE_EDITION
+msgid "Someone else is editing this very same subtitles."
+msgstr "Beste norbait azpititulu hauek editatzen dabil."
+
+#: SLICEABORT_TEXT
+msgid "The video's duration exceeds the limit, the video can't be downloaded"
+msgstr ""
+"Bideoaren iraupenak onarturiko limitea gainditzen du, ezin da bideoa "
+"deskargatu"
+
+#: SLICEEND_TEXT
+msgid ""
+"Your slice request has been successfully created, the video will be uploaded "
+"soon if duration requirements are fulfilled. Thank you!"
+msgstr ""
+"Zure mozketa eskaera era egokian egin da. Bideoa aurki eskuragarri egongo "
+"da, iraupen maximo baldintzak betetzen baditu. Mil esker!"
+
+#: SLICEPROGRESS_TEXT
+msgid "The slice request is being processed. Please wait..."
+msgstr "Eskaera prozesatzen ari da, itxaron mesedez..."
+
+#: SLICEREQUEST_TEXT
+msgid ""
+"WARNING:\n"
+"You must fill the following form with information \n"
+"on the new video to register your slice request correctly."
+msgstr ""
+"ERNE:\n"
+"Formularioa bideo berriaren datuekin bete behar duzu \n"
+"zure mozketa eskaera behar bezala erregistratzeko."
+
+#: SORT_BY
+msgid "Sort by"
+msgstr "Honen arabera ordenatu"
+
+#: SPEND_CREDITS
+msgid "Use Credits"
+msgstr "Kredituak Erabili"
+
+#: STEP_BY_STEP
+msgid "Step by step"
+msgstr "Urratsez urrats"
+
+#: SUBITLE_START_TIME_TOOLTIP
+msgid "Start subtitle line"
+msgstr "Azpititulu lerroa hasieratu"
+
+#: SUBTITLE_OVERLAPS
+msgid "The subtitle on the line {0} overlaps with the next subtitle."
+msgstr "{0}. lerroko azpititulua hurrengo azpitituluarekin gainjarrita dago."
+
+#: SUBTITLE_SECTION_DESCRIPTION
+msgid ""
+"The freshly uploaded videos are not very useful until somebody establishes "
+"who says what on them. Just grab a video and transcript the dialogue so that "
+"other users can practice with this exercise."
+msgstr ""
+"Igo berritako bideoak norbaitek berton zeinek zer esaten den adierazten duen "
+"arte ez dira oso erabilgarriak izaten. Aukeratu zerrendako bideo bat eta "
+"bertan esaten dena transkribatu beste erabiltzaileek ariketa honekin "
+"praktikatzeko aukera izan dezaten."
+
+#: SUBTITLE_STOP_TIME_TOOLTIP
+msgid "Stop subtitle line"
+msgstr "Azpititulu lerror geldiarazi"
+
+#: SUBTITLE_TIME_OUT_OF_BOUNDS
+msgid ""
+"One or more subtitle times on the line {0} are out of the video boundaries"
+msgstr ""
+"{0}. lerroko azpitituluaren denbora bat edo gehiago bideoaren borneetatik "
+"kanpo dago"
+
+#: TAGS
+msgid "tags"
+msgstr "etiketak"
+
+#: TERMS_OF_USE
+msgid "Terms of use"
+msgstr "Erabilera terminoak"
+
+#: TEXT_ADMINISTRATIVELY_DISABLED
+msgid ""
+"An administrative rule forbids the access to camera and microphone. Please "
+"contact your system administrator."
+msgstr ""
+"Zure webkam eta mikrofonoa administratiboki desgaituta daude. Mesedez zure "
+"sistemako kudeatzailearekin harremanetan jarri."
+
+#: TEXT_CAMERA_NOT_FOUND
+msgid ""
+"Your camera device couldn't be detected. Please make sure the device is "
+"correctly plugged and then click 'Retry' or click 'Cancel' to abort the "
+"recording."
+msgstr ""
+"Zure kamera gailua ezin izan da detektatu. Mesedez ziurtatu zure gailua ondo "
+"konektatuta dagoela eta ondoren sakatu 'Saiatu berriz' edo 'Utzi' grabaketa "
+"bertan behera uzteko."
+
+#: TEXT_CREDIT_COUNT
+msgid "Credits:"
+msgstr "Kredituak:"
+
+#: TEXT_EMPTY
+msgid "The text on the line {0} is empty."
+msgstr "{0}. lerroko testua hutsik dago."
+
+#: TEXT_MIC_NOT_FOUND
+msgid ""
+"Your microphone device couldn't be detected. Please make sure the device is "
+"correctly plugged and then click 'Retry' or click 'Cancel' to abort the "
+"recording."
+msgstr ""
+"Zure mikrofono gailua ezin izan da detektatu. Mesedez ziurtatu zure gailua "
+"ondo konektatuta dagoela eta ondoren sakatu 'Saiatu berriz' edo 'Utzi' "
+"grabaketa bertan behera uzteko."
+
+#: TEXT_MIC_TEST_EXPLAIN
+msgid ""
+"This test will ensure that your microphone works as excepted and has the "
+"minimum required volume to record an exercise."
+msgstr ""
+"Froga honek zure mikrofonoa espero bezala funtzionatzen duela eta ariketa "
+"bat grabatzeko beharrezkoa den bolumen-maila minimoa detektatzen dela "
+"konprobatzen du."
+
+#: TEXT_MODULE_INFO_SUBTITLE
+msgid "Enter a short description of the things you can do with this module."
+msgstr ""
+"Sar ezazu modulu honetan egin daitezken ekintzei buruzko deskribapen labur "
+"bat"
+
+#: TEXT_PRIVACY_RIGHTS_EXPLAIN
+msgid ""
+"Please click 'Allow' when you see this window. Also click on 'Remember' to "
+"skip this step the next time you want to record something."
+msgstr ""
+"Mesedez sakatu 'Baimendu' ondoko leihoa agertzean. Zenbait gauza grabatu "
+"nahi badituzu sakatu 'Gogoratu' eta honela urrats hau errepikatzeko beharrik "
+"ez duzu izango."
+
+#: TEXT_RECORD_VIDEO_UPLOAD
+msgid ""
+"Use the controls in the right to record an exercise using your webcam. You "
+"can record as many times as you want and preview the videos before actually "
+"saving them in the system."
+msgstr ""
+"Erabili eskubiko kontrolak zure web-kamera erabilita ariketa bat grabatzeko. "
+"Nahi bezain beste aldiz grabatu dezakezu. Grabatutakoa ikusteko aukera ere "
+"baduzu ariketa sisteman gorde baino lehen."
+
+#: TEXT_USER_ACCOUNT
+msgid "User Account"
+msgstr "Erabiltzailearen kontua"
+
+#: TEXT_WHO_ARE_WE
+msgid ""
+"We are a group of researchers and students from the Basque Country's Public "
+"University (UPV/EHU) hypermedia and multimedia research group (GHyM). This "
+"group is primarily focused on developing innovative web-based educational "
+"applications and services. You can follow us on Twitter @babelium :-)"
+msgstr ""
+"Euskal Herriko Unibertsitateko (EHU/UPV) Grupo Hipermedia y Multimedia "
+"(GHyM) taldeko ikerlari eta ikasle multzo bat gara. Gure taldeak web "
+"bitartezko hezkuntzarako zerbitzu eta aplikazio berritzaileen garapena du "
+"xede. Twitter-en jarrai gaitzazu! @babelium"
+
+#: TITLE_AVAILABLE_ACTIONS
+msgid "Available Actions"
+msgstr "Aukera Eskuragarriak"
+
+#: TITLE_BANDWIDTH_CHART
+msgid "Current bandwidth chart"
+msgstr "Uneko banda zabalera grafikoa"
+
+#: TITLE_CHOOSE_ROLE
+msgid "CHOOSE A ROLE:"
+msgstr "Rol bat aukeratu:"
+
+#: TITLE_CHOOSE_ROLE_REC_METHOD
+msgid "CHOOSE ROLE AND RECORDING METHOD"
+msgstr "Rola eta Grabaketa Metodoa Aukeratu"
+
+#: TITLE_CONFIRMATION
+msgid "Confirmation"
+msgstr "Berrespena"
+
+#: TITLE_CONFIRM_ACTION
+msgid "Confirm action"
+msgstr "Ekintza Baieztatu"
+
+#: TITLE_ERROR
+msgid "Error"
+msgstr "Errorea"
+
+#: TITLE_GRANTED_SCORE
+msgid "Granted score"
+msgstr "Emandako puntuazioa"
+
+#: TITLE_INFORMATION
+msgid "Information"
+msgstr "Informazioa"
+
+#: TITLE_INFORMATION_MESSAGE
+msgid "Information Message"
+msgstr "Informazio Mezua"
+
+#: TITLE_INSERT_NEW_ROL
+msgid "Insert a new Role"
+msgstr "Rol berria gehitu"
+
+#: TITLE_LOGIN_FORM
+msgid "Please enter your login information"
+msgstr "Mesedez zure kautotze informazioa sartu"
+
+#: TITLE_MACHINE_EVALUATION
+msgid "Automatic evaluation"
+msgstr "Ebaluazio automatikoa"
+
+#: TITLE_PRIVACY_SETTINGS
+msgid "Privacy Settings"
+msgstr "Pribatutasun Hobespenak"
+
+#: TITLE_REPORT_INAPPROPRIATE
+msgid "Report Inappropriate Exercises"
+msgstr "Ariketa Desegokien Berri Eman"
+
+#: TITLE_RESTORE_PASS_FORM
+msgid "Please enter your username or email"
+msgstr "Mesedez zure erabiltzaile izena edo eposta helbidea sartu"
+
+#: TITLE_SUBTITLE_EDITOR
+msgid "Subtitle Editor"
+msgstr "Azpititulu Editorea"
+
+#: TITLE_URLSEARCH
+msgid "Enter video's URL..."
+msgstr "Bideoaren URLa idatzi..."
+
+#: TITLE_USERS_CREDIT_HISTORY
+msgid "User's Credit History"
+msgstr "Erabiltzailearen Kreditu Historia"
+
+#: TITLE_USER_EVALUATION
+msgid "{0}'s evaluation"
+msgstr "{0}(r)en ebaluazioa"
+
+#: TITLE_VIEW_VIDEO_COMMENT
+msgid "View video comment"
+msgstr "Bideo bidezko komentarioa ikusi"
+
+#: TOOLTIP_ADD_FILES
+msgid "Add file(s)"
+msgstr "Fitxategia(k) gehitu"
+
+#: TOOLTIP_ADD_ROLES_TO_EXERCISE
+msgid "Define the characters/roles appearing on this exercise"
+msgstr "Ariketa honetan ageri diren pertsonaia/rolak definitu"
+
+#: TOOLTIP_ADD_SUBTITLES_TO_EXERCISE
+msgid "Add your own subtitles to this exercise"
+msgstr "Ariketa honi azpitituluak zuk zeuk gehitu"
+
+#: TOOLTIP_CANCEL_UPLOAD
+msgid "Cancel upload"
+msgstr "Igotzeari utzi"
+
+#: TOOLTIP_END_SUBTITLE_LINE
+msgid "Subtitle end"
+msgstr "Azpititulu amaiera"
+
+#: TOOLTIP_NEXT_SUBTITLE_LINE
+msgid "Next subtitle line"
+msgstr "Hurrengo azpititulu lerroa"
+
+#: TOOLTIP_PREVIOUS_SUBTITLE_LINE
+msgid "Previous subtitle line"
+msgstr "Aurretiko azpititulu lerroa"
+
+#: TOOLTIP_RECORD_RESPONSE
+msgid "Record a video response following this exercise"
+msgstr "Ariketa hau jarraituz bideo-erantzun bat grabatu"
+
+#: TOOLTIP_SEEK_TO_LINE
+msgid "Click here to seek the video to the start time of this subtitle line"
+msgstr ""
+"Sakatu hemen bideoa azpititulu lerro hau ikusten den unera salto egiteko"
+
+#: TOOLTIP_START_SUBTITLE_LINE
+msgid "Subtitle start"
+msgstr "Azpititulu hasiera"
+
+#: TOOLTIP_UPLOAD_FILES
+msgid "Upload file(s)"
+msgstr "Fitxategia(k) igo"
+
+#: TOOLTIP_VIDEO_OWNER_AUTHOR
+msgid ""
+"If the video you're uploading is created by someone else please refer here "
+"the author's name or webpage."
+msgstr ""
+"Igotzen ari zaren bideoa beste pertsona batek sortu badu, mesedez egiozu "
+"erreferentzia bere izena jarriz edo bere web orria adieraziz."
+
+#: UPLOAD_EVALUATION_EXERCISE
+msgid ""
+"Evaluation exercise: the video can't be used by others to practice and is "
+"only available in the evaluation area"
+msgstr ""
+"Evaluation exercise: the video can't be used by others to practice and is "
+"only available in the evaluation area"
+
+#: UPLOAD_EXERCISE_TYPE
+msgid "Choose exercise type"
+msgstr "Choose exercise type"
+
+#: UPLOAD_LIMITS_INFO
+msgid ""
+"<b>NOTE:</b> The maximum allowed video size is <b>{0}MB</b>. In addition, "
+"the videos shouldn't be shorter than <b>{1} seconds</b> or longer than "
+"<b>{2} seconds</b>, otherwise they will be rejected."
+msgstr ""
+"<b>OHARRA:</b>Onarturiko bideo tamaina maximoa <b>{0}MB</b>ekoa da. Honez "
+"gain, bideoek <b>{1} segundu</b> baino gehiago eta <b>{2} segundu</b> baino "
+"gutxiago iraun behar dute, bestela baztertu egingo dira."
+
+#: UPLOAD_LIMITS_REASONING
+msgid ""
+"In our research we've found that the user's concentration level drops "
+"significantly when dubbing videos longer than {0} seconds.<br>Also, since "
+"live dubbing is an stressful task, we limit the duration in hopes to keep a "
+"ballance between the amount of speaking practice the user achieves and the "
+"frustation he/she gets along the process."
+msgstr ""
+"Gure ikerkuntzan {0} segunduko baino gehiago dituzten bideoen bikoizketan "
+"erabiltzailearen kontzentrazio maila era nabarian jaisten dela behatu "
+"dugu.<br>Gainera, zuzeneko bikoizketa ataza estresagarria denez, iraupena "
+"mugatzen dugu prozesuan zehar erabiltzaileak lortzen duen praktika eta eta "
+"frustrazioa nolabait orekatzeko."
+
+#: UPLOAD_PRACTICE_EXERCISE
+msgid ""
+"Practice exercise: users can practice an record responses following this "
+"video"
+msgstr ""
+"Practice exercise: users can practice an record responses following this "
+"video"
+
+#: USER
+msgid "user"
+msgstr "erabiltzailea"
+
+#: USER_ERROR
+msgid "The username or the email already exists."
+msgstr "Erabiltzaile izen edo ePosta hori dagoeneko hartuta daude."
+
+#: USER_LATEST_DONE_ASSESSMENTS
+msgid "Assessments I recently done"
+msgstr "Azken aldian egindako ebaluazioak"
+
+#: USER_LATEST_RECEIVED_ASSESSMENTS
+msgid "Assessments I recently received"
+msgstr "Azken aldian jasotako ebaluazioak"
+
+#: USER_LATEST_UPLOADED_VIDEOS
+msgid "Videos I recently uploaded"
+msgstr "Azken aldian igotako bideoak"
+
+#: VALID_CHARACTERS
+msgid "Valid characters: [a-zA-Z0-9_]"
+msgstr "Karaktere onartuak: [a-zA-Z0-9_]"
+
+#: VALID_URL_ALERT
+msgid "You must enter a valid URL!"
+msgstr "Baliozko URL bat sartu behar duzu!"
+
+#: VALUATION
+msgid "Evaluation"
+msgstr "Ebaluazioa"
+
+#: VIDEOCOMMENT
+msgid "Video comment"
+msgstr "Bideo iruzkina"
+
+#: VIDEO_COUNT_MANY
+msgid "{0} videos"
+msgstr "{0} bideo"
+
+#: VIDEO_COUNT_SINGLE
+msgid "{0} video"
+msgstr "bideo {0}"
+
+#: VIDEO_DATA_SUCCESSFULLY_MODIFIED
+msgid "Video data successfully modified."
+msgstr "Bideoaren datuak era egokian aldatu dira."
+
+#: VIDEO_STATUS
+msgid "Video status"
+msgstr "Bideoaren egoera"
+
+#: VIDEO_TUTORIALS
+msgid "Video tutorials"
+msgstr "Bideo tutorialak"
+
+#: VIDEO_TUTORIALS_DESCRIPTION
+msgid ""
+"The following videos explain how to use some of Babelium's features [In "
+"English]"
+msgstr ""
+"Ondoko bideoek Babelium-eko zenbait ezaugarri nola erabili azaltzen dute "
+"[Ingeleraz]"
+
+#: VOLUME
+msgid "Volume"
+msgstr "Bolumena"
+
+#: WARNING_CLEAR_SUBTITLE_LINES
+msgid "Are you sure you want to delete ALL the subtitle lines?"
+msgstr "Ziur zaude azpititulu lerro GUZTIAK ezabatu nahi dituzula?"
+
+#: WARNING_EMPTY_SUBTITLE
+msgid "You can't save the subtitle. You haven't added any lines yet."
+msgstr "Azpitituluak ezin dira gorde. Oraindik lerrorik ez duzu gehitu."
+
+#: WARNING_NOT_MODIFIED_SUBTITLES
+msgid "You can't save the subtitle. You haven't modified any part of it."
+msgstr "Azpitituluak ezin dira gorde. Lehendik zeudenen berdinak dira."
+
+#: WARNING_ROLE_PANEL_1
+msgid "You must fill all the options"
+msgstr "Aukera guztiak hautatu behar dituzu"
+
+#: WARNING_ROLE_PANEL_2
+msgid "You must fill the method and pass the sound test"
+msgstr "Grabaketa metodoa hautatu eta soinu testa gainditu behar duzu"
+
+#: WARNING_ROLE_PANEL_3
+msgid "You must select a role and pass the sound test"
+msgstr "Rol bat hautatu eta soinu testa gainditu behar duzu"
+
+#: WARNING_ROLE_PANEL_4
+msgid "You must select a role and the method"
+msgstr "Rol bat eta grabaketa metodoa hautatu behar dituzu"
+
+#: WARNING_ROLE_PANEL_5
+msgid "You must pass the sound test"
+msgstr "Soinu testa gainditu behar duzu"
+
+#: WARNING_ROLE_PANEL_6
+msgid "You must select a recording method"
+msgstr "Grabaketa metodo bat hautatu behar duzu"
+
+#: WARNING_ROLE_PANEL_7
+msgid "You must select a role"
+msgstr "Rol bat hautatu behar duzu"
+
+#: WARNING_SUBTITLE_HAS_ERRORS
+msgid "Subtitle Has Errors"
+msgstr "Azpitituluak erroreak ditu"
+
+#: WEBCAM
+msgid "Webcam"
+msgstr "Web-kamera"
+
+#: WRONG_FIELDS_IN_FORM
+msgid "Some form fields are wrong. Fix the errors to proceed."
+msgstr ""
+"Zure formularioko eremu batzuk ez daude ondo. Jarraitzeko errore horiek "
+"zuzendu."
+
+#: YOURCHARACTER
+msgid "Your role is the red arrow"
+msgstr "Zure pertsonaia gezi gorria da"
+
+#: YOUR_ASSESSMENT_COULDNT_BE_SAVE
+msgid "Your assessment couldn't be properly saved."
+msgstr "Zure ebaluazioa ezin izan da era egokian gorde."
+
+#: YOUR_ASSESSMENT_HAS_BEEN_SAVED
+msgid "Your assessment has been saved. Thanks for your collaboration."
+msgstr "Zure ebaluazioa era egokian gorde da. Eskerrikasko kolaboratzeagatik."
+
+#: YOUR_AUTOEVALUATION_REQUEST_IS_BEING_PROCESSED
+msgid "Your autoevaluation request is being processed"
+msgstr "Zure autoebaluazio eskaera prozesatzen ari da"
+
+#: YOUR_AUTOEVALUATION_REQUEST_IS_PENDING
+msgid "Your autoevaluation request is pending"
+msgstr "Zure autoebaluazio eskaera egiteke dago"
