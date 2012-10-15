@@ -1,15 +1,9 @@
+# Don't forget to put a trailing <whitespace> at the end of each line to separate one rule from another 
+build.properties 
+Config.php 
 
-syntax: regexp
-build\.properties$
-syntax: regexp
-Config\.php$
+dist/ 
+bin-debug/ 
 
-syntax: regexp
-dist$
-syntax: regexp
-bin-debug$
-
-syntax: regexp
-build\.espantapajaros\.properties$
-syntax: regexp
-build\.local\.properties$
+build.espantapajaros.properties 
+build.local.properties 
