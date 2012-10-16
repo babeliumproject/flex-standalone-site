@@ -27,6 +27,142 @@
 
 -- USE `babeliumproject`;
 
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `ID` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  `realName` varchar(45) NOT NULL,
+  `realSurname` varchar(45) NOT NULL,
+  `creditCount` int(10) unsigned NOT NULL default '0',
+  `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `active` tinyint(1) NOT NULL default '0',
+  `activation_hash` varchar(20) NOT NULL,
+  `isAdmin` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `transcription`
+--
+
+DROP TABLE IF EXISTS `transcription`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `transcription` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `adding_date` datetime NOT NULL,
+  `status` varchar(45) NOT NULL,
+  `transcription` text,
+  `transcription_date` datetime default NULL,
+  `system` varchar(45) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `exercise`
+--
+
+DROP TABLE IF EXISTS `exercise`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `exercise` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(200) NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid',
+  `description` text NOT NULL COMMENT 'Describe the video''s content',
+  `source` enum('Youtube','Red5') NOT NULL COMMENT 'Specifies where the video comes from',
+  `language` varchar(45) NOT NULL COMMENT 'The spoken language of this exercise',
+  `fk_user_id` int(10) unsigned NOT NULL COMMENT 'Who suggested or uploaded this video',
+  `tags` varchar(100) NOT NULL COMMENT 'Tag list each item separated with a comma',
+  `title` varchar(80) NOT NULL,
+  `thumbnail_uri` varchar(200) character set latin1 NOT NULL default 'nothumb.png',
+  `adding_date` datetime NOT NULL,
+  `duration` int(10) unsigned NOT NULL,
+  `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable','UnprocessedNoPractice') NOT NULL default 'Unprocessed',
+  `filehash` varchar(32) character set latin1 NOT NULL default 'none',
+  `fk_transcription_id` int(10) unsigned default NULL,
+  `license` varchar(60) NOT NULL default 'cc-by' COMMENT 'The kind of license this exercise is attached to',
+  `reference` text NOT NULL COMMENT 'The url or name of the entity that provided this resource (if any)',
+  PRIMARY KEY  (`id`),
+  KEY `FK_exercises_1` (`fk_user_id`),
+  KEY `fk_exercise_transcriptions1` (`fk_transcription_id`),
+  CONSTRAINT `FK_exercises_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_exercise_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `subtitle`
+--
+
+DROP TABLE IF EXISTS `subtitle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `subtitle` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fk_exercise_id` int(10) unsigned NOT NULL,
+  `fk_user_id` int(10) unsigned NOT NULL,
+  `language` varchar(45) NOT NULL,
+  `translation` tinyint(1) NOT NULL default '0',
+  `adding_date` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `complete` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY  (`id`),
+  KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
+  KEY `FK_exercise_subtitle_2` (`fk_user_id`),
+  CONSTRAINT `FK_exercise_subtitle_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_exercise_subtitle_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `response`
+--
+
+DROP TABLE IF EXISTS `response`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `response` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fk_user_id` int(10) unsigned NOT NULL,
+  `fk_exercise_id` int(10) unsigned NOT NULL,
+  `file_identifier` varchar(100) NOT NULL,
+  `is_private` tinyint(1) NOT NULL,
+  `thumbnail_uri` varchar(200) NOT NULL default 'nothumb.png',
+  `source` enum('Youtube','Red5') NOT NULL,
+  `duration` int(10) unsigned NOT NULL,
+  `adding_date` datetime NOT NULL,
+  `rating_amount` int(10) NOT NULL,
+  `character_name` varchar(45) NOT NULL,
+  `fk_transcription_id` int(10) unsigned default NULL,
+  `fk_subtitle_id` int(10) unsigned default NULL,
+  `priority_date` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`),
+  KEY `FK_response_1` (`fk_user_id`),
+  KEY `FK_response_2` (`fk_exercise_id`),
+  KEY `fk_response_transcriptions1` (`fk_transcription_id`),
+  KEY `FK_response_3` (`fk_subtitle_id`),
+  CONSTRAINT `FK_response_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_response_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_response_3` FOREIGN KEY (`fk_subtitle_id`) REFERENCES `subtitle` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_response_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 --
 -- Table structure for table `credithistory`
 --
@@ -99,37 +235,6 @@ CREATE TABLE `evaluation_video` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `exercise`
---
-
-DROP TABLE IF EXISTS `exercise`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `exercise` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(200) NOT NULL COMMENT 'In case it''s Youtube video we''ll store here it''s uid',
-  `description` text NOT NULL COMMENT 'Describe the video''s content',
-  `source` enum('Youtube','Red5') NOT NULL COMMENT 'Specifies where the video comes from',
-  `language` varchar(45) NOT NULL COMMENT 'The spoken language of this exercise',
-  `fk_user_id` int(10) unsigned NOT NULL COMMENT 'Who suggested or uploaded this video',
-  `tags` varchar(100) NOT NULL COMMENT 'Tag list each item separated with a comma',
-  `title` varchar(80) NOT NULL,
-  `thumbnail_uri` varchar(200) character set latin1 NOT NULL default 'nothumb.png',
-  `adding_date` datetime NOT NULL,
-  `duration` int(10) unsigned NOT NULL,
-  `status` enum('Unprocessed','Processing','Available','Rejected','Error','Unavailable','UnprocessedNoPractice') NOT NULL default 'Unprocessed',
-  `filehash` varchar(32) character set latin1 NOT NULL default 'none',
-  `fk_transcription_id` int(10) unsigned default NULL,
-  `license` varchar(60) NOT NULL default 'cc-by' COMMENT 'The kind of license this exercise is attached to',
-  `reference` text NOT NULL COMMENT 'The url or name of the entity that provided this resource (if any)',
-  PRIMARY KEY  (`id`),
-  KEY `FK_exercises_1` (`fk_user_id`),
-  KEY `fk_exercise_transcriptions1` (`fk_transcription_id`),
-  CONSTRAINT `FK_exercises_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_exercise_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `exercise_comment`
@@ -255,6 +360,7 @@ CREATE TABLE `motd` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
 --
 -- Table structure for table `preferences`
 --
@@ -270,39 +376,6 @@ CREATE TABLE `preferences` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `response`
---
-
-DROP TABLE IF EXISTS `response`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `response` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `fk_user_id` int(10) unsigned NOT NULL,
-  `fk_exercise_id` int(10) unsigned NOT NULL,
-  `file_identifier` varchar(100) NOT NULL,
-  `is_private` tinyint(1) NOT NULL,
-  `thumbnail_uri` varchar(200) NOT NULL default 'nothumb.png',
-  `source` enum('Youtube','Red5') NOT NULL,
-  `duration` int(10) unsigned NOT NULL,
-  `adding_date` datetime NOT NULL,
-  `rating_amount` int(10) NOT NULL,
-  `character_name` varchar(45) NOT NULL,
-  `fk_transcription_id` int(10) unsigned default NULL,
-  `fk_subtitle_id` int(10) unsigned default NULL,
-  `priority_date` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`id`),
-  KEY `FK_response_1` (`fk_user_id`),
-  KEY `FK_response_2` (`fk_exercise_id`),
-  KEY `fk_response_transcriptions1` (`fk_transcription_id`),
-  KEY `FK_response_3` (`fk_subtitle_id`),
-  CONSTRAINT `FK_response_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_response_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_response_3` FOREIGN KEY (`fk_subtitle_id`) REFERENCES `subtitle` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_response_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `spinvox_request`
@@ -323,28 +396,6 @@ CREATE TABLE `spinvox_request` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `subtitle`
---
-
-DROP TABLE IF EXISTS `subtitle`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `subtitle` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `fk_exercise_id` int(10) unsigned NOT NULL,
-  `fk_user_id` int(10) unsigned NOT NULL,
-  `language` varchar(45) NOT NULL,
-  `translation` tinyint(1) NOT NULL default '0',
-  `adding_date` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `complete` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY  (`id`),
-  KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
-  KEY `FK_exercise_subtitle_2` (`fk_user_id`),
-  CONSTRAINT `FK_exercise_subtitle_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_subtitle_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `subtitle_line`
@@ -389,37 +440,6 @@ CREATE TABLE `subtitle_score` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `tagcloud`
---
-
-DROP TABLE IF EXISTS `tagcloud`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tagcloud` (
-  `tag` varchar(100) NOT NULL,
-  `amount` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `transcription`
---
-
-DROP TABLE IF EXISTS `transcription`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `transcription` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `adding_date` datetime NOT NULL,
-  `status` varchar(45) NOT NULL,
-  `transcription` text,
-  `transcription_date` datetime default NULL,
-  `system` varchar(45) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user_languages`
@@ -496,28 +516,95 @@ CREATE TABLE `user_videohistory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
 --
--- Table structure for table `users`
+-- Table structure for table `tag`
 --
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `ID` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(45) NOT NULL,
-  `password` varchar(45) NOT NULL,
-  `email` varchar(45) NOT NULL,
-  `realName` varchar(45) NOT NULL,
-  `realSurname` varchar(45) NOT NULL,
-  `creditCount` int(10) unsigned NOT NULL default '0',
-  `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `active` tinyint(1) NOT NULL default '0',
-  `activation_hash` varchar(20) NOT NULL,
-  `isAdmin` tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (`ID`)
+CREATE  TABLE `tag` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `rel_exercise_tag`
+--
+
+DROP TABLE IF EXISTS `rel_exercise_tag`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE  TABLE `rel_exercise_tag` (
+  `fk_exercise_id` INT UNSIGNED NOT NULL ,
+  `fk_tag_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`fk_exercise_id`,`fk_tag_id`),
+  INDEX `fk_rel_exercise_tag_1` (`fk_exercise_id` ASC),
+  INDEX `fk_rel_exercise_tag_2` (`fk_tag_id` ASC),
+  CONSTRAINT `fk_rel_exercise_tag_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_exercise_tag_2` FOREIGN KEY (`fk_tag_id`) REFERENCES `tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `exercise_descriptor`
+--
+
+DROP TABLE IF EXISTS `exercise_descriptor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE  TABLE `exercise_descriptor` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `level` ENUM('A1','A2','B1','B2','C1','C2') NOT NULL ,
+  `type` ENUM('L','R','SI','SP','S','LQ','W') NOT NULL ,
+  `number` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY(`level`,`type`,`number`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `exercise_descriptor_i18n`
+--
+
+DROP TABLE IF EXISTS `exercise_descriptor_i18n`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE  TABLE `exercise_descriptor_i18n` (
+  `fk_exercise_descriptor_id` INT UNSIGNED NOT NULL ,
+  `locale` VARCHAR(8) NOT NULL ,
+  `name` TEXT NOT NULL ,
+  INDEX `fk_exercise_descriptor_i18n_1` (`fk_exercise_descriptor_id` ASC) ,
+  PRIMARY KEY (`fk_exercise_descriptor_id`,`locale`),
+  CONSTRAINT `fk_exercise_descriptor_i18n_1` FOREIGN KEY (`fk_exercise_descriptor_id` ) REFERENCES `exercise_descriptor` (`id` ) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `rel_exercise_descriptor`
+--
+
+DROP TABLE IF EXISTS `rel_exercise_descriptor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE  TABLE `rel_exercise_descriptor` (
+  `fk_exercise_id` INT UNSIGNED NOT NULL ,
+  `fk_exercise_descriptor_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`fk_exercise_id`, `fk_exercise_descriptor_id`) ,
+  INDEX `fk_rel_exercise_descriptor_1` (`fk_exercise_id` ASC) ,
+  INDEX `fk_rel_exercise_descriptor_2` (`fk_exercise_descriptor_id` ASC) ,
+  CONSTRAINT `fk_rel_exercise_descriptor_1` FOREIGN KEY (`fk_exercise_id` ) REFERENCES `exercise` (`id` ) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_exercise_descriptor_2` FOREIGN KEY (`fk_exercise_descriptor_id` ) REFERENCES `exercise_descriptor` (`id` ) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -530,4 +617,3 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-06-13 10:21:47
