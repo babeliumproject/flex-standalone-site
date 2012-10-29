@@ -41,6 +41,16 @@
 					 height="100%"
 					 verticalAlign="middle"/>
 		</s:HGroup>
+		<s:HGroup width="100%"
+				  verticalAlign="middle"
+				  paddingLeft="10">
+			<s:Image id="elurnetLogo"
+					 source="resources/images/elurnet_logo-300x85.png"/>
+			<s:Label text="{resourceManager.getString('myResources','ELURNET_INFO')}"
+					 width="637"
+					 height="100%"
+					 verticalAlign="middle"/>
+		</s:HGroup>
 		<mx:Spacer height="24"/>
 		<s:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
 				 styleName="boldYellowLabel"/>
