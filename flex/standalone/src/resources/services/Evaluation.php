@@ -358,12 +358,13 @@ class Evaluation {
 
 		//Update the priority of the pending assessments of this user
 		$pendingAssessmentsPriority = $this->_updatePendingAssessmentsPriority();
-		if(!$pendingAssessmentsPriority){
+		 if(!isset($pendingAssessmentsPriority)){
 			$this->conn->_failedTransaction();
 			throw  new Exception("Pending assessment priority update failed");
 		}
 
-		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert && $pendingAssessmentsPriority){
+		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert 
+				&& isset($pendingAssessmentsPriority)){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
