@@ -1,6 +1,6 @@
 <?php 
 
-require_once 'services/utils/SessionHandler.php';
+require_once 'services/utils/SessionValidation.php';
 
 //session_start();
 //if(!isset($_SESSION['logged']) || $_SESSION['logged'] == false){
@@ -8,7 +8,7 @@ require_once 'services/utils/SessionHandler.php';
 //} else {
 
 try{
-   $service = new SessionHandler(true);
+   $service = new SessionValidation(true);
 }catch(Exception $e){
    header('Location: http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');
 }

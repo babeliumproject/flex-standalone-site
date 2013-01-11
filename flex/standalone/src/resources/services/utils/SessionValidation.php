@@ -35,7 +35,7 @@
  * 
  * @author Babelium Team
  */
-class SessionHandler{
+class SessionValidation{
 	
 	//When an exception is thrown on the services side we should consider automatically
 	//logging out the users for security purposes.

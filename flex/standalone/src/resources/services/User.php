@@ -23,7 +23,7 @@
 
 require_once 'utils/Datasource.php';
 require_once 'utils/Config.php';
-require_once 'utils/SessionHandler.php';
+require_once 'utils/SessionValidation.php';
 require_once 'utils/EmailAddressValidator.php';
 require_once 'utils/Mailer.php';
 require_once 'vo/UserVO.php';
@@ -43,7 +43,7 @@ class User {
 	public function __construct(){
 		$settings = new Config();
 		try {
-			$verifySession = new SessionHandler();
+			$verifySession = new SessionValidation();
 			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -64,7 +64,7 @@ class User {
 	public function keepAlive(){
 
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 
 			$sessionId = session_id();
 			if(empty($sessionId))
@@ -86,7 +86,7 @@ class User {
 	public function changePass($oldpass = null, $newpass = null)
 	{
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 
 			if(!$oldpass || !$newpass)
 				return false;
@@ -109,7 +109,7 @@ class User {
 	public function modifyUserLanguages($languages = null) {
 
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			
 			if(!$languages)
 				return false;
@@ -167,7 +167,7 @@ class User {
 	
 	public function modifyUserPersonalData($personalData = null){
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			
 			if(!$personalData)
 				return false;
@@ -200,7 +200,7 @@ class User {
 	
 	public function retrieveUserVideos(){
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			
 			$sql = "SELECT e.id, 
 						   e.title, 
@@ -244,7 +244,7 @@ class User {
 	
 	public function deleteSelectedVideos($selectedVideos = null){
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			
 			if(!$selectedVideos)
 				return false;
@@ -275,7 +275,7 @@ class User {
 	
 	public function modifyVideoData($videoData = null){
 		try{
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			
 			if(!$videoData)
 				return false;

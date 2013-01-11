@@ -5,7 +5,7 @@
 	//TODO Check if the user is logged in
 	/*
 	try{
-		$s = new SessionHandler(true);
+		$s = new SessionValidation(true);
 		evaluationDoneByUser($_SESSION['userId']);
 	} catch($exception){
 		header('Location': 'http://'.$_SERVER['SERVER_NAME'].'/bp-login.php');

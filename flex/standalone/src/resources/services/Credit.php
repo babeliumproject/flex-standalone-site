@@ -23,7 +23,7 @@
 
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
-require_once 'utils/SessionHandler.php';
+require_once 'utils/SessionValidation.php';
 
 require_once 'vo/CreditHistoryVO.php';
 
@@ -47,7 +47,7 @@ class Credit {
 	public function __construct() {
 
 		try {
-			$verifySession = new SessionHandler(true);
+			$verifySession = new SessionValidation(true);
 			$settings = new Config ( );
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 		} catch (Exception $e) {

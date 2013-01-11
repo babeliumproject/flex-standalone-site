@@ -24,7 +24,7 @@
 require_once 'Zend/Loader.php';
 require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
-require_once 'utils/SessionHandler.php';
+require_once 'utils/SessionValidation.php';
 
 /**
  * Class to perform operations that deal with external services data, such as YouTube Data API
@@ -67,7 +67,7 @@ class External {
 		Zend_Loader::loadClass ( 'Zend_Gdata_App_Entry' );
 		
 		try {
-			$verifySession = new SessionHandler();
+			$verifySession = new SessionValidation();
 		
 			$settings = new Config();
 		
@@ -164,7 +164,7 @@ class External {
 		set_time_limit(0); // Bypass the execution time limit
 
 		try {
-			new SessionHandler(true);
+			new SessionValidation(true);
 
 			$watchUrl = $data->watchUrl;
 

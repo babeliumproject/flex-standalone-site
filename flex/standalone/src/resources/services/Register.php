@@ -25,7 +25,7 @@ require_once 'utils/Config.php';
 require_once 'utils/Datasource.php';
 require_once 'utils/EmailAddressValidator.php';
 require_once 'utils/Mailer.php';
-require_once 'utils/SessionHandler.php';
+require_once 'utils/SessionValidation.php';
 
 require_once 'vo/NewUserVO.php';
 require_once 'vo/UserVO.php';
@@ -49,7 +49,7 @@ class Register{
 	 */
 	public function __construct(){
 		try{
-			$verifySession = new SessionHandler();
+			$verifySession = new SessionValidation();
 			$this->settings = new Config();
 			$this->conn = new Datasource($this->settings->host, $this->settings->db_name, $this->settings->db_username, $this->settings->db_password);
 		} catch (Exception $e){
