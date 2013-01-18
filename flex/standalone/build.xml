@@ -18,7 +18,7 @@
 		<mxmlc file="${APP_ROOT}/Main.mxml" 
 			   output="${DEPLOY_DIR}/Main.swf"
 			   services="${APP_ROOT}/service-config.xml"
-			   locale="en_US,es_ES,eu_ES">
+			   locale="en_US,es_ES,eu_ES,fr_FR">
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			

@@ -525,9 +525,17 @@ class Evaluation {
 	 * 		Returns true if the query was successful. Returns null otherways.
 	 */
 	private function _updatePendingAssessmentsPriority(){
-		$sql = "UPDATE response SET priority_date = NOW() WHERE fk_user_id = '%d' ";
+		//First check if the user has recorded any responses to avoid false-negatives in the affected_rows call.
+		$result = 1;
+		$sql = "SELECT id FROM response WHERE fk_user_id = '%d'";
+		$responses = $this->conn->_multipleSelect( $sql, $_SESSION['uid'] );
+		if($responses){
+			//The user has recorded some responses, update their priorities as a way of giving thanks
+			$sql = "UPDATE response SET priority_date = NOW() WHERE fk_user_id = '%d' ";
+			$result = $this->conn->_update ( $sql, $_SESSION['uid'] );
+		}
+		return $result;
 
-		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
 	/**
