@@ -1,9 +1,15 @@
-# Don't forget to put a trailing <whitespace> at the end of each line to separate one rule from another 
-build.properties 
-Config.php 
+#Ignore config files
+build.properties
+build.espantapajaros.properties
+build.local.properties
+Config.php
 
-dist/ 
-bin-debug/ 
+#Ignore temp files
+*~ 
+*.swp 
 
-build.espantapajaros.properties 
-build.local.properties 
+#Ignore settings and compilation dirs
+.settings/
+bin-debug/
+bin-release/
+dist/
