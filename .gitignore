@@ -5,8 +5,8 @@ build.local.properties
 Config.php
 
 #Ignore temp files
-*~ 
-*.swp 
+*~
+*.swp
 
 #Ignore settings and compilation dirs
 .settings/
