@@ -33,6 +33,8 @@ class Datasource
 	
 	const FETCH_MODE_ASSOC = 'fetch_assoc';
 	const FETCH_MODE_OBJECT = 'fetch_object';
+	
+	const DB_LOG_FILE = '/tmp/babelium_db_error.log';
 
 	/**
 	 * Constructor function
@@ -166,24 +168,15 @@ class Datasource
 	/**
 	 * Perform a SQL INSERT operation against the database
 	 * 
-	 * @return mixed $row
-	 * 		Return the last id of the inserted data or false when no data was inserted at all
+	 * @return mixed
+	 * 		Return the last id of the inserted data, when the insert is performed
+	 *      on an autoincremented id table, true when successful insert or false
+	 *      when something goes wrong
 	 */
 	public function _insert (){
-		$this->_execute ( func_get_args() );
-
-		//Execute expects an array of some kind because func_get_args() wraps the parameters in an array each time it is called
-		$sql = "SELECT last_insert_id()";
-		$params = array();
-		$params[] = $sql;
-		$result = $this->_execute ( $params );
-
-		$row = $this->_nextRow ( $result );
-		if ($row) {
-			return $row [0];
-		} else {
-			return false;
-		}
+		$result = $this->_execute ( func_get_args() );
+		$lastInsertId = mysqli_insert_id($this->dbLink);
+		return $lastInsertId ? $lastInsertId : $result;
 	}
 	
 	/**
@@ -268,7 +261,7 @@ class Datasource
 	private function _checkConnectionErrors(){
 		$errno = mysqli_connect_errno();
 		if($errno){
-			error_log("Database connection error #".$errno.": ".mysqli_connect_error()."\n",3,"/tmp/db_error.log");
+			error_log("Database connection error #".$errno.": ".mysqli_connect_error()."\n",3,self::DB_LOG_FILE);
 			throw new Exception("Database connection error\n");
 		} else {
 			return;
@@ -292,9 +285,9 @@ class Datasource
 		if($sqlstate){
 			//Rollback the uncommited changes just in case
 			$this->_failedTransaction();
-			error_log("Database error #" .$errno. " (".$sqlstate."): ".$error."\n",3,"/tmp/db_error.log");
+			error_log("Database error #" .$errno. " (".$sqlstate."): ".$error."\n",3,self::DB_LOG_FILE);
 			if($sql != "")
-				error_log("Caused by the following SQL command: ".$sql."\n",3,"/tmp/db_error.log");
+				error_log("Caused by the following SQL command: ".$sql."\n",3,self::DB_LOG_FILE);
 			throw new Exception("Database operation error\n");
 		}
 		else

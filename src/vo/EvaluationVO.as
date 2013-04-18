@@ -51,6 +51,8 @@ package vo
 	   public var userName:String;
 	   
 	   public var transcriptionSystem:String;
+	   
+	   public var mergeStatus:Number;
 
    }
 }

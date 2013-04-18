@@ -208,8 +208,21 @@ class Evaluation {
 			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
 			    WHERE (C.fk_user_id = '%d')
 			    ORDER BY A.adding_date DESC";
+		
+		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
+		if($results && is_array($results)){
+			foreach($results as $r){
+				//-1: unknown, 0: not merged, 1: merged
+				$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
+				$r->mergeStatus = $mergeStatus;
+				//
+				//if($mergeStatus == 1){
+				//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
+				//}
+			}
+		}
 
-		$searchResults = $this->conn->multipleRecast('EvaluationVO', $this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
+		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
 
 		return $searchResults;
 	}
@@ -616,6 +629,16 @@ class Evaluation {
 		return $this->conn->_update ( $sql, $responseId );
 	}
 
+	private function _mergedVideoReady($identifier){
+		if(!$this->responseFolder || strlen($this->responseFolder))
+			$this->_getResourceDirectories();
+		$responsefile = $this->red5Path . '/' . $this->responseFolder . '/' . $identifier . '_merge.flv';
+		if(is_readable($responsefile)){
+			return @is_link($responsefile) ? 0 : 1;
+		} else {
+			return -1;
+		}
+	}
 }
 
 

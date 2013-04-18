@@ -49,6 +49,8 @@ class EvaluationVO{
 	public $userName;
 	
 	public $transcriptionSystem;
+	
+	public $mergeStatus;
       
     public $_explicitType = "EvaluationVO";
 	
