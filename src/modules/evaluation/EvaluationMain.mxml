@@ -96,7 +96,7 @@
 			private var _responseUserName:String;
 
 			private var _userName:String;
-
+			private var _mergeStatus:Number;
 			private var _videoCommentName:String;
 
 			/**
@@ -353,7 +353,13 @@
 					VP.videoSource=RESPONSE_FOLDER + '/' + _responseName;
 					VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
 					VP.refresh();
-				} else {
+				} else if (_mergeStatus == 1) {
+					setupPlayCommands();
+					VP.state=VideoPlayerBabelia.PLAY_STATE;
+					VP.videoSource=RESPONSE_FOLDER + '/' + _responseName + '_merge';
+					VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);
+					VP.refresh();
+				}else {
 					setupSimultaneousPlaybackCommands();
 					VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
 					VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;

@@ -114,7 +114,10 @@ class Evaluation {
                 ORDER BY A.priority_date DESC, A.adding_date DESC";
 
 		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $evaluationThreshold, $_SESSION['uid'], $_SESSION['uid']));
-
+		$this->checkMerged($searchResults);
+		
+		// error_log(print_r($searchResults,1) . "\n", 3, "/tmp/error.log");
+		
 		return $searchResults;
 	}
 
@@ -162,6 +165,8 @@ class Evaluation {
 
 		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $_SESSION['uid'], $querySortField));
 
+		$this->checkMerged($searchResults);
+		
 		$result = new stdClass();
 		$result->hitCount = $hitCount;
 		$result->data = $searchResults;
@@ -211,6 +216,22 @@ class Evaluation {
 		
 		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
 		if($results && is_array($results)){
+			$this->checkMerged(results);
+		}
+
+		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
+
+		return $searchResults;
+	}
+
+	/**
+	 * 
+	 * Check if the video related to this evaluation-response has been 
+	 * merged with its related exercise so it can be played as a single video
+	 * @param array $results
+	 * 		array of EvaluationVO objects
+	 */
+	public function checkMerged($results){
 			foreach($results as $r){
 				//-1: unknown, 0: not merged, 1: merged
 				$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
@@ -220,13 +241,9 @@ class Evaluation {
 				//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
 				//}
 			}
-		}
-
-		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
-
-		return $searchResults;
+		
 	}
-
+	
 	/**
 	 * Retrieves the details of the assessment(s) of a particular response
 	 *
@@ -630,9 +647,11 @@ class Evaluation {
 	}
 
 	private function _mergedVideoReady($identifier){
+		
 		if(!$this->responseFolder || strlen($this->responseFolder))
 			$this->_getResourceDirectories();
 		$responsefile = $this->red5Path . '/' . $this->responseFolder . '/' . $identifier . '_merge.flv';
+		
 		if(is_readable($responsefile)){
 			return @is_link($responsefile) ? 0 : 1;
 		} else {
