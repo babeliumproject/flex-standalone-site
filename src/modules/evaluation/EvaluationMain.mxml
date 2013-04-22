@@ -347,6 +347,7 @@
 
 			private function onSubtitlesRetrieved(e:CueManagerEvent):void
 			{	
+				// trace("[INFO] onSubtitlesRetrieved " + _mergeStatus);
 				if(_exerciseName == ''){
 					setupPlayCommands();
 					VP.state=VideoPlayerBabelia.PLAY_STATE;
@@ -457,7 +458,9 @@
 				_responseCharacterName=selectedItem.responseCharacterName;
 				_responseAddingDate=selectedItem.responseAddingDate;
 				_responseUserName=selectedItem.responseUserName;
-
+				_mergeStatus=selectedItem.mergeStatus;
+				// trace("[INFO] mergeStatus" + _mergeStatus);
+				
 				//Scroll up to see the video
 				callLater(updateVerticalScroll);
 
