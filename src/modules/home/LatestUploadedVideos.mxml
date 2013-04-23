@@ -42,7 +42,7 @@
 			protected function latestUploadedVideosDataGroup_changeHandler(event:IndexChangeEvent):void
 			{
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
-				if (obj.isSubtitled)
+				if(obj.hasOwnProperty("isSubtitled") && obj.isSubtitled)
 				{
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
 				}

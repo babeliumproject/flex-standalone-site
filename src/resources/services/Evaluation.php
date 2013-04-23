@@ -215,10 +215,8 @@ class Evaluation {
 			    ORDER BY A.adding_date DESC";
 		
 		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-		if($results && is_array($results)){
-			$this->checkMerged(results);
-		}
-
+		$this->checkMerged(results);
+		
 		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
 
 		return $searchResults;
@@ -232,7 +230,9 @@ class Evaluation {
 	 * 		array of EvaluationVO objects
 	 */
 	public function checkMerged($results){
-			foreach($results as $r){
+		
+	if($results && is_array($results)){	
+		foreach($results as $r){
 				//-1: unknown, 0: not merged, 1: merged
 				$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
 				$r->mergeStatus = $mergeStatus;
@@ -241,7 +241,7 @@ class Evaluation {
 				//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
 				//}
 			}
-		
+	}
 	}
 	
 	/**
