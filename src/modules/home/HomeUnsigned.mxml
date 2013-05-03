@@ -5,11 +5,14 @@
 		  width="100%"
 		  creationComplete="onComplete()"
 		  xmlns:skins="skins.*"
-		  xmlns:videoPlayer="modules.videoPlayer.*">
+		  xmlns:videoPlayer="modules.videoPlayer.*" xmlns:home="modules.home.*">
 
 	<fx:Script>
 		<![CDATA[
 			import events.MessageOfTheDayEvent;
+			
+			import spark.components.Label;
+			
 			import events.ViewChangeEvent;
 			
 			import model.DataModel;
@@ -77,7 +80,6 @@
 
 			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
 			{
-
 				messageArray=DataModel.getInstance().messagesOfTheDayData;
 				if (messageArray.length > 0)
 				{
@@ -93,8 +95,6 @@
 					appDescriptionViewStack.addChild(navc);
 					navc.label=appDescriptionViewStack.numChildren.toString();
 				}
-
-
 			}
 
 			protected function addMessagesToContainer():void
@@ -160,6 +160,7 @@
 				//slideTimer.start();
 			}
 
+			/*
 			protected function howToVideosVS_changeHandler(event:IndexChangedEvent):void
 			{
 				var newIndex:uint=event.newIndex;
@@ -185,13 +186,14 @@
 						break;
 				}
 			}
+			*/
 
 			private function set onTabChange(value:Boolean):void
 			{
 				if (creationComplete && DataModel.getInstance().oldContentViewStackIndex == ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX)
 				{
-					howToVideoPlayer.stopVideo();
-					howToVideosVS.selectedIndex=0;
+					//howToVideoPlayer.stopVideo();
+					//howToVideosVS.selectedIndex=0;
 					staticMotd.staticUnsignedMotdVp.stopVideo();
 					staticMotd.staticUnsignedMotdVp.autoPlay=false;
 				}
@@ -213,7 +215,6 @@
 				destination="onLanguageChanged"/>
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="onTabChange"/>
-
 
 	<s:BorderContainer id="unsignedMotdBox"
 					   styleName="sectionInfoBox"
@@ -246,76 +247,11 @@
 		</mx:ViewStack>
 		<skins:HorizontalSeparatorLine width="100%"/>
 	</s:BorderContainer>
-
-	<s:HGroup paddingTop="16"
-			  paddingLeft="16"
-			  paddingRight="16">
-		<s:BitmapImage source="@Embed('/resources/images/icon_foot.png')"/>
-		<s:VGroup>
-			<s:Label id="stepByStepTitle"
-					 text="{resourceManager.getString('myResources','STEP_BY_STEP')}"
-					 styleName="sectionTitleLabel"/>
-			<s:Line width="{stepByStepTitle.width}">
-				<s:stroke>
-					<mx:SolidColorStroke weight="3"
-										 color="#268caa"/>
-				</s:stroke>
-			</s:Line>
-		</s:VGroup>
-	</s:HGroup>
-
-	<s:VGroup width="100%"
-			  horizontalAlign="center"
-			  paddingTop="16"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  paddingBottom="16">
-
-
-		<s:HGroup width="100%"
-				  horizontalAlign="center"
-				  paddingBottom="16">
-			<skins:StepTabBar styleName="paginationWhiteBlueButton"
-							  dataProvider="{howToVideosVS}"/>
-		</s:HGroup>
-
-		<mx:ViewStack id="howToVideosVS"
-					  change="howToVideosVS_changeHandler(event)">
-			<s:NavigatorContent id="howToConfDevNavContent"
-								label="1">
-			</s:NavigatorContent>
-
-			<s:NavigatorContent id="howToPractLangNavContent"
-								label="2">
-			</s:NavigatorContent>
-
-			<s:NavigatorContent id="howToAssessUsersNavContent"
-								label="3">
-			</s:NavigatorContent>
-
-			<s:NavigatorContent id="howToSubtitleNavContent"
-								label="4">
-			</s:NavigatorContent>
-		</mx:ViewStack>
-
-		<s:Label id="howToVideoLabel"
-				 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
-				 styleName="exerciseTitleLabel"/>
-
-		<videoPlayer:VideoPlayerBabelia id="howToVideoPlayer"
-										skin="white"
-										seek="true"
-										autoPlay="true"
-										subtitles="true"
-										autoScale="false"
-										arrows="false"
-										width="800"
-										height="{Math.floor(howToVideoPlayer.width * 9 / 16)}"
-										streamSource="{streamSource}"
-										videoSource="{howToVideoArray.getItemAt(howToVideosVS.selectedIndex)}"
-										controlsEnabled="false"/>
-
-
-	</s:VGroup>
-
+	
+	<home:LatestUploadedVideos/>
+	<home:LatestBestRatedVideos/>
+	
+	<!--
+	<home:HowToVideos width="100%"/>
+	-->
 </s:VGroup>

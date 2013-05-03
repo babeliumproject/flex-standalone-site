@@ -2,32 +2,39 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+		  width="100%"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-
+			
 			import events.HomepageEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
-
+			import mx.events.FlexEvent;
+			
 			import spark.events.IndexChangeEvent;
-
+			
 			import vo.ExerciseVO;
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
+			
+			private var creationComplete:Boolean;
+			
+			protected function onComplete(event:FlexEvent):void{
+				creationComplete=true;
+				new HomepageEvent(HomepageEvent.LATEST_UPLOADED_VIDEOS).dispatch();
+			}
 
-			protected function set retrieveLatestUploadedVideos(value:Boolean):void
+			protected function retrieveLatestUploadedVideos(value:Boolean):void
 			{
-				if (DataModel.getInstance().isLoggedIn == true)
+				if (DataModel.getInstance().isLoggedIn)
 				{
 					new HomepageEvent(HomepageEvent.LATEST_UPLOADED_VIDEOS).dispatch();
 				}
@@ -56,8 +63,9 @@
 		]]>
 	</fx:Script>
 
+	<!--
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
-				destination="retrieveLatestUploadedVideos"/>
+				destination="retrieveLatestUploadedVideos"/>-->
 	<fx:Binding source="{DataModel.getInstance().signedInLatestUploadedVideosRetrieved}"
 				destination="handleSignedInLatestUploadedVideos"/>
 
