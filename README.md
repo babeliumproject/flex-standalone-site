@@ -98,6 +98,11 @@ To install the maven2 and Oracle JDK dependencies:
 	$ sudo update-java-alternatives -s java-7-oracle
 	$ sudo apt-get install maven2
 
+NOTE: you might want to check this other [blog post][] about how to install Oracle JDK 1.7 
+from the command line (the webupd8team installer has an X11 dependency that might not 
+be satisfiable in an Ubuntu server environment)
+[blog post]: http://hendrelouw73.wordpress.com/2013/03/06/how-to-install-oracle-java-7-update-17-on-ubuntu-12-04-linux/
+
 
 Grab the latest compiled versions at: <http://code.google.com/p/red5/>
 
