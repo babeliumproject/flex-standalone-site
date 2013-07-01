@@ -241,7 +241,7 @@ class VideoProcessor{
 	 */
 	private function retrieveDuration($ffmpegOutput){
 		$totalTime = 0;
-		if (preg_match('/Duration: ((\d+):(\d+):(\d+))/s', $ffmpegOutput, $time)) {
+		if (preg_match('/Duration: ((\d+).(\d+).(\d+))/s', $ffmpegOutput, $time)) {
 			$totalTime = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
 		}
 		$this->mediaContainer->duration = $totalTime;
