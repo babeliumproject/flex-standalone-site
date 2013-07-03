@@ -39,11 +39,13 @@ Deploying on linux-based machine
 
 **Adobe Flash Player**
 
-If you are in a debian-based linux distro and work with Mozilla Firefox you might need to install the plugin manually:
+You don't need to install Flash Player in the server that hosts the Babelium platform, but you need it on your client machines. If your client machines have a debian-based linux distro and your users work with Mozilla Firefox you might need to install the plugin manually:
 
 	$ sudo apt-get install adobe-flashplugin 
 
-If you use Google Chrome the plugin comes embedded with the browser and you don't need to install anything.
+If your users use Google Chrome, the plugin comes embedded in the browser so you don't need to install anything.
+
+*NOTE:* If you are a developer or a system administrator we recommend you to install the [Flash Player Debugger](http://www.adobe.com/support/flashplayer/downloads.html) version on your client machine, otherwise you won't be able to see Flash log messages (very useful for debugging connection and resource availability problems). Once you install it, you have to enable the tracing support. To do that follow [these](http://livedocs.adobe.com/flex/3/html/help.html?content=logging_04.html) instructions. 
 
 **Zend Framework 1.12**
 
@@ -61,6 +63,8 @@ Enable PHP's `include_path` directive (if not already enabled):
 Copy the library to your PHP's include_path:
 
 	$ sudo cp -r ZendFramework-1.12.3/library/Zend <php_include_path>
+	
+We use Zend Framework for several purposes in the Babelium platform (Search engine, Mailing subsystem...) so we recommend to append it to **php.ini**'s `include_path` directive instead of referencing it with `ini_set()` on each PHP script.
 
 **Adobe Flex SDK 4.6**
 
@@ -197,13 +201,15 @@ Reload apache for the changes to take effect. And lasty, check if everything is 
 rtmpt://<server_domain>/<app_name>
 ```
 
-You can also close the ports 1935 and 8088 to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rule:
+*NOTE:* the default `<app_name>` is `vod` but you could also use customized Red5 applications instead of this one.
+
+You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rule:
 
 ```
 sudo iptables -A INPUT -p tcp --destination-port 1935 -j DROP
 ```
 
-Beware, due to a bad log configuration directives, using RTMPT might fill your Apache `access.log` file very fast with RTMPT log messages. To avoid that, you can use a `SetEnvIf` directive in your VirtualHost configuration file to filter all related lines:
+Beware, due to some bad log configuration directives, using RTMPT might fill your Apache `access.log` file very fast with RTMPT log messages. To avoid that, you can use a `SetEnvIf` directive in your VirtualHost configuration file to filter all the lines related with this issue:
 
 ```sh
 # avoid logging RTMPT protocol's idle, send, close and fcs requests - all but open - 
@@ -245,23 +251,104 @@ Open `babelium-flex-standalone-site/src/resources/sql/full-minimum_data.sql` wit
 
 *IMPORTANT:* the value of the field `web_domain` should be the same we created in the VirtualHost creation step. Else, you'll face problems when uploading videos and retrieving certain resources.
 
-Once you've modified the preferences add them to the database. 
+Once you've modified the preferences add them to the database.
+
+```sh
+mysql -u {BABELIUM_DB_USER} -p
+{BABELIUM_DB_USER_PASS}
+mysql> USE {BABELIUM_DB_SCHEMA};
+mysql> SOURCE {LOCAL_REPOSITORY_DIR}/src/resources/sql/full-minimum_data.sql;
+```
 
 You can also add some example data, for which you can grab multimedia resources at: [Babelium Sample files][]
 
 [Babelium Sample files]: http://code.google.com/p/babeliumproject/downloads/detail?name=babelium_sample_resources.tar.gz&can=2&q=#makechanges
 
 ```sh
-mysql -u root -p
-{ROOT_USER_PASS}
+mysql -u {BABELIUM_DB_USER} -p
+{BABELIUM_DB_USER_PASS}
 mysql> USE {BABELIUM_DB_SCHEMA};
-mysql> SOURCE {LOCAL_REPOSITORY_DIR}/src/resources/sql/full-minimum_data.sql;
 mysql> SOURCE {LOCAL_REPOSITORY_DIR}/src/resources/sql/full-example_data.sql;
 ```
 
-**Configure ant properties with your own paths**
+The file `full-example-data.sql` adds the following to the system:
 
-Use provided ant to deploy and copy all files to their place and give the appropriate permissions
+* Two demo users: **guest1** and **guest2** with passwords *guest1* and *guest2* (Remember to delete them or to change their password before going to production).
+* Some metadata and subtitles for the demo videos
+
+**Build the code using ant**
+
+Fill the `build.properties` file for babelium-flex-standalone-site:
+
+	$ cd babelium-flex-standalone-site
+	$ cp build.properties.template build.properties
+	$ vi build.properties
+	
+This table describes the purpose of each property field:
+
+<table>
+ <tr><th>Property</th><th>Description</th></tr>
+ <tr><td>FLEX_HOME</td><td>The home directory of your Flex SDK installation</td></tr>
+ <tr><td>CONFIG_RESTRICTED_EVALUATION</td><td>If set to "true" only teachers can evaluate the responses</td></tr>
+ <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to "true" allows to upload videos that go directly to the evaluation section</td></tr>
+ <tr><td>CONFIG_UNSTABLE</td><td>If set to "true" enables experimental features of the platform</td></tr>
+ <tr><td>BASE</td><td>The local path of the cloned repository (e.g. /home/babelium/git/babelium-flex-standalone-site)</td></tr>
+ <tr><td>SMTP_SERVER_PASS</td><td>Enter description here.</td></tr>
+ <tr><td>SMTP_SERVER_USER</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_FRAME_HEIGHT</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_MAX_DURATION</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_MAX_SIZE</td><td>Enter description here.</td></tr>
+ <tr><td>INITIAL_CREDITS</td><td>Enter description here.</td></tr>
+ <tr><td>SUBTITLE_ADDITION_CREDITS</td><td>Enter description here.</td></tr>
+ <tr><td>EVALUATION_REQUEST_CREDITS</td><td>Enter description here.</td></tr>
+ <tr><td>EVALUATION_DONE_CREDITS</td><td>Enter description here.</td></tr>
+ <tr><td>UPLOAD_EXERCISE_CREDITS</td><td>Enter description here.</td></tr>
+ <tr><td>EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION</td><td>Enter description here.</td></tr>	
+ <tr><td>REPORT_COUNT_TO_DELETE_VIDEO</td><td>Enter description here.</td></tr>
+ <tr><td>MIN_BANDWIDTH</td><td>Enter description here.</td></tr>
+ <tr><td>RED5_EXERCISE_FOLDER</td><td>Enter description here.</td></tr>	
+ <tr><td>RED5_EVALUATION_FOLDER</td><td>Enter description here.</td></tr>
+ <tr><td>RED5_RESPONSE_FOLDER</td><td>Enter description here.</td></tr>
+ <tr><td>MIN_VIDEO_RATING_COUNT</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_MIN_DURATION</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_EVAL_MIN_DURATION</td><td>Enter description here.</td></tr>
+ <tr><td>LOG_PATH</td><td>Enter description here.</td></tr>
+ <tr><td>SCRIPT_PATH</td><td>Enter description here.</td></tr>
+ <tr><td>BACKUP_PATH</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_DB_NAME</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_HOST</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_PORT</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_ROOT_USER</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_ROOT_USER_PASS</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_BABELIUM_USER</td><td>Enter description here.</td></tr>
+ <tr><td>SQL_BABELIUM_USER_PASS</td><td>Enter description here.</td></tr>
+ <tr><td>WEB_DOMAIN</td><td>Enter description here.</td></tr>
+ <tr><td>WEB_ROOT</td><td>Enter description here.</td></tr>
+ <tr><td>RED5_PATH</td><td>Enter description here.</td></tr>
+ <tr><td>RED5_APPNAME</td><td>Enter description here.</td></tr>
+</table>
+
+Once you are done editing, run ant to build:
+
+	$ ant
+
+
+The compiled files are placed in the `dist` folder. Copy the platform files to the target directory:
+
+	$ cd babelium-flex-standalone-site/
+	$ cp -r dist/* <babelium_home>/
+
+The cron scripts are built separately. You have another ant task for that purpose:
+
+	$ ant cron-deploy
+	
+The files are placed in the `dist/scripts` folder. Copy those files to a directory not directly accessible via web:
+
+	$ cd babelium-flex-standalone-site/dist
+	$ cp -r scripts/* <babelium_scripts_path>
+
 
 **Manual configuration (not using Ant)**
 
@@ -300,8 +387,14 @@ chmod 777 {BABELIUM_WEBROOT}/resources/uploads
 chmod 777 {BABELIUM_WEBROOT}/resources/images/thumbs
 chmod 777 {BABELIUM_WEBROOT}/resources/images/posters
 mkdir -p {RED5_HOME}/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
-chmod 777 {RED5_HOME}/webapps/vod/streams/{exercises,evaluations,responses,configs}
+chmod 775 {RED5_HOME}/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
 ```
+
+The cron scripts must have write permissions in the configs, exercises, evaluations, responses and unreferenced folders of Red5. So if those folders' owner is `red5user`, that user's group is `red5user` and the cron scripts owner is `cronuser` you could add `cronuser` to the `red5user` group.
+
+The cron scripts must also have write permissions in searchIndexes, uploads, thumbs and posters. Consider adding the owner of the cron scripts to the `apache` or `www-data` group.
+
+
 
  * Create a directory for your log files
 
