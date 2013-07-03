@@ -288,46 +288,45 @@ This table describes the purpose of each property field:
 
 <table>
  <tr><th>Property</th><th>Description</th></tr>
- <tr><td>FLEX_HOME</td><td>The home directory of your Flex SDK installation</td></tr>
- <tr><td>CONFIG_RESTRICTED_EVALUATION</td><td>If set to "true" only teachers can evaluate the responses</td></tr>
- <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to "true" allows to upload videos that go directly to the evaluation section</td></tr>
- <tr><td>CONFIG_UNSTABLE</td><td>If set to "true" enables experimental features of the platform</td></tr>
- <tr><td>BASE</td><td>The local path of the cloned repository (e.g. /home/babelium/git/babelium-flex-standalone-site)</td></tr>
- <tr><td>SMTP_SERVER_PASS</td><td>Enter description here.</td></tr>
- <tr><td>SMTP_SERVER_USER</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_FRAME_HEIGHT</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_MAX_DURATION</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_MAX_SIZE</td><td>Enter description here.</td></tr>
- <tr><td>INITIAL_CREDITS</td><td>Enter description here.</td></tr>
- <tr><td>SUBTITLE_ADDITION_CREDITS</td><td>Enter description here.</td></tr>
- <tr><td>EVALUATION_REQUEST_CREDITS</td><td>Enter description here.</td></tr>
- <tr><td>EVALUATION_DONE_CREDITS</td><td>Enter description here.</td></tr>
- <tr><td>UPLOAD_EXERCISE_CREDITS</td><td>Enter description here.</td></tr>
- <tr><td>EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION</td><td>Enter description here.</td></tr>	
- <tr><td>REPORT_COUNT_TO_DELETE_VIDEO</td><td>Enter description here.</td></tr>
- <tr><td>MIN_BANDWIDTH</td><td>Enter description here.</td></tr>
- <tr><td>RED5_EXERCISE_FOLDER</td><td>Enter description here.</td></tr>	
- <tr><td>RED5_EVALUATION_FOLDER</td><td>Enter description here.</td></tr>
- <tr><td>RED5_RESPONSE_FOLDER</td><td>Enter description here.</td></tr>
+ <tr><td>FLEX_HOME</td><td>The home directory of your Flex SDK installation.</td></tr>
+ <tr><td>CONFIG_RESTRICTED_EVALUATION</td><td>If set to "true" only teachers can evaluate the responses.</td></tr>
+ <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to "true" allows to upload videos that go directly to the evaluation section.</td></tr>
+ <tr><td>CONFIG_UNSTABLE</td><td>If set to "true" enables experimental features and prototypes of the platform.</td></tr>
+ <tr><td>BASE</td><td>The local path of the cloned repository (e.g. /home/babelium/git/babelium-flex-standalone-site).</td></tr>
+ <tr><td>SMTP_SERVER_PASS</td><td>Babelium uses Google Gmail's API. Enter the password of the Gmail account used for sending the emails.</td></tr>
+ <tr><td>SMTP_SERVER_USER</td><td>Babelium uses Google Gmail's API. Enter the full Gmail account address here (e.g. babelium@gmail.com).</td></tr>
+ <tr><td>VIDEO_FRAME_HEIGHT</td><td>The height in pixels the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels needed to obtain a resolution of 240p.</td></tr>
+ <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>The width in pixels (for a video that matches the 16:9 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
+ <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>The width in pixels (for a video that matches the 4:3 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
+ <tr><td>VIDEO_MAX_DURATION</td><td>The maximum allowed duration for the videos used in the platform, expressed in seconds.</td></tr>
+ <tr><td>VIDEO_MAX_SIZE</td><td>The maximum allowed size for the videos used in the platform, expressed in MB.</td></tr>
+ <tr><td>INITIAL_CREDITS</td><td>The number of usage points/credits the users gets when registering in the platform.</td></tr>
+ <tr><td>SUBTITLE_ADDITION_CREDITS</td><td>The number of credits awarded for adding subitles to an exercise.</td></tr>
+ <tr><td>EVALUATION_REQUEST_CREDITS</td><td>The number of credits subtracted for asking another user's assessment.</td></tr>
+ <tr><td>EVALUATION_DONE_CREDITS</td><td>The number of credits awarded for evaluating the work of another user.</td></tr>
+ <tr><td>UPLOAD_EXERCISE_CREDITS</td><td>The number of credits awarded for uploading new exercises to the platform.</td></tr>
+ <tr><td>EVALUATION_COUNT_BEFORE_FINISHED_EVALUATION</td><td>The number of evaluations that a response has to receive to consider the evaluation phase done.</td></tr>	
+ <tr><td>REPORT_COUNT_TO_DELETE_VIDEO</td><td>The number of reports a video has to receive before being automatically removed.</td></tr>
+ <tr><td>MIN_BANDWIDTH</td><td>The minimum bandwidth required to work with the platform, expressed in KB. If you modify the video resolution you'll have to make your own measurements to get an appropriate value for this field.</td></tr>
+ <tr><td>RED5_EXERCISE_FOLDER</td><td>The name of the folder that is going to store the exercise video files. By default it is called "exercises" and it is placed in the streams folder of Red5's vod app.</td></tr>	
+ <tr><td>RED5_EVALUATION_FOLDER</td><td>The name of the folder that is going to store the evaluation video files. By default it is called "evaluations" and it is placed in the streams folder of Red5's vod app.</td></tr>
+ <tr><td>RED5_RESPONSE_FOLDER</td><td>The name of the folder that is going to store the response video files. By default it is called "responses" and it is placed in the streams folder of Red5's vod app.</td></tr>
  <tr><td>MIN_VIDEO_RATING_COUNT</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_MIN_DURATION</td><td>Enter description here.</td></tr>
- <tr><td>VIDEO_EVAL_MIN_DURATION</td><td>Enter description here.</td></tr>
- <tr><td>LOG_PATH</td><td>Enter description here.</td></tr>
- <tr><td>SCRIPT_PATH</td><td>Enter description here.</td></tr>
- <tr><td>BACKUP_PATH</td><td>Enter description here.</td></tr>
- <tr><td>SQL_DB_NAME</td><td>Enter description here.</td></tr>
- <tr><td>SQL_HOST</td><td>Enter description here.</td></tr>
- <tr><td>SQL_PORT</td><td>Enter description here.</td></tr>
- <tr><td>SQL_ROOT_USER</td><td>Enter description here.</td></tr>
- <tr><td>SQL_ROOT_USER_PASS</td><td>Enter description here.</td></tr>
- <tr><td>SQL_BABELIUM_USER</td><td>Enter description here.</td></tr>
- <tr><td>SQL_BABELIUM_USER_PASS</td><td>Enter description here.</td></tr>
- <tr><td>WEB_DOMAIN</td><td>Enter description here.</td></tr>
- <tr><td>WEB_ROOT</td><td>Enter description here.</td></tr>
- <tr><td>RED5_PATH</td><td>Enter description here.</td></tr>
- <tr><td>RED5_APPNAME</td><td>Enter description here.</td></tr>
+ <tr><td>VIDEO_MIN_DURATION</td><td>The minimum required duration for the videos used in the platform, expressed in seconds.</td></tr>
+ <tr><td>VIDEO_EVAL_MIN_DURATION</td><td>The minimum required duration for the evaluation feedback videos, expressed in seconds.</td></tr>
+ <tr><td>LOG_PATH</td><td>The path where the platform's log files are stored. Ideally should be a directory placed outside of web scope..</td></tr>
+ <tr><td>SCRIPT_PATH</td><td>The path where the platform's periodic tasks are stored. The cron tasks directory should be placed outside of the web scope.</td></tr>
+ <tr><td>SQL_DB_NAME</td><td>The name of Babelium's database.</td></tr>
+ <tr><td>SQL_HOST</td><td>The host of Babelium's database.</td></tr>
+ <tr><td>SQL_PORT</td><td>The port of Babelium's database.</td></tr>
+ <tr><td>SQL_ROOT_USER</td><td>The name of your DBMS's superuser. This field is optional and only used to automatically create the Babelium database.</td></tr>
+ <tr><td>SQL_ROOT_USER_PASS</td><td>The password of your DBMS's superuser. This field is optional and only used to auomatically create the Babelium database.</td></tr>
+ <tr><td>SQL_BABELIUM_USER</td><td>The name of the user of Babelium's database.</td></tr>
+ <tr><td>SQL_BABELIUM_USER_PASS</td><td>The password of the user of Babelium's database.</td></tr>
+ <tr><td>WEB_DOMAIN</td><td>The web domain for the platform (e.g. www.babeliumproject.com).</td></tr>
+ <tr><td>WEB_ROOT</td><td>The path to the web root of the platform (e.g. /var/www/babelium) </td></tr>
+ <tr><td>RED5_PATH</td><td>The path to the streaming server (e.g. /var/red5).</td></tr>
+ <tr><td>RED5_APPNAME</td><td>The name of the app that is going to perform the streaming job. By default 'vod'.</td></tr>
 </table>
 
 Once you are done editing, run ant to build:
@@ -347,62 +346,33 @@ The cron scripts are built separately. You have another ant task for that purpos
 The files are placed in the `dist/scripts` folder. Copy those files to a directory not directly accessible via web:
 
 	$ cd babelium-flex-standalone-site/dist
-	$ cp -r scripts/* <babelium_scripts_path>
+	$ cp -r scripts/* <cron_scripts_path>
 
 
-**Manual configuration (not using Ant)**
+**Build the code manually (without ant)**
 
- * Copy `services/` to `{BABELIUM_ROOT}/your/target/folder`
- * Copy `server.php`, `crossdomain.xml`, `upload.php`, `youtube-dl.py`, `favicon.ico`  to {BABELIUM_ROOT}
- * Edit `crossdomain.xml` to add your babelium virtual host
+ * Edit `crossdomain.xml` to allow Babelium's web domain
+
+```xml
+<allow-access-from domain="babelium"/>
+```
+
  * Edit `server.php` and `upload.php` to add your services' path
 
     `define('SERVICE_PATH', '/services')`
 
+ * Edit `MediaTask.php` and `CleanupTask.php` to add your services' path
+ 
+    `define('CLI_SERVICE_PATH', '/var/www/babelium/services');`
 
- * Change `Datamodel.as` and `service-config.xml` according to your VirtualHost:
+ * Change `Datamodel.as` and `service-config.xml` according to your domain:
 
 ```as3
 [Bindable] public var server: String = "babelium";
 ```
 ```xml
-<endpoint uri="http://babelium/server.php" class="flex.messaging.endpoints.AMFEndpoint" />
+<endpoint uri="http://www.babelium/server.php" class="flex.messaging.endpoints.AMFEndpoint" />
 ```
-
- * Compile and export to {BABELIUM_ROOT}
- 
-```
-{FLEX_HOME}/bin/mxmlc --services="${APP_SRC}/service-config.xml" --define=CONFIG::restricted,false --library-path+=${APP_ROOT}/libs --source-path+="${APP_SRC}";"${APP_ROOT}/locale/{locale}" --locale="en_US,es_ES,eu_ES,fr_FR" --load-config=${MXMLC_CUSTOM_CONFIG_FILE}" --output="${DEPLOY_DIR}/Main.swf" ${APP_SRC}/Main.mxml"`
-```
-
- * Export resources/{images,templates,videoPlayer}
- * Create folders and give permissions
-
-```sh
-mkdir -p {BABELIUM_WEBROOT}/resources/{images,searchIndexes,templates,uploads,videoPlayer}
-mkdir -p {BABELIUM_WEBROOT}/resources/images/{flags,thumbs,posters,licenses}
-mkdir {BABELIUM_WEBROOT}/resources/videoPlayer/skins
-chmod 777 {BABELIUM_WEBROOT}/resources/searchIndexes
-chmod 777 {BABELIUM_WEBROOT}/resources/uploads
-chmod 777 {BABELIUM_WEBROOT}/resources/images/thumbs
-chmod 777 {BABELIUM_WEBROOT}/resources/images/posters
-mkdir -p {RED5_HOME}/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
-chmod 775 {RED5_HOME}/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
-```
-
-The cron scripts must have write permissions in the configs, exercises, evaluations, responses and unreferenced folders of Red5. So if those folders' owner is `red5user`, that user's group is `red5user` and the cron scripts owner is `cronuser` you could add `cronuser` to the `red5user` group.
-
-The cron scripts must also have write permissions in searchIndexes, uploads, thumbs and posters. Consider adding the owner of the cron scripts to the `apache` or `www-data` group.
-
-
-
- * Create a directory for your log files
-
-```sh
-mkdir -p {LOG_PATH}
-chmod 664 {LOG_PATH}
-```
-
  * Fill `Config.php`'s variables with your current setup
 
 ```php
@@ -417,6 +387,42 @@ public $smtp_mail_setFromMail = '{GMAIL_ACCOUNT}'; //mail@gmail.com
 public $logPath = '{LOG_PATH}';
 public $webRootPath = "{BABELIUM_WEBROOT}";
 ```
+
+ * Compile the app and export to &lt;babelium_home&gt;
+ 
+```sh
+{FLEX_HOME}/bin/mxmlc --services="${APP_SRC}/service-config.xml" --define=CONFIG::restricted,false --library-path+=${APP_ROOT}/libs --source-path+="${APP_SRC}";"${APP_ROOT}/locale/{locale}" --locale="en_US,es_ES,eu_ES,fr_FR" --load-config=${MXMLC_CUSTOM_CONFIG_FILE}" --output="${DEPLOY_DIR}/Main.swf" ${APP_SRC}/Main.mxml"`
+```
+
+ * Export the rest of the resources
+ 
+```sh
+cd babelium-flex-standalone-site
+cp -r src/resources/services <babelium_home>/services
+cp src/resources/{server.php,crossdomain.xml,upload.php,youtube-dl.py,favicon.ico} <babelium_home>
+cp -r src/resources/images <babelium_home>/resources
+cp -r src/resources/templates <babelium_home>/resources
+cp -r src/resources/videoPlayer <babelium_home>/resources
+mkdir -p <babelium_home>/{searchIndexes,uploads}
+```
+
+**Assign permissions to the folders**
+
+```sh
+chmod 775 <babelium_home>/resources/searchIndexes
+chmod 775 <babelium_home>/resources/uploads
+chmod 775 <babelium_home>/resources/images/thumbs
+chmod 775 <babelium_home>/resources/images/posters
+mkdir <babelium_log_path>
+chmod 775 <babelium_log_path>
+mkdir -p <red5_home>/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
+chmod 775 <red5_home>/webapps/vod/streams/{exercises,evaluations,responses,configs,unreferenced}
+```
+
+The cron scripts must have write permissions in the `configs`, `exercises`, `evaluations`, `responses` and `unreferenced` folders of Red5. So if those folders' owner is **red5user**, that user's group is **red5user** and the cron scripts' owner is **cronuser** you could add **cronuser** to the **red5user** group.
+
+The cron scripts must also have write permissions in `searchIndexes`, `uploads`, `thumbs` and `posters`. Consider adding the owner of the cron scripts to the **apache** (or **www-data**) group.
+
 
 **Add periodic tasks to crontab**
 
