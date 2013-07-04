@@ -293,8 +293,8 @@ This table describes the purpose of each property field:
  <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to "true" allows to upload videos that go directly to the evaluation section.</td></tr>
  <tr><td>CONFIG_UNSTABLE</td><td>If set to "true" enables experimental features and prototypes of the platform.</td></tr>
  <tr><td>BASE</td><td>The local path of the cloned repository (e.g. /home/babelium/git/babelium-flex-standalone-site).</td></tr>
- <tr><td>SMTP_SERVER_PASS</td><td>Babelium uses Google Gmail's API. Enter the password of the Gmail account used for sending the emails.</td></tr>
- <tr><td>SMTP_SERVER_USER</td><td>Babelium uses Google Gmail's API. Enter the full Gmail account address here (e.g. babelium@gmail.com).</td></tr>
+ <tr><td>SMTP_SERVER_PASS</td><td>Enter the password of the SMTP user or Gmail account used for sending the emails.</td></tr>
+ <tr><td>SMTP_SERVER_USER</td><td>Enter the name of the SMTP user or Gmail account address here.</td></tr>
  <tr><td>VIDEO_FRAME_HEIGHT</td><td>The height in pixels the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels needed to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>The width in pixels (for a video that matches the 16:9 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>The width in pixels (for a video that matches the 4:3 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
@@ -349,7 +349,7 @@ The files are placed in the `dist/scripts` folder. Copy those files to a directo
 	$ cp -r scripts/* <cron_scripts_path>
 
 
-**Build the code manually (without ant)**
+**(Optional) Build the code without ant**
 
  * Edit `crossdomain.xml` to allow Babelium's web domain
 
@@ -435,9 +435,14 @@ crontab -e
 Add the following lines:
 
 ```
+#Process the new video queue every 30 minutes
 0,30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/ProcessVideosCron.php >> {LOG_PATH}/transcode.log
+#Measure if user session is still active every 5 minutes
 */5 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/KeepAliveMonitorCron.php >> {LOG_PATH}/periodic_task.log
+#Update the search engine's index file every 15 minutes
 */15 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/ReCreateIndexCron.php >> {LOG_PATH}/periodic_task.log
+#"Delete" the videos that are not referenced in the DB daily at 3 a.m.
 0 3 * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeleteUnreferencedVideosCron.php >> {LOG_PATH}/periodic_task.log
+#Deactivate the videos that have received user complaints every 30 minutes
 */30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeactivateReportedVideosCron.php >> {LOG_PATH}/periodic_task.log
 ```
