@@ -435,9 +435,14 @@ crontab -e
 Add the following lines:
 
 ```
+#Process the new video queue every 30 minutes
 0,30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/ProcessVideosCron.php >> {LOG_PATH}/transcode.log
+#Measure if user session is still active every 5 minutes
 */5 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/KeepAliveMonitorCron.php >> {LOG_PATH}/periodic_task.log
+#Update the search engine's index file every 15 minutes
 */15 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/ReCreateIndexCron.php >> {LOG_PATH}/periodic_task.log
+#"Delete" the videos that are not referenced in the DB daily at 3 a.m.
 0 3 * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeleteUnreferencedVideosCron.php >> {LOG_PATH}/periodic_task.log
+#Deactivate the videos that have received user complaints every 30 minutes
 */30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeactivateReportedVideosCron.php >> {LOG_PATH}/periodic_task.log
 ```
