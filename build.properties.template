@@ -32,6 +32,8 @@ CONFIG_RESTRICTED_EVALUATION=false
 CONFIG_NO_PRACTICE_UPLOAD=false
 CONFIG_UNSTABLE=false
 
+LOCALE_BUNDLES=en_US,es_ES,eu_ES,fr_FR,de_DE
+
 #Project paths 
 BASE=/path/to/flex/project
 APP_ROOT=${BASE}/src
@@ -40,14 +42,19 @@ APP_LIB=${BASE}/libs
 MXMLC_CUSTOM_CONFIG_FILE=build-config.xml
 
 #Config.php config file's properties
-SMTP_SERVER_PASS=mail_server_password
-SMTP_SERVER_USER=mail_account
+SMTP_SERVER_HOST=smtp.googlemail.com
+SMTP_SERVER_AUTH=login
+SMTP_SERVER_AUTH_USER=smtp_server_auth_user_name
+SMTP_SERVER_AUTH_PASS=smtp_server_auth_user_pass
+SMTP_SERVER_PORT=465
+SMTP_SERVER_SSL=ssl
+SMTP_SERVER_FROM_MAIL=register@babeliumproject.com
+SMTP_SERVER_FROM_NAME=Babelium Project Admin
 VIDEO_FRAME_HEIGHT=240
 VIDEO_FRAME_WIDTH_16_9=426
 VIDEO_FRAME_WIDTH_4_3=320
 VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
-GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY=project_hosting_webhook_hash_key
 
 #Database preference table data
 INITIAL_CREDITS=40

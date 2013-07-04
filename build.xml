@@ -18,7 +18,7 @@
 		<mxmlc file="${APP_ROOT}/Main.mxml" 
 			   output="${DEPLOY_DIR}/Main.swf"
 			   services="${APP_ROOT}/service-config.xml"
-			   locale="en_US,es_ES,eu_ES,fr_FR,de_DE">
+			   locale="${LOCALE_BUNDLES}">
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
@@ -122,15 +122,19 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_password.+;" replace="db_password = '${SQL_BABELIUM_USER_PASS}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="db_name.+;" replace="db_name = '${SQL_DB_NAME}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="red5Path.+;" replace="red5Path = '${RED5_PATH}/webapps/${RED5_APPNAME}/streams';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_USER}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_PASS}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_host.+;" replace="smtp_server_host = '${SMTP_SERVER_HOST}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_auth.+;" replace="smtp_server_auth = '${SMTP_SERVER_AUTH}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_username.+;" replace="smtp_server_username = '${SMTP_SERVER_AUTH_USER}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_password.+;" replace="smtp_server_password = '${SMTP_SERVER_AUTH_PASS}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_ssl.+;" replace="smtp_server_ssl = '${SMTP_SERVER_SSL}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_port.+;" replace="smtp_server_port = '${SMTP_SERVER_PORT}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_FROM_MAIL}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromName.+;" replace="smtp_mail_setFromName = '${SMTP_SERVER_FROM_NAME}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameHeight.+;" replace="frameHeight = ${VIDEO_FRAME_HEIGHT};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth16_9.+;" replace="frameWidth16_9 = ${VIDEO_FRAME_WIDTH_16_9};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth4_3.+;" replace="frameWidth4_3 = ${VIDEO_FRAME_WIDTH_4_3};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxDuration.+;" replace="maxDuration = ${VIDEO_MAX_DURATION};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxSize.+;" replace="maxSize = ${VIDEO_MAX_SIZE};"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="project_secret_key.+;" replace="project_secret_key = '${GOOGLE_PROJECT_HOSTING_WEBHOOK_KEY}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="logPath.+;" replace="logPath = '${LOG_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
 	</target>

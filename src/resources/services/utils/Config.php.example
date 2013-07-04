@@ -29,20 +29,18 @@
 		
 		//SMTP server settings
 		public $smtp_server_host = 'smtp.googlemail.com';
-		public $smtp_server_username = ''; //example -> from example@gmail.com
+		public $smtp_server_auth = 'login';
+		public $smtp_server_username = '';
 		public $smtp_server_password = '';
 		public $smtp_server_ssl = 'ssl';
 		public $smtp_server_port = 465;
-		public $smtp_mail_setFromMail = ''; //example@gmail.com
+		public $smtp_mail_setFromMail = 'register@babeliumproject.com';
 		public $smtp_mail_setFromName = 'Babelium Project Admin';
 		
 		//Video encoding constants
 		public $frameHeight = 240;
 		public $frameWidth16_9 = 426;
 		public $frameWidth4_3 = 320;
-		
-		//Secret key used for GoogleCode's webhooks' authentication
-		public $project_secret_key = '';
 		
 		//Absolute path to log folder (should be writeable by www-data)
 		public $logPath = '';

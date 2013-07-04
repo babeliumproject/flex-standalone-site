@@ -91,27 +91,31 @@ class Mailer
 			error_log("[".date("d/m/Y H:i:s")."] Problem while sending notification mail. The provided username is not correct or it's duplicated in the database\n",3,$this->_settings->logPath.'/mail_smtp.log');
 			return false;
 		}
-
-		// SMTP Server config
-		$config = array('auth' => 'login',
-						'username' => $this->_settings->smtp_server_username,
-						'password' => $this->_settings->smtp_server_password,
-						'ssl' => $this->_settings->smtp_server_ssl,
-						'port' => $this->_settings->smtp_server_port
-		);
- 
-		$transport = new Zend_Mail_Transport_Smtp($this->_settings->smtp_server_host, $config);
-
-
-		$mail = new Zend_Mail('UTF-8');
-		$mail->setBodyText(utf8_decode($body));
-		if ( $htmlBody != null )
-			$mail->setBodyHtml($htmlBody);
-		$mail->setFrom($this->_settings->smtp_mail_setFromMail, $this->_settings->smtp_mail_setFromName);
-		$mail->addTo($this->_userMail, $this->_userRealName);
-		$mail->setSubject($subject);
 		
 		try {
+			//STMP server config
+			$auth_config = $ssl_config = $port_config = array();
+			if(!empty($this->_settings->smtp_server_auth)){
+				$auth_config = array('auth' => $this->_settings->smtp_server_auth, 'username' => $this->_settings->smtp_server_username, 'password' => $this->_settings->smtp_server_password);
+			}
+			if(!empty($this->_settings->smtp_server_ssl)){
+				$ssl_config = array('ssl' => $this->_settings->smtp_server_ssl);
+			}
+			if(!empty($this->_settings->smtp_server_port)){
+				$port_config = array('port' => $this->_settings->smtp_server_port);
+			}
+			$config = array_merge($auth_config, $ssl_config, $port_config);
+			$transport = count($config) ? new Zend_Mail_Transport_Smtp($this->_settings->smtp_server_host, $config) : new Zend_Mail_Transport_Smtp($this->_settings->smtp_server_host);
+
+			$mail = new Zend_Mail('UTF-8');
+			$mail->setBodyText(utf8_decode($body));
+			if ( $htmlBody != null )
+				$mail->setBodyHtml($htmlBody);
+			$mail->setFrom($this->_settings->smtp_mail_setFromMail, $this->_settings->smtp_mail_setFromName);
+			$mail->addTo($this->_userMail, $this->_userRealName);
+			$mail->setSubject($subject);
+		
+		
 			$mail->send($transport);
 		} catch (Exception $e) {
 			error_log("[".date("d/m/Y H:i:s")."] Problem while sending notification mail to ". $this->_userMail . ":" . $e->getMessage() . "\n",3,$this->_settings->logPath.'/mail_smtp.log');
