@@ -289,12 +289,19 @@ This table describes the purpose of each property field:
 <table>
  <tr><th>Property</th><th>Description</th></tr>
  <tr><td>FLEX_HOME</td><td>The home directory of your Flex SDK installation.</td></tr>
- <tr><td>CONFIG_RESTRICTED_EVALUATION</td><td>If set to "true" only teachers can evaluate the responses.</td></tr>
- <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to "true" allows to upload videos that go directly to the evaluation section.</td></tr>
+ <tr><td>LOCALE_BUNDLES</td><td>The UI language packs to include when building the platform. All available languages are included by default. To choose only a subset of the languages, write a comma-separated list of locale codes. Locale codes have the following format: <strong>es_ES</strong> (es=Spanish, ES=Spain).</td></tr>
+ <tr><td>CONFIG_RESTRICTED_EVALUATION</td><td>If set to **true** only teachers can evaluate the responses.</td></tr>
+ <tr><td>CONFIG_NO_PRACTICE_UPLOAD</td><td>If set to **true** allows to upload videos that go directly to the evaluation section.</td></tr>
  <tr><td>CONFIG_UNSTABLE</td><td>If set to "true" enables experimental features and prototypes of the platform.</td></tr>
  <tr><td>BASE</td><td>The local path of the cloned repository (e.g. /home/babelium/git/babelium-flex-standalone-site).</td></tr>
- <tr><td>SMTP_SERVER_PASS</td><td>Enter the password of the SMTP user or Gmail account used for sending the emails.</td></tr>
- <tr><td>SMTP_SERVER_USER</td><td>Enter the name of the SMTP user or Gmail account address here.</td></tr>
+ <tr><td>SMTP_SERVER_HOST</td><td>The host name of your SMTP server (e.g. smtp.googlemail.com).</td></tr>
+ <tr><td>SMTP_SERVER_AUTH</td><td>The type of authentication scheme your SMTP requires. Accepted values are: <strong>&lt;empty&gt;</strong> (no auth required), <strong>plain</strong>, <strong>login</strong> and <strong>crammd5</strong>.</td></tr>
+ <tr><td>SMTP_SERVER_AUTH_USER</td><td>The name of the SMTP user (only needed if your SMTP server requires authentication).</td></tr>
+ <tr><td>SMTP_SERVER_AUTH_PASS</td><td>The password of the SMTP user (only needed if your SMTP server requires authentication).</td></tr>
+ <tr><td>SMTP_SERVER_PORT</td><td>The port your SMTP server uses (e.g. 465).</td></tr>
+ <tr><td>SMTP_SERVER_SSL</td><td>The type of SSL your SMTP server uses. Accepted values are: <strong>&lt;empty&gt;</strong> (no ssl), <strong>ssl</strong> and <strong>tls</strong>.</td></tr>
+ <tr><td>SMTP_SERVER_FROM_MAIL</td><td>The e-mail address to use as sender (e.g. noreply@babeliumproject.com).</td></tr>
+ <tr><td>SMTP_SERVER_FROM_NAME</td><td>The name of the sender (e.g. Babelium Admin).</td></tr>
  <tr><td>VIDEO_FRAME_HEIGHT</td><td>The height in pixels the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels needed to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>The width in pixels (for a video that matches the 16:9 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>The width in pixels (for a video that matches the 4:3 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
@@ -326,7 +333,7 @@ This table describes the purpose of each property field:
  <tr><td>WEB_DOMAIN</td><td>The web domain for the platform (e.g. www.babeliumproject.com).</td></tr>
  <tr><td>WEB_ROOT</td><td>The path to the web root of the platform (e.g. /var/www/babelium) </td></tr>
  <tr><td>RED5_PATH</td><td>The path to the streaming server (e.g. /var/red5).</td></tr>
- <tr><td>RED5_APPNAME</td><td>The name of the app that is going to perform the streaming job. By default 'vod'.</td></tr>
+ <tr><td>RED5_APPNAME</td><td>The name of the app that is going to perform the streaming job. By default <strong>vod</strong>.</td></tr>
 </table>
 
 Once you are done editing, run ant to build:
