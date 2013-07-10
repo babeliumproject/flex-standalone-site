@@ -23,6 +23,7 @@ Deploying on linux-based machine
 * MySQL 5.2+
 * PHP 5.2+
 * ant
+* file
 * sox
 * Adobe Flash Player 11.0+
 * Zend Framework 1.12 (with Zend AMF)
