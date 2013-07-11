@@ -130,6 +130,9 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_port.+;" replace="smtp_server_port = '${SMTP_SERVER_PORT}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_FROM_MAIL}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromName.+;" replace="smtp_mail_setFromName = '${SMTP_SERVER_FROM_NAME}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="ffmpegCmdPath.+;" replace="ffmpegCmdPath = '${CMD_FFMPEG_PATH}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="fileCmdPath.+;" replace="fileCmdPath = '${CMD_FILE_PATH}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="soxCmdPath.+;" replace="soxCmdPath = '${CMD_SOX_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameHeight.+;" replace="frameHeight = ${VIDEO_FRAME_HEIGHT};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth16_9.+;" replace="frameWidth16_9 = ${VIDEO_FRAME_WIDTH_16_9};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameWidth4_3.+;" replace="frameWidth4_3 = ${VIDEO_FRAME_WIDTH_4_3};"/>

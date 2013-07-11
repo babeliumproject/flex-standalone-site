@@ -42,6 +42,11 @@
 		public $frameWidth16_9 = 426;
 		public $frameWidth4_3 = 320;
 		
+		//Absolute path of external commands (or path available in the PATH of all system users)
+		public $ffmpegCmdPath = 'ffmpeg';
+		public $fileCmdPath = 'file';
+		public $soxCmdPath = 'sox';
+		
 		//Absolute path to log folder (should be writeable by www-data)
 		public $logPath = '';
 

@@ -44,6 +44,10 @@ class VideoProcessor{
 	private $frameWidth4_3;
 	private $frameWidth16_9;
 	private $frameHeight;
+	
+	private $ffmpegCmdPath;
+	private $fileCmdPath;
+	private $soxCmdPath;
 
 	private $mediaContainer;
 	private $encodingPresets = array();
@@ -60,9 +64,13 @@ class VideoProcessor{
 		$this->frameWidth4_3 = $settings->frameWidth4_3;
 		$this->frameWidth16_9 = $settings->frameWidth16_9;
 		$this->frameHeight = $settings->frameHeight;
+		
+		$this->ffmpegCmdPath = $settings->ffmpegCmdPath ? $settings->ffmpegCmdPath : 'ffmpeg';
+		$this->fileCmdPath = $settings->fileCmdPath ? $settings->fileCmdPath : 'file';
+		$this->soxCmdPath = $settings->soxCmdPath ? $settings->soxCmdPath : 'sox';
 
-		$this->encodingPresets[] = "ffmpeg -y -i '%s' -s %dx%d -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s' 2>&1";
-		$this->encodingPresets[] = "ffmpeg -y -i '%s' -s %dx%d -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s' 2>&1";
+		$this->encodingPresets[] = $this->ffmpegCmdPath . " -y -i '%s' -s %dx%d -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s' 2>&1";
+		$this->encodingPresets[] = $this->ffmpegCmdPath . " -y -i '%s' -s %dx%d -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s' 2>&1";
 
 	}
 
@@ -76,19 +84,23 @@ class VideoProcessor{
 	public function retrieveMediaInfo($filePath){
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
-			$output = (exec("ffmpeg -i '$cleanPath' 2>&1",$cmd));
+			$output = (exec($this->ffmpegCmdPath." -i '$cleanPath' 2>&1",$cmd));
 			$strCmd = implode($cmd);
-			$this->mediaContainer = new stdclass();
-			if($this->isMediaFile($strCmd)){
-				$this->mediaContainer->hash = md5_file($cleanPath);
-				$this->retrieveAudioInfo($strCmd);
-				$this->retrieveVideoInfo($strCmd);
-				$this->retrieveDuration($strCmd);
-				if($this->mediaContainer->hasVideo == true)
-				$this->retrieveVideoAspectRatio();
-				return $this->mediaContainer;
+			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") === false){
+				$this->mediaContainer = new stdclass();
+				if($this->isMediaFile($strCmd)){
+					$this->mediaContainer->hash = md5_file($cleanPath);
+					$this->retrieveAudioInfo($strCmd);
+					$this->retrieveVideoInfo($strCmd);
+					$this->retrieveDuration($strCmd);
+					if($this->mediaContainer->hasVideo == true)
+						$this->retrieveVideoAspectRatio();
+					return $this->mediaContainer;
+				} else {
+					throw new Exception("Unknown media format\n");
+				}
 			} else {
-				throw new Exception("Unknown media format\n");
+				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
 			}
 		} else {
 			throw new Exception("Not a file\n");
@@ -111,19 +123,19 @@ class VideoProcessor{
 		$mimeCategory = $type ? 'audio' : 'video';
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_readable($cleanPath)){
-			$output = (exec("file -bi '$cleanPath' 2>&1",$cmd));
-
+			$output = (exec($this->fileCmdPath." -bi '$cleanPath' 2>&1",$cmd));
 			$implodedOutput = implode($cmd);
-			$fileMimeInfo = explode($implodedOutput, ";");
-			$fileMimeType = $fileMimeInfo[0];
-
-			$validMime = false;
-
-			if(strpos($implodedOutput,$mimeCategory) !== false){
-				$validMime = true;
+			if(strpos($implodeOutput, $this->fileCmdPath.": not found") === false){
+				$fileMimeInfo = explode($implodedOutput, ";");
+				$fileMimeType = $fileMimeInfo[0];
+				$validMime = false;
+				if(strpos($implodedOutput,$mimeCategory) !== false){
+					$validMime = true;
+				}
+				return $validMime;
+			} else {
+				throw new Exception("Unable to find $this->fileCmdPath\n");
 			}
-
-			return $validMime;
 		} else {
 			throw new Exception("Not a file\n");
 		}
@@ -299,7 +311,11 @@ class VideoProcessor{
 		//Random time between 0 and videoDuration
 		$second = rand(1, ($this->mediaContainer->duration - 1));
 
-		$resultsnap = (exec("ffmpeg -y -i '$cleanPath' -ss $second -vframes 1 -r 1 -s ". $snapshotWidth . "x" . $snapshotHeight ." '$cleanImagePath' 2>&1",$cmd));
+		$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanPath' -ss $second -vframes 1 -r 1 -s ". $snapshotWidth . "x" . $snapshotHeight ." '$cleanImagePath' 2>&1",$cmd));
+		$strCmd = implode($cmd);
+		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		}
 		return $resultsnap;
 	}
 
@@ -367,15 +383,24 @@ class VideoProcessor{
 
 				$toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
 				$poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
-				if(!is_file($toPath))
-				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
-				if(!is_file($poPath))
-				$resultsnap = (exec("ffmpeg -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 '$poPath' 2>&1",$cmd));
+				if(!is_file($toPath)){
+					$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
+					$strCmd = implode($cmd);
+					if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+						throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+					}
+				}
+				
+				if(!is_file($poPath)){
+					$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 '$poPath' 2>&1",$cmd));
+					$strCmd = implode($cmd);
+					if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+						throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+					}
+				}
 			}
 
 			//Create a symbolic link to the first generated thumbnail/poster to set it as the default image
-
-
 			if( is_link($cleanThumbPath.'/default.jpg') ){
 				unlink($cleanThumbPath.'/default.jpg');
 			}
@@ -446,6 +471,10 @@ class VideoProcessor{
 		if($preset >=0 && $preset < count($this->encodingPresets)){
 			$sysCall = sprintf($this->encodingPresets[$preset],$cleanInputPath, $width, $height, $cleanOutputPath);
 			$result = (exec($sysCall,$output));
+			$strCmd = implode($output);
+			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			}
 			return $result;
 		} else {
 			throw new Exception("Non-valid preset was chosen. Transcode aborted.\n");
@@ -456,7 +485,7 @@ class VideoProcessor{
 		
 		//TODO check ffmpeg is able to encode in the format denoted in the output file ffmpeg -formats E
 		//TODO check the specified audio channel and samplerate are supported by the codec 
-		$preset_demux_encode_audio = "ffmpeg -y -i %s -ac %d -ar %d %s 2>&1";
+		$preset_demux_encode_audio = $this->ffmpegCmdPath." -y -i %s -ac %d -ar %d %s 2>&1";
 		
 		$cleanInputPath = escapeshellcmd($inputFilePath);
 		$cleanOutputPath = escapeshellcmd($outputFilePath);
@@ -478,6 +507,10 @@ class VideoProcessor{
 		if($this->mediaContainer->hasAudio){
 			$sysCall = sprintf($preset_demux_encode_audio,$cleanInputPath,$audioChannels,$audioSamplerate,$outputFilePath);
 			$result = (exec($sysCall,$output));
+			$strCmd = implode($output);
+			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			}
 			return $result;
 		} else {
 			throw new Exception("The provided file does not have any valid audio streams\n");
@@ -486,7 +519,7 @@ class VideoProcessor{
 	}
 	
 	public function muxEncodeAudio($inputVideoPath, $outputVideoPath, $inputAudioPath){
-		$preset = "ffmpeg -i '%s' -i '%s' -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
+		$preset = $this->ffmpegCmdPath." -i '%s' -i '%s' -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
 		
 		$cleanInputVideoPath = escapeshellcmd($inputVideoPath);
 		$cleanOutputVideoPath = escapeshellcmd($outputVideoPath);
@@ -501,12 +534,16 @@ class VideoProcessor{
 		
 		$sysCall = sprintf($preset, $cleanInputVideoPath, $cleanInputAudioPath, $cleanOutputVideoPath);
 		$result = (exec($sysCall,$output));
+		$strCmd = implode($output);
+		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		}
 		return $result;
 	}
 	
 	public function audioSubsample($inputFilePath, $outputFilePath, $startTime = 0, $endTime = -1, $volume = -1){
 		
-		$preset = "ffmpeg -y -i '%s' -ss '%s'";
+		$preset = $this->ffmpegCmdPath." -y -i '%s' -ss '%s'";
 		if($endTime>0 && $endTime>$startTime){
 			$duration = $endTime - $startTime;
 			$preset .= " -t ".$duration;
@@ -538,6 +575,10 @@ class VideoProcessor{
 		if($this->mediaContainer->hasAudio){
 			$sysCall = sprintf($preset,$cleanInputPath,$startTime,$outputFilePath);
 			$result = (exec($sysCall,$output));
+			$strCmd = implode($output);
+			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			}
 			return $result;
 		} else {
 			throw new Exception("The provided file does not have any valid audio streams\n");
@@ -593,10 +634,14 @@ class VideoProcessor{
 		  * After resizing and applying the overlays we encode the input audio to mp3 and exchange the original exercise's audio with the reencoded audio collage
 		  * using stream index mapping. -map <input_number>:<stream_index>
 		  */
-		$preset_merge_videos = "ffmpeg -y -i '%s' -i '%s' -vf \"[in]settb=1/25,setpts=N/(25*TB),pad=%d:%d:0:0:0x000000, [T1]overlay=W/2:0 [out]; movie='%s':f=flv:si=0,scale=%d:%d,setpts=PTS-STARTPTS[T1]\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
+		$preset_merge_videos = $this->ffmpegCmdPath." -y -i '%s' -i '%s' -vf \"[in]settb=1/25,setpts=N/(25*TB),pad=%d:%d:0:0:0x000000, [T1]overlay=W/2:0 [out]; movie='%s':f=flv:si=0,scale=%d:%d,setpts=PTS-STARTPTS[T1]\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s' 2>&1";
 		
 		$sysCall = sprintf($preset_merge_videos,$cleanInputVideoPath1, $inputAudioPath, 2*$width, $height, $cleanInputVideoPath2, $width, $height, $cleanOutputVideoPath);
 		$result = (exec($sysCall,$output));
+		$strCmd = implode($output);
+		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		}
 		return $result;
 		
 	}
@@ -611,8 +656,8 @@ class VideoProcessor{
 	 * 		Take into account only the audio files that begin with this prefix
 	 * @param String $outputPath
 	 * 		Absolute path of the concatenated audio file
-	  * @throws Exception
-	 * 		Any of the provided paths is not readable by the script
+	 * @throws Exception
+	 * 		None of the provided paths is readable by the script or can't find sox
 	 */
 	public function concatAudio($inputPath, $filePrefix, $outputPath){
 		$cleanInputPath = escapeshellcmd($inputPath);
@@ -622,10 +667,13 @@ class VideoProcessor{
 		if(!is_writable($cleanOutputPath))
 			throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 		
-		//TODO  should check the presecence of sox in the $PATH first and throw an error elseways
-		$preset = "sox '%s/%s_*' '%s/%scollage.wav' 2>&1";
+		$preset = $this->soxCmdPath." '%s/%s_*' '%s/%scollage.wav' 2>&1";
 		$sysCall = sprintf($preset,$cleanInputPath,$filePrefix,$cleanOutputPath,$filePrefix);
 		$result = (exec($sysCall, $output));
+		$strCmd = implode($output);
+		if(strpos($strCmd, $this->soxCmdPath.": not found") !== false){
+			throw new Exception("Unable to find $this->soxCmdPath\n");
+		}
 		return $result;
 	}
 	
@@ -642,7 +690,7 @@ class VideoProcessor{
 	 * @return String $result
 	 * 		The output of the system call to ffmpeg
 	 * @throws Exception
-	 * 		Any of the provided paths is not readable by the script
+	 * 		None of the provided paths is readable by the script or can't find ffmpeg
 	 */
 	public function addDummyVideo($dummyImagePath, $inputPath, $outputPath){
 		$cleanDummyImagePath = escapeshellcmd($dummyImagePath);
@@ -656,9 +704,13 @@ class VideoProcessor{
 		//if(!is_writable($cleanOutputPath))
 		//	throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 			
-		$preset_dummy_video = "ffmpeg -loop 1 -shortest -y -f image2 -i '%s' -i '%s' -acodec copy -map 0:0 -map 1:1 -f flv '%s' 2>&1";
+		$preset_dummy_video = $this->ffmpegCmdPath." -loop 1 -shortest -y -f image2 -i '%s' -i '%s' -acodec copy -map 0:0 -map 1:1 -f flv '%s' 2>&1";
 		$sysCall = sprintf($preset_dummy_video,$cleanDummyImagePath, $cleanInputPath, $cleanOutputPath);
 		$result = (exec($sysCall,$output));
+		$strCmd = implode($output);
+		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
+			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		}
 		return $result;
 	}
 

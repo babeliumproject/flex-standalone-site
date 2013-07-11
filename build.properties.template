@@ -56,6 +56,10 @@ VIDEO_FRAME_WIDTH_4_3=320
 VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
 
+CMD_FFMPEG_PATH=ffmpeg
+CMD_FILE_PATH=file
+CMD_SOX_PATH=sox
+
 #Database preference table data
 INITIAL_CREDITS=40
 SUBTITLE_ADDITION_CREDITS=4
