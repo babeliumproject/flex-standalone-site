@@ -303,6 +303,9 @@ This table describes the purpose of each property field:
  <tr><td>SMTP_SERVER_SSL</td><td>The type of SSL your SMTP server uses. Accepted values are: <strong>&lt;empty&gt;</strong> (no ssl), <strong>ssl</strong> and <strong>tls</strong>.</td></tr>
  <tr><td>SMTP_SERVER_FROM_MAIL</td><td>The e-mail address to use as sender (e.g. noreply@babeliumproject.com).</td></tr>
  <tr><td>SMTP_SERVER_FROM_NAME</td><td>The name of the sender (e.g. Babelium Admin).</td></tr>
+ <tr><td>CMD_FFMPEG_PATH</td><td>Absolute path to the binary of <strong>ffmpeg</strong> in your server. You can use 'ffmpeg' if the binary is included in the PATH of all users.</td></tr>
+ <tr><td>CMD_FILE_PATH</td><td>Absolute path to the binary of <strong>file</strong> in your server. You can use 'file' if the binary is included in the PATH of all users.</td></tr>
+ <tr><td>CMD_SOX_PATH</td><td>Absolute path to the binary of <strong>sox</strong> in your server. You can use 'sox' if the binary is included in the PATH of all users.</td></tr>
  <tr><td>VIDEO_FRAME_HEIGHT</td><td>The height in pixels the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels needed to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_16_9</td><td>The width in pixels (for a video that matches the 16:9 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
  <tr><td>VIDEO_FRAME_WIDTH_4_3</td><td>The width in pixels (for a video that matches the 4:3 aspect ratio) the video will have after being encoded to be used in the Babelium platform. The default value represents the number of pixels to obtain a resolution of 240p.</td></tr>
