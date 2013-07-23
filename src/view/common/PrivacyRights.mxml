@@ -225,7 +225,7 @@
 				<s:HGroup>
 					<mx:Text width="100%"
 							 text="{resourceManager.getString('myResources','TEXT_MIC_NOT_FOUND')}"/>
-					<mx:Image source="resources/images/microphone_error.png"/>
+					<mx:Image source="resources/images/privacy_mic_error.png"/>
 				</s:HGroup>
 				<s:HGroup>
 					<s:Button id="micNotFoundErrorRetryButton"
@@ -248,7 +248,7 @@
 						  verticalAlign="middle">
 					<mx:Text width="100%"
 							 text="{resourceManager.getString('myResources','TEXT_CAMERA_NOT_FOUND')}"/>
-					<mx:Image source="resources/images/webcam_error.png"/>
+					<mx:Image source="resources/images/privacy_webcam_error.png"/>
 				</s:HGroup>
 				<s:HGroup>
 					<s:Button id="camNotFoundErrorRetryButton"

@@ -190,7 +190,7 @@ package modules.videoPlayer
 
 			_micImage=new Image();
 
-			_micImage.source = DataModel.getInstance().uploadDomain+"resources/images/mic-watermark.png";
+			_micImage.source = DataModel.getInstance().uploadDomain+"resources/images/player_mic_watermark.png";
 			_micImage.height = 128;
 			_micImage.width = 128;
 			_micImage.alpha = 0.7;
