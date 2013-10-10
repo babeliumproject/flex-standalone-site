@@ -184,16 +184,18 @@ sudo a2enmod rewrite
 Add the following set of rules to your apache configuration (i.e, `/etc/apache2/sites-enabled/your_virtual_host.conf`):
 
 ```sh
-ProxyPass /open http://localhost:8088/open
-ProxyPassReverse /open http://localhost:8088/open
-ProxyPass /send http://localhost:8088/send
-ProxyPassReverse /send http://localhost:8088/send 
-ProxyPass /idle http://localhost:8088/idle
-ProxyPassReverse /idle http://localhost:8088/idle
-ProxyPass /close http://localhost:8088/close
-ProxyPassReverse /close http://localhost:8088/close
-ProxyPass /fcs http://localhost:8088/fcs
-ProxyPassReverse /fcs http://localhost:8088/fcs
+ProxyTimeout 90
+ProxyPass /open http://127.0.0.1:5080/open
+ProxyPassReverse /open http://127.0.0.1:5080/open
+ProxyPass /send http://127.0.0.1:5080/send
+ProxyPassReverse /send http://127.0.0.1:5080/send
+ProxyPass /idle http://127.0.0.1:5080/idle
+ProxyPassReverse /idle http://127.0.0.1:5080/idle
+ProxyPass /close http://127.0.0.1:5080/close
+ProxyPassReverse /close http://127.0.0.1:5080/close
+ProxyPass /fcs http://127.0.0.1:5080/fcs
+ProxyPassReverse /fcs http://127.0.0.1:5080/fcs
+
 ```
 
 Reload apache for the changes to take effect. And lasty, check if everything is well configured connecting to your red5 instance using
@@ -204,10 +206,11 @@ rtmpt://<server_domain>/<app_name>
 
 *NOTE:* the default `<app_name>` is `vod` but you could also use customized Red5 applications instead of this one.
 
-You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rule:
+You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rules:
 
 ```
 sudo iptables -A INPUT -p tcp --destination-port 1935 -j DROP
+sudo iptables -A OUTPUT -p tcp --dport 1935 -j DROP
 ```
 
 Beware, due to some bad log configuration directives, using RTMPT might fill your Apache `access.log` file very fast with RTMPT log messages. To avoid that, you can use a `SetEnvIf` directive in your VirtualHost configuration file to filter all the lines related with this issue:
