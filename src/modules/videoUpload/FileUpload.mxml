@@ -302,8 +302,12 @@
 					uploadFileBox.minHeight=0;
 					uploadFileBox.height=150;
 					uploadFileBox.visible=true;
-					recFromWebcamBox.visible=false;
-					recUploadBox.visible=false;
+					//recFromWebcamBox.visible=false;
+					//recUploadBox.visible=false;
+					
+					//webcamWidget.includeInLayout=false;
+					webcamWidget.visible=false;
+					
 					vSliceWidget.visible=false;
 					sliceButtons.visible=false;
 					sliceButtons.includeInLayout=false;
@@ -311,20 +315,28 @@
 				}
 				else if (event.currentTarget.selectedValue == "recChoice")
 				{
-					webcamWidget.includeInLayout=true;
-					recFromWebcamBox.visible=true;
-					recUploadBox.visible=true;
+					//webcamWidget.includeInLayout=true;
+					webcamWidget.visible=true;
+					
+					//recFromWebcamBox.visible=true;
+					//recUploadBox.visible=true;
+					
+					uploadFileBox.includeInLayout=false;
 					uploadFileBox.minHeight=0;
 					uploadFileBox.height=0;
 					uploadFileBox.visible=false;
+					
+					
 					vSliceWidget.visible=false;
 					sliceButtons.visible=false;
 				}
 				else if (event.currentTarget.selectedValue == "ytChoice")
 				{
-					webcamWidget.includeInLayout=false;
-					recFromWebcamBox.visible=false;
-					recUploadBox.visible=false;
+					//webcamWidget.includeInLayout=false;
+					webcamWidget.visible=false;
+					
+					//recFromWebcamBox.visible=false;
+					//recUploadBox.visible=false;
 					uploadFileBox.includeInLayout=false;
 					uploadFileBox.minHeight=0;
 					uploadFileBox.height=0;
@@ -500,9 +512,9 @@
 				recordChoice.selected=false;
 				youtubeChoice.selected=false;
 				uploadFileBox.visible=false;
-				webcamWidget.includeInLayout=false;
+				//webcamWidget.includeInLayout=false;
 				webcamWidget.visible=false;
-				recFromWebcamBox.visible=false;
+				//recFromWebcamBox.visible=false;
 				vSliceWidget.visible=false;
 			}
 
@@ -1004,15 +1016,13 @@
 		</s:VGroup>
 
 		<!-- Wecbam recording widget -->
-		<s:VGroup id="webcamWidget">
+		<s:VGroup id="webcamWidget" visible="false">
 			<ns1:TempVideoRecording id="recFromWebcamBox"
-									visible="false"
 									streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
 									filePrefix="upld"/>
 			<s:VGroup id="recUploadBox"
 					  styleName="roundedBlueBorderBox"
-					  width="{recFromWebcamBox.width}"
-					  visible="false">
+					  width="{recFromWebcamBox.width}">
 				<mx:Text width="{recFromWebcamBox.width-22}"
 						 text="{resourceManager.getString('myResources','TEXT_RECORD_VIDEO_UPLOAD')}"
 						 selectable="false"/>
