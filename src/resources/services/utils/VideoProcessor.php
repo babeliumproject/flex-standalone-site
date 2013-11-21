@@ -86,7 +86,9 @@ class VideoProcessor{
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
 			$output = (exec($this->ffmpegCmdPath." -i '$cleanPath' 2>&1",$cmd));
 			$strCmd = implode($cmd);
-			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") === false){
+			if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
+			} else {
 				$this->mediaContainer = new stdclass();
 				if($this->isMediaFile($strCmd)){
 					$this->mediaContainer->hash = md5_file($cleanPath);
@@ -99,8 +101,6 @@ class VideoProcessor{
 				} else {
 					throw new Exception("Unknown media format\n");
 				}
-			} else {
-				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
 			}
 		} else {
 			throw new Exception("Not a file\n");
@@ -125,7 +125,9 @@ class VideoProcessor{
 		if(is_readable($cleanPath)){
 			$output = (exec($this->fileCmdPath." -bi '$cleanPath' 2>&1",$cmd));
 			$implodedOutput = implode($cmd);
-			if(strpos($implodeOutput, $this->fileCmdPath.": not found") === false){
+			if($errormsg = $this->system_command_unavailable($this->fileCmdPath, $implodedOutput)){
+				throw new Exception($errormsg);
+			} else {
 				$fileMimeInfo = explode($implodedOutput, ";");
 				$fileMimeType = $fileMimeInfo[0];
 				$validMime = false;
@@ -133,8 +135,6 @@ class VideoProcessor{
 					$validMime = true;
 				}
 				return $validMime;
-			} else {
-				throw new Exception("Unable to find $this->fileCmdPath\n");
 			}
 		} else {
 			throw new Exception("Not a file\n");
@@ -313,8 +313,8 @@ class VideoProcessor{
 
 		$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanPath' -ss $second -vframes 1 -r 1 -s ". $snapshotWidth . "x" . $snapshotHeight ." '$cleanImagePath' 2>&1",$cmd));
 		$strCmd = implode($cmd);
-		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+			throw new Exception($errormsg);
 		}
 		return $resultsnap;
 	}
@@ -386,16 +386,16 @@ class VideoProcessor{
 				if(!is_file($toPath)){
 					$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 -s ". $thumbnailWidth . "x" . $thumbnailHeight ." '$toPath' 2>&1",$cmd));
 					$strCmd = implode($cmd);
-					if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-						throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+					if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+						throw new Exception($errormsg);
 					}
 				}
 				
 				if(!is_file($poPath)){
 					$resultsnap = (exec($this->ffmpegCmdPath." -y -i '$cleanVideoPath' -ss $lastSecond -vframes 1 -r 1 '$poPath' 2>&1",$cmd));
 					$strCmd = implode($cmd);
-					if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-						throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+					if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+						throw new Exception($errormsg);
 					}
 				}
 			}
@@ -472,8 +472,8 @@ class VideoProcessor{
 			$sysCall = sprintf($this->encodingPresets[$preset],$cleanInputPath, $width, $height, $cleanOutputPath);
 			$result = (exec($sysCall,$output));
 			$strCmd = implode($output);
-			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 			}
 			return $result;
 		} else {
@@ -508,8 +508,8 @@ class VideoProcessor{
 			$sysCall = sprintf($preset_demux_encode_audio,$cleanInputPath,$audioChannels,$audioSamplerate,$outputFilePath);
 			$result = (exec($sysCall,$output));
 			$strCmd = implode($output);
-			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 			}
 			return $result;
 		} else {
@@ -535,8 +535,8 @@ class VideoProcessor{
 		$sysCall = sprintf($preset, $cleanInputVideoPath, $cleanInputAudioPath, $cleanOutputVideoPath);
 		$result = (exec($sysCall,$output));
 		$strCmd = implode($output);
-		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 		}
 		return $result;
 	}
@@ -576,8 +576,8 @@ class VideoProcessor{
 			$sysCall = sprintf($preset,$cleanInputPath,$startTime,$outputFilePath);
 			$result = (exec($sysCall,$output));
 			$strCmd = implode($output);
-			if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-				throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+			if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 			}
 			return $result;
 		} else {
@@ -639,8 +639,8 @@ class VideoProcessor{
 		$sysCall = sprintf($preset_merge_videos,$cleanInputVideoPath1, $inputAudioPath, 2*$width, $height, $cleanInputVideoPath2, $width, $height, $cleanOutputVideoPath);
 		$result = (exec($sysCall,$output));
 		$strCmd = implode($output);
-		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 		}
 		return $result;
 		
@@ -671,8 +671,8 @@ class VideoProcessor{
 		$sysCall = sprintf($preset,$cleanInputPath,$filePrefix,$cleanOutputPath,$filePrefix);
 		$result = (exec($sysCall, $output));
 		$strCmd = implode($output);
-		if(strpos($strCmd, $this->soxCmdPath.": not found") !== false){
-			throw new Exception("Unable to find $this->soxCmdPath\n");
+		if($errormsg=$this->system_call_unavailable($this->soxCmdPath, $strCmd)){
+			throw new Exception($errormsg);
 		}
 		return $result;
 	}
@@ -708,12 +708,28 @@ class VideoProcessor{
 		$sysCall = sprintf($preset_dummy_video,$cleanDummyImagePath, $cleanInputPath, $cleanOutputPath);
 		$result = (exec($sysCall,$output));
 		$strCmd = implode($output);
-		if(strpos($strCmd, $this->ffmpegCmdPath.": not found") !== false){
-			throw new Exception("Unable to find $this->ffmpegCmdPath\n");
+		if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
+				throw new Exception($errormsg);
 		}
 		return $result;
 	}
 
+	/**
+	 * Returns a message if the provided command is unavailable and
+	 * empty if the command is available
+	 * 
+	 * @param String $command
+	 * 		Relative or full path of the command used for the exec()
+	 * @param String $cmdoutput
+	 * 		Full output of the exec() function for the command above
+	 */
+	private function system_command_unavailable($command, $cmdoutput){
+		if(strpos($cmdoutput, $command.": not found") !== false)
+			return "Command not found: $command\n";
+		if(strpos($cmdoutput, $command.": Permission denied") !== false)
+			return "Permission denied for command: $command\n";
+		return;
+	}
 
 	/**
 	 * Returns a provided character long random alphanumeric string
