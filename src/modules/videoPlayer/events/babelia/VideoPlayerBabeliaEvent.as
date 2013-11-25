@@ -6,6 +6,7 @@ package modules.videoPlayer.events.babelia
 	{
 		
 		public static const SECONDSTREAM_FINISHED_PLAYING:String = "SecondStreamFinishedPlaying";
+		public static const SECONDSTREAM_STARTED_PLAYING:String = "SecondStreamStartedPlaying";
 		
 		
 		public function VideoPlayerBabeliaEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)

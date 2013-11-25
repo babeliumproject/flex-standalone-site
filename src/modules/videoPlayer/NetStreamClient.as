@@ -13,8 +13,10 @@ package modules.videoPlayer
 	import flash.net.NetStreamInfo;
 	import flash.utils.ByteArray;
 	
+	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 	
+	import mx.controls.Alert;
 	import mx.utils.ObjectUtil;
 	
 	//http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/NetStream.html
@@ -35,6 +37,22 @@ package modules.videoPlayer
 		public static const STREAM_PAUSED:int=4;
 		public static const STREAM_UNPAUSED:int=5;
 		public static const STREAM_BUFFERING:int=6;
+		public static const STREAM_SEEKING_START:int=7;
+		public static const STREAM_SEEKING_END:int=8;
+		
+		/*
+		* Allowed values are -2, -1, 0, or a positive number. 
+		* The default value is -2, which looks for a live stream, then a recorded stream, and if it finds neither, opens a live stream. You cannot use -2 with MP3 files. 
+		* If -1, plays only a live stream. 
+		* If 0 or a positive number, plays a recorded stream, beginning start seconds in.
+		*/
+		private const PLAY_MODE_WAIT_LIVE:int=-2;
+		private const PLAY_MODE_ONLY_LIVE:int=-1;
+		private const PLAY_MODE_ONLY_RECORDED:int=0;
+		
+		private var _defaultPlayMode:int = PLAY_MODE_ONLY_RECORDED;
+		
+		private var _streamFinishBuffer:Object = {"NetStream.Buffer.Empty": 0, "NetStream.Buffer.Flush": 0, "NetStream.Play.Stop": 0};
 		
 		private var _ns:NetStream;
 		private var _nc:NetConnection;
@@ -86,7 +104,10 @@ package modules.videoPlayer
 		public function play(...parameters):void{
 			try{
 				displayTrace("Play "+parameters);
-				_ns.play(parameters);	
+				var formattedStreamUrl:String = parameters[0] as String;
+				if(formattedStreamUrl.search(/\.flv$/) !=-1)
+					formattedStreamUrl = formattedStreamUrl.slice(0,-4);
+				_ns.play(formattedStreamUrl,_defaultPlayMode);	
 			} 
 			catch(e:SecurityError){
 				displayTrace("SecurityError ["+e.name+"] "+e.message);
@@ -164,24 +185,22 @@ package modules.videoPlayer
 			
 			displayTrace("NetStatus ["+messageLevel+"] "+messageCode+" "+messageDescription);
 			switch (messageCode)
-			{
+			{			
 				case "NetStream.Buffer.Empty":
-					if (_streamStatus == STREAM_STOPPED)
-					{
-						_streamStatus=STREAM_FINISHED;
-						this.dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING));
-					}
-					else
-						_streamStatus=STREAM_BUFFERING;
+					_streamStatus=STREAM_BUFFERING;
 					break;
 				case "NetStream.Buffer.Full":
 					if (_streamStatus == STREAM_READY)
+					{
 						_streamStatus=STREAM_STARTED;
+						this.dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_STARTED_PLAYING));
+					}
 					if (_streamStatus == STREAM_BUFFERING)
 						_streamStatus=STREAM_STARTED;
 					if (_streamStatus == STREAM_UNPAUSED)
 						_streamStatus=STREAM_STARTED;
-					
+					if (_streamStatus == STREAM_SEEKING_END)
+						_streamStatus=STREAM_STARTED;
 					break;
 				case "NetStream.Buffer.Flush":
 					break;
@@ -203,6 +222,19 @@ package modules.videoPlayer
 					break;
 				case "NetStream.Play.UnpublishNotify":
 					break;
+				case "NetStream.Play.Failed":
+					break;
+				case "NetStream.Play.FileStructureInvalid":
+					break;
+				case "NetStream.Play.InsufficientBW":
+					break;
+				case "NetStream.Play.NoSupportedTrackFound":
+					break;
+				case "NetStream.Play.StreamNotFound":
+					this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_NOT_FOUND));
+					break;
+				case "NetStream.Play.Transition":
+					break;
 				case "NetStream.Pause.Notify":
 					_streamStatus=STREAM_PAUSED;
 					break;
@@ -214,17 +246,43 @@ package modules.videoPlayer
 				case "NetStream.Record.Stop":
 					break;
 				case "NetStream.Seek.Notify":
+					_streamStatus=STREAM_SEEKING_START;
+					break;
+				case "NetStream.SeekStart.Notify":
+					_streamStatus=STREAM_SEEKING_START;
+					break;
+				case "NetStream.Seek.Complete":
+					_streamStatus=STREAM_SEEKING_END;
 					break;
 				case "NetStream.Connect.Closed":
 					_connected=false;
 					break;
 				case "NetStream.Connect.Success":
 					_connected=true;
-					break;
 				default:
 					break;
 			}
 			
+			if(checkEndingBuffer(messageCode)){
+				_streamStatus=STREAM_FINISHED;
+				this.dispatchEvent(new VideoPlayerBabeliaEvent(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING));
+			}
+			
+		}
+		
+		private function checkEndingBuffer(currentNetStatus:String):uint{
+			if(_streamFinishBuffer.hasOwnProperty(currentNetStatus)){
+				_streamFinishBuffer[currentNetStatus] = 1;
+			} else {
+				for(var k:String in _streamFinishBuffer){
+					_streamFinishBuffer[k]=0;
+				}
+			}
+			var result:uint=1;
+			for each(var val:int in _streamFinishBuffer){
+				result &= val;
+			}
+			return result;
 		}
 		
 		public function onStatus(event:StatusEvent):void{

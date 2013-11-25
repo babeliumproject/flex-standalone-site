@@ -6,6 +6,7 @@
 
 package modules.videoPlayer
 {
+	
 	import events.CloseConnectionEvent;
 	import events.StartConnectionEvent;
 	
@@ -33,21 +34,24 @@ package modules.videoPlayer
 	import modules.videoPlayer.controls.ScrubberBar;
 	import modules.videoPlayer.controls.SkinableComponent;
 	import modules.videoPlayer.controls.StopButton;
-	//import modules.videoPlayer.controls.babelia.RecStopButton;
 	import modules.videoPlayer.events.PlayPauseEvent;
 	import modules.videoPlayer.events.ScrubberBarEvent;
 	import modules.videoPlayer.events.StopEvent;
 	import modules.videoPlayer.events.VideoPlayerEvent;
 	import modules.videoPlayer.events.VolumeEvent;
-	//import modules.videoPlayer.events.babelia.RecStopButtonEvent;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
+	
+	//import org.as3commons.logging.api.ILogger;
+	//import org.as3commons.logging.api.getLogger;
 
 	public class VideoPlayer extends SkinableComponent
 	{
+		//protected static const logger:ILogger = getLogger(VideoPlayer);
+		
 		/**
 		 * Skin related variables
 		 */
@@ -81,7 +85,6 @@ package modules.videoPlayer
 		private var _bgVideo:Sprite;
 		public var _ppBtn:PlayButton;
 		public var _stopBtn:StopButton;
-		//public var _recStopBtn:RecStopButton;
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
@@ -91,6 +94,8 @@ package modules.videoPlayer
 		protected var _videoWidth:Number=320;
 
 		private var _timer:Timer;
+		//private var _reconnectionTimer:Timer;
+		//private var _reconnectionDelay:uint = 5000; //5 seconds
 
 		public static const PLAYBACK_READY_STATE:int=0;
 		public static const PLAYBACK_STARTED_STATE:int=1;
@@ -99,6 +104,22 @@ package modules.videoPlayer
 		public static const PLAYBACK_PAUSED_STATE:int=4;
 		public static const PLAYBACK_UNPAUSED_STATE:int=5;
 		public static const PLAYBACK_BUFFERING_STATE:int=6;
+		public static const PLAYBACK_SEEKING_START_STATE:int=7;
+		public static const PLAYBACK_SEEKING_END_STATE:int=8;
+		
+		/*
+		* Allowed values are -2, -1, 0, or a positive number. 
+		* The default value is -2, which looks for a live stream, then a recorded stream, and if it finds neither, opens a live stream. You cannot use -2 with MP3 files. 
+		* If -1, plays only a live stream. 
+		* If 0 or a positive number, plays a recorded stream, beginning start seconds in.
+		*/
+		private const PLAY_MODE_WAIT_LIVE:int=-2;
+		private const PLAY_MODE_ONLY_LIVE:int=-1;
+		private const PLAY_MODE_ONLY_RECORDED:int=0;
+		
+		private var _defaultPlayMode:int = PLAY_MODE_ONLY_RECORDED;
+		
+		private var _streamFinishBuffer:Object = {"NetStream.Buffer.Empty": 0, "NetStream.Buffer.Flush": 0, "NetStream.Play.Stop": 0};
 
 		[Bindable]
 		public var playbackState:int;
@@ -123,11 +144,9 @@ package modules.videoPlayer
 
 			_ppBtn=new PlayButton();
 			_stopBtn=new StopButton();
-			//_recStopBtn=new RecStopButton();
 
 			_videoBarPanel.addChild(_ppBtn);
 			_videoBarPanel.addChild(_stopBtn);
-			//_videoBarPanel.addChild(_recStopBtn);
 
 			_sBar=new ScrubberBar();
 
@@ -147,7 +166,6 @@ package modules.videoPlayer
 			addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying);
 			_ppBtn.addEventListener(PlayPauseEvent.STATE_CHANGED, onPPBtnChanged);
 			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick);
-			//_recStopBtn.addEventListener(RecStopButtonEvent.CLICK, onStopBtnClick);
 			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange);
 
 			/**
@@ -167,7 +185,6 @@ package modules.videoPlayer
 			putSkinableComponent(_ppBtn.COMPONENT_NAME, _ppBtn);
 			putSkinableComponent(_sBar.COMPONENT_NAME, _sBar);
 			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
-			//putSkinableComponent(_recStopBtn.COMPONENT_NAME, _recStopBtn);
 
 			// Loads default skin
 			skin="default";
@@ -180,7 +197,8 @@ package modules.videoPlayer
 		 */
 		public function set videoSource(location:String):void
 		{
-		
+			//if(!DataModel.getInstance().netConnected)
+			//	return;
 			_videoSource=location;
 			_video.visible=true;
 
@@ -291,14 +309,12 @@ package modules.videoPlayer
 		{
 			_ppBtn.enabled=true;
 			_stopBtn.enabled=true;
-			//_recStopBtn.enabled=true;
 		}
 
 		public function disableControls():void
 		{
 			_ppBtn.enabled=false;
 			_stopBtn.enabled=false;
-			//_recStopBtn.enabled=false;
 		}
 
 		/**
@@ -400,10 +416,6 @@ package modules.videoPlayer
 			_ppBtn.x=0;
 			_ppBtn.refresh();
 
-			//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
-			//_recStopBtn.refresh();
-			//_sBar.x=_recStopBtn.x + _recStopBtn.width;
-
 			_stopBtn.x=_ppBtn.x + _ppBtn.width;
 			_stopBtn.refresh();
 
@@ -415,7 +427,6 @@ package modules.videoPlayer
 			_audioSlider.refresh();
 
 			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width;
-			//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width;
 
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
@@ -490,6 +501,8 @@ package modules.videoPlayer
 
 			if (DataModel.getInstance().netConnected == true)
 			{
+				//if(_reconnectionTimer != null)
+				//	stopReconnectionTimer();
 				//Get the netConnection reference
 				_nc=DataModel.getInstance().netConnection;
 
@@ -505,11 +518,31 @@ package modules.videoPlayer
 			else{
 				disableControls();
 				if (_streamSource){
-					connectToStreamingServer();
+					//if(_reconnectionTimer == null || !_reconnectionTimer.running){
+						//startReconnectionTimer();
+						connectToStreamingServer();
+					//}
 				}
 			}
 		}
 		
+		//public function startReconnectionTimer():void{
+		//	connectToStreamingServer();
+		//	_reconnectionTimer = new Timer(_reconnectionDelay,0);
+		//	_reconnectionTimer.start();
+		//	_reconnectionTimer.addEventListener(TimerEvent.TIMER, onReconnectionTimerTick);
+		//	
+		//}
+		//
+		//public function stopReconnectionTimer():void{
+		//	_reconnectionTimer.stop();
+		//	_reconnectionTimer.removeEventListener(TimerEvent.TIMER, onReconnectionTimerTick);
+		//}
+		//
+		//public function onReconnectionTimerTick(event:TimerEvent):void{
+		//	connectToStreamingServer();
+		//}
+
 		public function connectToStreamingServer():void
 		{
 			if (!DataModel.getInstance().netConnection.connected)
@@ -524,50 +557,85 @@ package modules.videoPlayer
 				new CloseConnectionEvent().dispatch();
 		}
 
-		private function netStatus(e:NetStatusEvent):void
+		private function netStatus(event:NetStatusEvent):void
 		{
 			//trace("[INFO] Exercise stream: Status code " + e.info.code);
-
-			switch (e.info.code)
+			var info:Object=event.info;
+			var messageClientId:int=info.clientid ? info.clientid : -1;
+			var messageCode:String=info.code;
+			var messageDescription:String=info.description ? info.description : '';
+			var messageDetails:String=info.details ? info.details : '';
+			var messageLevel:String=info.level;
+			trace("NetStatus [{0}] {1} {2}", [messageLevel, messageCode, messageDescription]);	
+			
+			switch (messageCode)
 			{
-				case "NetStream.Play.StreamNotFound":
-					trace("[ERROR] Exercise stream: Stream " + _videoSource + " could not be found");
-					break;
-				case "NetStream.Play.Stop":
-					playbackState=PLAYBACK_STOPPED_STATE;
-					break;
-				case "NetStream.Play.Start":
-					playbackState=PLAYBACK_READY_STATE;
-					break;
 				case "NetStream.Buffer.Full":
-					if (playbackState == PLAYBACK_UNPAUSED_STATE)
-						playbackState=PLAYBACK_STARTED_STATE;
 					if (playbackState == PLAYBACK_READY_STATE)
 					{
 						playbackState=PLAYBACK_STARTED_STATE;
 						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_STARTED_PLAYING));
 					}
-					if(playbackState == PLAYBACK_BUFFERING_STATE)
-						playbackState = PLAYBACK_STARTED_STATE;
+					if (playbackState == PLAYBACK_BUFFERING_STATE)
+						playbackState=PLAYBACK_STARTED_STATE;
+					if (playbackState == PLAYBACK_UNPAUSED_STATE)
+						playbackState=PLAYBACK_STARTED_STATE;
+					if (playbackState == PLAYBACK_SEEKING_END_STATE)
+						playbackState=PLAYBACK_STARTED_STATE;
 					break;
 				case "NetStream.Buffer.Empty":
-					if (playbackState == PLAYBACK_STOPPED_STATE)
-					{
-						playbackState=PLAYBACK_FINISHED_STATE;
-						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_FINISHED_PLAYING));
-					}
-					else
-						playbackState=PLAYBACK_BUFFERING_STATE;
+					playbackState=PLAYBACK_BUFFERING_STATE;
 					break;
+				case "NetStream.Play.Start":
+					playbackState=PLAYBACK_STARTED_STATE;
+					break;
+				case "NetStream.Play.Stop":
+					playbackState=PLAYBACK_STOPPED_STATE;
+					break;
+				
+				case "NetStream.Play.StreamNotFound":
+					trace("[ERROR] Exercise stream: Stream " + _videoSource + " could not be found");
+					dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_NOT_FOUND));
+					break;
+				
 				case "NetStream.Pause.Notify":
 					playbackState=PLAYBACK_PAUSED_STATE;
 					break;
 				case "NetStream.Unpause.Notify":
 					playbackState=PLAYBACK_UNPAUSED_STATE;
 					break;
+				case "NetStream.Seek.Notify":
+					playbackState=PLAYBACK_SEEKING_START_STATE;
+					break;
+				case "NetStream.SeekStart.Notify":
+					playbackState=PLAYBACK_SEEKING_START_STATE;
+					break;
+				case "NetStream.Seek.Complete":
+					playbackState=PLAYBACK_SEEKING_END_STATE;
+					break;
 				default:
 					break;
 			}
+			
+			if(checkEndingBuffer(messageCode)){
+				playbackState=PLAYBACK_FINISHED_STATE;
+				dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_FINISHED_PLAYING));
+			}
+		}
+		
+		private function checkEndingBuffer(currentNetStatus:String):uint{
+			if(_streamFinishBuffer.hasOwnProperty(currentNetStatus)){
+				_streamFinishBuffer[currentNetStatus] = 1;
+			} else {
+				for(var k:String in _streamFinishBuffer){
+					_streamFinishBuffer[k]=0;
+				}
+			}
+			var result:uint=1;
+			for each(var val:int in _streamFinishBuffer){
+				result &= val;
+			}
+			return result;
 		}
 
 		protected function asyncErrorHandler(event:AsyncErrorEvent):void
@@ -614,7 +682,10 @@ package modules.videoPlayer
 				try
 				{
 					trace("[INFO] Exercise stream: Selected video " + _videoSource);
-					_ns.play(_videoSource);
+					var stream:String = _videoSource;
+					if(stream.search(/\.flv$/) !=-1)
+						stream = stream.slice(0,-4);
+					_ns.play(stream,_defaultPlayMode);
 				}
 				catch (e:Error)
 				{
@@ -635,6 +706,9 @@ package modules.videoPlayer
 
 		public function stopVideo():void
 		{
+			//if(!DataModel.getInstance().netConnected)
+			//	return;
+			
 			if (_ns)
 			{
 				_ns.play(false);
@@ -669,7 +743,7 @@ package modules.videoPlayer
 		{
 			if (_ns)
 			{
-				_ns.seek(_currentTime);
+				//_ns.seek(_currentTime);
 				_ns.resume();
 				//trace(_currentTime, _ns.time);
 			}
@@ -844,7 +918,7 @@ package modules.videoPlayer
 		{
 			if (!autoScale)
 			{
-				//trace("[INFO] Video player: BEFORE SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y);
+				//trace("Scaling info");
 				
 				//If the scalation is different in height and width take the smaller one
 				var scaleY:Number=_videoHeight / _video.height;
@@ -863,7 +937,7 @@ package modules.videoPlayer
 				_video.width=Math.ceil(_video.width*scaleC);
 				_video.height=Math.ceil(_video.height*scaleC);
 				
-				//trace("[INFO] Video player: AFTER SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y);
+				//trace("Scaling info");
 
 				// 1 black pixel, being smarter
 				//_video.y+=1;

@@ -4,7 +4,7 @@ package modules.videoPlayer.events
 
 	public class VideoPlayerEvent extends Event
 	{
-		
+		public static const STREAM_NOT_FOUND:String = "streamNotFound";
 		public static const VIDEO_SOURCE_CHANGED:String = "VideoSourceChanged";
 		public static const VIDEO_FINISHED_PLAYING:String = "VideoFinishedPlaying";
 		public static const VIDEO_STARTED_PLAYING:String = "VideoStartedPlaying";
