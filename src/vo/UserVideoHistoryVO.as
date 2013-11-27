@@ -14,8 +14,9 @@ package vo
 		public var subtitlesAreUsed:Boolean;
 		public var subtitleId:int;
 		public var exerciseRoleId:int;
+		public var fileIdentifier:String;
 
-		public function UserVideoHistoryVO(id:int=0, userSessionId:int=0, exerciseId:int=0, responseAttempt:Boolean=false, responseId:int=0, incidenceDate:String='', subtitlesAreUsed:Boolean=false, subtitleId:int=0, exerciseRoleId:int=0)
+		public function UserVideoHistoryVO(id:int=0, userSessionId:int=0, exerciseId:int=0, responseAttempt:Boolean=false, responseId:int=0, incidenceDate:String='', subtitlesAreUsed:Boolean=false, subtitleId:int=0, exerciseRoleId:int=0, fileIdentifier:String='')
 		{
 			this.id=id;
 			this.userSessionId=userSessionId;
@@ -26,6 +27,7 @@ package vo
 			this.subtitlesAreUsed=subtitlesAreUsed;
 			this.subtitleId=subtitleId;
 			this.exerciseRoleId=exerciseRoleId;
+			this.fileIdentifier=fileIdentifier;
 		}
 	}
 }

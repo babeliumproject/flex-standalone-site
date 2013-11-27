@@ -2,9 +2,9 @@
 
 /**
  * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
- * 
+ *
  * Copyright (c) 2011 GHyM and by respective authors (see below).
- * 
+ *
  * This file is part of Babelium Project.
  *
  * Babelium Project is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ require_once 'vo/UserVideoHistoryVO.php';
 
 /**
  * This class provides means to record statistical data about the user's activity on the system
- * 
+ *
  * @author Babelium Team
  *
  */
@@ -51,7 +51,7 @@ class UserVideoHistory{
 
 		if(!$videoHistoryData)
 			return false;
-		
+
 		if($sessionId = $this->_currentSessionData($_SESSION['uid'])){
 
 			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, subtitles_are_used, fk_subtitle_id)
@@ -63,30 +63,29 @@ class UserVideoHistory{
 	}
 
 	public function exerciseAttemptResponse($videoHistoryData = null){
-		
+
 		if(!$videoHistoryData)
 			return false;
-		
+
 		if($sessionId = $this->_currentSessionData($_SESSION['uid'])){
-			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, response_attempt, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id)
-					VALUES ('%d', '%d', '%d', 1, '%d', '%d', '%d')";
+			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, response_attempt, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id, file_identifier)
+					VALUES ('%d', '%d', '%d', 1, '%d', '%d', '%d', '%s')";
 			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId,
-			$videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId);
+			$videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId,$videoHistoryData->fileIdentifier );
 		} else {
 			return false;
 		}
 	}
 
 	public function exerciseSaveResponse($videoHistoryData = null){
-		
+
 		if(!$videoHistoryData)
 			return false;
-		
+
 		if($sessionId = $this->_currentSessionData()){
-			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, fk_response_id, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id)
-					VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d')";
-			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->responseId,
-			$videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId);
+			$sql = "INSERT INTO user_videohistory (fk_user_id, fk_user_session_id, fk_exercise_id, fk_response_id, subtitles_are_used, fk_subtitle_id, fk_exercise_role_id, file_identifier)
+					VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d','%s')";
+			return $this->conn->_insert($sql, $_SESSION['uid'], $sessionId, $videoHistoryData->exerciseId, $videoHistoryData->responseId, $videoHistoryData->subtitlesAreUsed, $videoHistoryData->subtitleId, $videoHistoryData->exerciseRoleId, $videoHistoryData->fileIdentifier);
 		} else {
 			return false;
 		}

@@ -508,7 +508,7 @@
 				statisticRecAttempt();
 			}
 
-			private function statisticRecAttempt():void
+			private function statisticRecAttempt(file:String=''):void
 			{
 				var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 				var subtitleId:int=_cueManager.currentSubtitle;
@@ -521,27 +521,28 @@
 						break;
 					}
 				}
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
+				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, true, 0, '', subtitlesAreUsed, subtitleId, roleId, file);
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
 			/**
-			 * On recording end successfully
-			 **/
+			* On recording end successfully
+			**/
 			private function onRecordingEnd(e:RecordingEvent):void
 			{
-				// Store last recorded response's filename
-				_recordedFilename=e.fileName;
+			// Store last recorded response's filename
+			_recordedFilename=e.fileName;
 
-				DataModel.getInstance().recordingExercise=false;
+			DataModel.getInstance().recordingExercise=false;
 
-				// Set the videoplayer to playback both the exercise and the last response.
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
-				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
+			// Set the videoplayer to playback both the exercise and the last response.
+			VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+			VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+			VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
 
-				VP.seek=false;
-				VP.stopVideo();
+			VP.seek=false;
+			VP.stopVideo();
+			statisticRecAttempt(_recordedFilename);
 			}
 
 			/**

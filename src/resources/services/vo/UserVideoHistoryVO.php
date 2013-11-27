@@ -1,7 +1,7 @@
 <?php
 
 class UserVideoHistoryVO{
-	
+
 	public $id;
 	public $userId;
 	public $userSessionId;
@@ -12,6 +12,7 @@ class UserVideoHistoryVO{
 	public $subtitlesAreUsed;
 	public $subtitleId;
 	public $exerciseRoleId;
-	
+	public $fileIdentifier;
+
 	public $_explicitType="UserVideoHistoryVO";
 }
