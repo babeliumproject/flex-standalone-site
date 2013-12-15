@@ -2,9 +2,9 @@
 
 /**
  * Babelium Project open source collaborative second language oral practice - http://www.babeliumproject.com
- * 
+ *
  * Copyright (c) 2011 GHyM and by respective authors (see below).
- * 
+ *
  * This file is part of Babelium Project.
  *
  * Babelium Project is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ require_once 'Exercise.php';
 
 /**
  * This class performs user related operations
- * 
+ *
  * @author Babelium Team
  *
  */
@@ -52,8 +52,8 @@ class User {
 
 	public function getTopTenCredited()
 	{
-		$sql = "SELECT name, 
-					   creditCount 
+		$sql = "SELECT name,
+					   creditCount
 				FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
 
 		$searchResults = $this->conn->_multipleSelect($sql);
@@ -90,7 +90,7 @@ class User {
 
 			if(!$oldpass || !$newpass)
 				return false;
-			
+
 			$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
 			$result = $this->conn->_singleSelect($sql, $_SESSION['uid'], $oldpass);
 			if (!$result)
@@ -99,7 +99,7 @@ class User {
 			$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
 			$result = $this->conn->_update($sql, $newpass, $_SESSION['uid'], $oldpass);
 
-			return $result;
+			return $result==1;
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -110,7 +110,7 @@ class User {
 
 		try {
 			$verifySession = new SessionValidation(true);
-			
+
 			if(!$languages)
 				return false;
 
@@ -158,29 +158,29 @@ class User {
 				$_SESSION['user-languages'] = $result;
 			}
 			return $result;
-				
+
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 
 	}
-	
+
 	public function modifyUserPersonalData($personalData = null){
 		try {
 			$verifySession = new SessionValidation(true);
-			
+
 			if(!$personalData)
 				return false;
-			
+
 			$validator = new EmailAddressValidator();
 			if(!$validator->check_email_address($personalData->email)){
 				return 'wrong_email';
 			} else {
-			
+
 				$currentPersonalData = $_SESSION['user-data'];
-			
+
 				$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'";
-			
+
 				$updateData = $this->conn->_update($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
 				if($updateData){
 					$currentPersonalData->realName = $personalData->realName;
@@ -192,40 +192,40 @@ class User {
 					return 'wrong_data';
 				}
 			}
-			
+
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
-		}	
+		}
 	}
-	
+
 	public function retrieveUserVideos(){
 		try {
 			$verifySession = new SessionValidation(true);
-			
-			$sql = "SELECT e.id, 
-						   e.title, 
-						   e.description, 
-						   e.language, 
-						   e.tags, 
-						   e.source, 
-						   e.name, 
-						   e.thumbnail_uri as thumbnailUri, 
+
+			$sql = "SELECT e.id,
+						   e.title,
+						   e.description,
+						   e.language,
+						   e.tags,
+						   e.source,
+						   e.name,
+						   e.thumbnail_uri as thumbnailUri,
 						   e.adding_date as addingDate,
-		               	   e.duration, 
-		               	   avg (suggested_level) as avgDifficulty, 
-		               	   e.status, 
-		               	   license, 
-		               	   reference, 
+		               	   e.duration,
+		               	   avg (suggested_level) as avgDifficulty,
+		               	   e.status,
+		               	   license,
+		               	   reference,
 		               	   a.complete as isSubtitled
-				FROM exercise e 
+				FROM exercise e
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-     			WHERE e.fk_user_id = %d AND e.status <> 'Unavailable' 
+     			WHERE e.fk_user_id = %d AND e.status <> 'Unavailable'
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
-			
-			
+
+
 			$searchResults = array();
 			if($searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'])){
 				$exercise = new Exercise();
@@ -236,22 +236,22 @@ class User {
 				}
 			}
 			return $this->conn->multipleRecast('ExerciseVO', $searchResults);
-			
+
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
-		}	
+		}
 	}
-	
+
 	public function deleteSelectedVideos($selectedVideos = null){
 		try {
 			$verifySession = new SessionValidation(true);
-			
+
 			if(!$selectedVideos)
 				return false;
-			
+
 			$whereClause = '';
 			$names = array();
-			
+
 			if(count($selectedVideos) > 0){
 				foreach($selectedVideos as $selectedVideo){
 					$whereClause .= " name = '%s' OR";
@@ -259,68 +259,68 @@ class User {
 				}
 				unset($selectedVideo);
 				$whereClause = substr($whereClause,0,-2);
-			
+
 				$sql = "UPDATE exercise SET status='Unavailable' WHERE ( fk_user_id=%d AND" . $whereClause ." )";
-				
+
 				$merge = array_merge((array)$sql, (array)$_SESSION['uid'], $names);
 				$updateData = $this->conn->_update($merge);
 
 				return $updateData ? true : false;
 			}
-			
+
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
-		}	
+		}
 	}
-	
+
 	public function modifyVideoData($videoData = null){
 		try{
 			$verifySession = new SessionValidation(true);
-			
+
 			if(!$videoData)
 				return false;
-			
+
 			$exercise = new Exercise();
 			$parsedTags = $exercise->parseExerciseTags($videoData->tags);
 			$parsedDescriptors = $exercise->parseDescriptors($videoData->descriptors);
-			
+
 			//Turn off the autocommit
 			//$this->conn->_startTransaction();
-			
+
 			//Remove previous exercise_level
 			$sql = "DELETE FROM exercise_level WHERE fk_exercise_id=%d";
 			$arows2 = $this->conn->_delete($sql,$videoData->id);
-			
+
 			//Insert new exercise level
 			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
 			$lii1 = $this->conn->_insert($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
-			
+
 			//Remove previous exercise_descriptors (if any)
 			$sql = "DELETE FROM rel_exercise_descriptor WHERE fk_exercise_id=%d";
 			$arows4 = $this->conn->_delete($sql,$videoData->id);
-			
+
 			//Insert new exercise descriptors (if any)
 			$exercise->insertDescriptors($parsedDescriptors,$videoData->id);
-			
+
 			//Remove previous exercise_tags
 			$sql = "DELETE FROM rel_exercise_tag WHERE fk_exercise_id=%d";
 			$arows3 = $this->conn->_delete($sql,$videoData->id);
-			
+
 			//Insert new exercise tags
 			$exercise->insertTags($parsedTags,$videoData->id);
-			
+
 			//Update the fields of the exercise
 			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s'
 					WHERE ( name='%s' AND fk_user_id=%d )";
-			
+
 			$arows1 = $this->conn->_update($sql, $videoData->title, $videoData->description, implode(',',$parsedTags), $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
-			
+
 			//Turn on the autocommit, there was no errors modifying the database
 			//$this->conn->_endTransaction();
-			
+
 			return true;
-			
-			
+
+
 		} catch (Exception $e){
 			//$this->conn->_failedTransaction();
 			throw new Exception ($e->getMessage());
@@ -328,9 +328,9 @@ class User {
 	}
 
 	private function _getUserLanguages(){
-		$sql = "SELECT language, 
-					   level, 
-					   positives_to_next_level as positivesToNextLevel, 
+		$sql = "SELECT language,
+					   level,
+					   positives_to_next_level as positivesToNextLevel,
 					   purpose
 				FROM user_languages WHERE (fk_user_id='%d')";
 		return $this->conn->multipleRecast('UserLanguageVO', $this->conn->_multipleSelect($sql, $_SESSION['uid']));
@@ -340,7 +340,7 @@ class User {
 	{
 		if(!$username)
 			return false;
-		
+
 		$id = -1;
 		$email = "";
 		$user = "";
@@ -361,20 +361,20 @@ class User {
 			$realName = $result->realName;
 		}
 
-		if ( $realName == '' || $realName == 'unknown' ) 
+		if ( $realName == '' || $realName == 'unknown' )
 			$realName = $user;
 
 		//User doesn't exist
-		if ( $id == -1 ) 
+		if ( $id == -1 )
 			return "Unregistered user";
 
 		$newPassword = $this->_createNewPassword();
-		
+
 		$this->conn->_startTransaction();
 
 		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
 		$result = $this->conn->_update($sql, sha1($newPassword), $id);
-		
+
 		if($result == 1){
 
 			$args = array(
@@ -385,13 +385,13 @@ class User {
 
 			$mail = new Mailer($email);
 
-			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") ) 
+			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") )
 				return null;
 
 			$subject = "Your password has been reseted";
 
 			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
-			
+
 			$this->conn->_endTransaction();
 
 			return "Done";
