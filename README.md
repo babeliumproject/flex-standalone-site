@@ -459,4 +459,7 @@ Add the following lines:
 0 3 * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeleteUnreferencedVideosCron.php >> {LOG_PATH}/periodic_task.log
 #Deactivate the videos that have received user complaints every 30 minutes
 */30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeactivateReportedVideosCron.php >> {LOG_PATH}/periodic_task.log
+# red5 monitor
+*/12 * * * * RED5=$(ps auxww| grep [r]ed5); [ -z "$RED5" ] && /usr/bin/php -q {CRON_SCRIPT_PATH}/red5isdown.php
+
 ```
