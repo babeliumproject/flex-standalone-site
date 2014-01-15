@@ -4,13 +4,13 @@ package vo
 	[Bindable]
 	public class LoginVO
 	{
-		public var name:String;
-		public var pass:String;
+		public var username:String;
+		public var password:String;
 		
-		public function LoginVO(name:String, pass:String)
+		public function LoginVO(username:String, password:String)
 		{
-			this.name = name;
-			this.pass = pass;
+			this.username = username;
+			this.password = password;
 		}
 	}
 }

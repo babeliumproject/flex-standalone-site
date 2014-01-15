@@ -92,7 +92,7 @@ class CleanupTask{
 		if($days<7)
 			return;
 		else{
-			$sql = "DELETE FROM users
+			$sql = "DELETE FROM user
 					WHERE (DATE_SUB(CURDATE(),INTERVAL '%d' DAY) > joiningDate AND active = 0 AND activation_hash <> '')";
 			$result = $this->db->_delete($sql,$days);
 		}

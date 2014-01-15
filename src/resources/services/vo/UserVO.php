@@ -11,11 +11,11 @@
 class UserVO {
 	
 	public $id;
-	public $name;
+	public $username;
 	public $email;
 	public $creditCount;
-	public $realName;
-	public $realSurname;
+	public $firstname;
+	public $lastname;
 	public $active;
 	public $joiningDate;
 	public $isAdmin;

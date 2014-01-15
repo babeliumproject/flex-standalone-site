@@ -79,20 +79,20 @@ class Register{
 			try{
 				$this->conn->_startTransaction();
 					
-				$insert = "INSERT INTO users (name, password, email, realName, realSurname, creditCount, activation_hash)";
+				$insert = "INSERT INTO user (username, password, email, firstname, lastname, creditCount, activation_hash)";
 				$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
 
-				$realName = $user->realName? $user->realName : "unknown";
-				$realSurname = $user->realSurname? $user->realSurname : "unknown";
+				$firstname = $user->firstname ? $user->firstname : "unknown";
+				$lastname = $user->lastname ? $user->lastname : "unknown";
 
-				$result = $this->_create ($insert, $user->name, $user->pass, $user->email,$realName, $realSurname, $initialCredits, $hash);
+				$result = $this->_create ($insert, $user->username, $user->pass, $user->email, $firstname, $lastname, $initialCredits, $hash);
 				if ($result)
 				{
 					//Add the languages selected by the user
 					$motherTongueLocale = 'en_US';
 					$languages = $user->languages;
 					if ($languages && is_array($languages) && count($languages) > 0){
-						$languageInsertResult = $this->addUserLanguages($languages, $result->ID);
+						$languageInsertResult = $this->addUserLanguages($languages, $result->id);
 						//We get the first mother tongue as message locale
 						$motherTongueLocale = $languages[0]->language;
 					}
@@ -111,11 +111,11 @@ class Register{
 					//$params = new stdClass();
 					//$params->name = $user->name;
 					//$params->activationHash = $hash;
-					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->name);	
+					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->username);	
 
 					$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
-						'USERNAME' => $user->name,
+						'USERNAME' => $user->username,
 						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'],
 						'ACTIVATION_LINK' => $activation_link,
 						'SIGNATURE' => 'The Babelium Project Team');
@@ -181,15 +181,15 @@ class Register{
 			return false;
 
 		$sql = "SELECT language
-				FROM users AS u INNER JOIN user_languages AS ul ON u.id = ul.fk_user_id 
-				WHERE (u.name = '%s' AND u.activation_hash = '%s') LIMIT 1";
+				FROM user AS u INNER JOIN user_languages AS ul ON u.id = ul.fk_user_id 
+				WHERE (u.username = '%s' AND u.activation_hash = '%s') LIMIT 1";
 		$result = $this->conn->_singleSelect($sql, $user->name, $user->activationHash);
 
 		if ( $result )
 		{
-			$sql = "UPDATE users SET active = 1, activation_hash = ''
-			        WHERE (name = '%s' AND activation_hash = '%s')";
-			$update = $this->conn->_update($sql, $user->name, $user->activationHash);
+			$sql = "UPDATE user SET active = 1, activation_hash = ''
+			        WHERE (username = '%s' AND activation_hash = '%s')";
+			$update = $this->conn->_update($sql, $user->username, $user->activationHash);
 		}
 
 		return ($result && $update)? $result->language : NULL ;
@@ -203,24 +203,24 @@ class Register{
 	 * @param String $userName
 	 * @param String $userPass
 	 * @param String $userEmail
-	 * @param String $userRealName
-	 * @param String $userRealSurname
+	 * @param String $userFirstname
+	 * @param String $userLastname
 	 * @param int $userInitialCredits
 	 * @param String $userHash
 	 * 
 	 * @return int $result
 	 * 		The latest inserted user id. False on error.
 	 */
-	private function _create($insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash) {
+	private function _create($insert, $userName, $userPass, $userEmail, $userFirstname, $userLastname, $userInitialCredits, $userHash) {
 		// Check user with same name or same email
-		$sql = "SELECT ID FROM users WHERE (name='%s' OR email = '%s' ) ";
+		$sql = "SELECT id FROM user WHERE (username='%s' OR email = '%s' ) ";
 		$result = $this->conn->_singleSelect($sql, $userName, $userEmail);
 		if ($result)
 			return false;
 		
-		$userId = $this->conn->_insert( $insert, $userName, $userPass, $userEmail, $userRealName, $userRealSurname, $userInitialCredits, $userHash );
+		$userId = $this->conn->_insert( $insert, $userName, $userPass, $userEmail, $userFirstname, $userLastname, $userInitialCredits, $userHash );
 		if($userId){
-			$sql = "SELECT ID, name, email, password, creditCount FROM users WHERE (ID=%d) ";
+			$sql = "SELECT id, username, email, password, creditCount FROM user WHERE (id=%d) ";
 			$result = $this->conn->_singleSelect($sql,$userId);
 			return $result;
 		} else {

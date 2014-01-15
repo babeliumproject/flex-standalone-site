@@ -35,15 +35,6 @@
 					  verticalAlign="middle"
 					  width="100%"/>
 
-			<skins:IconButton id="helpFAQButton"
-							  styleName="helpLinkButton"
-							  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
-							  click="helpFAQ_clickHandler(event)"
-							  toolTip="{resourceManager.getString('myResources','HELP_FAQ')}"/>
-			<skins:IconButton id="blogButton"
-							  styleName="blueLinkButton"
-							  label="{resourceManager.getString('myResources','BLOG')}"
-							  click="blogButton_clickHandler(event)"/>
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"
@@ -66,8 +57,10 @@
 					  visible="false"
 					  includeInLayout="false"
 					  height="100%">
+				<!--
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
+				-->
 				<s:HGroup verticalAlign="middle"
 						  horizontalAlign="center">
 					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
@@ -179,7 +172,7 @@
 				{
 					anonymousCP.visible=false;
 					anonymousCP.includeInLayout=false;
-					userCPName.label=DataModel.getInstance().loggedUser.name;
+					userCPName.label=DataModel.getInstance().loggedUser.username;
 					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.includeInLayout=true;
 					userCP.visible=true;
@@ -222,15 +215,6 @@
 				signInButton.enabled=status;
 				signUpButton.enabled=status;
 				signOutButton.enabled=status;
-			}
-
-			public function helpFAQ_clickHandler(event:MouseEvent):void
-			{
-				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
-			}
-			
-			public function blogButton_clickHandler(event:MouseEvent):void{
-				navigateToURL(new URLRequest('http://blog.babeliumproject.com'), '_blank');
 			}
 
 			private function onAccountActivation(flag:Boolean):void

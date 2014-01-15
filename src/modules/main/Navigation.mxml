@@ -19,11 +19,18 @@
 						   backgroundImage="@Embed('/resources/images/rainbow_bgr.png')"
 						   backgroundImageFillMode="scale">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="200"
-									horizontalAlign="center"
+				<s:HorizontalLayout paddingLeft="8"
+									paddingRight="8"
+									paddingTop="8"
+									paddingBottom="8"
+									horizontalAlign="left"
 									verticalAlign="middle"
 									clipAndEnableScrolling="true"/>
 			</s:layout>
+			<mx:Image source="resources/images/babelium_logo.png"
+					  buttonMode="true"
+					  click="changeView(ViewChangeEvent.VIEW_HOME_MODULE,event)"/>
+			<!--
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
 										  styleName="homeLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
@@ -32,7 +39,9 @@
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_HOME_MODULE,event)"/>
+	
 			<mx:VRule height="40"/>
+			-->
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EXERCISES')}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
@@ -61,6 +70,7 @@
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_SUBTITLE_MODULE,event)"/>
+			<!--
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
 										  id="configuration"
@@ -81,6 +91,7 @@
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE,event)"/>
+			-->
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.50"/>
 		<s:BorderContainer id="searchUploadBar"
@@ -128,11 +139,6 @@
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine/>
 	</s:VGroup>
-
-	<mx:Image source="resources/images/flan_dull.png"
-			  x="20"
-			  buttonMode="true"
-			  click="changeView(ViewChangeEvent.VIEW_HOME_MODULE,event)"/>
 
 
 	<fx:Binding source="{DataModel.getInstance().tagCloudClicked}"

@@ -197,9 +197,9 @@ class Response {
 	 * 		The amount of rows affected by the update operation
 	 */
 	private function _subCreditsForEvalRequest() {
-		$sql = "UPDATE (users u JOIN preferences p)
+		$sql = "UPDATE (user u JOIN preferences p)
 			SET u.creditCount=u.creditCount-p.prefValue 
-			WHERE (u.ID=%d AND p.prefName='evaluationRequestCredits') ";
+			WHERE (u.id=%d AND p.prefName='evaluationRequestCredits') ";
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
@@ -239,11 +239,11 @@ class Response {
 	 */
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, 
+		$sql = "SELECT username, 
 					   creditCount, 
 					   joiningDate, 
 					   isAdmin 
-				FROM users WHERE (id = %d) ";
+				FROM user WHERE (id = %d) ";
 
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}

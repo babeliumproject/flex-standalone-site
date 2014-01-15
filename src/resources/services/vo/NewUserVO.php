@@ -3,10 +3,10 @@
 class NewUserVO
 	{
 	
-	public $name;
-	public $pass;
-	public $realName;
-	public $realSurname;
+	public $username;
+	public $password;
+	public $firstname;
+	public $lastname;
 	public $email;
 	public $activationHash;
 	

@@ -242,9 +242,9 @@ class Search {
 	public function createIndex() {
 		//Query for the index
 		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.name as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
 				FROM exercise e 
-					 INNER JOIN users u ON e.fk_user_id= u.ID
+					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
@@ -284,9 +284,9 @@ class Search {
 
 		//Query for the index
 		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.name as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
 				FROM exercise e 
-					 INNER JOIN users u ON e.fk_user_id= u.ID
+					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id

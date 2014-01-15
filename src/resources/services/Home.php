@@ -125,7 +125,7 @@ class Home{
 		               D.source as responseSource, 
 		               D.thumbnail_uri as responseThumbnailUri, 
 		               D.duration as responseDuration,
-		               C.name as responseUserName, 
+		               C.username as responseUserName, 
 		               A.score_overall as overallScore, 
 		               A.score_intonation as intonationScore, 
 		               A.score_fluency as fluencyScore, 
@@ -143,7 +143,7 @@ class Home{
 			    FROM evaluation A 
 			    	 INNER JOIN response D ON A.fk_response_id = D.id
 			    	 INNER JOIN exercise E ON D.fk_exercise_id = E.id
-			    	 INNER JOIN users C ON A.fk_user_id = C.id
+			    	 INNER JOIN user C ON A.fk_user_id = C.id
 				WHERE (D.fk_user_id = '%d') 
 				ORDER BY A.adding_date DESC";
 		
@@ -252,14 +252,14 @@ class Home{
 					   e.thumbnail_uri as thumbnailUri, 
 					   e.adding_date as addingDate,
 		               e.duration, 
-		               u.name as userName, 
+		               u.username as userName, 
 		               avg (suggested_level) as avgDifficulty, 
 		               e.status, 
 		               e.license, 
 		               e.reference, 
 		               a.complete as isSubtitled
 				FROM exercise e 
-					 INNER JOIN users u ON e.fk_user_id= u.ID
+					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
@@ -315,14 +315,14 @@ class Home{
 					   e.thumbnail_uri as thumbnailUri, 
 					   e.adding_date as addingDate,
 		               e.duration, 
-		               u.name as userName, 
+		               u.username as userName, 
 		               avg (suggested_level) as avgDifficulty, 
 		               e.status, 
 		               e.license, 
 		               e.reference, 
 		               a.complete as isSubtitled
 				FROM exercise e 
-					 INNER JOIN users u ON e.fk_user_id= u.ID
+					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id

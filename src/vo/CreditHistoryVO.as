@@ -10,6 +10,7 @@ package vo
 		public var changeDate:String;
 		public var changeType:String;
 		public var changeAmount:int;
+		public var userId:int;
 		public var userName:String;
 		public var videoExerciseId:int;
 		public var videoExerciseName:String;

@@ -94,7 +94,7 @@ class Transcription {
 			return "transcription not supported for this video";
 				
 			//Check if user is admin
-			$sql = "SELECT isAdmin FROM users WHERE id = %d";
+			$sql = "SELECT isAdmin FROM user WHERE id = %d";
 			$result = $this->conn->_singleSelect($sql, $_SESSION['uid']);
 			if ($result->isAdmin <= 0)
 				return "only admin users can enable transcriptions to exercises";

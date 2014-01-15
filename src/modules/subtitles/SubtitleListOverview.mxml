@@ -146,7 +146,7 @@
 
 			private function onRemoteUpdate(event:SyncEvent):void
 			{
-				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name)
+				if (dataModel.loggedUser && dataModel.loggedUser.username && currentExercise && currentExercise.name)
 				{
 					var simultaneousEdit:Boolean=false;
 					var remoteData:Object=rso.data;
@@ -159,7 +159,7 @@
 						var ex:String=remoteData[item].exercise;
 						var ts:uint=remoteData[item].timestamp;
 						var dif:uint=(timestamp - ts) / 1000;
-						if (item.toString() != dataModel.loggedUser.name && ex == currentExercise.name && dif < 20)
+						if (item.toString() != dataModel.loggedUser.username && ex == currentExercise.name && dif < 20)
 						{
 							simultaneousEdit=true;
 						}
@@ -172,10 +172,10 @@
 
 			private function reserveRemoteSlot(event:TimerEvent):void
 			{
-				if (dataModel.loggedUser && dataModel.loggedUser.name && currentExercise && currentExercise.name && rso)
+				if (dataModel.loggedUser && dataModel.loggedUser.username && currentExercise && currentExercise.name && rso)
 				{
 					var date:Date=new Date();
-					rso.setProperty(dataModel.loggedUser.name, {exercise: currentExercise.name, timestamp: date.time});
+					rso.setProperty(dataModel.loggedUser.username, {exercise: currentExercise.name, timestamp: date.time});
 				}
 			}
 
