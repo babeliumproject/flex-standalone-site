@@ -5,4 +5,54 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			private var userCourses:Object = {};
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+				 paddingLeft="16"
+				 paddingRight="16"
+				 styleName="sectionInfoTitleLabel"/>
+		<s:Label text="{resourceManager.getString('myResources','EXERCISE_SECTION_DESCRIPTION')}"
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	<s:Label id="myCoursesTitle"
+			 text="{'My courses'}"
+			 styleName="sectionTitleLabel"/>
+
+	<s:Label id="noCourse"
+			 text="You're not currently enrolled in any course."
+			 includeInLayout="{}"
+			 visible="{}"/>
+
+	<mx:DataGrid id="myCoursesTable"
+				 dataProvider="{userCourses}"
+				 width="100%"
+				 horizontalScrollPolicy="off"
+				 verticalScrollPolicy="off"
+				 headerHeight="0"
+				 horizontalGridLines="true"
+				 horizontalGridLineColor="0xaaaaaa"
+				 contentBackgroundAlpha="0.0"
+				 alternatingItemColors="{[]}"
+				 selectable="false"
+				 variableRowHeight="true">
+		<mx:columns>
+			<mx:DataGridColumn itemRenderer="modules.home2.UserCourseItemRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+
 </s:VGroup>

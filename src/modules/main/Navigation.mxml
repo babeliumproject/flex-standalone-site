@@ -42,7 +42,7 @@
 	
 			<mx:VRule height="40"/>
 			-->
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EXERCISES')}"
+			<skins:NavigationToggleButton label="{'Browse'}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
@@ -70,6 +70,13 @@
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_SUBTITLE_MODULE,event)"/>
+			<skins:NavigationToggleButton label="{'Create'}"
+										  id="createLinkButton"
+										  styleName="configureLinkButton"
+										  skinClass="skins.NavigationToggleButtonSkin"
+										  enabled="{DataModel.getInstance().isLoggedIn}"
+										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_UPLOAD_MODULE_INDEX}"
+										  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE,event)"/>
 			<!--
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
@@ -100,7 +107,9 @@
 						   minHeight="0"
 						   width="100%"
 						   minWidth="1000"
-						   dropShadowVisible="true">
+						   dropShadowVisible="true"
+						   includeInLayout="{DataModel.getInstance().isLoggedIn}"
+						   visible="{DataModel.getInstance().isLoggedIn}">
 			<s:backgroundFill>
 				<mx:LinearGradient>
 					<mx:entries>
@@ -120,12 +129,15 @@
 									paddingBottom="4"
 									paddingRight="4"/>
 			</s:layout>
+			<!--
 			<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
 					  styleName="uploadButton"
 					  buttonMode="true"
 					  enabled="{!DataModel.getInstance().recordingExercise}"
 					  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE,event)"/>
+
 			<mx:Spacer width="30"/>
+			-->
 			<s:TextInput id="searchField"
 						 styleName="searchTextInput"
 						 width="100%"
@@ -148,9 +160,9 @@
 			import events.SearchEvent;
 			import events.VideoStopEvent;
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
+			
 			import skins.NavigationToggleButtonSkin;
 
 			//Initialization method
