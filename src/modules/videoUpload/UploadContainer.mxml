@@ -33,11 +33,16 @@
 			<main:UnauthorizedNotice id="unsignedScreen"
 									 width="100%"/>
 		</s:NavigatorContent>
+		<!--
 		<s:NavigatorContent id="videoUploadMainNavContent">
 			<videoUpload:FileUpload id="videoUploadMain"
-									width="100%"
-									uploadUrl="{DataModel.getInstance().uploadURL}"/>
+									width="100%"/>
 		</s:NavigatorContent>
+		-->
+		<s:NavigatorContent id="videoUploadMainNavContent">
+			<videoUpload:ExerciseCreate width="100%"/>
+		</s:NavigatorContent>
+		
 	</mx:ViewStack>
 
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"

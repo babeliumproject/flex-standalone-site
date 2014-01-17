@@ -50,12 +50,6 @@
 			private var _dataModel:DataModel = DataModel.getInstance();
 			private var _descriptors:Array;
 
-			private var _strUploadUrl:String;
-
-			private var addFileReference:FileReference;
-
-			private var _arrUploadFiles:Array;
-
 			private var red5VideoData:ExerciseVO;
 			private var red5VideoLevel:ExerciseLevelVO;
 
@@ -68,12 +62,6 @@
 
 			// Holds a reference to the currently focussed control on the form.
 			private var focussedFormControl:DisplayObject;
-
-			// Set uploadUrl
-			public function set uploadUrl(strUploadUrl:String):void
-			{
-				_strUploadUrl=strUploadUrl;
-			}
 
 			// Initalize
 			private function onComplete():void
@@ -187,8 +175,8 @@
 						red5VideoData.language=languageSelector.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileName;
 						
-						red5VideoData.license=String(mediaUploadForm.licenseSelector.selectedItem.code).toLowerCase();
-						red5VideoData.reference=mediaUploadForm.referenceUrl.text;
+						//red5VideoData.license=String(mediaUploadForm.licenseSelector.selectedItem.code).toLowerCase();
+						//red5VideoData.reference=mediaUploadForm.referenceUrl.text;
 						
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
@@ -242,10 +230,10 @@
 					red5VideoData.description=videoDescription.text;
 					red5VideoData.tags=parseTags(videoTags.text);
 					red5VideoData.language=languageSelector.selectedItem.code;
-					red5VideoData.name=mediaUploadForm.mediaName;
+					//red5VideoData.name=mediaUploadForm.mediaName;
 
-					red5VideoData.license=String(mediaUploadForm.licenseSelector.selectedItem.code).toLowerCase();
-					red5VideoData.reference=mediaUploadForm.referenceUrl.text;
+					//red5VideoData.license=String(mediaUploadForm.licenseSelector.selectedItem.code).toLowerCase();
+					//red5VideoData.reference=mediaUploadForm.referenceUrl.text;
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
@@ -272,7 +260,7 @@
 					}
 
 					var historic:CreditHistoryVO=new CreditHistoryVO();
-					historic.videoExerciseName=mediaUploadForm.recFromWebcamBox.recordingFileName;
+					//historic.videoExerciseName=mediaUploadForm.recFromWebcamBox.recordingFileName;
 					DataModel.getInstance().historicData=historic;
 
 					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
@@ -285,7 +273,8 @@
 			{
 
 				//Reset the combobox components
-				languageSelector.selectedIndex=0;
+				if (languageSelector.initialized)
+					languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
 			
 				//Reset the descriptors
@@ -388,31 +377,11 @@
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>
 
-	<s:BorderContainer styleName="sectionInfoBox"
-					   width="100%"
-					   minHeight="0">
-		<s:layout>
-			<s:VerticalLayout paddingTop="16"/>
-		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_UPLOAD_NEW_EXERCISE')}"
-				 styleName="sectionInfoTitleLabel"
-				 paddingLeft="16"
-				 paddingRight="16"/>
-		<s:Label text="{resourceManager.getString('myResources','UPLOAD_SECTION_DESCRIPTION')}"
-				 paddingBottom="16"
-				 paddingLeft="16"
-				 paddingRight="16"/>
-		<skins:HorizontalSeparatorLine width="100%"/>
-	</s:BorderContainer>
-
-
-	<s:HGroup width="100%"
-			  paddingBottom="16"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  paddingTop="16">
 		<s:VGroup width="100%"
 				  height="100%">
+			<s:Label id="latestReceivedAssessmentsTitle"
+					 text="{'General'}"
+					 styleName="sectionTitleLabel"/>
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox">
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
@@ -452,26 +421,10 @@
 							 styleName="boldLabel"
 							 required="true">
 					<common:LanguageComboBox id="languageSelector"/>
-				</mx:FormItem>
-
-				<mx:Spacer height="16"/>
-				<s:HGroup width="100%">
-					<mx:Image id="groupLogo"
-							  source="resources/images/about_section_title_icon.png"/>
-					<s:VGroup width="100%">
-						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_INFO'), DataModel.getInstance().maxFileSize/1048576, DataModel.getInstance().minExerciseDuration, DataModel.getInstance().maxExerciseDuration) }"
-								 fontSize="14"
-								 width="100%"/>
-						<mx:Text htmlText="{ StringUtil.substitute(resourceManager.getString('myResources', 'UPLOAD_LIMITS_REASONING'), DataModel.getInstance().maxExerciseDuration) }"
-								 width="100%"/>
-					</s:VGroup>
-
-				</s:HGroup>
+				</mx:FormItem>		
 			</mx:Form>
 		</s:VGroup>
-	</s:HGroup>
-
-	<ns1:MediaUploadForm id="mediaUploadForm"/>
+	
 	
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
