@@ -206,7 +206,7 @@ rtmpt://<server_domain>/<app_name>
 
 *NOTE:* the default `<app_name>` is `vod` but you could also use customized Red5 applications instead of this one.
 
-You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rules:
+You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use these iptables rules:
 
 ```
 sudo iptables -A INPUT -p tcp --destination-port 1935 -j DROP
