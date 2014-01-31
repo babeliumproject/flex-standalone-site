@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('CLI_SERVICE_PATH', '/var/www/vhosts/babeliumproject.com/httpdocs/services');
+define('CLI_SERVICE_PATH', '/var/www/babelium/services');
 
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
@@ -35,7 +35,6 @@ require_once CLI_SERVICE_PATH . '/utils/Config.php';
 class CleanupTask{
 
 	private $db;
-	private $alt_db;
 	private $filePath;
 	private $red5Path;
 
@@ -55,19 +54,8 @@ class CleanupTask{
 		$this->filePath = $cfg->filePath;
 		$this->red5Path = $cfg->red5Path;
 		$this->db = new Datasource ( $cfg->host, $cfg->db_name, $cfg->db_username, $cfg->db_password );
-		if ($this->isAltDbSet($cfg)){
-			$this->alt_db = new Datasource($cfg->alt_db_host, $cfg->alt_db_name, $cfg->alt_db_username, $cfg->alt_db_password);
-		}
+		
 		$this->_getResourceDirectories();
-	}
-
-	private function isAltDbSet($cfg){
-		if( isset($cfg->alt_db_host) &&  isset($cfg->alt_db_name) &&  isset($cfg->alt_db_username) &&  isset($cfg->alt_db_password) &&
-		   !empty($cfg->alt_db_host) && !empty($cfg->alt_db_name) && !empty($cfg->alt_db_username) && !empty($cfg->alt_db_password)){
-			return true;
-		} else{	
-			return false;
-		}
 	}
 
 	/**
@@ -154,13 +142,6 @@ class CleanupTask{
 		$sql = "SELECT name FROM exercise";
 		
 		$exercises = $this->_listFiles($this->db->_multipleSelect($sql), 'name');
-		
-		//When we have an alternative DB using the same red5 instance
-		if($this->alt_db){
-			$alt_exercises = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'name');
-			if ($alt_exercises)
-				$exercises = array_merge($exercises, $alt_exercises);
-		}
 
 		if($this->exerciseFolder && !empty($this->exerciseFolder)){
 			$exercisesPath = $this->red5Path .'/'.$this->exerciseFolder;
@@ -177,13 +158,6 @@ class CleanupTask{
 
 		$responses = $this->_listFiles($this->db->_multipleSelect($sql), 'file_identifier');
 
-		//When we have an alternative DB using the same red5 instance
-		if($this->alt_db){
-			$alt_responses = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'file_identifier');
-			if ($alt_responses)
-				$responses = array_merge($responses, $alt_responses);
-		}
-
 		if($this->responseFolder && !empty($this->responseFolder)){
 			$responsesPath = $this->red5Path .'/'.$this->responseFolder;
 			$this->_deleteFiles($responsesPath, $responses);
@@ -198,13 +172,6 @@ class CleanupTask{
 		$sql = "SELECT video_identifier FROM evaluation_video";
 
 		$evaluations = $this->_listFiles($this->db->_multipleSelect($sql), 'video_identifier');
-		
-		//When we have an alternative DB using the same red5 instance
-		if($this->alt_db){
-			$alt_evaluations = $this->_listFiles($this->alt_db->_multipleSelect($sql), 'video_identifier');
-			if ($alt_evaluations)
-				$evaluations = array_merge($evaluations, $alt_evaluations);
-		}
 
 		if($this->evaluationFolder && !empty($this->evaluationFolder)){
 			$evaluationsPath = $this->red5Path .'/'.$this->evaluationFolder;
@@ -265,13 +232,6 @@ class CleanupTask{
 						//Check modified time of the entry.
 						//If it was modified 2 hours ago and is not referenced in the database it is very likely the user isn't watching it and won't watch it anymore
 						if( ($mtime = filemtime ($entryFullPath)) && ((time()-$mtime)/3600 > 2) ){
-							
-							//Append the .unreferenced extension to the videos that aren't in the database
-							//if(rename($entryFullPath, $entryFullPath.'.unreferenced')){
-							//	echo "Successfully RENAMED from: ".$entryFullPath." to: ".$entryFullPath.".unreferenced\n";
-							//} else {
-							//	echo "Error while RENAMING from: ".$entryFullPath." to: ".$entryFullPath.".unreferenced\n";
-							//}
 							
 							//Unlink video metadata that's no longer needed
 							if(is_file($entryFullPath.'.meta')){

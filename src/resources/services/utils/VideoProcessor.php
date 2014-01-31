@@ -671,7 +671,7 @@ class VideoProcessor{
 		$sysCall = sprintf($preset,$cleanInputPath,$filePrefix,$cleanOutputPath,$filePrefix);
 		$result = (exec($sysCall, $output));
 		$strCmd = implode($output);
-		if($errormsg=$this->system_call_unavailable($this->soxCmdPath, $strCmd)){
+		if($errormsg=$this->system_command_unavailable($this->soxCmdPath, $strCmd)){
 			throw new Exception($errormsg);
 		}
 		return $result;

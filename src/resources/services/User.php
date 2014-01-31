@@ -99,7 +99,7 @@ class User {
 			$sql = "UPDATE user SET password = '%s' WHERE id = %d AND password = '%s'";
 			$result = $this->conn->_update($sql, $newpass, $_SESSION['uid'], $oldpass);
 
-			return $result;
+			return $result==1;
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
