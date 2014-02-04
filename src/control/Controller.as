@@ -155,9 +155,6 @@ package control {
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
 			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
 			addCommand(ResponseEvent.ADD_DUMMY_VIDEO, AddDummyVideoCommand);
-			
-			//Roles management commands
-			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
 
 			//Subtitle management commands
 			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);

@@ -176,11 +176,6 @@
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 
-				// Retrieving roles for selected exercise
-				//var auxExRol:ExerciseRoleVO=new ExerciseRoleVO();
-				//auxExRol.exerciseId=_exerciseId;
-				//new ExerciseRoleEvent(ExerciseRoleEvent.GET_EXERCISE_ROLES, auxExRol).dispatch();
-
 				// Retrieving available locales for selected exercise's subtitles
 				var auxEx:ExerciseVO=new ExerciseVO();
 				auxEx.id=_exerciseId;
