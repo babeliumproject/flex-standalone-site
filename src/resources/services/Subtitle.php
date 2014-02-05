@@ -359,7 +359,7 @@ class Subtitle {
             if ($subtitleCollection[$i]->exerciseRoleId < 1)
                 $errorMessage.="The role on the line " . ($i + 1) . " is empty.\n";
             $lineText = $subtitleCollection[$i]->text;
-            $lineText = preg_replace("/[ ,\;.\:\-_?����!���$']*/", "", $lineText);
+            $lineText = preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $lineText);
             if (count($lineText) < 1)
                 $errorMessage.="The text on the line " . ($i + 1) . " is empty.\n";
             if ($i > 0)
@@ -386,9 +386,9 @@ class Subtitle {
         $unmodifiedText = '';
         
         foreach ($compareSubject as $cline)
-            $currentText .= preg_replace("/[ ,\;.\:\-_?����!���$']*/", "", $cline->text)."\n";
+            $currentText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $cline->text)."\n";
         foreach ($unmodifiedSubtitlesLines as $uline)
-            $unmodifiedText .= preg_replace("/[ ,\;.\:\-_?����!���$']*/", "", $uline->text)."\n";
+            $unmodifiedText .= preg_replace("/[ ,\;.\:\-_?¿¡!€$']*/", "", $uline->text)."\n";
         $cosmeas = new CosineMeasure($currentText,$unmodifiedText);
         $cosmeas->compareTexts(); 
         $modificationRate = (strlen($unmodifiedText) - similar_text($unmodifiedText, $currentText)) * (strlen($unmodifiedText)/100);

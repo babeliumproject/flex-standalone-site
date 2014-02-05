@@ -25,7 +25,6 @@
 			
 			import events.CueManagerEvent;
 			import events.ExerciseEvent;
-			import events.ExerciseRoleEvent;
 			import events.RecordingEndOptionEvent;
 			import events.ResponseEvent;
 			import events.UserVideoHistoryEvent;
