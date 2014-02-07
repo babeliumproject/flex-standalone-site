@@ -231,11 +231,11 @@ class Subtitle {
                 
             $subtitle_data[] = $subline;
         }
-        $subtitle_count = count($new_subtitle);
+        $subtitle_count = count($subtitle_data);
         $serialized_subtitles = $this->custom_json_encode($subtitle_data);
         $cb64_subtitles = $this->packblob($serialized_subtitles);
         
-        $insert = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, complete, serialized_subtitles, subtitle_count) VALUES (%d, %d, '%s', '%s', %d)";
+        $insert = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, complete, serialized_subtitles, subtitle_count) VALUES (%d, %d, '%s', %d, '%s', %d)";
         $subtitleId = $this->conn->_insert($insert,$subtitles->exerciseId,$_SESSION['uid'],$subtitles->language,$subtitles->complete, $cb64_subtitles, $subtitle_count);
 
         //Update the user's credit count
