@@ -206,7 +206,7 @@ rtmpt://<server_domain>/<app_name>
 
 *NOTE:* the default `<app_name>` is `vod` but you could also use customized Red5 applications instead of this one.
 
-You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use this iptables rules:
+You can close the ports 1935 and 8088 on your firewall to make sure that rtmpt is working through the port 80. For that purpose, you can use these iptables rules:
 
 ```
 sudo iptables -A INPUT -p tcp --destination-port 1935 -j DROP
@@ -459,4 +459,7 @@ Add the following lines:
 0 3 * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeleteUnreferencedVideosCron.php >> {LOG_PATH}/periodic_task.log
 #Deactivate the videos that have received user complaints every 30 minutes
 */30 * * * * /usr/bin/php {CRON_SCRIPT_PATH}/DeactivateReportedVideosCron.php >> {LOG_PATH}/periodic_task.log
+# red5 monitor
+*/12 * * * * RED5=$(ps auxww| grep [r]ed5); [ -z "$RED5" ] && /usr/bin/php -q {CRON_SCRIPT_PATH}/red5isdown.php
+
 ```

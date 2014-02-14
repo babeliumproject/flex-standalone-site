@@ -20,12 +20,9 @@ package vo
 			this.password = password;
 			this.firstname = firstname;
 			this.lastname = lastname;
-			this.email =  email;
+			this.email = email;
 			this.activationHash = activationHash;
 			this.languages = languages;
-
-		}
-		
-		
+		}	
 	}
 }
