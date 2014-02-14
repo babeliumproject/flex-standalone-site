@@ -30,7 +30,7 @@
 			{
 				creationCompleted=true;
 				resetToInitialStatus();
-				focusManager.setFocus(realName);
+				focusManager.setFocus(firstname);
 			}
 
 			private function modifyPersonalData(event:MouseEvent):void
@@ -40,8 +40,8 @@
 				{
 					var modifiedUserData:UserVO=new UserVO();
 
-					modifiedUserData.realName=realName.text;
-					modifiedUserData.realSurname=realSurname.text;
+					modifiedUserData.firstname=firstname.text;
+					modifiedUserData.lastname=lastname.text;
 					modifiedUserData.email=newEmail.text;
 
 					new UserEvent(UserEvent.MODIFY_PERSONAL_DATA, null, modifiedUserData).dispatch();
@@ -65,8 +65,8 @@
 			public function resetToInitialStatus():void
 			{
 				resetToolTips();
-				realName.text=dataModel.loggedUser.realName;
-				realSurname.text=dataModel.loggedUser.realSurname;
+				firstname.text=dataModel.loggedUser.firstname;
+				lastname.text=dataModel.loggedUser.lastname;
 			}
 
 			public function resetToolTips():void
@@ -74,8 +74,8 @@
 				if (!creationCompleted)
 					return;
 
-				realName.text='';
-				realSurname.text='';
+				firstname.text='';
+				lastname.text='';
 				newEmail.text='';
 				newEmailRepeat.text='';
 
@@ -110,7 +110,7 @@
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
-				<s:TextInput id="realName"
+				<s:TextInput id="firstname"
 							 width="100%"/>
 			</s:HGroup>
 		</mx:FormItem>
@@ -118,7 +118,7 @@
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
-				<s:TextInput id="realSurname"
+				<s:TextInput id="lastname"
 							 width="100%"/>
 			</s:HGroup>
 		</mx:FormItem>

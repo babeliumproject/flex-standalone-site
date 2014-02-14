@@ -88,8 +88,8 @@
 			<mx:DataGridColumn headerText="#"
 							   width="30"
 							   labelFunction="setRowNumber"/>
-			<mx:DataGridColumn headerText="Name"
-							   dataField="name"/>
+			<mx:DataGridColumn headerText="User Name"
+							   dataField="username"/>
 			<mx:DataGridColumn headerText="Credits"
 							   width="60"
 							   dataField="creditCount"/>

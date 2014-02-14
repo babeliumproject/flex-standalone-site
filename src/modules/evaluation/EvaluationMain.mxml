@@ -298,7 +298,7 @@
 			{
 				if (dataModel.isLoggedIn)
 				{
-					_userName=dataModel.loggedUser.name;
+					_userName=dataModel.loggedUser.username;
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT).dispatch();
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER).dispatch();
 					new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER).dispatch();

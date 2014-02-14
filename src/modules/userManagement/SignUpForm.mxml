@@ -254,8 +254,8 @@
 				email.text='';
 				password.text='';
 				repassword.text='';
-				realName.text='';
-				surname.text='';
+				firstname.text='';
+				lastname.text='';
 
 				if (errorMessageToolTips.hasOwnProperty(username.name))
 					ToolTipManager.destroyToolTip(errorMessageToolTips[username.name] as ToolTip);
@@ -338,7 +338,7 @@
 
 						if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text))
 						{
-							var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), realName.text, surname.text, email.text, '', languages);
+							var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), firstname.text, lastname.text, email.text, '', languages);
 							new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
 						}
 						else
@@ -482,12 +482,12 @@
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
 						 styleName="boldLabel">
-				<s:TextInput id="realName"
+				<s:TextInput id="firstname"
 							 width="100%"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
 						 styleName="boldLabel">
-				<s:TextInput id="surname"
+				<s:TextInput id="lastname"
 							 width="100%"/>
 			</mx:FormItem>
 		</mx:Form>

@@ -167,7 +167,7 @@
 			private function resendActivationEmail(event:Event):void
 			{
 				var data:UserVO=new UserVO();
-				data.name=activationUsername.text;
+				data.username=activationUsername.text;
 				data.email=activationEmail.text;
 				new LoginEvent(LoginEvent.RESEND_ACTIVATION_EMAIL, null, data).dispatch();
 			}

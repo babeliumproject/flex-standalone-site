@@ -464,9 +464,9 @@ class MediaTask{
 	 * Reward the user with a certain amount of credits for uploading a new exercise and thus collaborating with the application
 	 */
 	private function _addCreditsForUploading($userId) {
-		$sql = "UPDATE (users u JOIN preferences p)
+		$sql = "UPDATE (user u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue 
-				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
+				WHERE (u.id=%d AND p.prefName='uploadExerciseCredits') ";
 		return $this->conn->_update ( $sql, $userId );
 	}
 

@@ -31,8 +31,8 @@ package commands.userManagement
 			var result:Object=data.result;
 			
 			if (result is UserVO){
-				DataModel.getInstance().loggedUser.realName = (result as UserVO).realName;
-				DataModel.getInstance().loggedUser.realSurname = (result as UserVO).realSurname;
+				DataModel.getInstance().loggedUser.firstname = (result as UserVO).firstname;
+				DataModel.getInstance().loggedUser.lastname = (result as UserVO).lastname;
 				DataModel.getInstance().loggedUser.email = (result as UserVO).email;
 				DataModel.getInstance().userPersonalDataModified = true;
 			} else if (result is String) {
