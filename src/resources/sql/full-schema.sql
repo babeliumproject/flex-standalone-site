@@ -29,25 +29,25 @@
 
 
 --
--- Table structure for table `users`
+-- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `ID` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(45) NOT NULL,
+CREATE TABLE `user` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `username` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
-  `realName` varchar(45) NOT NULL,
-  `realSurname` varchar(45) NOT NULL,
+  `firstname` varchar(45) NOT NULL,
+  `lastname` varchar(45) NOT NULL,
   `creditCount` int(10) unsigned NOT NULL default '0',
   `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL default '0',
   `activation_hash` varchar(20) NOT NULL,
   `isAdmin` tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (`ID`)
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
