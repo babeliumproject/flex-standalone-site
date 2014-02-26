@@ -238,6 +238,7 @@ class MediaTask{
 							@unlink($outputPath);
 							//The system tells us that there's another file, that after being transcoded, has the same md5_file() hash this file has
 							//@unlink($path);
+							$this->conn->_endTransaction();
 						}
 					} catch (Exception $e) {
 						$this->conn->_failedTransaction();
