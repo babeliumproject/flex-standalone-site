@@ -42,9 +42,9 @@
 		$db = new Datasource($cfg->host, $cfg->db_name, $cfg->db_username, $cfg->db_password);
 		$sql = "SELECT 	
 			u.id AS responseUserId,
-			u.name AS responseUserName,
-			u.realName AS responseUserRealName,
-			u.realSurname AS responseUserRealSurname,
+			u.username AS responseUserName,
+			u.firstname AS responseUserRealName,
+			u.lastname AS responseUserRealSurname,
 			r.adding_date AS responseDate,
 			r.character_name AS responsePickedRole,
 			ex.id AS exerciseId,
@@ -64,10 +64,10 @@
 				INNER JOIN
 				exercise ex ON r.fk_exercise_id = ex.id
 				INNER JOIN
-				users u ON r.fk_user_id = u.ID
+				users u ON r.fk_user_id = u.id
 				WHERE
 				ev.fk_user_id = %d
-				ORDER BY u.realSurname, u.realName, u.name ASC";
+				ORDER BY u.lastname, u.firstname, u.username ASC";
 		$exercises = array();
 		$users = array();
 		$data = array();

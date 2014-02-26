@@ -52,9 +52,9 @@ class User {
 
 	public function getTopTenCredited()
 	{
-		$sql = "SELECT name,
+		$sql = "SELECT username,
 					   creditCount
-				FROM users AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
+				FROM user AS U WHERE U.active = 1 ORDER BY creditCount DESC LIMIT 10";
 
 		$searchResults = $this->conn->_multipleSelect($sql);
 
@@ -91,12 +91,12 @@ class User {
 			if(!$oldpass || !$newpass)
 				return false;
 
-			$sql = "SELECT * FROM users WHERE id = %d AND password = '%s'";
+			$sql = "SELECT * FROM user WHERE id = %d AND password = '%s'";
 			$result = $this->conn->_singleSelect($sql, $_SESSION['uid'], $oldpass);
 			if (!$result)
 				return false;
 
-			$sql = "UPDATE users SET password = '%s' WHERE id = %d AND password = '%s'";
+			$sql = "UPDATE user SET password = '%s' WHERE id = %d AND password = '%s'";
 			$result = $this->conn->_update($sql, $newpass, $_SESSION['uid'], $oldpass);
 
 			return $result==1;
@@ -179,9 +179,9 @@ class User {
 
 				$currentPersonalData = $_SESSION['user-data'];
 
-				$sql = "UPDATE users SET realName='%s', realSurname='%s', email='%s' WHERE id='%d'";
+				$sql = "UPDATE user SET firstname='%s', lastname='%s', email='%s' WHERE id='%d'";
 
-				$updateData = $this->conn->_update($sql, $personalData->realName, $personalData->realSurname, $personalData->email, $_SESSION['uid']);
+				$updateData = $this->conn->_update($sql, $personalData->firstname, $personalData->lastname, $personalData->email, $_SESSION['uid']);
 				if($updateData){
 					$currentPersonalData->realName = $personalData->realName;
 					$currentPersonalData->realSurname = $personalData->realSurname;
@@ -343,26 +343,26 @@ class User {
 
 		$id = -1;
 		$email = "";
-		$user = "";
-		$realName = "";
+		$usern = "";
+		$firstname = "";
 
 		$aux = "name";
 		if ( Mailer::checkEmail($username) )
 			$aux = "email";
 
 		// Username or email checking
-		$sql = "SELECT id, name, email, realName FROM users WHERE $aux = '%s'";
+		$sql = "SELECT id, username, email, firstname FROM user WHERE $aux = '%s'";
 		$result = $this->conn->_singleSelect($sql, $username);
 		if ($result)
 		{
 			$id = $result->id;
-			$user = $result->name;
+			$usern = $result->username;
 			$email = $result->email;
-			$realName = $result->realName;
+			$firstname = $result->firstname;
 		}
 
-		if ( $realName == '' || $realName == 'unknown' )
-			$realName = $user;
+		if ( $firstname == '' || $firstname == 'unknown' )
+			$firstname = $user;
 
 		//User doesn't exist
 		if ( $id == -1 )
@@ -372,14 +372,14 @@ class User {
 
 		$this->conn->_startTransaction();
 
-		$sql = "UPDATE users SET password = '%s' WHERE id = %d";
+		$sql = "UPDATE user SET password = '%s' WHERE id = %d";
 		$result = $this->conn->_update($sql, sha1($newPassword), $id);
 
 		if($result == 1){
 
 			$args = array(
-							'REAL_NAME' => $realName,
-							'USERNAME' => $user,
+							'REAL_NAME' => $firstname,
+							'USERNAME' => $usern,
 							'PASSWORD' => $newPassword,
 							'SIGNATURE' => 'The Babelium Project Team');
 

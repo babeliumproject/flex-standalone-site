@@ -179,7 +179,7 @@
 				{
 					anonymousCP.visible=false;
 					anonymousCP.includeInLayout=false;
-					userCPName.label=DataModel.getInstance().loggedUser.name;
+					userCPName.label=DataModel.getInstance().loggedUser.username;
 					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.includeInLayout=true;
 					userCP.visible=true;

@@ -6,8 +6,8 @@ package vo
 	{
 		public var username:String;
 		public var password:String;
-     		public var firstname:String;
-     		public var lastname:String;
+     	public var firstname:String;
+     	public var lastname:String;
 		public var email:String;
 		public var activationHash:String;
 		

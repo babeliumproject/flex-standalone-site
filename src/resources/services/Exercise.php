@@ -370,9 +370,9 @@ class Exercise {
 	 * 		The number of rows affected by the credit adding operation
 	 */
 	private function _addCreditsForUploading() {
-		$sql = "UPDATE (users u JOIN preferences p)
+		$sql = "UPDATE (user u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
-				WHERE (u.ID=%d AND p.prefName='uploadExerciseCredits') ";
+				WHERE (u.id=%d AND p.prefName='uploadExerciseCredits') ";
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
@@ -403,7 +403,7 @@ class Exercise {
 	 */
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, creditCount, joiningDate, isAdmin FROM users WHERE (id = %d) ";
+		$sql = "SELECT username, creditCount, joiningDate, isAdmin FROM user WHERE (id = %d) ";
 
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
@@ -441,12 +441,12 @@ class Exercise {
 					   e.thumbnail_uri as thumbnailUri,
        				   e.adding_date as addingDate, 
        				   e.duration, 
-       				   u.name as userName, 
+       				   u.username as userName, 
        				   avg (suggested_level) as avgDifficulty, 
        				   e.status, 
        				   e.license, 
        				   e.reference
-				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			WHERE (e.status = 'Available')
@@ -481,12 +481,12 @@ class Exercise {
 					   e.thumbnail_uri as thumbnailUri,
        				   e.adding_date as addingDate, 
        				   e.duration, 
-       				   u.name as userName, 
+       				   u.username as userName, 
        				   avg (suggested_level) as avgDifficulty, 
        				   e.status, 
        				   e.license, 
        				   e.reference
-				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			WHERE (e.id = %d)
@@ -521,12 +521,12 @@ class Exercise {
 					   e.thumbnail_uri as thumbnailUri,
        				   e.adding_date, 
        				   e.duration, 
-       				   u.name as userName, 
+       				   u.username as userName, 
        				   avg (suggested_level) as avgDifficulty, 
        				   e.status, 
        				   e.license, 
        				   e.reference
-				FROM   exercise e INNER JOIN users u ON e.fk_user_id= u.ID
+				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			WHERE (e.name = '%s')
@@ -565,13 +565,13 @@ class Exercise {
 						   e.thumbnail_uri as thumbnailUri,
        					   e.adding_date as addingDate, 
        					   e.duration, 
-       					   u.name as userName, 
+       					   u.username as userName, 
        					   avg (suggested_level) as avgDifficulty, 
        					   e.status, 
        					   e.license, 
        					   e.reference
 					FROM exercise e 
-					 	 INNER JOIN users u ON e.fk_user_id= u.ID
+					 	 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
@@ -609,15 +609,15 @@ class Exercise {
 			       e.source, 
 			       e.name, 
 			       e.thumbnail_uri as thumbnailUri,
-       			       e.adding_date as addingDate, 
+       			   e.adding_date as addingDate, 
 			       e.duration, 
-			       u.name as userName, 
-       			       avg (suggested_level) as avgDifficulty,
+			       u.username as userName, 
+       			   avg (suggested_level) as avgDifficulty,
 			       e.status, 
 			       e.license, 
 			       e.reference
 			       FROM   exercise e 
-				 		INNER JOIN users u ON e.fk_user_id= u.ID
+				 		INNER JOIN user u ON e.fk_user_id= u.id
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id

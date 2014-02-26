@@ -63,7 +63,7 @@ class Credit {
 	 */
 	public function getCurrentDayCreditHistory() {
 		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_exercise_id as videoExerciseId, e.name as videoExerciseName, c.fk_response_id as videoResponseId, r.file_identifier as videoResponseName 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				FROM (((credithistory c INNER JOIN user u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
 				WHERE (c.fk_user_id = %d AND CURDATE() <= c.changeDate ) ORDER BY changeDate DESC ";
 		
 		return $this->conn->multipleRecast('CreditHistoryVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
@@ -76,7 +76,7 @@ class Credit {
 	 */
 	public function getLastWeekCreditHistory() {
 		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_exercise_id as videoExerciseId, e.name as videoExerciseName, c.fk_response_id as videoResponseId, r.file_identifier as videoResponseName 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				FROM (((credithistory c INNER JOIN user u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
 				WHERE (c.fk_user_id = %d AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
 		
 		return $this->conn->multipleRecast('CreditHistoryVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
@@ -89,7 +89,7 @@ class Credit {
 	 */
 	public function getLastMonthCreditHistory() {
 		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_exercise_id as videoExerciseId, e.name as videoExerciseName, c.fk_response_id as videoResponseId, r.file_identifier as videoResponseName 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				FROM (((credithistory c INNER JOIN user u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
 				WHERE (c.fk_user_id = %d AND DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= c.changeDate ) ORDER BY changeDate DESC ";
 		
 		return $this->conn->multipleRecast('CreditHistoryVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));
@@ -102,7 +102,7 @@ class Credit {
 	 */
 	public function getAllTimeCreditHistory() {
 		$sql = "SELECT c.changeDate, c.changeType, c.changeAmount, c.fk_exercise_id as videoExerciseId, e.name as videoExerciseName, c.fk_response_id as videoResponseId, r.file_identifier as videoResponseName 
-				FROM (((credithistory c INNER JOIN users u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
+				FROM (((credithistory c INNER JOIN user u ON c.fk_user_id=u.id) INNER JOIN exercise e ON e.id=c.fk_exercise_id) LEFT OUTER JOIN response r on r.id=c.fk_response_id) 
 				WHERE (c.fk_user_id = %d ) ORDER BY changeDate DESC ";
 
 		return $this->conn->multipleRecast('CreditHistoryVO',$this->conn->_multipleSelect ( $sql, $_SESSION['uid'] ));

@@ -39,7 +39,7 @@ class Mailer
 	private $_conn;
 	private $_settings;
 	private $_userMail;
-	private $_userRealName;
+	private $_userFirstname;
 	private $_validUser;
 
 	// Template related vars
@@ -68,15 +68,15 @@ class Mailer
 		if (!$username)
 			return false;
 
-		$aux = "name";
+		$aux = "username";
 		if ( Mailer::checkEmail($username) )
 			$aux = "email";
 
-		$sql = "SELECT name, email FROM users WHERE (".$aux." = '%s') ";
+		$sql = "SELECT username, email FROM user WHERE (".$aux." = '%s') ";
 		$result = $this->_conn->_singleSelect($sql, $username);
 		if ($result)
 		{
-			$this->_userRealName = $result->name;
+			$this->_userFirstname = $result->username;
 			$this->_userMail = $result->email;
 		}
 		else
@@ -112,7 +112,7 @@ class Mailer
 			if ( $htmlBody != null )
 				$mail->setBodyHtml($htmlBody);
 			$mail->setFrom($this->_settings->smtp_mail_setFromMail, $this->_settings->smtp_mail_setFromName);
-			$mail->addTo($this->_userMail, $this->_userRealName);
+			$mail->addTo($this->_userMail, $this->_userFirstname);
 			$mail->setSubject($subject);
 		
 		

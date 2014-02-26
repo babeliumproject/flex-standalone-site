@@ -330,9 +330,9 @@ class Subtitle {
 	 * 		Returns the number of rows affected by the latest database update
 	 */
 	private function _addCreditsForSubtitling() {
-		$sql = "UPDATE (users u JOIN preferences p)
+		$sql = "UPDATE (user u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue 
-				WHERE (u.ID=%d AND p.prefName='subtitleAdditionCredits') ";
+				WHERE (u.id=%d AND p.prefName='subtitleAdditionCredits') ";
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
@@ -363,11 +363,11 @@ class Subtitle {
 	 */
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, 
+		$sql = "SELECT username, 
 					   creditCount, 
 					   joiningDate, 
 					   isAdmin
-				FROM users WHERE (id = %d) ";
+				FROM user WHERE (id = %d) ";
 
 		return $this->conn->recast('UserVO', $this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
@@ -470,11 +470,11 @@ class Subtitle {
 			return false;
 		$sql = "SELECT s.id, 
 					   s.fk_exercise_id as exerciseId, 
-					   u.name as userName, 
+					   u.username as userName, 
 					   s.language, 
 					   s.translation, 
 					   s.adding_date as addingDate
-				FROM subtitle s inner join users u on s.fk_user_id=u.ID
+				FROM subtitle s inner join user u on s.fk_user_id=u.id
 				WHERE fk_exercise_id='%d'
 				ORDER BY s.adding_date DESC";
 		$searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId );

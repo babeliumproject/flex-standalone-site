@@ -12,11 +12,11 @@ $conn = new Datasource($settings->host,
 	$tabla= array();
 	$nombres = array();
 
-$sql = "SELECT id, name FROM users";
+$sql = "SELECT id, username FROM user";
 $rusers = $conn->_multipleSelect($sql);
 if($rusers){
 	foreach($rusers as $ruser){
-		$nombres[$ruser->id] = array('name' => $ruser->name, 'evs'=>0);
+		$nombres[$ruser->id] = array('name' => $ruser->username, 'evs'=>0);
 
 		$sql = "SELECT evaluation.fk_user_id AS evaluador, response.fk_user_id AS evaluado, evaluation.score_overall AS nota
 		 	FROM   evaluation, response 

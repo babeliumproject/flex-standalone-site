@@ -93,7 +93,7 @@ class Evaluation {
 		                        A.source as responseSource, 
 		                        A.thumbnail_uri as responseThumbnailUri, 
 		                        A.duration as responseDuration, 
-		                        F.name as responseUserName, 
+		                        F.username as responseUserName, 
 		                        B.id as exerciseId, 
 		                        B.name as exerciseName, 
 		                        B.duration as exerciseDuration, 
@@ -103,7 +103,7 @@ class Evaluation {
 		                        B.source as exerciseSource, 
 		                        AVG(EL.suggested_level) AS exerciseAvgDifficulty
 				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
-				     INNER JOIN users AS F on A.fk_user_id = F.ID
+				     INNER JOIN user AS F on A.fk_user_id = F.id
 				     LEFT OUTER JOIN exercise_level EL ON B.id=EL.fk_exercise_id 
 		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
 				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
@@ -190,7 +190,7 @@ class Evaluation {
 		               			A.source as responseSource, 
 		               			A.thumbnail_uri as responseThumbnailUri, 
 		               			A.duration as responseDuration,
-		               			U.name as responseUserName, 
+		               			U.username as responseUserName, 
 		               			C.score_overall as overallScore, 
 		               			C.score_intonation as intonationScore, 
 		               			C.score_fluency as fluencyScore, 
@@ -209,13 +209,13 @@ class Evaluation {
 		               			E.thumbnail_uri as evaluationVideoThumbnailUri 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
-			         INNER JOIN users AS U ON U.ID = A.fk_user_id
+			         INNER JOIN user AS U ON U.id = A.fk_user_id
 			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
 			    WHERE (C.fk_user_id = '%d')
 			    ORDER BY A.adding_date DESC";
 		
 		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-		$this->checkMerged(results);
+		$this->checkMerged($results);
 		
 		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
 
@@ -231,17 +231,17 @@ class Evaluation {
 	 */
 	public function checkMerged($results){
 		
-	if($results && is_array($results)){	
-		foreach($results as $r){
-				//-1: unknown, 0: not merged, 1: merged
-				$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
-				$r->mergeStatus = $mergeStatus;
-				//
-				//if($mergeStatus == 1){
-				//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
-				//}
-			}
-	}
+		if($results && is_array($results)){	
+			foreach($results as $r){
+					//-1: unknown, 0: not merged, 1: merged
+					$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
+					$r->mergeStatus = $mergeStatus;
+					//
+					//if($mergeStatus == 1){
+					//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
+					//}
+				}
+		}
 	}
 	
 	/**
@@ -255,7 +255,7 @@ class Evaluation {
 	public function detailsOfAssessedResponse($responseId = 0){
 		if(!$responseId)
 		return false;
-		$sql = "SELECT C.name as userName,
+		$sql = "SELECT C.username as userName,
 					   A.score_overall as overallScore, 
 					   A.score_intonation as intonationScore, 
 					   A.score_fluency as fluencyScore, 
@@ -265,7 +265,7 @@ class Evaluation {
 					   A.comment as comment, 
 					   B.video_identifier as evaluationVideoFileIdentifier, 
 					   B.thumbnail_uri as evaluationVideoThumbnailUri
-			    FROM (evaluation AS A INNER JOIN users AS C ON A.fk_user_id = C.id) 
+			    FROM (evaluation AS A INNER JOIN user AS C ON A.fk_user_id = C.id) 
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
 
@@ -284,10 +284,10 @@ class Evaluation {
 	public function getEvaluationChartData($responseId = 0){
 		if(!$responseId)
 		return false;
-		$sql = "SELECT U.name as userName,
+		$sql = "SELECT U.username as userName,
 				E.score_overall as overallScore, 
 				E.comment
-				FROM evaluation AS E INNER JOIN users AS U ON E.fk_user_id = U.ID 
+				FROM evaluation AS E INNER JOIN user AS U ON E.fk_user_id = U.id 
 				     INNER JOIN response AS R ON E.fk_response_id = R.id 
 				WHERE (R.id = '%d') ";
 
@@ -512,9 +512,9 @@ class Evaluation {
 	 * 		Returns true when the sql operation went well or null when an error happened
 	 */
 	private function _addCreditsForEvaluating() {
-		$sql = "UPDATE (users u JOIN preferences p)
+		$sql = "UPDATE (user u JOIN preferences p)
 				SET u.creditCount=u.creditCount+p.prefValue
-				WHERE (u.ID=%d AND p.prefName='evaluatedWithVideoCredits') ";
+				WHERE (u.id=%d AND p.prefName='evaluatedWithVideoCredits') ";
 		return $this->conn->_update ( $sql, $_SESSION['uid'] );
 	}
 
@@ -576,7 +576,7 @@ class Evaluation {
 	 */
 	private function _getUserInfo(){
 
-		$sql = "SELECT name, creditCount, joiningDate, isAdmin FROM users WHERE (id = %d) ";
+		$sql = "SELECT username, creditCount, joiningDate, isAdmin FROM user WHERE (id = %d) ";
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 

@@ -106,24 +106,24 @@ class Auth{
 	 * Checks the provided authentication data and logs the user in the system if everything is ok
 	 *
 	 * @param stdClass $user
-	 * 		An object with the following properties: (name, pass)
+	 * 		An object with the following properties: (username, password)
 	 * @return mixed $result
 	 * 		Returns the current user data. Or an error message when wrong login data is provided
 	 */
 	public function processLogin($user = null){
 		if($user && is_object($user)){
 			//Check if the given username exists
-			if($this->getUserInfo($user->name)==false){
+			if($this->getUserInfo($user->username)==false){
 				return "wrong_user";
 			} else {
 				//Check whether the user is active or not
-				$sql = "SELECT id FROM users WHERE (name = '%s' AND active = 0)";
-				$result = $this->conn->_singleSelect($sql, $user->name);
+				$sql = "SELECT id FROM user WHERE (username = '%s' AND active = 0)";
+				$result = $this->conn->_singleSelect($sql, $user->username);
 				if ( $result )
 				return "inactive_user";
 				//Check if the user provided correct authentication data
-				$sql = "SELECT id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
-				$result = $this->conn->_singleSelect($sql, $user->name, $user->pass);
+				$sql = "SELECT id, username, firstname, lastname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
+				$result = $this->conn->_singleSelect($sql, $user->username, $user->password);
 				if($result){
 					$userLanguages = $this->_getUserLanguages($result->id);
 					$result->userLanguages = $userLanguages;
@@ -183,7 +183,7 @@ class Auth{
 			return false;
 		}
 
-		$sql = "SELECT id, name, realName, realSurname, email, creditCount FROM users WHERE (name = '%s') ";
+		$sql = "SELECT id, username, firstname, lastname, email, creditCount FROM users WHERE (username = '%s') ";
 
 		return $this->conn->_singleSelect($sql, $username);
 	}
@@ -209,7 +209,7 @@ class Auth{
 	 * Sends again the account activation email if the provided user is valid and not active.
 	 *
 	 * @param stdClass $user
-	 * 		An object with the following properties: (name, email)
+	 * 		An object with the following properties: (username, email)
 	 * @return string $mailSent
 	 * 		Returns a string telling whether the mail sending operation went well or not
 	 */
@@ -217,11 +217,11 @@ class Auth{
 		if(!$user)
 			return null;
 		
-		if($this->getUserInfo($user->name)==false){
+		if($this->getUserInfo($user->username)==false){
 			return "wrong_user";
 		} else {
-			$sql = "SELECT id, activation_hash FROM users WHERE (name= '%s' AND email= '%s' AND active = 0 AND activation_hash <> '')";
-			$inactiveUserExists = $this->conn->_singleSelect($sql, $user->name, $user->email);
+			$sql = "SELECT id, activation_hash FROM user WHERE (username= '%s' AND email= '%s' AND active = 0 AND activation_hash <> '')";
+			$inactiveUserExists = $this->conn->_singleSelect($sql, $user->username, $user->email);
 			if ($inactiveUserExists){
 				$usersFirstMotherTongue = 'en_US';
 				$userId = $inactiveUserExists->id;
@@ -236,15 +236,15 @@ class Auth{
 					}
 				}
 				// Submit activation email
-				$mail = new Mailer($user->name);
+				$mail = new Mailer($user->username);
 
 				$subject = 'Babelium Project: Account Activation';
 
 				$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
-						'USERNAME' => $user->name,
+						'USERNAME' => $user->username,
 						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#',
-						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$activationHash.'&user='.$user->name,
+						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$activationHash.'&user='.$user->username,
 						'SIGNATURE' => 'The Babelium Project Team');
 
 				if ( !$mail->makeTemplate("mail_activation", $args, $usersFirstMotherTongue) )
@@ -261,7 +261,7 @@ class Auth{
 	 * Initializes a session for this user.
 	 *
 	 * @param stdClass $userData
-	 * 		An object with the following properties: (id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin, userLanguages[])
+	 * 		An object with the following properties: (id, username, firstname, lastname, email, creditCount, joiningDate, isAdmin, userLanguages[])
 	 * @return int $result
 	 * 		Returns the last insert id if the session storing went well or false when something went wrong
 	 */
