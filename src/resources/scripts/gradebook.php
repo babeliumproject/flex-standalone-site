@@ -64,7 +64,7 @@
 				INNER JOIN
 				exercise ex ON r.fk_exercise_id = ex.id
 				INNER JOIN
-				users u ON r.fk_user_id = u.id
+				user u ON r.fk_user_id = u.id
 				WHERE
 				ev.fk_user_id = %d
 				ORDER BY u.lastname, u.firstname, u.username ASC";

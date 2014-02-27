@@ -122,7 +122,7 @@ class Auth{
 				if ( $result )
 				return "inactive_user";
 				//Check if the user provided correct authentication data
-				$sql = "SELECT id, username, firstname, lastname, email, creditCount, joiningDate, isAdmin FROM users WHERE (name='%s' AND password='%s') ";
+				$sql = "SELECT id, username, firstname, lastname, email, creditCount, joiningDate, isAdmin FROM user WHERE (username='%s' AND password='%s') ";
 				$result = $this->conn->_singleSelect($sql, $user->username, $user->password);
 				if($result){
 					$userLanguages = $this->_getUserLanguages($result->id);
@@ -183,7 +183,7 @@ class Auth{
 			return false;
 		}
 
-		$sql = "SELECT id, username, firstname, lastname, email, creditCount FROM users WHERE (username = '%s') ";
+		$sql = "SELECT id, username, firstname, lastname, email, creditCount FROM user WHERE (username = '%s') ";
 
 		return $this->conn->_singleSelect($sql, $username);
 	}

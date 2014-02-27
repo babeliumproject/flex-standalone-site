@@ -79,7 +79,7 @@ class Register{
 			try{
 				$this->conn->_startTransaction();
 					
-				$insert = "INSERT INTO users (username, password, email, firstname, lastname, creditCount, activation_hash)";
+				$insert = "INSERT INTO user (username, password, email, firstname, lastname, creditCount, activation_hash)";
 				$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
 
 				$realName = $user->firstname ? $user->firstname : "unknown";
