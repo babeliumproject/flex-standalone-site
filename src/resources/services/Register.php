@@ -104,7 +104,7 @@ class Register{
 					}
 
 					// Submit activation email
-					$mail = new Mailer($user->name);
+					$mail = new Mailer($user->username);
 
 					$subject = 'Babelium Project: Account Activation';
 
@@ -124,6 +124,7 @@ class Register{
 						return "error_sending_email";
 
 					$mail = $mail->send($mail->txtContent, $subject, $mail->htmlContent);
+					if (!$mail) return "error_sending_email";
 
 					return $this->conn->recast('UserVO',$result);
 				}

@@ -230,11 +230,11 @@ package model
 
 		//Exercise uploading related data
 		[Bindable]
-		public var server:String="babelium";
+		public var server:String='babelium';
 		
 		public var streamingProtocol:String=RTMP;
 		public var streamingPort:uint=1935;
-		public var streamingApp:String="vod";
+		public var streamingApp:String='vod';
 		[Bindable] public var streamingResourcesPath:String=streamingProtocol+"://" + server + ":"+ streamingPort + "/" + streamingApp;
 	
 		[Bindable] public var evaluationStreamsFolder:String="evaluations";

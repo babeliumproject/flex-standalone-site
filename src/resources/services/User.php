@@ -183,8 +183,8 @@ class User {
 
 				$updateData = $this->conn->_update($sql, $personalData->firstname, $personalData->lastname, $personalData->email, $_SESSION['uid']);
 				if($updateData){
-					$currentPersonalData->realName = $personalData->realName;
-					$currentPersonalData->realSurname = $personalData->realSurname;
+					$currentPersonalData->realName = $personalData->firstname;
+					$currentPersonalData->realSurname = $personalData->lastname;
 					$currentPersonalData->email = $personalData->email;
 					$_SESSION['user-data'] = $currentPersonalData;
 					return $personalData;
@@ -362,7 +362,7 @@ class User {
 		}
 
 		if ( $firstname == '' || $firstname == 'unknown' )
-			$firstname = $user;
+			$firstname = $usern;
 
 		//User doesn't exist
 		if ( $id == -1 )
