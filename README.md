@@ -24,7 +24,7 @@ Deploying on linux-based machine
 * PHP 5.2+
 * ant
 * file
-* sox
+* Sox 14.4+
 * Adobe Flash Player 11.0+
 * Zend Framework 1.12 (with Zend AMF)
 * Adobe Flex SDK 4.6+
