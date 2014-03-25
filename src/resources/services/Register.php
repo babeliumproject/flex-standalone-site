@@ -85,7 +85,7 @@ class Register{
 				$realName = $user->firstname ? $user->firstname : "unknown";
 				$realSurname = $user->lastname ? $user->lastname : "unknown";
 
-				$result = $this->_create ($insert, $user->username, $user->pass, $user->email,$realName, $realSurname, $initialCredits, $hash);
+				$result = $this->_create ($insert, $user->username, $user->password, $user->email,$realName, $realSurname, $initialCredits, $hash);
 				if ($result)
 				{
 					//Add the languages selected by the user
