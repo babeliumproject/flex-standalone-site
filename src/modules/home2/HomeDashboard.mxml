@@ -30,7 +30,7 @@
 	</s:BorderContainer>
 
 	<s:Label id="myCoursesTitle"
-			 text="{'My courses'}"
+			 text="{resourceManager.getString('myResources','MY_COURSES')}"
 			 styleName="sectionTitleLabel"/>
 
 	<s:Label id="noCourse"

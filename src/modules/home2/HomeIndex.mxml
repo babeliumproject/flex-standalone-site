@@ -20,4 +20,4 @@
 			<home2:HomeDashboard id="homeDashboard"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
- +</s:VGroup>
+ </s:VGroup>

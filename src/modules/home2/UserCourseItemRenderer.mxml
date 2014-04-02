@@ -17,7 +17,7 @@
 	<s:Label text="{data}"/>
 	
 	<s:Button id="viewCourse"
-			  label="{'View course'}"
+			  label="{resourceManager.getString('myResources','VIEW_COURSE'}"
 			  click="viewCourse_clickHandler(event)"/>
 
 	
