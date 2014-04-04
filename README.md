@@ -4,7 +4,7 @@ This repository is the code for [Babelium's][] main site.
 
 Here you will find the latest version of the Babelium site.
 
-The site is currently available in 4 languages: English, Spanish, Basque and French.
+The site is currently available in 5 languages: English, Spanish, Basque, German and French.
 
 Cloning the repository
 ----------------------
