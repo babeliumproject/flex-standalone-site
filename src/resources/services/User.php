@@ -346,7 +346,7 @@ class User {
 		$usern = "";
 		$firstname = "";
 
-		$aux = "name";
+		$aux = "username";
 		if ( Mailer::checkEmail($username) )
 			$aux = "email";
 
@@ -385,10 +385,10 @@ class User {
 
 			$mail = new Mailer($email);
 
-			if ( !$mail->makeTemplate("restorepass", $args, "es_ES") )
+			if ( !$mail->makeTemplate("restorepass", $args, "en_US") )
 				return null;
 
-			$subject = "Your password has been reseted";
+			$subject = "Your password has been reset";
 
 			$mail->send($mail->txtContent, $subject, $mail->htmlContent);
 
