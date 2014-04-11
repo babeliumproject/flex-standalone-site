@@ -267,6 +267,10 @@ package model
 		[Embed("../resources/images/flags/flag_ukraine.png")]
 		public var FlagUkraine:Class;
 		
+		[Bindable]
+		[Embed("../resources/images/flags/flag_cuba.png")]
+		public var FlagCuba:Class;
+		
 //		private var af_ZA:Object={code: 'af_ZA', icon: };
 		private var sq_AL:Object={code: 'sq_AL', icon: FlagAlbania};
 //		private var ar_DZ:Object={code: 'ar_DZ', icon: };
@@ -368,6 +372,7 @@ package model
 		private var es_BO:Object={code: 'es_BO', icon: FlagBolivia};
 		private var es_CL:Object={code: 'es_CL', icon: FlagChile};
 		private var es_CO:Object={code: 'es_CO', icon: FlagColombia};
+		private var es_CU:Object={code: 'es_CU', icon: FlagCuba};
 		private var es_CR:Object={code: 'es_CR', icon: FlagCostaRica};
 		private var es_DO:Object={code: 'es_DO', icon: FlagDominicanRepublic};
 		private var es_EC:Object={code: 'es_EC', icon: FlagEcuador};
@@ -508,6 +513,7 @@ package model
 			availableLanguages.push(es_BO);
 			availableLanguages.push(es_CL);
 			availableLanguages.push(es_CO);
+			availableLanguages.push(es_CU);
 			availableLanguages.push(es_CR);
 			availableLanguages.push(es_DO);
 			availableLanguages.push(es_EC);
