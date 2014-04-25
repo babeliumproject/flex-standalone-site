@@ -17,7 +17,7 @@
 		  minWidth="1000"
 		  gap="0"
 		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*" xmlns:course="modules.course.*">
 
 	<skins:CustomViewStack id="contentViewStack"
 						   width="100%"
@@ -48,6 +48,10 @@
 		<main:HelpFAQMain id="helpModule"/>
 
 		<userManagement:AccountActivation id="accountActivation"/>
+		
+		<course:Module id="courseModule"/>
+		
+		<main:UnauthorizedNotice id="loginModule"/>
 
 	</skins:CustomViewStack>
 

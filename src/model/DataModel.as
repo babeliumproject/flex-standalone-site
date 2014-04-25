@@ -93,6 +93,8 @@ package model
 		public var currentUploadViewStackIndex:uint;
 		[Bindable]
 		public var currentAccountViewStackIndex:uint;
+		[Bindable]
+		public var currentCourseViewStackIndex:uint;
 
 		[Bindable]
 		public var oldContentViewStackIndex:uint;

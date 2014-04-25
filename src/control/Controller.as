@@ -4,6 +4,7 @@ package control {
 	import commands.VideoStopCommand;
 	import commands.autoevaluation.*;
 	import commands.configuration.*;
+	import commands.course.*;
 	import commands.evaluation.*;
 	import commands.exercises.*;
 	import commands.home.*;
@@ -39,6 +40,7 @@ package control {
 			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_ACTIVATION_MODULE, ViewActivationModuleCommand);
+			addCommand(ViewChangeEvent.VIEW_COURSE_MODULE, ViewCourseModuleCommand);
 			
 			//Home ViewStack related commands
 			addCommand(ViewChangeEvent.VIEW_HOME_UNSIGNED, ViewHomeUnsignedCommand);
@@ -63,6 +65,9 @@ package control {
 			
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_UNSIGNED, ViewAccountUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_SIGNED, ViewAccountSignedCommand);
+			
+			addCommand(ViewChangeEvent.VIEW_COURSE_UNSIGNED, ViewCourseUnsignedCommand);
+			addCommand(ViewChangeEvent.VIEW_COURSE_SIGNED, ViewCourseSignedCommand);
 
 			//Credit management commands
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);

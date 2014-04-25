@@ -30,6 +30,9 @@ package events
 		public static const VIEW_ABOUT_MODULE:String="viewAboutModule";
 		public static const VIEW_SEARCH_MODULE:String="viewSearchModule";
 		public static const VIEW_HELP_MODULE:String="viewHelpModule";
+		public static const VIEW_COURSE_MODULE:String="viewCourseModule";
+		
+		public static const VIEW_LOGIN_MODULE:String="viewLoginModule";
 
 		//User related views
 		public static const VIEW_REGISTER_MODULE:String="viewRegisterModule";
@@ -61,6 +64,9 @@ package events
 		public static const VIEW_ACCOUNT_UNSIGNED:String="viewAccountUnsigned";
 		public static const VIEW_ACCOUNT_SIGNED:String="viewAccountSigned";
 		
+		public static const VIEW_COURSE_UNSIGNED:String="viewCourseUnsigned";
+		public static const VIEW_COURSE_SIGNED:String="viewCourseSigned";
+		
 		
 		//Indexes of application's content ViewStack
 		public static const VIEWSTACK_HOME_MODULE_INDEX:uint = 0;
@@ -75,6 +81,8 @@ package events
 		public static const VIEWSTACK_SEARCH_MODULE_INDEX:uint = 9;
 		public static const VIEWSTACK_HELP_MODULE_INDEX:uint = 10;
 		public static const VIEWSTACK_ACTIVATION_MODULE_INDEX:uint = 11;
+		public static const VIEWSTACK_COURSE_MODULE_INDEX:uint = 12;
+		public static const VIEWSTACK_LOGIN_MODULE_INDEX:uint = 13;
 
 		public function ViewChangeEvent(type:String)
 		{

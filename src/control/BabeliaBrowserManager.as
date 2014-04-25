@@ -36,6 +36,7 @@ package control
 		/**
 		 * ACTION CONSTANTS
 		 **/
+		public static const INDEX:String ="index";
 		public static const ACTIVATE:String="activate";
 		public static const SUBTITLE:String="edit";
 		public static const VIEW:String="view";
@@ -76,6 +77,7 @@ package control
 			_modulesFragments.setItemAt("help", ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX);
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
 			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX);
+			_modulesFragments.setItemAt("course", ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX);
 		}
 		
 		// Get instance
