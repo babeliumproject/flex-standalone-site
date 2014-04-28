@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 						 xmlns:s="library://ns.adobe.com/flex/spark"
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
 						 xmlns:skins="skins.*"
 						 keyDown="checkPressedKey(event)"
-						 close="onClose(event)"
-						 resize="onWindowResize(event)"
-						 title="{resourceManager.getString('myResources', 'TITLE_LOGIN_FORM')}"
-						 creationComplete="completeHandler()"
-						 styleName="loginPopup"
-						 autoLayout="true"
-						 minWidth="300">
+						 creationComplete="completeHandler()" >
 
-	<skins:layout>
+	<s:layout>
 		<s:VerticalLayout paddingLeft="10"
 						  paddingRight="10"
 						  paddingTop="10"
 						  paddingBottom="10"/>
-	</skins:layout>
+	</s:layout>
 
 	<fx:Script>
 		<![CDATA[
@@ -114,7 +108,7 @@
 			{
 				errorInfo.text=DataModel.getInstance().restorePassErrorMessage;
 				DataModel.getInstance().restorePassErrorMessage="";
-				title=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
+				title.text=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
 				username.text='';
 				password.text='';
 				focusManager.setFocus(userOrEmail);
@@ -124,7 +118,7 @@
 			private function showLogin(event:Event):void
 			{
 				errorInfo.text='';
-				title=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
+				title.text=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
 				userOrEmail.text='';
 				focusManager.setFocus(username);
 				restorePassword.visible=true;
@@ -137,7 +131,7 @@
 			private function showActivationResend(even:Event):void
 			{
 				errorInfo.text='';
-				this.title=resourceManager.getString('myResources', 'LABEL_SEND_EMAIL_AGAIN');
+				title.text=resourceManager.getString('myResources', 'LABEL_SEND_EMAIL_AGAIN');
 				activationUsername.text='';
 				activationEmail.text='';
 				resendEmailLink.visible=true;
@@ -181,17 +175,7 @@
 				DataModel.getInstance().activationEmailResent=false;
 			}
 
-			private function onClose(evt:CloseEvent):void
-			{
-				//PopUpManager.removePopUp(evt.target as IFlexDisplayObject);
-				//DataModel.getInstance().loginPop = null;
-				PopUpManager.removePopUp(this);
-			}
-
-			private function onWindowResize(evt:ResizeEvent):void
-			{
-				//PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
-			}
+			
 		]]>
 	</fx:Script>
 
@@ -208,6 +192,9 @@
 			 styleName="errorLabel"
 			 textAlign="center"
 			 width="100%"/>
+	<s:Label id="title"
+			 width="100%"
+			 textAlign="left"/>
 	<mx:ViewStack id="loginViewStack"
 				  creationPolicy="all"
 				  width="100%">
@@ -338,4 +325,4 @@
 		</s:NavigatorContent>
 
 	</mx:ViewStack>
-</skins:CustomTitleWindow>
+</s:Group>

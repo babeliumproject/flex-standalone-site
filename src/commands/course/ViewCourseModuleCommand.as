@@ -17,7 +17,7 @@ package commands.course
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var index:uint = ViewChangeEvent.VIEW_COURSE_MODULE;
+			var index:uint = ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX;
 			DataModel.getInstance().currentContentViewStackIndex = index;
 			
 			BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(index));

@@ -22,6 +22,7 @@ package control
 		/** Variables **/
 		public static var instance:BabeliaBrowserManager = new BabeliaBrowserManager();
 		private var _isParsing:Boolean;
+		private var _lastURL:String;
 		private var _browserManager:IBrowserManager;
 		
 		/**
@@ -78,6 +79,7 @@ package control
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
 			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX);
 			_modulesFragments.setItemAt("course", ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX);
+			_modulesFragments.setItemAt("login", ViewChangeEvent.VIEWSTACK_LOGIN_MODULE_INDEX);
 		}
 		
 		// Get instance
@@ -100,6 +102,7 @@ package control
 		public function parseURL(e:BrowserChangeEvent = null) : void
 		{
 			_isParsing = true;
+			_lastURL = e.lastURL;
 			
 			clearFragments();
 			
@@ -169,6 +172,7 @@ package control
 			if ( moduleIndex >= 0 )
 			{
 				DataModel.getInstance().currentContentViewStackIndex = moduleIndex;
+				trace("Current content viewstack index: "+DataModel.getInstance().currentContentViewStackIndex);
 				return true;
 			}
 			
