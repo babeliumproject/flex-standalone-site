@@ -187,6 +187,15 @@ class Auth{
 
 		return $this->conn->_singleSelect($sql, $username);
 	}
+	
+	private function getPermissions($userId){
+		$sql = "SELECT cru.fk_role_id, cru.fk_course_id, r.archetype 
+				FROM rel_course_role_user cru INNER JOIN role r ON cru.fk_role_id=r.id 
+				WHERE cru.fk_user_id = %d";
+		
+		
+		return $this->conn->_multipleSelect($sql,$_SESSION['uid']);
+	}
 
 	/**
 	 * Logs the user out and clears the session data

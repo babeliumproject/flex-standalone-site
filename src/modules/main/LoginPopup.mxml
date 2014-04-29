@@ -2,14 +2,17 @@
 <skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 						 xmlns:s="library://ns.adobe.com/flex/spark"
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
-						 keyDown="checkPressedKey(event)"
+						 xmlns:skins="skins.*"
+						 xmlns:userManagement="modules.userManagement.*"
 						 close="onClose(event)"
 						 resize="onWindowResize(event)"
-						 creationComplete="completeHandler()"
 						 styleName="loginPopup"
 						 autoLayout="true"
-						 minWidth="300" xmlns:userManagement="modules.userManagement.*">
-	<userManagement:LoginRestorePassForm/>
+						 minWidth="300">
+	
+
+	<userManagement:LoginRestorePassForm id="loginRestoreForm"
+										 width="100%"/>
 	
 	<fx:Declarations>
 		
@@ -18,8 +21,15 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
+			
+			protected function creationCompleteHandler(e:FlexEvent):void
+			{
+				loginRestoreForm.addEventListener(CloseEvent.CLOSE, onClose);
+			}
+			
 
 			private function onClose(evt:CloseEvent):void
 			{

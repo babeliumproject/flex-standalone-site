@@ -109,8 +109,6 @@
 			
 			import model.DataModel;
 			
-			import modules.userManagement.LoginRestorePassForm;
-			
 			import mx.binding.utils.BindingUtils;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
@@ -139,7 +137,7 @@
 
 			public function showLogin():void
 			{
-				DataModel.getInstance().loginPop=PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginRestorePassForm, true) as LoginRestorePassForm;
+				DataModel.getInstance().loginPop=PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginPopup, true) as LoginPopup;
 				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 			}
 

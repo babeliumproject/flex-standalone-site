@@ -9,7 +9,7 @@
 	<s:layout>
 		<s:VerticalLayout paddingLeft="10"
 						  paddingRight="10"
-						  paddingTop="10"
+						  paddingTop="0"
 						  paddingBottom="10"/>
 	</s:layout>
 
@@ -76,8 +76,13 @@
 						restorePassword.visible=false;
 						resendEmailLink.includeInLayout=true;
 						resendEmailLink.visible=true;
+					} else {
+						restorePassword.includeInLayout=true;
+						restorePassword.visible=true;
+						resendEmailLink.includeInLayout=false;
+						resendEmailLink.visible=false;
 					}
-					DataModel.getInstance().loginPop.errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					DataModel.getInstance().loginPop.loginRestoreForm.errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
 				}
 			}
@@ -194,7 +199,7 @@
 			 width="100%"/>
 	<s:Label id="title"
 			 width="100%"
-			 textAlign="left"/>
+			 textAlign="center"/>
 	<mx:ViewStack id="loginViewStack"
 				  creationPolicy="all"
 				  width="100%">

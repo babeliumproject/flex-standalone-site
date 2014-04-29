@@ -102,7 +102,7 @@ package control
 		public function parseURL(e:BrowserChangeEvent = null) : void
 		{
 			_isParsing = true;
-			_lastURL = e.lastURL;
+			_lastURL = e ? e.lastURL : null;
 			
 			clearFragments();
 			

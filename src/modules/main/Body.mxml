@@ -51,7 +51,7 @@
 		
 		<course:Module id="courseModule"/>
 		
-		<main:UnauthorizedNotice id="loginModule"/>
+		<main:Login id="loginModule"/>
 
 	</skins:CustomViewStack>
 

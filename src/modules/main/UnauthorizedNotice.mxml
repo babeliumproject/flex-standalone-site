@@ -11,20 +11,18 @@
 	<fx:Script>
 		<![CDATA[
 			import events.ViewChangeEvent;
-
+			
 			import model.DataModel;
-
-			import modules.userManagement.LoginRestorePassForm;
-
+			
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
 
-			private var loginPop:LoginRestorePassForm;
+			private var loginPop:LoginPopup;
 
 			protected function signInLink_clickHandler(event:MouseEvent):void
 			{
-				DataModel.getInstance().loginPop=LoginRestorePassForm(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginRestorePassForm, true));
+				DataModel.getInstance().loginPop=LoginPopup(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginPopup, true));
 				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
 			}
 
