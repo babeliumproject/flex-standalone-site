@@ -130,7 +130,7 @@
 			private var assessmentPendingListTitleLabel:Label;
 			private var colorStroke:SolidColorStroke;
 			private var assessmentPendingListTitleLine:Line;
-			private var waitingAssessmentListAndPagination:CustomItemRendererEvaluationTable;
+			private var waitingAssessmentListAndPagination:CustomItemRendererPaginatedTable;
 			private var waitingAssessmentBox:VGroup;
 			private var waitingAssessmentBoxNavContent:NavigatorContent;
 
@@ -143,7 +143,7 @@
 			private var assessedToUserListTitleLabel:Label;
 			private var assessedToUserListTitleStroke:SolidColorStroke;
 			private var assessedToUserListTitleLine:Line;
-			private var assessedToCurrentUserListAndPagination:CustomItemRendererEvaluationTable;
+			private var assessedToCurrentUserListAndPagination:CustomItemRendererPaginatedTable;
 			private var assessedToCurrentUserBox:VGroup;
 			private var assessedToCurrentUserBoxNavContent:NavigatorContent;
 
@@ -156,7 +156,7 @@
 			private var assessedByUserListTitleLabel:Label;
 			private var assessedByUserListTitleStroke:SolidColorStroke;
 			private var assessedByUserListTitleLine:Line;
-			private var assessedByCurrentUserListAndPagination:CustomItemRendererEvaluationTable;
+			private var assessedByCurrentUserListAndPagination:CustomItemRendererPaginatedTable;
 			private var assessedByCurrentUserBox:VGroup;
 			private var assessedByCurrentUserBoxNavContent:NavigatorContent;
 
@@ -612,8 +612,8 @@
 				switch (newIndex)
 				{
 					case evaluationOptionsViewStack.getChildIndex(waitingAssessmentBoxNavContent):
-						assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=null;
-						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
+						assessedToCurrentUserListAndPagination.table.selectedItem=null;
+						assessedByCurrentUserListAndPagination.table.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
 						assessedByUserDetail.includeInLayout=false;
@@ -630,8 +630,8 @@
 
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedToCurrentUserBoxNavContent):
-						waitingAssessmentListAndPagination.evaluationTable.selectedItem=null;
-						assessedByCurrentUserListAndPagination.evaluationTable.selectedItem=null;
+						waitingAssessmentListAndPagination.table.selectedItem=null;
+						assessedByCurrentUserListAndPagination.table.selectedItem=null;
 						evaluationRatingBox.includeInLayout=false;
 						evaluationRatingBox.visible=false;
 						assessedByUserDetail.includeInLayout=false;
@@ -648,8 +648,8 @@
 
 						break;
 					case evaluationOptionsViewStack.getChildIndex(assessedByCurrentUserBoxNavContent):
-						waitingAssessmentListAndPagination.evaluationTable.selectedItem=null;
-						assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=null;
+						waitingAssessmentListAndPagination.table.selectedItem=null;
+						assessedToCurrentUserListAndPagination.table.selectedItem=null;
 						assessmentsOfSelectedResponse.visible=false;
 						assessmentsOfSelectedResponse.includeInLayout=false;
 						evaluationRatingBox.includeInLayout=false;
@@ -712,9 +712,9 @@
 					assessmentsOfSelectedResponse.includeInLayout=false;
 
 					// Remove selected items
-					waitingAssessmentListAndPagination.evaluationTable.selectedIndex=-1;
-					assessedByCurrentUserListAndPagination.evaluationTable.selectedIndex=-1;
-					assessedToCurrentUserListAndPagination.evaluationTable.selectedItem=-1;
+					waitingAssessmentListAndPagination.table.selectedIndex=-1;
+					assessedByCurrentUserListAndPagination.table.selectedIndex=-1;
+					assessedToCurrentUserListAndPagination.table.selectedItem=-1;
 
 					//Return the pagination controls to the first page
 					_currentPageWaitingForAssessment=1;
@@ -861,7 +861,7 @@
 				assessmentPendingListTitleLine=new Line();
 				assessmentPendingListTitleLine.stroke=colorStroke;
 
-				waitingAssessmentListAndPagination=new CustomItemRendererEvaluationTable();
+				waitingAssessmentListAndPagination=new CustomItemRendererPaginatedTable();
 				//waitingAssessmentListAndPagination.dataProvider = waitingForAssessmentList;
 				waitingAssessmentListAndPagination.changeListener=waitingAssessmentChangeHandler;
 				waitingAssessmentListAndPagination.itemRenderer=ListItemWaitingForAssessment;
@@ -926,7 +926,7 @@
 				assessedToUserListTitleLine.width=assessedToUserListTitleLabel.width;
 				assessedToUserListTitleLine.stroke=assessedToUserListTitleStroke;
 
-				assessedToCurrentUserListAndPagination=new CustomItemRendererEvaluationTable();
+				assessedToCurrentUserListAndPagination=new CustomItemRendererPaginatedTable();
 				//assessedToCurrentUserListAndPagination.dataProvider = assessedToCurrentUserList; 
 				assessedToCurrentUserListAndPagination.changeListener=assessedToCurrentUserChangeHandler;
 				assessedToCurrentUserListAndPagination.itemRenderer=ListItemAssessedToCurrentUser;
@@ -991,7 +991,7 @@
 				assessedByUserListTitleLine.width=assessedByUserListTitleLabel.width;
 				assessedByUserListTitleLine.stroke=assessedByUserListTitleStroke;
 
-				assessedByCurrentUserListAndPagination=new CustomItemRendererEvaluationTable();
+				assessedByCurrentUserListAndPagination=new CustomItemRendererPaginatedTable();
 				//assessedByCurrentUserListAndPagination.dataProvider = assessedByCurrentUserList;
 				assessedByCurrentUserListAndPagination.changeListener=assessedByCurrentUserChangeHandler;
 				assessedByCurrentUserListAndPagination.itemRenderer=ListItemAssessedByCurrentUser;

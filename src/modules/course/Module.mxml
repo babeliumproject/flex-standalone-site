@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:course="modules.course.*"
 		 preinitialize="preinitializeHandler(event)"
-		 creationComplete="creationCompleteHandler(event)">
+		 creationComplete="creationCompleteHandler(event)"
+		 width="100%">
 	
-	<s:Button click="button1_clickHandler(event)"/>
+	<mx:ViewStack id="courseModuleViewstack">
+		<s:NavigatorContent id="courseIndexNC">
+			<course:Index/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="courseViewNC">
+			<course:View/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
 	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}" destination="urlChangeHandler"/>
 	
 	<fx:Script>
 		<![CDATA[
@@ -65,18 +72,43 @@
 				if (!DataModel.getInstance().isLoggedIn)
 				{
 					BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_LOGIN_MODULE_INDEX));
-					BabeliaBrowserManager.getInstance().parseURL(null);
+					BabeliaBrowserManager.getInstance().parseURL();
 					return;
 				}
 				this.visible=true;
 			}
 			
-			protected function button1_clickHandler(event:MouseEvent):void
-			{
-				checkPermissions();
+			
+			public function set urlChangeHandler(value:Object):void{
+				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+				
+				if (browser.moduleIndex != ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX)
+					return;
+				
+				if (value == null)
+					return;
+				
+				if (!_model.isLoggedIn)
+					return;
+				
+				switch (browser.actionFragment)
+				{
+					case BabeliaBrowserManager.VIEW:
+						if (browser.targetFragment != '')
+						{
+							
+						}
+						break;
+					case BabeliaBrowserManager.TEACH:
+						
+						break;
+					default: //When no action is given in the URL default to 'learn' action
+						new ViewChangeEvent(ViewChangeEvent.VIEW_COURSE_MODULE).dispatch();
+						break;
+				}
 			}
 			
 		]]>
 	</fx:Script>
 	
-</s:Group>
+</s:VGroup>

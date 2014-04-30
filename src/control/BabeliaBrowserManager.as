@@ -37,7 +37,8 @@ package control
 		/**
 		 * ACTION CONSTANTS
 		 **/
-		public static const INDEX:String ="index";
+		public static const LEARN:String="learn";
+		public static const TEACH:String="teach";
 		public static const ACTIVATE:String="activate";
 		public static const SUBTITLE:String="edit";
 		public static const VIEW:String="view";

@@ -42,7 +42,7 @@
 	
 			<mx:VRule height="40"/>
 			-->
-			<skins:NavigationToggleButton label="{'Browse'}"
+			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'BROWSE')}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
@@ -51,6 +51,14 @@
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_EXERCISE_MODULE,event)"/>
 			<mx:VRule height="40"/>
+			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
+										  styleName="evaluateLinkButton"
+										  skinClass="skins.NavigationToggleButtonSkin"
+										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
+										  visible="{DataModel.getInstance().isLoggedIn}"
+										  selected="{_urlManager.moduleIndex == ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX &amp;&amp;
+										  			 _urlManager.actionFragment == BabeliaBrowserManager.LEARN }"
+										  click="redirect('course','learn')"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
 										  styleName="evaluateLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
@@ -70,7 +78,7 @@
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX}"
 										  click="changeView(ViewChangeEvent.VIEW_SUBTITLE_MODULE,event)"/>
-			<skins:NavigationToggleButton label="{'Create'}"
+			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"
 										  styleName="configureLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
@@ -157,17 +165,29 @@
 				destination="this.onTagCloudClicked"/>
 	<fx:Script>
 		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
 			import events.SearchEvent;
 			import events.VideoStopEvent;
 			import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			
+			import mx.utils.URLUtil;
+			
 			import skins.NavigationToggleButtonSkin;
+			
+			[Bindable] protected var _model:DataModel=DataModel.getInstance();
+			[Bindable] protected var _urlManager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
 
 			//Initialization method
 			private function init():void
 			{
+			}
+			
+			private function redirect(module:String=null, action:String=null, value:String=null):void{
+				_urlManager.updateURL(module,action,value);
+				_urlManager.parseURL();
 			}
 
 			private function changeView(destination:String, event:MouseEvent):void

@@ -1,8 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-</s:Group>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  xmlns:skins="skins.*"
+		  preinitialize="preinitializeHandler(event)">
+	
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label text="{resourceManager.getString('myResources','COURSE')}"
+				 paddingLeft="16"
+				 paddingRight="16"
+				 styleName="sectionInfoTitleLabel"/>
+		<s:Label text="{resourceManager.getString('myResources','COURSE_SECTION_DESCRIPTION')}"
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+	
+	<s:Label id="myCoursesTitle"
+			 text="{resourceManager.getString('myResources','MY_COURSES')}"
+			 styleName="sectionTitleLabel"/>
+	
+	<s:Label id="noCourse"
+			 text="You're not currently enrolled in any course."
+			 includeInLayout="{!userCourses.length}"
+			 visible="{!userCourses.length}"/>
+	
+	<mx:DataGrid id="myCoursesTable"
+				 dataProvider="{userCourses}"
+				 width="100%"
+				 horizontalScrollPolicy="off"
+				 verticalScrollPolicy="off"
+				 headerHeight="0"
+				 horizontalGridLines="true"
+				 horizontalGridLineColor="0xaaaaaa"
+				 contentBackgroundAlpha="0.0"
+				 alternatingItemColors="{[]}"
+				 selectable="false"
+				 variableRowHeight="true"
+				 includeInLayout="{userCourses &amp;&amp; userCourses.length}"
+				 visible="{userCourses &amp;&amp; userCourses.length}">
+		<mx:columns>
+			<mx:DataGridColumn itemRenderer="modules.course.CourseItemRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<fx:Script>
+		<![CDATA[
+			import events.CourseEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			
+			[Bindable] private var userCourses:ArrayCollection;
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void
+			{
+				var scope:String='teach or learn';
+				//Retrieve this view's data and render it
+				new CourseEvent(CourseEvent.GET_COURSES,scope).dispatch();
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+</s:VGroup>

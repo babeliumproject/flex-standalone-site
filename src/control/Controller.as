@@ -65,9 +65,6 @@ package control {
 			
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_UNSIGNED, ViewAccountUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_SIGNED, ViewAccountSignedCommand);
-			
-			addCommand(ViewChangeEvent.VIEW_COURSE_UNSIGNED, ViewCourseUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_COURSE_SIGNED, ViewCourseSignedCommand);
 
 			//Credit management commands
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);

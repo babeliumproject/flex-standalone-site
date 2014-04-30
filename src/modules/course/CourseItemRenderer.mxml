@@ -4,21 +4,23 @@
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
 				autoDrawBackground="true">
 	
+	
+	
+	<s:Label text="{data.fullname}" styleName="sectionTitleLabel"/>
+	<s:Label text="{data.summary}"/>
+	
+	<s:Button id="viewCourse"
+			  label="{resourceManager.getString('myResources','VIEW_COURSE')}"
+			  click="viewCourse_clickHandler(event)"/>
+
 	<fx:Script>
 		<![CDATA[
 			protected function viewCourse_clickHandler(event:MouseEvent):void
 			{
 				parentDocument.viewCourse(data);
 			}
-
+			
 		]]>
 	</fx:Script>
-	
-	<s:Label text="{data}"/>
-	
-	<s:Button id="viewCourse"
-			  label="{resourceManager.getString('myResources','VIEW_COURSE'}"
-			  click="viewCourse_clickHandler(event)"/>
-
 	
 </s:ItemRenderer>

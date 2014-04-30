@@ -27,30 +27,30 @@
 				createPagination();
 			}
 
-			public function set dataProvider(assessedToCurrentUserData:ArrayCollection):void
+			public function set dataProvider(data:ArrayCollection):void
 			{
-				_dataProvider=assessedToCurrentUserData;
+				_dataProvider=data;
 				if (_dataProvider && _dataProvider.length > 0)
 				{
-					evaluationTable.includeInLayout=true;
-					evaluationTable.visible=true;
+					table.includeInLayout=true;
+					table.visible=true;
 					createPagination();
 				}
 				else
 				{
-					evaluationTable.includeInLayout=false;
-					evaluationTable.visible=false;
+					table.includeInLayout=false;
+					table.visible=false;
 				}
 			}
 
 			public function set itemRenderer(renderer:Class):void
 			{
-				evaluationTableColumn.itemRenderer=new ClassFactory(renderer);
+				tableColumn.itemRenderer=new ClassFactory(renderer);
 			}
 
 			public function set changeListener(changeFunction:Function):void
 			{
-				evaluationTable.addEventListener(ListEvent.CHANGE, changeFunction);
+				table.addEventListener(ListEvent.CHANGE, changeFunction);
 			}
 
 			public function createPagination():void
@@ -72,14 +72,14 @@
 				var current:int=_currentPage - 1;
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				evaluationTable.rowCount=dataTemp.length;
-				evaluationTable.dataProvider=dataTemp;
+				table.rowCount=dataTemp.length;
+				table.dataProvider=dataTemp;
 			}
 		]]>
 	</fx:Script>
 
 
-	<mx:DataGrid id="evaluationTable"
+	<mx:DataGrid id="table"
 				 width="100%"
 				 editable="false"
 				 sortableColumns="false"
@@ -87,7 +87,7 @@
 				 headerHeight="0"
 				 dataProvider="{_dataProvider}">
 		<mx:columns>
-			<mx:DataGridColumn id="evaluationTableColumn"/>
+			<mx:DataGridColumn id="tableColumn"/>
 		</mx:columns>
 	</mx:DataGrid>
 
