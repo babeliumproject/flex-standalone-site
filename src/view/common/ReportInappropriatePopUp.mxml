@@ -18,7 +18,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import events.ExerciseEvent;
+			import modules.exercise.event.ExerciseEvent;
 
 			import model.DataModel;
 

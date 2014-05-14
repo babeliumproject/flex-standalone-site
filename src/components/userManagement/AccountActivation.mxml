@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="creationCompleteHandler(event)"
+		 gap="14">
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import events.RegisterUserEvent;
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.events.FlexEvent;
+			import mx.utils.URLUtil;
+			
+			import vo.NewUserVO;
+			
+			
+			private var noActionMessage:String = 'No action was requested.';
+			private var activatingMessage:String="Activating account. Please wait...";
+			private var successfulActivationMessage:String="Your account has been successfully activated. Redirecting to home...";
+			private var wrongActivationMessage:String="A problem occurred while activating your account. Please try again later.";
+
+			[Bindable] private var message:String = noActionMessage;
+			
+			private var redirectTimer:Timer;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+
+			}
+
+			public function set checkUrlParameters(value:String):void
+			{
+				if (BabeliaBrowserManager.getInstance().moduleIndex != 11)
+					return;
+
+				if (BabeliaBrowserManager.getInstance().actionFragment != BabeliaBrowserManager.ACTIVATE)
+					return;
+
+				var parameters:Object=URLUtil.stringToObject(value, "&");
+
+				if (parameters != null)
+				{
+					if (parameters.hash != '' && parameters.user != '')
+					{
+						//It looks like this is an activation url sent by email
+						message = activatingMessage;
+						var user:NewUserVO=new NewUserVO(parameters.user, '', '', '', '', parameters.hash, null);
+						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user).dispatch();
+					}
+				}
+			}
+
+			public function set greetAndRedirect(value:Boolean):void
+			{
+				if (DataModel.getInstance().accountActivationRetrieved == true)
+				{
+					if(DataModel.getInstance().accountActivationStatus){
+						message = successfulActivationMessage;
+						redirectTimer = new Timer(3000,1);
+						redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage);
+						redirectTimer.start();
+					}else{
+						message = wrongActivationMessage;
+					}
+					DataModel.getInstance().accountActivationRetrieved = false;
+				}
+			}
+			
+			public function set onTabChange(value:Boolean):void{
+				message = noActionMessage;
+			}
+			
+			public function redirectToHomePage(event:TimerEvent):void{
+				redirectTimer.stop();
+				message = noActionMessage;
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				BabeliaBrowserManager.getInstance().updateURL('home');
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+				destination="checkUrlParameters"/>
+	<fx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
+				destination="greetAndRedirect"/>
+	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
+				destination="onTabChange"/>
+
+	<s:Label text="{resourceManager.getString('myResources','ACCOUNT_ACTIVATION')}"
+			  styleName="sectionTitleLabel"/>
+	<mx:HRule width="100%"/>
+	<s:Label id="activating"
+			  text="{message}"/>
+</s:VGroup>

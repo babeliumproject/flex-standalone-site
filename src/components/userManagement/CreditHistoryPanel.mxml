@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:userManagement="components.userManagement.*"
+		  xmlns:common="view.common.*"
+		  width="100%"
+		  height="100%"
+		  paddingBottom="20"
+		  paddingLeft="20"
+		  paddingRight="20"
+		  paddingTop="20">
+
+	<fx:Script>
+		<![CDATA[
+			import events.CreditEvent;
+
+			import model.DataModel;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.formatters.DateFormatter;
+
+			import view.common.CustomAlert;
+
+			import vo.CreditHistoryVO;
+
+			[Bindable]
+			private var historicDataProvider:ArrayCollection;
+
+			private static const MILLISECONDS_DAY:int=86400000;
+
+			public function set creditHistoryRetrieved(value:Boolean):void
+			{
+				historicDataProvider=DataModel.getInstance().creditHistory;
+				//if (historicDataProvider.length > 0)
+				creditHistoryTable.rowCount=historicDataProvider.length;
+				creditHistoryTable.dataProvider=historicDataProvider;
+				DataModel.getInstance().isCreditHistoryRetrieved=false;
+			}
+
+			private function formatVideoExerciseName(item:Object, col:DataGridColumn):String
+			{
+				if (item.videoExerciseName == null)
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
+				else
+					return item.videoExerciseName;
+			}
+
+			private function formatVideoResponseName(item:Object, col:DataGridColumn):String
+			{
+				if (item.videoResponseName == null)
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
+				else
+					return item.videoResponseName;
+			}
+
+			private function formatVideoEvaluationName(item:Object, col:DataGridColumn):String
+			{
+				if (item.videoEvaluationName == null)
+					return resourceManager.getString('myResources', 'RENDERER_NO_INPUT_DATA');
+				else
+					return item.videoEvaluationName;
+			}
+
+			private function todayClickHandler():void
+			{
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.time - MILLISECONDS_DAY);
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="hours";
+				new CreditEvent(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY).dispatch();
+			}
+
+			private function lastWeekClickHandler():void
+			{
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.time - 7 * MILLISECONDS_DAY);
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="days";
+				new CreditEvent(CreditEvent.GET_LAST_WEEK_CREDIT_HISTORY).dispatch();
+			}
+
+			private function lastMonthClickHandler():void
+			{
+				var initDate:Date=lineChartContainer.chartMaximum;
+				var prevDate:Date=new Date(initDate.setMonth(initDate.month - 1));
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="days";
+				new CreditEvent(CreditEvent.GET_LAST_MONTH_CREDIT_HISTORY).dispatch();
+			}
+
+			private function allTimeClickHandler():void
+			{
+				var initDate:Date=lineChartContainer.chartMaximum;
+
+				var rawDbDate:String=DataModel.getInstance().loggedUser.joiningDate;
+				var dateAndTime:Array=rawDbDate.split(" ");
+				var splittedDate:Array=(dateAndTime[0] as String).split("-");
+				var splittedTime:Array=(dateAndTime[1] as String).split(":");
+				var joiningDate:Date=new Date(splittedDate[0], splittedDate[1] - 1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
+
+				var prevDate:Date=joiningDate;
+
+				lineChartContainer.chartMinimum=prevDate;
+				lineChartContainer.labelUnits="months";
+
+				new CreditEvent(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY).dispatch();
+			}
+
+			public function exerciseNameClickHandler():void
+			{
+				CustomAlert.info("WIP: Watch the selected exercise.");
+			}
+
+			public function resetComponent():void
+			{
+				if (historicDataProvider)
+				{
+					historicDataProvider.removeAll();
+					historicDataProvider=new ArrayCollection();
+				}
+				if (lineChartContainer.chartData)
+				{
+					lineChartContainer.chartData.removeAll();
+					lineChartContainer.chartData=new ArrayCollection();
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isCreditHistoryRetrieved}"
+				destination="creditHistoryRetrieved"/>
+
+	<s:Label text="{resourceManager.getString('myResources','TITLE_USERS_CREDIT_HISTORY')}"
+			 styleName="sectionTitleLabel"
+			 id="creditHistoryTitleLabel"/>
+	<s:Line width="{creditHistoryTitleLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{creditHistoryTitleLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+
+	<s:BorderContainer width="100%"
+					   minHeight="0"
+					   styleName="roundedBorderGreyBox">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="4"
+								paddingRight="4"
+								paddingTop="4"
+								paddingBottom="4"
+								horizontalAlign="center"/>
+		</s:layout>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_HOURS_CREDITS')}"
+				  click="todayClickHandler()"
+				  buttonMode="true"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_WEEK_CREDITS')}"
+				  click="lastWeekClickHandler()"
+				  buttonMode="true"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_LAST_MONTH_CREDITS')}"
+				  click="lastMonthClickHandler()"
+				  buttonMode="true"/>
+		<s:Button label="{resourceManager.getString('myResources','LABEL_ALL_TIME_CREDITS')}"
+				  click="allTimeClickHandler()"
+				  buttonMode="true"/>
+	</s:BorderContainer>
+	<userManagement:CreditLineChart id="lineChartContainer"
+									height="300"
+									width="100%"/>
+	<mx:DataGrid width="100%"
+				 height="100%"
+				 id="creditHistoryTable">
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_DATE_CREDIT_TABLE')}"
+							   dataField="changeDate"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_CHANGE_TYPE_CREDIT_TABLE')}"
+							   dataField="changeType"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_CHANGE_AMOUNT_CREDIT_TABLE')}"
+							   dataField="changeAmount"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_EXERCISE_NAME_CREDIT_TABLE')}"
+							   dataField="videoExerciseName"
+							   labelFunction="formatVideoExerciseName"
+							   itemRenderer="components.userManagement.ExerciseClickRenderer">
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_RESPONSE_NAME_CREDIT_TABLE')}"
+							   dataField="videoResponseName"
+							   labelFunction="formatVideoResponseName"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','HEADERTEXT_EVALUATION_NAME_CREDIT_TABLE')}"
+							   dataField="videoEvaluationName"
+							   labelFunction="formatVideoEvaluationName"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</s:VGroup>

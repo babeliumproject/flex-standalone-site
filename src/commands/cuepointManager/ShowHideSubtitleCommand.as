@@ -5,7 +5,7 @@ package commands.cuepointManager
 	
 	import control.CuePointManager;
 	
-	import modules.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoPlayerBabelia;
 	
 	import mx.controls.DataGrid;
 	

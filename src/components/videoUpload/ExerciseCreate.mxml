@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoUpload="components.videoUpload.*"
+		  xmlns:subtitles="components.subtitles.*"
+		  xmlns:skins="skins.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.IndexChangedEvent;
+
+			import spark.events.IndexChangeEvent;
+
+			protected function stepViewStack_changeHandler(event:IndexChangedEvent):void
+			{
+				// TODO Auto-generated method stub
+
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label text="{'Create new exercise'}"
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<s:Label text="{resourceManager.getString('myResources','UPLOAD_SECTION_DESCRIPTION')}"
+				 paddingBottom="16"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	<s:BorderContainer width="100%"
+					   minHeight="0"
+					   backgroundColor="0xFFFFFF"
+					   borderAlpha="0">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="right">
+			<s:Label text="Steps"/>
+			<skins:StepTabBar styleName="paginationWhiteBlueButton"
+							  dataProvider="{stepViewStack}"/>
+		</s:HGroup>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	
+	<s:VGroup paddingTop="16"
+			  paddingBottom="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  width="100%">
+
+
+		<mx:ViewStack id="stepViewStack"
+					  change="stepViewStack_changeHandler(event)">
+			<s:NavigatorContent label="1">
+				<videoUpload:FileUpload/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="2">
+				<videoUpload:MediaUploadForm/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="3">
+				<subtitles:SubtitleEditor/>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+
+	</s:VGroup>
+
+</s:VGroup>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:course="components.course.*"
+		 preinitialize="preinitializeHandler(event)"
+		 creationComplete="creationCompleteHandler(event)"
+		 width="100%">
+	
+	<mx:ViewStack id="courseModuleViewstack">
+		<s:NavigatorContent id="courseIndexNC">
+			<course:Index/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="courseViewNC">
+			<course:View/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}" destination="urlChangeHandler"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.events.DragEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.events.StateChangeEvent;
+			
+			import spark.events.ElementExistenceEvent;
+			
+			private var _creationComplete:Boolean;
+			private var _model:DataModel;
+			
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				// The Event.ADDED and Event.ADDED_TO_STAGE events are dispatched before FlexEvent.PREINITIALIZE
+				// that leaves only FlexEvent.ADD to know the component has been added as a child somewhere.
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				trace("Course component added");
+				this.visible=false;
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void{
+				trace("Course component removed");
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				trace("Course component update complete");
+				checkPermissions();
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace("Course component complete");
+				_creationComplete=true;
+				_model=DataModel.getInstance();
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					BabeliaBrowserManager.getInstance().updateURL('login');
+					BabeliaBrowserManager.getInstance().parseURL();
+					return;
+				}
+				this.visible=true;
+			}
+			
+			
+			public function set urlChangeHandler(value:Object):void{
+				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+				
+				if (browser.moduleIndex != 13)
+					return;
+				
+				if (value == null)
+					return;
+				
+				if (!_model.isLoggedIn)
+					return;
+				
+				switch (browser.actionFragment)
+				{
+					case BabeliaBrowserManager.VIEW:
+						if (browser.targetFragment != '')
+						{
+							
+						}
+						break;
+					case BabeliaBrowserManager.TEACH:
+						
+						break;
+					default: //When no action is given in the URL default to 'learn' action
+						//new ViewChangeEvent(ViewChangeEvent.VIEW_COURSE_MODULE).dispatch();
+						break;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+</s:VGroup>

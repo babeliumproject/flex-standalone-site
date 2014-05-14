@@ -10,10 +10,11 @@ package model
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
 	
-	import modules.autoevaluation.Evaluation;
-	import modules.main.Body;
-	import modules.userManagement.KeepAliveTimer;
-	import modules.userManagement.LoginRestorePassForm;
+	import components.autoevaluation.Evaluation;
+	import components.main.Body;
+	import components.main.LoginPopup;
+	import components.userManagement.KeepAliveTimer;
+	import components.userManagement.LoginRestorePassForm;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -133,7 +134,7 @@ package model
 		[Bindable]
 		public var activationEmailResentErrorMessage:String='';
 		[Bindable]
-		public var loginPop:LoginRestorePassForm;
+		public var loginPop:LoginPopup;
 		[Bindable]
 		public var passwordChanged:Boolean=false;
 		[Bindable]
@@ -232,7 +233,7 @@ package model
 
 		//Exercise uploading related data
 		[Bindable]
-		public var server:String='babelium';
+		public var server:String='babeliumlms';
 		
 		public var streamingProtocol:String=RTMP;
 		public var streamingPort:uint=1935;

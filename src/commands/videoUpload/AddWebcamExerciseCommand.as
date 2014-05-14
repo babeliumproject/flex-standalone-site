@@ -6,7 +6,7 @@ package commands.videoUpload
 	import com.adobe.cairngorm.control.CairngormEvent;
 
 	import events.CreditEvent;
-	import events.ExerciseEvent;
+	import modules.exercise.event.ExerciseEvent;
 
 	import model.DataModel;
 

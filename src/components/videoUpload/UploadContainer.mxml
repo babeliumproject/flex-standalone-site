@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoUpload="components.videoUpload.*"
+		  xmlns:main="components.main.*"
+		  
+		  width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import model.DataModel;
+			
+			import mx.events.FlexEvent;
+
+			
+			private var _creationComplete:Boolean;
+			private var _model:DataModel;
+
+			/*
+			private function set onUserAuthenticationStatus(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN).dispatch();
+				else
+					new ViewChangeEvent(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED).dispatch();
+			}*/
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void{
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				_model=DataModel.getInstance();
+				//subtitleModuleViewStack.addEventListener(IndexChangedEvent.CHANGE, onChildChange);
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					BabeliaBrowserManager.getInstance().updateURL('login');
+					BabeliaBrowserManager.getInstance().parseURL();
+					return;
+				}
+				this.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+
+	<!--
+	<mx:ViewStack id="uploadModuleViewStack"
+				  width="100%"
+				  height="100%"
+				  selectedIndex="{ DataModel.getInstance().currentUploadViewStackIndex }"
+				  creationPolicy="all"
+				  resizeToContent="true">
+		<s:NavigatorContent id="unsignedScreenNavContent">
+			<main:UnauthorizedNotice id="unsignedScreen"
+									 width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="videoUploadMainNavContent">
+			-->
+			<videoUpload:ExerciseCreate width="100%"/>
+	<!--
+		</s:NavigatorContent>
+		
+	</mx:ViewStack>
+
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onUserAuthenticationStatus"/>
+-->
+</s:VGroup>

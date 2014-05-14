@@ -5,11 +5,13 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.BabeliaBrowserManager;
+	
 	import events.*;
 	
 	import model.DataModel;
 	
-	import modules.userManagement.SignUpForm;
+	import components.userManagement.SignUpForm;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -54,9 +56,12 @@ package commands.userManagement
 				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();
 
 				// If user is in register module, redirect to home
-				if (DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX)
-				{
-					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				//if (DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX)
+				//{
+				//	new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				//}
+				if (BabeliaBrowserManager.getInstance().moduleIndex==3){
+					BabeliaBrowserManager.getInstance().updateURL('home');
 				}
 			}
 			else

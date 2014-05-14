@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  horizontalAlign="center"
+		  width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			//import events.ViewChangeEvent;
+
+			protected function homeButtons_clickHandler(event:MouseEvent, destination:String):void
+			{
+				//new ViewChangeEvent(destination).dispatch();
+				BabeliaBrowserManager.getInstance().updateURL(destination);
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<mx:Text htmlText="{resourceManager.getString('myResources','HOME_LOGGED_IN_STATIC_MESSAGE')}"
+			 width="500"/>
+	<s:BorderContainer cornerRadius="6"
+					   borderColor="#ffffff">
+		<s:backgroundFill>
+			<mx:LinearGradient rotation="90">
+				<mx:entries>
+					<mx:GradientEntry color="#ffffff"
+									  ratio="0.5"
+									  alpha="0.9"/>
+					<mx:GradientEntry color="#999999"
+									  ratio="1.0"
+									  alpha="0.9"/>
+				</mx:entries>
+			</mx:LinearGradient>
+		</s:backgroundFill>
+		<s:layout>
+			<s:HorizontalLayout paddingBottom="16"
+								paddingLeft="16"
+								paddingRight="16"
+								paddingTop="16"/>
+		</s:layout>
+		<s:VGroup height="100%"
+				  horizontalAlign="center">
+			<s:Label text="{resourceManager.getString('myResources','OBTAIN_CREDITS')}"
+					 styleName="boldLabel"/>
+			<s:HGroup>
+				<skins:IconButton id="homeUploadButton"
+								  styleName="homeUploadButton"
+								  label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
+								  click="homeButtons_clickHandler(event, 'upload')"/>
+				<skins:IconButton id="homeSubtitleButton"
+								  styleName="homeSubtitleButton"
+								  label="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"
+								  click="homeButtons_clickHandler(event, 'subtitles')"/>
+				<skins:IconButton id="homeEvaluateButton"
+								  styleName="homeEvaluateButton"
+								  label="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
+								  click="homeButtons_clickHandler(event, 'evaluation')"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:Line rotation="90" height="100%">
+			<s:stroke>
+				<mx:SolidColorStroke weight="3"
+									 color="#ffffff"/>
+			</s:stroke>
+		</s:Line>
+		<s:VGroup height="100%"
+				  horizontalAlign="center">
+			<s:Label text="{resourceManager.getString('myResources','SPEND_CREDITS')}"
+					 styleName="boldLabel"/>
+			<skins:IconButton id="homePracticeButton"
+							  styleName="homePracticeButton"
+							  label="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+							  click="homeButtons_clickHandler(event, 'exercises')"/>
+		</s:VGroup>
+	</s:BorderContainer>
+
+</s:HGroup>

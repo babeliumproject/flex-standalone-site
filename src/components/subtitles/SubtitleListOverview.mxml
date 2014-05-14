@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:subtitles="components.subtitles.*"
+		  paddingTop="0"
+		  horizontalAlign="center"
+		  width="100%"
+		  creationComplete="completeHandler(event)"
+		  xmlns:skins="skins.*">
+
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label id="subtitleModuleTitle"
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"
+				 text="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"/>
+
+		<s:Label text="{resourceManager.getString('myResources','SUBTITLE_SECTION_DESCRIPTION')}"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+
+		<!--
+		<s:HGroup horizontalAlign="right"
+				  width="100%"
+				  verticalAlign="bottom"
+				  gap="0">
+			<skins:HorizontalSeparatorLine width="100%"/>
+			<s:TabBar dataProvider="{subtitleListOverviewViewStack}"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
+			<skins:HorizontalSeparatorLine width="16"/>
+		</s:HGroup>
+		-->
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+
+	<subtitles:SubtitleEditor id="subtitleEditor"
+							  includeInLayout="false"
+							  visible="false"
+							  width="100%"/>
+
+	<mx:Spacer height="20"/>
+
+
+	<subtitles:SubtitlePendingList id="subtitlePendingList"
+								   dataProvider="{emptySubtitleList}"
+								   changeListener="{emptySubtitleChangeHandler}"
+								   width="100%"/>
+
+	<fx:Binding source="{dataModel.isLoggedIn}"
+				destination="userAuthenticationHandler"/>
+
+	<fx:Binding source="{dataModel.exercisesWithoutSubtitlesRetrieved}"
+				destination="exercisesWithoutSubtitlesRetrievedHandler"/>
+
+	<fx:Binding source="{dataModel.stopVideoFlag}"
+				destination="onTabChange"/>
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+				destination="onURLChange"/>
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			import control.CuePointManager;
+			
+			import modules.exercise.event.ExerciseEvent;
+			import events.SubtitleEvent;
+			import events.SubtitleListEvent;
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.graphics.shaderClasses.ExclusionShader;
+			import mx.utils.ObjectUtil;
+			
+			import spark.components.List;
+			
+			import vo.ExerciseRoleVO;
+			import vo.ExerciseVO;
+			import vo.SubtitleAndSubtitleLinesVO;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			[Bindable]
+			private var currentExercise:ExerciseVO;
+
+			private var currentPageEmptySubtitle:uint=1;
+
+			[Bindable]
+			private var emptySubtitleList:ArrayCollection;
+			[Bindable]
+			private var reviewSubtitleList:ArrayCollection;
+
+			private var rso:SharedObject;
+			private var rsoidleTimer:Timer;
+			private var SLOT_RESERVE_DELAY:uint=10000; //10 seconds
+
+			private var creationComplete:Boolean=false;
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				refreshExerciseLists();
+
+				connectToSharedObject();
+
+				rsoidleTimer=new Timer(SLOT_RESERVE_DELAY, 0);
+				rsoidleTimer.addEventListener(TimerEvent.TIMER, reserveRemoteSlot);
+
+				creationComplete=true;
+			}
+
+			private function connectToSharedObject():void
+			{
+				if (dataModel.netConnected)
+				{
+					try
+					{
+						rso=SharedObject.getRemote("SubtitleEdition", dataModel.netConnection.uri, false);
+						rso.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onError);
+						rso.addEventListener(NetStatusEvent.NET_STATUS, onError);
+						rso.connect(dataModel.netConnection);
+						rso.addEventListener(SyncEvent.SYNC, onRemoteUpdate);
+					}
+					catch (error:Error)
+					{
+						trace(error.message);
+					}
+				}
+			}
+
+			private function onError(event:Event):void
+			{
+				//Do nothing, leave it for debugging purposes
+			}
+
+			private function onRemoteUpdate(event:SyncEvent):void
+			{
+				if (dataModel.loggedUser && dataModel.loggedUser.username && currentExercise && currentExercise.name)
+				{
+					var simultaneousEdit:Boolean=false;
+					var remoteData:Object=rso.data;
+					var date:Date=new Date();
+					var timestamp:uint=date.time;
+
+					for (var item:Object in remoteData)
+					{
+						//If other than yourself is editing this exercise's subtitles display a notification
+						var ex:String=remoteData[item].exercise;
+						var ts:uint=remoteData[item].timestamp;
+						var dif:uint=(timestamp - ts) / 1000;
+						if (item.toString() != dataModel.loggedUser.username && ex == currentExercise.name && dif < 20)
+						{
+							simultaneousEdit=true;
+						}
+					}
+					subtitleEditor.simultaneousEditNotice.includeInLayout=simultaneousEdit;
+					subtitleEditor.simultaneousEditNotice.visible=simultaneousEdit;
+				}
+			}
+
+
+			private function reserveRemoteSlot(event:TimerEvent):void
+			{
+				if (dataModel.loggedUser && dataModel.loggedUser.username && currentExercise && currentExercise.name && rso)
+				{
+					var date:Date=new Date();
+					rso.setProperty(dataModel.loggedUser.username, {exercise: currentExercise.name, timestamp: date.time});
+				}
+			}
+
+			public function refreshExerciseLists():void
+			{
+				if (dataModel.isLoggedIn)
+				{
+					new SubtitleListEvent(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES).dispatch();
+				}
+				else
+				{
+					emptySubtitleList=new ArrayCollection();
+				}
+			}
+
+			private function set exercisesWithoutSubtitlesRetrievedHandler(value:Boolean):void
+			{
+				var ewsDataprovider:ArrayCollection=dataModel.exercisesWithoutSubtitles;
+				emptySubtitleList=ewsDataprovider;
+				allDataReceived();
+			}
+
+
+			private function emptySubtitleChangeHandler(event:Event):void
+			{
+				var selectedItem:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				currentExercise=selectedItem;
+
+				rsoidleTimer.stop();
+				reserveRemoteSlot(null);
+				rsoidleTimer.start();
+
+				//Set the current exercise in the subtitle editor
+				prepareExercise();
+
+				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, currentExercise.name);
+				BabeliaBrowserManager.getInstance().updateURL('subtitles', BabeliaBrowserManager.SUBTITLE, currentExercise.name);
+			}
+
+			private function prepareExercise():void
+			{
+				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
+				var roles:ExerciseRoleVO=new ExerciseRoleVO();
+				roles.exerciseId=currentExercise.id;
+
+				CuePointManager.getInstance().reset();
+
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+
+				var recModuleCurrentExerciseRetr:Boolean=dataModel.currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
+				dataModel.currentExercise.setItemAt(currentExercise, 0);
+				dataModel.currentExerciseRetrieved=new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
+			}
+
+			private function allDataReceived():void
+			{
+				if (emptySubtitleList != null)
+				{
+					onURLChange="Data";
+				}
+			}
+
+			/*
+			private function onSubtitleTabChange(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+
+				//Reset the state of the lists of the module
+				subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
+
+
+				currentPageEmptySubtitle=1;
+
+				subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
+
+				//Hide and reset the subtitle editor and its videoplayer on tab change
+				subtitleEditor.visible=false;
+				subtitleEditor.includeInLayout=false;
+				subtitleEditor.onTabChange(true);
+			}*/
+
+			private function set onTabChange(value:Boolean):void
+			{
+				if (creationComplete && dataModel.oldContentViewStackIndex == 6)
+				{
+					//Reset the state of the lists of the module
+					subtitlePendingList.exercisesWithoutSubtitlesTile.selectedItem=null;
+
+					currentPageEmptySubtitle=1;
+					subtitlePendingList.currentPaginationPage=currentPageEmptySubtitle;
+
+					//Hide and reset the subtitle editor and its videoplayer on tab change
+					subtitleEditor.visible=false;
+					subtitleEditor.includeInLayout=false;
+
+					if (rsoidleTimer)
+						rsoidleTimer.stop();
+				}
+			}
+
+			private function set userAuthenticationHandler(value:Boolean):void
+			{
+				if (creationComplete)
+					refreshExerciseLists();
+			}
+
+			private function set onURLChange(value:Object):void
+			{
+				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+
+				if (browser.moduleIndex != 6)
+					return;
+
+				if (value == null)
+					return;
+
+				if (!dataModel.isLoggedIn)
+					return;
+
+				var actionFragment:String=browser.actionFragment;
+
+				if (actionFragment == BabeliaBrowserManager.SUBTITLE)
+				{
+					if (browser.targetFragment != '')
+					{
+
+						var tempEx:ExerciseVO=null;
+						var exercises:ArrayCollection=dataModel.exercisesWithoutSubtitles;
+						for (var i:int=0; i < exercises.length; i++)
+						{
+							var tmp:ExerciseVO=exercises.getItemAt(i) as ExerciseVO;
+							if (tmp.name == browser.targetFragment)
+							{
+								tempEx=tmp;
+								break;
+							}
+						}
+
+						if (tempEx)
+						{
+							currentExercise=tempEx;
+
+							rsoidleTimer.stop();
+							reserveRemoteSlot(null);
+							rsoidleTimer.start();
+
+							//Set the current exercise in the subtitle editor
+							prepareExercise();
+						}
+					}
+					else
+					{
+						//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+						BabeliaBrowserManager.getInstance().updateURL('home');
+						return;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+
+</s:VGroup>

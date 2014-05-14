@@ -1,6 +1,6 @@
 package control
 {
-	import events.ViewChangeEvent;
+	//import events.ViewChangeEvent;
 	
 	import model.DataModel;
 	
@@ -8,6 +8,7 @@ package control
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
+	import mx.utils.ObjectUtil;
 	
 	
 	/**
@@ -31,6 +32,7 @@ package control
 		private var _modulesFragments:ArrayCollection;
 		
 		[Bindable] public var moduleIndex:int;
+		[Bindable] public var moduleURL:String;
 		[Bindable] public var actionFragment:String;
 		[Bindable] public var targetFragment:String;
 		
@@ -56,7 +58,10 @@ package control
 			
 			_browserManager = BrowserManager.getInstance();
 			_browserManager.init();
-			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL);
+			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, parseURL);
+			//_browserManager.addEventListener(BrowserChangeEvent.APPLICATION_URL_CHANGE, urlchanged);
+			//_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, urlchanged);
+			//_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, urlchanged);
 			
 			_isParsing = false;
 			
@@ -66,7 +71,7 @@ package control
 			// fill array
 			for ( var i:int = 0; i < 20; i++ )
 				_modulesFragments.addItem(null);
-			
+			/*
 			_modulesFragments.setItemAt("about", ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX);
 			_modulesFragments.setItemAt("account", ViewChangeEvent.VIEWSTACK_ACCOUNT_MODULE_INDEX);
 			_modulesFragments.setItemAt("config", ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX);
@@ -80,13 +85,36 @@ package control
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
 			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX);
 			_modulesFragments.setItemAt("course", ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX);
-			_modulesFragments.setItemAt("login", ViewChangeEvent.VIEWSTACK_LOGIN_MODULE_INDEX);
+			_modulesFragments.setItemAt("login", ViewChangeEvent.VIEWSTACK_LOGIN_MODULE_INDEX);*/
+			
+			_modulesFragments.setItemAt("about", 8);
+			_modulesFragments.setItemAt("account", 4);
+			_modulesFragments.setItemAt("config", 7);
+			_modulesFragments.setItemAt("evaluation", 2);
+			_modulesFragments.setItemAt("exercises", 1);
+			_modulesFragments.setItemAt("home", 0);
+			_modulesFragments.setItemAt("register", 3);
+			_modulesFragments.setItemAt("search", 9);
+			_modulesFragments.setItemAt("upload", 5);
+			_modulesFragments.setItemAt("help", 10);
+			_modulesFragments.setItemAt("activation", 11);
+			_modulesFragments.setItemAt("subtitles", 6);
+			_modulesFragments.setItemAt("course", 12);
+			_modulesFragments.setItemAt("login", 13);
+			
 		}
 		
 		// Get instance
 		public static function getInstance() : BabeliaBrowserManager
 		{
 			return instance;
+		}
+		
+		public function urlchanged(event:BrowserChangeEvent=null):void{
+			_lastURL = event ? event.lastURL : null;
+			trace("Last url: "+_lastURL);
+			trace("Event Object: "+ObjectUtil.toString(event));
+			trace("Module ID: "+this.moduleIndex);
 		}
 		
 		public function addBrowserChangeListener(listenerFunction:Function):void{
@@ -114,10 +142,17 @@ package control
 			var length:Number = params.length;
 			
 			if ( length <= 1 )
-				updateURL(index2fragment(ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX));
+				//updateURL(index2fragment(ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX));
+				updateURL('home');
 			
-			if ( length > 1 ) // module
-				if ( !changeModule(params[1]) ) return;
+			if ( length > 1 ){ // module
+				//if ( !changeModule(params[1]) ) return;
+				if (params[1] == 'exercises') 
+					moduleURL = 'modules/exercise/ExerciseModule.swf';
+				else
+					moduleURL = 'modules/other/OtherModule.swf';
+				
+			}
 			
 			if ( length > 2 ) // action
 				actionFragment = params[2];
@@ -163,8 +198,7 @@ package control
 		{
 			moduleIndex = _modulesFragments.getItemIndex(module);
 			
-			if ( moduleIndex == ViewChangeEvent.VIEWSTACK_ACCOUNT_MODULE_INDEX
-				&& !DataModel.getInstance().isLoggedIn )
+			if ( moduleIndex == 4 && !DataModel.getInstance().isLoggedIn )
 			{
 				DataModel.getInstance().currentContentViewStackIndex = 0;
 				updateURL("home");

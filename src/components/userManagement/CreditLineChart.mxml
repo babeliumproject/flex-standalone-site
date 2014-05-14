@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  creationComplete="init()">
+
+	<fx:Declarations>
+		<mx:SolidColor id="sc1"
+					   color="#df5c02"
+					   alpha=".5"/>
+		<mx:SolidColorStroke id="s1"
+							 color="#df5c02"
+							 weight="2"/>
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.formatters.DateFormatter;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
+			
+			import vo.CreditHistoryVO;
+
+			[Bindable]
+			public var chartData:ArrayCollection;
+
+			[Bindable]
+			private var chartMaxDate:Date;
+			[Bindable]
+			private var chartMinDate:Date;
+
+			[Bindable]
+			private var chartLabelUnits:String;
+
+
+			public function init():void
+			{
+				chartMaxDate=new Date();
+				chartMinDate=new Date(chartMaxDate.setMonth(chartMaxDate.month - 1));
+			}
+
+			public function set chartMinimum(min:Date):void
+			{
+				chartMinDate=min;
+			}
+
+			public function set chartMaximum(max:Date):void
+			{
+				chartMaxDate=max;
+			}
+
+			public function get chartMaximum():Date
+			{
+				return chartMaxDate;
+			}
+
+			public function set labelUnits(unit:String):void
+			{
+				var choices:ArrayCollection=new ArrayCollection(new Array("years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"));
+				if (choices.contains(unit))
+				{
+					chartLabelUnits=unit;
+					dateAxis.labelUnits=chartLabelUnits;
+				}
+			}
+
+			public function set creditHistoryRetrieved(value:Boolean):void
+			{
+				chartMaxDate=new Date();
+				chartData=DataModel.getInstance().creditChartData;
+				chartData= new ArrayCollection(chartData.source.reverse());
+				if (chartData.length > 0)
+				{
+					creditLineChart.dataProvider=chartData;
+				}
+				DataModel.getInstance().isChartDataRetrieved=false;
+			}
+
+			private function dateParseFunction(s:String):Date
+			{
+				var df:DateFormatter=new DateFormatter();
+				df.formatString="MM-DD-YYYY JJ:NN:SS";
+				var d:Date=DateFormatter.parseDateString(df.format(s));
+				return d;
+			}
+		]]>
+	</fx:Script>
+	<fx:Binding source="{DataModel.getInstance().isChartDataRetrieved}"
+				destination="creditHistoryRetrieved"/>
+	<mx:LineChart id="creditLineChart"
+				  showDataTips="true"
+				  height="100%"
+				  width="100%">
+		<mx:horizontalAxis>
+			<mx:DateTimeAxis id="dateAxis"
+							 disabledDays="[]"
+							 minimum="{chartMinDate}"
+							 maximum="{chartMaxDate}"
+							 parseFunction="dateParseFunction"/>
+			<!--<mx:CategoryAxis categoryField="Date"/>-->
+		</mx:horizontalAxis>
+
+		<mx:series>
+			<mx:AreaSeries yField="Credits"
+						   xField="Date"
+						 
+						   form="segment"
+						   displayName="Credit Variation"
+						   areaStroke="{s1}"
+						   areaFill="{sc1}"/>
+		</mx:series>
+
+	</mx:LineChart>
+	<mx:Legend id="legend"
+			   dataProvider="{creditLineChart}"
+			   />
+</s:HGroup>

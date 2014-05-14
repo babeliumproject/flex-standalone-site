@@ -3,8 +3,10 @@ package commands.main
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.ExerciseEvent;
-	import events.ViewChangeEvent;
+	import control.BabeliaBrowserManager;
+	
+	import modules.exercise.event.ExerciseEvent;
+	//import events.ViewChangeEvent;
 	
 	import model.DataModel;
 	
@@ -21,7 +23,8 @@ package commands.main
 			var recModuleCurrentExerciseRetr:Boolean = DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
-			new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLE_EDITOR).dispatch();
+			//new ViewChangeEvent(ViewChangeEvent.VIEW_SUBTITLE_EDITOR).dispatch();
+			BabeliaBrowserManager.getInstance().updateURL('subtitle','view',selectedEx.name);
 		}
 		
 	}

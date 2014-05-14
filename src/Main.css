@@ -19,9 +19,9 @@ s|Application{
 	skinClass: ClassReference('skins.ApplicationCustomSkin');
 }	
 
-mx|LinkButton{
+/*mx|LinkButton{
 	fontWeight: normal;
-}
+}*/
 
 /*
 mx|Alert{

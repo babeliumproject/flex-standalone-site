@@ -8,9 +8,9 @@ package commands.autoevaluation {
 	
 	import model.DataModel;
 	
-	import modules.autoevaluation.Autoevaluator;
-	import modules.autoevaluation.AutoevaluatorManager;
-	import modules.autoevaluation.Evaluation;
+	import components.autoevaluation.Autoevaluator;
+	import components.autoevaluation.AutoevaluatorManager;
+	import components.autoevaluation.Evaluation;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;

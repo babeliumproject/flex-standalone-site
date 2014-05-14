@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import components.main.VideoPaginator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			
+			import spark.components.Button;
+			
+			[Bindable]
+			private var _currentPage:int=1;
+			
+			[Bindable]
+			private var _exercisesWithSubtitlesList:ArrayCollection;
+			
+			public function set currentPaginationPage(value:uint):void{
+				_currentPage = value;
+				createPagination();
+			}
+			
+			public function set dataProvider(exercisesToReview:ArrayCollection):void
+			{
+				_exercisesWithSubtitlesList=exercisesToReview;
+				if (_exercisesWithSubtitlesList.length > 0)
+				{
+					exercisesWithSubtitlesTile.includeInLayout=true;
+					exercisesWithSubtitlesTile.visible=true;
+					createPagination();
+				}
+				else
+				{
+					exercisesWithSubtitlesTile.includeInLayout=false;
+					exercisesWithSubtitlesTile.visible=false;
+				}
+			}
+			
+			public function set changeListener(changeFunction:Function):void
+			{
+				exercisesWithSubtitlesTile.addEventListener(ListEvent.CHANGE, changeFunction);
+			}
+			
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_exercisesWithSubtitlesList.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
+				refreshDataProvider();
+			}
+			
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				_currentPage=int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+			
+			public function refreshDataProvider():void
+			{
+				var current:int=_currentPage - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(_exercisesWithSubtitlesList.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				exercisesWithSubtitlesTile.dataProvider=dataTemp;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:List id="exercisesWithSubtitlesTile"
+			width="100%"
+			minHeight="0"
+			borderVisible="false"
+			skinClass="skins.TransparentBgListSkin"
+			itemRenderer="modules.exercises.ExerciseItemRenderer"
+			dataProvider="{_exercisesWithSubtitlesList}">
+		<s:layout>
+			<s:TileLayout horizontalAlign="justify"
+						  verticalAlign="middle"
+						  columnAlign="justifyUsingWidth"
+						  columnWidth="500"/>
+		</s:layout>
+	</s:List>
+	
+	<s:HGroup id="paginationBox"
+			  width="100%"
+			  horizontalAlign="center"
+			  gap="2"/>
+	
+</s:VGroup>

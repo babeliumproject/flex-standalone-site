@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subtitles:SubtitleEditorClass xmlns:fx="http://ns.adobe.com/mxml/2009"
+							   xmlns:s="library://ns.adobe.com/flex/spark"
+							   xmlns:mx="library://ns.adobe.com/flex/mx"
+							   xmlns:subtitles="components.subtitles.*"
+							   xmlns:videoPlayer="components.videoPlayer.*"
+							   xmlns:videoUpload="components.videoUpload.*"
+							   xmlns:common="view.common.*"
+							   xmlns:skins="skins.*"
+							   paddingTop="20"
+							   paddingLeft="16"
+							   paddingRight="16">
+
+	<!-- Video Player -->
+	<s:VGroup width="100%">
+		<s:Label id="exerciseTitle"
+				 text="ExerciseTitle"
+				 width="100%"
+				 styleName="exerciseTitleLabel"/>
+		<s:HGroup width="100%">
+			<s:VGroup>
+				<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
+												autoPlay="true"
+												skin="white"
+												seek="true"
+												subtitles="true"
+												autoScale="false"
+												arrows="false"
+												width="400"
+												height="250"
+												subtitlingControls="true"
+												streamSource="{streamSource}"/>
+				<s:BorderContainer id="simultaneousEditNotice"
+								   minHeight="0"
+								   includeInLayout="false"
+								   visible="false"
+								   cornerRadius="8"
+								   borderWeight="2"
+								   backgroundAlpha="0.5"
+								   backgroundColor="#a8c6ee"
+								   borderColor="#a8c6ee"
+								   width="100%">
+					<s:layout>
+						<s:HorizontalLayout verticalAlign="middle"
+											paddingBottom="4"
+											paddingLeft="10"
+											paddingRight="10"
+											paddingTop="4"/>
+					</s:layout>
+					<mx:Image source="@Embed('/resources/images/alertInfo.png')"/>
+					<s:Label width="300"
+							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBTITLE_EDITION')}"/>
+				</s:BorderContainer>
+			</s:VGroup>
+
+
+			<s:BorderContainer id="subtitleEditor"
+							   width="100%"
+							   height="100%"
+							   backgroundAlpha="0"
+							   cornerRadius="8"
+							   minHeight="500">
+
+				<s:layout>
+					<s:VerticalLayout paddingTop="10"
+									  paddingLeft="10"
+									  paddingRight="10"
+									  paddingBottom="10"
+									  verticalAlign="middle"
+									  horizontalAlign="center"/>
+				</s:layout>
+
+				<s:Label text="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"/>
+
+				<s:HGroup id="guestEditWarningBox"
+						  verticalAlign="middle">
+					<mx:Image source="@Embed(source='/resources/images/alertConfirmation.png')"/>
+					<s:Label id="notLoggedWarning"
+							 styleName="guestVersionWarningLabel"
+							 text="{resourceManager.getString('myResources','LABEL_GUEST_EDIT_WARNING')}"/>
+				</s:HGroup>
+				<s:VGroup id="subtitleVersionBox"
+						  includeInLayout="false"
+						  visible="false"
+						  width="100%"
+						  horizontalAlign="left"
+						  paddingTop="10">
+					<s:HGroup verticalAlign="middle"
+							  width="100%">
+						<s:Label text="{resourceManager.getString('myResources','LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION')}"/>
+						<s:DropDownList id="subtitleVersionSelector"
+									dataProvider="{availableSubtitleVersions}"
+									change="{onSubtitleVersionChange(event)}"
+									labelFunction="{subtitleVersionComboLabelFunction}"
+									minWidth="250"
+									requireSelection="true"/>
+					</s:HGroup>
+				</s:VGroup>
+
+				<mx:DataGrid id="subtitleList"
+							 sortableColumns="false"
+							 width="100%"
+							 height="100%"
+							 editable="true"
+							 dataProvider="{this.subtitleCollection}"
+							 rowHeight="28">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
+										   labelFunction="{lfRowNum}"
+										   editable="false"
+										   width="60">
+							<mx:itemRenderer>
+								<fx:Component>
+									<mx:LinkButton click="outerDocument.goToTimeHandler()"
+												   selectionColor="0xB7F39B"
+												   rollOverColor="0xEEFEE6"
+												   toolTip="{resourceManager.getString('myResources','TOOLTIP_SEEK_TO_LINE')}"/>
+								</fx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
+										   editable="true"
+										   editorDataField="value"
+										   width="85"
+										   rendererIsEditor="true"
+										   itemRenderer="components.subtitles.ShowNumericStepperRenderer">
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
+										   width="85"
+										   editable="true"
+										   editorDataField="value"
+										   rendererIsEditor="true"
+										   itemRenderer="components.subtitles.HideNumericStepperRenderer"/>
+						<mx:DataGridColumn id="comboColumn"
+										   width="150"
+										   dataField="roleId"
+										   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
+										   rendererIsEditor="true"
+										   labelFunction="{resolveIdToRole}"
+										   editorDataField="selectedItemKey">
+							<mx:itemRenderer>
+								<fx:Component>
+									<subtitles:GridComboBox dataProvider="{outerDocument.comboData}"
+															labelField="charName"
+															lookupField="roleId"
+															prompt="Select a role..."/>
+								</fx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
+										   dataField="text"
+										   width="375">
+							<mx:itemEditor>
+								<fx:Component>
+									<mx:TextInput maxChars="120"/>
+								</fx:Component>
+							</mx:itemEditor>
+						</mx:DataGridColumn>
+
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:Spacer height="10"/>
+				<s:HGroup width="100%" verticalAlign="middle">
+					<mx:Image id="groupLogo"
+						  	  source="resources/images/about_section_title_icon.png"/>
+					<mx:Text htmlText="{resourceManager.getString('myResources','COMPLETE_SUBTITLE_INFO')}" width="100%" fontSize="14"/>
+				</s:HGroup>
+				<s:HGroup height="40"
+						  width="100%"
+						  horizontalAlign="center">
+					<!-- enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}" -->
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
+									  
+									  click="{subtitleInsertHandler(event)}"
+									  id="addSubtitleLine"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('/resources/images/add.png')"/>
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+									  enabled="{subtitleCollection.length > 0}"
+									  click="subtitleRemoveHandler()"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('/resources/images/delete.png')"/>
+
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
+									  enabled="{subtitleCollection.length > 0}"
+									  click="subtitleClearHandler()"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('/resources/images/cancel.png')"/>
+					<mx:VRule id="saveSubtitleSeparator"
+							  height="30"/>
+					<skins:IconButton id="saveSubtitleButton"
+									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
+									  click="saveSubtitlesHandler()"
+									  skinClass="skins.IconButtonSkin"
+									  icon="@Embed('/resources/images/disk.png')"/>
+				</s:HGroup>
+
+			</s:BorderContainer>
+		</s:HGroup>
+	</s:VGroup>
+
+</subtitles:SubtitleEditorClass>

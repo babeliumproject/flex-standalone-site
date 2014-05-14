@@ -5,6 +5,8 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.BabeliaBrowserManager;
+	
 	import events.*;
 	
 	import model.DataModel;
@@ -38,7 +40,8 @@ package commands.userManagement
 				_dataModel.registrationErrorMessage = null;
 				_dataModel.isSuccessfullyLogged = false;
 				_dataModel.isLoggedIn = false;
-				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				BabeliaBrowserManager.getInstance().updateURL('home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else {
 				//Inform about the error

@@ -3,7 +3,7 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoPlayerBabelia;
 	
 	import vo.CueObject;
 

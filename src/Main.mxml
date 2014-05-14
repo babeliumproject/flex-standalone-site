@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   xmlns:control="control.*"
 			   xmlns:business="business.*"
-			   xmlns:main="modules.main.*"
+			   xmlns:main="components.main.*"
 			   preinitialize="init()"
 			   height="100%"
 			   width="100%"

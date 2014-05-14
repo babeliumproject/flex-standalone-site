@@ -4,9 +4,7 @@ package control {
 	import commands.VideoStopCommand;
 	import commands.autoevaluation.*;
 	import commands.configuration.*;
-	import commands.course.*;
 	import commands.evaluation.*;
-	import commands.exercises.*;
 	import commands.home.*;
 	import commands.main.*;
 	import commands.search.*;
@@ -16,6 +14,10 @@ package control {
 	import commands.videoUpload.*;
 	
 	import events.*;
+	
+	import modules.exercise.event.ExerciseEvent;
+	import modules.exercise.event.ResponseEvent;
+	import modules.exercise.command.*;
 
 	public class Controller extends FrontController {
 		//All the application's actions are managed from this controller
@@ -29,6 +31,7 @@ package control {
 			
 			
 			//Content ViewStack related commands
+			/*
 			addCommand(ViewChangeEvent.VIEW_HOME_MODULE, ViewHomeModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_EXERCISE_MODULE, ViewExerciseModuleCommand);
 			addCommand(ViewChangeEvent.VIEW_EVALUATION_MODULE, ViewEvaluationModuleCommand);
@@ -65,7 +68,8 @@ package control {
 			
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_UNSIGNED, ViewAccountUnsignedCommand);
 			addCommand(ViewChangeEvent.VIEW_ACCOUNT_SIGNED, ViewAccountSignedCommand);
-
+			*/
+			
 			//Credit management commands
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);
 			addCommand(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY, GetCurrentDayCreditHistoryCommand);
@@ -169,7 +173,7 @@ package control {
 			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);
 			
 			//Configuration ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_CONFIGURATION_MODULE, ViewConfigurationModuleCommand);
+			//addCommand(ViewChangeEvent.VIEW_CONFIGURATION_MODULE, ViewConfigurationModuleCommand);
 		}
 
 	}

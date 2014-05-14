@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  horizontalAlign="center"
+		  width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			[Bindable]
+			private var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			
+			[Bindable]
+			private var videoSource:String = 'intro';
+
+			protected function registerButton_clickHandler(event:MouseEvent):void
+			{
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
+				BabeliaBrowserManager.getInstance().updateURL('register');
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<s:BorderContainer cornerRadius="8">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="16" paddingRight="16" paddingTop="16" paddingBottom="16"/>
+		</s:layout>
+		<videoPlayer:VideoPlayerBabelia id="staticUnsignedMotdVp"
+										skin="white"
+										autoPlay="false"
+										seek="true"
+										subtitles="true"
+										autoScale="false"
+										arrows="false"
+										width="400"
+										height="250"
+										streamSource="{streamSource}"
+										videoSource="{videoSource}"
+										controlsEnabled="false"/>
+	</s:BorderContainer>
+
+	<s:VGroup>
+		<mx:Text htmlText="{resourceManager.getString('myResources','HOME_LOGGED_IN_STATIC_MESSAGE')}"
+				 width="500"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<s:Button id="registerButton"
+					  styleName="bigBlueButton"
+					  buttonMode="true"
+					  label="{resourceManager.getString('myResources','JOIN_US')}"
+					  click="registerButton_clickHandler(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+
+
+</s:HGroup>

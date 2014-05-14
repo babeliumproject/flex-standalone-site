@@ -10,7 +10,7 @@ package control
 	import flash.net.*;
 	import flash.utils.*;
 	
-	import modules.videoPlayer.events.babelia.StreamEvent;
+	import components.videoPlayer.events.babelia.StreamEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
