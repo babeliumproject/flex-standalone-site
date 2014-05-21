@@ -213,6 +213,10 @@ package model
 		public var availableExercises:ArrayCollection;
 		[Bindable]
 		public var availableRecordableExercises:ArrayCollection;
+		
+		[Bindable]
+		public var availableRecordableExercisesRetrieved:Boolean;
+		
 		[Bindable]
 		public var availableExercisesRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
 

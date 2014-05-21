@@ -32,6 +32,7 @@ package control
 		private var _modulesFragments:ArrayCollection;
 		
 		[Bindable] public var moduleIndex:int;
+		[Bindable] public var moduleName:String;
 		[Bindable] public var moduleURL:String;
 		[Bindable] public var actionFragment:String;
 		[Bindable] public var targetFragment:String;

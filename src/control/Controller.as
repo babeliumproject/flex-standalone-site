@@ -15,9 +15,11 @@ package control {
 	
 	import events.*;
 	
-	import modules.exercise.event.ExerciseEvent;
-	import modules.exercise.event.ResponseEvent;
 	import modules.exercise.command.*;
+	import modules.exercise.event.ExerciseEvent;
+	import modules.exercise.event.GetExercisesCommand;
+	import modules.exercise.event.ResponseEvent;
+	import modules.exercise.event.WatchExerciseCommand;
 
 	public class Controller extends FrontController {
 		//All the application's actions are managed from this controller

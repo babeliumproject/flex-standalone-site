@@ -20,21 +20,22 @@
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
+			import components.videoPlayer.events.VideoPlayerEvent;
+			import components.videoPlayer.events.babelia.RecordingEvent;
+			import components.videoPlayer.events.babelia.StreamEvent;
+			
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
 			
 			import events.CueManagerEvent;
-			import modules.exercise.event.ExerciseEvent;
 			import events.RecordingEndOptionEvent;
-			import modules.exercise.event.ResponseEvent;
 			import events.UserVideoHistoryEvent;
-			//import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			
-			import components.videoPlayer.events.VideoPlayerEvent;
-			import components.videoPlayer.events.babelia.RecordingEvent;
-			import components.videoPlayer.events.babelia.StreamEvent;
+			import modules.IModuleInterface;
+			import modules.exercise.event.ExerciseEvent;
+			import modules.exercise.event.ResponseEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -86,7 +87,7 @@
 			private var _exerciseId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
-			
+
 			private var sorter:SortingCollator=new SortingCollator();
 
 			/**
@@ -135,7 +136,6 @@
 				setupResponseOptions();
 				if (_exerciseTitle == null)
 					_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
-				onURLChange=null;
 				_creationComplete=true;
 			}
 
@@ -276,21 +276,21 @@
 					_rolesReady=true;
 				}
 			}
-			
+
 			private function localeCompareFunction(item1:Object, item2:Object):int
 			{
 				//trace(ObjectUtil.toString(item1));
 				//trace(ObjectUtil.toString(item2));
-				
-				
+
+
 				//var sorter:SortingCollator=new SortingCollator();
-				sorter.setStyle('locale',resourceManager.localeChain[0]);
+				sorter.setStyle('locale', resourceManager.localeChain[0]);
 				sorter.ignoreCase=true;
 				sorter.ignoreSymbols=false;
-				
+
 				//trace(sorter.compare(item1.toString(),item2.toString()));
-				
-				return sorter.compare(item1.toString(),item2.toString());
+
+				return sorter.compare(item1.toString(), item2.toString());
 				//return language1.localeCompare(language2);
 			}
 
@@ -417,7 +417,7 @@
 
 				// Update URL
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, _exerciseName);
-				BabeliaBrowserManager.getInstance().updateURL('exercises',BabeliaBrowserManager.VIEW, _exerciseName);
+				//BabeliaBrowserManager.getInstance().updateURL('exercises', BabeliaBrowserManager.VIEW, _exerciseName);
 				_exerciseSelected=true;
 			}
 
@@ -427,12 +427,15 @@
 				videoPlayerAndRecordingControls.visible=false;
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
-				if(DataModel.getInstance().isLoggedIn){
+				if (DataModel.getInstance().isLoggedIn)
+				{
 					panelSelectedExercise.visible=true;
 					panelSelectedExercise.includeInLayout=true;
 					guestEditWarningBox.visible=false;
 					guestEditWarningBox.includeInLayout=false;
-				} else {
+				}
+				else
+				{
 					guestEditWarningBox.visible=true;
 					guestEditWarningBox.includeInLayout=true;
 					panelSelectedExercise.visible=false;
@@ -576,12 +579,15 @@
 
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
-				if(DataModel.getInstance().isLoggedIn){
+				if (DataModel.getInstance().isLoggedIn)
+				{
 					panelSelectedExercise.visible=true;
 					panelSelectedExercise.includeInLayout=true;
 					guestEditWarningBox.visible=false;
 					guestEditWarningBox.includeInLayout=false;
-				} else {
+				}
+				else
+				{
 					guestEditWarningBox.visible=true;
 					guestEditWarningBox.includeInLayout=true;
 					panelSelectedExercise.visible=false;
@@ -631,8 +637,8 @@
 
 				hideSelectedExercise(); // Information of selected exercise
 
-				exerciseList.exerciseListDataGroup.selectedIndex=-1;
-				exerciseList.removeFilters();
+				//exerciseList.exerciseListDataGroup.selectedIndex=-1;
+				//exerciseList.removeFilters();
 
 				// Remove cueManager's Listeners
 				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
@@ -756,61 +762,7 @@
 				}
 			}
 
-			// On URL change
-			public function set onURLChange(value:Object):void
-			{
-				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
-
-				//if (browser.moduleIndex != 1)
-				//	return;
-
-				//if (value == null)
-				//	return;
-
-				switch (browser.actionFragment)
-				{
-					case BabeliaBrowserManager.VIEW:
-						if (browser.targetFragment != '')
-						{
-							var tempEx:ExerciseVO=null;
-							var exercises:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
-							if(exercises){
-							for (var i:int=0; i < exercises.length; i++)
-							{
-								var tmp:ExerciseVO=exercises.getItemAt(i) as ExerciseVO;
-								if (tmp.name == browser.targetFragment)
-								{
-									tempEx=tmp;
-									break;
-								}
-							}
-							}
-							if (tempEx == null)
-							{
-								//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-								BabeliaBrowserManager.getInstance().updateURL('home');
-								return;
-							}
-							new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, tempEx).dispatch();
-							//FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
-						}
-						else
-						{
-							//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-							BabeliaBrowserManager.getInstance().updateURL('home');
-							return;
-						}
-						break;
-					case BabeliaBrowserManager.RECORD:
-						//In the target fragment &mode={0,1} should be specified &role=myrole
-						break;
-					default:
-						//resetComponent();
-						//new ViewChangeEvent(ViewChangeEvent.VIEW_EXERCISE_MODULE).dispatch();
-						BabeliaBrowserManager.getInstance().updateURL('exercises');
-						break;
-				}
-			}
+			
 
 			public function set onLogout(value:Boolean):void
 			{
@@ -848,8 +800,7 @@
 	-->
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
-				destination="onURLChange"/>
+	
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
 
@@ -974,20 +925,21 @@
 			</s:HGroup>
 		</s:BorderContainer>
 		<view:RecordingEndOptions id="recordingEndOptions"
-									   includeInLayout="false"
-									   visible="false"
-									   width="{VP.width}"
-									   backgroundAlpha="0"
-									   borderVisible="false"/>
+								  includeInLayout="false"
+								  visible="false"
+								  width="{VP.width}"
+								  backgroundAlpha="0"
+								  borderVisible="false"/>
 
 		<babelia:ExerciseInfoBox id="ratingShareReport"
-											 borderVisible="false"
-											 backgroundAlpha="0"
-											 width="{VP.width}"/>
+								 borderVisible="false"
+								 backgroundAlpha="0"
+								 width="{VP.width}"/>
 
 
 	</s:VGroup>
 
+	<!--
 	<s:VGroup width="100%"
 			  horizontalAlign="left"
 			  paddingLeft="16"
@@ -1003,13 +955,14 @@
 			</s:stroke>
 		</s:Line>
 	</s:VGroup>
-
+	-->
 	<!-- Video List -->
+	<!--
 	<view:VideoList width="100%"
-						 id="exerciseList"
-						 paddingLeft="16"
-						 paddingRight="16"
-						 paddingTop="16"
-						 paddingBottom="16"/>
-
+					id="exerciseList"
+					paddingLeft="16"
+					paddingRight="16"
+					paddingTop="16"
+					paddingBottom="16"/>
+	-->
 </s:VGroup>

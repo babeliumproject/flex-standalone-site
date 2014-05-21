@@ -11,19 +11,21 @@
 
 	<fx:Script>
 		<![CDATA[
-			import modules.exercise.event.ExerciseEvent;
-
-			import model.DataModel;
-
 			import components.main.VideoPaginator;
-
+			
+			import control.BabeliaBrowserManager;
+			
+			import model.DataModel;
+			
+			import modules.exercise.event.ExerciseEvent;
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
-
+			
 			import spark.components.Button;
-
+			
 			import vo.ExerciseVO;
 
 
@@ -49,21 +51,21 @@
 
 			public function set handleExercisesRetrieve(value:Boolean):void
 			{
-				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
-				{
+				//if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
+				//{
 					//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
 					_dataProvider=DataModel.getInstance().availableRecordableExercises;
 
 					createPagination();
 
-					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
-				}
+					//DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
+				//}
 			}
 
 			public function set retrieveCustomizedExercises(value:Boolean):void
 			{
-				trace("get recordable exercises");
-				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+				//trace("get recordable exercises");
+				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
 			public function createPagination():void
@@ -92,7 +94,8 @@
 			{
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
 
-				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+				BabeliaBrowserManager.getInstance().updateURL('exercises',BabeliaBrowserManager.VIEW, obj.name);
 				callLater(updateVerticalScroll);
 			}
 
@@ -180,7 +183,7 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().availableRecordableExercisesRetrieved}"
 				destination="handleExercisesRetrieve"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>

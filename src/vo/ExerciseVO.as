@@ -32,6 +32,7 @@ package vo
 		public var isSubtitled:uint;
 		
 		public var descriptors:*;
+		public var related:*;
 		
 		public var score:Number; //is used to sort the searches
 		public var idIndex:int; //is used to delete exercises

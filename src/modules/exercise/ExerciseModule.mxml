@@ -14,11 +14,80 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import mx.binding.utils.BindingUtils;
+			
+			import model.DataModel;
+			
+			import modules.exercise.event.ExerciseEvent;
+			import modules.exercise.model.ExerciseModel;
+			import modules.exercise.view.Exercises;
+			import modules.exercise.view.VideoList;
+			
+			import vo.ExerciseVO;
+			
+			public var modulename:String = 'exercises';
+			
+			[Bindable]
+			public var urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			
 			public function getModuleName():String{
-				return 'exercise';
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				BindingUtils.bindSetter(onURLChange, urlmanager, "targetFragment");
+			}
+			
+			private function actionView(value:String):void{
+				removeAllElements();
+				var viewExercise:Exercises = new Exercises();
+				addElement(viewExercise);
+				var ex:ExerciseVO = new ExerciseVO();
+				ex.name = urlmanager.targetFragment;
+				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
+			}
+			
+			private function actionIndex():void{
+				trace("Exercise index");
+				removeAllElements();
+				var indexExercise:VideoList = new VideoList();
+				indexExercise.percentWidth=100;
+				indexExercise.id="exerciseList";
+				indexExercise.paddingLeft=16;
+				indexExercise.paddingRight=16;
+				indexExercise.paddingTop=16;
+				indexExercise.paddingBottom=16;
+				addElement(indexExercise);
+				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+			}
+			
+			public function onURLChange(value:Object):void
+			{
+				trace("Exercise URL handler");
+				trace("Correct module "+urlmanager.moduleName + "current: "+modulename);
+				if(urlmanager.moduleName != modulename) return;
+				
+				switch (urlmanager.actionFragment)
+				{
+					case BabeliaBrowserManager.VIEW:
+						if (urlmanager.targetFragment != '')
+						{
+							actionView(urlmanager.targetFragment);
+						}
+						else
+						{
+							urlmanager.updateURL('home');
+							return;
+						}
+						break;
+					default:
+						actionIndex();
+						break;
+				}
 			}
 		]]>
 	</fx:Script>
-	
-	<view:Exercises/>
+
 </s:Module>

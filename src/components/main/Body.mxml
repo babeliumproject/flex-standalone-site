@@ -16,9 +16,9 @@
 		  paddingBottom="40"
 		  minWidth="1000"
 		  gap="0"
-	
-		  xmlns:skins="skins.*" xmlns:course="components.course.*">
-	
+		  xmlns:skins="skins.*"
+		  xmlns:course="components.course.*">
+
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
@@ -26,46 +26,53 @@
 			import modules.IModuleInterface;
 			
 			import mx.events.ModuleEvent;
-			
-			[Bindable] public var moduleURL:String;
+
 			[Bindable]
-			public var currentModuleName:String;
-			
-			public function set onURLChange(module:String):void{
+			public var moduleURL:String;
+
+			//[Bindable] public var currentModuleName:String;
+
+			public function set onURLChange(module:String):void
+			{
+
 				moduleURL=module;
 				modloader.unloadModule();
+				
 				modloader.loadModule(moduleURL);
 			}
-			
+
 			protected function moduleReadyHandler(event:ModuleEvent):void
 			{
 				/* Cast the ModuleLoader's child to the interface.
 				This child is an instance of the module.
 				You can now call methods on that instance. */
-				var ichild:* = modloader.child as IModuleInterface;                
-				if (modloader.child != null) {                    
-					/* Call setters in the module to adjust its
-					appearance when it loads. */
-					//ichild.setAdjusterID(myId.text);
-					//ichild.setBackgroundColor(myColor.selectedColor);
-				} else {                
-					trace("Uh oh. The mod.child property is null");                 
+				var ichild:*=modloader.child as IModuleInterface;
+				var modulename:String='home';
+				if (modloader.child != null)
+				{
+					trace("Accessing module's interface");
+					modulename = ichild.getModuleName();
+					BabeliaBrowserManager.getInstance().moduleName=modulename;
+					ichild.setDataBindings();
 				}
-				/* Set the value of a local variable by calling a method
-				on the interface. */
-				currentModuleName = ichild.getModuleName();
+				else
+				{
+					BabeliaBrowserManager.getInstance().moduleName=modulename;
+					trace("Uh oh. The mod.child property is null");
+				}
+				
 				
 			}
-			
 		]]>
 	</fx:Script>
 
 	<fx:Binding source="{BabeliaBrowserManager.getInstance().moduleURL}"
 				destination="onURLChange"/>
-	
+
 	<s:ModuleLoader id="modloader"
-					ready="moduleReadyHandler(event)"/>
-	
+					ready="moduleReadyHandler(event)"
+					width="100%"/>
+
 	<!--
 	<skins:CustomViewStack id="contentViewStack"
 						   width="100%"
@@ -96,9 +103,9 @@
 		<main:HelpFAQMain id="helpModule"/>
 
 		<userManagement:AccountActivation id="accountActivation"/>
-		
+
 		<course:Module id="courseModule"/>
-		
+
 		<main:Login id="loginModule" width="100%"/>
 
 	</skins:CustomViewStack>
@@ -107,7 +114,7 @@
 		<![CDATA[
 			import events.UserEvent;
 			import events.VideoStopEvent;
-			
+
 			import model.DataModel;
 			import spark.events.IndexChangeEvent;
 

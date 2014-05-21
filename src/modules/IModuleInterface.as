@@ -5,5 +5,7 @@ package modules
 	public interface IModuleInterface extends IEventDispatcher
 	{
 		function getModuleName():String;
+		
+		function setDataBindings(data:* = null):void;
 	}
 }

@@ -1,4 +1,4 @@
-package commands.main
+package modules.exercise.event
 {
 	import business.ExerciseDelegate;
 	

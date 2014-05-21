@@ -95,5 +95,11 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		public function watchExercise(exercisehash:String):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.watchExercise(exercisehash);
+			pendingCall.addResponder(responder);
+		}
+		
 	}
 }

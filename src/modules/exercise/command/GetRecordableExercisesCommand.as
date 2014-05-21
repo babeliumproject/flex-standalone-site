@@ -20,6 +20,7 @@ package modules.exercise.command
 	
 	public class GetRecordableExercisesCommand implements ICommand, IResponder
 	{
+		private var dataModel:DataModel = DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
@@ -36,14 +37,13 @@ package modules.exercise.command
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				
 				//Set the data to the application's model
-				DataModel.getInstance().availableRecordableExercises=resultCollection;
+				dataModel.availableRecordableExercises=resultCollection;
 				//Reflect the visual changes
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
-				
 			} else {
-				DataModel.getInstance().availableRecordableExercises.removeAll();
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
+				dataModel.availableRecordableExercises.removeAll();
 			}
+			//dataModel.availableExercisesRetrieved.setItemAt(!dataModel.availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE), DataModel.RECORDING_MODULE);
+			dataModel.availableRecordableExercisesRetrieved = !dataModel.availableRecordableExercisesRetrieved;
 		}
 		
 		public function fault(info:Object):void

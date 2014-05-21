@@ -78,6 +78,25 @@ class Exercise {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	public function watchExercise($hash = null) {
+		
+		$exercise = $this->getExerciseByName($hash);
+		if($exercise){
+			$relatedexercises = array();
+			//Related exercises. This should use the search engine to look for 
+			//matches that take into account: language, difficulty, tags, descriptors
+			$qrelated = "SELECT id FROM exercise
+						 WHERE language='%s' AND status = 'Available'
+			 			 ORDER BY RAND() LIMIT 4";
+			$results = $this->conn->_multipleSelect($qrelated, $exercise->language);
+			foreach($results as $result){
+				array_push($relatedexercises, $this->getExerciseById($result->id));
+			}
+			$exercise->related = $relatedexercises;
+		}
+		return $exercise;
+	}
 
 	/**
 	 * Saves information about a exercise that's being just uploaded and marks it to be reencoded to meet Babelium's video specification via a cron task.
@@ -129,7 +148,10 @@ class Exercise {
 					return $lastExerciseId;
 			}
 
-		} catch (Exception $e) {
+		} catch (Exception $e) {if(!$exerciname) return;
+		
+		$query = "SELECT * FROM exercise WHERE name='%s' AND status='Available'";
+		$exerciseinfo = $this->conn->_singleSelect($query, $exercisename);
 			throw new Exception($e->getMessage());
 		}
 
@@ -519,7 +541,7 @@ class Exercise {
 					   e.source, 
 					   e.name, 
 					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date, 
+       				   e.adding_date as addingDate, 
        				   e.duration, 
        				   u.username as userName, 
        				   avg (suggested_level) as avgDifficulty, 
