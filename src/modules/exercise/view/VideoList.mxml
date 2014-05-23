@@ -187,6 +187,22 @@
 				destination="handleExercisesRetrieve"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>
+	
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingTop="16">
+		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
+				 styleName="sectionTitleLabel"
+				 id="exerciseListTitleLabel"/>
+		<s:Line width="{exerciseListTitleLabel.width}">
+			<s:stroke>
+				<mx:SolidColorStroke weight="3"
+									 color="{exerciseListTitleLabel.getStyle('color')}"/>
+			</s:stroke>
+		</s:Line>
+	</s:VGroup>
 
 	<s:ToggleButton id="filterButton"
 					label="{resourceManager.getString('myResources','FILTER')}"

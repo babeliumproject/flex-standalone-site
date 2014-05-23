@@ -1,74 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:view="modules.exercise.view.*"
-		  implements="modules.IModuleInterface">
+		  implements="modules.IModuleInterface"
+		  width="100%">
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
-	
+
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	
+
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-			
-			import mx.binding.utils.BindingUtils;
-			
+
+			import flash.utils.getDefinitionByName;
+			import flash.utils.getQualifiedClassName;
+
 			import model.DataModel;
-			
+
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.model.ExerciseModel;
 			import modules.exercise.view.Exercises;
+			import modules.exercise.view.IGroupInterface;
 			import modules.exercise.view.VideoList;
-			
+
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.IVisualElement;
+			import mx.core.IVisualElementContainer;
+			import mx.utils.ObjectUtil;
+
+			import spark.components.Group;
+
 			import vo.ExerciseVO;
-			
-			public var modulename:String = 'exercises';
-			
+
+			public var modulename:String='exercises';
+
 			[Bindable]
 			public var urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
-			
-			public function getModuleName():String{
+
+			[Bindable]
+			private var viewstackIndex:uint;
+
+			public static const INDEX:uint=0;
+			public static const VIEW:uint=1;
+
+			private var changewatcher:ChangeWatcher;
+
+			public function getModuleName():String
+			{
 				return modulename;
 			}
-			
-			public function setDataBindings(data:* = null):void{
-				BindingUtils.bindSetter(onURLChange, urlmanager, "targetFragment");
+
+			public function setDataBindings(data:*=null):void
+			{
+				changewatcher=BindingUtils.bindSetter(onURLChange, urlmanager, "targetFragment");
 			}
-			
-			private function actionView(value:String):void{
-				removeAllElements();
-				var viewExercise:Exercises = new Exercises();
-				addElement(viewExercise);
-				var ex:ExerciseVO = new ExerciseVO();
-				ex.name = urlmanager.targetFragment;
+
+			public function resetModule():void
+			{
+				changewatcher.unwatch();
+				resetViews();
+			}
+
+			public function resetViews():void
+			{
+				if (exerciseViewstack)
+				{
+					var views:Array=exerciseViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+
+			private function actionView(fragment:String):void
+			{
+				viewstackIndex=VIEW;
+				var ex:ExerciseVO=new ExerciseVO();
+				ex.name=urlmanager.targetFragment;
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
 			}
-			
-			private function actionIndex():void{
-				trace("Exercise index");
-				removeAllElements();
-				var indexExercise:VideoList = new VideoList();
-				indexExercise.percentWidth=100;
-				indexExercise.id="exerciseList";
-				indexExercise.paddingLeft=16;
-				indexExercise.paddingRight=16;
-				indexExercise.paddingTop=16;
-				indexExercise.paddingBottom=16;
-				addElement(indexExercise);
+
+			private function actionIndex(fragment:String=null):void
+			{
+				viewstackIndex=INDEX;
 				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
-			
+
 			public function onURLChange(value:Object):void
 			{
-				trace("Exercise URL handler");
-				trace("Correct module "+urlmanager.moduleName + "current: "+modulename);
-				if(urlmanager.moduleName != modulename) return;
-				
+				if (urlmanager.moduleName != modulename)
+					return;
+
+				resetViews();
 				switch (urlmanager.actionFragment)
 				{
 					case BabeliaBrowserManager.VIEW:
@@ -89,5 +124,18 @@
 			}
 		]]>
 	</fx:Script>
+
+	<mx:ViewStack id="exerciseViewstack"
+				  selectedIndex="{ viewstackIndex }"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="index">
+			<view:VideoList id="exerciseIndex"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="view">
+			<view:Exercises id="exerciseView"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
 
 </s:Module>

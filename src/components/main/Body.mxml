@@ -2,22 +2,11 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:userManagement="components.userManagement.*"
-		  xmlns:exercises="modules.exercises.*"
-		  xmlns:home="components.home.*"
-		  xmlns:main="components.main.*"
-		  xmlns:subtitles="components.subtitles.*"
-		  xmlns:videoUpload="components.videoUpload.*"
-		  xmlns:evaluation="components.evaluation.*"
-		  xmlns:configuration="components.configuration.*"
-		  xmlns:search="components.search.*"
 		  height="100%"
 		  width="100%"
 		  paddingBottom="40"
 		  minWidth="1000"
-		  gap="0"
-		  xmlns:skins="skins.*"
-		  xmlns:course="components.course.*">
+		  gap="0">
 
 	<fx:Script>
 		<![CDATA[
@@ -34,8 +23,12 @@
 
 			public function set onURLChange(module:String):void
 			{
-
 				moduleURL=module;
+				if(modloader.child != null){
+					var ichild:* = modloader.child as IModuleInterface;
+					ichild.resetModule();
+					trace("resetModule was called");
+				}
 				modloader.unloadModule();
 				
 				modloader.loadModule(moduleURL);
@@ -71,66 +64,6 @@
 
 	<s:ModuleLoader id="modloader"
 					ready="moduleReadyHandler(event)"
-					width="100%"/>
-
-	<!--
-	<skins:CustomViewStack id="contentViewStack"
-						   width="100%"
-						   height="100%"
-						   selectedIndex="{ DataModel.getInstance().currentContentViewStackIndex }"
-						   change="handleIndexChange(event)">
-
-		<home:HomeMain id="homeModule"/>
-
-		<exercises:Exercises id="exerciseModule"/>
-
-		<evaluation:EvaluationContainer id="evaluationModule"/>
-
-		<userManagement:SignUpForm id="registerModule"/>
-
-		<userManagement:AccountContainer id="accountModule"/>
-
-		<videoUpload:UploadContainer id="uploadModule"/>
-
-		<subtitles:SubtitleMain id="subtitlingModule"/>
-
-		<configuration:ConfigurationContainer id="configurationModule"/>
-
-		<main:About id="aboutModule"/>
-
-		<search:Search id="searchModule"/>
-
-		<main:HelpFAQMain id="helpModule"/>
-
-		<userManagement:AccountActivation id="accountActivation"/>
-
-		<course:Module id="courseModule"/>
-
-		<main:Login id="loginModule" width="100%"/>
-
-	</skins:CustomViewStack>
-
-	<fx:Script>
-		<![CDATA[
-			import events.UserEvent;
-			import events.VideoStopEvent;
-
-			import model.DataModel;
-			import spark.events.IndexChangeEvent;
-
-			public function onComplete():void
-			{
-//				contentViewStack.addEventListener(IndexChangedEvent.CHANGE, handleIndexChange);
-			}
-
-			public function handleIndexChange(evt:IndexChangeEvent):void
-			{
-				DataModel.getInstance().oldContentViewStackIndex=evt.oldIndex;
-				DataModel.getInstance().newContentViewStackIndex=evt.newIndex;
-				// Video stop on tab change
-				new VideoStopEvent().dispatch();
-			}
-		]]>
-	</fx:Script>
-	-->
+					width="100%"
+					height="100%"/>
 </s:VGroup>

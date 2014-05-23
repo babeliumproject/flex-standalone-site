@@ -11,7 +11,9 @@
   <applications>
     <application path="Main.mxml"/>
   </applications>
-  <modules/>
+  <modules>
+    <module application="src/Main.mxml" destPath="modules/exercise/ExerciseModule.swf" optimize="true" sourcePath="src/modules/exercise/ExerciseModule.mxml"/>
+  </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>

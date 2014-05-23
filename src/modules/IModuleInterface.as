@@ -7,5 +7,7 @@ package modules
 		function getModuleName():String;
 		
 		function setDataBindings(data:* = null):void;
+		
+		function resetModule():void;
 	}
 }

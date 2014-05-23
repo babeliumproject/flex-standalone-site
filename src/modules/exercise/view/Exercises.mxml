@@ -10,7 +10,8 @@
 		  horizontalAlign="center"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*"
+		  implements="modules.exercise.view.IGroupInterface">
 
 	<fx:Script>
 		<![CDATA[
@@ -412,8 +413,8 @@
 			 **/
 			private function showSelectedExercise():void
 			{
-				videoPlayerAndRecordingControls.includeInLayout=true;
-				videoPlayerAndRecordingControls.visible=true;
+				//videoPlayerAndRecordingControls.includeInLayout=true;
+				//videoPlayerAndRecordingControls.visible=true;
 
 				// Update URL
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, _exerciseName);
@@ -423,8 +424,8 @@
 
 			private function hideSelectedExercise():void
 			{
-				videoPlayerAndRecordingControls.includeInLayout=false;
-				videoPlayerAndRecordingControls.visible=false;
+				//videoPlayerAndRecordingControls.includeInLayout=false;
+				//videoPlayerAndRecordingControls.visible=false;
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
 				if (DataModel.getInstance().isLoggedIn)
@@ -785,6 +786,11 @@
 					recordingEndOptions.includeInLayout=false;
 				}
 			}
+			
+			public function resetGroup():void{
+				resetComponent();
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -827,8 +833,6 @@
 			  width="100%"
 			  horizontalAlign="center"
 			  verticalAlign="middle"
-			  includeInLayout="false"
-			  visible="false"
 			  paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16"
@@ -938,31 +942,4 @@
 
 
 	</s:VGroup>
-
-	<!--
-	<s:VGroup width="100%"
-			  horizontalAlign="left"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  paddingTop="16">
-		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
-				 styleName="sectionTitleLabel"
-				 id="exerciseListTitleLabel"/>
-		<s:Line width="{exerciseListTitleLabel.width}">
-			<s:stroke>
-				<mx:SolidColorStroke weight="3"
-									 color="{exerciseListTitleLabel.getStyle('color')}"/>
-			</s:stroke>
-		</s:Line>
-	</s:VGroup>
-	-->
-	<!-- Video List -->
-	<!--
-	<view:VideoList width="100%"
-					id="exerciseList"
-					paddingLeft="16"
-					paddingRight="16"
-					paddingTop="16"
-					paddingBottom="16"/>
-	-->
 </s:VGroup>
