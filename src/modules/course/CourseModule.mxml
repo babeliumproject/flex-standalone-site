@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  implements="modules.IModuleInterface"
+		  width="100%"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.course.view.*">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import modules.course.command.ViewCourse;
+			
+			import control.Controller;
+			
+			import model.DataModel;
+			
+			import modules.course.command.GetCourses;
+			import modules.course.event.CourseEvent;
+			import modules.course.model.CourseModel;
+			import modules.exercise.view.IGroupInterface;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+
+			
+			public var modulename:String = 'course';
+			
+			[Bindable]
+			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			
+			[Bindable]
+			private var _model:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var _viewstackIndex:uint;
+			
+			private var _creationComplete:Boolean;
+			
+			public static const INDEX:uint=0;
+			public static const VIEW:uint=1;
+			
+			private var changewatcher:ChangeWatcher;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "targetFragment");
+			}
+			
+			public function resetModule():void{
+				
+			}
+			
+			public function resetViews():void{
+				if (courseViewstack)
+				{
+					var views:Array=courseViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function actionIndex(fragment:String = null):void{
+				
+			}
+			
+			public function actionView(fragment:String):void{
+				
+			}
+			
+			public function onURLChange(value:String):void{
+				if (_urlmanager.moduleName != modulename)
+					return;
+				
+				if (!_model.isLoggedIn)
+					return;
+				
+				switch(_urlmanager.actionFragment)
+				{
+					case 'view':
+					{
+						if (_urlmanager.targetFragment != '')
+						{
+							// course/view?id=<courseid>
+							actionView(_urlmanager.targetFragment);
+						}
+						else
+						{
+							_urlmanager.updateURL('home');
+							return;
+						}
+					}
+						
+					default:
+					{
+						// course/index?s=teach, course/index?s=learn, course/?s=learn
+						actionIndex();
+						break;
+					}
+				}
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				if(!_model.moduleMap.hasOwnProperty(modulename))
+					_model.moduleMap[modulename] = new CourseModel();
+				
+				FlexGlobals.topLevelApplication.appController.addCommand(CourseEvent.GET_COURSES, GetCourses);
+				FlexGlobals.topLevelApplication.appController.addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
+				
+				// The Event.ADDED and Event.ADDED_TO_STAGE events are dispatched before FlexEvent.PREINITIALIZE
+				// that leaves only FlexEvent.ADD to know the component has been added as a child somewhere.
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void{
+				
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					BabeliaBrowserManager.getInstance().updateURL('login');
+					return;
+				}
+				this.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="courseViewstack"
+				  selectedIndex="{ _viewstackIndex }"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="index">
+			<view:Index id="courseIndex"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="view">
+			<view:View id="courseView"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+</s:Module>

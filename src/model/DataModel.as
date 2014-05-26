@@ -4,19 +4,20 @@ package model
 	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
-	import flash.media.Camera;
-	import flash.media.Microphone;
-	import flash.net.FileReference;
-	import flash.net.NetConnection;
-	import flash.utils.Dictionary;
-	
 	import components.autoevaluation.Evaluation;
 	import components.main.Body;
 	import components.main.LoginPopup;
 	import components.userManagement.KeepAliveTimer;
 	import components.userManagement.LoginRestorePassForm;
 	
+	import flash.media.Camera;
+	import flash.media.Microphone;
+	import flash.net.FileReference;
+	import flash.net.NetConnection;
+	import flash.utils.Dictionary;
+	
 	import mx.collections.ArrayCollection;
+	import mx.utils.ObjectProxy;
 	
 	import vo.CreditHistoryVO;
 	import vo.ExerciseVO;
@@ -495,6 +496,10 @@ package model
 		public var userReportedExercise:Boolean=false;
 		[Bindable]
 		public var userReportedExerciseFlag:Boolean=false;
+		
+		public var moduleMap:Object = {};
+		[Bindable]
+		public var moduleMapProxy:ObjectProxy = new ObjectProxy(moduleMap);
 
 		public function DataModel()
 		{

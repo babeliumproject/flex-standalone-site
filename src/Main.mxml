@@ -92,10 +92,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<fx:Declarations>
 		<!--This defines the reachable remote services -->
-		<business:Services/>
+		<business:Services id="appServiceLocator"/>
 
 		<!--This defines all the actions available -->
-		<control:Controller/>
+		<control:Controller id="appController"/>
 	</fx:Declarations>
 
 	<s:Scroller id="appScroller"

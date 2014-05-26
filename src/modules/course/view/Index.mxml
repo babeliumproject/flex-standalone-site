@@ -4,6 +4,51 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx" 
 		  xmlns:skins="skins.*"
 		  preinitialize="preinitializeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import modules.course.event.CourseEvent;
+			import modules.course.model.CourseModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			
+			[Bindable] private var userCourses:ArrayCollection;
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void
+			{
+				//var scope:String='teach or learn';
+				//Retrieve this view's data and render it
+				new CourseEvent(CourseEvent.GET_COURSES).dispatch();
+			}
+			
+			public function set dataChanged(value:Boolean):void{
+				trace("CourseIndex datachange");
+				userCourses = (DataModel.getInstance().moduleMap.getItemIndex('course') as CourseModel).getCoursesData;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Binding source="{DataModel.getInstance().moduleMapProxy.course.getCoursesDataChanged}" destination="dataChanged"/>
 	
 	<s:BorderContainer styleName="sectionInfoBox"
 					   width="100%"
@@ -46,46 +91,8 @@
 				 includeInLayout="{userCourses &amp;&amp; userCourses.length}"
 				 visible="{userCourses &amp;&amp; userCourses.length}">
 		<mx:columns>
-			<mx:DataGridColumn itemRenderer="components.course.CourseItemRenderer"/>
+			<mx:DataGridColumn itemRenderer="modules.course.view.CourseItemRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
-	
-	<fx:Script>
-		<![CDATA[
-			import events.CourseEvent;
-			
-			import mx.collections.ArrayCollection;
-			import mx.events.FlexEvent;
 
-			
-			[Bindable] private var userCourses:ArrayCollection;
-			
-			protected function preinitializeHandler(event:FlexEvent):void
-			{
-				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
-				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
-				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
-			}
-			
-			protected function componentAddedHandler(event:FlexEvent):void
-			{
-				
-			}
-			
-			protected function componentRemovedHandler(event:FlexEvent):void
-			{
-				
-			}
-			
-			protected function componentUpdateCompleteHandler(event:FlexEvent):void
-			{
-				var scope:String='teach or learn';
-				//Retrieve this view's data and render it
-				new CourseEvent(CourseEvent.GET_COURSES,scope).dispatch();
-			}
-			
-			
-			
-		]]>
-	</fx:Script>
 </s:VGroup>

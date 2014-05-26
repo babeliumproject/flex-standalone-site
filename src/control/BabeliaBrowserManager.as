@@ -147,11 +147,28 @@ package control
 				updateURL('home');
 			
 			if ( length > 1 ){ // module
+				
 				//if ( !changeModule(params[1]) ) return;
-				if (params[1] == 'exercises') 
-					moduleURL = 'modules/exercise/ExerciseModule.swf';
-				else
-					moduleURL = 'modules/other/OtherModule.swf';
+				var modulefragment:String = params[1];
+				switch(modulefragment)
+				{
+					case 'exercises':
+					{
+						moduleURL = 'modules/exercise/ExerciseModule.swf';
+						break;
+					}
+					case 'course':
+					{
+						moduleURL = 'modules/course/CourseModule.swf';
+						break;
+					}
+					default:
+					{
+						moduleURL = 'modules/home/HomeModule.swf';
+						break;
+					}
+				}
+				
 				
 			}
 			

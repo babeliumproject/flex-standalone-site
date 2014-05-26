@@ -31,7 +31,6 @@ package control {
 			addCommand(StartConnectionEvent.EVENT_START_CONNECTION, StartConnectionCommand);
 			addCommand(CloseConnectionEvent.EVENT_CLOSE_CONNECTION, CloseConnectionCommand);
 			
-			
 			//Content ViewStack related commands
 			/*
 			addCommand(ViewChangeEvent.VIEW_HOME_MODULE, ViewHomeModuleCommand);

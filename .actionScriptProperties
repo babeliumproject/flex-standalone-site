@@ -13,6 +13,7 @@
   </applications>
   <modules>
     <module application="src/Main.mxml" destPath="modules/exercise/ExerciseModule.swf" optimize="true" sourcePath="src/modules/exercise/ExerciseModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/course/CourseModule.swf" optimize="true" sourcePath="src/modules/course/CourseModule.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>

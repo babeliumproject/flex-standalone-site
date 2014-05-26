@@ -35,13 +35,11 @@
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="Subtitle"/>
-
-		<!--
-		<mx:RemoteObject id="rolRO"
+		
+		<mx:RemoteObject id="courseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="ExerciseRole"/>
-		-->
+						 source="Course"/>
 		
 		<mx:RemoteObject id="exerciseRO"
 						 destination="babeliumService"
