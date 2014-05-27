@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		xmlns:mx="library://ns.adobe.com/flex/mx"
 		xmlns:common="view.common.*" 
-		xmlns:videoUpload="components.videoUpload.*">
+		xmlns:videoUpload="components.videoUpload.*" xmlns:view="modules.create.view.*">
 	
 	<fx:Script>
 		<![CDATA[
@@ -153,7 +153,7 @@
 			</s:VGroup>
 		</s:HGroup>
 		<s:VGroup id="recordWidget" includeInLayout="false" visible="false">
-			<videoUpload:TempVideoRecording id="recFromWebcamBox"
+			<view:TempVideoRecording id="recFromWebcamBox"
 											streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
 											filePrefix="upld"/>
 			<s:VGroup id="recUploadBox"

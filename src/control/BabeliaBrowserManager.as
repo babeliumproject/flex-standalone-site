@@ -159,7 +159,7 @@ package control
 					}
 					case 'course':
 					{
-						moduleURL = 'modules/course/CourseModule.swf';
+						moduleURL = 'modules/dashboard/CourseModule.swf';
 						break;
 					}
 					default:

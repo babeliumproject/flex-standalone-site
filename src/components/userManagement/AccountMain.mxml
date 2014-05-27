@@ -4,7 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:userManagement="components.userManagement.*"
 		  width="100%"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*" xmlns:view="modules.create.view.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -96,7 +96,7 @@
 		
 		<s:NavigatorContent id="userVideoNavContent"
 							label="{resourceManager.getString('myResources','MY_VIDEOS')}">
-			<userManagement:UserVideos id="userVideos"/>
+			<view:CreateManageView id="userVideos"/>
 		</s:NavigatorContent>
 
 	</mx:ViewStack>

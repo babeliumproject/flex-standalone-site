@@ -30,18 +30,7 @@
 			<mx:Image source="resources/images/babelium_logo.png"
 					  buttonMode="true"
 					  click="changeView('home',event)"/>
-			<!--
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_HOME')}"
-										  styleName="homeLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_HOME_MODULE_INDEX}"
-										  click="changeView(ViewChangeEvent.VIEW_HOME_MODULE,event)"/>
-	
-			<mx:VRule height="40"/>
-			-->
+			
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'BROWSE')}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
@@ -59,25 +48,6 @@
 										  selected="{_urlManager.moduleIndex == 12 &amp;&amp;
 										  			 _urlManager.actionFragment == BabeliaBrowserManager.LEARN }"
 										  click="redirect('course','learn')"/>
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_EVALUATIONS')}"
-										  styleName="evaluateLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
-						   							!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == 2}"
-										  click="changeView('evaluation',event)"/>
-			<mx:VRule height="40"/>
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_SUBTITLE')}"
-										  styleName="subtitleLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp;
-						   							!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == 6}"
-										  click="changeView('subtitles',event)"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"
 										  styleName="configureLinkButton"
@@ -85,28 +55,6 @@
 										  enabled="{DataModel.getInstance().isLoggedIn}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 5}"
 										  click="changeView('upload',event)"/>
-			<!--
-			<mx:VRule height="40"/>
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_CONFIGURATION')}"
-										  id="configuration"
-										  styleName="configureLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; 
-						   							!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_CONFIGURATION_MODULE_INDEX}"
-										  click="changeView(ViewChangeEvent.VIEW_CONFIGURATION_MODULE,event)"/>
-			<mx:VRule height="40"/>
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LABEL_ABOUT')}"
-										  styleName="aboutLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_ABOUT_MODULE_INDEX}"
-										  click="changeView(ViewChangeEvent.VIEW_ABOUT_MODULE,event)"/>
-			-->
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.50"/>
 		<s:BorderContainer id="searchUploadBar"
@@ -137,15 +85,7 @@
 									paddingBottom="4"
 									paddingRight="4"/>
 			</s:layout>
-			<!--
-			<s:Button label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
-					  styleName="uploadButton"
-					  buttonMode="true"
-					  enabled="{!DataModel.getInstance().recordingExercise}"
-					  click="changeView(ViewChangeEvent.VIEW_UPLOAD_MODULE,event)"/>
-
-			<mx:Spacer width="30"/>
-			-->
+			
 			<s:TextInput id="searchField"
 						 styleName="searchTextInput"
 						 width="100%"

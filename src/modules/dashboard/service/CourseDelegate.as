@@ -1,4 +1,4 @@
-package modules.course.service
+package modules.dashboard.service
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
@@ -8,7 +8,6 @@ package modules.course.service
 
 	public class CourseDelegate
 	{
-		private var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "courseRO" );
 		private var responder:IResponder;
 		
 		public function CourseDelegate(responder:IResponder)
@@ -17,11 +16,13 @@ package modules.course.service
 		}
 		
 		public function getCourses(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "courseRO" );
 			var pendingCall:AsyncToken = service.getCourses(query);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function viewCourse(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "courseRO" );
 			var pendingCall:AsyncToken = service.viewCourse(query);
 			pendingCall.addResponder(responder);
 		}

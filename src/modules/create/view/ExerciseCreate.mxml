@@ -4,7 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:videoUpload="components.videoUpload.*"
 		  xmlns:subtitles="components.subtitles.*"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*" xmlns:view="modules.create.view.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.IndexChangedEvent;
@@ -65,13 +65,13 @@
 		<mx:ViewStack id="stepViewStack"
 					  change="stepViewStack_changeHandler(event)">
 			<s:NavigatorContent label="1">
-				<videoUpload:FileUpload/>
+				<view:FileUpload/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="2">
-				<videoUpload:MediaUploadForm/>
+				<view:MediaUploadForm/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="3">
-				<subtitles:SubtitleEditor/>
+				<view:CreateSubtitleView/>
 			</s:NavigatorContent>
 		</mx:ViewStack>
 

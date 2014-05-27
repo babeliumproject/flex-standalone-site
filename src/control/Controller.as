@@ -15,6 +15,9 @@ package control {
 	
 	import events.*;
 	
+	import modules.dashboard.command.GetCourses;
+	import modules.dashboard.command.ViewCourse;
+	import modules.dashboard.event.CourseEvent;
 	import modules.exercise.command.*;
 	import modules.exercise.event.ExerciseEvent;
 	import modules.exercise.event.GetExercisesCommand;
@@ -30,6 +33,9 @@ package control {
 			addCommand(SetupConnectionEvent.EVENT_SETUP_CONNECTION, SetupConnectionCommand);
 			addCommand(StartConnectionEvent.EVENT_START_CONNECTION, StartConnectionCommand);
 			addCommand(CloseConnectionEvent.EVENT_CLOSE_CONNECTION, CloseConnectionCommand);
+			
+			addCommand(CourseEvent.GET_COURSES, GetCourses);
+			addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
 			
 			//Content ViewStack related commands
 			/*

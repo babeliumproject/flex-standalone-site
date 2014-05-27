@@ -5,7 +5,7 @@
 		  implements="modules.IModuleInterface"
 		  width="100%"
 		  preinitialize="preinitializeHandler(event)"
-		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.course.view.*">
+		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.dashboard.view.*">
 	
 	<s:layout>
 		<s:VerticalLayout/>
@@ -18,16 +18,16 @@
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-			
-			import modules.course.command.ViewCourse;
-			
 			import control.Controller;
+			
+			import flash.utils.getDefinitionByName;
 			
 			import model.DataModel;
 			
-			import modules.course.command.GetCourses;
-			import modules.course.event.CourseEvent;
-			import modules.course.model.CourseModel;
+			import modules.dashboard.command.GetCourses;
+			import modules.dashboard.command.ViewCourse;
+			import modules.dashboard.event.CourseEvent;
+			import modules.dashboard.model.CourseModel;
 			import modules.exercise.view.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
@@ -83,11 +83,13 @@
 			}
 			
 			public function actionIndex(fragment:String = null):void{
-				
+				_viewstackIndex=INDEX;
+				new CourseEvent(CourseEvent.GET_COURSES, fragment).dispatch();
 			}
 			
 			public function actionView(fragment:String):void{
-				
+				_viewstackIndex=VIEW;
+				new CourseEvent(CourseEvent.VIEW_COURSE, fragment).dispatch();
 			}
 			
 			public function onURLChange(value:String):void{
@@ -126,9 +128,6 @@
 			{
 				if(!_model.moduleMap.hasOwnProperty(modulename))
 					_model.moduleMap[modulename] = new CourseModel();
-				
-				FlexGlobals.topLevelApplication.appController.addCommand(CourseEvent.GET_COURSES, GetCourses);
-				FlexGlobals.topLevelApplication.appController.addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
 				
 				// The Event.ADDED and Event.ADDED_TO_STAGE events are dispatched before FlexEvent.PREINITIALIZE
 				// that leaves only FlexEvent.ADD to know the component has been added as a child somewhere.
@@ -172,10 +171,10 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="index">
-			<view:Index id="courseIndex"/>
+			<view:Index id="courseIndex" width="100%"/>
 		</s:NavigatorContent>
 		<s:NavigatorContent id="view">
-			<view:View id="courseView"/>
+			<view:View id="courseView" width="100%"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

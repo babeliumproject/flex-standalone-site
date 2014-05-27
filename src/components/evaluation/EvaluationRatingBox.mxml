@@ -9,7 +9,7 @@
 				   visible="false"
 				   creationComplete="onComplete(event)"
 				   cornerRadius="8"
-				   backgroundAlpha="0">
+				   backgroundAlpha="0" xmlns:view="modules.create.view.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -258,7 +258,7 @@
 						<s:VGroup id="videoCommentBox"
 								  width="100%"
 								  horizontalAlign="center">
-							<videoUpload:TempVideoRecording id="videoComment"
+							<view:TempVideoRecording id="videoComment"
 															streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
 															filePrefix="comment"
 															minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>

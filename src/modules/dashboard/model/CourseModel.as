@@ -1,11 +1,13 @@
-package modules.course.model
+package modules.dashboard.model
 {
 	import mx.collections.ArrayCollection;
 
 	public class CourseModel
 	{
 		
-		public var getCoursesData:ArrayCollection;
+		public var myCoursesData:ArrayCollection;
+		public var myExercisesData:ArrayCollection;
+		
 		[Bindable]
 		public var getCoursesDataChanged:Boolean;
 		

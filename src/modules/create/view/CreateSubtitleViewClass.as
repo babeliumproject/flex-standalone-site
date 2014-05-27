@@ -1,4 +1,4 @@
-package components.subtitles
+package modules.create.view
 {
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;
@@ -55,7 +55,7 @@ package components.subtitles
 	import vo.SubtitleLineVO;
 
 
-	public class SubtitleEditorClass extends HGroup
+	public class CreateSubtitleViewClass extends HGroup
 	{
 		/**
 		 * Singleton objects
@@ -126,7 +126,7 @@ package components.subtitles
 		public var saveSubtitleButton:IconButton;
 		public var saveSubtitleSeparator:VRule;
 
-		public function SubtitleEditorClass()
+		public function CreateSubtitleViewClass()
 		{
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}

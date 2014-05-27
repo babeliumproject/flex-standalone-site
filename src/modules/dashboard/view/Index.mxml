@@ -6,16 +6,19 @@
 		  preinitialize="preinitializeHandler(event)">
 	<fx:Script>
 		<![CDATA[
+			
 			import model.DataModel;
 			
-			import modules.course.event.CourseEvent;
-			import modules.course.model.CourseModel;
+			import modules.dashboard.event.CourseEvent;
+			import modules.dashboard.model.CourseModel;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
 			
 			
 			[Bindable] private var userCourses:ArrayCollection;
+			[Bindable] private var userExercises:ArrayCollection;
 			
 			protected function preinitializeHandler(event:FlexEvent):void
 			{
@@ -38,12 +41,14 @@
 			{
 				//var scope:String='teach or learn';
 				//Retrieve this view's data and render it
-				new CourseEvent(CourseEvent.GET_COURSES).dispatch();
+				//new CourseEvent(CourseEvent.GET_COURSES).dispatch();
 			}
 			
 			public function set dataChanged(value:Boolean):void{
 				trace("CourseIndex datachange");
-				userCourses = (DataModel.getInstance().moduleMap.getItemIndex('course') as CourseModel).getCoursesData;
+				userCourses = (DataModel.getInstance().moduleMap.course as CourseModel).myCoursesData;
+				trace(ObjectUtil.toString(userCourses));
+				userExercises = (DataModel.getInstance().moduleMap.course as CourseModel).myExercisesData;
 			}
 		]]>
 	</fx:Script>
@@ -91,8 +96,38 @@
 				 includeInLayout="{userCourses &amp;&amp; userCourses.length}"
 				 visible="{userCourses &amp;&amp; userCourses.length}">
 		<mx:columns>
-			<mx:DataGridColumn itemRenderer="modules.course.view.CourseItemRenderer"/>
+			<mx:DataGridColumn itemRenderer="modules.dashboard.view.CourseItemRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
+	
+	<s:Label text="My latest exercises"
+			 styleName="sectionTitleLabel"
+			 id="mylatestexercisesLabel"/>
+	<s:Line width="{mylatestexercisesLabel.width}">
+		<s:stroke>
+			<mx:SolidColorStroke weight="3"
+								 color="{mylatestexercisesLabel.getStyle('color')}"/>
+		</s:stroke>
+	</s:Line>
+	
+	<s:Label id="noExercises"
+			 text="You haven't recorded any exercise yet."
+			 includeInLayout="{!userExercises.length}"
+			 visible="{!userExercises.length}"/>
+	
+	<s:List id="myExercisesTable"
+			width="100%"
+			minHeight="0"
+			borderVisible="false"
+			skinClass="skins.TransparentBgListSkin"
+			itemRenderer="modules.exercise.view.ExerciseItemRenderer"
+			dataProvider="{userExercises}">
+		<s:layout>
+			<s:TileLayout horizontalAlign="justify"
+						  verticalAlign="middle"
+						  columnAlign="justifyUsingWidth"
+						  columnWidth="500"/>
+		</s:layout>
+	</s:List>
 
 </s:VGroup>

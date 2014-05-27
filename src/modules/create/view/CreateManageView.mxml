@@ -8,7 +8,7 @@
 		  paddingRight="16"
 		  paddingTop="16"
 		  creationComplete="creationCompleteHandler(event)"
-		  xmlns:userManagement="components.userManagement.*">
+		  xmlns:userManagement="components.userManagement.*" xmlns:view="modules.create.view.*">
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
@@ -222,7 +222,7 @@
 					 variableRowHeight="true">
 			<mx:columns>
 
-				<mx:DataGridColumn itemRenderer="components.userManagement.UserVideoItemRenderer"/>
+				<mx:DataGridColumn itemRenderer="modules.create.view.UserVideoItemRenderer"/>
 			</mx:columns>
 		</mx:DataGrid>
 		<s:HGroup id="paginationUserVideos"
@@ -232,7 +232,7 @@
 
 	</s:VGroup>
 
-	<userManagement:UserVideoInfoEdit id="videoEditPanel"
+	<view:UserVideoInfoEdit id="videoEditPanel"
 									  includeInLayout="false"
 									  visible="false"
 									  cancelClickHandler="{editCancelHandler}"/>

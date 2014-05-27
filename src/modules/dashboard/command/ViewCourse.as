@@ -1,13 +1,13 @@
-package modules.course.command
+package modules.dashboard.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
 	
-	import modules.course.event.CourseEvent;
-	import modules.course.model.CourseModel;
-	import modules.course.service.CourseDelegate;
+	import modules.dashboard.event.CourseEvent;
+	import modules.dashboard.model.CourseModel;
+	import modules.dashboard.service.CourseDelegate;
 	
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
