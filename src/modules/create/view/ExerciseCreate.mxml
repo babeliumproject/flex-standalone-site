@@ -2,9 +2,8 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:videoUpload="components.videoUpload.*"
-		  xmlns:subtitles="components.subtitles.*"
-		  xmlns:skins="skins.*" xmlns:view="modules.create.view.*">
+		  xmlns:skins="skins.*" 
+		  xmlns:view="modules.create.view.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.IndexChangedEvent;
@@ -28,7 +27,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{'Create new exercise'}"
+		<s:Label text="Create new exercise"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>

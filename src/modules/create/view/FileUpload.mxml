@@ -395,9 +395,13 @@
 							 width="100%"
 							 styleName="boldLabel"
 							 required="true">
-					<mx:TextArea width="100%"
+					<!--<mx:TextArea width="100%"
 								 id="videoDescription"
-								 maxChars="500"/>
+								 maxChars="500"/>-->
+					<mx:RichTextEditor width="100%"
+									   id="videoDescription"
+									   dropShadowVisible="false"
+									   headerHeight="0"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 							 width="100%"

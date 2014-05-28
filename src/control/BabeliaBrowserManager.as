@@ -162,6 +162,11 @@ package control
 						moduleURL = 'modules/dashboard/CourseModule.swf';
 						break;
 					}
+					case 'create':
+					{
+						moduleURL = 'modules/create/CreateModule.swf';
+						break;
+					}
 					default:
 					{
 						moduleURL = 'modules/home/HomeModule.swf';

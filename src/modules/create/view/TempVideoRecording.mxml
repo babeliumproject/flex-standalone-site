@@ -86,16 +86,16 @@
 
 			private var _timeFormatter:TimeFormatter;
 
-			[Embed(source='../../resources/images/playerPlayIcon.png')]
+			[Embed(source='../../../resources/images/playerPlayIcon.png')]
 			[Bindable]
 			private var playImageEmbed:Class;
-			[Embed(source='../../resources/images/playerPauseIcon.png')]
+			[Embed(source='../../../resources/images/playerPauseIcon.png')]
 			[Bindable]
 			private var pauseImageEmbed:Class;
-			[Embed(source='../../resources/images/playerRecIcon.png')]
+			[Embed(source='../../../resources/images/playerRecIcon.png')]
 			[Bindable]
 			private var recImageEmbed:Class;
-			[Embed(source='../../resources/images/playerStopIcon.png')]
+			[Embed(source='../../../resources/images/playerStopIcon.png')]
 			[Bindable]
 			private var stopImageEmbed:Class;
 

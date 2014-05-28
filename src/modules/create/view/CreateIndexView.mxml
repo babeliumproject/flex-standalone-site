@@ -5,4 +5,50 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] 
+			protected var latestCreationsData:ArrayCollection;
+			
+		]]>
+	</fx:Script>
+	
+	<s:Button id="addnewexercise"
+			  label="Add new exercise"
+			  click="{BabeliaBrowserManager.getInstance().updateURL('create','edit')}"/>
+	
+	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
+	
+	<s:Panel title="My latest creations" dropShadowVisible="false" backgroundAlpha="0">
+		<s:Label id="nocreations" 
+				 text="No haven't created any exercise yet."
+				 includeInLayout="{!latestCreationsData.length}"
+				 visible="{!latestCreationsData.length}"/>
+		<s:VGroup width="100%"
+				  includeInLayout="{latestCreationsData &amp;&amp; latestCreationsData.length}"
+				  visible="{latestCreationsData &amp;&amp; latestCreationsData.length}">
+			<s:List id="latestCreations"
+					width="100%"
+					minHeight="0"
+					itemRenderer="modules.create.view.CreationItemRenderer"
+					dataProvider="{latestCreationsData}">
+				<s:layout>
+					<s:TileLayout horizontalAlign="justify"
+								  verticalAlign="middle"
+								  columnAlign="justifyUsingWidth"
+								  columnWidth="500"/>
+				</s:layout>
+			</s:List>
+			<s:Button id="seeAllCreations" 
+					  label="See all my creations" 
+					  click="{BabeliaBrowserManager.getInstance().updateURL('create', 'manage')}"/>
+		</s:VGroup>
+		
+	</s:Panel>
+	
 </s:VGroup>
