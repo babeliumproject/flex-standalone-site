@@ -54,7 +54,7 @@
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{DataModel.getInstance().isLoggedIn}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 5}"
-										  click="changeView('upload',event)"/>
+										  click="changeView('create',event)"/>
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.50"/>
 		<s:BorderContainer id="searchUploadBar"

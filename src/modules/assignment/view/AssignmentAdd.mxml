@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private _peerEvaluation:Boolean;
+			private _customRubric:Boolean;
+
+			protected function pickExerciseHandler(event:MouseEvent):void
+			{
+				//Save current form data as a draft and keep in session to come back to it when picking an exercise
+				BabeliaBrowserManager.getInstance().updateURL('exercises');
+			}
+			
+			protected function peerassessmentchoose_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function defaultRubric_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<s:Form>
+		<s:FormHeading label="Exercise"/>
+		<s:Button label="Pick an exercise" click="pickExerciseHandler(event)"/>
+		<s:FormHeading label="Availability"/>
+		<s:FormItem label="Allow submissions from">
+			<mx:DateField id="allowSubmissionsfrom"/>
+		</s:FormItem>
+		<s:FormItem label="Submission due date">
+			<mx:DateField id="submissionDuedate"/>
+		</s:FormItem>
+		<s:FormHeading label="Evaluation"/>
+		<s:FormItem label="Peer evaluation">
+			<s:DropDownList id="peerassessmentchoose" selectedIndex="0" change="peerassessmentchoose_changeHandler(event)">
+				<s:ArrayCollection>
+					<fx:String id="Yes"/>
+					<fx:String id="No"/>
+				</s:ArrayCollection>
+			</s:DropDownList>
+		</s:FormItem>
+		<s:FormItem label="Self-evaluation">
+			<s:DropDownList id="selfassessmentchoose" selectedIndex="0" change="peerassessmentchoose_changeHandler(event)">
+				<s:ArrayCollection>
+					<fx:String id="Yes"/>
+					<fx:String id="No"/>
+				</s:ArrayCollection>
+			</s:DropDownList>
+		</s:FormItem>
+		<s:FormItem label="Allow evaluations from" visible="{_peerEvaluation}">
+				<mx:DateField id="allowEvaluationsFrom"/>
+		</s:FormItem>
+		<s:FormItem label="Evaluation due date" visible="{_peerEvaluation}">
+				<mx:DateField id="evaluationDueDate"/>
+		</s:FormItem>
+		<s:FormHeading label="Grade"/>
+		<s:FormItem label="Use default rubric">
+			<s:CheckBox id="defaultRubric" selected="true" change="defaultRubric_changeHandler(event)"/>
+		</s:FormItem>
+		<s:FormItem label="Custom rubric">
+			<s:VGroup id="groupRubric" visible="{_customRubric}">
+				<!-- The criteria should be added at runtime, take a look at language preference code -->
+			</s:VGroup>
+		</s:FormItem>
+		<s:FormItem
+	</s:Form>
+</s:VGroup>

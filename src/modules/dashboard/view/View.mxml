@@ -2,9 +2,42 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import mx.collections.ArrayCollection;
+			
+			import model.DataModel;
+
+			
+			[Bindable] private var _courseInfo:Object;
+			[Bindable] private var _assignmentData:ArrayCollection;
+
+			protected function addAssignment(event:MouseEvent):void
+			{
+				if(DataModel.getInstance().moduleMap.hasOwnProperty('course')){
+					_courseInfo = DataModel.getInstance().moduleMap['course'];
+					BabeliaBrowserManager.getInstance().updateURL('assignment','add','course='+_courseInfo.id);
+				}
+			}
+		]]>
+	</fx:Script>
+	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:Button id="test" label="Add new assignment"/>
+	
+	<s:List width="100%" 
+			borderVisible="false" 
+			itemRenderer="modules.dashboard.view.AssignmentItemRenderer"
+			dataProvider="{_assignmentData}">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+	</s:List>
+	
+	<s:Button id="addAssignmentButton" label="Add new assignment" click="addAssignment(event)"/>
 </s:VGroup>

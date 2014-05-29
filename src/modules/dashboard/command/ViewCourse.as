@@ -9,17 +9,13 @@ package modules.dashboard.command
 	import modules.dashboard.model.CourseModel;
 	import modules.dashboard.service.CourseDelegate;
 	
+	import mx.messaging.messages.RemotingMessage;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	
 	public class ViewCourse implements ICommand, IResponder
 	{
 		private var _model:DataModel = DataModel.getInstance();
-		
-		public function ViewCourse()
-		{
-			
-		}
 		
 		public function execute(event:CairngormEvent):void
 		{
@@ -37,6 +33,12 @@ package modules.dashboard.command
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
+			var rm:RemotingMessage = faultEvent.token.message as RemotingMessage;
+			if(rm){
+				var faultString:String = faultEvent.fault.faultString;
+				var faultDetail:String = faultEvent.fault.faultDetail;
+				trace("[Error] "+rm.source+"."+rm.operation+": " + faultString);
+			}
 		}
 	}
 }

@@ -107,15 +107,16 @@ class Course{
 	public function viewCourse($courseid){
 		if(!$courseid) return false;
 		
-		if(checkPermissions($courseid)){
+		$assignments = false;
+		if($roleid = $this->checkPermissions($courseid)){
 			$query = "SELECT * FROM assignment WHERE fk_course_id=%d ORDER BY duedate";
 			$assignments = $this->db->_multipleSelect($query, $courseid);
-			return $assignments;
 		}
+		return $assignments;
 	}
 	
 	public function checkPermissions($courseid){
-		$query = "SELECT id FROM course c INNER JOIN rel_course_role_user cr ON c.id=cr.fk_course_id WHERE c.id=%d and cr.fk_user_id=%d";
+		$query = "SELECT cr.fk_role_id FROM course c INNER JOIN rel_course_role_user cr ON c.id=cr.fk_course_id WHERE c.id=%d and cr.fk_user_id=%d";
 		return $this->db->_singleSelect($query, $courseid, $_SESSION['uid']);
 	}
 }

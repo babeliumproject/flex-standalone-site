@@ -59,7 +59,7 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "targetFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
 			}
 			
 			public function resetModule():void{
@@ -113,6 +113,7 @@
 							_urlmanager.updateURL('home');
 							return;
 						}
+						break;
 					}
 						
 					default:
