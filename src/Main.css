@@ -265,6 +265,13 @@ s|TextInput{
 	borderColor: #FFFFFF;
 }
 
+.loginBorderContainer{
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
+	backgroundColor: #FFFFFF;
+	cornerRadius: 8;
+	borderColor: #000000;
+}
+
 .privacyRightsPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
 	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');

@@ -17,15 +17,21 @@
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
 			
+			import components.main.LoginPopup;
+			
+			import control.BabeliaBrowserManager;
+			
 			import events.LoginEvent;
 			
 			import model.DataModel;
 			
 			import mx.controls.Alert;
 			import mx.core.IFlexDisplayObject;
+			import mx.core.IUIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
 			
 			import skins.ActionButtonSkin;
 			import skins.CustomTitleWindowSkin;
@@ -46,8 +52,6 @@
 				{
 					if (loginViewStack.selectedChild == loginFormBoxNavContent)
 						processLogin(null);
-					else if (loginViewStack.selectedChild == restorePassFormBoxNavContent)
-						processRestorePass(null);
 					else if (loginViewStack.selectedChild == resendActivationEmailBoxNavContent)
 						resendActivationEmail(null);
 				}
@@ -82,7 +86,7 @@
 						resendEmailLink.includeInLayout=false;
 						resendEmailLink.visible=false;
 					}
-					DataModel.getInstance().loginPop.loginRestoreForm.errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
 				}
 			}
@@ -105,32 +109,29 @@
 						username.text="";
 						password.text="";
 					}
+					if(!parentDocument is CustomTitleWindowSkin){
+						trace("LastURL is: "+ BabeliaBrowserManager.getInstance().getLastURL());
+					}
 					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				}
-			}
-
-			private function showRestorePass(event:Event):void
-			{
-				errorInfo.text=DataModel.getInstance().restorePassErrorMessage;
-				DataModel.getInstance().restorePassErrorMessage="";
-				title.text=resourceManager.getString('myResources', 'TITLE_RESTORE_PASS_FORM');
-				username.text='';
-				password.text='';
-				focusManager.setFocus(userOrEmail);
-				loginViewStack.selectedChild=restorePassFormBoxNavContent;
-			}
+			}	
 
 			private function showLogin(event:Event):void
 			{
 				errorInfo.text='';
 				title.text=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
-				userOrEmail.text='';
 				focusManager.setFocus(username);
 				restorePassword.visible=true;
 				restorePassword.includeInLayout=true;
 				resendEmailLink.visible=false;
 				resendEmailLink.includeInLayout=false;
 				loginViewStack.selectedChild=loginFormBoxNavContent;
+			}
+			
+			private function showRestorePass(event:Event):void{
+				//If the container's parent is an instance of Popup, close it
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				BabeliaBrowserManager.getInstance().updateURL('login','forgotpassword');
 			}
 
 			private function showActivationResend(even:Event):void
@@ -145,22 +146,6 @@
 				restorePassword.includeInLayout=false;
 				focusManager.setFocus(activationUsername);
 				loginViewStack.selectedChild=resendActivationEmailBoxNavContent;
-			}
-
-
-			private function set passRecoveryDone(flag:Boolean):void
-			{
-				if (DataModel.getInstance().passRecoveryDone)
-				{
-					DataModel.getInstance().passRecoveryDone=false;
-					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-				}
-			}
-
-			private function processRestorePass(event:Event):void
-			{
-				var user:LoginVO=new LoginVO(userOrEmail.text, "");
-				new LoginEvent(LoginEvent.RESTORE_PASS, user).dispatch();
 			}
 
 			private function resendActivationEmail(event:Event):void
@@ -188,8 +173,6 @@
 				destination="wrongLogin"/>
 	<fx:Binding source="{DataModel.getInstance().isSuccessfullyLogged}"
 				destination="loggedSuccessfully"/>
-	<fx:Binding source="{DataModel.getInstance().passRecoveryDone}"
-				destination="passRecoveryDone"/>
 	<fx:Binding source="{DataModel.getInstance().activationEmailResent}"
 				destination="onActivationEmailResent"/>
 
@@ -237,11 +220,6 @@
 							  id="okButton"
 							  buttonMode="true"
 							  click="processLogin(event)"/>
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-							  styleName="bigBlueButton"
-							  id="cancelButton"
-							  buttonMode="true"
-							  click="cancelButtonClickHandler(event)"/>
 				</s:HGroup>
 				<s:VGroup id="loginProblemTroubleshootingBox"
 						  width="100%"
@@ -260,35 +238,6 @@
 				</s:VGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
-
-		<s:NavigatorContent id="restorePassFormBoxNavContent">
-			<s:VGroup id="restorePassFormBox"
-					  width="100%">
-
-				<s:Label text="{resourceManager.getString('myResources','LABEL_USER_OR_EMAIL')}"
-						 styleName="formLabel"/>
-				<s:TextInput id="userOrEmail"
-							 width="100%"
-							 styleName="searchTextInput"
-							 fontSize="16"/>
-				<mx:Spacer width="20"/>
-				<s:HGroup width="100%"
-						  horizontalAlign="center"
-						  verticalAlign="middle">
-					<s:Button label="{resourceManager.getString('myResources','LABEL_RESTORE_PASSWORD')}"
-							  id="restoreButton"
-							  buttonMode="true"
-							  styleName="bigBlueButton"
-							  click="processRestorePass(event)"/>
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-							  id="cancelRestoreButton"
-							  buttonMode="true"
-							  styleName="bigBlueButton"
-							  click="showLogin(event)"/>
-				</s:HGroup>
-			</s:VGroup>
-		</s:NavigatorContent>
-
 
 		<s:NavigatorContent id="resendActivationEmailBoxNavContent">
 			<s:VGroup id="resendActivationEmailBox"

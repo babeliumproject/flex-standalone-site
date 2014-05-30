@@ -36,7 +36,9 @@
 			{
 				//PopUpManager.removePopUp(evt.target as IFlexDisplayObject);
 				//DataModel.getInstance().loginPop = null;
-				trace("Onclose event fired");
+				//trace("Onclose event fired");
+				//trace("CustomTitleWindows is popup? "+this.isPopUp);
+				trace(Class(getDefinitionByName(getQualifiedClassName(this))) + " isPopup: "+this.isPopUp);
 				PopUpManager.removePopUp(this);
 			}
 			

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.login.view.*"
+		  width="100%"
+		  implements="modules.IModuleInterface"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import mx.events.FlexEvent;
+			
+			import model.DataModel;
+			
+			import modules.exercise.view.IGroupInterface;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			
+			import spark.components.NavigatorContent;
+			
+			public static const INDEX:uint=0;
+			public static const ACTIVATE:uint=1;
+			public static const FORGOTPASSWORD:uint=2;
+
+			
+			private var changewatcher:ChangeWatcher;
+			
+			public var modulename:String = 'login';
+			
+			[Bindable]
+			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			
+			[Bindable]
+			private var _model:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var _viewstackIndex:uint;
+			
+			private var _creationComplete:Boolean;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
+			}
+			
+			public function resetModule():void{
+				changewatcher.unwatch();
+				resetViews();
+			}
+			
+			public function resetViews():void{
+				if (loginViewstack)
+				{
+					var views:Array=loginViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function onURLChange(value:String):void{
+				if (_urlmanager.moduleName != modulename)
+					return;
+				
+				resetViews();
+				switch (_urlmanager.actionFragment)
+				{
+					case 'activate':
+						actionActivate(_urlmanager.targetFragment);
+						break;
+					case 'forgotpassword':
+						actionForgotpassword();
+						break;
+					default:
+						actionIndex();
+						break;
+				}
+			}
+			
+			public function actionIndex():void{
+				_viewstackIndex = INDEX;
+			}
+			
+			public function actionActivate(fragment:String):void{
+				_viewstackIndex = ACTIVATE;
+			}
+			
+			public function actionForgotpassword():void{
+				_viewstackIndex = FORGOTPASSWORD;
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				//if(!_model.moduleMap.hasOwnProperty(modulename))
+				//	_model.moduleMap[modulename] = new CourseModel();
+				
+				// The Event.ADDED and Event.ADDED_TO_STAGE events are dispatched before FlexEvent.PREINITIALIZE
+				// that leaves only FlexEvent.ADD to know the component has been added as a child somewhere.
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void{
+				
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					BabeliaBrowserManager.getInstance().updateURL('course');
+					return;
+				}
+				this.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="loginViewstack"
+				  selectedIndex="{ _viewstackIndex }"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="index">
+			<view:LoginIndex id="loginIndex"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="activate">
+			<view:LoginActivate id="loginActivate"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="forgotpassword">
+			<view:LoginForgotpassword id="loginForgotpassword"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+</s:Module>

@@ -167,6 +167,11 @@ package control
 						moduleURL = 'modules/create/CreateModule.swf';
 						break;
 					}
+					case 'login':
+					{
+						moduleURL = 'modules/login/LoginModule.swf';
+						break;
+					}
 					default:
 					{
 						moduleURL = 'modules/home/HomeModule.swf';
@@ -204,6 +209,9 @@ package control
 				_browserManager.setFragment(DELIMITER+module+DELIMITER+action+DELIMITER+target);
 		}
 		
+		public function getLastURL():String{
+			return _lastURL;
+		}
 		
 		/**
 		 * From index to fragment
@@ -236,7 +244,6 @@ package control
 			
 			return false;
 		}
-		
 		
 		/**
 		 * Clear Fragments

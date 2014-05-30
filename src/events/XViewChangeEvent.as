@@ -11,7 +11,7 @@ package events
 	import components.main.HelpFAQMain;
 	import components.search.Search;
 	import components.subtitles.SubtitleMain;
-	import components.userManagement.AccountActivation;
+	import modules.login.view.LoginActivate;
 	import components.userManagement.AccountMain;
 	import components.userManagement.SignUpForm;
 	import components.videoUpload.UploadContainer;
