@@ -60,9 +60,9 @@ package commands.userManagement
 				//{
 				//	new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				//}
-				if (BabeliaBrowserManager.getInstance().moduleIndex==3){
-					BabeliaBrowserManager.getInstance().updateURL('home');
-				}
+				//if (BabeliaBrowserManager.getInstance().moduleIndex==3){
+				//	BabeliaBrowserManager.getInstance().updateURL('home');
+				//}
 			}
 			else
 			{

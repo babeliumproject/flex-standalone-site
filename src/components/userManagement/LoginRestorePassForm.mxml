@@ -109,7 +109,7 @@
 						username.text="";
 						password.text="";
 					}
-					if(!parentDocument is CustomTitleWindowSkin){
+					if(!(parentDocument is CustomTitleWindowSkin)){
 						trace("LastURL is: "+ BabeliaBrowserManager.getInstance().getLastURL());
 					}
 					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));

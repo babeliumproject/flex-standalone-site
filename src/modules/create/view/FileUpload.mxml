@@ -7,14 +7,30 @@
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
 		  creationComplete="onComplete()">
+	
+	<fx:Declarations>
+		<mx:StringValidator id="titleValidator"
+							source="{videoTitle}"
+							property="text"
+							minLength="3"
+							maxLength="80"/>
+		<mx:StringValidator id="descriptionValidator"
+							source="{videoDescription}"
+							property="text"
+							minLength="3"
+							maxLength="512"/>
+		<mx:StringValidator id="tagValidator"
+							source="{videoTags}"
+							property="text"
+							minLength="3"
+							maxLength="255"/>
+	</fx:Declarations>
 
 	<fx:Script>
 		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
 			import events.EvaluationEvent;
-			
-			import mx.controls.CheckBox;
-			
-			import modules.exercise.event.ExerciseEvent;
 			import events.UploadEvent;
 			import events.UserEvent;
 			import events.VideoSliceEvent;
@@ -25,8 +41,12 @@
 			import model.DataModel;
 			import model.ResourceSubscriber;
 			
+			import modules.create.event.CreateEvent;
+			import modules.exercise.event.ExerciseEvent;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
+			import mx.controls.CheckBox;
 			import mx.core.IVisualElement;
 			import mx.events.*;
 			import mx.managers.*;
@@ -82,8 +102,19 @@
 
 			}
 
-			
+			protected function gotoMediaUpload(event:MouseEvent):void
+			{
+				//Validate the form
+				var exercisedata:ExerciseVO = new ExerciseVO();
+				
+				//Attempt to save the data as draft.
+				new CreateEvent(CreateEvent.CREATEUPDATE_EXERCISE, exercisedata).dispatch();
+			}
 
+			public function set createUpdateExerciseResult(value:Boolean):void{
+				//Go to next step of exercise creation
+				BabeliaBrowserManager.getInstance().updateURL('create','edit','id=<exerciseid>&a=mediaupload');
+			}
 
 
 			private function parseTags(tags:String):String
@@ -202,7 +233,7 @@
 							}
 						}
 						
-						new ExerciseEvent(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, red5VideoData).dispatch();
+						new CreateEvent(CreateEvent.UNPROCESSED, red5VideoData).dispatch();
 					}
 		
 
@@ -263,7 +294,7 @@
 					//historic.videoExerciseName=mediaUploadForm.recFromWebcamBox.recordingFileName;
 					DataModel.getInstance().historicData=historic;
 
-					new ExerciseEvent(ExerciseEvent.ADD_WEBCAM_EXERCISE, red5VideoData).dispatch();
+					new CreateEvent(CreateEvent.WEBCAM, red5VideoData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
@@ -359,13 +390,6 @@
 			{
 				resetComponent();
 			}
-
-			private function changeUploadType(event:ItemClickEvent):void
-			{
-
-			}
-
-			
 			
 		]]>
 	</fx:Script>
@@ -379,8 +403,8 @@
 
 		<s:VGroup width="100%"
 				  height="100%">
-			<s:Label id="latestReceivedAssessmentsTitle"
-					 text="{'General'}"
+			<s:Label id="sectionTitle"
+					 text="{'1. Label the exercise'}"
 					 styleName="sectionTitleLabel"/>
 			<mx:Form width="100%"
 					 styleName="roundedBlueBorderBox">
@@ -429,24 +453,8 @@
 			</mx:Form>
 		</s:VGroup>
 	
-	
-	<fx:Declarations>
-		<mx:StringValidator id="titleValidator"
-							source="{videoTitle}"
-							property="text"
-							minLength="3"
-							maxLength="80"/>
-		<mx:StringValidator id="descriptionValidator"
-							source="{videoDescription}"
-							property="text"
-							minLength="3"
-							maxLength="512"/>
-		<mx:StringValidator id="tagValidator"
-							source="{videoTags}"
-							property="text"
-							minLength="3"
-							maxLength="255"/>
-	</fx:Declarations>
-
-
+		<s:Button id="gotomediaupload"
+				  label="Save and continue"
+				  styleName="bigBlueButton"
+				  click="gotoMediaUpload(event)"/>
 </s:VGroup>

@@ -607,3 +607,11 @@ s|TextInput{
 	cornerRadius: 8;
 }
 
+.stepsBorderContainer{
+	backgroundAlpha: 0.25;
+	backgroundColor: #DBDBDB;
+	borderColor: #333333;
+	borderAlpha: 0.25;
+	cornerRadius: 8;
+}
+

@@ -128,8 +128,6 @@ package control {
 			addCommand(UploadEvent.UPLOAD_BROWSE, UploadBrowseCommand);
 			addCommand(UploadEvent.UPLOAD_START, UploadStartCommand);
 			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
-			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
-			addCommand(ExerciseEvent.ADD_WEBCAM_EXERCISE, AddWebcamExerciseCommand);
 			
 			//VideoSlice management commands
 			addCommand(VideoSliceEvent.SEARCH_URL, SearchUrlCommand);

@@ -10,9 +10,6 @@ package modules.exercise.event
 
 	public class ExerciseEvent extends CairngormEvent
 	{
-
-		public static const ADD_UNPROCESSED_EXERCISE:String="addUnprocessedExercise";
-		public static const ADD_WEBCAM_EXERCISE:String="addWebcamExercise";
 		public static const GET_EXERCISES:String="getExercises";
 		public static const GET_RECORDABLE_EXERCISES:String="getRecordableExercises";
 		public static const WATCH_EXERCISE:String="watchExercise";
