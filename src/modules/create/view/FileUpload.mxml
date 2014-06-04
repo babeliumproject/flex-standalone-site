@@ -108,7 +108,7 @@
 				var exercisedata:ExerciseVO = new ExerciseVO();
 				
 				//Attempt to save the data as draft.
-				new CreateEvent(CreateEvent.CREATEUPDATE_EXERCISE, exercisedata).dispatch();
+				new CreateEvent(CreateEvent.ADD_EXERCISE, exercisedata).dispatch();
 			}
 
 			public function set createUpdateExerciseResult(value:Boolean):void{

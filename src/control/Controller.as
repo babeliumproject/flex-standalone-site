@@ -37,46 +37,6 @@ package control {
 			addCommand(CourseEvent.GET_COURSES, GetCourses);
 			addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
 			
-			//Content ViewStack related commands
-			/*
-			addCommand(ViewChangeEvent.VIEW_HOME_MODULE, ViewHomeModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_EXERCISE_MODULE, ViewExerciseModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_MODULE, ViewEvaluationModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_REGISTER_MODULE, ViewRegisterModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_MODULE, ViewAccountModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_MODULE, ViewUploadModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLE_MODULE, ViewSubtitleModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ACTIVATION_MODULE, ViewActivationModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_COURSE_MODULE, ViewCourseModuleCommand);
-			
-			//Home ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_HOME_UNSIGNED, ViewHomeUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_HOME_SIGNED_IN, ViewHomeSignedInCommand);
-			
-			//Subtitle ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED, ViewSubtitleUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLES_SIGNED_IN, ViewSubtitleSignedInCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLE_EDITOR, ViewSubtitleEditorCommand);
-			
-			//Upload ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED, ViewUploadUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN, ViewUploadSignedInCommand);
-			
-			//Evaluation ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_UNSIGNED, ViewEvaluationUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_SIGNED_IN, ViewEvaluationSignedInCommand);
-			
-			//Configuration ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_CONFIG_UNSIGNED, ViewConfigUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_CONFIG_SIGNED, ViewConfigSignedCommand);
-			
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_UNSIGNED, ViewAccountUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_SIGNED, ViewAccountSignedCommand);
-			*/
-			
 			//Credit management commands
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);
 			addCommand(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY, GetCurrentDayCreditHistoryCommand);
@@ -177,8 +137,6 @@ package control {
 			// Video stop after tab changing
 			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);
 			
-			//Configuration ViewStack related commands
-			//addCommand(ViewChangeEvent.VIEW_CONFIGURATION_MODULE, ViewConfigurationModuleCommand);
 		}
 
 	}
