@@ -32,5 +32,11 @@ package modules.create.service
 			var pendingCall:AsyncToken = service.addExerciseMedia(query);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function getLatestCreations():void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "exerciseRO" );
+			var pendingCall:AsyncToken = service.getLatestCreations();
+			pendingCall.addResponder(responder);
+		}
 	}
 }

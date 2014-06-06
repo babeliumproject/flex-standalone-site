@@ -15,6 +15,8 @@ package control {
 	
 	import events.*;
 	
+	import flash.utils.getDefinitionByName;
+	
 	import modules.dashboard.command.GetCourses;
 	import modules.dashboard.command.ViewCourse;
 	import modules.dashboard.event.CourseEvent;
@@ -66,10 +68,7 @@ package control {
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
-			addCommand(UserEvent.RETRIEVE_USER_VIDEOS, RetrieveUserVideosCommand);
-			addCommand(UserEvent.DELETE_SELECTED_VIDEOS, DeleteSelectedVideosCommand);
-			addCommand(UserEvent.MODIFY_VIDEO_DATA, ModifyVideoDataCommand);
-
+		
 			//Search management commands
 			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
 

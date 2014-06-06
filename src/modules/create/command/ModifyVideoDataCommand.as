@@ -1,4 +1,4 @@
-package commands.userManagement
+package modules.create.command
 {
 	import business.UserDelegate;
 	
@@ -16,12 +16,13 @@ package commands.userManagement
 	
 	import view.common.CustomAlert;
 	
-	public class DeleteSelectedVideosCommand implements ICommand, IResponder
+	public class ModifyVideoDataCommand implements ICommand, IResponder
 	{
+
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).deleteSelectedVideos((event as UserEvent).dataList);
+			new UserDelegate(this).modifyVideoData((event as UserEvent).videoData);
 		}
 		
 		public function result(data:Object):void
@@ -29,17 +30,17 @@ package commands.userManagement
 			var result:Object=data.result;
 			
 			if (result == true){
-				DataModel.getInstance().selectedVideosDeleted = true;
+				DataModel.getInstance().videoDataModified = true;
 			} else {
-				DataModel.getInstance().selectedVideosDeleted = false;
-				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_DELETING_VIDEOS'));
+				DataModel.getInstance().videoDataModified = false;
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_MODIFYING_VIDEO_DATA'));
 			}
 		}
 		
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'ERROR_WHILE_DELETING_VIDEOS'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'ERROR_WHILE_MODIFYING_VIDEO_DATA'));
 			trace(ObjectUtil.toString(info));
 		}
 	}

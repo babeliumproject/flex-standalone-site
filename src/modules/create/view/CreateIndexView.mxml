@@ -20,7 +20,7 @@
 	
 	<s:Button id="addnewexercise"
 			  label="Add new exercise"
-			  click="{BabeliaBrowserManager.getInstance().updateURL('create','edit')}"/>
+			  click="{BabeliaBrowserManager.getInstance().updateURL('create','add')}"/>
 	
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
 	

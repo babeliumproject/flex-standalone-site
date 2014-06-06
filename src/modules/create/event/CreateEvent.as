@@ -10,12 +10,13 @@ package modules.create.event
 		public static const ADD_EXERCISE:String = "addExercise";
 		public static const EDIT_EXERCISE:String = "editExercise";
 		public static const ADD_EXERCISE_MEDIA:String = "addExerciseMedia";
+		public static const GET_LATEST_CREATIONS:String = "getLatestCreations";
 		public static const UNPROCESSED:String = "unprocessed";
 		public static const WEBCAM:String = "webcam";
 		
 		public var exercisedata:Object;
 		
-		public function CreateEvent(type:String, exercisedata:Object)
+		public function CreateEvent(type:String, exercisedata:Object=null)
 		{
 			super(type);
 			this.exercisedata = exercisedata;

@@ -330,6 +330,50 @@ class Exercise {
 		}
 	}
 	
+	public function getTags($exerciseid){
+		if (!$exerciseid) return;
+		$sql = "SELECT t.name FROM rel_exercise_tag r INNER JOIN tag t ON r.fk_tag_id=t.id WHERE r.fk_exercise_id=%d";
+		$tags = $this->conn->_multipleSelect($sql,$exerciseid);
+		$taglist = false;
+		if($tags){
+			$taglist = array();
+			foreach($tags as $t){
+				$taglist[] = $t->name;
+			}
+		}
+		return $taglist;
+	}
+	
+	public function getLatestCreations(){
+		$limit = 5;
+		try {
+			$verifySession = new SessionValidation(true);
+			$status = 1; //ready
+			$sql = "SELECT e.id, e.title, e.description, e.language, e.timemodified, avg (suggested_level) as avgDifficulty
+					FROM exercise e LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
+					WHERE e.fk_user_id = %d
+					ORDER BY e.timemodified DESC
+					LIMIT %d";
+		
+			$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'], $limit);
+			foreach($searchResults as $searchResult){
+				$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+				$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
+				$searchResult->tags = $this->getTags($searchResult->id);
+				$media = $this->getPrimaryMedia($searchResult->id);
+				if($media){
+					$searchResult->duration = $media->duration;
+					$searchResult->name = $media->code;
+					$searchResult->license = $media->license;
+					$searchResult->reference = $media->authorref;
+				}
+			}
+			return $this->conn->multipleRecast('ExerciseVO',$filteredResults);
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
+	
 	/**
 	 * Parses a list of language common framework descriptors using their id
 	 * @param array $descriptors
@@ -453,29 +497,22 @@ class Exercise {
 	 * 		An array of stdClass on which each element has information about an exercises, or false on error
 	 */
 	public function getExercises(){
+		$status = 1; //ready
 		$sql = "SELECT e.id, 
 					   e.title, 
 					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date as addingDate, 
-       				   e.duration, 
+					   e.language,
+					   e.timemodified,
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
-       				   e.status, 
-       				   e.license, 
-       				   e.reference
+       				   avg (suggested_level) as avgDifficulty  
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			WHERE (e.status = 'Available')
+       			WHERE (e.status = %d)
 				GROUP BY e.id
-				ORDER BY e.adding_date DESC";
+				ORDER BY e.timemodified DESC";
 
-		$searchResults = $this->conn->_multipleSelect($sql);
+		$searchResults = $this->conn->_multipleSelect($sql,$status);
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
@@ -496,18 +533,10 @@ class Exercise {
 		$sql = "SELECT e.id, 
 					   e.title, 
 					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date as addingDate, 
-       				   e.duration, 
+					   e.language,
+					   e.timemodified,
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
-       				   e.status, 
-       				   e.license, 
-       				   e.reference
+       				   avg (suggested_level) as avgDifficulty  
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
@@ -519,6 +548,14 @@ class Exercise {
 		if($result){
 			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
 			$result->descriptors = $this->getExerciseDescriptors($result->id);
+			$result->tags = $this->getTags($result->id);
+			$media = $this->getPrimaryMedia($result->id);
+			if($media){
+				$result->duration = $media->duration;
+				$result->name = $media->code;
+				$result->license = $media->license;
+				$result->reference = $media->authorref;
+			}
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);
@@ -536,18 +573,10 @@ class Exercise {
 		$sql = "SELECT e.id, 
 					   e.title, 
 					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date as addingDate, 
-       				   e.duration, 
+					   e.language,
+					   e.timemodified,
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
-       				   e.status, 
-       				   e.license, 
-       				   e.reference
+       				   avg (suggested_level) as avgDifficulty  
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
@@ -557,11 +586,31 @@ class Exercise {
 
 		$result = $this->conn->_singleSelect($sql,$name);
 		if($result){
-			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+		$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
 			$result->descriptors = $this->getExerciseDescriptors($result->id);
+			$result->tags = $this->getTags($result->id);
+			$media = $this->getPrimaryMedia($result->id);
+			if($media){
+				$result->duration = $media->duration;
+				$result->name = $media->code;
+				$result->license = $media->license;
+				$result->reference = $media->authorref;
+			}
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);
+	}
+	
+	public function getPrimaryMedia($exerciseid){
+		if(!$exerciseid) return;
+		$level = 1; //Primary
+		$component = 'exercise';
+		$status = 2; //Available
+		$sql = "SELECT * FROM media WHERE component='%s' AND instanceid=%d AND status=%d AND level=%d"; 
+		
+		//There should be only one media labelled as 'primary' for each instanceid
+		$media = $this->conn->_singleSelect($sql, $component, $exerciseid, $status, $level);
+		return $media;
 	}
 
 	/**
@@ -576,35 +625,35 @@ class Exercise {
 	public function getExercisesUnfinishedSubtitling(){
 		try {
 			$verifySession = new SessionValidation(true);
-
+			$status = 1; //ready
 			$sql = "SELECT e.id, 
-						   e.title, 
-						   e.description, 
-						   e.language, 
-						   e.tags, 
-						   e.source, 
-						   e.name, 
-						   e.thumbnail_uri as thumbnailUri,
-       					   e.adding_date as addingDate, 
-       					   e.duration, 
-       					   u.username as userName, 
-       					   avg (suggested_level) as avgDifficulty, 
-       					   e.status, 
-       					   e.license, 
-       					   e.reference
+					   e.title, 
+					   e.description, 
+					   e.language,
+					   e.timemodified,
+       				   u.username as userName, 
+       				   avg (suggested_level) as avgDifficulty  
 					FROM exercise e 
 					 	 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			 	 	 WHERE (e.status = 'Available')
+       			 	 	 WHERE (e.status = %d)
 				 	GROUP BY e.id
-				 	ORDER BY e.adding_date DESC";
+				 	ORDER BY e.timemodified DESC";
 
-			$searchResults = $this->conn->_multipleSelect($sql);
+			$searchResults = $this->conn->_multipleSelect($sql, $status);
 			foreach($searchResults as $searchResult){
 				$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 				$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
+				$searchResult->tags = $this->getTags($searchResult->id);
+				$media = $this->getPrimaryMedia($searchResult->id);
+				if($media){
+					$searchResult->duration = $media->duration;
+					$searchResult->name = $media->code;
+					$searchResult->license = $media->license;
+					$searchResult->reference = $media->authorref;
+				}
 			}
 
 			//Filter searchResults to include only the "evaluate" languages of the user
@@ -623,34 +672,35 @@ class Exercise {
 	 * 		An array of stdClass on which each element has information about an exercises, or false on error
 	 */
 	public function getRecordableExercises(){
+		$status = 1; //ready
 		$sql = "SELECT e.id, 
-			       e.title, 
-			       e.description, 
-			       e.language, 
-			       e.tags, 
-			       e.source, 
-			       e.name, 
-			       e.thumbnail_uri as thumbnailUri,
-       			   e.adding_date as addingDate, 
-			       e.duration, 
-			       u.username as userName, 
-       			   avg (suggested_level) as avgDifficulty,
-			       e.status, 
-			       e.license, 
-			       e.reference
+					   e.title, 
+					   e.description, 
+					   e.language,
+					   e.timemodified,
+       				   u.username as userName, 
+       				   avg (suggested_level) as avgDifficulty  
 			       FROM   exercise e 
 				 		INNER JOIN user u ON e.fk_user_id= u.id
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
        				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE e.status = 'Available' AND t.complete = 1
+       			 WHERE e.status = %d AND t.complete = 1
 				 GROUP BY e.id
-				 ORDER BY e.adding_date DESC, e.language DESC";
+				 ORDER BY e.timemodified DESC, e.language DESC";
 		
-		$searchResults = $this->conn->_multipleSelect($sql);
+		$searchResults = $this->conn->_multipleSelect($sql, $status);
 		foreach($searchResults as $searchResult){
 			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
+			$searchResult->tags = $this->getTags($searchResult->id);
+			$media = $this->getPrimaryMedia($searchResult->id);
+			if($media){
+				$searchResult->duration = $media->duration;
+				$searchResult->name = $media->code;
+				$searchResult->license = $media->license;
+				$searchResult->reference = $media->authorref;
+			}
 		}
 
 		try {

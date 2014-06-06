@@ -16,16 +16,25 @@
 
 	<fx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.FrontController;
+			
+			import events.UserEvent;
+			
 			import control.BabeliaBrowserManager;
 			
-			import mx.events.FlexEvent;
+			import flash.utils.getDefinitionByName;
 			
 			import model.DataModel;
 			
+			import modules.create.command.GetLatestCreations;
+			import modules.create.event.CreateEvent;
 			import modules.exercise.view.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 
 			public var modulename:String = 'create';
 			
@@ -51,6 +60,12 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{
+				
+				FlexGlobals.topLevelApplication.appController.addCommand(UserEvent.RETRIEVE_USER_VIDEOS, getDefinitionByName("modules.create.command.RetrieveUserVideosCommand") as Class);
+				FlexGlobals.topLevelApplication.appController.addCommand(UserEvent.DELETE_SELECTED_VIDEOS, getDefinitionByName("modules.create.command.DeleteSelectedVideosCommand") as Class);
+				FlexGlobals.topLevelApplication.appController.addCommand(UserEvent.MODIFY_VIDEO_DATA, getDefinitionByName("modules.create.command.ModifyVideoDataCommand") as Class);
+
+				FlexGlobals.topLevelApplication.appController.addCommand(CreateEvent.GET_LATEST_CREATIONS, getDefinitionByName("modules.create.command.GetLatestCreations") as Class);
 				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
 			}
 			
