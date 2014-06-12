@@ -3,7 +3,7 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*" 
-		  xmlns:view="modules.create.view.*">
+		  xmlns:view="modules.create.view.*" xmlns:view1="modules.subtitle.view.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.IndexChangedEvent;
@@ -70,7 +70,7 @@
 				<view:MediaUploadForm width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="3. Add subtitles">
-				<view:CreateSubtitleView width="100%"/>
+				<view1:CreateSubtitleView width="100%"/>
 			</s:NavigatorContent>
 		</mx:ViewStack>
 

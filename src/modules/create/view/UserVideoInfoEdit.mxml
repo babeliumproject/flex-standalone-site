@@ -5,8 +5,7 @@
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
 		  width="100%"
-		  creationComplete="completeHandler(event)"
-		  xmlns:videoPlayer="components.videoPlayer.*">
+		  creationComplete="completeHandler(event)">
 
 
 	<s:Label id="editVideoTitle"
@@ -33,10 +32,10 @@
 						 width="100%"
 						 styleName="boldLabel"
 						 required="true">
-				<s:TextArea width="100%"
-							id="videoDescription"
-							maxChars="500"
-							fontWeight="normal"/>
+				<mx:RichTextEditor width="100%"
+								   id="videoDescription"
+								   dropShadowVisible="false"
+								   headerHeight="0"/>
 			</mx:FormItem>
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
 						 width="100%"
@@ -92,20 +91,6 @@
 			</mx:FormItem>
 			-->
 		</mx:Form>
-
-		<videoPlayer:VideoPlayerBabelia id="VP"
-										layoutDirection="ltr"
-										autoPlay="false"
-										skin="white"
-										seek="true"
-										subtitles="false"
-										autoScale="false"
-										arrows="false"
-										subtitlingControls="false"
-										width="426"
-										height="240"
-										streamSource="{_streamSource}"
-										controlsEnabled="false"/>
 	</s:HGroup>
 
 	<s:HGroup width="100%"
@@ -124,8 +109,6 @@
 
 	</s:HGroup>
 
-	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
-				destination="onTabChange"/>
 	<fx:Binding source="{DataModel.getInstance().videoDataModified}"
 				destination="videoDataModified"/>
 	
@@ -179,7 +162,7 @@
 			private var focussedFormControl:DisplayObject;
 			
 			[Bindable] public var formIsValid:Boolean=false;
-			[Bindable] private var red5VideoData:ExerciseVO;
+			[Bindable] private var exerciseData:ExerciseVO;
 			[Bindable] private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
 			private function completeHandler(event:FlexEvent):void
@@ -192,10 +175,6 @@
 
 			public function resetComponent():void
 			{
-				VP.endVideo();
-				VP.videoSource = '';
-				VP.autoPlay = false;
-
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
@@ -359,16 +338,16 @@
 				var validUrl:Boolean=true;
 				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text))
 				{
-					red5VideoData.title=videoTitle.text;
-					red5VideoData.description=videoDescription.text;
-					red5VideoData.tags=parseTags(videoTags.text);
-					red5VideoData.language=languageSelector.selectedItem.code;
+					exerciseData.title=videoTitle.text;
+					exerciseData.description=videoDescription.text;
+					exerciseData.tags=parseTags(videoTags.text);
+					exerciseData.language=languageSelector.selectedItem.code;
 
-					red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
-					red5VideoData.reference=referenceUrl.text;
+					exerciseData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+					exerciseData.reference=referenceUrl.text;
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					exerciseData.avgDifficulty=difficultySelector.selectedIndex + 1;
 					
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();
@@ -379,9 +358,9 @@
 							descriptors.push(descriptor);
 						}
 					}
-					red5VideoData.descriptors=descriptors;
+					exerciseData.descriptors=descriptors;
 
-					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, red5VideoData).dispatch();
+					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, exerciseData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
@@ -392,33 +371,23 @@
 				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
 			}
 
-			protected function set onTabChange(value:Boolean):void
-			{
-				VP.endVideo();
-				//resetComponent();
-			}
-
 			public function setInformation(data:ExerciseVO):void
 			{
-				red5VideoData=data;
-				videoTitle.text=red5VideoData.title;
-				videoDescription.text=red5VideoData.description;
-				videoTags.text=red5VideoData.tags;
+				exerciseData=data;
+				videoTitle.text=exerciseData.title;
+				videoDescription.text=exerciseData.description;
+				videoTags.text=exerciseData.tags;
 				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
-				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(red5VideoData.language);
+				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
 				licenseSelector.dataProvider = licenseSelector.licenses;
-				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(red5VideoData.license);
-				referenceUrl.text=red5VideoData.reference;
-				difficultySelector.selectedIndex=red5VideoData.avgDifficulty - 1;
+				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(exerciseData.license);
+				referenceUrl.text=exerciseData.reference;
+				difficultySelector.selectedIndex=exerciseData.avgDifficulty - 1;
 				difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
 				//The previous function should have created the descriptors of the selected level
-				selectPreviousDescriptors(red5VideoData.descriptors);
+				selectPreviousDescriptors(exerciseData.descriptors);
 				
-				VP.stopVideo();
-				VP.state=VideoPlayerBabelia.PLAY_STATE;
-				VP.controlsEnabled=true;
-				VP.videoSource=EXERCISE_FOLDER + '/' + red5VideoData.name;
 			}
 
 			private function set videoDataModified(value:Boolean):void

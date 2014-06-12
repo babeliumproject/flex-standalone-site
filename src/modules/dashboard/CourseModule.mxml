@@ -28,7 +28,7 @@
 			import modules.dashboard.command.ViewCourse;
 			import modules.dashboard.event.CourseEvent;
 			import modules.dashboard.model.CourseModel;
-			import modules.exercise.view.IGroupInterface;
+			import modules.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;

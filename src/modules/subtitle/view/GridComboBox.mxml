@@ -4,7 +4,7 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx"
 			 dataChange="setSelected()"
 			 change="onSelectionChange(event)"
-			 itemRenderer="modules.create.view.GridComboBoxItemRenderer">
+			 itemRenderer="modules.subtitle.view.GridComboBoxItemRenderer">
 
 	<fx:Script>
 		<![CDATA[

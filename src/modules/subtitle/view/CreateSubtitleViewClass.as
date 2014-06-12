@@ -1,4 +1,4 @@
-package modules.create.view
+package modules.subtitle.view
 {
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;

@@ -11,7 +11,7 @@
 		  width="100%"
 		  creationComplete="onComplete()"
 		  xmlns:skins="skins.*"
-		  implements="modules.exercise.view.IGroupInterface">
+		  implements="modules.IGroupInterface">
 
 	<fx:Script>
 		<![CDATA[

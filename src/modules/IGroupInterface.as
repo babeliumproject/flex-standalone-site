@@ -1,4 +1,4 @@
-package modules.exercise.view
+package modules
 {
 	public interface IGroupInterface
 	{

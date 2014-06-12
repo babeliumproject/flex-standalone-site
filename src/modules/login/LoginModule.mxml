@@ -22,7 +22,7 @@
 			
 			import model.DataModel;
 			
-			import modules.exercise.view.IGroupInterface;
+			import modules.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;

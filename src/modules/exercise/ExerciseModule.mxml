@@ -25,7 +25,7 @@
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.model.ExerciseModel;
 			import modules.exercise.view.Exercises;
-			import modules.exercise.view.IGroupInterface;
+			import modules.IGroupInterface;
 			import modules.exercise.view.VideoList;
 
 			import mx.binding.utils.BindingUtils;
