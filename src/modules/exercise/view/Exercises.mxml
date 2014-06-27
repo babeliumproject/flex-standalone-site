@@ -458,7 +458,7 @@
 
 					// Retrieving selected exercise information
 					var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
-					_exerciseName=tmp.name;
+					_exerciseName=tmp.exercisecode;
 					_exerciseTitle=tmp.title;
 					_exerciseId=tmp.id;
 					_currentExercise=tmp;

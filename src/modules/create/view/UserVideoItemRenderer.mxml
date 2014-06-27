@@ -51,7 +51,7 @@
 						  toolTip="{exerciseLanguage.source}"
 						  source="{getFlagSource(data as ExerciseVO)}"
 						  id="exerciseLanguage"/>
-				<s:Label text="{getLevelCorrespondence(data.avgDifficulty)}"
+				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
 			<hulstkamp:AhFxRatingComponent rating="{data.avgRating}"
@@ -59,7 +59,7 @@
 										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
 										   scaleX="1.2"
 										   scaleY="1.2"/>
-			<s:Label text="{dateFormatter.format(data.addingDate)}"
+			<s:Label text="{dateFormatter.format(data.timecreated)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 
@@ -69,7 +69,7 @@
 				 toolTip="{data.description}"
 				 width="850"/>
 		<s:HGroup width="850" paddingTop="4" paddingBottom="4" verticalAlign="middle">
-			<s:Label text="{resourceManager.getString('myResources','TAGS')+':'}"/>
+			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"/>
 			<s:TileGroup id="exerciseTagsBox"
 						 width="750"
 						 horizontalGap="1"
@@ -80,6 +80,7 @@
 						 paddingRight="0"
 						 paddingTop="0"/>
 		</s:HGroup>
+		<!--
 		<s:HGroup verticalAlign="middle"
 				  width="100%">
 			<mx:Image id="license"
@@ -92,9 +93,6 @@
 					  height="15"
 					  useHandCursor="true"
 					  buttonMode="true"/>
-			<!--
-			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
-					 visible="{data.reference}"/>-->
 			<skins:IconButton id="referenceUrl"
 							  width="240"
 							  label="{data.reference}"
@@ -102,16 +100,16 @@
 							  styleName="commonLinkButton"
 							  enabled="{checkExternalUrl(data.reference)}"/>
 		</s:HGroup>
-
+		-->
 		<s:HGroup width="100%"
 				  verticalAlign="middle"
 				  paddingBottom="16">
 			<s:Label text="{resourceManager.getString('myResources','VIDEO_STATUS')+':'}"/>
-			<s:Label text="{data.status}"/>
+			<s:Label text="{data.status == 1 ? 'Ready' : 'Draft'}"/>
 		</s:HGroup>
 		<s:Button id="editVideoData"
 				  label="{resourceManager.getString('myResources','EDIT')}"
-				  click="editVideoData_clickHandler(event)"/>
+				  click="editExercise(event)"/>
 
 	</s:VGroup>
 
@@ -128,17 +126,19 @@
 			import control.BabeliaBrowserManager;
 			import control.CuePointManager;
 			
-			import modules.exercise.event.ExerciseEvent;
 			import events.SearchEvent;
 			import events.SubtitleEvent;
-			//import events.ViewChangeEvent;
 			
 			import model.DataModel;
+			
+			import modules.exercise.event.ExerciseEvent;
 			
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
+			
+			import skins.IconButton;
 			
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
@@ -171,15 +171,16 @@
 			
 			public function dataChangeHandler():void{
 				addTagLinkButtons();
-				setupReferenceComponent();
+				//setupReferenceComponent();
 			}
 
-			protected function editVideoData_clickHandler(event:MouseEvent):void
+			protected function editExercise(event:MouseEvent):void
 			{
-
-				parentDocument.videoEditRequested(data);
+				//parentDocument.videoEditRequested(data);
+				BabeliaBrowserManager.getInstance().updateURL('create','edit',data.exercisecode);
 			}
 
+			/*
 			private function setupReferenceComponent():void
 			{
 				if (checkExternalUrl(data.reference))
@@ -204,6 +205,7 @@
 				if (checkExternalUrl(data.reference))
 					navigateToURL(new URLRequest(data.reference), '_blank');
 			}
+			*/
 
 			public function getLevelCorrespondence(avgDifficulty:Number):String
 			{
@@ -242,6 +244,7 @@
 			public function getImageSource(temp:ExerciseVO):String
 			{
 				var url:String='';
+				/*
 				if (temp.source == "Red5")
 					if (temp.thumbnailUri != 'nothumb.png')
 						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
@@ -249,9 +252,12 @@
 						url=DataModel.getInstance().thumbURL + '/nothumb.png';
 				else
 					url=temp.thumbnailUri;
+				*/
+				url = DataModel.getInstance().thumbURL + "/" + temp.exercisecode + "/default.jpg";
 				return url;
 			}
 
+			/*
 			public function getLicenseSource(temp:ExerciseVO):String
 			{
 				_licenseData=LicenseResource.getLicenseData(temp.license);
@@ -280,20 +286,23 @@
 				}
 				return (true);
 			}
+			*/
 			
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
-				var tags:String = data.tags;
-				var taglist:Array=tags.split(',');
-				
-				for each (var tag:String in taglist)
-				{
-					var linkTag:IconButton=new IconButton();
-					linkTag.styleName="commonLinkButton";
-					linkTag.label=StringUtil.trim(tag);
-					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
-					exerciseTagsBox.addElement(linkTag);
+				if(data.tags){
+					var tags:String = data.tags;
+					var taglist:Array=tags.split(',');
+
+					for each (var tag:String in taglist)
+					{
+						var linkTag:IconButton=new IconButton();
+						linkTag.styleName="commonLinkButton";
+						linkTag.label=StringUtil.trim(tag);
+						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+						exerciseTagsBox.addElement(linkTag);
+					}
 				}
 			}
 			

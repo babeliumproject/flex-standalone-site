@@ -23,7 +23,7 @@ package modules.exercise.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var exercisehash:String = (event as ExerciseEvent).exercise.name;
+			var exercisehash:String = (event as ExerciseEvent).exercise.exercisecode;
 			new ExerciseDelegate(this).watchExercise(exercisehash);
 		}
 		

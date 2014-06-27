@@ -88,7 +88,7 @@
 			{
 				viewstackIndex=VIEW;
 				var ex:ExerciseVO=new ExerciseVO();
-				ex.name=urlmanager.targetFragment;
+				ex.exercisecode=urlmanager.targetFragment;
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
 			}
 

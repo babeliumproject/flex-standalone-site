@@ -111,6 +111,7 @@
 	
 	<s:FormHeading label="Media" styleName="sectionTitleLabel"/>
 
+	<!--
 	<s:HGroup width="100%">
 		<s:Image id="warningIcon"
 				  source="resources/images/about_section_title_icon.png"/>
@@ -122,6 +123,7 @@
 					 width="100%"/>
 		</s:VGroup>
 	</s:HGroup>
+	-->
 	
 	<s:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
 				styleName="boldLabel"

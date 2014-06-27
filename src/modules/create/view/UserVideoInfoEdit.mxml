@@ -343,11 +343,11 @@
 					exerciseData.tags=parseTags(videoTags.text);
 					exerciseData.language=languageSelector.selectedItem.code;
 
-					exerciseData.license=String(licenseSelector.selectedItem.code).toLowerCase();
-					exerciseData.reference=referenceUrl.text;
+					//exerciseData.license=String(licenseSelector.selectedItem.code).toLowerCase();
+					//exerciseData.reference=referenceUrl.text;
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-					exerciseData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					exerciseData.difficulty=difficultySelector.selectedIndex + 1;
 					
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();
@@ -379,10 +379,10 @@
 				videoTags.text=exerciseData.tags;
 				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
-				licenseSelector.dataProvider = licenseSelector.licenses;
-				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(exerciseData.license);
-				referenceUrl.text=exerciseData.reference;
-				difficultySelector.selectedIndex=exerciseData.avgDifficulty - 1;
+				//licenseSelector.dataProvider = licenseSelector.licenses;
+				//licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(exerciseData.license);
+				//referenceUrl.text=exerciseData.reference;
+				difficultySelector.selectedIndex=exerciseData.difficulty - 1;
 				difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
 				//The previous function should have created the descriptors of the selected level

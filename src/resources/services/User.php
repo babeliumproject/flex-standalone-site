@@ -205,36 +205,25 @@ class User {
 		try {
 			$verifySession = new SessionValidation(true);
 
-			$sql = "SELECT e.id,
-						   e.title,
-						   e.description,
-						   e.language,
-						   e.tags,
-						   e.source,
-						   e.name,
-						   e.thumbnail_uri as thumbnailUri,
-						   e.adding_date as addingDate,
-		               	   e.duration,
-		               	   avg (suggested_level) as avgDifficulty,
-		               	   e.status,
-		               	   license,
-		               	   reference,
-		               	   a.complete as isSubtitled
-				FROM exercise e
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-     			WHERE e.fk_user_id = %d AND e.status <> 'Unavailable'
-				GROUP BY e.id
-				ORDER BY e.adding_date DESC";
+			$sql = "SELECT e.id, 
+						   e.title, 
+						   e.description, 
+						   e.language, 
+						   e.exercisecode, 
+						   e.timecreated, 
+		               	   e.difficulty, 
+		               	   e.status 
+				FROM exercise e 
+				WHERE e.fk_user_id = %d
+				ORDER BY e.timecreated DESC";
 
 
 			$searchResults = array();
 			if($searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'])){
 				$exercise = new Exercise();
 				foreach($searchResults as $searchResult){
-					$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
-					$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+					//$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
+					//$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 					$searchResult->descriptors = $exercise->getExerciseDescriptors($searchResult->id);
 				}
 			}

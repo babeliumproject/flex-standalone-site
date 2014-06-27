@@ -64,7 +64,7 @@
 		<mx:ViewStack id="stepViewStack"
 					  change="stepViewStack_changeHandler(event)">
 			<s:NavigatorContent label="1. Label the exercise">
-				<view:FileUpload width="100%"/>
+				<view:UserVideoInfoEdit width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="2. Add media">
 				<view:MediaUploadForm width="100%"/>

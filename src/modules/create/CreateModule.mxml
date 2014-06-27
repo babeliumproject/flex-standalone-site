@@ -116,6 +116,9 @@
 			public function actionEdit(fragment:String = null):void{
 				trace("create edit call");
 				_viewstackIndex=EDIT;
+				var exercise:Object = new Object();
+				exercise.exercisecode = _urlmanager.targetFragment;
+				new CreateEvent(CreateEvent.EDIT_EXERCISE, exercise).dispatch();
 			}
 			
 			public function actionManage(fragment:String = null):void{

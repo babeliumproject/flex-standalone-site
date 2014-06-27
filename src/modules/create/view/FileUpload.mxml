@@ -204,13 +204,13 @@
 						red5VideoData.description=videoDescription.text;
 						red5VideoData.tags=parseTags(videoTags.text);
 						red5VideoData.language=languageSelector.selectedItem.code;
-						red5VideoData.name=DataModel.getInstance().uploadFileName;
+						red5VideoData.exercisecode=DataModel.getInstance().uploadFileName;
 						
 						//red5VideoData.license=String(mediaUploadForm.licenseSelector.selectedItem.code).toLowerCase();
 						//red5VideoData.reference=mediaUploadForm.referenceUrl.text;
 						
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+						red5VideoData.difficulty=difficultySelector.selectedIndex + 1;
 						
 						//If the user chose any level descriptors, those must be saved too
 						var descriptors:Array=new Array();
@@ -267,7 +267,7 @@
 					//red5VideoData.reference=mediaUploadForm.referenceUrl.text;
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					red5VideoData.difficulty=difficultySelector.selectedIndex + 1;
 					
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();

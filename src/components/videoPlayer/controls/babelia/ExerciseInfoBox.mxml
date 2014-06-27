@@ -160,17 +160,19 @@
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
-				//tagBoxSeparator.height=1;
-				_tags=_exercise.tags.split(',');
-				for each (var tag:String in _tags)
-				{
-					var linkTag:IconButton=new IconButton();
-					linkTag.styleName="commonLinkButton";
-					linkTag.setStyle("fontSize", 11);
-					linkTag.setStyle("fontWeight", "normal");
-					linkTag.label=StringUtil.trim(tag);
-					linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
-					exerciseTagsBox.addElement(linkTag);
+				if(_exercise.tags){
+					//tagBoxSeparator.height=1;
+					_tags=_exercise.tags.split(',');
+					for each (var tag:String in _tags)
+					{
+						var linkTag:IconButton=new IconButton();
+						linkTag.styleName="commonLinkButton";
+						linkTag.setStyle("fontSize", 11);
+						linkTag.setStyle("fontWeight", "normal");
+						linkTag.label=StringUtil.trim(tag);
+						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+						exerciseTagsBox.addElement(linkTag);
+					}
 				}
 			}
 

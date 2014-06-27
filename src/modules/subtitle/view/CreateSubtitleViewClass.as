@@ -327,7 +327,7 @@ package modules.subtitle.view
 
 						var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
 						subHistoricData.videoExerciseId=currentExercise.id;
-						subHistoricData.videoExerciseName=currentExercise.name;
+						subHistoricData.videoExerciseName=currentExercise.exercisecode;
 						DataModel.getInstance().subHistoricData=subHistoricData;
 						
 						CustomAlert.info(resourceManager.getString('myResources', 'CONFIRMATION_COMPLETE_SUBTITLE'), Alert.YES | Alert.NO, null, completeSubtitleConfirmation, Alert.NO);
@@ -432,7 +432,7 @@ package modules.subtitle.view
 		{
 
 			var exerciseToWatch:ExerciseVO=new ExerciseVO();
-			exerciseToWatch.name=exerciseFileName;
+			exerciseToWatch.exercisecode=exerciseFileName;
 			exerciseToWatch.id=exerciseId;
 			exerciseToWatch.language=exerciseLanguage;
 			exerciseToWatch.title=exerciseTitle.text;
@@ -466,7 +466,7 @@ package modules.subtitle.view
 				
 				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
 				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
-				exerciseFileName=watchExercise.name;
+				exerciseFileName=watchExercise.exercisecode;
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
 				exerciseTitle.text=watchExercise.title;

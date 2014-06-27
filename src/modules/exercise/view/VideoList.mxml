@@ -95,7 +95,7 @@
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
 
 				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('exercises',BabeliaBrowserManager.VIEW, obj.name);
+				BabeliaBrowserManager.getInstance().updateURL('exercises',BabeliaBrowserManager.VIEW, obj.exercisecode);
 				callLater(updateVerticalScroll);
 			}
 
@@ -141,14 +141,14 @@
 					}
 					else if (dFilter && !lFilter)
 					{
-						if (e.avgDifficulty == dFilter)
+						if (e.difficulty == dFilter)
 						{
 							filteredList.addItem(e);
 						}
 					}
 					else if (dFilter && lFilter)
 					{
-						if (e.avgDifficulty == dFilter && e.language == lFilter)
+						if (e.difficulty == dFilter && e.language == lFilter)
 						{
 							filteredList.addItem(e);
 						}

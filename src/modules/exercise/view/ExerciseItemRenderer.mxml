@@ -97,6 +97,7 @@
 						 paddingTop="0"/>
 			<!--<s:HGroup id="tagRow"/>-->
 		</s:HGroup>
+		<!--
 		<s:HGroup verticalAlign="middle"
 				  width="100%">
 			<mx:Image id="license"
@@ -109,9 +110,6 @@
 					  height="15"
 					  useHandCursor="true"
 					  buttonMode="true"/>
-			<!--
-			<s:Label text="{resourceManager.getString('myResources','AUTHOR_PROVIDED_BY')}"
-					 visible="{data.reference}"/>-->
 			<skins:IconButton id="referenceUrl"
 							  width="240"
 							  label="{data.reference}"
@@ -119,7 +117,7 @@
 							  styleName="commonLinkButton"
 							  enabled="{checkExternalUrl(data.reference)}"/>
 		</s:HGroup>
-
+		-->
 	</s:VGroup>
 
 	<fx:Declarations>
@@ -178,9 +176,10 @@
 			
 			public function dataChangeHandler():void{
 				addTagLinkButtons();
-				setupReferenceComponent();
+				//setupReferenceComponent();
 			}
 
+			/*
 			private function setupReferenceComponent():void
 			{
 				if (checkExternalUrl(data.reference))
@@ -205,6 +204,7 @@
 				if (checkExternalUrl(data.reference))
 					navigateToURL(new URLRequest(data.reference), '_blank');
 			}
+			*/
 
 			public function getLevelCorrespondence(avgDifficulty:Number):String
 			{
@@ -243,6 +243,7 @@
 			public function getImageSource(temp:ExerciseVO):String
 			{
 				var url:String='';
+				/*
 				if (temp.source == "Red5")
 					if (temp.thumbnailUri != 'nothumb.png')
 						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
@@ -250,9 +251,12 @@
 						url=DataModel.getInstance().thumbURL + '/nothumb.png';
 				else
 					url=temp.thumbnailUri;
+				*/
+				url=DataModel.getInstance().thumbURL + "/" + temp.exercisecode + '/default.jpg';
 				return url;
 			}
 
+			/*
 			public function getLicenseSource(temp:ExerciseVO):String
 			{
 				_licenseData=LicenseResource.getLicenseData(temp.license);
@@ -281,6 +285,7 @@
 				}
 				return (true);
 			}
+			*/
 
 			private function addTagLinkButtons():void
 			{
