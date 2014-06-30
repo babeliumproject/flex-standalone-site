@@ -3,32 +3,27 @@
 class ExerciseVO {
 	
 	public $id;
-	public $name;
+	public $exercisecode;
 	public $title;
 	public $description;
-	public $tags;
 	public $language;
-	public $source;
-	
-	public $userId;
-	public $userName;
-	
-	public $thumbnailUri;
-	public $addingDate;
-	public $duration;
-	public $transcriptionId;
+	public $difficulty;
+	public $timecreated;
+	public $timemodified;
 	public $status;
-	public $license;
-	public $reference;
+	
+	public $userName;
+	public $userId;
 	
 	public $avgRating;
 	public $ratingCount;
 	
-	public $avgDifficulty;
-	
 	public $isSubtitled;
 	
+	public $tags;
 	public $descriptors;
+	public $related;
+	public $media;
 	
 	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
 	public $score;

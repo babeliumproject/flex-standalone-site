@@ -15,6 +15,12 @@ package modules.create.service
 			this.responder = responder;
 		}
 		
+		public function getExercise(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken = service.getExerciseByName(query.exercisecode);
+			pendingCall.addResponder(responder);
+		}
+		
 		public function addExercise(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "exerciseRO" );
 			var pendingCall:AsyncToken = service.addExercise(query);

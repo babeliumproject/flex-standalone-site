@@ -129,19 +129,23 @@
 			}
 			
 			public function editSelectedExercise(data:ExerciseVO):void{
+				/*
 				videoEditPanel.setInformation(data);
 				videoListPanel.includeInLayout = false;
 				videoListPanel.visible = false;
 				videoEditPanel.includeInLayout = true;
 				videoEditPanel.visible = true;
+				*/
 			}
 			
 			private function editCancelHandler(event:MouseEvent):void{
+				/*
 				videoListPanel.includeInLayout = true;
 				videoListPanel.visible = true;
 				videoEditPanel.includeInLayout = false;
 				videoEditPanel.visible = false;
 				videoEditPanel.resetComponent();
+				*/
 			}
 
 			protected function searchButton_clickHandler(event:MouseEvent):void
@@ -187,11 +191,11 @@
 									paddingTop="8"/>
 			</s:layout>
 
-			<s:Button id="deleteSelectedVideos"
+			<s:Button id="deleteExercisesButton"
 					  click="deleteExercisesButtonClickHandler(event)"
 					  label="{resourceManager.getString('myResources','DELETE')}"/>
 			<mx:VRule height="20"/>
-			<s:Label id="videoCount"
+			<s:Label id="exerciseCount"
 					 paddingLeft="16"
 					 paddingRight="16"
 					 text="{userExerciseList.length > 1 ? StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_MANY'),userExerciseList.length) : StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_SINGLE'),userExerciseList.length)}"/>
@@ -233,9 +237,10 @@
 
 	</s:VGroup>
 
+	<!--
 	<view:UserVideoInfoEdit id="videoEditPanel"
 									  includeInLayout="false"
 									  visible="false"
 									  cancelClickHandler="{editCancelHandler}"/>
-
+	-->
 </s:VGroup>

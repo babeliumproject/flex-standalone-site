@@ -92,6 +92,8 @@
 			}
 			
 			public function onURLChange(value:String):void{
+				trace("trace: "+value);
+				trace(_urlmanager.actionFragment);
 				if (_urlmanager.moduleName != modulename)
 					return;
 				

@@ -576,11 +576,10 @@ class Exercise {
 					   e.language,
 					   e.timemodified,
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty  
+       				   e.difficulty
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			WHERE (e.name = '%s')
+       			WHERE (e.exercisecode = '%s')
 				GROUP BY e.id
 				LIMIT 1";
 
@@ -590,12 +589,7 @@ class Exercise {
 			$result->descriptors = $this->getExerciseDescriptors($result->id);
 			$result->tags = $this->getTags($result->id);
 			$media = $this->getPrimaryMedia($result->id);
-			if($media){
-				$result->duration = $media->duration;
-				$result->name = $media->code;
-				$result->license = $media->license;
-				$result->reference = $media->authorref;
-			}
+			$result->media = $media;
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);

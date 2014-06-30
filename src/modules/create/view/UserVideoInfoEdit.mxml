@@ -63,6 +63,8 @@
 						 required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</mx:FormItem>
+			
+			<!--
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
 						 styleName="boldLabel"
 						 required="true">
@@ -76,7 +78,7 @@
 							 id="referenceUrl"/>
 			</mx:FormItem>
 
-			<!--
+			
 			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
 						 styleName="boldLabel"
 						 visible="{DataModel.getInstance().loggedUser.isAdmin}"
@@ -101,13 +103,16 @@
 						  click="saveChangesClickHandler(event)"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/save.png')"/>
-
+		<!--
 		<skins:IconButton id="cancelButton"
 						  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/cancel.png')"/>
-
+		-->
 	</s:HGroup>
+	
+	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
+				destination="setInformation"/>
 
 	<fx:Binding source="{DataModel.getInstance().videoDataModified}"
 				destination="videoDataModified"/>
@@ -178,7 +183,7 @@
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
-				licenseSelector.selectedIndex=0;
+				//licenseSelector.selectedIndex=0;
 
 				//Reset the descriptors
 				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex+1));
@@ -197,7 +202,7 @@
 				videoTitle.text="";
 				videoDescription.text="";
 				videoTags.text="";
-				referenceUrl.text="";
+				//referenceUrl.text="";
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
@@ -366,13 +371,17 @@
 					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
 			}
 
+			/*
 			public function set cancelClickHandler(cancelFunction:Function):void
 			{
 				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
 			}
-
-			public function setInformation(data:ExerciseVO):void
+			*/
+			
+			public function set setInformation(value:Boolean):void
 			{
+				//resetComponent();
+				var data:ExerciseVO = DataModel.getInstance().exerciseData;
 				exerciseData=data;
 				videoTitle.text=exerciseData.title;
 				videoDescription.text=exerciseData.description;
@@ -395,7 +404,7 @@
 				if (DataModel.getInstance().videoDataModified == true)
 				{
 					CustomAlert.info(resourceManager.getString('myResources', 'VIDEO_DATA_SUCCESSFULLY_MODIFIED'));
-					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					//cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 					DataModel.getInstance().videoDataModified=false;
 				}
 			}

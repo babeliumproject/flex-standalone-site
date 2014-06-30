@@ -18,12 +18,8 @@ package vo
 		public var userName:String;
 		public var userId:uint;
 		
-		public var transcriptionId:int;
-
-		
 		public var avgRating:Number;
-		public var ratingCount:int; //used for bayesian average rating calculation
-		
+		public var ratingCount:int; //used for bayesian average rating calculation	
 		
 		public var isSubtitled:uint;
 		

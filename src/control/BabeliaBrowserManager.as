@@ -134,7 +134,7 @@ package control
 			_isParsing = true;
 			_lastURL = e ? e.lastURL : null;
 			
-			clearFragments();
+			//clearFragments();
 			
 			//Fixes a bug caused by email clients that escape url sequences
 			var uescparams:String = unescape(_browserManager.fragment);
@@ -178,7 +178,7 @@ package control
 						break;
 					}
 				}
-				
+				clearFragments();
 				
 			}
 			
@@ -199,7 +199,7 @@ package control
 		{
 			// default url format: /module/action/target
 			
-			clearFragments();
+			//clearFragments();
 			
 			if ( action == null )
 				_browserManager.setFragment(DELIMITER+module);

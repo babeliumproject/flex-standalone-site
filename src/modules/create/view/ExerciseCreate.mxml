@@ -3,7 +3,9 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*" 
-		  xmlns:view="modules.create.view.*" xmlns:view1="modules.subtitle.view.*">
+		  xmlns:view="modules.create.view.*"
+		  width="100%"
+		  implements="modules.IGroupInterface">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.IndexChangedEvent;
@@ -14,6 +16,13 @@
 			{
 				// TODO Auto-generated method stub
 
+			}
+			
+			public function resetGroup():void{
+				if(exerciseClassification)
+					exerciseClassification.resetComponent();
+				if(mediaUpload)
+					mediaUpload.resetComponent();
 			}
 		]]>
 	</fx:Script>
@@ -62,15 +71,18 @@
 
 
 		<mx:ViewStack id="stepViewStack"
-					  change="stepViewStack_changeHandler(event)">
+					  change="stepViewStack_changeHandler(event)"
+					  width="100%">
 			<s:NavigatorContent label="1. Label the exercise">
-				<view:UserVideoInfoEdit width="100%"/>
+				<view:UserVideoInfoEdit id="exerciseClassification" width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="2. Add media">
-				<view:MediaUploadForm width="100%"/>
+				<view:MediaUploadForm id="mediaUpload" width="100%"/>
 			</s:NavigatorContent>
-			<s:NavigatorContent label="3. Add subtitles">
-				<view1:CreateSubtitleView width="100%"/>
+			<s:NavigatorContent label="3. Preview Publish">
+				<s:VGroup>
+					<s:Label text="Add controls for previewing and publishing"/>
+				</s:VGroup>
 			</s:NavigatorContent>
 		</mx:ViewStack>
 

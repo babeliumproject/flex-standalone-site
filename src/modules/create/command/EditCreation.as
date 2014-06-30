@@ -3,7 +3,17 @@ package modules.create.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import model.DataModel;
+	
+	import modules.create.event.CreateEvent;
+	import modules.create.service.CreateDelegate;
+	
+	import mx.messaging.messages.RemotingMessage;
 	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
+	import mx.utils.ObjectUtil;
+	
+	import vo.ExerciseVO;
 	
 	public class EditCreation implements ICommand, IResponder
 	{
@@ -13,14 +23,29 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
+			trace("Event: "+ObjectUtil.toString(event));
+			new CreateDelegate(this).getExercise((event as CreateEvent).exercisedata);
 		}
 		
 		public function result(data:Object):void
 		{
+			var result:Object=data.result;
+			trace("getExData:"+ObjectUtil.toString(result));
+			if(result){
+				DataModel.getInstance().exerciseData = result as ExerciseVO;
+			}
+			DataModel.getInstance().exerciseDataRetrieved = !DataModel.getInstance().exerciseDataRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
+			var faultEvent:FaultEvent=FaultEvent(info);
+			var rm:RemotingMessage = faultEvent.token.message as RemotingMessage;
+			if(rm){
+				var faultString:String = faultEvent.fault.faultString;
+				var faultDetail:String = faultEvent.fault.faultDetail;
+				trace("[Error] "+rm.source+"."+rm.operation+": " + faultString);
+			}
 		}
 	}
 }

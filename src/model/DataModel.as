@@ -497,6 +497,11 @@ package model
 		[Bindable]
 		public var userReportedExerciseFlag:Boolean=false;
 		
+		[Bindable]
+		public var exerciseData:ExerciseVO;
+		[Bindable]
+		public var exerciseDataRetrieved:Boolean;
+		
 		public var moduleMap:Object = {};
 		[Bindable]
 		public var moduleMapProxy:ObjectProxy = new ObjectProxy(moduleMap);
