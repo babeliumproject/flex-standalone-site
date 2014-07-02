@@ -92,13 +92,11 @@
 			}
 			
 			public function onURLChange(value:String):void{
-				trace("trace: "+value);
-				trace(_urlmanager.actionFragment);
 				if (_urlmanager.moduleName != modulename)
 					return;
 				
 				resetViews();
-				switch (_urlmanager.actionFragment)
+				switch (value)
 				{
 					case 'manage':
 						actionManage(_urlmanager.targetFragment);
@@ -119,7 +117,7 @@
 				trace("create edit call");
 				_viewstackIndex=EDIT;
 				var exercise:Object = new Object();
-				exercise.exercisecode = _urlmanager.targetFragment;
+				exercise.exercisecode = fragment;
 				new CreateEvent(CreateEvent.EDIT_EXERCISE, exercise).dispatch();
 			}
 			

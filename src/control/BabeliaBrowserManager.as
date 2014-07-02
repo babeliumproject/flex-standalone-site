@@ -134,7 +134,9 @@ package control
 			_isParsing = true;
 			_lastURL = e ? e.lastURL : null;
 			
-			//clearFragments();
+			var modparam:String = null;
+			var actionparam:String = null;
+			var valueparam:String = null;
 			
 			//Fixes a bug caused by email clients that escape url sequences
 			var uescparams:String = unescape(_browserManager.fragment);
@@ -149,8 +151,8 @@ package control
 			if ( length > 1 ){ // module
 				
 				//if ( !changeModule(params[1]) ) return;
-				var modulefragment:String = params[1];
-				switch(modulefragment)
+				modparam = params[1];
+				switch(modparam)
 				{
 					case 'exercises':
 					{
@@ -178,15 +180,17 @@ package control
 						break;
 					}
 				}
-				clearFragments();
-				
 			}
 			
-			if ( length > 2 ) // action
-				actionFragment = params[2];
+			if ( length > 2 ) {
+				actionparam = params[2];
+			}
 			
 			if ( length > 3 ) // target
-				targetFragment = params[3];
+				valueparam = params[3];
+		
+			targetFragment = valueparam;
+			actionFragment = actionparam;
 			
 			_isParsing = false;
 		}
@@ -207,6 +211,8 @@ package control
 				_browserManager.setFragment(DELIMITER+module+DELIMITER+action);
 			else
 				_browserManager.setFragment(DELIMITER+module+DELIMITER+action+DELIMITER+target);
+			
+			trace("BrowserManager current fragment: "+_browserManager.fragment);
 		}
 		
 		public function getLastURL():String{

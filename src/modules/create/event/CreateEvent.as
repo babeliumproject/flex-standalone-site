@@ -2,7 +2,7 @@ package modules.create.event
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import vo.ExerciseVO;
+	import flash.events.Event;
 	
 	public class CreateEvent extends CairngormEvent
 	{
@@ -23,6 +23,10 @@ package modules.create.event
 		{
 			super(type);
 			this.exercisedata = exercisedata;
+		}
+		
+		override public function clone():Event {
+			return new CreateEvent(type, exercisedata);
 		}
 	}
 }

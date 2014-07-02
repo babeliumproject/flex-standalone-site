@@ -23,16 +23,17 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			trace("Event: "+ObjectUtil.toString(event));
-			new CreateDelegate(this).getExercise((event as CreateEvent).exercisedata);
+			var params:Object = (event as CreateEvent).exercisedata;
+			new CreateDelegate(this).getExercise(params);
 		}
 		
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			trace("getExData:"+ObjectUtil.toString(result));
 			if(result){
 				DataModel.getInstance().exerciseData = result as ExerciseVO;
+			} else {
+				DataModel.getInstance().exerciseData = null;
 			}
 			DataModel.getInstance().exerciseDataRetrieved = !DataModel.getInstance().exerciseDataRetrieved;
 		}

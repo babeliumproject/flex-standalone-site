@@ -180,6 +180,7 @@
 
 			public function resetComponent():void
 			{
+				trace("UserVideoInfoEdit Reset component");
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;

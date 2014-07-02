@@ -177,6 +177,7 @@
 			protected function editExercise(event:MouseEvent):void
 			{
 				//parentDocument.videoEditRequested(data);
+				trace("Exercise renderer event dispatch data: "+data.exercisecode);
 				BabeliaBrowserManager.getInstance().updateURL('create','edit',data.exercisecode);
 			}
 
