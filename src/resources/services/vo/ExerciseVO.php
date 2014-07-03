@@ -11,14 +11,16 @@ class ExerciseVO {
 	public $timecreated;
 	public $timemodified;
 	public $status;
+	public $likes;
+	public $dislikes;
 	
 	public $userName;
 	public $userId;
 	
-	public $avgRating;
-	public $ratingCount;
-	
 	public $isSubtitled;
+	
+	public $thumbnail;
+	public $duration;
 	
 	public $tags;
 	public $descriptors;

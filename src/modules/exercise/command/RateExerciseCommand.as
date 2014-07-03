@@ -46,7 +46,8 @@ package modules.exercise.command
 					if (exNewData.id == exercise.id)
 					{
 						//Let the binding propagate the changes until it meets it's destination
-						exercise.avgRating=exNewData.avgRating;
+						exercise.likes=exNewData.likes;
+						exercise.dislikes=exNewData.dislikes;
 						break;
 					}
 				}
@@ -55,7 +56,8 @@ package modules.exercise.command
 					var currentRec:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
 					if (exNewData.id == currentRec.id)
 					{
-						currentRec.avgRating=exNewData.avgRating;
+						currentRec.likes=exNewData.likes;
+						currentRec.dislikes=exNewData.dislikes;
 						DataModel.getInstance().currentExercise.setItemAt(currentRec, DataModel.RECORDING_MODULE);
 					}
 				}
@@ -64,7 +66,8 @@ package modules.exercise.command
 					var currentSub:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
 					if (exNewData.id == currentSub.id)
 					{
-						currentSub.avgRating=exNewData.avgRating;
+						currentSub.likes=exNewData.likes;
+						currentSub.dislikes=exNewData.dislikes;
 						DataModel.getInstance().currentExercise.setItemAt(currentSub, DataModel.SUBTITLE_MODULE);
 					}
 				}

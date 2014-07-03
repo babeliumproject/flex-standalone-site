@@ -246,30 +246,22 @@ class Home{
 					   e.title, 
 					   e.description, 
 					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri, 
-					   e.adding_date as addingDate,
-		               e.duration, 
+					   e.exercisecode, 
+					   e.timecreated,
 		               u.username as userName, 
-		               avg (suggested_level) as avgDifficulty, 
+		               e.difficulty, 
 		               e.status, 
-		               e.license, 
-		               e.reference, 
-		               a.complete as isSubtitled
+		               e.likes, 
+		               e.dislikes
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
+       			WHERE e.status = 1
 				GROUP BY e.id
-				ORDER BY e.adding_date DESC";
+				ORDER BY e.timecreated DESC";
 		
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
-			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
 		}
 
 		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
@@ -291,10 +283,10 @@ class Home{
 	 * 		A number that tells the caller which of the exercises had a better average rating
 	 */
 	private function sortResultsByScore($exerciseA, $exerciseB){
-		if ($exerciseA->avgRating == $exerciseB->avgRating) {
+		if ($exerciseA->likes == $exerciseB->likes) {
         	return 0;
     	}
-    	return ($exerciseA->avgRating < $exerciseB->avgRating) ? -1 : 1;
+    	return ($exerciseA->likes < $exerciseB->likes) ? -1 : 1;
 	}
 
 	/**
@@ -309,30 +301,22 @@ class Home{
 					   e.title, 
 					   e.description, 
 					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri, 
-					   e.adding_date as addingDate,
-		               e.duration, 
+					   e.exercisecode, 
+					   e.timecreated,
 		               u.username as userName, 
-		               avg (suggested_level) as avgDifficulty, 
+		               e.difficulty, 
 		               e.status, 
-		               e.license, 
-		               e.reference, 
-		               a.complete as isSubtitled
+		               e.likes, 
+		               e.dislikes
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
+       			WHERE e.status = 1
 				GROUP BY e.id
-				ORDER BY e.adding_date DESC";
+				ORDER BY e.timecreated DESC";
 		
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
-			$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
 		}
 
 		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');

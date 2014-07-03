@@ -20,7 +20,7 @@
 			 height="90">
 		<mx:Image id="thumbnail"
 				  scaleContent="true"
-				  source="{getImageSource(data as ExerciseVO)}"
+				  source="{data.thumbnail}"
 				  autoLoad="true"
 				  width="120"
 				  height="90"
@@ -58,23 +58,20 @@
 						  toolTip="{exerciseLanguage.source}"
 						  source="{getFlagSource(data as ExerciseVO)}"
 						  id="exerciseLanguage"/>
-				<s:Label text="{getLevelCorrespondence(data.avgDifficulty)}"
+				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<hulstkamp:AhFxRatingComponent rating="{data.avgRating}"
-										   enabled="false"
-										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
-										   scaleX="1.2"
-										   scaleY="1.2"/>
-			<s:Label text="{dateFormatter.format(data.addingDate)}"
+			<s:Label text="{dateFormatter.format(data.timecreated)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 
 
+		<!--
 		<s:Label text="{data.description}"
 				 width="320"
 				 maxDisplayedLines="3"
 				 toolTip="{data.description}"/>
+		-->
 		<s:HGroup horizontalAlign="right"
 				  verticalAlign="middle"
 				  width="320">

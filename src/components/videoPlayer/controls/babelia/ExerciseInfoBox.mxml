@@ -73,7 +73,7 @@
 				{
 					if (_exercise)
 					{
-						_exerciseRating=_exercise.avgRating;
+					
 						_dataAvailable=true;
 						updateComponents();
 					}
@@ -92,7 +92,7 @@
 
 			private function updateComponents():void
 			{
-				rating.rating=_exerciseRating;
+	
 				exDescription.text=_exercise.description;
 				additionalInfoBox.visible=false;
 				additionalInfoBox.includeInLayout=false;
@@ -201,6 +201,7 @@
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 
+			/*
 			protected function ratingClickHandler(event:MouseEvent):void
 			{
 				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
@@ -210,7 +211,7 @@
 					score.exerciseId=_exercise.id;
 					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
 				}
-			}
+			}*/
 
 			protected function reportVideoClickHandler(event:MouseEvent):void
 			{
@@ -235,13 +236,8 @@
 			  width="100%">
 		<s:HGroup paddingTop="4"
 				  paddingLeft="0">
-			<hulstkamp:AhFxRatingComponent id="rating"
-										   rating="{_exerciseRating}"
-										   enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userRatedExercise &amp;&amp; _dataAvailable  }"
-										   click="ratingClickHandler(event)"
-										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
-										   scaleX="1.5"
-										   scaleY="1.5"/>
+			<s:Label id="likescount" text="Likes: 0"/>
+			<s:Label id="dislikescount" text="Dislikes: 0"/>
 		</s:HGroup>
 		<s:HGroup horizontalAlign="right"
 				  paddingBottom="0"

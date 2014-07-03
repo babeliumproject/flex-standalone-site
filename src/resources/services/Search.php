@@ -241,14 +241,11 @@ class Search {
 	 */
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.exercisecode, e.timecreated,
+		                u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
+       			WHERE e.status = 1
 				GROUP BY e.id";
 		$result = $this->conn->_multipleSelect ( $sql );
 		if($result){
@@ -259,14 +256,12 @@ class Search {
 			Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
 			foreach ( $result as $line ) {
-				
-				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->exerciseId);
-				$line->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
+				$tags = $this->getExerciseTags($line->exerciseId);
 				$descriptors = $this->getExerciseDescriptors($line->exerciseId,$line->language);
-				if($descriptors)
-					$line->descriptors = implode("\n",$descriptors);
-				else
-					$line->descriptors = '';
+				
+				$line->tags = $tags ? implode("\n",$tags): '';
+				$line->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+				
 				$this->addDoc($line,$this->unindexedFields);
 			}
 			$this->index->commit();
@@ -283,14 +278,11 @@ class Search {
 	public function addDocumentIndex($idDB){
 
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.exercisecode, e.timecreated,
+		               u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available' AND e.id='%d');
+       			WHERE e.status = 1 AND e.id=%d);
 				GROUP BY e.id";
 		$result = $this->conn->_singleSelect ( $sql, $idDB );
 
@@ -299,13 +291,12 @@ class Search {
 			//Loads the lucene indexation file
 			$this->initialize();
 			
-			$lineAvgScore = $this->getExerciseAvgBayesianScore($result->id);
-			$result->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
-			$descriptors = $this->getExerciseDescriptors($result->exerciseId,$result->language);
-			if($descriptors)
-				$result->descriptors = implode(', ',$descriptors);
-			else
-				$result->descriptors = '';
+			$tags = $this->getExerciseTags($result->exerciseId);
+			$descriptors = $this->getExerciseDescriptors($result->exerciseId,$line->language);
+			
+			$result->tags = $tags ? implode("\n",$tags): '';
+			$result->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+			
 			
 			$this->addDoc($result,$this->unindexedFields);
 			$this->index->commit();
@@ -384,38 +375,12 @@ class Search {
 		return $dcodes;
 	}
 	
-	
-	/**
-	 * The average score is not accurate information in statistical terms, so we use a weighted value
-	 * @param int $exerciseId
-	 */
-	public function getExerciseAvgBayesianScore($exerciseId){
-		if(!isset($this->exerciseMinRatingCount)){
-			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
-			$result = $this->conn->_singleSelect($sql);
-			$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
-		}
-		
-		if(!isset($this->exerciseGlobalAvgRating)){
-			$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
-			$result = $this->conn->_singleSelect($sql);
-			$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
-		}
-		
-		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
-				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
-				WHERE (e.id = '%d' ) GROUP BY e.id";
-		if($result = $this->conn->_singleSelect($sql,$exerciseId)){
-			$exerciseAvgRating = $result->avgScore ? $result->avgScore : 0;
-			$exerciseRatingCount = $result->scoreCount ? $result->scoreCount : 1;
-			$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
-								   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
-			$result->avgScore = $exerciseBayesianAvg;
-		}
-		return $result;
-	}	
-	
-	
+	private function getExerciseTags($exerciseid){
+		require_once 'Exercise.php';
+		$e = new Exercise();
+		$results = $e->getExerciseTags($exerciseid);
+		return $results;
+	}
 }
 
 ?>

@@ -14,12 +14,14 @@ package vo
 		public var timecreated:uint;
 		public var timemodified:uint;
 		public var status:String;
+		public var likes:uint;
+		public var dislikes:uint;
 		
 		public var userName:String;
 		public var userId:uint;
 		
-		public var avgRating:Number;
-		public var ratingCount:int; //used for bayesian average rating calculation	
+		public var thumbnail:String;
+		public var duration:uint;
 		
 		public var isSubtitled:uint;
 		
