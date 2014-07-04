@@ -129,16 +129,16 @@ class Subtitle {
         if(!$subtitle)
             return false;
         $subtitleId = $subtitle->id;
-        $exerciseId = $subtitle->exerciseId;
+        $mediaId = $subtitle->mediaId;
         $language = $subtitle->language;
 
         if(!$subtitleId){
             //Get the latest subtitle version for this exercise
-            $sql = "SELECT * FROM subtitle WHERE id = (SELECT MAX(id) FROM subtitle WHERE fk_exercise_id =%d AND language = '%s')";
+            $sql = "SELECT * FROM subtitle WHERE id = (SELECT MAX(id) FROM subtitle WHERE fk_media_id=%d AND language='%s')";
 
-            $subtitle = $this->conn->_singleSelect($sql, $exerciseId, $language);
+            $subtitle = $this->conn->_singleSelect($sql, $mediaId, $language);
         } else {
-            $sql = "SELECT * FROM subtitle WHERE id = %d";
+            $sql = "SELECT * FROM subtitle WHERE id=%d";
             $subtitle = $this->conn->_singleSelect($sql, $subtitleId);
         }   
         
@@ -407,13 +407,13 @@ class Subtitle {
         if(!$exerciseId)
             return false;
         $sql = "SELECT s.id, 
-                       s.fk_exercise_id as exerciseId, 
+                       s.fk_media_id as exerciseId, 
                        u.username as userName, 
                        s.language, 
                        s.translation, 
                        s.adding_date as addingDate
                 FROM subtitle s inner join user u on s.fk_user_id=u.id
-                WHERE fk_exercise_id='%d'
+                WHERE fk_media_id=%d
                 ORDER BY s.adding_date DESC";
         $searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId );
 
@@ -432,7 +432,7 @@ class Subtitle {
         //Retrieve the subtitle id to be deleted
         $sql = "SELECT DISTINCT s.id
                 FROM subtitle_line sl INNER JOIN subtitle s ON sl.fk_subtitle_id = s.id
-                WHERE (s.fk_exercise_id= '%d' )";
+                WHERE (s.fk_media_id= '%d' )";
 
         $subtitleIdToDelete = $this->conn->_singleSelect($sql, $exerciseId);
 

@@ -38,7 +38,7 @@ package control
 		public var cuelist:ArrayCollection=new ArrayCollection();
 
 		private var cache:Dictionary; // as HashMap
-		private var exerciseId:int;
+		private var mediaId:int;
 		private var subtitleId:int;
 		public var cached:Boolean=false;
 		
@@ -55,7 +55,7 @@ package control
 
 			cuelist=new ArrayCollection();
 			cache=new Dictionary();
-			exerciseId=-1;
+			mediaId=-1;
 			subtitleId=-1;
 			cached=false;
 		}
@@ -70,7 +70,7 @@ package control
 		 **/
 		public function reset():void
 		{
-			exerciseId=-1;
+			mediaId=-1;
 			subtitleId=-1;
 			cached=false;
 			cuelist.removeAll();
@@ -81,13 +81,13 @@ package control
 		 * Set video.
 		 * @return true if video was cached
 		 **/
-		public function setVideo(videoId:int):Boolean
+		public function setMedia(mediaId:int):Boolean
 		{
-			this.exerciseId=videoId;
+			this.mediaId=mediaId;
 
-			if (cache[this.exerciseId] != null)
+			if (cache[this.mediaId] != null)
 			{
-				var cachedCuelist:CueObjectCache=cache[this.exerciseId] as CueObjectCache;
+				var cachedCuelist:CueObjectCache=cache[this.mediaId] as CueObjectCache;
 
 				/**
 				 *  flash.utils.getTimer():int
@@ -196,15 +196,15 @@ package control
 		 **/
 		public function saveCache():void
 		{
-			if (cache[this.exerciseId] != null)
+			if (cache[this.mediaId] != null)
 			{
-				var cachedVideo:CueObjectCache=cache[this.exerciseId] as CueObjectCache;
+				var cachedVideo:CueObjectCache=cache[this.mediaId] as CueObjectCache;
 				cachedVideo.setCachedTime(flash.utils.getTimer());
 				cachedVideo.setCueList(cuelist);
 			}
 			else
 			{
-				cache[this.exerciseId]=new CueObjectCache(flash.utils.getTimer(), cuelist);
+				cache[this.mediaId]=new CueObjectCache(flash.utils.getTimer(), cuelist);
 			}
 		}
 
@@ -242,7 +242,7 @@ package control
 		public function setCuesFromSubtitleUsingLocale(language:String):void
 		{
 			var subtitle:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO();
-			subtitle.exerciseId=this.exerciseId;
+			subtitle.mediaId=this.mediaId;
 			subtitle.language=language;
 
 			// add this manager as iresponder and get subtitle lines

@@ -74,8 +74,6 @@
 			[Bindable]
 			private var _currentExercise:ExerciseVO;
 			[Bindable]
-			private var _thumbURL:String=DataModel.getInstance().thumbURL + "/";
-			[Bindable]
 			private var _exerciseTitle:String;
 			[Bindable]
 			private var _exerciseSelected:Boolean=false;
@@ -85,7 +83,7 @@
 			private var _characterNames:ArrayCollection=new ArrayCollection();
 			private var _roles:ArrayCollection=new ArrayCollection();
 			private var _exerciseName:String;
-			private var _exerciseId:int;
+			private var _mediaId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
 
@@ -179,7 +177,7 @@
 
 				// Retrieving available locales for selected exercise's subtitles
 				var auxEx:ExerciseVO=new ExerciseVO();
-				auxEx.id=_exerciseId;
+				auxEx.id=_currentExercise.media[0].id;
 				new ExerciseEvent(ExerciseEvent.GET_EXERCISE_LOCALES, auxEx).dispatch();
 			}
 
@@ -260,7 +258,7 @@
 						if (cueobj.role != "NPC" && !tmpRoles.contains(cueobj.role))
 						{
 							tmpRoles.addItem(cueobj.role);
-							_roles.addItem(new ExerciseRoleVO(cueobj.roleId, _exerciseId, cueobj.role));
+							_roles.addItem(new ExerciseRoleVO(cueobj.roleId, _mediaId, cueobj.role));
 						}
 					}
 
@@ -311,7 +309,7 @@
 			 **/
 			private function prepareCueManager():void
 			{
-				var cached:Boolean=_cueManager.setVideo(_exerciseId);
+				var cached:Boolean=_cueManager.setMedia(_mediaId);
 
 				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
 				//_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
@@ -460,7 +458,7 @@
 					var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
 					_exerciseName=tmp.exercisecode;
 					_exerciseTitle=tmp.title;
-					_exerciseId=tmp.id;
+					_mediaId=tmp.media[0].id;
 					_currentExercise=tmp;
 
 					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
@@ -520,7 +518,7 @@
 						break;
 					}
 				}
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
+				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
@@ -709,7 +707,7 @@
 					//This must be changed by some function that takes a snapshot of the Response video
 					var responseThumbnail:String="nothumb.png";
 					var subtitleId:int=_cueManager.currentSubtitle;
-					var responseData:ResponseVO=new ResponseVO(0, _exerciseId, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
+					var responseData:ResponseVO=new ResponseVO(0, _currentExercise.id, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
 
 					//Third, save response				
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
@@ -744,7 +742,7 @@
 							break;
 						}
 					}
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
 					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
 				}
 			}
@@ -757,8 +755,8 @@
 					_exerciseStartedPlaying=false;
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
 					var subtitleId:int=_cueManager.currentSubtitle;
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, 0, '', subtitlesAreUsed, subtitleId, 0);
-					if (_exerciseId > 0 && subtitleId > 0)
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId, 0);
+					if (_mediaId > 0 && subtitleId > 0)
 						new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
 				}
 			}
@@ -831,7 +829,7 @@
 
 	<s:VGroup id="videoPlayerAndRecordingControls"
 			  width="100%"
-			  horizontalAlign="center"
+			  horizontalAlign="left"
 			  verticalAlign="middle"
 			  paddingTop="16"
 			  paddingLeft="16"
@@ -934,6 +932,16 @@
 								  width="{VP.width}"
 								  backgroundAlpha="0"
 								  borderVisible="false"/>
+		<mx:TabNavigator id="exerciseInfoTabs" width="100%" minHeight="400" height="100%">
+			<mx:VBox label="Description">
+				<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
+			</mx:VBox>
+			<mx:VBox label="Add. Info">
+				<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
+			</mx:VBox>
+			
+		</mx:TabNavigator>
+		
 
 		<babelia:ExerciseInfoBox id="ratingShareReport"
 								 borderVisible="false"

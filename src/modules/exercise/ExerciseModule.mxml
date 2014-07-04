@@ -58,7 +58,7 @@
 
 			public function setDataBindings(data:*=null):void
 			{
-				changewatcher=BindingUtils.bindSetter(onURLChange, urlmanager, "targetFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, urlmanager, "actionFragment");
 			}
 
 			public function resetModule():void
@@ -86,9 +86,9 @@
 
 			private function actionView(fragment:String):void
 			{
-				viewstackIndex=VIEW;
 				var ex:ExerciseVO=new ExerciseVO();
-				ex.exercisecode=urlmanager.targetFragment;
+				ex.exercisecode=fragment;
+				viewstackIndex=VIEW;
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
 			}
 
@@ -104,9 +104,9 @@
 					return;
 
 				resetViews();
-				switch (urlmanager.actionFragment)
+				switch (value)
 				{
-					case BabeliaBrowserManager.VIEW:
+					case 'view':
 						if (urlmanager.targetFragment != '')
 						{
 							actionView(urlmanager.targetFragment);

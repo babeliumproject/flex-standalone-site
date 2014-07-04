@@ -35,7 +35,6 @@ package modules.exercise.command
 			if (result is Array)
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				trace(ObjectUtil.toString(resultCollection));
 				//Set the data to the application's model
 				dataModel.availableRecordableExercises=resultCollection;
 				//Reflect the visual changes

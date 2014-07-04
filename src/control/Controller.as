@@ -101,7 +101,7 @@ package control {
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
 			addCommand(ExerciseEvent.RATE_EXERCISE, RateExerciseCommand);
 			addCommand(ExerciseEvent.REPORT_EXERCISE, ReportInappropriateExerciseCommand);
-			addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
+			//addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
 			addCommand(ExerciseEvent.USER_REPORTED_EXERCISE, UserReportedExerciseCommand);
 			
 			//Evaluation management commands

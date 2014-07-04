@@ -430,6 +430,23 @@ class Exercise {
 		return $this->conn->multipleRecast('ExerciseVO',$searchResults);
 	}
 	
+	public function watchExercise($exercisecode){
+		if(!$exercisecode) return;
+		
+		$exdata = $this->getExerciseByName($exercisecode);
+		if($exdata){
+			$status = 2;
+			$level = 1;
+			$media = $this->getExerciseMedia($exdata->id, $status, $level);
+			if($media)
+				$exdata->media = $media;
+			$related = $this->getRelatedExercises($exdata);
+			if($related)
+				$exdata->related = $related;
+		}
+		return $this->conn->recast('ExerciseVO',$exdata);
+	}
+	
 	/**
 	 * Gets information about an exercise using its id
 	 * @return stdClass
@@ -502,6 +519,23 @@ class Exercise {
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);
+	}
+	
+	private function getRelatedExercises($exercise, $howmany=5){
+		if (!$exercise) return;
+		$relatedex = false;
+		$sql = "SELECT e.id  
+				FROM exercise e 
+				WHERE language='%s' AND difficulty=%d AND status=1 ORDER BY RAND() LIMIT %d";
+		$results = $this->conn->_multipleSelect($sql, $exercise->language, $exercise->difficulty, $howmany);
+		if ($results){
+			$relatedex = array();
+			foreach($results as $result){
+				$re = $this->getExerciseById($result->id);
+				if($re) $relatedex[] = $re;
+			}
+		}
+		return $relatedex;
 	}
 
 	/**
@@ -723,19 +757,19 @@ class Exercise {
 
 	/**
 	 * Gets the available subtitle languages for the provided exercise id
-	 * @param int $exerciseId
-	 * 		The exercise id whose subtitle languages we want to search
+	 * @param int $mediaid
+	 * 		The media file whose subtitle languages we want to search
 	 * @return array $results
-	 * 		An array of subtitle languages available for this exercise
+	 * 		An array of subtitle languages available for this media
 	 */
-	public function getExerciseLocales($exerciseId=0) {
-		if(!$exerciseId)
+	public function getExerciseLocales($mediaid=0) {
+		if(!$mediaid)
 			return false;
 
 		$sql = "SELECT DISTINCT language as locale FROM subtitle
-				WHERE fk_exercise_id = %d";
+				WHERE fk_media_id = %d";
 
-		$results = $this->conn->_multipleSelect ( $sql, $exerciseId );
+		$results = $this->conn->_multipleSelect ( $sql, $mediaid );
 
 		return $results; // return languages
 	}

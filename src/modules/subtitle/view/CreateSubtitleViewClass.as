@@ -315,7 +315,7 @@ package modules.subtitle.view
 
 						var subtitleLines:Array=subLines.toArray();
 						subtitlesToBeSaved=new SubtitleAndSubtitleLinesVO();
-						subtitlesToBeSaved.exerciseId=currentExercise.id;
+						subtitlesToBeSaved.mediaId=currentExercise.id;
 						subtitlesToBeSaved.language=exerciseLanguage;
 						subtitlesToBeSaved.subtitleLines=subtitleLines;
 						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)

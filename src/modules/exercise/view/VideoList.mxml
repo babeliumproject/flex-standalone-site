@@ -96,7 +96,7 @@
 
 				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
 				BabeliaBrowserManager.getInstance().updateURL('exercises',BabeliaBrowserManager.VIEW, obj.exercisecode);
-				callLater(updateVerticalScroll);
+				//callLater(updateVerticalScroll);
 			}
 
 			public function thumbSet(data:Object):String

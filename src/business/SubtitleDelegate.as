@@ -38,7 +38,7 @@ package business
 		
 		public function getExerciseSubtitles(subtitle:SubtitleAndSubtitleLinesVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
-			var pendingCall:AsyncToken = service.getExerciseSubtitles(subtitle.exerciseId);
+			var pendingCall:AsyncToken = service.getExerciseSubtitles(subtitle.mediaId);
 			pendingCall.addResponder(responder);
 		}
 		
