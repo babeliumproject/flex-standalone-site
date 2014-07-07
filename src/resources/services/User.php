@@ -201,7 +201,7 @@ class User {
 		}
 	}
 
-	public function retrieveUserVideos(){
+	public function retrieveUserVideos($offset=0, $rowcount=0){
 		try {
 			$verifySession = new SessionValidation(true);
 
@@ -216,10 +216,22 @@ class User {
 				FROM exercise e 
 				WHERE e.fk_user_id = %d
 				ORDER BY e.timecreated DESC";
-
-
+			
 			$searchResults = array();
-			if($searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'])){
+			
+			if($rowcount){
+				if($offset){
+					$sql .= " LIMIT %d, %d";
+					$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'], $offset, $rowcount);
+				} else {
+					$sql .= " LIMIT %d";
+					$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid'], $rowcount);
+				}
+			} else {
+				$searchResults = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
+			}
+
+			if($searchResults){
 				$exercise = new Exercise();
 				foreach($searchResults as $searchResult){
 					//$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;

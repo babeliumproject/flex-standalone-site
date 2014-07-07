@@ -17,16 +17,16 @@ package modules.create.event
 		public static const UNPROCESSED:String = "unprocessed";
 		public static const WEBCAM:String = "webcam";
 		
-		public var exercisedata:Object;
+		public var params:Object;
 		
-		public function CreateEvent(type:String, exercisedata:Object=null)
+		public function CreateEvent(type:String, params:Object=null)
 		{
 			super(type);
-			this.exercisedata = exercisedata;
+			this.params = params;
 		}
 		
 		override public function clone():Event {
-			return new CreateEvent(type, exercisedata);
+			return new CreateEvent(type, params);
 		}
 	}
 }

@@ -21,12 +21,12 @@
 			
 			import control.BabeliaBrowserManager;
 			
-			import modules.exercise.event.ExerciseEvent;
 			import events.SearchEvent;
-			//import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			import model.ResourceSubscriber;
+			
+			import modules.exercise.event.ExerciseEvent;
 			
 			import mx.controls.LinkButton;
 			import mx.core.Application;
@@ -159,9 +159,10 @@
 			private function addTagLinkButtons():void
 			{
 				removeTagLinkButtons();
+				
 				if(_exercise.tags){
-					//tagBoxSeparator.height=1;
-					_tags=_exercise.tags.split(',');
+					_tags = _exercise.tags is Array ? _exercise.tags : (_exercise.tags as String).split(',');
+
 					for each (var tag:String in _tags)
 					{
 						var linkTag:IconButton=new IconButton();

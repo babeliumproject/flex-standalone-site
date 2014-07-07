@@ -932,16 +932,17 @@
 								  width="{VP.width}"
 								  backgroundAlpha="0"
 								  borderVisible="false"/>
-		<mx:TabNavigator id="exerciseInfoTabs" width="100%" minHeight="400" height="100%">
-			<mx:VBox label="Description">
-				<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
-			</mx:VBox>
-			<mx:VBox label="Add. Info">
+		<s:TabBar id="exerciseInfoTabs" dataProvider="{exerciseInfoStack}"/>
+		<mx:ViewStack id="exerciseInfoStack" width="{VP.width}" resizeToContent="true">
+			<s:NavigatorContent id="descNC" label="Description">
+				<s:VGroup id="description" width="100%" top="16">
+					<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="addInfNC" label="Add. Info" width="100%">
 				<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
-			</mx:VBox>
-			
-		</mx:TabNavigator>
-		
+			</s:NavigatorContent>
+		</mx:ViewStack>
 
 		<babelia:ExerciseInfoBox id="ratingShareReport"
 								 borderVisible="false"

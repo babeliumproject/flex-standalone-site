@@ -1,54 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	
+
+	<fx:Binding source="{DataModel.getInstance().latestCreationsRetrieved}"
+				destination="latestCreationsRetrieved"/>
+
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-			
+
+			import model.DataModel;
+
 			import mx.collections.ArrayCollection;
-			
-			[Bindable] 
+
+			[Bindable]
 			protected var latestCreationsData:ArrayCollection;
+
+			public function set latestCreationsRetrieved(value:Boolean):void
+			{
+				if (DataModel.getInstance().latestCreations)
+				{
+					latestCreationsData=DataModel.getInstance().latestCreations;
+				}
+			}
 			
+			private function changeHandler(event:Event):void
+			{
+				var obj:Object=List(event.target).selectedItem;
+				BabeliaBrowserManager.getInstance().updateURL('create','edit', obj.exercisecode);
+			}
 		]]>
 	</fx:Script>
-	
+
 	<s:Button id="addnewexercise"
 			  label="Add new exercise"
 			  click="{BabeliaBrowserManager.getInstance().updateURL('create','add')}"/>
-	
+
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
-	
-	<s:Panel title="My latest creations" dropShadowVisible="false" backgroundAlpha="0">
-		<s:Label id="nocreations" 
+	<s:Panel title="My latest creations"
+			 dropShadowVisible="false"
+			 backgroundAlpha="0"
+			 width="100%"
+			 minHeight="0"
+			 left="16"
+			 right="16">
+		<s:Label id="nocreations"
 				 text="No haven't created any exercise yet."
 				 includeInLayout="{!latestCreationsData.length}"
 				 visible="{!latestCreationsData.length}"/>
 		<s:VGroup width="100%"
 				  includeInLayout="{latestCreationsData &amp;&amp; latestCreationsData.length}"
-				  visible="{latestCreationsData &amp;&amp; latestCreationsData.length}">
-			<s:List id="latestCreations"
+				  visible="{latestCreationsData &amp;&amp; latestCreationsData.length}"
+				  horizontalAlign="right">
+			<s:List id="latestCreationsList"
 					width="100%"
 					minHeight="0"
+					borderVisible="false"
 					itemRenderer="modules.create.view.CreationItemRenderer"
-					dataProvider="{latestCreationsData}">
+					change="changeHandler(event)"
+					dataProvider="{latestCreationsData}"
+					contentBackgroundAlpha="0">
 				<s:layout>
-					<s:TileLayout horizontalAlign="justify"
-								  verticalAlign="middle"
-								  columnAlign="justifyUsingWidth"
-								  columnWidth="500"/>
+					<s:TileLayout/>
 				</s:layout>
 			</s:List>
-			<s:Button id="seeAllCreations" 
-					  label="See all my creations" 
+			<s:Button id="seeAllCreations"
+					  label="See all my creations"
 					  click="{BabeliaBrowserManager.getInstance().updateURL('create', 'manage')}"/>
 		</s:VGroup>
-		
+
 	</s:Panel>
-	
+
 </s:VGroup>

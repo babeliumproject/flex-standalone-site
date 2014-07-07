@@ -502,6 +502,11 @@ package model
 		[Bindable]
 		public var exerciseDataRetrieved:Boolean;
 		
+		[Bindable]
+		public var latestCreations:ArrayCollection;
+		[Bindable]
+		public var latestCreationsRetrieved:Boolean;
+		
 		public var moduleMap:Object = {};
 		[Bindable]
 		public var moduleMapProxy:ObjectProxy = new ObjectProxy(moduleMap);

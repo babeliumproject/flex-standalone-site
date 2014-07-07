@@ -23,7 +23,7 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var params:Object = (event as CreateEvent).exercisedata;
+			var params:Object = (event as CreateEvent).params;
 			new CreateDelegate(this).getExercise(params);
 		}
 		

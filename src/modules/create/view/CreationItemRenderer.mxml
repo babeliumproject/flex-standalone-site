@@ -1,11 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-				xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx">
 	<s:layout>
-		<s:HorizontalLayout/>
+		<s:HorizontalLayout verticalAlign="middle"
+							paddingTop="4"
+							paddingBottom="4"
+							paddingLeft="8"
+							paddingRight="8"/>
 	</s:layout>
+
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DateTimeFormatter id="dateTimeFormatter" timeStyle="none" dateStyle="short"/>
 	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.formatters.NumberBaseRoundType;
+			
+			import view.common.LocaleFlagResource;
+			
+			import spark.formatters.NumberFormatter;
+			
+			import view.common.TimeFormatter;
+			
+			[Bindable]
+			private var _data:Object;
+			
+			private var _creationComplete:Boolean=false;
+			
+			[Bindable]
+			private var _timeFormatter:TimeFormatter=new TimeFormatter();
+			
+			public function completeHandler():void
+			{
+				_data=data;
+				_creationComplete=true;				
+			}
+			
+			public function getLevelCorrespondence(difficulty:int):String
+			{
+				switch (difficulty)
+				{
+					case 1:
+						return 'A1';
+						break;
+					case 2:
+						return 'A2';
+						break;
+					case 3:
+						return 'B1';
+						break;
+					case 4:
+						return 'B2';
+						break;
+					case 5:
+						return 'C1';
+						break;
+					default:
+						return '';
+						break;
+				}
+			}
+			
+			public function getFlagSource(temp:Object):String
+			{
+				return LocaleFlagResource.getFlagResource(temp.language);
+			}
+			
+		
+
+			
+		]]>
+	</fx:Script>
+
+	<s:Group width="120"
+			 height="90">
+		<mx:Image id="thumbnail"
+				  scaleContent="true"
+				  source="{data.thumbnail}"
+				  autoLoad="true"
+				  width="120"
+				  height="90"
+				  toolTip="{data.title}"/>
+		<s:TextInput text="{_timeFormatter.format(data.duration)}"
+					 styleName="videoDurationLabel"
+					 x="88"
+					 y="0"
+					 width="32"
+					 height="16"
+					 editable="false"
+					 selectable="false"/>
+	</s:Group>
+
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  gap="2">
+		<s:Label id="title"
+				 text="{data.title}"
+				 width="180"
+				 styleName="boldLabel"/>
+		<s:Line width="180"
+				alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="2"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+		<s:HGroup gap="20"
+				  verticalAlign="middle">
+			<s:HGroup gap="2"
+					  verticalAlign="middle">
+				<mx:Image width="16"
+						  height="16"
+						  toolTip="{exerciseLanguage.source}"
+						  source="{getFlagSource(data)}"
+						  id="exerciseLanguage"/>
+				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
+						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:Label text="{dateTimeFormatter.format(data.timecreated)}"
+					 styleName="boldYellowLabel"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label id="status" text="Status: "/>
+			<s:Label id="statusValue" text="{data.status ? 'Ready' : 'Draft'}" />
+		</s:HGroup>
+	</s:VGroup>
+
 </s:ItemRenderer>

@@ -129,6 +129,9 @@
 			public function actionIndex(fragment:String = null):void{
 				trace("create index call");
 				_viewstackIndex=INDEX;
+				
+				var params:Object = {'offset':0, 'rowcount':5};
+				new CreateEvent(CreateEvent.GET_LATEST_CREATIONS, params).dispatch(); 
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void
