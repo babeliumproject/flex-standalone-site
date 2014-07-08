@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
-				   xmlns:s="library://ns.adobe.com/flex/spark"
-				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   borderStyle="solid"
-				   borderWeight="2"
-				   creationComplete="onComplete()"
-				   cornerRadius="4"
-				   xmlns:skins="skins.*">
-
-	<s:layout>
-		<s:HorizontalLayout/>
-	</s:layout>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  creationComplete="onComplete()"
+		  width="100%"
+		  height="100%"
+		  horizontalAlign="center">
 
 	<fx:Script>
 
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -27,9 +23,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -39,6 +35,7 @@
 			 *  Constants
 			 */
 			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
+			private const DEFAULT_MIC_GAIN:uint=70;
 			private var _maximumVideoDuration:int=DataModel.getInstance().maxExerciseDuration; //seconds
 			private var _minimumVideoDuration:int=DataModel.getInstance().minExerciseDuration; //seconds
 			private var _defaultVideoWidth:int=DataModel.getInstance().cameraWidth; //pixels
@@ -104,7 +101,7 @@
 			public function onComplete():void
 			{
 				//Button icon initialization
-				recStopButton.setStyle('icon', recImageEmbed);
+				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 
 				_timeFormatter=new TimeFormatter();
@@ -118,11 +115,6 @@
 				_countdownTxt.selectable=false;
 				_countdownTxt.visible=false;
 
-				_countdownTxt.x=_videoWidth / 2 - 10;
-				_countdownTxt.y=_videoHeight / 2 - 10;
-				_countdownTxt.width=_videoWidth;
-				_countdownTxt.height=_videoHeight;
-
 				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
@@ -131,24 +123,15 @@
 
 			public function resetComponent():void
 			{
-				recStopButton.setStyle('icon', recImageEmbed);
+				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 				playPauseButton.enabled=false;
-
-				estat.text='';
 
 				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
 
 				recordingFileName=null;
-
-				/**
-				 * This feature is disabled until we decide which behaviour is best
-				 *
-				 * disconnectFromStreamingServer();
-				 *
-				 */
 
 				disconnnectStreams();
 			}
@@ -257,10 +240,10 @@
 
 				if (info.code == "NetStream.Play.Stop")
 				{
-					recStopButton.setStyle('icon', recImageEmbed);
+					startStopCapture.setStyle('icon', recImageEmbed);
 					playPauseButton.setStyle('icon', playImageEmbed);
 
-					recStopButton.enabled=true;
+					startStopCapture.enabled=true;
 					playPauseButton.enabled=true;
 
 					audio_pause=false;
@@ -272,13 +255,12 @@
 				if (audio_pause)
 				{
 					playbackNetStream.resume();
-					estat.text="Playing...";
 					audio_pause=false;
 				}
 				else
 				{
 					// Play the recording
-					estat.text="Playing...";
+		
 					if (playbackNetStream)
 						playbackNetStream.close();
 					playbackNetStream=new NetStream(netConnection);
@@ -288,14 +270,14 @@
 
 					playbackNetStream.play(_streamsFolder + "/" + recordingFileName);
 					video.attachNetStream(playbackNetStream); // JUANAN
-					estat.text="Playing...";
+				
 				}
 
 				// It's not possible recording or save while audio is playing
 				playPauseButton.enabled=true;
-				recStopButton.enabled=true;
+				startStopCapture.enabled=true;
 
-				recStopButton.setStyle('icon', stopImageEmbed);
+				startStopCapture.setStyle('icon', stopImageEmbed);
 				playPauseButton.setStyle('icon', pauseImageEmbed);
 			}
 
@@ -303,40 +285,41 @@
 			{
 				//in_ns.togglePause();
 				playbackNetStream.pause();
-				estat.text="Paused";
+				
 				audio_pause=true;
 
 				// It's possible recording or save while audio is paused
-				recStopButton.enabled=true;
+				startStopCapture.enabled=true;
 				playPauseButton.enabled=true;
 
 
-				recStopButton.setStyle('icon', recImageEmbed);
+				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
 
 			private function stopAudio():void
 			{
-				estat.text="Stopped ";
 
 				// Close output stream
 				publishNetStream.close();
 				isRecording=false;
 
 				// It's not possible playing audio while recording
-				recStopButton.enabled=true;
+				startStopCapture.enabled=true;
 				playPauseButton.enabled=true;
 
-				recStopButton.setStyle('icon', recImageEmbed);
+				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
 
-			private function recStopAudio():void
+			private function startStopRecording():void
 			{
 				if (!_streamingServerConnection)
 					connectToStreamingServer();
-				if (recStopButton.getStyle('icon') == recImageEmbed)
+				if (!isRecording){
+					startStopCapture.label = resourceManager.getString('myResources','BUTTON_STOP');
 					prepareDevices();
+				}
 				else
 				{
 					if (_recordCountDown.running)
@@ -348,6 +331,11 @@
 					}
 					stopCamera();
 					stopAudio();
+					if(recordingFileName){
+						startStopCapture.label = resourceManager.getString('myResources','BUTTON_RECORD_AGAIN');
+					} else {
+						startStopCapture.label = resourceManager.getString('myResources','BUTTON_START_RECORDING');
+					}
 				}
 			}
 
@@ -359,9 +347,8 @@
 			}
 
 
-			private function playPauseAudio():void
+			private function playPauseRecording():void
 			{
-				estat.text='playPauseAudio' + playPauseButton.label;
 				switch (playPauseButton.getStyle('icon'))
 				{
 					case playImageEmbed:
@@ -377,8 +364,7 @@
 			{
 				if (o.code == "NetStream.Play.Complete")
 				{
-					estat.text="";
-
+					trace("Playback complete");
 				}
 			}
 
@@ -393,13 +379,20 @@
 				{
 					if (_camera != null)
 					{
-						videoHolder.setActualSize(_camera.width, _camera.height);
+						//videoHolder.setActualSize(_camera.width, _camera.height);
 						video=new Video(_camera.width, _camera.height);
 						if (publishNetStream != null)
 							publishNetStream.attachCamera(_camera);
 						video.attachCamera(_camera);
 						video.smoothing=true;
-
+						video.height=videoHolder.height;
+						video.width=videoHolder.width;
+						
+						_countdownTxt.x=videoHolder.width / 2 - 10;
+						_countdownTxt.y=videoHolder.height / 2 - 10;
+						_countdownTxt.width=videoHolder.width;
+						_countdownTxt.height=videoHolder.height;
+						
 						videoHolder.addChild(video);
 						videoHolder.addChild(_countdownTxt);
 						video.visible=false;
@@ -407,23 +400,22 @@
 					}
 					if (_mic != null)
 					{
-						estat.text="Recording..."
 						anyContent=true;
 
 						_mic.setLoopBack(false);
-						_mic.gain=40;
+						_mic.gain=DEFAULT_MIC_GAIN;
 
 						// Start publishing the audio output as a recorded stream
 						if (publishNetStream != null)
 							publishNetStream.attachAudio(_mic);
 
 						// It's not possible playing audio while recording
-						recStopButton.enabled=true;
-						recStopButton.setStyle('icon', stopImageEmbed);
+						startStopCapture.enabled=true;
+						startStopCapture.setStyle('icon', stopImageEmbed);
 
 						playPauseButton.enabled=false;
 						playPauseButton.setStyle('icon', playImageEmbed);
-						recStopButton.enabled=false;
+						startStopCapture.enabled=false;
 					}
 				}
 			}
@@ -441,7 +433,7 @@
 				recordCountdown.text=_timeFormatter.format(_maximumVideoDuration - _recordCountDown.currentCount);
 				if (_recordCountDown.currentCount >= _minimumVideoDuration)
 				{
-					recStopButton.enabled=true;
+					startStopCapture.enabled=true;
 				}
 				if (_recordCountDown.currentCount == _recordCountDown.repeatCount)
 				{
@@ -450,7 +442,7 @@
 					_recordCountDown.reset();
 					recordCountdown.text=_timeFormatter.format(0);
 					recordCountdown.visible=false;
-					recStopAudio();
+					startStopRecording();
 				}
 			}
 
@@ -534,67 +526,87 @@
 				}
 				else
 				{
-					CustomAlert.error(resourceManager.getString('myResources','DEVICES_NOT_ALLOWED_ERROR'));
+					CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
 				}
 			}
+			
+			public function set cancelClickHandler(cancelFunction:Function):void
+			{
+				cancelCapture.addEventListener(MouseEvent.CLICK, cancelFunction);
+			}
+			
+			public function set uploadClickHandler(uploadFunction:Function):void{
+				uploadCapture.addEventListener(MouseEvent.CLICK, uploadFunction);
+			}
+			
 		]]>
 	</fx:Script>
 
 	<fx:Binding source="{DataModel.getInstance().netConnected}"
 				destination="onConnectionStatus"/>
 
-	<s:VGroup width="100%"
-			  height="100%"
-			  horizontalAlign="center">
-		<s:HGroup paddingBottom="4"
-				  paddingTop="4"
+
+	<s:SkinnableContainer id="videoBg"
+						  backgroundColor="0x000000"
+						  width="100%"
+						  height="100%">
+		<s:layout>
+			<s:HorizontalLayout horizontalAlign="center"/>
+		</s:layout>
+		<mx:UIComponent id="videoHolder"
+						width="{Math.round(videoBg.height*4/3)}"
+						height="{videoBg.height}"/>
+	</s:SkinnableContainer>
+
+	<s:SkinnableContainer width="100%"
+						  backgroundColor="0xCCCCCC">
+		<s:HGroup paddingBottom="2"
+				  paddingTop="2"
 				  paddingLeft="4"
-				  paddingRight="4">
-			<s:SkinnableContainer backgroundColor="0x000000"
-								  width="100%">
-				<mx:UIComponent id="videoHolder"
-								width="{_videoWidth}"
-								height="{_videoHeight}"/>
-			</s:SkinnableContainer>
-		</s:HGroup>
-
-		<s:SkinnableContainer width="100%"
-							  backgroundColor="0xCCCCCC">
-			<s:HGroup paddingBottom="2"
-					  paddingTop="2"
-					  paddingLeft="4"
-					  paddingRight="4"
-					  horizontalAlign="left"
-					  verticalAlign="middle"
-					  width="100%"
-					  gap="4">
-				<skins:IconButton click="recStopAudio();"
-								  id="recStopButton"
-								  width="20"
-								  height="20"
-								  cornerRadius="4"
-								  skinClass="skins.IconButtonSkin"/>
-				<skins:IconButton click="playPauseAudio();"
-								  id="playPauseButton"
-								  enabled="false"
-								  width="20"
-								  height="20"
-								  cornerRadius="4"
-								  skinClass="skins.IconButtonSkin"/>
-				<s:Label id="statusLabel"
-						 text="Status:"
-						 fontWeight="bold"/>
-				<s:Label id="estat"
-						 width="100%"/>
-				<s:HGroup width="100%"
-						  horizontalAlign="right">
-					<s:Label id="recordCountdown"
-							 visible="false"
-							 text=""/>
-				</s:HGroup>
+				  paddingRight="4"
+				  horizontalAlign="left"
+				  verticalAlign="middle"
+				  width="100%"
+				  gap="4">
+			
+			<skins:IconButton click="playPauseRecording()"
+							  id="playPauseButton"
+							  enabled="false"
+							  width="20"
+							  height="20"
+							  cornerRadius="4"
+							  skinClass="skins.IconButtonSkin"/>
+			<s:HGroup width="100%"
+					  horizontalAlign="right">
+				<s:Label id="recordCountdown"
+						 visible="false"
+						 text=""/>
 			</s:HGroup>
-		</s:SkinnableContainer>
-	</s:VGroup>
+		</s:HGroup>
+	</s:SkinnableContainer>
+	<s:HGroup id="actionsGroup"
+			  width="100%"
+			  paddingBottom="10"
+			  paddingLeft="10"
+			  paddingRight="10"
+			  paddingTop="10">
+		<s:Button id="cancelCapture"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  cornerRadius="1"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<skins:IconButton id="startStopCapture"
+					  label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+					  cornerRadius="1"
+					  skinClass="skins.IconButtonSkin"
+					  click="startStopRecording()"/>
+		</s:HGroup>
+		<s:Button id="uploadCapture"
+				  label="{resourceManager.getString('myResources', 'UPLOAD')}"
+				  visible="{recordingFileName != null  &amp;&amp; !isRecording}"
+				  cornerRadius="1"/>
+	</s:HGroup>
 
 
-</s:BorderContainer>
+
+</s:VGroup>

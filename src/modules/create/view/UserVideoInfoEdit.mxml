@@ -35,9 +35,10 @@
 				<mx:RichTextEditor width="100%"
 								   id="videoDescription"
 								   dropShadowVisible="false"
-								   headerHeight="0"/>
+								   headerHeight="0"
+								   fontWeight="normal"/>
 			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','KEYWORDS')}"
 						 width="100%"
 						 styleName="boldLabel"
 						 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
@@ -99,16 +100,10 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle">
 		<skins:IconButton id="saveButton"
-						  label="{resourceManager.getString('myResources','BUTTON_SAVE_NEWPASS')}"
+						  label="{resourceManager.getString('myResources','SAVE_AND_CONTINUE')}"
 						  click="saveChangesClickHandler(event)"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/save.png')"/>
-		<!--
-		<skins:IconButton id="cancelButton"
-						  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
-						  skinClass="skins.IconButtonSkin"
-						  icon="@Embed('/resources/images/cancel.png')"/>
-		-->
 	</s:HGroup>
 	
 	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
@@ -125,9 +120,8 @@
 							maxLength="80"/>
 		<mx:StringValidator id="descriptionValidator"
 							source="{videoDescription}"
-							property="text"
-							minLength="3"
-							maxLength="512"/>
+							property="htmlText"
+							minLength="3"/>
 		<mx:StringValidator id="tagValidator"
 							source="{videoTags}"
 							property="text"
@@ -201,7 +195,7 @@
 				tagValidator.enabled=false;
 
 				videoTitle.text="";
-				videoDescription.text="";
+				videoDescription.htmlText="";
 				videoTags.text="";
 				//referenceUrl.text="";
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
@@ -342,10 +336,10 @@
 			{
 
 				var validUrl:Boolean=true;
-				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.text) && fieldHasData(videoTags.text))
+				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.htmlText) && fieldHasData(videoTags.text))
 				{
 					exerciseData.title=videoTitle.text;
-					exerciseData.description=videoDescription.text;
+					exerciseData.description=videoDescription.htmlText;
 					exerciseData.tags=parseTags(videoTags.text);
 					exerciseData.language=languageSelector.selectedItem.code;
 
@@ -385,7 +379,7 @@
 				var data:ExerciseVO = DataModel.getInstance().exerciseData;
 				exerciseData=data;
 				videoTitle.text=exerciseData.title;
-				videoDescription.text=exerciseData.description;
+				videoDescription.htmlText=exerciseData.description;
 				videoTags.text=exerciseData.tags;
 				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);

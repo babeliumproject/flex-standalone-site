@@ -77,7 +77,7 @@
 			 styleName="sectionTitleLabel"/>
 	
 	<s:Label id="noCourse"
-			 text="You're not currently enrolled in any course."
+			 text="{resourceManager.getString('myResources','YOU_ARE_NOT_CURRENTLY_ENROLLED_IN_ANY_COURSE')}"
 			 includeInLayout="{!userCourses.length}"
 			 visible="{!userCourses.length}"/>
 	
@@ -111,7 +111,7 @@
 	</s:Line>
 	
 	<s:Label id="noExercises"
-			 text="You haven't recorded any exercise yet."
+			 text="{resourceManager.getString('myResources', 'YOU_HAVENT_RECORDED_ANY_EXERCISE_YET')}"
 			 includeInLayout="{!userExercises.length}"
 			 visible="{!userExercises.length}"/>
 	

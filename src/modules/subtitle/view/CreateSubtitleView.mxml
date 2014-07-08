@@ -105,7 +105,7 @@
 							 dataProvider="{this.subtitleCollection}"
 							 rowHeight="28">
 					<mx:columns>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_NUMBER')}"
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','NUMBER')}"
 										   labelFunction="{lfRowNum}"
 										   editable="false"
 										   width="60">
@@ -118,14 +118,14 @@
 								</fx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_SHOW')}"
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','BEGIN')}"
 										   editable="true"
 										   editorDataField="value"
 										   width="85"
 										   rendererIsEditor="true"
 										   itemRenderer="modules.subtitle.view.ShowNumericStepperRenderer">
 						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_HIDE')}"
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','END')}"
 										   width="85"
 										   editable="true"
 										   editorDataField="value"
@@ -134,7 +134,7 @@
 						<mx:DataGridColumn id="comboColumn"
 										   width="150"
 										   dataField="roleId"
-										   headerText="{resourceManager.getString('myResources','COLUMNHEAD_ROLE')}"
+										   headerText="{resourceManager.getString('myResources','ROLE')}"
 										   rendererIsEditor="true"
 										   labelFunction="{resolveIdToRole}"
 										   editorDataField="selectedItemKey">
@@ -147,7 +147,7 @@
 								</fx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','COLUMNHEAD_TEXT')}"
+						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','TEXT')}"
 										   dataField="text"
 										   width="375">
 							<mx:itemEditor>

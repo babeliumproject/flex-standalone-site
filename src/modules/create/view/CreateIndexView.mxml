@@ -37,11 +37,11 @@
 	</fx:Script>
 
 	<s:Button id="addnewexercise"
-			  label="Add new exercise"
+			  label="{resourceManager.getString('myResources','ADD_NEW_EXERCISE')}"
 			  click="{BabeliaBrowserManager.getInstance().updateURL('create','add')}"/>
 
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
-	<s:Panel title="My latest creations"
+	<s:Panel title="{resourceManager.getString('myResources','MY_LATEST_CREATIONS')}"
 			 dropShadowVisible="false"
 			 backgroundAlpha="0"
 			 width="100%"
@@ -49,7 +49,7 @@
 			 left="16"
 			 right="16">
 		<s:Label id="nocreations"
-				 text="No haven't created any exercise yet."
+				 text="{resourceManager.getString('myResources','YOU_HAVENT_CREATED_ANY_EXERCISE_YET')}"
 				 includeInLayout="{!latestCreationsData.length}"
 				 visible="{!latestCreationsData.length}"/>
 		<s:VGroup width="100%"
@@ -69,7 +69,7 @@
 				</s:layout>
 			</s:List>
 			<s:Button id="seeAllCreations"
-					  label="See all my creations"
+					  label="{resourceManager.getString('myResources','SEE_ALL_MY_CREATIONS')}"
 					  click="{BabeliaBrowserManager.getInstance().updateURL('create', 'manage')}"/>
 		</s:VGroup>
 
