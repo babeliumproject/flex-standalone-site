@@ -73,10 +73,10 @@
 				uploadFilename.text=filename;
 				updateUploadProgress();
 				DataModel.getInstance().uploadFileSelected=false;
+				chooseMediaTypeContainer.includeInLayout=false;
+				chooseMediaTypeContainer.visible=false;
 				uploadWidget.includeInLayout=true;
 				uploadWidget.visible=true;
-				recFromWebcamBox.includeInLayout=false;
-				recFromWebcamBox.visible=false;
 				new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
 			}
 
@@ -132,7 +132,7 @@
 	<fx:Binding source="{DataModel.getInstance().uploadFinishedData}"
 				destination="this.uploadComplete"/>
 
-	<s:FormHeading label="Media"
+	<s:FormHeading label="{resourceManager.getString('myResources','UPLOAD_MEDIA')}"
 				   styleName="sectionTitleLabel"/>
 
 	<s:BorderContainer id="chooseMediaTypeContainer"
@@ -179,6 +179,47 @@
 								 cancelClickHandler="{cancelCaptureClickHandler}"
 								 uploadClickHandler="{uploadCaptureClickHandler}"/>
 	</s:BorderContainer>
+	
+	<s:BorderContainer id="uploadWidget"
+					   backgroundAlpha="0"
+					   visible="false"
+					   includeInLayout="false" width="100%">
+		<s:layout>
+			<s:HorizontalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
+		</s:layout>
+		
+		<s:Image source="resources/images/thumbs/nothumb.png"/>
+		<s:VGroup>
+			<s:HGroup verticalAlign="middle">
+				<s:Label id="uploadFilename"/>
+				<s:Button id="cancelUpload"
+						  click="cancelUpload_clickHandler(event)"
+						  label="{resourceManager.getString('myResources','CANCEL')}"
+						  cornerRadius="1"
+						  height="30"/>
+			</s:HGroup>
+			<mx:ProgressBar id="uploadProgressBar"
+							mode="manual"
+							labelPlacement="center"
+							label=""
+							height="30"
+							width="100%"/>
+			<s:Label id="uploadStatus"/>
+			<s:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
+						styleName="boldLabel"
+						required="true">
+				<common:LicenseComboBox id="licenseSelector"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
+						styleName="boldLabel"
+						toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
+						width="100%">
+				<s:TextInput width="100%"
+							 id="referenceUrl"/>
+			</s:FormItem>
+		</s:VGroup>
+		
+	</s:BorderContainer>
 
 	<!--
 	<s:HGroup width="100%">
@@ -193,41 +234,4 @@
 		</s:VGroup>
 	</s:HGroup>
 	-->
-
-	<s:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
-				styleName="boldLabel"
-				required="true">
-		<common:LicenseComboBox id="licenseSelector"/>
-	</s:FormItem>
-	<s:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
-				styleName="boldLabel"
-				toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
-				width="100%">
-		<s:TextInput width="100%"
-					 id="referenceUrl"/>
-	</s:FormItem>
-	<s:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_UPLOADING_METHOD')}"
-				styleName="boldLabel">
-
-		<s:HGroup id="uploadWidget"
-				  visible="false"
-				  includeInLayout="false">
-			<s:Image source="resources/images/thumbs/nothumb.png"/>
-			<s:VGroup>
-				<s:HGroup>
-					<s:Label id="uploadFilename"/>
-					<s:Button id="cancelUpload"
-							  click="cancelUpload_clickHandler(event)"
-							  label="Cancel"
-							  visible="true"/>
-				</s:HGroup>
-				<mx:ProgressBar id="uploadProgressBar"
-								mode="manual"
-								labelPlacement="center"
-								label=""/>
-				<s:Label id="uploadStatus"/>
-			</s:VGroup>
-		</s:HGroup>
-
-	</s:FormItem>
 </s:Form>

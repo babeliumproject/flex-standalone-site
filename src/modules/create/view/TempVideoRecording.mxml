@@ -13,9 +13,9 @@
 		<![CDATA[
 			import events.CloseConnectionEvent;
 			import events.StartConnectionEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -23,9 +23,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import skins.IconButtonSkin;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -124,6 +124,8 @@
 			public function resetComponent():void
 			{
 				startStopCapture.setStyle('icon', recImageEmbed);
+				startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_START_RECORDING');
+				startStopCapture.enabled=true;
 				playPauseButton.setStyle('icon', playImageEmbed);
 				playPauseButton.enabled=false;
 
@@ -132,6 +134,14 @@
 				isRecording=false;
 
 				recordingFileName=null;
+
+				if (_countdown && _countdown.running)
+				{
+					_countdown.stop();
+					_countdown.reset();
+					_countdownTxt.text=COUNTDOWN_TIMER_SECS.toString();
+					_countdownTxt.visible=false;
+				}
 
 				disconnnectStreams();
 			}
@@ -187,8 +197,9 @@
 				}
 				if (video)
 				{
-					video.attachCamera(null);
 					video.clear();
+					video.attachCamera(null);
+					video=null;
 				}
 			}
 
@@ -260,7 +271,7 @@
 				else
 				{
 					// Play the recording
-		
+
 					if (playbackNetStream)
 						playbackNetStream.close();
 					playbackNetStream=new NetStream(netConnection);
@@ -270,7 +281,7 @@
 
 					playbackNetStream.play(_streamsFolder + "/" + recordingFileName);
 					video.attachNetStream(playbackNetStream); // JUANAN
-				
+
 				}
 
 				// It's not possible recording or save while audio is playing
@@ -285,7 +296,7 @@
 			{
 				//in_ns.togglePause();
 				playbackNetStream.pause();
-				
+
 				audio_pause=true;
 
 				// It's possible recording or save while audio is paused
@@ -299,9 +310,12 @@
 
 			private function stopAudio():void
 			{
-
 				// Close output stream
-				publishNetStream.close();
+				if (publishNetStream)
+				{
+					publishNetStream.attachAudio(null);
+					publishNetStream.close();
+				}
 				isRecording=false;
 
 				// It's not possible playing audio while recording
@@ -316,8 +330,9 @@
 			{
 				if (!_streamingServerConnection)
 					connectToStreamingServer();
-				if (!isRecording){
-					startStopCapture.label = resourceManager.getString('myResources','BUTTON_STOP');
+				if (!isRecording)
+				{
+					startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_STOP');
 					prepareDevices();
 				}
 				else
@@ -331,10 +346,13 @@
 					}
 					stopCamera();
 					stopAudio();
-					if(recordingFileName){
-						startStopCapture.label = resourceManager.getString('myResources','BUTTON_RECORD_AGAIN');
-					} else {
-						startStopCapture.label = resourceManager.getString('myResources','BUTTON_START_RECORDING');
+					if (recordingFileName)
+					{
+						startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN');
+					}
+					else
+					{
+						startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_START_RECORDING');
 					}
 				}
 			}
@@ -342,8 +360,11 @@
 			private function stopCamera():void
 			{
 				// clear the videoContainer
-				video.attachCamera(null);
 				video.clear();
+				video.attachCamera(null);
+				video=null;
+				if (publishNetStream)
+					publishNetStream.attachCamera(null);
 			}
 
 
@@ -387,12 +408,12 @@
 						video.smoothing=true;
 						video.height=videoHolder.height;
 						video.width=videoHolder.width;
-						
+
 						_countdownTxt.x=videoHolder.width / 2 - 10;
 						_countdownTxt.y=videoHolder.height / 2 - 10;
 						_countdownTxt.width=videoHolder.width;
 						_countdownTxt.height=videoHolder.height;
-						
+
 						videoHolder.addChild(video);
 						videoHolder.addChild(_countdownTxt);
 						video.visible=false;
@@ -475,16 +496,19 @@
 
 			private function startRecording():void
 			{
-				var d:Date=new Date();
-				recordingFileName=_streamFilePrefix + "-" + d.getTime().toString();
+				if (publishNetStream)
+				{
+					var d:Date=new Date();
+					recordingFileName=_streamFilePrefix + "-" + d.getTime().toString();
 
-				// Publish the stream
-				publishNetStream.publish(_streamsFolder + "/" + recordingFileName, "record");
-				isRecording=true;
+					// Publish the stream
+					publishNetStream.publish(_streamsFolder + "/" + recordingFileName, "record");
+					isRecording=true;
 
-				//Recording time elpased variables
-				recordCountdown.visible=true;
-				startRecordCountDown();
+					//Recording time elpased variables
+					recordCountdown.visible=true;
+					startRecordCountDown();
+				}
 			}
 
 			private function prepareDevices():void
@@ -529,16 +553,16 @@
 					CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
 				}
 			}
-			
+
 			public function set cancelClickHandler(cancelFunction:Function):void
 			{
 				cancelCapture.addEventListener(MouseEvent.CLICK, cancelFunction);
 			}
-			
-			public function set uploadClickHandler(uploadFunction:Function):void{
+
+			public function set uploadClickHandler(uploadFunction:Function):void
+			{
 				uploadCapture.addEventListener(MouseEvent.CLICK, uploadFunction);
 			}
-			
 		]]>
 	</fx:Script>
 
@@ -568,7 +592,7 @@
 				  verticalAlign="middle"
 				  width="100%"
 				  gap="4">
-			
+
 			<skins:IconButton click="playPauseRecording()"
 							  id="playPauseButton"
 							  enabled="false"
@@ -596,10 +620,10 @@
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<skins:IconButton id="startStopCapture"
-					  label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
-					  cornerRadius="1"
-					  skinClass="skins.IconButtonSkin"
-					  click="startStopRecording()"/>
+							  label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+							  cornerRadius="1"
+							  skinClass="skins.IconButtonSkin"
+							  click="startStopRecording()"/>
 		</s:HGroup>
 		<s:Button id="uploadCapture"
 				  label="{resourceManager.getString('myResources', 'UPLOAD')}"
