@@ -95,7 +95,7 @@
 				{
 					if (DataModel.getInstance().uploadErrors == '')
 					{
-						uploadStatus.text=resourceManager.getString('myResources', 'LABEL_UPLOADSTATUS_SUCCESSFULUPLOAD');
+						uploadStatus.text=resourceManager.getString('myResources', 'UPLOADSUCCESSFULUPLOAD');
 					}
 					else
 					{
@@ -205,14 +205,14 @@
 							height="30"
 							width="100%"/>
 			<s:Label id="uploadStatus"/>
-			<s:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
+			<s:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
 						styleName="boldLabel"
 						required="true">
 				<common:LicenseComboBox id="licenseSelector"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
+			<s:FormItem label="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
 						styleName="boldLabel"
-						toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
+						toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
 						width="100%">
 				<s:TextInput width="100%"
 							 id="referenceUrl"/>

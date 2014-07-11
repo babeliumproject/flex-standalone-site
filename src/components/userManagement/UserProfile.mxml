@@ -135,7 +135,7 @@
 		]]>
 	</fx:Script>
 
-	<s:Label text="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}"
+	<s:Label text="{resourceManager.getString('myResources','MY_PROFILE')}"
 			 styleName="sectionTitleLabel"
 			 id="userProfileTitleLabel"/>
 	<s:Line width="{userProfileTitleLabel.width}">
@@ -153,54 +153,54 @@
 				  paddingLeft="16"
 				  paddingRight="16">
 			<s:HGroup paddingTop="10">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_PERSONAL_INFO')}"
+				<s:Label text="{resourceManager.getString('myResources','PERSONAL_INFO')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase()+' '+resourceManager.getString('myResources','LABEL_PERSONAL_INFO').toLowerCase()}"
+								  label="{resourceManager.getString('myResources','EDIT').toLowerCase()+' '+resourceManager.getString('myResources','PERSONAL_INFO').toLowerCase()}"
 								  click="modifyPersonalDataClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
+				<s:Label text="{resourceManager.getString('myResources','REAL_NAME')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userName"
 						 text="{dataModel.loggedUser.firstname}"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
+				<s:Label text="{resourceManager.getString('myResources','REAL_SURNAME')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userSurname"
 						 text="{dataModel.loggedUser.lastname}"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','LABEL_EMAIL')}"
+				<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
 						 styleName="boldLabel"/>
 				<s:Label id="userEmail"
 						 text="{dataModel.loggedUser.email}"/>
 			</s:HGroup>
 
 			<s:HGroup paddingTop="16">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_SECURITY')}"
+				<s:Label text="{resourceManager.getString('myResources','SECURITY')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources','LABEL_MODIFY_PASSWORD').toLowerCase()}"
+								  label="{resourceManager.getString('myResources','MODIFY_PASSWORD').toLowerCase()}"
 								  click="modifyPasswordClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 
 			<s:HGroup paddingTop="16">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGES')}"
+				<s:Label text="{resourceManager.getString('myResources','LANGUAGES')}"
 						 styleName="exerciseTitleLabel"/>
 				<skins:IconButton styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources','LABEL_EDIT').toLowerCase() +' '+resourceManager.getString('myResources','LABEL_LANGUAGES').toLowerCase()}"
+								  label="{resourceManager.getString('myResources','EDIT').toLowerCase() +' '+resourceManager.getString('myResources','LANGUAGES').toLowerCase()}"
 								  click="modifyLanguagesClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
-			<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATE_LANGUAGE')}"
+			<s:Label text="{resourceManager.getString('myResources','EVALUATE_LANGUAGE')}"
 					 styleName="boldLabel"/>
 			<s:VGroup id="evaluateLanguages"
 					  paddingLeft="16"/>
-			<s:Label text="{resourceManager.getString('myResources','LABEL_PRACTICE_LANGUAGE')}"
+			<s:Label text="{resourceManager.getString('myResources','PRACTICE_LANGUAGE')}"
 					 styleName="boldLabel"/>
 			<s:VGroup id="practiceLanguages"
 					  paddingLeft="16"/>

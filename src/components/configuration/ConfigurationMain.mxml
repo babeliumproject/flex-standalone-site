@@ -187,7 +187,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_CONFIGURATION')}"
+		<s:Label text="{resourceManager.getString('myResources','CONFIGURATION')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
@@ -251,15 +251,15 @@
 					  creationPolicy="all"
 					  resizeToContent="true">
 
-			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_WEBCAM_SETUP')}">
+			<s:NavigatorContent label="{resourceManager.getString('myResources','WEBCAM_SETUP')}">
 				<configuration:WebcamCheck id="webCamCheck"/>
 			</s:NavigatorContent>
 
-			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}">
+			<s:NavigatorContent label="{resourceManager.getString('myResources','MIC_SETUP')}">
 				<configuration:MicrophoneCheck id="micCheck"/>
 			</s:NavigatorContent>
 
-			<s:NavigatorContent label="{resourceManager.getString('myResources','LABEL_BANDWIDTH_CHECK')}">
+			<s:NavigatorContent label="{resourceManager.getString('myResources','BANDWIDTH_CHECK')}">
 				<bandwidth:connectionCheck id="bandwidthCheck"/>
 			</s:NavigatorContent>
 		</mx:ViewStack>

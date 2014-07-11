@@ -64,7 +64,7 @@
 		</mx:series>
 	</mx:ColumnChart>
 	<mx:Legend dataProvider="{evaluationDetailChart}"/>
-	<s:Button label="{resourceManager.getString('myResources', 'BUTTON_CLOSE')}"
+	<s:Button label="{resourceManager.getString('myResources', 'CLOSE')}"
 			  click="closeClickHandler(event)"
 			  buttonMode="true"/>
 </common:CustomTitleWindow>

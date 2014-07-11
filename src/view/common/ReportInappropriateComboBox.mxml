@@ -36,7 +36,7 @@
 	<s:DropDownList id="reportInappropriateComboBox"
 					dataProvider="{reportReasons}"
 					fontWeight="normal"
-					prompt="{resourceManager.getString('myResources', 'PROMPT_CHOOSE_ISSUE')}"
+					prompt="{resourceManager.getString('myResources', 'CHOOSE_ISSUE')}"
 					labelFunction="reportInappropriateComboBoxLabelFunction"
 					change="reportInappropriateComboBoxChangeHandler(event)"
 					selectedIndex="-1"
@@ -45,7 +45,7 @@
 	<mx:ComboBox id="reportInappropriateComboBox"
 				 dataProvider="{reportReasons}"
 				 fontWeight="normal"
-				 prompt="{resourceManager.getString('myResources', 'PROMPT_CHOOSE_ISSUE')}"
+				 prompt="{resourceManager.getString('myResources', 'CHOOSE_ISSUE')}"
 				 labelFunction="reportInappropriateComboBoxLabelFunction"
 				 change="reportInappropriateComboBoxChangeHandler(event)"
 				 selectedIndex="-1"/>-->

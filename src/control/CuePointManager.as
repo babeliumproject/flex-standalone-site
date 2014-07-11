@@ -326,7 +326,7 @@ package control
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=info as FaultEvent;
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBTITLE_LINES'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBLINES'));
 		}
 	}
 }

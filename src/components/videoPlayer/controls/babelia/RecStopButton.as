@@ -87,7 +87,7 @@ package components.videoPlayer.controls.babelia
 			if(_recMode){
 				state = (_state == REC_STATE) ? STOP_STATE : REC_STATE;
 			}
-			dispatchEvent(new RecStopButtonEvent(RecStopButtonEvent.BUTTON_CLICK,cstate));
+			dispatchEvent(new RecStopButtonEvent(RecStopButtonEvent.CLICK,cstate));
 		}
 	}
 }

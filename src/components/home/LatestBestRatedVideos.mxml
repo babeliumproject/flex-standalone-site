@@ -40,7 +40,7 @@
 				}
 				else
 				{
-					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
+					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
 					BabeliaBrowserManager.getInstance().updateURL('subtitles', BabeliaBrowserManager.SUBTITLE, obj.name);
 				}
 				List(event.target).selectedItem=null;

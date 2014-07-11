@@ -49,7 +49,7 @@
 					</s:layout>
 					<mx:Image source="@Embed('/resources/images/alertInfo.png')"/>
 					<s:Label width="300"
-							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBTITLE_EDITION')}"/>
+							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBEDITION')}"/>
 				</s:BorderContainer>
 			</s:VGroup>
 
@@ -70,14 +70,14 @@
 									  horizontalAlign="center"/>
 				</s:layout>
 
-				<s:Label text="{resourceManager.getString('myResources','TITLE_SUBTITLE_EDITOR')}"/>
+				<s:Label text="{resourceManager.getString('myResources','SUBEDITOR')}"/>
 
 				<s:HGroup id="guestEditWarningBox"
 						  verticalAlign="middle">
 					<mx:Image source="@Embed(source='/resources/images/alertConfirmation.png')"/>
 					<s:Label id="notLoggedWarning"
 							 styleName="guestVersionWarningLabel"
-							 text="{resourceManager.getString('myResources','LABEL_GUEST_EDIT_WARNING')}"/>
+							 text="{resourceManager.getString('myResources','GUEST_EDIT_WARNING')}"/>
 				</s:HGroup>
 				<s:VGroup id="subtitleVersionBox"
 						  includeInLayout="false"
@@ -87,7 +87,7 @@
 						  paddingTop="10">
 					<s:HGroup verticalAlign="middle"
 							  width="100%">
-						<s:Label text="{resourceManager.getString('myResources','LABEL_CURRENTLY_SELECTED_SUBTITLE_VERSION')}"/>
+						<s:Label text="{resourceManager.getString('myResources','CURRENTLY_SELECTED_SUBVERSION')}"/>
 						<s:DropDownList id="subtitleVersionSelector"
 									dataProvider="{availableSubtitleVersions}"
 									change="{onSubtitleVersionChange(event)}"
@@ -114,7 +114,7 @@
 									<mx:LinkButton click="outerDocument.goToTimeHandler()"
 												   selectionColor="0xB7F39B"
 												   rollOverColor="0xEEFEE6"
-												   toolTip="{resourceManager.getString('myResources','TOOLTIP_SEEK_TO_LINE')}"/>
+												   toolTip="{resourceManager.getString('myResources','SEEK_TO_LINE')}"/>
 								</fx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -163,25 +163,25 @@
 				<s:HGroup width="100%" verticalAlign="middle">
 					<mx:Image id="groupLogo"
 						  	  source="resources/images/about_section_title_icon.png"/>
-					<mx:Text htmlText="{resourceManager.getString('myResources','COMPLETE_SUBTITLE_INFO')}" width="100%" fontSize="14"/>
+					<mx:Text htmlText="{resourceManager.getString('myResources','COMPLETE_SUBINFO')}" width="100%" fontSize="14"/>
 				</s:HGroup>
 				<s:HGroup height="40"
 						  width="100%"
 						  horizontalAlign="center">
 					<!-- enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}" -->
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBLINE')}"
 									  
 									  click="{subtitleInsertHandler(event)}"
 									  id="addSubtitleLine"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/add.png')"/>
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBLINE')}"
 									  enabled="{subtitleCollection.length > 0}"
 									  click="subtitleRemoveHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/delete.png')"/>
 
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBLINES')}"
 									  enabled="{subtitleCollection.length > 0}"
 									  click="subtitleClearHandler()"
 									  skinClass="skins.IconButtonSkin"
@@ -189,7 +189,7 @@
 					<mx:VRule id="saveSubtitleSeparator"
 							  height="30"/>
 					<skins:IconButton id="saveSubtitleButton"
-									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
+									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBLINES')}"
 									  click="saveSubtitlesHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/disk.png')"/>

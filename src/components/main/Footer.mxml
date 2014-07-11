@@ -108,7 +108,7 @@
 					<s:Label text="|"/>
 					<skins:IconButton id="helpFAQButton"
 									  styleName="footerLinkButton"
-									  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
+									  label="{resourceManager.getString('myResources', 'HELP')}"
 									  click="helpFAQ_clickHandler(event)"
 									  toolTip="{resourceManager.getString('myResources','HELP_FAQ')}"/>
 					<s:Label text="|"/>

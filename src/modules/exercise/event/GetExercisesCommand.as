@@ -45,12 +45,12 @@ package modules.exercise.event
 					//Set the data to the application's model
 					DataModel.getInstance().availableExercises=resultCollection;
 					//Reflect the visual changes
-					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.SUBTITLE_MODULE);
+					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.SUBMODULE);
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
 				}
 			} else {
 				DataModel.getInstance().availableExercises.removeAll();
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.SUBTITLE_MODULE);
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.SUBMODULE);
 				DataModel.getInstance().availableExercisesRetrieved.setItemAt(true, DataModel.RECORDING_MODULE);
 			}
 			

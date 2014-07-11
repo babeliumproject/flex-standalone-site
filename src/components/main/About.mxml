@@ -11,7 +11,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_ABOUT_SECTION')}"
+		<s:Label text="{resourceManager.getString('myResources','ABOUT_SECTION')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
@@ -27,7 +27,7 @@
 			  paddingLeft="16"
 			  paddingRight="16"
 			  width="100%">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_WHO_ARE_WE')}"
+		<s:Label text="{resourceManager.getString('myResources','WHO_ARE_WE')}"
 				 styleName="boldYellowLabel"/>
 		<s:HGroup width="100%"
 				  verticalAlign="middle">
@@ -36,7 +36,7 @@
 					  height="87"
 					  width="87"
 					  source="resources/images/ghym_logo_degr_87px.png"/>
-			<s:Label text="{resourceManager.getString('myResources','TEXT_WHO_ARE_WE')}"
+			<s:Label text="{resourceManager.getString('myResources','WHO_ARE_WE')}"
 					 width="850"
 					 height="100%"
 					 verticalAlign="middle"/>
@@ -52,35 +52,35 @@
 					 verticalAlign="middle"/>
 		</s:HGroup>
 		<mx:Spacer height="24"/>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_CONTACT_INFO')}"
+		<s:Label text="{resourceManager.getString('myResources','CONTACT_INFO')}"
 				 styleName="boldYellowLabel"/>
 		<s:VGroup width="100%">
-			<s:Label text="{resourceManager.getString('myResources','LABEL_FEEDBACK')}"/>
+			<s:Label text="{resourceManager.getString('myResources','FEEDBACK')}"/>
 			<skins:IconButton label="babeliumproject@gmail.com"
 						   styleName="commonLinkButton"
 						   click="emailButtonClickHandler(event)"/>
 		</s:VGroup>
 		<mx:Spacer height="24"/>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_INFO')}"
+		<s:Label text="{resourceManager.getString('myResources','APPLICATION_INFO')}"
 				 styleName="boldYellowLabel"/>
 		<s:VGroup width="100%">
 			<s:HGroup width="100%">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_APPLICATION_VERSION')}"/>
+				<s:Label text="{resourceManager.getString('myResources','APPLICATION_VERSION')}"/>
 				<s:Label id="appRevisionLabel"
 						 styleName="boldDarkGreyLabel"/>
 			</s:HGroup>
 			<s:HGroup width="100%">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_USERS_FLASH_VERSION')}"/>
+				<s:Label text="{resourceManager.getString('myResources','USERS_FLASH_VERSION')}"/>
 				<s:Label id="flashVersionLabel"
 						 styleName="boldDarkGreyLabel"
 						 text="{userFlashVersion()}"/>
 			</s:HGroup>
 			<!--
-				 s:Label text="{resourceManager.getString('myResources','TEXT_LICENSE_DISCLAIMER')}"
+				 s:Label text="{resourceManager.getString('myResources','LICENSE_DISCLAIMER')}"
 				 / -->
 		</s:VGroup>
 		<mx:Spacer height="24"/>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_THIRD_PARTY_STUFF')}"
+		<s:Label text="{resourceManager.getString('myResources','THIRD_PARTY_STUFF')}"
 				 styleName="boldYellowLabel"/>
 
 		<s:HGroup width="100%" horizontalAlign="center">
@@ -179,7 +179,7 @@
 				var versionString:String=Capabilities.version;
 				var pattern:RegExp=/^(\w*) (\d*),(\d*),(\d*),(\d*)$/;
 				var result:Object=pattern.exec(versionString);
-				var text:String=resourceManager.getString('myResources', 'LABEL_UNKOWN_FLASH_VERSION');
+				var text:String=resourceManager.getString('myResources', 'UNKOWN_FLASH_VERSION');
 				if (result != null)
 				{
 					if (result[1] == "WIN")

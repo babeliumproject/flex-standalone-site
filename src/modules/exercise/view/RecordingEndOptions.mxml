@@ -19,7 +19,7 @@
 	</fx:Script>
 
 
-	<s:Label text="{resourceManager.getString('myResources','TITLE_AVAILABLE_ACTIONS')}"
+	<s:Label text="{resourceManager.getString('myResources','AVAILABLE_ACTIONS')}"
 			 fontWeight="bold"
 			 fontSize="14"/>
 
@@ -30,14 +30,14 @@
 				  width="100%">
 
 			<skins:IconButton id="publishRespLinkButton"
-							  label="{resourceManager.getString('myResources','BUTTON_SAVE_RESPONSE')}"
+							  label="{resourceManager.getString('myResources','SAVE_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
 							  styleName="commonLinkButton"
 							  width="100%"
 							  enabled="{ !DataModel.getInstance().recordingExercise }"
 							  icon="@Embed('/resources/images/eo_save_response.png')"/>
 			<skins:IconButton id="watchRespLinkButton"
-							  label="{resourceManager.getString('myResources','BUTTON_WATCH_RESPONSE')}"
+							  label="{resourceManager.getString('myResources','WATCH_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
 							  styleName="commonLinkButton"
 							  width="100%"
@@ -48,7 +48,7 @@
 				  verticalAlign="middle"
 				  width="100%">
 			<skins:IconButton id="recordAgainLinkButton"
-							  label="{resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN')}"
+							  label="{resourceManager.getString('myResources', 'RECORD_AGAIN')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
 							  styleName="commonLinkButton"
 							  width="100%"
@@ -57,7 +57,7 @@
 
 			<!-- styleName="watchRecordedButton" -->
 			<skins:IconButton id="discardRespLinkButton"
-							  label="{resourceManager.getString('myResources','BUTTON_DISCARD_RESPONSE')}"
+							  label="{resourceManager.getString('myResources','DISCARD_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
 							  styleName="commonLinkButton"
 							  width="100%"

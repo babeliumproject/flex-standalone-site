@@ -229,12 +229,12 @@
 <mx:Binding source="{DataModel.getInstance().sliceComplete}"
 			destination="this.onSliceCreationComplete"/>
 
-	<mx:Label text="{resourceManager.getString('myResources','TITLE_URLSEARCH')}"
+	<mx:Label text="{resourceManager.getString('myResources','URLSEARCH')}"
 			  fontSize="12"
 			  fontWeight="bold"/>	
 	<mx:HBox>
 		<mx:TextInput width="200" id="sliceSearch"/>
-		<mx:Button label="{resourceManager.getString('myResources','BUTTON_SEARCH')}" click="identifySearchType()"/>									
+		<mx:Button label="{resourceManager.getString('myResources','SEARCH')}" click="identifySearchType()"/>									
 	</mx:HBox>
 	<mx:HBox>	
 		<mx:HBox width="70%">
@@ -253,7 +253,7 @@
 				 	 borderStyle="solid"
 				 	 borderThickness="2"
 				 	 visible="false">
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','TITLE')}"
 							 width="100%"
 							 fontWeight="bold"
 							 required="true">
@@ -261,7 +261,7 @@
 								  id="videoTitle"
 								  fontWeight="normal"/>
 				</mx:FormItem>
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
 							 width="100%"
 							 fontWeight="bold"
 							 required="true">
@@ -269,7 +269,7 @@
 								 id="videoDescription"
 								 fontWeight="normal"/>
 				</mx:FormItem>
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TAGS')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','TAGS')}"
 							 width="100%"
 							 fontWeight="bold"
 							 toolTip="Comma separated words"
@@ -278,12 +278,12 @@
 								 id="videoTags"
 								 fontWeight="normal"/>
 				</mx:FormItem>
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 							 fontWeight="bold"
 							 required="true">
 					<common:DifficultyLevelComboBox id="difficultySelector"/>
 				</mx:FormItem>
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 							 fontWeight="bold"
 							 required="true">
 					<common:LanguageComboBox id="languageSelector"/>
@@ -293,12 +293,12 @@
 								   verticalAlign="middle"
 								   width="100%">
 				<mx:Button id="btnCancel"
-								   toolTip="{resourceManager.getString('myResources','TOOLTIP_CANCEL_UPLOAD')}"
+								   toolTip="{resourceManager.getString('myResources','CANCEL_UPLOAD')}"
 								   icon="@Embed(source='../../resources/images/cancel.png')"
 								   width="26"
 								   click="cancelSlice()"/>
-				<mx:Button label="{resourceManager.getString('myResources','BUTTON_UPLOAD')}"
-								   toolTip="{resourceManager.getString('myResources','TOOLTIP_UPLOAD_FILES')}"
+				<mx:Button label="{resourceManager.getString('myResources','UPLOAD')}"
+								   toolTip="{resourceManager.getString('myResources','UPLOAD_FILES')}"
 								   id="btnUpload"
 								   click="saveSlice()"
 								   enabled="{formIsValid}"

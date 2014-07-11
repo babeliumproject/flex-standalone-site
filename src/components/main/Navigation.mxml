@@ -91,7 +91,7 @@
 						 width="100%"
 						 maxChars="100"
 						 enter="launchSearch(null)"/>
-			<s:Button label="{resourceManager.getString('myResources','LABEL_SEARCH')}"
+			<s:Button label="{resourceManager.getString('myResources','SEARCH')}"
 					  styleName="searchButton"
 					  buttonMode="true"
 					  enabled="true"

@@ -47,7 +47,7 @@ package control {
 			
 			//Homepage management commands
 			addCommand(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, UnsignedMessageOfTheDayCommand);
-			addCommand(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, SignedMessageOfTheDayCommand);
+			addCommand(MessageOfTheDayEvent.SIGNED_OF_THE_DAY, SignedMessageOfTheDayCommand);
 			addCommand(HomepageEvent.LATEST_RECEIVED_ASSESSMENTS, UsersLatestReceivedAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_DONE_ASSESSMENTS, UsersLatestGivenAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_USER_UPLOADED_VIDEOS, UsersLatestUploadedVideosCommand);
@@ -127,8 +127,8 @@ package control {
 			addCommand(ResponseEvent.ADD_DUMMY_VIDEO, AddDummyVideoCommand);
 
 			//Subtitle management commands
-			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
-			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
+			addCommand(SubtitleEvent.SAVE_SUBAND_SUBLINES, SaveSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_EXERCISE_SUBLINES, GetExerciseSubtitleLinesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW, GetExercisesReviewSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);

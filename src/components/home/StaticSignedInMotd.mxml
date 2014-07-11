@@ -52,15 +52,15 @@
 			<s:HGroup>
 				<skins:IconButton id="homeUploadButton"
 								  styleName="homeUploadButton"
-								  label="{resourceManager.getString('myResources','LABEL_UPLOAD')}"
+								  label="{resourceManager.getString('myResources','UPLOAD')}"
 								  click="homeButtons_clickHandler(event, 'upload')"/>
 				<skins:IconButton id="homeSubtitleButton"
 								  styleName="homeSubtitleButton"
-								  label="{resourceManager.getString('myResources','LABEL_SUBTITLE')}"
+								  label="{resourceManager.getString('myResources','SUBTITLE')}"
 								  click="homeButtons_clickHandler(event, 'subtitles')"/>
 				<skins:IconButton id="homeEvaluateButton"
 								  styleName="homeEvaluateButton"
-								  label="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
+								  label="{resourceManager.getString('myResources','EVALUATIONS')}"
 								  click="homeButtons_clickHandler(event, 'evaluation')"/>
 			</s:HGroup>
 		</s:VGroup>
@@ -76,7 +76,7 @@
 					 styleName="boldLabel"/>
 			<skins:IconButton id="homePracticeButton"
 							  styleName="homePracticeButton"
-							  label="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+							  label="{resourceManager.getString('myResources','EXERCISES')}"
 							  click="homeButtons_clickHandler(event, 'exercises')"/>
 		</s:VGroup>
 	</s:BorderContainer>

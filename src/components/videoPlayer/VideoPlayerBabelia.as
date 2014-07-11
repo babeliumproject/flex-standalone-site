@@ -219,7 +219,7 @@ package components.videoPlayer
 			_subtitleButton.addEventListener(SubtitleButtonEvent.STATE_CHANGED, onSubtitleButtonClicked);
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
-			//_recStopBtn.addEventListener(RecStopButtonEvent.BUTTON_CLICK, onRecStopEvent);
+			//_recStopBtn.addEventListener(RecStopButtonEvent.CLICK, onRecStopEvent);
 			
 			/**
 			 * Adds components to player

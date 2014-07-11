@@ -34,7 +34,7 @@ package model
 
 		public var localesAndFlags:LocalesAndFlags;
 
-		public static const SUBTITLE_MODULE:int=0;
+		public static const SUBMODULE:int=0;
 		public static const RECORDING_MODULE:int=1;
 		public static const GAPS_TO_ABORT_RECORDING:int=3;
 

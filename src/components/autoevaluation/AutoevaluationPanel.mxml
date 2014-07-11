@@ -2,7 +2,7 @@
 <s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
 					xmlns:s="library://ns.adobe.com/flex/spark"
 					xmlns:mx="library://ns.adobe.com/flex/mx"
-					label="{resourceManager.getString('myResources', 'TITLE_MACHINE_EVALUATION')}"
+					label="{resourceManager.getString('myResources', 'MACHINE_EVALUATION')}"
 					width="100%"
 					creationComplete="init()">
 
@@ -171,9 +171,9 @@
 						  height="100%"
 						  styleName="padding10AllSidesBox"
 						  verticalAlign="middle">
-					<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISE_TRANSCRIPTION')}"/>
-					<s:Label text="{resourceManager.getString('myResources','LABEL_YOUR_TRANSCRIPTION')}"/>
-					<s:Label text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_SCORE')}"/>
+					<s:Label text="{resourceManager.getString('myResources','EXERCISE_TRANSCRIPTION')}"/>
+					<s:Label text="{resourceManager.getString('myResources','YOUR_TRANSCRIPTION')}"/>
+					<s:Label text="{resourceManager.getString('myResources','AUTOEVAL_SCORE')}"/>
 				</s:VGroup>
 				<s:VGroup width="70%"
 						  height="100%"
@@ -196,7 +196,7 @@
 					  verticalAlign="middle">
 				<s:Label id="errorLabel"
 						 textAlign="center"
-						 text="{resourceManager.getString('myResources','LABEL_AUTOEVAL_ERROR')}"/>
+						 text="{resourceManager.getString('myResources','AUTOEVAL_ERROR')}"/>
 			</s:HGroup>
 		</s:NavigatorContent>
 

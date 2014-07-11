@@ -15,7 +15,7 @@ package components.videoPlayer.controls.babelia
 		/**
 		 * SKIN CONSTANTS
 		 */
-		public static const TEXT_COLOR:String = "textColor";
+		public static const COLOR:String = "textColor";
 		public static const ROLE_COLOR:String = "roleColor";
 		public static const BAR_COLOR:String = "barColor";
 		public static const BORDER_COLOR:String = "borderColor";
@@ -63,7 +63,7 @@ package components.videoPlayer.controls.babelia
 			
 			_textBox=new TextField();
 			_textBox.selectable = false;
-			_textBox.text = resourceManager.getString('myResources','LABEL_ROLE_CURRENTLY_TALKING')+": ";
+			_textBox.text = resourceManager.getString('myResources','ROLE_CURRENTLY_TALKING')+": ";
 			_textBox.setTextFormat(_textFormat);
 			
 			addChild(_textBox);
@@ -99,7 +99,7 @@ package components.videoPlayer.controls.babelia
 		
 		override public function availableProperties(obj:Array = null) : void
 		{
-			super.availableProperties([BG_COLOR,BORDER_COLOR,BAR_COLOR,TEXT_COLOR,ROLE_COLOR,FONT_FAMILY]);
+			super.availableProperties([BG_COLOR,BORDER_COLOR,BAR_COLOR,COLOR,ROLE_COLOR,FONT_FAMILY]);
 		}
 		
 		public function resize(width:Number, height:Number) : void
@@ -117,7 +117,7 @@ package components.videoPlayer.controls.babelia
 			
 			CreateBG( width, height );
 			
-			_textFormat.color=getSkinColor(TEXT_COLOR);
+			_textFormat.color=getSkinColor(COLOR);
 			_textFormat.font=getSkinProperty(FONT_FAMILY);
 			
 			_textBox.x = _defaultMargin*3;
@@ -227,7 +227,7 @@ package components.videoPlayer.controls.babelia
 		private function set label(text:String) : void
 		{
 			
-			_textFormat.color = getSkinColor(TEXT_COLOR);
+			_textFormat.color = getSkinColor(COLOR);
 			_textBox.text = text;
 			_textBox.setTextFormat(_textFormat);
 		}

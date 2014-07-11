@@ -21,14 +21,14 @@
 	<s:HGroup width="100%">
 		<mx:Form width="100%"
 				 styleName="roundedBlueBorderBox">
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_TITLE')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','TITLE')}"
 						 width="100%"
 						 styleName="boldLabel"
 						 required="true">
 				<s:TextInput width="100%"
 							 id="videoTitle"/>
 			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DESCRIPTION')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
 						 width="100%"
 						 styleName="boldLabel"
 						 required="true">
@@ -49,7 +49,7 @@
 							maxChars="255"
 							fontWeight="normal"/>
 			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_DIFFICULTY_LEVEL')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						 styleName="boldLabel"
 						 required="true"
 						 width="100%">
@@ -59,35 +59,35 @@
 				</s:HGroup>
 				<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
 			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 						 styleName="boldLabel"
 						 required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</mx:FormItem>
 			
 			<!--
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
 						 styleName="boldLabel"
 						 required="true">
 				<common:LicenseComboBox id="licenseSelector"/>
 			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_VIDEO_OWNER_AUTHOR')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
 						 styleName="boldLabel"
-						 toolTip="{resourceManager.getString('myResources','TOOLTIP_VIDEO_OWNER_AUTHOR')}"
+						 toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
 						 width="100%">
 				<s:TextInput width="100%"
 							 id="referenceUrl"/>
 			</mx:FormItem>
 
 			
-			<mx:FormItem label="{resourceManager.getString('myResources','LABEL_AUTOMATIC_EVALUATION')}"
+			<mx:FormItem label="{resourceManager.getString('myResources','AUTOMATIC_EVALUATION')}"
 						 styleName="boldLabel"
 						 visible="{DataModel.getInstance().loggedUser.isAdmin}"
 						 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
 						 height="67">
-				<s:CheckBox label="{resourceManager.getString('myResources','LABEL_ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
+				<s:CheckBox label="{resourceManager.getString('myResources','ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
 							id="autoevaluateCheckbox"/>
-				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_CHOOSE_TRANSCRIPTION_SYSTEM')}"
+				<mx:FormItem label="{resourceManager.getString('myResources','CHOOSE_TRANSCRIPTION_SYSTEM')}"
 							 styleName="boldLabel">
 					<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
 				</mx:FormItem>
@@ -363,7 +363,7 @@
 					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, exerciseData).dispatch();
 				}
 				else
-					CustomAlert.error(resourceManager.getString('myResources', 'MESSAGE_FILL_THE_REQUIRED_FIELDS'));
+					CustomAlert.error(resourceManager.getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));
 			}
 
 			/*

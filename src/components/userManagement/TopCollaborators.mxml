@@ -67,7 +67,7 @@
 				destination="this.setTopTenData"/>
 	
 	
-	<s:Label text="{resourceManager.getString('myResources','LABEL_TOP_COLLABORATORS')}"
+	<s:Label text="{resourceManager.getString('myResources','TOP_COLLABORATORS')}"
 			 styleName="sectionTitleLabel"
 			 id="topCollaboratorsTitleLabel"/>
 	<s:Line width="{topCollaboratorsTitleLabel.width}">

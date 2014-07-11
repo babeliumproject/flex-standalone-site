@@ -25,21 +25,21 @@ package view.common
 
 		public static function info(text:String="", flags:uint=0x4, parent:Sprite=null, closehandler:Function=null, defaultButtonFlag:uint=0x4):void
 		{
-			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'TITLE_INFORMATION');
+			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'INFORMATION');
 			var alert:Alert=show(text, localizedTitle, flags, parent, closehandler, infoIcon, defaultButtonFlag);
 			setStyles(alert);
 		}
 
 		public static function error(text:String="", parent:Sprite=null, closehandler:Function=null):void
 		{
-			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'TITLE_ERROR');
+			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'ERROR');
 			var alert:Alert=show(text, localizedTitle, 0x4, parent, closehandler, errorIcon, 0x4);
 			setStyles(alert);
 		}
 
 		public static function confirm(text:String="", flags:uint=0x3, parent:Sprite=null, closehandler:Function=null, defaultButtonFlag:uint=0x2):void
 		{
-			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'TITLE_CONFIRMATION');
+			var localizedTitle:String=ResourceManager.getInstance().getString('myResources', 'CONFIRMATION');
 			var alert:Alert=show(text, localizedTitle, flags, parent, closehandler, confirmationIcon, defaultButtonFlag);
 			setStyles(alert);
 

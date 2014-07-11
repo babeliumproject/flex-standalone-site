@@ -56,7 +56,7 @@
 			public function getSignedInMessagesOfTheDay():void
 			{
 				if (DataModel.getInstance().isLoggedIn)
-					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
 			protected function set onSignedInMessagesOfTheDayRetrieved(value:Boolean):void
@@ -132,7 +132,7 @@
 			public function buildAvailableActionsPanel():void
 			{
 				var homeUploadButton:Button=new Button();
-				homeUploadButton.label=resourceManager.getString('myResources', 'LABEL_UPLOAD');
+				homeUploadButton.label=resourceManager.getString('myResources', 'UPLOAD');
 				homeUploadButton.styleName="homeUploadButton";
 			}
 

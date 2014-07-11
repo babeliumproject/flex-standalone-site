@@ -27,7 +27,7 @@
 			</s:layout>
 
 
-			<s:Label text="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
 
 			<main:LocalizationComboBox id="localeComboBox"/>
 
@@ -44,13 +44,13 @@
 					  height="100%">
 				<skins:IconButton id="signInButton"
 								  styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources', 'LABEL_SIGN_IN')}"
+								  label="{resourceManager.getString('myResources', 'SIGN_IN')}"
 								  click="signInClickHandler()"
 								  visible="{_urlManager.moduleIndex != 13}"
 								  includeInLayout="{_urlManager.moduleIndex != 13}"/>
 				<skins:IconButton id="signUpButton"
 								  styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources', 'LABEL_SIGN_UP')}"
+								  label="{resourceManager.getString('myResources', 'SIGN_UP')}"
 								  click="signUpClickHandler()"/>
 			</s:HGroup>
 			<s:HGroup id="userCP"
@@ -65,7 +65,7 @@
 				-->
 				<s:HGroup verticalAlign="middle"
 						  horizontalAlign="center">
-					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
+					<s:Label text="{resourceManager.getString('myResources','CREDIT_COUNT')}"
 							 height="100%"
 							 verticalAlign="middle"
 							 styleName="boldDarkerGreyLabel"/>
@@ -94,7 +94,7 @@
 				</s:HGroup>
 				<skins:IconButton id="signOutButton"
 								  styleName="signOutLinkButton"
-								  toolTip="{resourceManager.getString('myResources','LABEL_SIGN_OUT')}"
+								  toolTip="{resourceManager.getString('myResources','SIGN_OUT')}"
 								  click="signOutClickHandler()"/>
 			</s:HGroup>
 

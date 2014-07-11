@@ -253,7 +253,7 @@ package modules.subtitle.view
 
 		public function subtitleClearHandler():void
 		{
-			CustomAlert.confirm(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBTITLE_LINES'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, Alert.NO);
+			CustomAlert.confirm(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBLINES'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, Alert.NO);
 		}
 
 		private function subtitleClearConfirmation(event:CloseEvent):void
@@ -356,7 +356,7 @@ package modules.subtitle.view
 			} else {
 				subtitlesToBeSaved.complete = false;
 			}
-			new SubtitleEvent(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, subtitlesToBeSaved).dispatch();
+			new SubtitleEvent(SubtitleEvent.SAVE_SUBAND_SUBLINES, subtitlesToBeSaved).dispatch();
 		}
 
 		private function subtitlesWereModified(compareSubject:ArrayCollection):Boolean
@@ -392,16 +392,16 @@ package modules.subtitle.view
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)
-					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'TEXT_EMPTY') + "\n", i + 1);
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'EMPTY') + "\n", i + 1);
 				if (i > 0)
 				{
 					if (( subtitleCollection.getItemAt((i - 1)).endTime + 0.2 ) >= subtitleCollection.getItemAt(i).startTime)
-						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAPS') + "\n", i);
+						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBOVERLAPS') + "\n", i);
 				}
 				var endTime:Number = subtitleCollection.getItemAt(i).endTime;
 				var startTime:Number = subtitleCollection.getItemAt(i).startTime;
 				if((endTime > VPSubtitle.duration - 0.5) || endTime < 0.5 || startTime < 0.5 || startTime > VPSubtitle.duration - 0.5 )
-					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_TIME_OUT_OF_BOUNDS') + "\n", i+1);
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTIME_OUT_OF_BOUNDS') + "\n", i+1);
 			}
 			return errorMessage;
 		}
@@ -448,7 +448,7 @@ package modules.subtitle.view
 			CuePointManager.getInstance().reset();
 
 			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, exerciseId, '', '')).dispatch();
-			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
 			new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, exerciseToWatch).dispatch();
 		}
 
@@ -458,14 +458,14 @@ package modules.subtitle.view
 
 		public function onExerciseSelected(value:Boolean):void
 		{
-			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) /*&& videoPlayerReady*/)
+			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBMODULE) /*&& videoPlayerReady*/)
 			{
 				//Add the subtitle editor to the stage
 				this.includeInLayout=true;
 				this.visible=true;
 				
-				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
-				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
+				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBMODULE);
+				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBMODULE) as ExerciseVO;
 				exerciseFileName=watchExercise.exercisecode;
 				exerciseId=watchExercise.id;
 				exerciseLanguage=watchExercise.language;
@@ -511,9 +511,9 @@ package modules.subtitle.view
 		private function onRolesRetrieved(value:Boolean):void
 		{
 
-			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.SUBTITLE_MODULE) == true)
+			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.SUBMODULE) == true)
 			{
-				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.SUBTITLE_MODULE) as ArrayCollection;
+				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.SUBMODULE) as ArrayCollection;
 				var cData:ArrayCollection=new ArrayCollection;
 				var insertOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 				cData.addItem(insertOption);
@@ -542,7 +542,7 @@ package modules.subtitle.view
 					comboData.removeAll();
 					comboData=cData;
 				}
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.SUBTITLE_MODULE);
+				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.SUBMODULE);
 			}
 		}
 
@@ -556,7 +556,7 @@ package modules.subtitle.view
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
 
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', '')).dispatch();
-				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, subtitles).dispatch();
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
 			}
 
 		}

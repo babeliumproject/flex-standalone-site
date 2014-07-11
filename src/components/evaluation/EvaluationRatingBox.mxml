@@ -77,7 +77,7 @@
 					{
 						if (includeTextCheck.selected && textComment.text == '')
 						{
-							CustomAlert.info(resourceManager.getString('myResources', 'ERROR_SELECTED_TEXT_COMMENT_NO_FILL'));
+							CustomAlert.info(resourceManager.getString('myResources', 'ERROR_SELECTED_COMMENT_NO_FILL'));
 							return;
 						}
 						if (includeVideoCheck.selected && !videoComment.recordingFileName)
@@ -195,7 +195,7 @@
 						  paddingRight="16"/>
 	</s:layout>
 
-	<s:Label text="{resourceManager.getString('myResources','MESSAGE_RATE_THE_USERS_RESPONSE')}"
+	<s:Label text="{resourceManager.getString('myResources','RATE_THE_USERS_RESPONSE')}"
 			 styleName="sectionTitleLabel"/>
 	<s:VGroup id="ratingContainer"
 			  width="100%"
@@ -206,29 +206,29 @@
 
 			<!-- Score section -->
 			<s:VGroup width="50%">
-				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"
+				<s:Label text="{resourceManager.getString('myResources','COMPULSORY_EVALUATION_DATA') + ':'}"
 						 styleName="boldLabel"/>
 				<evaluation:ScoreParameterBox id="userIntonationScore"
-											  parameter="MESSAGE_RATE_USER_INTONATION"/>
+											  parameter="INTONATION"/>
 				<evaluation:ScoreParameterBox id="userFluencyScore"
-											  parameter="MESSAGE_RATE_USER_FLUENCY"/>
+											  parameter="FLUENCY"/>
 				<evaluation:ScoreParameterBox id="userRhythmScore"
-											  parameter="MESSAGE_RATE_USER_RHYTHM"/>
+											  parameter="RHYTHM"/>
 				<evaluation:ScoreParameterBox id="userSpontaneityScore"
-											  parameter="MESSAGE_RATE_USER_SPONTANEITY"/>
+											  parameter="SPONTANEITY"/>
 				<evaluation:ScoreParameterBox id="userOverallScore"
-											  parameter="MESSAGE_RATE_USER_OVERALL_SCORE"/>
+											  parameter="OVERALL_SCORE"/>
 			</s:VGroup>
 
 			<!-- Comment section -->
 			<s:VGroup width="50%">
-				<s:Label text="{resourceManager.getString('myResources','MESSAGE_OPTIONAL_EVALUATION_DATA') + ':'}"
+				<s:Label text="{resourceManager.getString('myResources','OPTIONAL_EVALUATION_DATA') + ':'}"
 						 styleName="boldLabel"/>
 				<s:CheckBox id="includeTextCheck"
-							label="{resourceManager.getString('myResources','LABEL_INCLUDE_TEXT_COMMENT')}"
+							label="{resourceManager.getString('myResources','INCLUDE_COMMENT')}"
 							click="includeTextVideoCommentClickHandler(event)"/>
 				<s:CheckBox id="includeVideoCheck"
-							label="{resourceManager.getString('myResources','LABEL_INCLUDE_VIDEO_COMMENT')}"
+							label="{resourceManager.getString('myResources','INCLUDE_VIDEO_COMMENT')}"
 							click="includeTextVideoCommentClickHandler(event)"/>
 
 				<mx:TabNavigator id="optionalEvaluationDataBox"
@@ -243,7 +243,7 @@
 								 paddingLeft="8"
 								 paddingRight="8">
 					<s:NavigatorContent id="textCommentBoxNavContent"
-										label="{resourceManager.getString('myResources','LABEL_TEXT_COMMENT')}">
+										label="{resourceManager.getString('myResources','COMMENT')}">
 						<s:VGroup id="textCommentBox"
 								  width="100%">
 							<mx:TextArea id="textComment"
@@ -254,7 +254,7 @@
 					</s:NavigatorContent>
 
 					<s:NavigatorContent id="videoCommentBoxNavContent"
-										label="{resourceManager.getString('myResources','LABEL_VIDEO_COMMENT')}">
+										label="{resourceManager.getString('myResources','VIDEO_COMMENT')}">
 						<s:VGroup id="videoCommentBox"
 								  width="100%"
 								  horizontalAlign="center">
@@ -276,12 +276,12 @@
 				  horizontalAlign="center"
 				  verticalAlign="middle">
 			<s:Button id="sendEvaluationButton"
-					  label="{resourceManager.getString('myResources','LABEL_SEND_EVALUATION')}"
+					  label="{resourceManager.getString('myResources','SEND_EVALUATION')}"
 					  buttonMode="true"
 					  click="sendEvaluationButtonClickHandler(event)"
 					  styleName="bigBlueButton"/>
 			<s:Button id="resetEvaluationButton"
-					  label="{resourceManager.getString('myResources','LABEL_RESET_EVALUATION')}"
+					  label="{resourceManager.getString('myResources','RESET_EVALUATION')}"
 					  buttonMode="true"
 					  click="resetEvaluationButtonClickHandler(event)"
 					  styleName="bigBlueButton"/>

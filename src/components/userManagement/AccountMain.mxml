@@ -56,7 +56,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','TEXT_USER_ACCOUNT')}"
+		<s:Label text="{resourceManager.getString('myResources','USER_ACCOUNT')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>
@@ -80,17 +80,17 @@
 				  resizeToContent="true"
 				  change="onAccountTabChange(event)">
 		<s:NavigatorContent id="creditHistoryContainerNavContent"
-							label="{resourceManager.getString('myResources','LABEL_CREDIT_HISTORY')}">
+							label="{resourceManager.getString('myResources','CREDIT_HISTORY')}">
 			<userManagement:CreditHistoryPanel id="creditHistoryContainer"/>
 		</s:NavigatorContent>
 
 		<s:NavigatorContent id="topCollaboratorsNavContent"
-							label="{resourceManager.getString('myResources','LABEL_TOP_COLLABORATORS')}">
+							label="{resourceManager.getString('myResources','TOP_COLLABORATORS')}">
 			<userManagement:TopCollaborators id="topCollaborators"/>
 		</s:NavigatorContent>
 
 		<s:NavigatorContent id="userProfileNavContent"
-							label="{resourceManager.getString('myResources','LABEL_MY_PROFILE')}">
+							label="{resourceManager.getString('myResources','MY_PROFILE')}">
 			<userManagement:UserProfile id="userProfile"/>
 		</s:NavigatorContent>
 		

@@ -70,15 +70,15 @@
 
 			public function onServerClientComplete(event:BandwidthDetectEvent):void
 			{
-				chartData=new ArrayCollection([{Connection: resourceManager.getString('myResources', 'LABEL_NEEDED_BW'), BWDown: bwMin}, {Connection: resourceManager.getString('myResources', 'LABEL_REAL_BW'), BWDown: event.info.kbitDown}]);
+				chartData=new ArrayCollection([{Connection: resourceManager.getString('myResources', 'NEEDED_BW'), BWDown: bwMin}, {Connection: resourceManager.getString('myResources', 'REAL_BW'), BWDown: event.info.kbitDown}]);
 //				showBwInfo(event);
 				dispatchResultEvent(event);
 			}
 
 //			private function showBwInfo(event:BandwidthDetectEvent):void
 //			{
-//				Needed.text=resourceManager.getString('myResources', 'LABEL_NEEDED_BW') + ": " + bwMin + " Kb/s";
-//				Real.text=resourceManager.getString('myResources', 'LABEL_REAL_BW') + ": " + event.info.kbitDown + " Kb/s";
+//				Needed.text=resourceManager.getString('myResources', 'NEEDED_BW') + ": " + bwMin + " Kb/s";
+//				Real.text=resourceManager.getString('myResources', 'REAL_BW') + ": " + event.info.kbitDown + " Kb/s";
 //				bwInfo.visible=true;
 //			}
 
@@ -110,7 +110,7 @@
 				destination="onPreferencesRetrieved"/>
 
 	<s:Label id="labelBandwidthCheck"
-			 text="{resourceManager.getString('myResources','LABEL_BANDWIDTH_CHECK')}"
+			 text="{resourceManager.getString('myResources','BANDWIDTH_CHECK')}"
 			 styleName="sectionTitleLabel"/>
 	<s:Line width="{labelBandwidthCheck.width}">
 		<s:stroke>

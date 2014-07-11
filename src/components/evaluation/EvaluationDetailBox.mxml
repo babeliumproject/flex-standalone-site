@@ -42,7 +42,7 @@
 				this.label=_evaluationData.userName;
 				if(!_evaluationData.userName || _evaluationData.userName == '')
 					_evaluationData.userName = resourceManager.getString('myResources', 'USER');
-				userEvaluationTitleLabel.text=StringUtil.substitute(resourceManager.getString('myResources', 'TITLE_USER_EVALUATION'), _evaluationData.userName);
+				userEvaluationTitleLabel.text=StringUtil.substitute(resourceManager.getString('myResources', 'USER_EVALUATION'), _evaluationData.userName);
 				evaluationDateLabel.text=_evaluationData.addingDate;
 			}
 
@@ -90,7 +90,7 @@
 						  paddingTop="16"/>
 	</s:layout>
 	<s:Label id="userEvaluationTitleLabel"
-			 text="{StringUtil.substitute(resourceManager.getString('myResources','TITLE_USER_EVALUATION'),_evaluationData.userName)}"
+			 text="{StringUtil.substitute(resourceManager.getString('myResources','USER_EVALUATION'),_evaluationData.userName)}"
 			 styleName="sectionTitleLabel"/>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<!--
@@ -105,7 +105,7 @@
 				  width="50%">
 			<s:HGroup id="intonationGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','INTONATION_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="intonationScore"
@@ -116,7 +116,7 @@
 			</s:HGroup>
 			<s:HGroup id="fluencyGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','FLUENCY_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="fluencyScore"
@@ -127,7 +127,7 @@
 			</s:HGroup>
 			<s:HGroup id="rhythmGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','RHYTHM_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="rhythmScore"
@@ -138,7 +138,7 @@
 			</s:HGroup>
 			<s:HGroup id="spontaneityGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','SPONTANEITY_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="spontaneityScore"
@@ -149,7 +149,7 @@
 			</s:HGroup>
 			<s:HGroup id="overallGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','OVERALL_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="overallScore"

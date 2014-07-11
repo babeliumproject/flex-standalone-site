@@ -12,7 +12,7 @@ package components.videoPlayer.controls
 		 * Skin constants
 		 */
 		public static const BG_COLOR:String = "bgColor";
-		public static const TEXT_COLOR:String = "textColor";
+		public static const COLOR:String = "textColor";
 
 		public static const BG_GRADIENT_ANGLE:String = "bgGradientAngle";
 		public static const BG_GRADIENT_START_COLOR:String = "bgGradientStartColor";
@@ -62,7 +62,7 @@ package components.videoPlayer.controls
 		
 		override public function availableProperties(obj:Array = null) : void
 		{
-			super.availableProperties([BG_COLOR,TEXT_COLOR]);
+			super.availableProperties([BG_COLOR,COLOR]);
 		}
 		
 		/**
@@ -83,7 +83,7 @@ package components.videoPlayer.controls
 			CreateBG( width, height );
 			
 			_timeBox.width = width;
-			tf.color = getSkinColor(TEXT_COLOR);
+			tf.color = getSkinColor(COLOR);
 			
 		}
 		

@@ -134,7 +134,7 @@
 				setupVideoPlayer();
 				setupResponseOptions();
 				if (_exerciseTitle == null)
-					_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
+					_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
 				_creationComplete=true;
 			}
 
@@ -631,7 +631,7 @@
 
 				VP.arrows=false; // Hide arrows
 
-				_exerciseTitle=resourceManager.getString('myResources', 'LABEL_EXERCISE_TITLE');
+				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
 				_currentExercise=null; // Reset current exercise
 
 				hideSelectedExercise(); // Information of selected exercise
@@ -814,7 +814,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_EXERCISES')}"
+		<s:Label text="{resourceManager.getString('myResources','EXERCISES')}"
 				 paddingLeft="16"
 				 paddingRight="16"
 				 styleName="sectionInfoTitleLabel"/>
@@ -870,7 +870,7 @@
 						  source="resources/images/about_section_title_icon.png"
 						  height="30"
 						  width="30"/>
-				<mx:Text htmlText="{resourceManager.getString('myResources','LABEL_GUEST_RECORD_WARNING')}"
+				<mx:Text htmlText="{resourceManager.getString('myResources','GUEST_RECORD_WARNING')}"
 						 width="100%"
 						 fontSize="14"/>
 			</s:HGroup>
@@ -900,14 +900,14 @@
 				<s:VGroup width="100%"
 						  verticalAlign="middle">
 					<s:HGroup verticalAlign="middle">
-						<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_ROLE')}"/>
+						<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
 						<mx:ComboBox id="availableRoles"
 									 dataProvider="{_characterNames}"
 									 enabled="{!DataModel.getInstance().recordingExercise}"/>
 					</s:HGroup>
 
 					<s:HGroup verticalAlign="middle">
-						<s:Label text="{resourceManager.getString('myResources', 'MESSAGE_CHOOSE_REC_METHOD')}"/>
+						<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_REC_METHOD')}"/>
 						<s:RadioButton id="micOnly"
 									   selected="true"
 									   groupName="recMode"
@@ -921,7 +921,7 @@
 				<skins:IconButton id="startRecordingButton"
 								  styleName="recStartLinkButton"
 								  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
-								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'BUTTON_START_RECORDING') }"
+								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'START_RECORDING') }"
 								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
 								  click="onStartRecordingClicked(event)"/>
 			</s:HGroup>

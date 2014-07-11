@@ -8,17 +8,17 @@
 
 	<fx:Declarations>
 		<s:ArrayCollection id="sortFields1">
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_AUTOMATIC')}"
+			<fx:Object label="{resourceManager.getString('myResources','AUTOMATIC')}"
 					   data="score"/>
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_USER')}"
+			<fx:Object label="{resourceManager.getString('myResources','USER')}"
 					   data="userName"/>
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_LANGUAGE')}"
+			<fx:Object label="{resourceManager.getString('myResources','LANGUAGE')}"
 					   data="language"/>
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_RATING')}"
+			<fx:Object label="{resourceManager.getString('myResources','RATING')}"
 					   data="avgRating"/>
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DIFFICULTY')}"
+			<fx:Object label="{resourceManager.getString('myResources','DIFFICULTY')}"
 					   data="avgDifficulty"/>
-			<fx:Object label="{resourceManager.getString('myResources','SEARCH_CB_DATE')}"
+			<fx:Object label="{resourceManager.getString('myResources','DATE')}"
 					   data="addingDate"/>
 		</s:ArrayCollection>
 	</fx:Declarations>
@@ -167,7 +167,7 @@
 				}
 				else
 				{
-					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
+					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
 					BabeliaBrowserManager.getInstance().updateURL('subtitles', BabeliaBrowserManager.SUBTITLE, obj.name);
 				}
 				List(event.target).selectedItem=null;
@@ -188,7 +188,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_SEARCH') ? resourceManager.getString('myResources','LABEL_SEARCH') : 'Search' }"
+		<s:Label text="{resourceManager.getString('myResources','SEARCH') ? resourceManager.getString('myResources','SEARCH') : 'Search' }"
 				 paddingLeft="16"
 				 paddingRight="16"
 				 styleName="sectionInfoTitleLabel"/>

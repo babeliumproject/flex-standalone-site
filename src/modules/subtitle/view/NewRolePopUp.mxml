@@ -5,7 +5,7 @@
 						 xmlns:skins="skins.*"
 						 autoLayout="true"
 						 styleName="genericPopup"
-						 title="{resourceManager.getString('myResources','TITLE_INSERT_NEW_ROL')}">
+						 title="{resourceManager.getString('myResources','INSERT_NEW_ROL')}">
 
 	<skins:layout>
 		<s:VerticalLayout paddingBottom="16"
@@ -20,7 +20,7 @@
 			 width="100%"/>
 
 	<s:HGroup width="100%" verticalAlign="middle">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_NEW_ROLE')+':'}"/>
+		<s:Label text="{resourceManager.getString('myResources','NEW_ROLE')+':'}"/>
 		<s:TextInput id="newrole"
 					 width="100%"
 					 maxChars="20"/>
@@ -30,11 +30,11 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle"
 			  paddingTop="10">
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+		<s:Button label="{resourceManager.getString('myResources','OK')}"
 				  id="okButton"
 				  buttonMode="true"
 				  styleName="bigBlueButton"/>
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+		<s:Button label="{resourceManager.getString('myResources','CANCEL')}"
 				  id="cancelButton"
 				  buttonMode="true"
 				  styleName="bigBlueButton"/>

@@ -124,7 +124,7 @@
 			public function resetComponent():void
 			{
 				startStopCapture.setStyle('icon', recImageEmbed);
-				startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_START_RECORDING');
+				startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
 				startStopCapture.enabled=true;
 				playPauseButton.setStyle('icon', playImageEmbed);
 				playPauseButton.enabled=false;
@@ -332,7 +332,7 @@
 					connectToStreamingServer();
 				if (!isRecording)
 				{
-					startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_STOP');
+					startStopCapture.label=resourceManager.getString('myResources', 'STOP');
 					prepareDevices();
 				}
 				else
@@ -348,11 +348,11 @@
 					stopAudio();
 					if (recordingFileName)
 					{
-						startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_RECORD_AGAIN');
+						startStopCapture.label=resourceManager.getString('myResources', 'RECORD_AGAIN');
 					}
 					else
 					{
-						startStopCapture.label=resourceManager.getString('myResources', 'BUTTON_START_RECORDING');
+						startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
 					}
 				}
 			}
@@ -620,7 +620,7 @@
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<skins:IconButton id="startStopCapture"
-							  label="{resourceManager.getString('myResources', 'BUTTON_START_RECORDING')}"
+							  label="{resourceManager.getString('myResources', 'START_RECORDING')}"
 							  cornerRadius="1"
 							  skinClass="skins.IconButtonSkin"
 							  click="startStopRecording()"/>

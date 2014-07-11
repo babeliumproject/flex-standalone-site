@@ -31,7 +31,7 @@ package commands.userManagement
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else if (data.result == "user_active_wrong_email"){
 				//Error message incorrect data
-				DataModel.getInstance().activationEmailResentErrorMessage = ResourceManager.getInstance().getString('myResources','LABEL_ERROR_WRONG_ACTIVATION_RESEND_DATA');
+				DataModel.getInstance().activationEmailResentErrorMessage = ResourceManager.getInstance().getString('myResources','ERROR_WRONG_ACTIVATION_RESEND_DATA');
 			}
 		}
 		

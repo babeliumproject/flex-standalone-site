@@ -7,7 +7,7 @@
 						  height="220"
 						  styleName="privacyRightsPopup"
 						  creationComplete="creationCompleteHandler()"
-						  title="{resourceManager.getString('myResources','TITLE_PRIVACY_SETTINGS')}">
+						  title="{resourceManager.getString('myResources','PRIVACY_SETTINGS')}">
 	
 	<skins:layout>
 		<s:VerticalLayout paddingLeft="10"
@@ -173,12 +173,12 @@
 				if (event.code == "Microphone.Muted")
 				{
 					_devicesAllowed=false;
-					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_OK');
+					privacyRecButton.label=resourceManager.getString('myResources', 'OK');
 				}
 				if (event.code == "Microphone.Unmuted")
 				{
 					_devicesAllowed=true;
-					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_RECORD');
+					privacyRecButton.label=resourceManager.getString('myResources', 'RECORD');
 				}
 			}
 
@@ -187,12 +187,12 @@
 				if (event.code == "Camera.Muted")
 				{
 					_devicesAllowed=false;
-					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_OK');
+					privacyRecButton.label=resourceManager.getString('myResources', 'OK');
 				}
 				if (event.code == "Camera.Unmuted")
 				{
 					_devicesAllowed=true;
-					privacyRecButton.label=resourceManager.getString('myResources', 'BUTTON_RECORD');
+					privacyRecButton.label=resourceManager.getString('myResources', 'RECORD');
 				}
 			}
 
@@ -224,17 +224,17 @@
 					  width="100%">
 				<s:HGroup>
 					<mx:Text width="100%"
-							 text="{resourceManager.getString('myResources','TEXT_MIC_NOT_FOUND')}"/>
+							 text="{resourceManager.getString('myResources','MIC_NOT_FOUND')}"/>
 					<mx:Image source="resources/images/privacy_mic_error.png"/>
 				</s:HGroup>
 				<s:HGroup>
 					<s:Button id="micNotFoundErrorRetryButton"
-							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
+							  label="{resourceManager.getString('myResources','RETRY')}"
 							  click="initDevices()"
 							  buttonMode="true"/>
 
 					<s:Button id="micNotFoundErrorCancelButton"
-							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  label="{resourceManager.getString('myResources','CANCEL')}"
 							  click="cancelButtonClickHandler(event)"
 							  buttonMode="true"/>
 				</s:HGroup>
@@ -247,16 +247,16 @@
 				<s:HGroup width="100%"
 						  verticalAlign="middle">
 					<mx:Text width="100%"
-							 text="{resourceManager.getString('myResources','TEXT_CAMERA_NOT_FOUND')}"/>
+							 text="{resourceManager.getString('myResources','CAMERA_NOT_FOUND')}"/>
 					<mx:Image source="resources/images/privacy_webcam_error.png"/>
 				</s:HGroup>
 				<s:HGroup>
 					<s:Button id="camNotFoundErrorRetryButton"
-							  label="{resourceManager.getString('myResources','BUTTON_RETRY')}"
+							  label="{resourceManager.getString('myResources','RETRY')}"
 							  click="initDevices()"
 							  buttonMode="true"/>
 					<s:Button id="camNotFoundErrorCancelButton"
-							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  label="{resourceManager.getString('myResources','CANCEL')}"
 							  click="cancelButtonClickHandler(event)"
 							  buttonMode="true"/>
 				</s:HGroup>
@@ -267,9 +267,9 @@
 			<s:VGroup id="adminError"
 					  width="100%">
 				<mx:Text width="100%"
-						 text="{resourceManager.getString('myResources','TEXT_ADMINISTRATIVELY_DISABLED')}"/>
+						 text="{resourceManager.getString('myResources','ADMINISTRATIVELY_DISABLED')}"/>
 				<s:Button id="adminErrorButton"
-						  label="{resourceManager.getString('myResources','BUTTON_OK')}"
+						  label="{resourceManager.getString('myResources','OK')}"
 						  click="cancelButtonClickHandler(event)"
 						  buttonMode="true"/>
 			</s:VGroup>
@@ -281,7 +281,7 @@
 				<s:HGroup width="100%"
 						  verticalAlign="middle">
 					<mx:Text width="100%"
-							 text="{resourceManager.getString('myResources','TEXT_PRIVACY_RIGHTS_EXPLAIN')}"/>
+							 text="{resourceManager.getString('myResources','PRIVACY_RIGHTS_EXPLAIN')}"/>
 					<mx:Image source="resources/images/privacy_settings.png"
 							  width="160"
 							  height="102"/>
@@ -292,12 +292,12 @@
 						  verticalAlign="bottom"
 						  paddingTop="8">
 					<s:Button id="privacyRecButton"
-							  label="{resourceManager.getString('myResources','BUTTON_OK')}"
+							  label="{resourceManager.getString('myResources','OK')}"
 							  click="okButtonClickHandler(event)"
 							  styleName="bigBlueButton"
 							  buttonMode="true"/>
 					<s:Button id="privacyCancelButton"
-							  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+							  label="{resourceManager.getString('myResources','CANCEL')}"
 							  click="cancelButtonClickHandler(event)"
 							  styleName="bigBlueButton"
 							  buttonMode="true"/>
@@ -308,7 +308,7 @@
 		<s:NavigatorContent id="micSoundTestNavContent">
 			<s:VGroup id="micSoundTest"
 					  width="100%">
-				<mx:Text text="{resourceManager.getString('myResources','TEXT_MIC_TEST_EXPLAIN')}"/>
+				<mx:Text text="{resourceManager.getString('myResources','MIC_TEST_EXPLAIN')}"/>
 			</s:VGroup>
 		</s:NavigatorContent>
 

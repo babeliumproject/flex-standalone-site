@@ -25,7 +25,7 @@ package components.videoPlayer.controls.babelia
 		public static const BORDER_COLOR:String = "bgColor";
 		public static const BARBG_COLOR:String = "barBgColor";
 		public static const BAR_COLOR:String = "barColor";
-		public static const TEXT_COLOR:String = "textColor";
+		public static const COLOR:String = "textColor";
 		
 		/**
 		 * Variables
@@ -97,10 +97,10 @@ package components.videoPlayer.controls.babelia
 		{
 			if(_mic.activityLevel >= 0){
 				this.setProgress(_mic.activityLevel, 100);
-				this.label = ResourceManager.getInstance().getString('myResources','LABEL_MIC_INPUT_LEVEL') != null ? ResourceManager.getInstance().getString('myResources','LABEL_MIC_INPUT_LEVEL')+":   " + _mic.activityLevel+"%" : "Mic activity level:   " + _mic.activityLevel+"%";
+				this.label = ResourceManager.getInstance().getString('myResources','MIC_INPUT_LEVEL') != null ? ResourceManager.getInstance().getString('myResources','MIC_INPUT_LEVEL')+":   " + _mic.activityLevel+"%" : "Mic activity level:   " + _mic.activityLevel+"%";
 			} else {
 				this.setProgress(0, 100);
-				this.label = ResourceManager.getInstance().getString('myResources','LABEL_MIC_WAITING_FOR_INPUT') != null ? ResourceManager.getInstance().getString('myResources','LABEL_MIC_WAITING_FOR_INPUT') : "Waiting for mic input";
+				this.label = ResourceManager.getInstance().getString('myResources','MIC_WAITING_FOR_INPUT') != null ? ResourceManager.getInstance().getString('myResources','MIC_WAITING_FOR_INPUT') : "Waiting for mic input";
 			}
 		}
 		
@@ -140,7 +140,7 @@ package components.videoPlayer.controls.babelia
 		
 		private function set label(text:String) : void
 		{
-			_textFormat.color = getSkinColor(TEXT_COLOR);
+			_textFormat.color = getSkinColor(COLOR);
 			_textBox.text = text;
 			_textBox.setTextFormat(_textFormat);
 		}

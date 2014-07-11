@@ -361,33 +361,33 @@
 
 
 	<s:HGroup verticalAlign="middle">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_FIRST_LANGUAGE')}"
+		<s:Label text="{resourceManager.getString('myResources','FIRST_LANGUAGE')}"
 				 styleName="boldLabel"/>
 		<skins:IconButton id="addAnotherMotherLang"
 						  click="addAnotherMotherLang_clickHandler(event)"
-						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  label="{resourceManager.getString('myResources','ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
 	<s:VGroup id="motherLanguagesBox"
 			  paddingLeft="16"/>
 
 	<s:HGroup verticalAlign="middle">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_OTHER_LANGUAGES')}"
+		<s:Label text="{resourceManager.getString('myResources','OTHER_LANGUAGES')}"
 				 styleName="boldLabel"/>
 		<skins:IconButton id="addAnotherKnownLang"
 						  click="addAnotherKnownLang_clickHandler(event)"
-						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  label="{resourceManager.getString('myResources','ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
 	<s:VGroup id="knownLanguagesBox"
 			  paddingLeft="16"/>
 
 	<s:HGroup verticalAlign="middle">
-		<s:Label text="{resourceManager.getString('myResources','LABEL_INTEREST_LANGUAGES')}"
+		<s:Label text="{resourceManager.getString('myResources','INTEREST_LANGUAGES')}"
 				 styleName="boldLabel"/>
 		<skins:IconButton id="addAnotherInterestLang"
 						  click="addAnotherInterestLang_clickHandler(event)"
-						  label="{resourceManager.getString('myResources','BUTTON_ADD_ANOTHER')}"
+						  label="{resourceManager.getString('myResources','ADD_ANOTHER')}"
 						  styleName="addLanguageLinkButton"/>
 	</s:HGroup>
 	<s:VGroup id="interestLanguagesBox"
@@ -397,13 +397,13 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle">
 		<skins:IconButton id="saveButton"
-						  label="{resourceManager.getString('myResources','BUTTON_SAVE_NEWPASS')}"
+						  label="{resourceManager.getString('myResources','SAVE_NEWPASS')}"
 						  click="saveChangesClickHandler(event)"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/save.png')"/>
 
 		<skins:IconButton id="cancelButton"
-						  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						  label="{resourceManager.getString('myResources','CANCEL')}"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/cancel.png')"/>
 

@@ -24,7 +24,7 @@ package events
 		public static const VIEW_EXERCISE_MODULE:String="viewExerciseModule";
 		public static const VIEW_HOME_MODULE:String="viewHomeModule";
 		public static const VIEW_UPLOAD_MODULE:String="viewUploadModule";
-		public static const VIEW_SUBTITLE_MODULE:String="viewSubtitleModule";
+		public static const VIEW_SUBMODULE:String="viewSubtitleModule";
 		public static const VIEW_CONFIGURATION_MODULE:String="viewConfigurationModule";
 		public static const VIEW_RANKING_MODULE:String="viewRankingModule";
 		public static const VIEW_ABOUT_MODULE:String="viewAboutModule";
@@ -58,7 +58,7 @@ package events
 		//Subtitle related views
 		public static const VIEW_SUBTITLES_UNSIGNED:String="viewSubtitlesUnsigned";
 		public static const VIEW_SUBTITLES_SIGNED_IN:String="viewSubtitlesSignedIn";
-		public static const VIEW_SUBTITLE_EDITOR:String="viewSubtitleEditor";
+		public static const VIEW_SUBEDITOR:String="viewSubtitleEditor";
 		
 		//User account related views
 		public static const VIEW_ACCOUNT_UNSIGNED:String="viewAccountUnsigned";
@@ -75,7 +75,7 @@ package events
 		public static const VIEWSTACK_REGISTER_MODULE_INDEX:uint = 3;
 		public static const VIEWSTACK_ACCOUNT_MODULE_INDEX:uint = 4;
 		public static const VIEWSTACK_UPLOAD_MODULE_INDEX:uint = 5;
-		public static const VIEWSTACK_SUBTITLE_MODULE_INDEX:uint = 6;
+		public static const VIEWSTACK_SUBMODULE_INDEX:uint = 6;
 		public static const VIEWSTACK_CONFIGURATION_MODULE_INDEX:uint = 7;
 		public static const VIEWSTACK_ABOUT_MODULE_INDEX:uint = 8;
 		public static const VIEWSTACK_SEARCH_MODULE_INDEX:uint = 9;

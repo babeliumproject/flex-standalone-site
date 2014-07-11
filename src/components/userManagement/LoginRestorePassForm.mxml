@@ -86,7 +86,7 @@
 						resendEmailLink.includeInLayout=false;
 						resendEmailLink.visible=false;
 					}
-					errorInfo.text=resourceManager.getString('myResources', 'LABEL_' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					errorInfo.text=resourceManager.getString('myResources', '' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
 					DataModel.getInstance().loginErrorMessage="";
 				}
 			}
@@ -119,7 +119,7 @@
 			private function showLogin(event:Event):void
 			{
 				errorInfo.text='';
-				title.text=resourceManager.getString('myResources', 'TITLE_LOGIN_FORM');
+				title.text=resourceManager.getString('myResources', 'LOGIN_FORM');
 				focusManager.setFocus(username);
 				restorePassword.visible=true;
 				restorePassword.includeInLayout=true;
@@ -137,7 +137,7 @@
 			private function showActivationResend(even:Event):void
 			{
 				errorInfo.text='';
-				title.text=resourceManager.getString('myResources', 'LABEL_SEND_EMAIL_AGAIN');
+				title.text=resourceManager.getString('myResources', 'SEND_EMAIL_AGAIN');
 				activationUsername.text='';
 				activationEmail.text='';
 				resendEmailLink.visible=true;
@@ -190,14 +190,14 @@
 		<s:NavigatorContent id="loginFormBoxNavContent">
 			<s:VGroup id="loginFormBox"
 					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
+				<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="username"
 							 styleName="searchTextInput"
 							 fontSize="16"
 							 width="100%"/>
 
-				<s:Label text="{resourceManager.getString('myResources','LABEL_PASSWORD')}"
+				<s:Label text="{resourceManager.getString('myResources','PASSWORD')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="password"
 							 styleName="searchTextInput"
@@ -208,14 +208,14 @@
 						  verticalAlign="middle"
 						  paddingLeft="12"
 						  paddingRight="12">
-					<s:CheckBox label="{resourceManager.getString('myResources','LABEL_REMEMBER_ME')}"
+					<s:CheckBox label="{resourceManager.getString('myResources','REMEMBER_ME')}"
 								id="rememberUser"/>
 				</s:HGroup>
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle"
 						  paddingTop="8">
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+					<s:Button label="{resourceManager.getString('myResources','OK')}"
 							  styleName="bigBlueButton"
 							  id="okButton"
 							  buttonMode="true"
@@ -225,11 +225,11 @@
 						  width="100%"
 						  horizontalAlign="right"
 						  paddingTop="10">
-					<skins:IconButton label="{resourceManager.getString('myResources','LABEL_I_FORGOT_MY_PASSWORD')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','I_FORGOT_MY_PASSWORD')}"
 									  id="restorePassword"
 									  styleName="commonLinkButton"
 									  click="showRestorePass(event)"/>
-					<skins:IconButton label="{resourceManager.getString('myResources','LABEL_SEND_EMAIL_AGAIN')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','SEND_EMAIL_AGAIN')}"
 									  id="resendEmailLink"
 									  styleName="commonLinkButton"
 									  click="showActivationResend(event)"
@@ -244,17 +244,17 @@
 					  width="100%">
 				
 				<!--
-				<s:Label text="{resourceManager.getString('myResources','LABEL_INPUT_USER_AND_EMAIL')}"
+				<s:Label text="{resourceManager.getString('myResources','INPUT_USER_AND_EMAIL')}"
 						 styleName="formLabel"/>
 				-->	
-						<s:Label text="{resourceManager.getString('myResources','LABEL_USER_NAME')}"
+						<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
 								 styleName="formLabel"/>
 						<s:TextInput id="activationUsername"
 									 styleName="searchTextInput"
 									 fontSize="16"
 									 width="100%"/>
 					
-						<s:Label text="{resourceManager.getString('myResources','LABEL_EMAIL')}"
+						<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
 								 styleName="formLabel"/>
 						<s:TextInput id="activationEmail"
 									 styleName="searchTextInput"
@@ -264,12 +264,12 @@
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle">
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_OK')}"
+					<s:Button label="{resourceManager.getString('myResources','OK')}"
 							  buttonMode="true"
 							  id="activationOkButton"
 							  styleName="bigBlueButton"
 							  click="resendActivationEmail(event)"/>
-					<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+					<s:Button label="{resourceManager.getString('myResources','CANCEL')}"
 							  buttonMode="true"
 							  id="activationCancelButton"
 							  styleName="bigBlueButton"

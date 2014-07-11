@@ -236,7 +236,7 @@
 
 
 	<s:Label id="labelMicrophoneCheck"
-			 text="{resourceManager.getString('myResources','LABEL_MIC_SETUP')}"
+			 text="{resourceManager.getString('myResources','MIC_SETUP')}"
 			 styleName="sectionTitleLabel"/>
 	<s:Line width="{labelMicrophoneCheck.width}">
 		<s:stroke>

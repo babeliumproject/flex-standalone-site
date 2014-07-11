@@ -8,7 +8,7 @@ package events
 	{
 		
 		public static const UNSIGNED_MESSAGES_OF_THE_DAY:String = "unsignedMessagesOfTheDay";
-		public static const SIGNED_MESSAGE_OF_THE_DAY:String = "signedMessagedOfTheDay";
+		public static const SIGNED_OF_THE_DAY:String = "signedMessagedOfTheDay";
 		
 		public var messageLocale:String;
 		

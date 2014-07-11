@@ -4,7 +4,7 @@
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
 						 xmlns:videoPlayer="components.videoPlayer.*"
 						 xmlns:skins="skins.*"
-						 title="{resourceManager.getString('myResources','TITLE_VIEW_VIDEO_COMMENT')}"
+						 title="{resourceManager.getString('myResources','VIEW_VIDEO_COMMENT')}"
 						 creationComplete="onComplete()">
 
 	<skins:layout>
@@ -85,5 +85,5 @@
 	<mx:Spacer width="20"/>
 	<s:Button click="closeButtonClickHandler(event)"
 			  buttonMode="true"
-			  label="{resourceManager.getString('myResources','BUTTON_CLOSE')}"/>
+			  label="{resourceManager.getString('myResources','CLOSE')}"/>
 </skins:CustomTitleWindow>

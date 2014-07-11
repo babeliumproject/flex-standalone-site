@@ -5,7 +5,7 @@
 						 xmlns:skins="skins.*"
 						 xmlns:common="view.common.*"
 						 styleName="reportPopup"
-						 title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
+						 title="{resourceManager.getString('myResources','REPORT_INAPPROPRIATE')}"
 						 creationComplete="creationCompleteHandler()"
 						 autoLayout="true">
 
@@ -83,7 +83,7 @@
 
 
 
-	<s:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"
+	<s:Label text="{resourceManager.getString('myResources','REPORT_SPECIFY_ISSUE')}"
 			 styleName="formLabel"/>
 	<common:ReportInappropriateComboBox id="reportComboBox"
 										paddingLeft="16"/>
@@ -92,13 +92,13 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle"
 			  paddingTop="20">
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
+		<s:Button label="{resourceManager.getString('myResources','REPORT')}"
 				  id="reportButton"
 				  styleName="bigBlueButton"
 				  click="reportButtonClickHandler(event)"
 				  enabled="true"
 				  buttonMode="true"/>
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+		<s:Button label="{resourceManager.getString('myResources','CANCEL')}"
 				  id="cancelButton"
 				  styleName="bigBlueButton"
 				  click="cancelButtonClickHandler(event)"

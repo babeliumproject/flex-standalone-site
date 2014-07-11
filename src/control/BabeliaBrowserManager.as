@@ -84,7 +84,7 @@ package control
 			_modulesFragments.setItemAt("upload", ViewChangeEvent.VIEWSTACK_UPLOAD_MODULE_INDEX);
 			_modulesFragments.setItemAt("help", ViewChangeEvent.VIEWSTACK_HELP_MODULE_INDEX);
 			_modulesFragments.setItemAt("activation", ViewChangeEvent.VIEWSTACK_ACTIVATION_MODULE_INDEX);
-			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBTITLE_MODULE_INDEX);
+			_modulesFragments.setItemAt("subtitles", ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX);
 			_modulesFragments.setItemAt("course", ViewChangeEvent.VIEWSTACK_COURSE_MODULE_INDEX);
 			_modulesFragments.setItemAt("login", ViewChangeEvent.VIEWSTACK_LOGIN_MODULE_INDEX);*/
 			

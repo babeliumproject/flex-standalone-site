@@ -59,7 +59,7 @@ package commands.subtitles
 				}
 			}
 			//Exercise Role bindings
-			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBTITLE_MODULE);
+			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBMODULE);
 			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.RECORDING_MODULE);
 			DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
 			
@@ -89,7 +89,7 @@ package commands.subtitles
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent=FaultEvent(info);
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBTITLE_LINES'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBLINES'));
 			trace(ObjectUtil.toString(info));
 		}
 

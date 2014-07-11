@@ -79,7 +79,7 @@
 			public var thumbUrl:String=DataModel.getInstance().thumbURL;
 
 			[Bindable]
-			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'LABEL_EXERCISE_TITLE');
+			private var _exerciseTitle:String=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
 			[Bindable]
 			private var _evaluationSelected:Boolean=false;
 
@@ -880,7 +880,7 @@
 				waitingAssessmentBox.addElement(waitingAssessmentListAndPagination);
 
 				waitingAssessmentBoxNavContent=new NavigatorContent();
-				waitingAssessmentBoxNavContent.label=resourceManager.getString('myResources', 'EPAITUGABEDAUDENAK');
+				waitingAssessmentBoxNavContent.label=resourceManager.getString('myResources', 'WAITING_FOR_ASSESSMENT');
 				waitingAssessmentBoxNavContent.addElement(waitingAssessmentBox);
 
 			}
@@ -1048,7 +1048,7 @@
 			<s:VerticalLayout paddingTop="16"
 							  paddingBottom="0"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_EVALUATIONS')}"
+		<s:Label text="{resourceManager.getString('myResources','EVALUATIONS')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>

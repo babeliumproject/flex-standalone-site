@@ -119,7 +119,7 @@ package components.videoSlice
 			// Create a Button for cueing up the video whose id is specified.
 			/*cueButton = new Button();
 			cueButton.enabled = false;
-			cueButton.label = resourceManager.getString("myResources","BUTTON_CUEVIDEO");
+			cueButton.label = resourceManager.getString("myResources","CUEVIDEO");
 			cueButton.width = 100;
 			cueButton.x = 110;
 			cueButton.y = 10;
@@ -185,7 +185,7 @@ package components.videoSlice
 			createSliceButton = new Button();
 			createSliceButton.enabled = false;
 			createSliceButton.visible = true;
-			createSliceButton.label = resourceManager.getString("myResources","BUTTON_CREATE");
+			createSliceButton.label = resourceManager.getString("myResources","CREATE");
 			createSliceButton.width = 95;
 			createSliceButton.height = 50;
 			createSliceButton.x = 433;
@@ -196,7 +196,7 @@ package components.videoSlice
 			// Create a Button for playing the current slice.
 			playSliceButton = new Button();
 			playSliceButton.enabled = false;
-			playSliceButton.label = resourceManager.getString("myResources","BUTTON_PLAYSLICE");
+			playSliceButton.label = resourceManager.getString("myResources","PLAYSLICE");
 			playSliceButton.width = 80;
 			playSliceButton.x = 440;
 			playSliceButton.y = 195;

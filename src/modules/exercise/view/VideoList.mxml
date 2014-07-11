@@ -232,7 +232,7 @@
 				 verticalAlign="middle"/>
 		<common:DifficultyLevelComboBox id="filterDifficulty"
 										change="filterDifficulty_changeHandler(event)"
-										prompt="{resourceManager.getString('myResources','PROMPT_SELECT_DIFFICULTY')}"/>
+										prompt="{resourceManager.getString('myResources','SELECT_DIFFICULTY')}"/>
 		<skins:IconButton id="filterRemoveButton"
 						  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
 						  styleName="commonLinkButton"

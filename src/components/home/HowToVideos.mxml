@@ -50,7 +50,7 @@
 						break;
 					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
 						//howToVideoPlayer.videoSource="subtitle";
-						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBA_VIDEO');
 						break;
 					default:
 						break;

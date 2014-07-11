@@ -266,7 +266,7 @@
 				 fontSize="11"
 				 width="100%"/>
 		<s:VGroup id="descriptorContainer" minHeight="0"/>
-		<s:Label text="{resourceManager.getString('myResources','LABEL_TAGS')}"
+		<s:Label text="{resourceManager.getString('myResources','TAGS')}"
 				 fontWeight="bold"
 				 fontSize="11"/>
 		<s:TileGroup id="exerciseTagsBox"

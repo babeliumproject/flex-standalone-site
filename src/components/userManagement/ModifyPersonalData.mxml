@@ -106,7 +106,7 @@
 	<mx:Form width="100%"
 			 styleName="roundedBlueBorderBox"
 			 labelWidth="300">
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_NAME')}"
+		<mx:FormItem label="{resourceManager.getString('myResources','REAL_NAME')}"
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
@@ -114,7 +114,7 @@
 							 width="100%"/>
 			</s:HGroup>
 		</mx:FormItem>
-		<mx:FormItem label="{resourceManager.getString('myResources','LABEL_REAL_SURNAME')}"
+		<mx:FormItem label="{resourceManager.getString('myResources','REAL_SURNAME')}"
 					 styleName="boldLabel"
 					 required="true">
 			<s:HGroup>
@@ -152,12 +152,12 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle">
 		<skins:IconButton id="saveButton"
-						  label="{resourceManager.getString('myResources','BUTTON_SAVE_NEWPASS')}"
+						  label="{resourceManager.getString('myResources','SAVE_NEWPASS')}"
 						  click="modifyPersonalData(event)"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/save.png')"/>
 		<skins:IconButton id="cancelButton"
-						  label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+						  label="{resourceManager.getString('myResources','CANCEL')}"
 						  skinClass="skins.IconButtonSkin"
 						  icon="@Embed('/resources/images/cancel.png')"/>
 	</s:HGroup>

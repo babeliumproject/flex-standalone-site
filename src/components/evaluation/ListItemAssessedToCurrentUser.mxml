@@ -69,7 +69,7 @@
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
 			<s:HGroup verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','BALORAZIOKOP')+':'}"
+				<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_COUNT')+':'}"
 						 styleName="boldLabel"/>
 				<s:Label text="{data.responseRatingAmount}"/>
 			</s:HGroup>

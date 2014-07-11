@@ -61,14 +61,14 @@ package modules.exercise.command
 						DataModel.getInstance().currentExercise.setItemAt(currentRec, DataModel.RECORDING_MODULE);
 					}
 				}
-				if (DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE))
+				if (DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBMODULE))
 				{
-					var currentSub:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBTITLE_MODULE) as ExerciseVO;
+					var currentSub:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBMODULE) as ExerciseVO;
 					if (exNewData.id == currentSub.id)
 					{
 						currentSub.likes=exNewData.likes;
 						currentSub.dislikes=exNewData.dislikes;
-						DataModel.getInstance().currentExercise.setItemAt(currentSub, DataModel.SUBTITLE_MODULE);
+						DataModel.getInstance().currentExercise.setItemAt(currentSub, DataModel.SUBMODULE);
 					}
 				}
 			}

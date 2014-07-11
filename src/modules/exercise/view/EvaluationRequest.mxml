@@ -9,7 +9,7 @@
 		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 	</s:layout>
 
-	<s:Label text="{resourceManager.getString('myResources','MESSAGE_YOU_MUST_BE_REGISTERED')}"
+	<s:Label text="{resourceManager.getString('myResources','YOU_MUST_BE_REGISTERED')}"
 			 styleName="errorLabel"
 			 visible="{ !DataModel.getInstance().isLoggedIn}"/>
 	<s:VGroup id="evaluationOptions"
@@ -17,27 +17,27 @@
 			  width="100%">
 		<s:HGroup width="100%"
 				  visible="{!DataModel.getInstance().isLoggedIn}">
-			<s:Label text="{resourceManager.getString('myResources','LABEL_CLICK_HERE')}"/>
-			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
-			<s:Label text="{resourceManager.getString('myResources','MESSAGE_TO_SIGN_IN_TO_SIGN_UP')}"/>
-			<mx:LinkButton label="{resourceManager.getString('myResources','BUTTON_HERE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','CLICK_HERE')}"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources','HERE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','TO_SIGN_IN_TO_SIGN_UP')}"/>
+			<mx:LinkButton label="{resourceManager.getString('myResources','HERE')}"/>
 		</s:HGroup>
-		<s:Label text="{resourceManager.getString('myResources','MESSAGE_SUCCESSFULLY_SAVED')}"/>
-		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_USERS_EVALUATION')}"/>
-		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_1')}"/>
-		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_2')}"/>
-		<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_EVALUATION_EXPLAIN_3')}"/>
+		<s:Label text="{resourceManager.getString('myResources','SUCCESSFULLY_SAVED')}"/>
+		<s:Label text="{resourceManager.getString('myResources','ASK_USERS_EVALUATION')}"/>
+		<s:Label text="{resourceManager.getString('myResources','ASK_EVALUATION_EXPLAIN_1')}"/>
+		<s:Label text="{resourceManager.getString('myResources','ASK_EVALUATION_EXPLAIN_2')}"/>
+		<s:Label text="{resourceManager.getString('myResources','ASK_EVALUATION_EXPLAIN_3')}"/>
 		<s:HGroup width="100%"
 				  visible="{DataModel.getInstance().isAutoevaluable}">
-			<s:Label text="{resourceManager.getString('myResources','MESSAGE_ASK_COMPUTER_EVALUATION')}"/>
+			<s:Label text="{resourceManager.getString('myResources','ASK_COMPUTER_EVALUATION')}"/>
 			<s:CheckBox label="{resourceManager.getString('myResources','CHECK_YES_PLEASE')}"
 						 id="autoevaluateCheckbox"/>
 		</s:HGroup>
 		<s:HGroup width="100%">
-			<s:Button label="{resourceManager.getString('myResources','BUTTON_SOMEONE_EVALUATE_ME')}"
+			<s:Button label="{resourceManager.getString('myResources','SOMEONE_EVALUATE_ME')}"
 					  buttonMode="true"
 					  click="evaluationRequestedClickHandler()"/>
-			<s:Button label="{resourceManager.getString('myResources','BUTTON_NO_THANKS')}"
+			<s:Button label="{resourceManager.getString('myResources','NO_THANKS')}"
 					  buttonMode="true"
 					  click="returnToMainClickHandler()"/>
 		</s:HGroup>

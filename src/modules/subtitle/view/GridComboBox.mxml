@@ -161,7 +161,7 @@
 					else if (selectedItem[_actionField] == _actionDoNothingItem)
 					{
 						//Do nothing
-						CustomAlert.info(resourceManager.getString('myResources', 'MESSAGE_SELECT_ROL_TO_DELETE'));
+						CustomAlert.info(resourceManager.getString('myResources', 'SELECT_ROL_TO_DELETE'));
 					}
 				}
 			}
@@ -212,7 +212,7 @@
 						if (dp[_valueField].toLowerCase() == newRoleName.toLowerCase())
 						{
 							roleExists=true;
-							newRolePopUp.errorInfo.text=resourceManager.getString('myResources', 'MESSAGE_ROLE_ALREADY_EXISTS');
+							newRolePopUp.errorInfo.text=resourceManager.getString('myResources', 'ROLE_ALREADY_EXISTS');
 						}
 						if (dp[_lookupField] > maxRoleId)
 							maxRoleId=dp[_lookupField];

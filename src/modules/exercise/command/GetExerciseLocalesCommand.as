@@ -48,7 +48,7 @@ package modules.exercise.command
 		public function fault(info:Object):void
 		{
 			var faultEvent:FaultEvent = FaultEvent(info);
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBTITLE_LANGUAGES'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_SUBLANGUAGES'));
 			trace(ObjectUtil.toString(info));
 		}
 		
