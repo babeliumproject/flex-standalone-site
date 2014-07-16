@@ -186,7 +186,7 @@
 			<view:CreateManageView id="createManage" width="100%"/>
 		</s:NavigatorContent>
 		<s:NavigatorContent id="edit">
-			<view:ExerciseCreate id="createEdit" width="100%"/>
+			<view:CreateEditView id="createEdit" width="100%"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 	

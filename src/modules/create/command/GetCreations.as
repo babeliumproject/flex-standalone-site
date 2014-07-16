@@ -15,7 +15,7 @@ package modules.create.command
 	
 	import view.common.CustomAlert;
 
-	public class RetrieveUserVideosCommand implements ICommand, IResponder
+	public class GetCreations implements ICommand, IResponder
 	{
 
 		private var dataModel:DataModel = DataModel.getInstance();

@@ -615,3 +615,26 @@ s|TextInput{
 	cornerRadius: 8;
 }
 
+.lightBorderContainer{
+	backgroundAlpha: 1.0;
+	backgroundColor: #FFFFFF;
+	borderAlpha: 0.85;
+	borderColor: #E0E0E0;
+	cornerRadius: 1;
+}
+
+.btn-default{
+	gradientColors: #ffffff, #ffffff;
+	gradientColorsOver: #e6e6e6, #e6e6e6;
+	gradientColorsDown: #e6e6e6, #e6e6e6;
+	borderColors: #cccccc, #cccccc;
+	borderSize: 1;
+	cornerRadius: 4;
+	color: #333333;
+	colorOver: #333333;
+	colorDown: #333333;
+	fontSize: 14;
+	fontWeight: normal;
+	padding: 12;
+	skinClass: ClassReference('skins.IconButtonSkin');
+}

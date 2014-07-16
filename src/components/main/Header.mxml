@@ -50,7 +50,7 @@
 								  includeInLayout="{_urlManager.moduleIndex != 13}"/>
 				<skins:IconButton id="signUpButton"
 								  styleName="yellowLinkButton"
-								  label="{resourceManager.getString('myResources', 'SIGN_UP')}"
+								  label="{resourceManager.getString('myResources', 'REGISTER')}"
 								  click="signUpClickHandler()"/>
 			</s:HGroup>
 			<s:HGroup id="userCP"

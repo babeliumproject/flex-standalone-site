@@ -36,7 +36,7 @@
 					  height="87"
 					  width="87"
 					  source="resources/images/ghym_logo_degr_87px.png"/>
-			<s:Label text="{resourceManager.getString('myResources','WHO_ARE_WE')}"
+			<s:Label text="{resourceManager.getString('myResources','WHO_ARE_WE_LONG')}"
 					 width="850"
 					 height="100%"
 					 verticalAlign="middle"/>

@@ -258,7 +258,7 @@
 						<s:VGroup id="videoCommentBox"
 								  width="100%"
 								  horizontalAlign="center">
-							<view:TempVideoRecording id="videoComment"
+							<view:WebcamCapture id="videoComment"
 															streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
 															filePrefix="comment"
 															minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>

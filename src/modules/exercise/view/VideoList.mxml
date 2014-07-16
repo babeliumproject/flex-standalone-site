@@ -193,7 +193,7 @@
 			  paddingLeft="16"
 			  paddingRight="16"
 			  paddingTop="16">
-		<s:Label text="{resourceManager.getString('myResources','EXERCISE_LIST')}"
+		<s:Label text="{resourceManager.getString('myResources','PRACTICE_EXERCISE_LIST')}"
 				 styleName="sectionTitleLabel"
 				 id="exerciseListTitleLabel"/>
 		<s:Line width="{exerciseListTitleLabel.width}">

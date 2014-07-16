@@ -14,7 +14,7 @@ package modules.create.command
 			addCommand(CreateEvent.EDIT_EXERCISE, EditCreation);
 			addCommand(CreateEvent.GET_LATEST_CREATIONS, GetLatestCreations);
 			addCommand(CreateEvent.MODIFY_VIDEO_DATA, ModifyVideoDataCommand);
-			addCommand(CreateEvent.RETRIEVE_USER_VIDEOS, RetrieveUserVideosCommand);
+			addCommand(CreateEvent.RETRIEVE_USER_VIDEOS, GetCreations);
 		}
 	}
 }

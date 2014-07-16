@@ -544,7 +544,7 @@
 				</s:HGroup>
 			</mx:FormItem>
 			<mx:Spacer/>
-			<s:Label text="{resourceManager.getString('myResources','PRACTICE_LANGUAGE')}"/>
+			<s:Label text="{resourceManager.getString('myResources','WHICH_LANGUAGES_WOULD_YOU_LIKE_TO_PRACTICE')}"/>
 			<mx:Spacer/>
 			<mx:FormItem label="{resourceManager.getString('myResources','INTEREST_LANGUAGES')}"
 						 styleName="boldLabel">
@@ -563,7 +563,7 @@
 				  horizontalAlign="center"
 				  verticalAlign="middle">
 			<skins:IconButton id="saveButton"
-							  label="{resourceManager.getString('myResources','SIGN_UP')}"
+							  label="{resourceManager.getString('myResources','REGISTER')}"
 							  click="processNewUser()"
 							  skinClass="skins.IconButtonSkin"
 							  icon="@Embed('/resources/images/save.png')"/>

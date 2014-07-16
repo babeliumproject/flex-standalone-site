@@ -74,10 +74,10 @@
 					  change="stepViewStack_changeHandler(event)"
 					  width="100%">
 			<s:NavigatorContent label="1. Label the exercise">
-				<view:UserVideoInfoEdit id="exerciseClassification" width="100%"/>
+				<view:LabelExercise id="exerciseClassification" width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="2. Add media">
-				<view:MediaUploadForm id="mediaUpload" width="100%"/>
+				<view:UploadMedia id="mediaUpload" width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent label="3. Preview Publish">
 				<s:VGroup>

@@ -31,7 +31,7 @@
 					  buttonMode="true"
 					  click="changeView('home',event)"/>
 			
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'BROWSE')}"
+			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;

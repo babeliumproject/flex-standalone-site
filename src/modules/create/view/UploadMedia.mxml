@@ -4,14 +4,14 @@
 		xmlns:mx="library://ns.adobe.com/flex/mx"
 		xmlns:common="view.common.*"
 		xmlns:videoUpload="components.videoUpload.*"
-		xmlns:view="modules.create.view.*">
+		xmlns:view="modules.create.view.*" xmlns:skins="skins.*">
 
 	<fx:Script>
 		<![CDATA[
 			import events.UploadEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.utils.StringUtil;
 
 			private var filereference:FileReference;
@@ -31,13 +31,14 @@
 				updateUploadProgress();
 				licenseSelector.selectedIndex=0;
 				referenceUrl.text='';
-				uploadStatus.text='';
+				//uploadStatus.text='';
 				uploadFilename.text='';
-			}
-
-			protected function changeUploadMethod(event:Event):void
-			{
-				//TODO
+				chooseMediaTypeContainer.includeInLayout=true;
+				chooseMediaTypeContainer.visible=true;
+				uploadWidget.includeInLayout=false;
+				uploadWidget.visible=false;
+				errorMessageContainer.visible=false;
+				errorMessageContainer.includeInLayout=false;
 			}
 
 			protected function uploadFile_clickHandler(event:MouseEvent):void
@@ -55,6 +56,11 @@
 
 			protected function cancelUpload_clickHandler(event:MouseEvent):void
 			{
+				clearUpload();
+				resetComponent();
+			}
+			
+			protected function clearUpload():void{
 				updateUploadProgress();
 				new UploadEvent(UploadEvent.UPLOAD_CANCEL).dispatch();
 			}
@@ -77,6 +83,7 @@
 				chooseMediaTypeContainer.visible=false;
 				uploadWidget.includeInLayout=true;
 				uploadWidget.visible=true;
+				cancelUpload.visible=true;
 				new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
 			}
 
@@ -86,44 +93,52 @@
 				var bytesTotal:int=DataModel.getInstance().uploadBytesTotal;
 				var percentLoaded:Number=Math.round((bytesLoaded / bytesTotal) * 100);
 				updateUploadProgress(percentLoaded);
-				DataModel.getInstance().uploadProgressUpdated=false;
 			}
 
 			protected function set uploadComplete(complete:Boolean):void
 			{
-				if (DataModel.getInstance().uploadFinishedData)
+				if (DataModel.getInstance().uploadErrors == '')
 				{
-					if (DataModel.getInstance().uploadErrors == '')
-					{
-						uploadStatus.text=resourceManager.getString('myResources', 'UPLOADSUCCESSFULUPLOAD');
-					}
-					else
-					{
-						uploadStatus.text=DataModel.getInstance().uploadErrors;
-					}
-					DataModel.getInstance().uploadFinishedData=false;
-					cancelUpload_clickHandler(null);
+					//uploadStatus.text=resourceManager.getString('myResources', 'UPLOADSUCCESSFULUPLOAD');
+					uploadProgressBar.label=resourceManager.getString('myResources', 'PROCESSING').toUpperCase() + ' ...';
+					cancelUpload.label=resourceManager.getString('myResources', 'DONE');
+					cancelUpload.buttonMode=false;
 				}
+				else
+				{
+					displayUploadErrors();
+				}
+				clearUpload();
 			}
 			
-			protected function cancelCaptureClickHandler(event:Event):void{
+			protected function displayUploadErrors():void{
+				chooseMediaTypeContainer.visible=false;
+				chooseMediaTypeContainer.includeInLayout=false;
+				//Reset this widget
+				uploadWidget.visible=false;
+				uploadWidget.includeInLayout=false;
+				//Reset this widget
+				errorMessage.text=DataModel.getInstance().uploadErrors;
+				errorMessageContainer.visible=true;
+				errorMessageContainer.includeInLayout=true;
+				//Add a button to go back to choosemediatypecontainer
+			}
+
+			protected function cancelCaptureClickHandler(event:Event):void
+			{
 				recFromWebcamBox.resetComponent();
 				recFromWebcamBox.includeInLayout=false;
 				recFromWebcamBox.visible=false;
 				methodSelection.visible=true;
 				methodSelection.includeInLayout=true;
 			}
-			
-			protected function uploadCaptureClickHandler(event:Event):void{
-				
+
+			protected function uploadCaptureClickHandler(event:Event):void
+			{
+
 			}
 		]]>
 	</fx:Script>
-
-	<fx:Declarations>
-		<s:RadioButtonGroup id="uploadOptionsGroup"
-							itemClick="changeUploadMethod(event)"/>
-	</fx:Declarations>
 
 	<fx:Binding source="{DataModel.getInstance().uploadFileSelected}"
 				destination="this.uploadStart"/>
@@ -136,11 +151,11 @@
 				   styleName="sectionTitleLabel"/>
 
 	<s:BorderContainer id="chooseMediaTypeContainer"
-					   backgroundAlpha="0"
+					   styleName="lightBorderContainer"
 					   width="640"
 					   height="380">
 		<s:layout>
-			<s:VerticalLayout />
+			<s:VerticalLayout/>
 		</s:layout>
 
 		<s:VGroup id="methodSelection"
@@ -156,11 +171,10 @@
 			<s:HGroup visible="true"
 					  includeInLayout="true"
 					  paddingTop="80">
-				<s:Button id="uploadFile"
-						  styleName="bigBlueButton"
+				<skins:IconButton id="uploadFile"
+						  styleName="btn-default"
 						  click="uploadFile_clickHandler(event)"
-						  label="{resourceManager.getString('myResources','FILE')}"
-						  buttonMode="true"/>
+						  label="{resourceManager.getString('myResources','FILE')}"/>
 				<s:Button id="recordFile"
 						  styleName="bigBlueButton"
 						  click="recordFile_clickHandler(event)"
@@ -169,48 +183,55 @@
 			</s:HGroup>
 		</s:VGroup>
 
-		<view:TempVideoRecording id="recFromWebcamBox"
-								 streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
-								 filePrefix="upld"
-								 includeInLayout="false"
-								 visible="false"
-								 width="100%"
-								 height="100%"
-								 cancelClickHandler="{cancelCaptureClickHandler}"
-								 uploadClickHandler="{uploadCaptureClickHandler}"/>
+		<view:WebcamCapture id="recFromWebcamBox"
+							streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
+							filePrefix="upld"
+							includeInLayout="false"
+							visible="false"
+							width="100%"
+							height="100%"
+							cancelClickHandler="{cancelCaptureClickHandler}"
+							uploadClickHandler="{uploadCaptureClickHandler}"/>
 	</s:BorderContainer>
-	
+
 	<s:BorderContainer id="uploadWidget"
-					   backgroundAlpha="0"
+					   styleName="lightBorderContainer"
 					   visible="false"
-					   includeInLayout="false" width="100%">
+					   includeInLayout="false"
+					   width="100%">
 		<s:layout>
-			<s:HorizontalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
+			<s:HorizontalLayout paddingBottom="10"
+								paddingLeft="10"
+								paddingRight="10"
+								paddingTop="10"/>
 		</s:layout>
-		
+
 		<s:Image source="resources/images/thumbs/nothumb.png"/>
-		<s:VGroup>
-			<s:HGroup verticalAlign="middle">
-				<s:Label id="uploadFilename"/>
+		<s:VGroup width="100%">
+			<s:HGroup verticalAlign="middle" width="100%">
+				<s:VGroup width="100%">
+					<s:Label id="uploadFilename"/>
+					<mx:ProgressBar id="uploadProgressBar"
+									mode="manual"
+									labelPlacement="center"
+									label="{resourceManager.getString('myResources', 'UPLOADING').toUpperCase()+' ...'}"
+									trackHeight="30"
+									width="100%"/>
+				</s:VGroup>
 				<s:Button id="cancelUpload"
 						  click="cancelUpload_clickHandler(event)"
 						  label="{resourceManager.getString('myResources','CANCEL')}"
 						  cornerRadius="1"
-						  height="30"/>
+						  visible="false"
+						  height="40"/>
 			</s:HGroup>
-			<mx:ProgressBar id="uploadProgressBar"
-							mode="manual"
-							labelPlacement="center"
-							label=""
-							height="30"
-							width="100%"/>
-			<s:Label id="uploadStatus"/>
+			<!--<s:Label id="uploadStatus"/>-->
 			<s:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
 						styleName="boldLabel"
 						required="true">
 				<common:LicenseComboBox id="licenseSelector"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
+			<s:FormItem label="{resourceManager.getString('myResources','AUTHORS_NAME_URL')}"
 						styleName="boldLabel"
 						toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
 						width="100%">
@@ -218,7 +239,24 @@
 							 id="referenceUrl"/>
 			</s:FormItem>
 		</s:VGroup>
+	</s:BorderContainer>
+	
+	<s:BorderContainer id="errorMessageContainer"
+					   styleName="lightBorderContainer"
+					   visible="false"
+					   includeInLayout="false"
+					   width="100%"
+					   minHeight="100">
+		<s:layout>
+			<s:HorizontalLayout paddingBottom="10"
+								paddingLeft="10"
+								paddingRight="10"
+								paddingTop="10"
+								verticalAlign="middle"
+								horizontalAlign="center"/>
+		</s:layout>
 		
+		<s:Label id="errorMessage"/>
 	</s:BorderContainer>
 
 	<!--

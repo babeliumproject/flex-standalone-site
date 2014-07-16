@@ -56,7 +56,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"/>
 		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','USER_ACCOUNT')}"
+		<s:Label text="{resourceManager.getString('myResources','MY_ACCOUNT')}"
 				 styleName="sectionInfoTitleLabel"
 				 paddingLeft="16"
 				 paddingRight="16"/>

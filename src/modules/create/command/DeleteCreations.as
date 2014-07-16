@@ -16,7 +16,7 @@ package modules.create.command
 	
 	import view.common.CustomAlert;
 	
-	public class DeleteSelectedVideosCommand implements ICommand, IResponder
+	public class DeleteCreations implements ICommand, IResponder
 	{
 		
 		public function execute(event:CairngormEvent):void

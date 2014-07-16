@@ -60,7 +60,7 @@
 					width="100%"
 					minHeight="0"
 					borderVisible="false"
-					itemRenderer="modules.create.view.CreationItemRenderer"
+					itemRenderer="modules.create.view.LatestCreationItemRenderer"
 					change="changeHandler(event)"
 					dataProvider="{latestCreationsData}"
 					contentBackgroundAlpha="0">

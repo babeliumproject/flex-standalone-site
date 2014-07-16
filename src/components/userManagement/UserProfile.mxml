@@ -200,7 +200,7 @@
 					 styleName="boldLabel"/>
 			<s:VGroup id="evaluateLanguages"
 					  paddingLeft="16"/>
-			<s:Label text="{resourceManager.getString('myResources','PRACTICE_LANGUAGE')}"
+			<s:Label text="{resourceManager.getString('myResources','LANGUAGES_IM_PRACTICING')}"
 					 styleName="boldLabel"/>
 			<s:VGroup id="practiceLanguages"
 					  paddingLeft="16"/>

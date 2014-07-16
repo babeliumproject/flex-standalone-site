@@ -37,7 +37,7 @@ package commands.videoUpload
 				var result:ProgressEvent=data as ProgressEvent;
 				_dataModel.uploadBytesLoaded=result.bytesLoaded;
 				_dataModel.uploadBytesTotal=result.bytesTotal;
-				_dataModel.uploadProgressUpdated=true;
+				_dataModel.uploadProgressUpdated=!_dataModel.uploadProgressUpdated;
 			}
 			//Upload finished and sent some data
 			else if (data is DataEvent)
@@ -54,7 +54,7 @@ package commands.videoUpload
 					_dataModel.uploadErrors=messageXML.response.message;
 					_dataModel.uploadFileName = '';
 				}
-				_dataModel.uploadFinishedData=true;
+				_dataModel.uploadFinishedData=!_dataModel.uploadFinishedData;
 			}
 		}
 

@@ -227,7 +227,7 @@
 					 variableRowHeight="true">
 			<mx:columns>
 
-				<mx:DataGridColumn itemRenderer="modules.create.view.UserVideoItemRenderer"/>
+				<mx:DataGridColumn itemRenderer="modules.create.view.CreationItemRenderer"/>
 			</mx:columns>
 		</mx:DataGrid>
 		<s:HGroup id="userExercisePaginator"

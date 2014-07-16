@@ -185,7 +185,7 @@ package components.videoSlice
 			createSliceButton = new Button();
 			createSliceButton.enabled = false;
 			createSliceButton.visible = true;
-			createSliceButton.label = resourceManager.getString("myResources","CREATE");
+			createSliceButton.label = resourceManager.getString("myResources","CREATE_SLICE");
 			createSliceButton.width = 95;
 			createSliceButton.height = 50;
 			createSliceButton.x = 433;
