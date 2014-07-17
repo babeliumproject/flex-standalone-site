@@ -614,9 +614,9 @@
 			  paddingLeft="10"
 			  paddingRight="10"
 			  paddingTop="10">
-		<s:Button id="cancelCapture"
-				  label="{resourceManager.getString('myResources','CANCEL')}"
-				  cornerRadius="1"/>
+		<skins:IconButton id="cancelCapture"
+					  styleName="btn-default"
+					  label="{resourceManager.getString('myResources','CANCEL')}"/>
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<skins:IconButton id="startStopCapture"

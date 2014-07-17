@@ -19,15 +19,22 @@ package skins
 	
 	[Style(name="borderSize", type="uint", format="Length", inherit="yes" )]
 	
-	[Style(name="colorOver", type="uint", format="Color", inherit="yes" )]
-	
-	[Style(name="colorDown", type="uint", format="Color", inherit="yes" )]
+	[Style(name="tColor", type="uint", format="Color", inherit="yes" )]	
+	[Style(name="tColorOver", type="uint", format="Color", inherit="yes" )]	
+	[Style(name="tColorDown", type="uint", format="Color", inherit="yes" )]
 	
 	[Style(name="underlineOver", type="Boolean", inherit="yes" )]
 	
 	[Style(name="underlineDown", type="Boolean", inherit="yes" )]
 	
 	[Style(name="padding", type="uint", format="Length", inherit="yes" )]
+	
+	[Style(name="bgrColor", inherit="yes", type="uint", format="Color")]
+	[Style(name="bgrColorOver", inherit="yes", type="uint", format="Color")]
+	[Style(name="bgrColorDown", inherit="yes", type="uint", format="Color")]
+	[Style(name="bColor", inherit="yes", type="uint", format="Color")]
+	[Style(name="bColorOver", inherit="yes", type="uint", format="Color")]
+	[Style(name="bColorDown", inherit="yes", type="uint", format="Color")]
 
 	public class IconButton extends Button
 	{

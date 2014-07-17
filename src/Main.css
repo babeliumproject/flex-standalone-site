@@ -12,8 +12,8 @@ s|Application{
 	horizontalAlign: center;
 	paddingTop: 0;
 	paddingBottom: 5;
-	fontFamily: Arial;
-	fontSize: 12;
+	fontFamily: "Helvetica, Arial, sans-serif";
+	fontSize: 14;
 	fontWeight: normal;
 	color: #000000;
 	skinClass: ClassReference('skins.ApplicationCustomSkin');
@@ -624,17 +624,85 @@ s|TextInput{
 }
 
 .btn-default{
-	gradientColors: #ffffff, #ffffff;
-	gradientColorsOver: #e6e6e6, #e6e6e6;
-	gradientColorsDown: #e6e6e6, #e6e6e6;
-	borderColors: #cccccc, #cccccc;
-	borderSize: 1;
-	cornerRadius: 4;
-	color: #333333;
-	colorOver: #333333;
-	colorDown: #333333;
-	fontSize: 14;
-	fontWeight: normal;
-	padding: 12;
-	skinClass: ClassReference('skins.IconButtonSkin');
+	bgrColor: #FFFFFF;
+	bgrColorOver: #E6E6E6;
+	bgrColorDown: #E6E6E6;
+	bColor: #CCCCCC;
+	bColorOver: #ADADAD;
+	bColorDown: #ADADAD;
+	tColor: #333333;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
 }
+
+.btn-primary{
+	bgrColor: #428bca;
+	bgrColorOver: #3071a9;
+	bgrColorDown: #3071a9;
+	bColor: #357ebd;
+	bColorOver: #285e8e;
+	bColorDown: #285e8e;
+	tColor: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
+}
+
+.btn-success{
+	bgrColor: #5cb85c;
+	bgrColorOver: #449d44;
+	bgrColorDown: #449d44;
+	bColor: #4cae4c;
+	bColorOver: #398439;
+	bColorDown: #398439;
+	tColor: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
+}
+
+.btn-info{
+	bgrColor: #5bc0de;
+	bgrColorOver: #31b0d5;
+	bgrColorDown: #31b0d5;
+	bColor: #46b8da;
+	bColorOver: #269abc;
+	bColorDown: #269abc;
+	tColor: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
+}
+
+.btn-warning{
+	bgrColor: #f0ad4e;
+	bgrColorOver: #ec971f;
+	bgrColorDown: #ec971f;
+	bColor: #eea236;
+	bColorOver: #d58512;
+	bColorDown: #d58512;
+	tColor: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
+}
+
+.btn-danger{
+	bgrColor: #d9534f;
+	bgrColorOver: #c9302c;
+	bgrColorDown: #c9302c;
+	bColor: #d43f3a;
+	bColorOver: #ac2925;
+	bColorDown: #ac2925;
+	tColor: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.StylableButton');
+}
+
+.btn-link{
+	bgrAlpha: 0;
+	borderAlpha: 0;
+	tColor: #428bca;
+	tColorOver: #2a6496;
+	tColorDown: #428bca;
+	tDecorationOver: 'underline';
+	tDecorationDown: 'none';
+	
+}
+

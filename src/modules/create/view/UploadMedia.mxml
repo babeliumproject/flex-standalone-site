@@ -172,11 +172,11 @@
 					  includeInLayout="true"
 					  paddingTop="80">
 				<skins:IconButton id="uploadFile"
-						  styleName="btn-default"
+						  styleName="btn-primary"
 						  click="uploadFile_clickHandler(event)"
 						  label="{resourceManager.getString('myResources','FILE')}"/>
-				<s:Button id="recordFile"
-						  styleName="bigBlueButton"
+				<skins:IconButton id="recordFile"
+						  styleName="btn-primary"
 						  click="recordFile_clickHandler(event)"
 						  label="{resourceManager.getString('myResources','WEBCAM_CAPTURE')}"
 						  buttonMode="true"/>
