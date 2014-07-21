@@ -64,6 +64,15 @@
 						 required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</mx:FormItem>
+			<s:DropDownList id="testDDL" skinClass="skins.BootstrapDropDownList" prompt="Some prompt" cornerRadius="3" borderColor="0xcccccc">
+				<mx:ArrayCollection>
+					<fx:String>Alabama</fx:String>
+					<fx:String>Alaska</fx:String>
+					<fx:String>Arizona</fx:String>
+					<fx:String>Arkansas</fx:String>
+					<fx:String>California</fx:String>
+				</mx:ArrayCollection>
+			</s:DropDownList>
 			
 			<!--
 			<mx:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
@@ -100,10 +109,9 @@
 			  horizontalAlign="center"
 			  verticalAlign="middle">
 		<skins:IconButton id="saveButton"
+						  styleName="btn-success"
 						  label="{resourceManager.getString('myResources','SAVE_AND_CONTINUE')}"
-						  click="saveChangesClickHandler(event)"
-						  skinClass="skins.IconButtonSkin"
-						  icon="@Embed('/resources/images/save.png')"/>
+						  click="saveChangesClickHandler(event)"/>
 	</s:HGroup>
 	
 	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
