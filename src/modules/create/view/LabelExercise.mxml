@@ -5,7 +5,7 @@
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
 		  width="100%"
-		  creationComplete="completeHandler(event)">
+		  creationComplete="completeHandler(event)" xmlns:view="modules.create.view.*">
 
 
 	<s:Label id="editVideoTitle"
@@ -73,6 +73,11 @@
 					<fx:String>California</fx:String>
 				</mx:ArrayCollection>
 			</s:DropDownList>
+			<view:DifficultyDropDownList id="test2" skinClass="skins.BootstrapDropDownList" 
+										 cornerRadius="3" borderColor="0xcccccc" requireSelection="true" 
+										 sortItems="true" 
+										 dataProvider="{dpD}"
+										 labelFunction="{languageComboBoxLabelFunction}"/>
 			
 			<!--
 			<mx:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
@@ -147,6 +152,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.IVisualElement;
+			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
@@ -411,6 +417,16 @@
 					DataModel.getInstance().videoDataModified=false;
 				}
 			}
+			
+			public function languageComboBoxLabelFunction(item:Object):String
+			{
+				var locale:String=String(item.code);
+				var upperLocale:String=locale.toUpperCase();
+				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
+			}
+			
+			[Bindable]
+			private var dpD:ArrayCollection = new ArrayCollection(DataModel.getInstance().localesAndFlags.availableLanguages);
 		]]>
 	</fx:Script>
 </s:VGroup>
