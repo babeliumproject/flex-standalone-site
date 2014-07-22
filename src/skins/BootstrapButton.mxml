@@ -55,6 +55,19 @@
 			private var textColor_hover:uint=textColor;
 			[Bindable]
 			private var textColor_active:uint=textColor;
+			
+			[Bindable]
+			private var backgroundAlpha:Number=1.0;
+			
+			[Bindable]
+			private var borderAlpha:Number=1.0;
+			
+			[Bindable]
+			private var textDecoration:String='none';
+			[Bindable]
+			private var textDecoration_hover:String='none';
+			[Bindable]
+			private var textDecoration_active:String='none';
 
 			private var cornerRadius:Number=4;
 
@@ -109,6 +122,21 @@
 				var ts9:uint=getStyle('tColorDown');
 				if (ts9)
 					textColor_active=ts9;
+				var ts10:Number=getStyle('bgrAlpha');
+				if(!isNaN(ts10))
+					backgroundAlpha=ts10;
+				var ts11:Number=getStyle('bAlpha');
+				if(!isNaN(ts11))
+					borderAlpha=ts11;
+				var ts12:String=getStyle('tDecoration');
+				if(ts12)
+					textDecoration=ts12;
+				var ts13:String=getStyle('tDecorationOver');
+				if(ts13)
+					textDecoration_hover=ts13;
+				var ts14:String=getStyle('tDecorationDown');
+				if(ts14)
+					textDecoration_active=ts14;
 
 				var cr:Number=getStyle("cornerRadius");
 
@@ -122,6 +150,10 @@
 						hldownstroke.tlRadius=cornerRadius;
 						hldownstroke.trRadius=cornerRadius;
 					}
+				}
+				
+				if(backgroundAlpha == 0 && hldownstroke){
+					hldownstroke.alpha=0;
 				}
 
 				super.updateDisplayList(unscaledWidth, unscaledHeight);
@@ -158,11 +190,13 @@
 			right="1"
 			top="1"
 			bottom="1"
-			radiusX="4">
+			radiusX="4"
+			alpha="{backgroundAlpha}">
 		<s:fill>
 			<s:SolidColor color="{backgroundColor}"
 						  color.over="{backgroundColor_hover}"
-						  color.down="{backgroundColor_active}"/>
+						  color.down="{backgroundColor_active}"
+						  alpha="{backgroundAlpha}"/>
 		</s:fill>
 	</s:Rect>
 
@@ -173,13 +207,14 @@
 			right="0"
 			top="0"
 			bottom="0"
-			radiusX="4">
+			radiusX="4"
+			alpha="{borderAlpha}">
 		<s:stroke>
 			<s:SolidColorStroke weight="1"
 								color="{borderColor}"
 								color.over="{borderColor_hover}"
 								color.down="{borderColor_active}"
-								alpha="1"/>
+								alpha="{borderAlpha}"/>
 		</s:stroke>
 	</s:Rect>
 
@@ -207,7 +242,12 @@
 			 top="6"
 			 bottom="6"
 			 lineHeight="1.42857"
-			 color="{textColor}">
+			 color="{textColor}"
+			 color.over="{textColor_hover}"
+			 color.down="{textColor_active}"
+			 textDecoration.up="{textDecoration}"
+			 textDecoration.over="{textDecoration_hover}"
+			 textDecoration.down="{textDecoration_active}">
 	</s:Label>
 
 </s:SparkSkin>

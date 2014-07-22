@@ -696,13 +696,14 @@ s|TextInput{
 }
 
 .btn-link{
-	bgrAlpha: 0;
-	borderAlpha: 0;
+	bgrAlpha: 0.0;
+	bAlpha: 0.0;
 	tColor: #428bca;
 	tColorOver: #2a6496;
 	tColorDown: #428bca;
-	tDecorationOver: 'underline';
-	tDecorationDown: 'none';
-	
+	tDecorationOver: "underline";
+	tDecorationDown: "none";
+	cornerRadius: 3;
+	skinClass: ClassReference("skins.BootstrapButton");
 }
 

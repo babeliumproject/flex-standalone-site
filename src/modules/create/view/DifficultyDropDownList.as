@@ -16,8 +16,9 @@ package modules.create.view
 	
 	public class DifficultyDropDownList extends DropDownList
 	{
-		private var _sorter:SortingCollator;
+		private var _sorter:SortingCollator  = new SortingCollator();
 		private var _sortItems:Boolean;
+		private var sortItemsChanged:Boolean;
 		
 		public function DifficultyDropDownList()
 		{
@@ -26,17 +27,28 @@ package modules.create.view
 		}
 		
 		protected function localeChangeHandler(event:Event):void{
+			/*
 			getLocalizedItems();
 			if(_sortItems){
 				dataProvider.toArray().sort(localizedSorting);
-			}
+			}*/
 		}
 		
-		override public function set dataProvider(value:IList):void{
-			super.dataProvider = value;
-			getLocalizedItems();
-			if(_sortItems){
-				dataProvider.toArray().sort(localizedSorting);
+		override protected function commitProperties():void{
+			super.commitProperties();
+			
+			if(sortItemsChanged){
+				sortItemsChanged=false;
+				if(_sortItems){
+					var oldSelectedItem:Object = selectedItem;
+					dataProvider.toArray().sort(localizedSorting);
+				}
+			}
+			
+			var item:Object = getWidestItem();
+			if(item){
+				this.typicalItem = item;
+				invalidateDisplayList();
 			}
 		}
 		
@@ -51,12 +63,6 @@ package modules.create.view
 					_dataList.push(ResourceManager.getInstance().getString('myResources', label));
 			}
 			return _dataList;
-		}
-		
-		override protected function dataProvider_collectionChangeHandler(event:Event):void{
-			super.dataProvider_collectionChangeHandler(event);
-			var item:Object = getWidestItem();
-			if(item) this.typicalItem = item;
 		}
 		
 		protected function localizedSorting(item1:Object, item2:Object):int{
@@ -77,9 +83,11 @@ package modules.create.view
 			textField.setTextFormat(format);
 			
 			var o:Object;
+			var text:String;
 			for (var i:uint=0; i<this.dataProvider.length; i++){
 				o = this.dataProvider.getItemAt(i);
-				textField.text = getItemLabel(o);
+				text = getItemLabel(o);
+				textField.text = text ? text : "";
 				if (textField.textWidth > twidth){
 					twidth = textField.textWidth;
 					widestItem = o;
@@ -89,7 +97,7 @@ package modules.create.view
 		}
 		
 		protected function getItemLabel(item:Object):String{
-			if(!item) return null;
+			if(!item) return "";
 			
 			var label:String;
 			if (this.labelFunction != null){
@@ -101,12 +109,12 @@ package modules.create.view
 		}
 		
 		public function set sortItems(value:Boolean):void{
-			if(value){
-				_sorter = new SortingCollator();
-			} else {
-				_sorter = null;
-			}
-			_sortItems;
+			if (value == _sortItems)
+				return;
+			
+			_sortItems=value;
+			sortItemsChanged = true;
+			invalidateProperties();
 		}
 		
 		public function get sortItems():Boolean{

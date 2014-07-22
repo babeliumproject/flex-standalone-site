@@ -19,28 +19,25 @@
 	</s:Line>
 
 	<s:HGroup width="100%">
-		<mx:Form width="100%"
-				 styleName="roundedBlueBorderBox">
-			<mx:FormItem label="{resourceManager.getString('myResources','TITLE')}"
+		<s:Form width="100%">
+			<s:FormItem label="{resourceManager.getString('myResources','TITLE')}"
 						 width="100%"
-						 styleName="boldLabel"
 						 required="true">
 				<s:TextInput width="100%"
-							 id="videoTitle"/>
-			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
+							 id="videoTitle"
+							 skinClass="skins.BootstrapTextInput"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
 						 width="100%"
-						 styleName="boldLabel"
 						 required="true">
 				<mx:RichTextEditor width="100%"
 								   id="videoDescription"
 								   dropShadowVisible="false"
 								   headerHeight="0"
 								   fontWeight="normal"/>
-			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','KEYWORDS')}"
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','KEYWORDS')}"
 						 width="100%"
-						 styleName="boldLabel"
 						 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
 						 required="true">
 				<s:TextArea width="100%"
@@ -48,36 +45,30 @@
 							id="videoTags"
 							maxChars="255"
 							fontWeight="normal"/>
-			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						 styleName="boldLabel"
 						 required="true"
 						 width="100%">
 				<s:HGroup width="100%">
 					<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
-					<skins:IconButton styleName="commonLinkButton" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="true"/>
+					<skins:IconButton styleName="btn-link" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="true"/>
 				</s:HGroup>
 				<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
-			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 						 styleName="boldLabel"
 						 required="true">
 				<common:LanguageComboBox id="languageSelector"/>
-			</mx:FormItem>
-			<s:DropDownList id="testDDL" skinClass="skins.BootstrapDropDownList" prompt="Some prompt" cornerRadius="3" borderColor="0xcccccc">
-				<mx:ArrayCollection>
-					<fx:String>Alabama</fx:String>
-					<fx:String>Alaska</fx:String>
-					<fx:String>Arizona</fx:String>
-					<fx:String>Arkansas</fx:String>
-					<fx:String>California</fx:String>
-				</mx:ArrayCollection>
-			</s:DropDownList>
+			</s:FormItem>
+			<view:DifficultyDropDownList id="test1" skinClass="skins.BootstrapDropDownList"
+										 cornerRadius="3" borderColor="0xcccccc" requireSelection="true"
+										 dataProvider="{dpleve}"/>
 			<view:DifficultyDropDownList id="test2" skinClass="skins.BootstrapDropDownList" 
 										 cornerRadius="3" borderColor="0xcccccc" requireSelection="true" 
 										 sortItems="true" 
-										 dataProvider="{dpD}"
-										 labelFunction="{languageComboBoxLabelFunction}"/>
+										 labelFunction="{languageComboBoxLabelFunction}"
+										 dataProvider="{dpD}"/>
 			
 			<!--
 			<mx:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
@@ -107,7 +98,7 @@
 				</mx:FormItem>
 			</mx:FormItem>
 			-->
-		</mx:Form>
+		</s:Form>
 	</s:HGroup>
 
 	<s:HGroup width="100%"
@@ -145,6 +136,8 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
+			
+			import mx.resources.ResourceManager;
 			
 			import model.DataModel;
 			import model.LocalesAndFlags;
@@ -424,6 +417,14 @@
 				var upperLocale:String=locale.toUpperCase();
 				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
 			}
+			
+			[Bindable]
+			private var dpleve:ArrayCollection = new ArrayCollection([
+				ResourceManager.getInstance().getString('myResources','LEVEL_A1'), 
+				ResourceManager.getInstance().getString('myResources','LEVEL_A2'),
+				ResourceManager.getInstance().getString('myResources','LEVEL_B1'),
+				ResourceManager.getInstance().getString('myResources','LEVEL_B2'),
+				ResourceManager.getInstance().getString('myResources','LEVEL_C1')]);
 			
 			[Bindable]
 			private var dpD:ArrayCollection = new ArrayCollection(DataModel.getInstance().localesAndFlags.availableLanguages);
