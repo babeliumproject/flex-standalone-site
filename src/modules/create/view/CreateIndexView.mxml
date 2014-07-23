@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:mx="library://ns.adobe.com/flex/mx">
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  paddingLeft="12"
+		  paddingRight="12"
+		  paddingTop="6"
+		  paddingBottom="6">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -27,27 +32,24 @@
 					latestCreationsData=DataModel.getInstance().latestCreations;
 				}
 			}
-			
+
 			private function changeHandler(event:Event):void
 			{
 				var obj:Object=List(event.target).selectedItem;
-				BabeliaBrowserManager.getInstance().updateURL('create','edit', obj.exercisecode);
+				BabeliaBrowserManager.getInstance().updateURL('create', 'edit', obj.exercisecode);
 			}
 		]]>
 	</fx:Script>
 
-	<s:Button id="addnewexercise"
-			  label="{resourceManager.getString('myResources','ADD_NEW_EXERCISE')}"
-			  click="{BabeliaBrowserManager.getInstance().updateURL('create','add')}"/>
+	<skins:IconButton id="addnewexercise"
+					  label="{resourceManager.getString('myResources','ADD_NEW_EXERCISE')}"
+					  click="{BabeliaBrowserManager.getInstance().updateURL('create','add')}"
+					  styleName="btn-primary"/>
 
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
 	<s:Panel title="{resourceManager.getString('myResources','MY_LATEST_CREATIONS')}"
-			 dropShadowVisible="false"
-			 backgroundAlpha="0"
 			 width="100%"
-			 minHeight="0"
-			 left="16"
-			 right="16">
+			 minHeight="0">
 		<s:Label id="nocreations"
 				 text="{resourceManager.getString('myResources','YOU_HAVENT_CREATED_ANY_EXERCISE_YET')}"
 				 includeInLayout="{!latestCreationsData.length}"
@@ -68,9 +70,10 @@
 					<s:TileLayout/>
 				</s:layout>
 			</s:List>
-			<s:Button id="seeAllCreations"
-					  label="{resourceManager.getString('myResources','SEE_ALL_MY_CREATIONS')}"
-					  click="{BabeliaBrowserManager.getInstance().updateURL('create', 'manage')}"/>
+			<skins:IconButton id="seeAllCreations"
+							  label="{resourceManager.getString('myResources','SEE_ALL_MY_CREATIONS')}"
+							  click="{BabeliaBrowserManager.getInstance().updateURL('create', 'manage')}"
+							  styleName="btn-default"/>
 		</s:VGroup>
 
 	</s:Panel>

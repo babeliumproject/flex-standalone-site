@@ -11,7 +11,7 @@ package commands.userManagement
 	
 	import model.DataModel;
 	
-	import components.userManagement.SignUpForm;
+	import modules.signup.view.SignUpForm;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;

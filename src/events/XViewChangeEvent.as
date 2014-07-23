@@ -13,7 +13,7 @@ package events
 	import components.subtitles.SubtitleMain;
 	import modules.login.view.LoginActivate;
 	import components.userManagement.AccountMain;
-	import components.userManagement.SignUpForm;
+	import modules.signup.view.SignUpForm;
 	import components.videoUpload.UploadContainer;
 
 

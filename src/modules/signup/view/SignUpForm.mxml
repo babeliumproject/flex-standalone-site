@@ -9,6 +9,9 @@
 		  creationComplete="onComplete(event)">
 	<fx:Script>
 		<![CDATA[
+			import components.userManagement.FieldValidator;
+			import components.userManagement.LanguageKnowledgeBox;
+			import components.userManagement.MotherLanguageBox;
 			import com.adobe.crypto.SHA1;
 			
 			import control.BabeliaBrowserManager;
@@ -376,6 +379,10 @@
 				resetToInitialStatus();
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				BabeliaBrowserManager.getInstance().updateURL('home');
+			}
+			
+			public function resetGroup():void{
+				resetToInitialStatus();
 			}
 		]]>
 	</fx:Script>

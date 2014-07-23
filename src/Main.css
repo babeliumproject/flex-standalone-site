@@ -35,20 +35,30 @@ s|Label{
 
 s|Panel{
 	backgroundColor: #FFFFFF;
+	backgroundAlpha: 1;
 	borderWeight: 1;
 	borderStyle: solid;
-	borderColor: #AAAAAA;
-	dropShadowEnabled: false;
-	cornerRadius: 6;
-	color: #2B333C;
-	fontSize: 12;
-	paddingBottom: 2;
-	paddingLeft: 2;
-	paddingRight: 2;
-	headerHeight: 19;
-	headerColors: #919191, #FFFFFF;
-	footerColors: #9DB6D9, #FFFFFF;
+	borderColor: #E0E0E0;
+	borderAlpha: 0.85;
+	dropShadowVisible: false;
+	cornerRadius: 3;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+	paddingRight: 12;
+	headerHeight: 32;
+	headerColors: #E6E6E6, #E6E6E6;
+	footerColors: #E6E6E6, #E6E6E6;
 	roundedBottomCorners: true;
+}
+
+mx|ToolTip{
+	backgroundColor: #000000;
+	color: #FFFFFF;
+	dropShadowVisible: false;
+	fontSize: 12;
+	cornerRadius: 3;
 }
 
 /*
@@ -631,6 +641,8 @@ s|TextInput{
 	bColorOver: #ADADAD;
 	bColorDown: #ADADAD;
 	tColor: #333333;
+	tColorOver: #333333;
+	tColorDown: #333333;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }
@@ -643,6 +655,8 @@ s|TextInput{
 	bColorOver: #285e8e;
 	bColorDown: #285e8e;
 	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }
@@ -655,6 +669,8 @@ s|TextInput{
 	bColorOver: #398439;
 	bColorDown: #398439;
 	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }
@@ -667,6 +683,8 @@ s|TextInput{
 	bColorOver: #269abc;
 	bColorDown: #269abc;
 	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }
@@ -679,6 +697,8 @@ s|TextInput{
 	bColorOver: #d58512;
 	bColorDown: #d58512;
 	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }
@@ -691,6 +711,8 @@ s|TextInput{
 	bColorOver: #ac2925;
 	bColorDown: #ac2925;
 	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
 	cornerRadius: 3;
 	skinClass: ClassReference('skins.BootstrapButton');
 }

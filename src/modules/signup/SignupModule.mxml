@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.signup.view.*"
+		  implements="modules.IModuleInterface"
+		  width="100%"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" >
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<view:SignUpForm id="signUpIndex" width="100%"/>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
+			import mx.binding.utils.ChangeWatcher;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.events.FlexEvent;
+
+			public var modulename:String = 'signup';
+			
+			private var _creationComplete:Boolean;
+			private var _changewatcher:ChangeWatcher;
+			
+			[Bindable]
+			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			
+			/**
+			 * Module interface methods 
+			 */
+			public function getModuleName():String{
+				return modulename;	
+			}
+			
+			public function resetModule():void{
+				_changewatcher.unwatch();
+				resetViews();
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				_changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
+			}
+			
+			protected function resetViews():void{
+				signUpIndex.resetGroup();
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentRemovedHandler(event:FlexEvent):void{
+				
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					//If the user is already logged in return to previous page or navigate to home
+					BabeliaBrowserManager.getInstance().updateURL('home');
+					return;
+				}
+				this.visible=true;
+			}
+			
+			public function onURLChange(value:String):void{
+				if (_urlmanager.moduleName != modulename)
+					return;
+			}
+			
+		]]>
+	</fx:Script>
+</s:Module>

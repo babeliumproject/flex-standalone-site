@@ -93,6 +93,13 @@
 			 */
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
+				var icon:String=getStyle('icon');
+				if(icon){
+					iconGraphic.includeInLayout=true;
+					labelDisplay.left = 12 + 16 + 6;
+				}
+				
+				
 				var ts1:uint=getStyle('bgrColor');
 				if (ts1)
 					backgroundColor=ts1;
@@ -231,16 +238,23 @@
 							 color="0x000000"
 							 tlRadius="4"
 							 trRadius="4"/>
-
-
+	<s:Graphic id="iconGraphic" left="12" top="8" bottom="8" width="16" height="16" includeInLayout="false">
+		<s:Path id="iconData" data="{getStyle('icon')}" verticalCenter="1">
+			<s:fill>
+				<s:SolidColor color="{textColor}"
+							  color.over="{textColor_hover}"
+							  color.down="{textColor_active}"/>
+			</s:fill>
+		</s:Path>
+	</s:Graphic>
 	<s:Label id="labelDisplay"
 			 textAlign="center"
 			 maxDisplayedLines="1"
-			 verticalAlign="middle"
+			 verticalCenter="1"
 			 left="12"
 			 right="12"
-			 top="6"
-			 bottom="6"
+			 top="8"
+			 bottom="8"
 			 lineHeight="1.42857"
 			 color="{textColor}"
 			 color.over="{textColor_hover}"

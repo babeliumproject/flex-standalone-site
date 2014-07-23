@@ -107,9 +107,10 @@
 			<s:Label text="{resourceManager.getString('myResources','VIDEO_STATUS')+':'}"/>
 			<s:Label text="{data.status == 1 ? 'Ready' : 'Draft'}"/>
 		</s:HGroup>
-		<s:Button id="editVideoData"
+		<skins:IconButton id="editVideoData"
 				  label="{resourceManager.getString('myResources','EDIT')}"
-				  click="editExercise(event)"/>
+				  click="editExercise(event)"
+				  styleName="btn-default"/>
 
 	</s:VGroup>
 

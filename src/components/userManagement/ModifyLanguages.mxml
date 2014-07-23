@@ -11,6 +11,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import modules.signup.view.SignUpForm;
 			import events.UserEvent;
 			
 			import flash.utils.getQualifiedClassName;

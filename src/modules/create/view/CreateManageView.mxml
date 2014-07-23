@@ -9,14 +9,16 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  creationComplete="creationCompleteHandler(event)">
+		  creationComplete="creationCompleteHandler(event)" xmlns:skins="skins.*">
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
 			
-			import model.DataModel;
+			import spark.components.Button;
 			
 			import components.main.VideoPaginator;
+			
+			import model.DataModel;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -191,9 +193,10 @@
 									paddingTop="8"/>
 			</s:layout>
 
-			<s:Button id="deleteExercisesButton"
+			<skins:IconButton id="deleteExercisesButton"
 					  click="deleteExercisesButtonClickHandler(event)"
-					  label="{resourceManager.getString('myResources','DELETE')}"/>
+					  label="{resourceManager.getString('myResources','DELETE')}"
+					  styleName="btn-danger"/>
 			<mx:VRule height="20"/>
 			<s:Label id="exerciseCount"
 					 paddingLeft="16"
