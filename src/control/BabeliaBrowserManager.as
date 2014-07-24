@@ -174,6 +174,14 @@ package control
 						moduleURL = 'modules/login/LoginModule.swf';
 						break;
 					}
+					case 'signup':
+					{
+						moduleURL = 'modules/signup/SignupModule.swf';
+					}
+					case 'subtitle':
+					{
+						moduleURL = 'modules/subtitle/SubtitleModule.swf';
+					}
 					default:
 					{
 						moduleURL = 'modules/home/HomeModule.swf';

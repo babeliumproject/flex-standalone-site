@@ -433,7 +433,7 @@ class Exercise {
 	public function watchExercise($exercisecode){
 		if(!$exercisecode) return;
 		
-		$exdata = $this->getExerciseByName($exercisecode);
+		$exdata = $this->getExerciseByCode($exercisecode);
 		if($exdata){
 			$status = 2;
 			$level = 1;
@@ -489,7 +489,7 @@ class Exercise {
 	 * @return stdClass
 	 * 		An object with information about the requested exercise or false on error
 	 */
-	public function getExerciseByName($name = null){
+	public function getExerciseByCode($name = null){
 		if(!$name)
 			return;
 			

@@ -12,13 +12,13 @@
 		  creationComplete="creationCompleteHandler(event)" xmlns:skins="skins.*">
 	<fx:Script>
 		<![CDATA[
-			import events.UserEvent;
-			
-			import spark.components.Button;
-			
 			import components.main.VideoPaginator;
 			
+			import events.UserEvent;
+			
 			import model.DataModel;
+			
+			import modules.create.event.CreateEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -26,6 +26,8 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.utils.StringUtil;
+			
+			import spark.components.Button;
 			
 			import view.common.CustomAlert;
 			
@@ -53,7 +55,7 @@
 			private function retrieveExercises():void
 			{
 				paginationIdx=1;
-				new UserEvent(UserEvent.RETRIEVE_USER_VIDEOS).dispatch();
+				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
 			}
 
 			private function set userExerciseListRetrieved(value:Boolean):void
@@ -107,7 +109,7 @@
 
 			private function deleteSelectedExercises():void
 			{
-				new UserEvent(UserEvent.DELETE_SELECTED_VIDEOS, itemsToDelete).dispatch();
+				new CreateEvent(CreateEvent.DELETE_SELECTED_CREATIONS, itemsToDelete).dispatch();
 			}
 
 			private function set deleteSelectedExercisesResult(value:Boolean):void

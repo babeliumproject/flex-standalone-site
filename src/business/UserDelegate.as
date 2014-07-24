@@ -65,23 +65,5 @@ package business
 			var pendingCall:AsyncToken = service.modifyUserPersonalData(personalData);
 			pendingCall.addResponder(responder);
 		}
-		
-		public function retrieveUserVideos():void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.retrieveUserVideos();
-			pendingCall.addResponder(responder);
-		}
-		
-		public function deleteSelectedVideos(selectedVideos:Array):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.deleteSelectedVideos(selectedVideos);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function modifyVideoData(videoData:ExerciseVO):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("userRO");
-			var pendingCall:AsyncToken = service.modifyVideoData(videoData);
-			pendingCall.addResponder(responder);
-		}
 	}
 }

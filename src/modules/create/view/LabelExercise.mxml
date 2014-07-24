@@ -137,11 +137,11 @@
 		<![CDATA[
 			import events.UserEvent;
 			
-			import mx.resources.ResourceManager;
-			
 			import model.DataModel;
 			import model.LocalesAndFlags;
 			import model.ResourceSubscriber;
+			
+			import modules.create.event.CreateEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.IVisualElement;
@@ -149,6 +149,7 @@
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.validators.Validator;
 			
@@ -176,7 +177,7 @@
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
-				getDescriptorCodesFromResourceFile();
+				//getDescriptorCodesFromResourceFile();
 			}
 
 			public function resetComponent():void
@@ -267,6 +268,8 @@
 				var levelIndex:int = dispatchingItem.selectedIndex;
 				if (levelIndex != -1)
 				{
+					if(!_descriptors)
+						getDescriptorCodesFromResourceFile();
 					addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(levelIndex+1));
 				}
 			}
@@ -290,16 +293,19 @@
 				//First remove the previous elements of the container
 				removeLevelDescriptors();
 				//Then add the new set of elements
-				for (var item:Object in _descriptors){
+				trace("addLevelDescriptors for level: "+levelcode);
+				for (var item:String in _descriptors){
 					//Get only the descriptors of the chosen difficulty level
 					if(_descriptors[item] == levelcode){
+						trace("found matching descriptors");
 						var chkBox:CheckBox = new CheckBox();
-						chkBox.id=item as String;
+						chkBox.id=item;
 						chkBox.percentWidth=100;
 						
 						chkBox.label=resourceManager.getString("myResources",chkBox.id);
-						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item as String);
+						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item);
 						descriptorContainer.addElement(chkBox);
+						trace(resourceManager.getString("myResources",chkBox.id));
 					}
 				}
 			}
@@ -367,7 +373,7 @@
 					}
 					exerciseData.descriptors=descriptors;
 
-					new UserEvent(UserEvent.MODIFY_VIDEO_DATA, null, null, exerciseData).dispatch();
+					new CreateEvent(CreateEvent.SAVE_EXERCISE, exerciseData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));

@@ -9,6 +9,9 @@ package modules.create.command
 	
 	import model.DataModel;
 	
+	import modules.create.event.CreateEvent;
+	import modules.create.service.CreateDelegate;
+	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -19,10 +22,9 @@ package modules.create.command
 	public class ModifyVideoDataCommand implements ICommand, IResponder
 	{
 
-		
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).modifyVideoData((event as UserEvent).videoData);
+			new CreateDelegate(this).updateExercise((event as CreateEvent).params);
 		}
 		
 		public function result(data:Object):void

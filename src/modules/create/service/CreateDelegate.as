@@ -17,7 +17,7 @@ package modules.create.service
 		
 		public function getExercise(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken = service.getExerciseByName(query.exercisecode);
+			var pendingCall:AsyncToken = service.getExerciseByCode(query.exercisecode);
 			pendingCall.addResponder(responder);
 		}
 		
@@ -39,11 +39,11 @@ package modules.create.service
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getLatestCreations(query:Object = null):void{
+		public function getCreations(query:Object = null):void{
 			var offset:uint = query.hasOwnProperty('offset') ? query.offset : 0;
 			var rowcount:uint = query.hasOwnProperty('rowcount') ? query.rowcount : 0;
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "userRO" );
-			var pendingCall:AsyncToken = service.retrieveUserVideos(offset, rowcount);
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
+			var pendingCall:AsyncToken = service.listUserCreations(offset, rowcount);
 			pendingCall.addResponder(responder);
 		}
 	}

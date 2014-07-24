@@ -18,7 +18,7 @@ package modules.create.command
 		public function execute(event:CairngormEvent):void
 		{
 			var params:Object = Object(event).params;
-			new CreateDelegate(this).getLatestCreations(params);
+			new CreateDelegate(this).getCreations(params);
 		}
 		
 		public function result(data:Object):void

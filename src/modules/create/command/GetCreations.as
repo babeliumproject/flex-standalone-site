@@ -7,6 +7,8 @@ package modules.create.command
 	
 	import model.DataModel;
 	
+	import modules.create.service.CreateDelegate;
+	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -22,7 +24,7 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).retrieveUserVideos();
+			new CreateDelegate(this).getCreations();
 		}
 
 		public function result(data:Object):void

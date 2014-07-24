@@ -12,9 +12,9 @@ package modules.create.command
 			
 			addCommand(CreateEvent.ADD_EXERCISE, AddCreation);
 			addCommand(CreateEvent.EDIT_EXERCISE, EditCreation);
-			addCommand(CreateEvent.GET_LATEST_CREATIONS, GetLatestCreations);
-			addCommand(CreateEvent.MODIFY_VIDEO_DATA, ModifyVideoDataCommand);
-			addCommand(CreateEvent.RETRIEVE_USER_VIDEOS, GetCreations);
+			addCommand(CreateEvent.LIST_LATEST_CREATIONS, GetLatestCreations);
+			addCommand(CreateEvent.SAVE_EXERCISE, ModifyVideoDataCommand);
+			addCommand(CreateEvent.LIST_CREATIONS, GetCreations);
 		}
 	}
 }
