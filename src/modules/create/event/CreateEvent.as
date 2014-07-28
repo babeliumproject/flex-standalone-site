@@ -16,6 +16,7 @@ package modules.create.event
 		public static const SAVE_EXERCISE:String = "modifyVideoData";
 		public static const UNPROCESSED:String = "unprocessed";
 		public static const WEBCAM:String = "webcam";
+		public static const LIST_EXERCISE_MEDIA:String = "listExerciseMedia";
 		
 		public var params:Object;
 		

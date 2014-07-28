@@ -122,52 +122,108 @@ class Create {
 		}
 	}
 	
-	public function modifyVideoData($videoData = null){
+	public function getExerciseData($exercisecode = null){
+		try{
+			$verifySession = new SessionValidation(true);
+			
+			require_once 'Exercise.php';
+			$exercise = new Exercise();
+			$exercisedata = $exercise->getExerciseByCode($exercisecode);
+			
+			//The requested code was not found, user is adding a new exercise
+			if(!$exercisedata){
+				//Generate an exercise-uid and store it in the session and return it to client.
+				//In following calls to saveExerciseData check for exercise-uid to determine if adding new exercise.
+				$euid = $this->uuidv4();
+				$_SESSION['euid'] = $euid;
+				return $euid;
+			} else {
+				
+			}
+		} catch (Exception $e){
+			throw new Exception ($e->getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Helper function to generate RFC4122 compliant UUIDs
+	 * 
+	 * @return String $uuid
+	 * 		A RFC4122 compliant string
+	 */
+	private function uuidv4()
+	{
+		//When the openssl extension is not available in *nix systems try using urandom
+		if(function_exists('openssl_random_pseudo_bytes')){
+			$data = openssl_random_pseudo_bytes(16);
+		} else {
+			$data = file_get_contents('/dev/urandom', NULL, NULL, 0, 16);
+		}	
+	
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+	
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+	}
+	
+	public function saveExerciseData($data = null){
 		try{
 			$verifySession = new SessionValidation(true);
 	
-			if(!$videoData)
-				return false;
-	
+			if(!$data)
+				return;
+			
+			$optime = time();
 			$exercise = new Exercise();
-			$parsedTags = $exercise->parseExerciseTags($videoData->tags);
-			$parsedDescriptors = $exercise->parseDescriptors($videoData->descriptors);
+			$parsedTags = $exercise->parseExerciseTags($data->tags);
+			$parsedDescriptors = $exercise->parseDescriptors($data->descriptors);
 	
-			//Turn off the autocommit
-			//$this->conn->_startTransaction();
+			//Updating an exercise that already exists
+			if($data->exercisecode && $exercise->getExerciseByCode($data->exercisecode)){
 	
-			//Remove previous exercise_level
-			$sql = "DELETE FROM exercise_level WHERE fk_exercise_id=%d";
-			$arows2 = $this->conn->_delete($sql,$videoData->id);
+				//Turn off the autocommit
+				//$this->conn->_startTransaction();
+						
+				//Remove previous exercise_descriptors (if any)
+				$sql = "DELETE FROM rel_exercise_descriptor WHERE fk_exercise_id=%d";
+				$arows4 = $this->conn->_delete($sql,$data->id);
+		
+				//Insert new exercise descriptors (if any)
+				$exercise->insertDescriptors($parsedDescriptors,$data->id);
+		
+				//Remove previous exercise_tags
+				$sql = "DELETE FROM rel_exercise_tag WHERE fk_exercise_id=%d";
+				$arows3 = $this->conn->_delete($sql,$data->id);
+		
+				//Insert new exercise tags
+				$exercise->insertTags($parsedTags,$data->id);
+		
+				//Update the fields of the exercise
+				$sql = "UPDATE exercise SET title='%s', description='%s', language='%s', difficulty=%d WHERE exercisecode='%s' AND fk_user_id=%d";
+				$arows1 = $this->conn->_update($sql, $data->title, $data->description, $data->language, $data->difficulty, $data->exercisecode, $_SESSION['uid']);
+				
+				//Turn on the autocommit, there was no errors modifying the database
+				//$this->conn->_endTransaction();
+				
+				return $data->exercisecode;
 	
-			//Insert new exercise level
-			$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level) VALUES (%d, %d, %d)";
-			$lii1 = $this->conn->_insert($sql, $videoData->id, $_SESSION['uid'], $videoData->avgDifficulty);
-	
-			//Remove previous exercise_descriptors (if any)
-			$sql = "DELETE FROM rel_exercise_descriptor WHERE fk_exercise_id=%d";
-			$arows4 = $this->conn->_delete($sql,$videoData->id);
-	
-			//Insert new exercise descriptors (if any)
-			$exercise->insertDescriptors($parsedDescriptors,$videoData->id);
-	
-			//Remove previous exercise_tags
-			$sql = "DELETE FROM rel_exercise_tag WHERE fk_exercise_id=%d";
-			$arows3 = $this->conn->_delete($sql,$videoData->id);
-	
-			//Insert new exercise tags
-			$exercise->insertTags($parsedTags,$videoData->id);
-	
-			//Update the fields of the exercise
-			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s'
-			WHERE ( name='%s' AND fk_user_id=%d )";
-	
-			$arows1 = $this->conn->_update($sql, $videoData->title, $videoData->description, implode(',',$parsedTags), $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
-	
-			//Turn on the autocommit, there was no errors modifying the database
-			//$this->conn->_endTransaction();
-	
-			return true;
+			// Adding a new exercise
+			} else {
+				$data->euid;
+				
+				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, fk_user_id, timecreated) 
+						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d)";
+				$exerciseid = this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, $_SESSION['uid'], $optime);
+				
+				//Insert new exercise descriptors (if any)
+				$exercise->insertDescriptors($parsedDescriptors,$exerciseid);
+				
+				//Insert new exercise tags
+				$exercise->insertTags($parsedTags,$exerciseid);
+				
+				return $exercisecode;
+			}
 	
 	
 		} catch (Exception $e){

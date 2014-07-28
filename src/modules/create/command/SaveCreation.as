@@ -5,6 +5,8 @@ package modules.create.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.BabeliaBrowserManager;
+	
 	import events.UserEvent;
 	
 	import model.DataModel;
@@ -19,7 +21,7 @@ package modules.create.command
 	
 	import view.common.CustomAlert;
 	
-	public class ModifyVideoDataCommand implements ICommand, IResponder
+	public class SaveCreation implements ICommand, IResponder
 	{
 
 		public function execute(event:CairngormEvent):void
@@ -31,10 +33,12 @@ package modules.create.command
 		{
 			var result:Object=data.result;
 			
-			if (result == true){
-				DataModel.getInstance().videoDataModified = true;
+			if (result is String){
+				DataModel.getInstance().exerciseDataModified = true;
+				//Go to step 2 of exercise creation, media management
+				BabeliaBrowserManager.getInstance().updateURL('create', 'edit', result+'/s/2');
 			} else {
-				DataModel.getInstance().videoDataModified = false;
+				DataModel.getInstance().exerciseDataModified = false;
 				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_MODIFYING_VIDEO_DATA'));
 			}
 		}

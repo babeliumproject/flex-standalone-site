@@ -489,8 +489,8 @@ class Exercise {
 	 * @return stdClass
 	 * 		An object with information about the requested exercise or false on error
 	 */
-	public function getExerciseByCode($name = null){
-		if(!$name)
+	public function getExerciseByCode($exercisecode = null){
+		if(!$exercisecode)
 			return;
 			
 		$sql = "SELECT e.id, 
@@ -509,7 +509,7 @@ class Exercise {
 				GROUP BY e.id
 				LIMIT 1";
 
-		$result = $this->conn->_singleSelect($sql,$name);
+		$result = $this->conn->_singleSelect($sql,$exercisecode);
 		if($result){
 			$data = $this->getPrimaryMediaMinData($result->id);
 			$result->thumbnail = $data ? $data->thumbnail : null;

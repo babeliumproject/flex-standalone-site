@@ -113,7 +113,7 @@
 	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
 				destination="setInformation"/>
 
-	<fx:Binding source="{DataModel.getInstance().videoDataModified}"
+	<fx:Binding source="{DataModel.getInstance().exerciseDataModified}"
 				destination="videoDataModified"/>
 	
 	<fx:Declarations>
@@ -409,11 +409,11 @@
 
 			private function set videoDataModified(value:Boolean):void
 			{
-				if (DataModel.getInstance().videoDataModified == true)
+				if (DataModel.getInstance().exerciseDataModified == true)
 				{
 					CustomAlert.info(resourceManager.getString('myResources', 'VIDEO_DATA_SUCCESSFULLY_MODIFIED'));
 					//cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
-					DataModel.getInstance().videoDataModified=false;
+					DataModel.getInstance().exerciseDataModified=false;
 				}
 			}
 			

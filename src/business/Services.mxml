@@ -80,6 +80,11 @@
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="Home"/>
+		
+		<mx:RemoteObject id="createRO"
+						 destination="babeliumService"
+						 showBusyCursor="true"
+						 source="Create"/>
 
 	</fx:Declarations>
 

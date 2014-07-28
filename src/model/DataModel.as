@@ -149,7 +149,7 @@ package model
 		[Bindable]
 		public var selectedVideosDeleted:Boolean=false;
 		[Bindable]
-		public var videoDataModified:Boolean=false;
+		public var exerciseDataModified:Boolean=false;
 
 		//Pass recovery
 		[Bindable]

@@ -40,8 +40,8 @@ package modules.create.service
 		}
 		
 		public function getCreations(query:Object = null):void{
-			var offset:uint = query.hasOwnProperty('offset') ? query.offset : 0;
-			var rowcount:uint = query.hasOwnProperty('rowcount') ? query.rowcount : 0;
+			var offset:uint = query && query.hasOwnProperty('offset') ? query.offset : 0;
+			var rowcount:uint = query && query.hasOwnProperty('rowcount') ? query.rowcount : 0;
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
 			var pendingCall:AsyncToken = service.listUserCreations(offset, rowcount);
 			pendingCall.addResponder(responder);

@@ -8,10 +8,14 @@
 
 	<fx:Script>
 		<![CDATA[
+			import control.BabeliaBrowserManager;
+			
 			import events.UploadEvent;
-
+			
 			import model.DataModel;
-
+			
+			import modules.create.event.CreateEvent;
+			
 			import mx.utils.StringUtil;
 
 			private var filereference:FileReference;
@@ -137,6 +141,19 @@
 			{
 
 			}
+			
+			public function set onURLChange(value:String):void{
+				//Check if the module and the action are right
+				var _urlManager:BabeliaBrowserManager = BabeliaBrowserManager.getInstance();
+				
+				if(_urlManager.moduleName == 'create' && _urlManager.actionFragment == 'edit'){
+					if(_urlManager.targetFragment.indexOf('/s/2')){
+						var exercisecode:String = '';
+						new CreateEvent(CreateEvent.LIST_EXERCISE_MEDIA, exercisecode).dispatch();
+					}
+				}
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -146,6 +163,8 @@
 				destination="this.uploadProgress"/>
 	<fx:Binding source="{DataModel.getInstance().uploadFinishedData}"
 				destination="this.uploadComplete"/>
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+				destination="this.onURLChange"/>
 
 	<s:FormHeading label="{resourceManager.getString('myResources','UPLOAD_MEDIA')}"
 				   styleName="sectionTitleLabel"/>

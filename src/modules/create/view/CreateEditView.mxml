@@ -67,11 +67,11 @@
 			  paddingLeft="16"
 			  paddingRight="16"
 			  width="100%">
-
-
 		<mx:ViewStack id="stepViewStack"
 					  change="stepViewStack_changeHandler(event)"
-					  width="100%">
+					  resizeToContent="true"
+					  width="100%"
+					  height="100%">
 			<s:NavigatorContent label="1. Label the exercise">
 				<view:LabelExercise id="exerciseClassification" width="100%"/>
 			</s:NavigatorContent>
