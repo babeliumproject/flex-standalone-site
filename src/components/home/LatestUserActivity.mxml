@@ -42,7 +42,7 @@
 				
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
 				//BabeliaBrowserManager.getInstance().parseURL(null);
-				BabeliaBrowserManager.getInstance().updateURL('evaluation', BabeliaBrowserManager.REVISE, urlResponseName);
+				BabeliaBrowserManager.getInstance().redirect('evaluation', BabeliaBrowserManager.REVISE, urlResponseName);
 			}
 
 
@@ -54,7 +54,7 @@
 
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
 				//BabeliaBrowserManager.getInstance().parseURL(null);
-				BabeliaBrowserManager.getInstance().updateURL('evaluation', BabeliaBrowserManager.VIEW, urlResponseName);
+				BabeliaBrowserManager.getInstance().redirect('evaluation', BabeliaBrowserManager.VIEW, urlResponseName);
 			}
 
 

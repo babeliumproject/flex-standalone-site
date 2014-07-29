@@ -15,7 +15,7 @@
 			protected function pickExerciseHandler(event:MouseEvent):void
 			{
 				//Save current form data as a draft and keep in session to come back to it when picking an exercise
-				BabeliaBrowserManager.getInstance().updateURL('exercises');
+				BabeliaBrowserManager.getInstance().redirect('exercises');
 			}
 			
 			protected function peerassessmentchoose_changeHandler(event:IndexChangeEvent):void

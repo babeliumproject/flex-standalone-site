@@ -35,7 +35,7 @@ package commands.userManagement
 			{
 				DataModel.getInstance().passRecoveryDone = !DataModel.getInstance().passRecoveryDone;
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('home');
+				BabeliaBrowserManager.getInstance().redirect('home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','NEW_PASSWORD_SENT'));
 			}
 			else

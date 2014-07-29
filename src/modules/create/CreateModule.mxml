@@ -102,10 +102,10 @@
 						actionManage(_urlmanager.targetFragment);
 						break;
 					case 'add':
-						actionEdit();
+						actionAddEdit();
 						break;
 					case 'edit':
-						actionEdit(_urlmanager.targetFragment);
+						actionAddEdit(_urlmanager.targetFragment);
 						break;
 					default:
 						actionIndex();
@@ -113,7 +113,18 @@
 				}
 			}
 			
-			public function actionEdit(fragment:String = null):void{
+			public function actionAddEdit(fragment:String = null):void{
+				
+				if(!fragment){
+					//Adding new exercise create/add: go to step1
+				} else {
+					//Editing an existing exercise
+					//if create/edit/<exercisecode>: go to step1
+					//if create/edit/<exercisecode>/s/1: go to step1
+					//if create/edit/<exercisecode>/s/2: go to step2
+					//if create/edit/<exercisecode>/s/3: go to step3
+				}
+				
 				trace("create edit call");
 				_viewstackIndex=EDIT;
 				var exercise:Object = new Object();
@@ -166,7 +177,7 @@
 			protected function checkPermissions():void{
 				if (!DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().updateURL('login');
+					BabeliaBrowserManager.getInstance().redirect('login');
 					return;
 				}
 				this.visible=true;

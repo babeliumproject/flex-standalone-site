@@ -214,7 +214,7 @@ class Create {
 				
 				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, fk_user_id, timecreated) 
 						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d)";
-				$exerciseid = this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, $_SESSION['uid'], $optime);
+				$exerciseid = $this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, $_SESSION['uid'], $optime);
 				
 				//Insert new exercise descriptors (if any)
 				$exercise->insertDescriptors($parsedDescriptors,$exerciseid);

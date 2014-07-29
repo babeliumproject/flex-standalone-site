@@ -13,7 +13,7 @@
 
 			protected function goToAssignment_clickHandler(event:MouseEvent):void
 			{
-				BabeliaBrowserManager.getInstance().updateURL('assignment','view','id='+data.id);
+				BabeliaBrowserManager.getInstance().redirect('assignment','view','id='+data.id);
 			}
 			
 			protected function initializeHandler(event:FlexEvent):void

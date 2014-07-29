@@ -141,7 +141,7 @@
 			protected function checkPermissions():void{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().updateURL('course');
+					BabeliaBrowserManager.getInstance().redirect('course');
 					return;
 				}
 				this.visible=true;

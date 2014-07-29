@@ -17,13 +17,13 @@
 			protected function footerFAQ_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('help');
+				BabeliaBrowserManager.getInstance().redirect('help');
 			}
 
 			protected function footerAboutUs_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_ABOUT_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('about');
+				BabeliaBrowserManager.getInstance().redirect('about');
 			}
 
 			protected function footerDevelopers_clickHandler(event:MouseEvent):void
@@ -44,7 +44,7 @@
 			protected function helpFAQ_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('help');
+				BabeliaBrowserManager.getInstance().redirect('help');
 			}
 
 			protected function blogButton_clickHandler(event:MouseEvent):void

@@ -246,12 +246,14 @@ class Exercise {
 	 */
 	public function parseExerciseTags($tags){
 		$ptags = array();
-		//Remove a set of symbols from the tag string
-		$ctags = str_replace(array(":",";","{","}","[","]","\\","/"),'',escapeshellcmd($tags));
+		
 		//Change new-line characters with commas, lower-case, remove html tags, and unnecessary whitespaces
-		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',strtolower(strip_tags(trim($ctags)))));
+		$ttags = strtolower(strip_tags(trim(escapeshellcmd($tags))));
+		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',$ttags));
 		
 		$cleanTags = array();
+		
+		$symbolstoremove = array(":",";","{","}","[","]","\\","/","\"","'",".");
 		
 		foreach($ptags as $tag){
 			
@@ -259,7 +261,7 @@ class Exercise {
 			//Remove links to avoid spam
 			if(strlen($cleanTag) > 1 && !preg_match("/^http[s]?\:\\/\\/([^\\/]+)/",$cleanTag,$matches)){
 				//TODO cut tags longer than 20 chars
-				$cleanTags[] = $cleanTag;
+				$cleanTags[] = str_replace($symbolstoremove,'',$cleanTag);
 			}
 		}
 		unset($tag);
@@ -283,7 +285,7 @@ class Exercise {
 					$tagId = $exists->id;
 				}
 				$sql = "SELECT fk_tag_id FROM rel_exercise_tag WHERE (fk_exercise_id=%d AND fk_tag_id=%d)";
-				$exist = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
+				$exists = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
 				if(!$exists){
 					$relInsert = "INSERT INTO rel_exercise_tag SET fk_exercise_id=%d, fk_tag_id=%d";
 					$this->conn->_insert($relInsert, $exerciseId, $tagId);

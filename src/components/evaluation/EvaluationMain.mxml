@@ -444,7 +444,7 @@
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
-				BabeliaBrowserManager.getInstance().updateURL('evaluate',BabeliaBrowserManager.EVALUATE, urlResponseName);
+				BabeliaBrowserManager.getInstance().redirect('evaluate',BabeliaBrowserManager.EVALUATE, urlResponseName);
 			}
 
 			private function prepareWaitingAssessment(selectedItem:EvaluationVO):void
@@ -491,7 +491,7 @@
 					var urlResponseName:String=_responseName.replace("audio/", "");
 
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
-					BabeliaBrowserManager.getInstance().updateURL('evaluation',BabeliaBrowserManager.REVISE, urlResponseName);
+					BabeliaBrowserManager.getInstance().redirect('evaluation',BabeliaBrowserManager.REVISE, urlResponseName);
 				}
 			}
 
@@ -543,7 +543,7 @@
 					var urlResponseName:String=_responseName.replace("audio/", "");
 
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
-					BabeliaBrowserManager.getInstance().updateURL('evaluation',BabeliaBrowserManager.VIEW,urlResponseName);
+					BabeliaBrowserManager.getInstance().redirect('evaluation',BabeliaBrowserManager.VIEW,urlResponseName);
 				}
 			}
 

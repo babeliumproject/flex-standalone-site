@@ -36,7 +36,7 @@ package modules.create.command
 			if (result is String){
 				DataModel.getInstance().exerciseDataModified = true;
 				//Go to step 2 of exercise creation, media management
-				BabeliaBrowserManager.getInstance().updateURL('create', 'edit', result+'/s/2');
+				BabeliaBrowserManager.getInstance().redirect('create', 'edit', result+'/s/2');
 			} else {
 				DataModel.getInstance().exerciseDataModified = false;
 				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_MODIFYING_VIDEO_DATA'));

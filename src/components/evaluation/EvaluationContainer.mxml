@@ -56,7 +56,7 @@
 			protected function checkPermissions():void{
 				if (!DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().updateURL('login');
+					BabeliaBrowserManager.getInstance().redirect('login');
 					BabeliaBrowserManager.getInstance().parseURL();
 					return;
 				}

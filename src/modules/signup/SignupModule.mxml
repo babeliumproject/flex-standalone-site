@@ -85,7 +85,7 @@
 				if (DataModel.getInstance().isLoggedIn)
 				{
 					//If the user is already logged in return to previous page or navigate to home
-					BabeliaBrowserManager.getInstance().updateURL('home');
+					BabeliaBrowserManager.getInstance().redirect('home');
 					return;
 				}
 				this.visible=true;

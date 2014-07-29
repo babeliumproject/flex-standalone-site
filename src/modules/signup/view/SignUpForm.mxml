@@ -378,7 +378,7 @@
 			{
 				resetToInitialStatus();
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('home');
+				BabeliaBrowserManager.getInstance().redirect('home');
 			}
 			
 			public function resetGroup():void{

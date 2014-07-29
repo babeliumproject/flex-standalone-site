@@ -19,7 +19,7 @@
 			{
 				if(DataModel.getInstance().moduleMap.hasOwnProperty('course')){
 					_courseInfo = DataModel.getInstance().moduleMap['course'];
-					BabeliaBrowserManager.getInstance().updateURL('assignment','add','course='+_courseInfo.id);
+					BabeliaBrowserManager.getInstance().redirect('assignment','add','course='+_courseInfo.id);
 				}
 			}
 		]]>

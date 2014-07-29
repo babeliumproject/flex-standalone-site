@@ -14,7 +14,7 @@
 			protected function homeButtons_clickHandler(event:MouseEvent, destination:String):void
 			{
 				//new ViewChangeEvent(destination).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL(destination);
+				BabeliaBrowserManager.getInstance().redirect(destination);
 			}
 		]]>
 	</fx:Script>

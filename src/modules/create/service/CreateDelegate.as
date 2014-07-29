@@ -28,13 +28,13 @@ package modules.create.service
 		}
 		
 		public function updateExercise(query:Object = null):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "exerciseRO" );
-			var pendingCall:AsyncToken = service.updateExercise(query);
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
+			var pendingCall:AsyncToken = service.saveExerciseData(query);
 			pendingCall.addResponder(responder);
 		}
 		
 		public function addExerciseMedia(query:Object = null):void{
-			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "exerciseRO" );
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
 			var pendingCall:AsyncToken = service.addExerciseMedia(query);
 			pendingCall.addResponder(responder);
 		}

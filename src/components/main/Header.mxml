@@ -155,13 +155,13 @@
 			{
 				//Change contentViewStack to sign up page
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('register');
+				BabeliaBrowserManager.getInstance().redirect('register');
 			}
 
 			public function userOptionsItemClickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('account');
+				BabeliaBrowserManager.getInstance().redirect('account');
 			}
 
 			public function signOutClickHandler():void
@@ -170,7 +170,7 @@
 				new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
 				// Redirecting to home
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('home');
+				BabeliaBrowserManager.getInstance().redirect('home');
 				anonymousCP.includeInLayout=true;
 				anonymousCP.visible=true;
 				userCP.includeInLayout=false;

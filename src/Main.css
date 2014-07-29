@@ -729,3 +729,23 @@ s|TextInput{
 	skinClass: ClassReference("skins.BootstrapButton");
 }
 
+.frm-input{
+	paddingLeft: 12;
+	paddingRight: 12;
+	paddingTop: 6;
+	paddingBottom: 6;
+	borderColor: #CCCCCC;
+	borderAlpha: 1;
+	skinClass: ClassReference("skins.BootstrapTextInput");
+}
+
+.frm-textarea{
+	paddingLeft: 12;
+	paddingRight: 12;
+	paddingTop: 6;
+	paddingBottom: 6;
+	borderColor: #CCCCCC;
+	borderAlpha: 1;
+	skinClass: ClassReference("skins.BootstrapTextArea");
+}
+

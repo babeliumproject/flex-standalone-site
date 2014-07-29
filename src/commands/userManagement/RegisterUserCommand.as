@@ -41,7 +41,7 @@ package commands.userManagement
 				_dataModel.isSuccessfullyLogged = false;
 				_dataModel.isLoggedIn = false;
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('home');
+				BabeliaBrowserManager.getInstance().redirect('home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else {
 				//Inform about the error

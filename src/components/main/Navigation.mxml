@@ -46,7 +46,7 @@
 										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
 										  visible="{DataModel.getInstance().isLoggedIn}"
 										  selected="{_urlManager.moduleIndex == 12 &amp;&amp;
-										  			 _urlManager.actionFragment == BabeliaBrowserManager.LEARN }"
+										  			 _urlManager.actionFragment == 'learn' }"
 										  click="redirect('course','learn')"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"
@@ -126,7 +126,7 @@
 			}
 			
 			private function redirect(module:String=null, action:String=null, value:String=null):void{
-				_urlManager.updateURL(module,action,value);
+				_urlManager.redirect(module,action,value);
 				//_urlManager.parseURL();
 			}
 
@@ -135,7 +135,7 @@
 //				if(event != null)
 //					unselectNavButtons(event);
 				//new ViewChangeEvent(destination).dispatch();
-				_urlManager.updateURL(destination);
+				_urlManager.redirect(destination);
 			}
 
 			private function unselectNavButtons(event:MouseEvent):void
@@ -158,7 +158,7 @@
 				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
 				//{
 				//changeView(ViewChangeEvent.VIEW_SEARCH_MODULE, event);
-				_urlManager.updateURL('search');
+				_urlManager.redirect('search');
 				//}
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}

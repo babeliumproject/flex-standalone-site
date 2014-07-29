@@ -417,7 +417,7 @@ package modules.subtitle.view
 		public function updateURL(action:String, target:String):void
 		{
 			// Update URL
-			BabeliaBrowserManager.getInstance().updateURL('subtitles', action, target);
+			BabeliaBrowserManager.getInstance().redirect('subtitles', action, target);
 		}
 
 		public function subtitleVersionComboLabelFunction(item:Object):String

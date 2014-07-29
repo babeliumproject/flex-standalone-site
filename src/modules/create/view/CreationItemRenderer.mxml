@@ -179,7 +179,7 @@
 			{
 				//parentDocument.videoEditRequested(data);
 				trace("Exercise renderer event dispatch data: "+data.exercisecode);
-				BabeliaBrowserManager.getInstance().updateURL('create','edit',data.exercisecode);
+				BabeliaBrowserManager.getInstance().redirect('create','edit',data.exercisecode);
 			}
 
 			/*
@@ -319,7 +319,7 @@
 				DataModel.getInstance().searchField=(event.target as IconButton).label;
 				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('search');
+				BabeliaBrowserManager.getInstance().redirect('search');
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 

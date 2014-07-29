@@ -39,7 +39,7 @@
 				if (BabeliaBrowserManager.getInstance().moduleIndex != 11)
 					return;
 
-				if (BabeliaBrowserManager.getInstance().actionFragment != BabeliaBrowserManager.ACTIVATE)
+				if (BabeliaBrowserManager.getInstance().actionFragment != 'activate')
 					return;
 
 				var parameters:Object=URLUtil.stringToObject(value, "&");
@@ -80,7 +80,7 @@
 				redirectTimer.stop();
 				message = noActionMessage;
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().updateURL('home');
+				BabeliaBrowserManager.getInstance().redirect('home');
 			}
 			
 		]]>

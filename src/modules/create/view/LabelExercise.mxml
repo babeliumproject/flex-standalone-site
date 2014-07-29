@@ -24,14 +24,14 @@
 						 width="100%"
 						 required="true">
 				<s:TextInput width="100%"
-							 id="videoTitle"
-							 skinClass="skins.BootstrapTextInput"/>
+							 id="exerciseTitle"
+							 styleName="frm-input"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
 						 width="100%"
 						 required="true">
 				<mx:RichTextEditor width="100%"
-								   id="videoDescription"
+								   id="exerciseDescription"
 								   dropShadowVisible="false"
 								   headerHeight="0"
 								   fontWeight="normal"/>
@@ -42,9 +42,8 @@
 						 required="true">
 				<s:TextArea width="100%"
 							heightInLines="3"
-							id="videoTags"
-							maxChars="255"
-							fontWeight="normal"/>
+							id="exerciseKeywords"
+							styleName="frm-textarea"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						 styleName="boldLabel"
@@ -69,35 +68,6 @@
 										 sortItems="true" 
 										 labelFunction="{languageComboBoxLabelFunction}"
 										 dataProvider="{dpD}"/>
-			
-			<!--
-			<mx:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
-						 styleName="boldLabel"
-						 required="true">
-				<common:LicenseComboBox id="licenseSelector"/>
-			</mx:FormItem>
-			<mx:FormItem label="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
-						 styleName="boldLabel"
-						 toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
-						 width="100%">
-				<s:TextInput width="100%"
-							 id="referenceUrl"/>
-			</mx:FormItem>
-
-			
-			<mx:FormItem label="{resourceManager.getString('myResources','AUTOMATIC_EVALUATION')}"
-						 styleName="boldLabel"
-						 visible="{DataModel.getInstance().loggedUser.isAdmin}"
-						 includeInLayout="{DataModel.getInstance().loggedUser.isAdmin}"
-						 height="67">
-				<s:CheckBox label="{resourceManager.getString('myResources','ADD_AUTOMATIC_EVALUATION_IF_POSSIBLE')}"
-							id="autoevaluateCheckbox"/>
-				<mx:FormItem label="{resourceManager.getString('myResources','CHOOSE_TRANSCRIPTION_SYSTEM')}"
-							 styleName="boldLabel">
-					<common:TranscriptionSystemComboBox id="transcSystemSelector"/>
-				</mx:FormItem>
-			</mx:FormItem>
-			-->
 		</s:Form>
 	</s:HGroup>
 
@@ -118,16 +88,16 @@
 	
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
-							source="{videoTitle}"
+							source="{exerciseTitle}"
 							property="text"
 							minLength="3"
 							maxLength="80"/>
 		<mx:StringValidator id="descriptionValidator"
-							source="{videoDescription}"
+							source="{exerciseDescription}"
 							property="htmlText"
 							minLength="3"/>
 		<mx:StringValidator id="tagValidator"
-							source="{videoTags}"
+							source="{exerciseKeywords}"
 							property="text"
 							minLength="3"
 							maxLength="255"/>
@@ -158,8 +128,6 @@
 			import view.common.CustomAlert;
 			
 			import vo.ExerciseVO;
-			
-			private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
 
 			private var _dataModel:DataModel = DataModel.getInstance();
 			private var _descriptors:Array;
@@ -170,23 +138,19 @@
 			
 			[Bindable] public var formIsValid:Boolean=false;
 			[Bindable] private var exerciseData:ExerciseVO;
-			[Bindable] private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
-
+			
 			private function completeHandler(event:FlexEvent):void
 			{
-				videoTitle.addEventListener(Event.CHANGE, validateForm);
-				videoDescription.addEventListener(Event.CHANGE, validateForm);
-				videoTags.addEventListener(Event.CHANGE, validateForm);
-				//getDescriptorCodesFromResourceFile();
+				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
 			}
 
 			public function resetComponent():void
 			{
-				trace("UserVideoInfoEdit Reset component");
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
-				//licenseSelector.selectedIndex=0;
 
 				//Reset the descriptors
 				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex+1));
@@ -194,21 +158,20 @@
 				descriptorContainer.includeInLayout = false;
 				
 				//Reset the video form fields
-				videoTitle.removeEventListener(Event.CHANGE, validateForm);
-				videoDescription.removeEventListener(Event.CHANGE, validateForm);
-				videoTags.removeEventListener(Event.CHANGE, validateForm);
+				exerciseTitle.removeEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.removeEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.removeEventListener(Event.CHANGE, validateForm);
 
 				titleValidator.enabled=false;
 				descriptionValidator.enabled=false;
 				tagValidator.enabled=false;
 
-				videoTitle.text="";
-				videoDescription.htmlText="";
-				videoTags.text="";
-				//referenceUrl.text="";
-				videoTitle.addEventListener(Event.CHANGE, validateForm);
-				videoDescription.addEventListener(Event.CHANGE, validateForm);
-				videoTags.addEventListener(Event.CHANGE, validateForm);
+				exerciseTitle.text="";
+				exerciseDescription.htmlText="";
+				exerciseKeywords.text="";
+				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
 
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
@@ -293,19 +256,15 @@
 				//First remove the previous elements of the container
 				removeLevelDescriptors();
 				//Then add the new set of elements
-				trace("addLevelDescriptors for level: "+levelcode);
 				for (var item:String in _descriptors){
 					//Get only the descriptors of the chosen difficulty level
 					if(_descriptors[item] == levelcode){
-						trace("found matching descriptors");
 						var chkBox:CheckBox = new CheckBox();
 						chkBox.id=item;
 						chkBox.percentWidth=100;
-						
 						chkBox.label=resourceManager.getString("myResources",chkBox.id);
 						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item);
 						descriptorContainer.addElement(chkBox);
-						trace(resourceManager.getString("myResources",chkBox.id));
 					}
 				}
 			}
@@ -321,12 +280,10 @@
 				var containsSaved:Boolean=false;
 				if(savedDescriptors){
 					var savedDescCollection:ArrayCollection = new ArrayCollection(savedDescriptors);
-					trace(ObjectUtil.toString(savedDescCollection));
 					for(var i:int=0; i<descriptorContainer.numElements; i++){
 						var item:IVisualElement = descriptorContainer.getElementAt(i);
 						if((item is CheckBox)){
 							var descriptor:String = (item as CheckBox).id;
-							trace(descriptor);
 							if(savedDescCollection.contains(descriptor)){
 								(item as CheckBox).selected=true;
 								containsSaved=true;
@@ -349,17 +306,12 @@
 			{
 
 				var validUrl:Boolean=true;
-				if (fieldHasData(videoTitle.text) && fieldHasData(videoDescription.htmlText) && fieldHasData(videoTags.text))
+				if (fieldHasData(exerciseTitle.text) && fieldHasData(exerciseDescription.htmlText) && fieldHasData(exerciseKeywords.text))
 				{
-					exerciseData.title=videoTitle.text;
-					exerciseData.description=videoDescription.htmlText;
-					exerciseData.tags=parseTags(videoTags.text);
+					exerciseData.title=exerciseTitle.text;
+					exerciseData.description=exerciseDescription.htmlText;
+					exerciseData.tags=parseTags(exerciseKeywords.text);
 					exerciseData.language=languageSelector.selectedItem.code;
-
-					//exerciseData.license=String(licenseSelector.selectedItem.code).toLowerCase();
-					//exerciseData.reference=referenceUrl.text;
-
-					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
 					exerciseData.difficulty=difficultySelector.selectedIndex + 1;
 					
 					//If the user chose any level descriptors, those must be saved too
@@ -378,27 +330,17 @@
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));
 			}
-
-			/*
-			public function set cancelClickHandler(cancelFunction:Function):void
-			{
-				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
-			}
-			*/
 			
 			public function set setInformation(value:Boolean):void
 			{
 				//resetComponent();
 				var data:ExerciseVO = DataModel.getInstance().exerciseData;
 				exerciseData=data;
-				videoTitle.text=exerciseData.title;
-				videoDescription.htmlText=exerciseData.description;
-				videoTags.text=exerciseData.tags;
+				exerciseTitle.text=exerciseData.title;
+				exerciseDescription.htmlText=exerciseData.description;
+				exerciseKeywords.text=exerciseData.tags;
 				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
-				//licenseSelector.dataProvider = licenseSelector.licenses;
-				//licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(exerciseData.license);
-				//referenceUrl.text=exerciseData.reference;
 				difficultySelector.selectedIndex=exerciseData.difficulty - 1;
 				difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
