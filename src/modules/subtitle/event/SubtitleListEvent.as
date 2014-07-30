@@ -1,4 +1,4 @@
-package events
+package modules.subtitle.event
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	

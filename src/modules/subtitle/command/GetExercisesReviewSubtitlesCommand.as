@@ -1,4 +1,4 @@
-package commands.subtitles
+package modules.subtitle.command
 {
 	import business.ExerciseDelegate;
 	

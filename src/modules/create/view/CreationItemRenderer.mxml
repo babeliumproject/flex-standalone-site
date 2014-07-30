@@ -54,20 +54,10 @@
 				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<hulstkamp:AhFxRatingComponent rating="{data.avgRating}"
-										   enabled="false"
-										   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
-										   scaleX="1.2"
-										   scaleY="1.2"/>
 			<s:Label text="{dateFormatter.format(data.timecreated)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 
-
-		<s:Label text="{data.description}"
-				 maxDisplayedLines="3"
-				 toolTip="{data.description}"
-				 width="850"/>
 		<s:HGroup width="850" paddingTop="4" paddingBottom="4" verticalAlign="middle">
 			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"/>
 			<s:TileGroup id="exerciseTagsBox"
@@ -128,7 +118,7 @@
 			import control.CuePointManager;
 			
 			import events.SearchEvent;
-			import events.SubtitleEvent;
+			import modules.subtitle.event.SubtitleEvent;
 			
 			import model.DataModel;
 			
@@ -179,7 +169,7 @@
 			{
 				//parentDocument.videoEditRequested(data);
 				trace("Exercise renderer event dispatch data: "+data.exercisecode);
-				BabeliaBrowserManager.getInstance().redirect('create','edit',data.exercisecode);
+				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+data.exercisecode);
 			}
 
 			/*
@@ -258,37 +248,6 @@
 				url = DataModel.getInstance().thumbURL + "/" + temp.exercisecode + "/default.jpg";
 				return url;
 			}
-
-			/*
-			public function getLicenseSource(temp:ExerciseVO):String
-			{
-				_licenseData=LicenseResource.getLicenseData(temp.license);
-				return _licenseData.imageResource;
-			}
-
-			//http://livedocs.adobe.com/flex/3/langref/flash/net/package.html#navigateToURL%28%29
-			private function addHttpIfneeded(url:String):String
-			{
-				var urlparse:String=url;
-				var httpPattern:RegExp=new RegExp("^http[s]?\:\\/\\/");
-				if (httpPattern.exec(urlparse) == null)
-				{
-					urlparse="http://" + urlparse;
-				}
-				return urlparse;
-			}
-
-			private function checkExternalUrl(url:String):Boolean
-			{
-				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
-				var result:Object=pattern.exec(url);
-				if (result == null || url.length >= 4096)
-				{
-					return (false);
-				}
-				return (true);
-			}
-			*/
 			
 			private function addTagLinkButtons():void
 			{
@@ -317,9 +276,7 @@
 			protected function tagClickHandler(event:MouseEvent):void
 			{
 				DataModel.getInstance().searchField=(event.target as IconButton).label;
-				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('search');
+				BabeliaBrowserManager.getInstance().redirect('/search/query/'+(event.target as IconButton).label);
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 

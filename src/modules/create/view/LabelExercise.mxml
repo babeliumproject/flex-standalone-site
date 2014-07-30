@@ -5,7 +5,8 @@
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
 		  width="100%"
-		  creationComplete="completeHandler(event)" xmlns:view="modules.create.view.*">
+		  creationComplete="completeHandler(event)"
+		  xmlns:view="modules.create.view.*">
 
 
 	<s:Label id="editVideoTitle"
@@ -18,18 +19,24 @@
 		</s:stroke>
 	</s:Line>
 
-	<s:HGroup width="100%">
+	<s:BorderContainer id="chooseMediaTypeContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+
 		<s:Form width="100%">
 			<s:FormItem label="{resourceManager.getString('myResources','TITLE')}"
-						 width="100%"
-						 required="true">
+						width="100%"
+						required="true">
 				<s:TextInput width="100%"
 							 id="exerciseTitle"
 							 styleName="frm-input"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
-						 width="100%"
-						 required="true">
+						width="100%"
+						required="true">
 				<mx:RichTextEditor width="100%"
 								   id="exerciseDescription"
 								   dropShadowVisible="false"
@@ -37,39 +44,52 @@
 								   fontWeight="normal"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','KEYWORDS')}"
-						 width="100%"
-						 toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
-						 required="true">
+						width="100%"
+						toolTip="{resourceManager.getString('myResources','COMMA_SEPARATED_WORDS')}"
+						required="true">
 				<s:TextArea width="100%"
 							heightInLines="3"
 							id="exerciseKeywords"
 							styleName="frm-textarea"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
-						 styleName="boldLabel"
-						 required="true"
-						 width="100%">
+						styleName="boldLabel"
+						required="true"
+						width="100%">
 				<s:HGroup width="100%">
-					<common:DifficultyLevelComboBox id="difficultySelector" change="onDifficultyChange(event)"/>
-					<skins:IconButton styleName="btn-link" label="{resourceManager.getString('myResources','DESCRIPTORS')}" click="showHideDescriptorsClickHandler(event)" visible="true"/>
+					<common:DifficultyLevelComboBox id="difficultySelector"
+													change="onDifficultyChange(event)"/>
+					<skins:IconButton styleName="btn-link"
+									  label="{resourceManager.getString('myResources','DESCRIPTORS')}"
+									  click="showHideDescriptorsClickHandler(event)"
+									  visible="true"/>
 				</s:HGroup>
-				<s:VGroup id="descriptorContainer" width="100%" visible="false" includeInLayout="false"/>
+				<s:VGroup id="descriptorContainer"
+						  width="100%"
+						  visible="false"
+						  includeInLayout="false"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
-						 styleName="boldLabel"
-						 required="true">
+						styleName="boldLabel"
+						required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</s:FormItem>
-			<view:DifficultyDropDownList id="test1" skinClass="skins.BootstrapDropDownList"
-										 cornerRadius="3" borderColor="0xcccccc" requireSelection="true"
+			<view:DifficultyDropDownList id="test1"
+										 skinClass="skins.BootstrapDropDownList"
+										 cornerRadius="3"
+										 borderColor="0xcccccc"
+										 requireSelection="true"
 										 dataProvider="{dpleve}"/>
-			<view:DifficultyDropDownList id="test2" skinClass="skins.BootstrapDropDownList" 
-										 cornerRadius="3" borderColor="0xcccccc" requireSelection="true" 
-										 sortItems="true" 
+			<view:DifficultyDropDownList id="test2"
+										 skinClass="skins.BootstrapDropDownList"
+										 cornerRadius="3"
+										 borderColor="0xcccccc"
+										 requireSelection="true"
+										 sortItems="true"
 										 labelFunction="{languageComboBoxLabelFunction}"
 										 dataProvider="{dpD}"/>
 		</s:Form>
-	</s:HGroup>
+	</s:BorderContainer>
 
 	<s:HGroup width="100%"
 			  horizontalAlign="center"
@@ -79,13 +99,13 @@
 						  label="{resourceManager.getString('myResources','SAVE_AND_CONTINUE')}"
 						  click="saveChangesClickHandler(event)"/>
 	</s:HGroup>
-	
+
 	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
 				destination="setInformation"/>
 
 	<fx:Binding source="{DataModel.getInstance().exerciseDataModified}"
 				destination="videoDataModified"/>
-	
+
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
 							source="{exerciseTitle}"
@@ -106,13 +126,13 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
-			
+
 			import model.DataModel;
 			import model.LocalesAndFlags;
 			import model.ResourceSubscriber;
-			
+
 			import modules.create.event.CreateEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.core.IVisualElement;
 			import mx.events.CollectionEvent;
@@ -122,23 +142,25 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.validators.Validator;
-			
+
 			import spark.components.CheckBox;
-			
+
 			import view.common.CustomAlert;
-			
+
 			import vo.ExerciseVO;
 
-			private var _dataModel:DataModel = DataModel.getInstance();
+			private var _dataModel:DataModel=DataModel.getInstance();
 			private var _descriptors:Array;
 			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
-			
+
 			// Holds a reference to the currently focussed control on the form.
 			private var focussedFormControl:DisplayObject;
-			
-			[Bindable] public var formIsValid:Boolean=false;
-			[Bindable] private var exerciseData:ExerciseVO;
-			
+
+			[Bindable]
+			public var formIsValid:Boolean=false;
+			[Bindable]
+			private var exerciseData:ExerciseVO;
+
 			private function completeHandler(event:FlexEvent):void
 			{
 				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
@@ -153,10 +175,10 @@
 				difficultySelector.selectedIndex=0;
 
 				//Reset the descriptors
-				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex+1));
-				descriptorContainer.visible = false;
-				descriptorContainer.includeInLayout = false;
-				
+				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex + 1));
+				descriptorContainer.visible=false;
+				descriptorContainer.includeInLayout=false;
+
 				//Reset the video form fields
 				exerciseTitle.removeEventListener(Event.CHANGE, validateForm);
 				exerciseDescription.removeEventListener(Event.CHANGE, validateForm);
@@ -225,81 +247,97 @@
 				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				return (fieldData.length < 1) ? false : true;
 			}
-			
-			private function onDifficultyChange(event:ListEvent):void{
+
+			private function onDifficultyChange(event:ListEvent):void
+			{
 				var dispatchingItem:DifficultyLevelComboBox=DifficultyLevelComboBox(event.target);
-				var levelIndex:int = dispatchingItem.selectedIndex;
+				var levelIndex:int=dispatchingItem.selectedIndex;
 				if (levelIndex != -1)
 				{
-					if(!_descriptors)
+					if (!_descriptors)
 						getDescriptorCodesFromResourceFile();
-					addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(levelIndex+1));
+					addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(levelIndex + 1));
 				}
 			}
-			
-			private function getDescriptorCodesFromResourceFile():void{
-				var resources:Object = resourceManager.getResourceBundle("en_US","myResources").content;
-				var descriptorPattern:RegExp = /D\d{3}_(\w{2})_(\w{2})\d{2}/;
-				for (var item:Object in resources){
-					var key:String = item as String;
+
+			private function getDescriptorCodesFromResourceFile():void
+			{
+				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var descriptorPattern:RegExp=/D\d{3}_(\w{2})_(\w{2})\d{2}/;
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
 					//Filter the strings that have to do with the descriptors
-					var matches:Array = key.match(descriptorPattern);
-					if(matches && matches.length){
-						if(!_descriptors)
-							_descriptors = new Array();
-						_descriptors[key] = matches[1];
+					var matches:Array=key.match(descriptorPattern);
+					if (matches && matches.length)
+					{
+						if (!_descriptors)
+							_descriptors=new Array();
+						_descriptors[key]=matches[1];
 					}
 				}
 			}
-			
-			private function addLevelDescriptors(levelcode:String):void{
+
+			private function addLevelDescriptors(levelcode:String):void
+			{
 				//First remove the previous elements of the container
 				removeLevelDescriptors();
 				//Then add the new set of elements
-				for (var item:String in _descriptors){
+				for (var item:String in _descriptors)
+				{
 					//Get only the descriptors of the chosen difficulty level
-					if(_descriptors[item] == levelcode){
-						var chkBox:CheckBox = new CheckBox();
+					if (_descriptors[item] == levelcode)
+					{
+						var chkBox:CheckBox=new CheckBox();
 						chkBox.id=item;
 						chkBox.percentWidth=100;
-						chkBox.label=resourceManager.getString("myResources",chkBox.id);
+						chkBox.label=resourceManager.getString("myResources", chkBox.id);
 						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item);
 						descriptorContainer.addElement(chkBox);
 					}
 				}
 			}
-			
-			private function removeLevelDescriptors():void{
-				if(descriptorContainer.numElements){
+
+			private function removeLevelDescriptors():void
+			{
+				if (descriptorContainer.numElements)
+				{
 					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
 					descriptorContainer.removeAllElements();
 				}
 			}
-			
-			private function selectPreviousDescriptors(savedDescriptors:*):void{
+
+			private function selectPreviousDescriptors(savedDescriptors:*):void
+			{
 				var containsSaved:Boolean=false;
-				if(savedDescriptors){
-					var savedDescCollection:ArrayCollection = new ArrayCollection(savedDescriptors);
-					for(var i:int=0; i<descriptorContainer.numElements; i++){
-						var item:IVisualElement = descriptorContainer.getElementAt(i);
-						if((item is CheckBox)){
-							var descriptor:String = (item as CheckBox).id;
-							if(savedDescCollection.contains(descriptor)){
+				if (savedDescriptors)
+				{
+					var savedDescCollection:ArrayCollection=new ArrayCollection(savedDescriptors);
+					for (var i:int=0; i < descriptorContainer.numElements; i++)
+					{
+						var item:IVisualElement=descriptorContainer.getElementAt(i);
+						if ((item is CheckBox))
+						{
+							var descriptor:String=(item as CheckBox).id;
+							if (savedDescCollection.contains(descriptor))
+							{
 								(item as CheckBox).selected=true;
 								containsSaved=true;
 							}
 						}
 					}
 				}
-				if(containsSaved){
-					descriptorContainer.visible = true;
-					descriptorContainer.includeInLayout = true;
+				if (containsSaved)
+				{
+					descriptorContainer.visible=true;
+					descriptorContainer.includeInLayout=true;
 				}
 			}
-			
-			private function showHideDescriptorsClickHandler(e:MouseEvent):void{
-				descriptorContainer.visible = !descriptorContainer.visible;
-				descriptorContainer.includeInLayout = !descriptorContainer.includeInLayout;
+
+			private function showHideDescriptorsClickHandler(e:MouseEvent):void
+			{
+				descriptorContainer.visible=!descriptorContainer.visible;
+				descriptorContainer.includeInLayout=!descriptorContainer.includeInLayout;
 			}
 
 			private function saveChangesClickHandler(event:MouseEvent):void
@@ -313,13 +351,15 @@
 					exerciseData.tags=parseTags(exerciseKeywords.text);
 					exerciseData.language=languageSelector.selectedItem.code;
 					exerciseData.difficulty=difficultySelector.selectedIndex + 1;
-					
+
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();
-					for(var i:int=0; i<descriptorContainer.numElements; i++){
-						var item:IVisualElement = descriptorContainer.getElementAt(i);
-						if((item is CheckBox) && (item as CheckBox).selected){
-							var descriptor:String = (item as CheckBox).id;
+					for (var i:int=0; i < descriptorContainer.numElements; i++)
+					{
+						var item:IVisualElement=descriptorContainer.getElementAt(i);
+						if ((item is CheckBox) && (item as CheckBox).selected)
+						{
+							var descriptor:String=(item as CheckBox).id;
 							descriptors.push(descriptor);
 						}
 					}
@@ -330,23 +370,23 @@
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));
 			}
-			
+
 			public function set setInformation(value:Boolean):void
 			{
 				//resetComponent();
-				var data:ExerciseVO = DataModel.getInstance().exerciseData;
+				var data:ExerciseVO=DataModel.getInstance().exerciseData;
 				exerciseData=data;
 				exerciseTitle.text=exerciseData.title;
 				exerciseDescription.htmlText=exerciseData.description;
 				exerciseKeywords.text=exerciseData.tags;
-				languageSelector.dataProvider = _localesAndFlags.availableLanguages;
+				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
 				difficultySelector.selectedIndex=exerciseData.difficulty - 1;
 				difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
 				//The previous function should have created the descriptors of the selected level
 				selectPreviousDescriptors(exerciseData.descriptors);
-				
+
 			}
 
 			private function set videoDataModified(value:Boolean):void
@@ -358,24 +398,19 @@
 					DataModel.getInstance().exerciseDataModified=false;
 				}
 			}
-			
+
 			public function languageComboBoxLabelFunction(item:Object):String
 			{
 				var locale:String=String(item.code);
 				var upperLocale:String=locale.toUpperCase();
 				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
 			}
-			
+
 			[Bindable]
-			private var dpleve:ArrayCollection = new ArrayCollection([
-				ResourceManager.getInstance().getString('myResources','LEVEL_A1'), 
-				ResourceManager.getInstance().getString('myResources','LEVEL_A2'),
-				ResourceManager.getInstance().getString('myResources','LEVEL_B1'),
-				ResourceManager.getInstance().getString('myResources','LEVEL_B2'),
-				ResourceManager.getInstance().getString('myResources','LEVEL_C1')]);
-			
+			private var dpleve:ArrayCollection=new ArrayCollection([ResourceManager.getInstance().getString('myResources', 'LEVEL_A1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_A2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_C1')]);
+
 			[Bindable]
-			private var dpD:ArrayCollection = new ArrayCollection(DataModel.getInstance().localesAndFlags.availableLanguages);
+			private var dpD:ArrayCollection=new ArrayCollection(DataModel.getInstance().localesAndFlags.availableLanguages);
 		]]>
 	</fx:Script>
 </s:VGroup>

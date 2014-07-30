@@ -29,7 +29,7 @@
 			</s:layout>
 			<mx:Image source="resources/images/babelium_logo.png"
 					  buttonMode="true"
-					  click="changeView('home',event)"/>
+					  click="changeView('/home',event)"/>
 			
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
 										  styleName="practiceLinkButton"
@@ -38,7 +38,7 @@
 						   							!DataModel.getInstance().recording &amp;&amp;
 						   							!DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 1}"
-										  click="changeView('exercises',event)"/>
+										  click="changeView('/exercises',event)"/>
 			<mx:VRule height="40"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
 										  styleName="evaluateLinkButton"
@@ -47,14 +47,14 @@
 										  visible="{DataModel.getInstance().isLoggedIn}"
 										  selected="{_urlManager.moduleIndex == 12 &amp;&amp;
 										  			 _urlManager.actionFragment == 'learn' }"
-										  click="redirect('course','learn')"/>
+										  click="changeView('/course/learn',event)"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"
 										  styleName="configureLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{DataModel.getInstance().isLoggedIn}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 5}"
-										  click="changeView('create',event)"/>
+										  click="changeView('/create',event)"/>
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.50"/>
 		<s:BorderContainer id="searchUploadBar"
@@ -125,11 +125,6 @@
 			{
 			}
 			
-			private function redirect(module:String=null, action:String=null, value:String=null):void{
-				_urlManager.redirect(module,action,value);
-				//_urlManager.parseURL();
-			}
-
 			private function changeView(destination:String, event:MouseEvent):void
 			{
 //				if(event != null)

@@ -1,11 +1,11 @@
-package commands.subtitles
+package modules.subtitle.command
 {
 	import business.ExerciseDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.SubtitleListEvent;
+	import modules.subtitle.event.SubtitleListEvent;
 	
 	import model.DataModel;
 	

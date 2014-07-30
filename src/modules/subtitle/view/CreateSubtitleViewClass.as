@@ -7,7 +7,7 @@ package modules.subtitle.view
 	import control.CuePointManager;
 	
 	import modules.exercise.event.ExerciseEvent;
-	import events.SubtitleEvent;
+	import modules.subtitle.event.SubtitleEvent;
 	//import events.ViewChangeEvent;
 	
 	import flash.events.Event;

@@ -131,7 +131,7 @@
 			private function showRestorePass(event:Event):void{
 				//If the container's parent is an instance of Popup, close it
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-				BabeliaBrowserManager.getInstance().redirect('login','forgotpassword');
+				BabeliaBrowserManager.getInstance().redirect('/login/forgotpassword');
 			}
 
 			private function showActivationResend(even:Event):void

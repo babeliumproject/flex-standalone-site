@@ -36,14 +36,14 @@
 			private function changeHandler(event:Event):void
 			{
 				var obj:Object=List(event.target).selectedItem;
-				BabeliaBrowserManager.getInstance().redirect('create', 'edit', obj.exercisecode);
+				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+obj.exercisecode);
 			}
 		]]>
 	</fx:Script>
 
 	<skins:IconButton id="addnewexercise"
 					  label="{resourceManager.getString('myResources','ADD_NEW_EXERCISE')}"
-					  click="{BabeliaBrowserManager.getInstance().redirect('create','add')}"
+					  click="{BabeliaBrowserManager.getInstance().redirect('/create/add')}"
 					  styleName="btn-primary"/>
 
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
@@ -72,7 +72,7 @@
 			</s:List>
 			<skins:IconButton id="seeAllCreations"
 							  label="{resourceManager.getString('myResources','SEE_ALL_MY_CREATIONS')}"
-							  click="{BabeliaBrowserManager.getInstance().redirect('create', 'manage')}"
+							  click="{BabeliaBrowserManager.getInstance().redirect('/create/manage')}"
 							  styleName="btn-default"/>
 		</s:VGroup>
 

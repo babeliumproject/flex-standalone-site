@@ -3,7 +3,7 @@ package control
 	//import events.ViewChangeEvent;
 
 	import model.DataModel;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
@@ -74,8 +74,13 @@ package control
 		}
 
 		/**
-		 * Parse function
-		 **/
+		 * Listens for changes in the fragment property of the BrowserManager and parses the fragment
+		 * to notify all associated listeners of the degree of the change. The fragment property can be changed
+		 * by either the browser or calls to the redirect() function.
+		 * 
+		 * @param e
+		 * 
+		 */		
 		public function parseURL(e:BrowserChangeEvent=null):void
 		{
 			_isParsing=true;
@@ -92,7 +97,7 @@ package control
 			var length:Number=params.length;
 
 			if (length <= 1)
-				redirect('home');
+				redirect('/home');
 
 			if (length > 1)
 			{ // module
@@ -122,10 +127,12 @@ package control
 					case 'signup':
 					{
 						moduleURL='modules/signup/SignupModule.swf';
+						break;
 					}
 					case 'subtitle':
 					{
 						moduleURL='modules/subtitle/SubtitleModule.swf';
+						break;
 					}
 					default:
 					{
@@ -149,36 +156,10 @@ package control
 			_isParsing=false;
 		}
 
-
-		/**
-		 * Update URL function
-		 **/
-		public function redirect(module:String, action:String=null, target:String=null):void
+		public function redirect(url:String=null):void
 		{
-			// default url format: /module/action/target
-
-			//clearFragments();
-
-			var url:String;
-			if(!url)
-				return;
-			
-			//Absolute URL, take into account for module change
-			if (url.indexOf('/') == 0)
-			{
-
-			} else { //Relative url, change within the current module
-
-			}
-
-			if (action == null)
-				_browserManager.setFragment(DELIMITER + module);
-			else if (target == null)
-				_browserManager.setFragment(DELIMITER + module + DELIMITER + action);
-			else
-				_browserManager.setFragment(DELIMITER + module + DELIMITER + action + DELIMITER + target);
-
-			trace("BrowserManager current fragment: " + _browserManager.fragment);
+			trace("URL Manager redirect to: "+url);
+			_browserManager.setFragment(url);
 		}
 
 		public function getLastURL():String

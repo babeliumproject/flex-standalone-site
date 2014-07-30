@@ -25,7 +25,7 @@
 			import control.BabeliaBrowserManager;
 			protected function viewCourse_clickHandler(event:MouseEvent):void
 			{
-				BabeliaBrowserManager.getInstance().redirect('course','view',data.id);
+				BabeliaBrowserManager.getInstance().redirect('/course/view/'+data.id);
 			}
 			
 		]]>

@@ -1,4 +1,4 @@
-package commands.subtitles
+package modules.subtitle.command
 {
 	import business.SubtitleDelegate;
 	
@@ -7,7 +7,7 @@ package commands.subtitles
 	
 	import control.CuePointManager;
 	
-	import events.SubtitleEvent;
+	import modules.subtitle.event.SubtitleEvent;
 	
 	import model.DataModel;
 	

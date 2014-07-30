@@ -23,7 +23,7 @@ package modules.exercise.event
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
 			//new ViewChangeEvent(ViewChangeEvent.VIEW_SUBEDITOR).dispatch();
-			BabeliaBrowserManager.getInstance().redirect('subtitle','view',selectedEx.exercisecode);
+			BabeliaBrowserManager.getInstance().redirect('/subtitle/view/'+selectedEx.exercisecode);
 		}
 		
 	}

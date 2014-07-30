@@ -132,7 +132,7 @@
 			
 			import modules.exercise.event.ExerciseEvent;
 			import events.SearchEvent;
-			import events.SubtitleEvent;
+			import modules.subtitle.event.SubtitleEvent;
 			//import events.ViewChangeEvent;
 			
 			import model.DataModel;

@@ -155,7 +155,7 @@
 			{
 				//Change contentViewStack to sign up page
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('register');
+				BabeliaBrowserManager.getInstance().redirect('signup');
 			}
 
 			public function userOptionsItemClickHandler(event:MouseEvent):void

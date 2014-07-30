@@ -8,7 +8,6 @@ package control {
 	import commands.home.*;
 	import commands.main.*;
 	import commands.search.*;
-	import commands.subtitles.*;
 	import commands.userManagement.*;
 	import commands.videoSlice.*;
 	import commands.videoUpload.*;
@@ -17,14 +16,12 @@ package control {
 	
 	import flash.utils.getDefinitionByName;
 	
-	import modules.dashboard.command.GetCourses;
-	import modules.dashboard.command.ViewCourse;
-	import modules.dashboard.event.CourseEvent;
+	import modules.dashboard.command.*;
+	import modules.dashboard.event.*;
 	import modules.exercise.command.*;
-	import modules.exercise.event.ExerciseEvent;
-	import modules.exercise.event.GetExercisesCommand;
-	import modules.exercise.event.ResponseEvent;
-	import modules.exercise.event.WatchExerciseCommand;
+	import modules.exercise.event.*;
+	import modules.subtitle.command.*;
+	import modules.subtitle.event.*;
 
 	public class Controller extends FrontController {
 		//All the application's actions are managed from this controller

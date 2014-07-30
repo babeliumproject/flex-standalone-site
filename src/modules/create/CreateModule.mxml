@@ -120,9 +120,9 @@
 				} else {
 					//Editing an existing exercise
 					//if create/edit/<exercisecode>: go to step1
-					//if create/edit/<exercisecode>/s/1: go to step1
-					//if create/edit/<exercisecode>/s/2: go to step2
-					//if create/edit/<exercisecode>/s/3: go to step3
+					//if create/edit/<exercisecode>?s=1: go to step1
+					//if create/edit/<exercisecode>?s=2: go to step2
+					//if create/edit/<exercisecode>?s=3: go to step3
 				}
 				
 				trace("create edit call");
