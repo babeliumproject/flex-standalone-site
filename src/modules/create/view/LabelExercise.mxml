@@ -74,6 +74,52 @@
 						required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
+				<view:DifficultyDropDownList id="exerciseTypeDropdown"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 dataProvider="{dpExerciseType}"
+											 sortItems="true"
+											 change="onConditionalDropdownChange(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
+				<view:DifficultyDropDownList id="commSituationDropdow"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 dataProvider="{dpCommSituation}"
+											 sortItems="true"
+											 change="onConditionalDropdownChange(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}">
+				<s:HGroup width="100%">
+				<view:DifficultyDropDownList id="commCompetenceDropdow"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 dataProvider="{dpCommCompetence}"
+											 sortItems="true"
+											 change="onConditionalDropdownChange(event)"/>
+					<skins:IconButton id="showDescriptorsButton"
+									  styleName="btn-link"
+									  label="{resourceManager.getString('myResources','DESCRIPTORS')}"
+									  click="showHideDescriptorsClickHandler(event)"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}">
+				<view:DifficultyDropDownList id="lingAspectDropdown"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 dataProvider="{dpLingAspect}"
+											 sortItems="true"/>
+			</s:FormItem>
+			<!--
 			<view:DifficultyDropDownList id="test1"
 										 skinClass="skins.BootstrapDropDownList"
 										 cornerRadius="3"
@@ -88,6 +134,7 @@
 										 sortItems="true"
 										 labelFunction="{languageComboBoxLabelFunction}"
 										 dataProvider="{dpD}"/>
+			-->
 		</s:Form>
 	</s:BorderContainer>
 
@@ -126,13 +173,13 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UserEvent;
-
+			
 			import model.DataModel;
 			import model.LocalesAndFlags;
 			import model.ResourceSubscriber;
-
+			
 			import modules.create.event.CreateEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.IVisualElement;
 			import mx.events.CollectionEvent;
@@ -142,11 +189,11 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.validators.Validator;
-
+			
 			import spark.components.CheckBox;
-
+			
 			import view.common.CustomAlert;
-
+			
 			import vo.ExerciseVO;
 
 			private var _dataModel:DataModel=DataModel.getInstance();
@@ -405,6 +452,15 @@
 				var upperLocale:String=locale.toUpperCase();
 				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
 			}
+			
+			protected function onConditionalDropdownChange(event:Event):void{
+				
+			}
+			
+			[Bindable] private var dpExerciseType:ArrayCollection;
+			[Bindable] private var dpCommSituation:ArrayCollection;
+			[Bindable] private var dpCommCompetence:ArrayCollection;
+			[Bindable] private var dpLingAspect:ArrayCollection;
 
 			[Bindable]
 			private var dpleve:ArrayCollection=new ArrayCollection([ResourceManager.getInstance().getString('myResources', 'LEVEL_A1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_A2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_C1')]);
