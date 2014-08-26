@@ -457,10 +457,57 @@
 				
 			}
 			
-			[Bindable] private var dpExerciseType:ArrayCollection;
-			[Bindable] private var dpCommSituation:ArrayCollection;
-			[Bindable] private var dpCommCompetence:ArrayCollection;
-			[Bindable] private var dpLingAspect:ArrayCollection;
+			[Bindable]
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([
+				'FREE_CONTEXT',
+				'CONVERSATION',
+				'STORYTELLING',
+				'DUBBING',
+				'ERROR_DETECTION',
+				'TRANSLATION',
+				'READING'
+			]);
+			[Bindable]
+			private var dpCommSituation:ArrayCollection = new ArrayCollection([
+				{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'},
+				{'code': 2, 'label': 'WORK'},
+				{'code': 3, 'label': 'STUDIES'}
+			]);
+			[Bindable]
+			private var dpCommCompetence:ArrayCollection = new ArrayCollection([
+				'DEALING_WITH_EMERGENCY_SITUATIONS', 
+				'DESCRIBING_EXPERIENCES', 
+				'DEVELOPING_AN_ARGUMENT', 
+				'GENERAL_WORK', 
+				'GETTING_STAYING_WELL', 
+				'GIVING_PRESENTATIONS', 
+				'GOING_OUT_TO_EAT', 
+				'GOING_SHOPPING', 
+				'MAKING_A_TRIP', 
+				'MAKING_ARRANGEMENTS', 
+				'PARTICIPATING_IN_AN_INTERVIEW', 
+				'PARTICIPATING_IN_CLASS', 
+				'PARTICIPATING_IN_MEETINGS', 
+				'PUBLIC_SPEAKING', 
+				'SIGHTSEEING', 
+				'SOCIALIZING', 
+				'SPEAKING_ABOUT_ONESELF', 
+				'STAYING_AT_A_HOTEL', 
+				'TELEPHONING', 
+				'USING_FINANCIAL_AND_POSTAL_SERVICES'
+			]);
+			
+			[Bindable]
+			private var dpLingAspect:ArrayCollection = new ArrayCollection([
+				'VERB',
+				'NOUN',
+				'PRONOUNS',
+				'ADVERB_ADJECTIVE',
+				'FORMS_OF_QUESTIONS',
+				'NEGATION',
+				'VOCABULARY',
+				'PRONUNCIATION'
+			]);
 
 			[Bindable]
 			private var dpleve:ArrayCollection=new ArrayCollection([ResourceManager.getInstance().getString('myResources', 'LEVEL_A1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_A2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_C1')]);

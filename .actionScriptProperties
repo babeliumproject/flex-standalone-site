@@ -16,6 +16,8 @@
     <module application="src/Main.mxml" destPath="modules/create/CreateModule.swf" optimize="true" sourcePath="src/modules/create/CreateModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/dashboard/CourseModule.swf" optimize="true" sourcePath="src/modules/dashboard/CourseModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/login/LoginModule.swf" optimize="true" sourcePath="src/modules/login/LoginModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/signup/SignupModule.swf" optimize="true" sourcePath="src/modules/signup/SignupModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/subtitle/SubtitleModule.swf" optimize="true" sourcePath="src/modules/subtitle/SubtitleModule.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
