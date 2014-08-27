@@ -75,35 +75,35 @@
 				<common:LanguageComboBox id="languageSelector"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
-				<view:DifficultyDropDownList id="exerciseTypeDropdown"
-											 skinClass="skins.BootstrapDropDownList"
-											 cornerRadius="3"
-											 borderColor="0xcccccc"
-											 requireSelection="true"
-											 dataProvider="{dpExerciseType}"
-											 sortItems="true"
-											 change="onConditionalDropdownChange(event)"/>
+				<view:EnhancedDropDownList id="exerciseTypeDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   resourceDataProvider="{dpExerciseType}"
+										   sortItems="true"
+										   change="onConditionalDropdownChange(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
-				<view:DifficultyDropDownList id="commSituationDropdow"
-											 skinClass="skins.BootstrapDropDownList"
-											 cornerRadius="3"
-											 borderColor="0xcccccc"
-											 requireSelection="true"
-											 dataProvider="{dpCommSituation}"
-											 sortItems="true"
-											 change="onConditionalDropdownChange(event)"/>
+				<view:EnhancedDropDownList id="commSituationDropdow"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   resourceDataProvider="{dpCommSituation}"
+										   sortItems="true"
+										   change="onConditionalDropdownChange(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}">
 				<s:HGroup width="100%">
-				<view:DifficultyDropDownList id="commCompetenceDropdow"
-											 skinClass="skins.BootstrapDropDownList"
-											 cornerRadius="3"
-											 borderColor="0xcccccc"
-											 requireSelection="true"
-											 dataProvider="{dpCommCompetence}"
-											 sortItems="true"
-											 change="onConditionalDropdownChange(event)"/>
+					<view:EnhancedDropDownList id="commCompetenceDropdow"
+											   skinClass="skins.BootstrapDropDownList"
+											   cornerRadius="3"
+											   borderColor="0xcccccc"
+											   requireSelection="true"
+											   resourceDataProvider="{dpCommCompetence}"
+											   sortItems="true"
+											   change="onConditionalDropdownChange(event)"/>
 					<skins:IconButton id="showDescriptorsButton"
 									  styleName="btn-link"
 									  label="{resourceManager.getString('myResources','DESCRIPTORS')}"
@@ -111,30 +111,14 @@
 				</s:HGroup>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}">
-				<view:DifficultyDropDownList id="lingAspectDropdown"
-											 skinClass="skins.BootstrapDropDownList"
-											 cornerRadius="3"
-											 borderColor="0xcccccc"
-											 requireSelection="true"
-											 dataProvider="{dpLingAspect}"
-											 sortItems="true"/>
-			</s:FormItem>
-			<!--
-			<view:DifficultyDropDownList id="test1"
-										 skinClass="skins.BootstrapDropDownList"
-										 cornerRadius="3"
-										 borderColor="0xcccccc"
-										 requireSelection="true"
-										 dataProvider="{dpleve}"/>
-			<view:DifficultyDropDownList id="test2"
-										 skinClass="skins.BootstrapDropDownList"
-										 cornerRadius="3"
-										 borderColor="0xcccccc"
-										 requireSelection="true"
-										 sortItems="true"
-										 labelFunction="{languageComboBoxLabelFunction}"
-										 dataProvider="{dpD}"/>
-			-->
+				<view:EnhancedDropDownList id="lingAspectDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   resourceDataProvider="{dpLingAspect}"
+										   sortItems="true"/>
+			</s:FormItem>		
 		</s:Form>
 	</s:BorderContainer>
 
@@ -310,7 +294,17 @@
 			private function getDescriptorCodesFromResourceFile():void
 			{
 				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
-				var descriptorPattern:RegExp=/D\d{3}_(\w{2})_(\w{2})\d{2}/;
+				//var descriptorPattern:RegExp=/D\d{3}_(\w{2})_(\w{2})\d{2}/;
+				
+				/* D1_1_08_1
+				 * 	D: Descriptor
+				 *  1: Difficulty level (A1, A2, B1, B2, C)
+				 *  1: Communication situation (Everyday life & tourism, Studies, Work)
+				 *  08: Communicative competence (Staying at a hotel, Sightseeing, ...)
+				 *  1: Number of descriptor
+				 */
+				var descriptorPattern:RegExp=/D(\d)_(\d{2})_(\d)/;
+				
 				for (var item:Object in resources)
 				{
 					var key:String=item as String;
@@ -452,62 +446,21 @@
 				var upperLocale:String=locale.toUpperCase();
 				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
 			}
-			
-			protected function onConditionalDropdownChange(event:Event):void{
-				
+
+			protected function onConditionalDropdownChange(event:Event):void
+			{
+
 			}
-			
+
 			[Bindable]
-			private var dpExerciseType:ArrayCollection=new ArrayCollection([
-				'FREE_CONTEXT',
-				'CONVERSATION',
-				'STORYTELLING',
-				'DUBBING',
-				'ERROR_DETECTION',
-				'TRANSLATION',
-				'READING'
-			]);
+			private var dpExerciseType:ArrayCollection=new ArrayCollection(['FREE_CONTEXT', 'CONVERSATION', 'STORYTELLING', 'DUBBING', 'ERROR_DETECTION', 'TRANSLATION', 'READING']);
 			[Bindable]
-			private var dpCommSituation:ArrayCollection = new ArrayCollection([
-				{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'},
-				{'code': 2, 'label': 'WORK'},
-				{'code': 3, 'label': 'STUDIES'}
-			]);
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'WORK'}, {'code': 3, 'label': 'STUDIES'}]);
 			[Bindable]
-			private var dpCommCompetence:ArrayCollection = new ArrayCollection([
-				'DEALING_WITH_EMERGENCY_SITUATIONS', 
-				'DESCRIBING_EXPERIENCES', 
-				'DEVELOPING_AN_ARGUMENT', 
-				'GENERAL_WORK', 
-				'GETTING_STAYING_WELL', 
-				'GIVING_PRESENTATIONS', 
-				'GOING_OUT_TO_EAT', 
-				'GOING_SHOPPING', 
-				'MAKING_A_TRIP', 
-				'MAKING_ARRANGEMENTS', 
-				'PARTICIPATING_IN_AN_INTERVIEW', 
-				'PARTICIPATING_IN_CLASS', 
-				'PARTICIPATING_IN_MEETINGS', 
-				'PUBLIC_SPEAKING', 
-				'SIGHTSEEING', 
-				'SOCIALIZING', 
-				'SPEAKING_ABOUT_ONESELF', 
-				'STAYING_AT_A_HOTEL', 
-				'TELEPHONING', 
-				'USING_FINANCIAL_AND_POSTAL_SERVICES'
-			]);
-			
+			private var dpCommCompetence:ArrayCollection=new ArrayCollection(['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GETTING_STAYING_WELL', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'MAKING_A_TRIP', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'USING_FINANCIAL_AND_POSTAL_SERVICES']);
+
 			[Bindable]
-			private var dpLingAspect:ArrayCollection = new ArrayCollection([
-				'VERB',
-				'NOUN',
-				'PRONOUNS',
-				'ADVERB_ADJECTIVE',
-				'FORMS_OF_QUESTIONS',
-				'NEGATION',
-				'VOCABULARY',
-				'PRONUNCIATION'
-			]);
+			private var dpLingAspect:ArrayCollection=new ArrayCollection(['VERB', 'NOUN', 'PRONOUNS', 'ADVERB_ADJECTIVE', 'FORMS_OF_QUESTIONS', 'NEGATION', 'VOCABULARY', 'PRONUNCIATION']);
 
 			[Bindable]
 			private var dpleve:ArrayCollection=new ArrayCollection([ResourceManager.getInstance().getString('myResources', 'LEVEL_A1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_A2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_C1')]);

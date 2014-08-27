@@ -14,34 +14,42 @@ package modules.create.view
 	import spark.components.DropDownList;
 	import spark.globalization.SortingCollator;
 	
-	public class DifficultyDropDownList extends DropDownList
+	public class EnhancedDropDownList extends DropDownList
 	{
 		private var _sorter:SortingCollator  = new SortingCollator();
 		private var _sortItems:Boolean;
 		private var sortItemsChanged:Boolean;
 		
-		public function DifficultyDropDownList()
+		private var _resourceDataProvider:IList;
+		private var resourceDataProviderChanged:Boolean;
+		
+		public function EnhancedDropDownList()
 		{
 			super();
-			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler);
+			
 		}
 		
 		protected function localeChangeHandler(event:Event):void{
-			/*
-			getLocalizedItems();
-			if(_sortItems){
-				dataProvider.toArray().sort(localizedSorting);
-			}*/
+			var items:IList = getLocalizedItems();
+			if(dataProvider === items) return;
+			trace("Selected item: "+ObjectUtil.toString(selectedItem));
+			dataProvider = items;
+		}
+		
+		override public function set dataProvider(value:IList):void{
+			super.dataProvider=value;
+			sortItemsChanged=true;
+			invalidateProperties();
 		}
 		
 		override protected function commitProperties():void{
 			super.commitProperties();
-			
 			if(sortItemsChanged){
 				sortItemsChanged=false;
 				if(_sortItems){
 					var oldSelectedItem:Object = selectedItem;
-					dataProvider.toArray().sort(localizedSorting);
+					//FIXME casting should be to parent of ArrayCollection and should also allow ArrayList
+					(dataProvider as ArrayCollection).source.sort(localizedSorting);
 				}
 			}
 			
@@ -52,17 +60,26 @@ package modules.create.view
 			}
 		}
 		
-		protected function getLocalizedItems():Array{
-			var _dataList:Array = new Array();
+		protected function getLocalizedItems():IList{
+			var copyResDP:IList = null;
+			var dataList:IList = new ArrayCollection();
 			var o:Object;
 			var label:String;
-			for (var i:int=0; i<dataProvider.length; i++){
-				o = this.dataProvider.getItemAt(i);
-				label = getItemLabel(o);
-				if(label)
-					_dataList.push(ResourceManager.getInstance().getString('myResources', label));
+			copyResDP= ObjectUtil.copy(resourceDataProvider) as IList;
+			for (var i:int=0; i<copyResDP.length; i++){
+				o = copyResDP.getItemAt(i);
+				if(o is String){
+					o = ResourceManager.getInstance().getString('myResources', o as String);
+				} else {
+					trace("Item is object: "+ObjectUtil.toString(o));
+					if(o.hasOwnProperty(this.labelField)){
+						o[this.labelField] = ResourceManager.getInstance().getString('myResources', o[this.labelField]);
+						trace("Set the labelField property of the object to the translated value: "+ObjectUtil.toString(o));
+					}
+				}
+				dataList.addItem(o);
 			}
-			return _dataList;
+			return dataList;
 		}
 		
 		protected function localizedSorting(item1:Object, item2:Object):int{
@@ -106,6 +123,23 @@ package modules.create.view
 				label = item.hasOwnProperty(this.labelField) ? item[this.labelField] : item as String;
 			}
 			return label;
+		}
+		
+		[Bindable("resourceDataProviderChanged")]
+		public function get resourceDataProvider():IList{
+			return _resourceDataProvider;
+		}
+		
+		public function set resourceDataProvider(value:IList):void
+		{   
+			if (resourceDataProvider === value)
+				return;
+			
+			_resourceDataProvider=value;
+			dataProvider = getLocalizedItems();
+			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler);
+			
+			dispatchEvent(new Event("resourceDataProviderChanged"));
 		}
 		
 		public function set sortItems(value:Boolean):void{
