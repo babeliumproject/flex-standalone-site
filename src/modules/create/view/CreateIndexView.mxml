@@ -17,9 +17,9 @@
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-
+			
 			import model.DataModel;
-
+			
 			import mx.collections.ArrayCollection;
 
 			[Bindable]
@@ -37,6 +37,25 @@
 			{
 				var obj:Object=List(event.target).selectedItem;
 				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+obj.exercisecode);
+			}
+			
+			private var player:Object;
+			private var loader:Loader;
+			
+			private function loadPlayer():void{
+				loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.INIT, onLoaderInit);
+				loader.load(new URLRequest("http://babeliumlms/babeliumPlayer.swf"));
+			}
+			
+			private function onLoaderInit(event:Event):void{
+				addChild(loader);
+				loader.content.addEventListener("onConnectionReady", onConnectionReady);
+			}
+			
+			private function onConnectionReady(event:Event):void{
+				player = loader.content;
+				player.setSize(640,360);
 			}
 		]]>
 	</fx:Script>
