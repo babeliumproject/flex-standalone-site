@@ -49,7 +49,7 @@ package view.common
 			//return language1.localeCompare(language2);
 		}
 		
-		private function updateLocalizedComboBox(value:Boolean=true):void
+		private function updateLocalizedComboBox():void
 		{
 			if(translatableCollection){
 				dataProvider = localizeCollection(translatableCollection);
@@ -105,6 +105,7 @@ package view.common
 				
 				iterator.moveNext();
 			}
+			trace(ObjectUtil.toString(collectionCopy));
 			return collectionCopy;
 		}
 		

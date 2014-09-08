@@ -996,7 +996,7 @@
 							 label="{resourceManager.getString('myResources','EXERCISE_TYPE')}"
 							 width="100%">
 					<common:LocalizedComboBox id="exerciseTypeCombo"
-											  dataProvider="{dpExerciseType}"
+											  translatableDataProvider="{dpExerciseType}"
 											  fontWeight="normal"
 											  change="onConditionalComboChange(event)"/>
 				</mx:FormItem>
@@ -1005,7 +1005,7 @@
 							 label="{resourceManager.getString('myResources', 'COMMUNICATION_SITUATION')}"
 							 width="100%">
 					<common:LocalizedComboBox id="commSituationCombo"
-											  dataProvider="{dpCommSituation}"
+											  translatableDataProvider="{dpCommSituation}"
 											  fontWeight="normal"
 											  change="onConditionalComboChange(event)"/>
 				</mx:FormItem>
@@ -1015,7 +1015,7 @@
 							 width="100%">
 					<s:HGroup width="100%">
 						<common:LocalizedComboBox id="commCompetenceCombo"
-												  dataProvider="{dpCommCompetence}"
+												  translatableDataProvider="{dpCommCompetence}"
 												  fontWeight="normal"
 												  change="onConditionalComboChange(event)"/>
 						<skins:IconButton styleName="commonLinkButton"
@@ -1033,7 +1033,7 @@
 							 styleName="boldLabel"
 							 width="100%">
 					<common:LocalizedComboBox id="lingAspectCombo"
-											  dataProvider="{dpLingAspect}"
+											  translatableDataProvider="{dpLingAspect}"
 											  fontWeight="normal"/>
 				</mx:FormItem>
 
