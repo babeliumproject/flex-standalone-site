@@ -2,92 +2,46 @@ package view.common
 {
 	import flash.events.Event;
 	
+	import mx.collections.ArrayCollection;
+	import mx.collections.ICollectionView;
+	import mx.collections.IList;
+	import mx.collections.IViewCursor;
+	import mx.collections.ListCollectionView;
+	import mx.collections.XMLListCollection;
 	import mx.controls.ComboBox;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.managers.ICursorManager;
 	import mx.resources.ResourceManager;
+	import mx.utils.ObjectUtil;
 	
 	import spark.globalization.SortingCollator;
 	
 	public class LocalizedComboBox extends ComboBox
 	{
-		
-		private var _displayPrompt:Boolean = true;
-		private var _creationComplete:Boolean=false;
-		private var _useCustomDataProvider:Boolean=false;
-		private var _currentDataProvider:Array = new Array();
-		private var _prefixedValue:Object;
 		private var sorter:SortingCollator = new SortingCollator();
+		
+		protected var translatableCollection:ICollectionView;
+		
+		private var translatablePromptChanged:Boolean = false;
+		private var _translatablePrompt:String;
 		
 		public function LocalizedComboBox()
 		{
 			super();
-			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 			ResourceManager.getInstance().addEventListener(Event.CHANGE, onLocaleChainChange);
-		}
-		
-		public function onCreationComplete(event:FlexEvent):void
-		{
-			_creationComplete=true;
-			
-			this.setStyle('fontWeight', 'normal');
-			
-			this.labelFunction=localizedComboBoxLabelFunction;
-			this.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
-			
-			if(_displayPrompt){
-				this.prompt=ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
-			}
-			updateLocalizedComboBox();
 		}
 		
 		public function onLocaleChainChange(e:Event):void
 		{
-			updateLocalizedComboBox();	
-		}
-		
-		public function set useCustomDataProvider(value:Boolean):void
-		{
-			_useCustomDataProvider=value;
-		}
-		
-		public function set displayPrompt(value:Boolean):void{
-			_displayPrompt = value;
-		}
-		
-		public function set customDataProvider(data:Array):void
-		{
-			var newData:Array=new Array();
-			for (var i:int=0; i < data.length; i++)
-			{
-				var comboitem:Object={'code':i,'label':ResourceManager.getInstance().getString('myResources',data[i])};
-				if (comboitem)
-					newData.push(comboitem);
-			}
-			_currentDataProvider=newData;
-			if (_useCustomDataProvider && _creationComplete)
-				this.dataProvider=null;
-			this.dataProvider=_currentDataProvider;
-		}
-		
-		// Custom ComboBox functions
-		public function localizedComboBoxLabelFunction(item:Object):String
-		{
-			var rawlabel:String=String(item.label);
-			var upperlabel:String=rawlabel.toUpperCase();
-			return resourceManager.getString('myResources', upperlabel);
-		}
-		
-		public function languageComboBoxChangeHandler(event:Event):void
-		{
-			updateLocalizedComboBox();
+			if(translatableCollection)
+				updateLocalizedComboBox();	
 		}
 		
 		private function localeCompareFunction(item1:Object, item2:Object):int
 		{
-			var language1:String=localizedComboBoxLabelFunction(item1);
-			var language2:String=localizedComboBoxLabelFunction(item2);
-			
+			var language1:String=item1.label;
+			var language2:String=item2.label;
 			
 			sorter.setStyle('locale',resourceManager.localeChain[0]);
 			sorter.ignoreCase=true;
@@ -97,25 +51,72 @@ package view.common
 		
 		private function updateLocalizedComboBox(value:Boolean=true):void
 		{
-			if(_displayPrompt)
-				this.prompt = ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
-			if (_currentDataProvider.length > 0)
-			{
-				var oldSelectedItem:Object=this.selectedItem;
-				// Repopulate the combobox with locales,
-				// re-sorting by localized language name.
-				_currentDataProvider.sort(localeCompareFunction);
-				this.dataProvider=_currentDataProvider;
-				this.selectedItem=oldSelectedItem;
+			if(translatableCollection){
+				dataProvider = localizeCollection(translatableCollection);
+				//Save the selectedIndex before rearranging
+				var oldSelectedItem:Object=selectedItem;
+				//Sort the dataProvider
+				dataProvider.sort(localeCompareFunction);
+				//Restore the saved selectedIndex
+				selectedItem=oldSelectedItem;
 			}
 		}
 		
-		public function set prefixedValue(value:Object):void{
-			_prefixedValue = value;
+		public function set translatableDataProvider(value:Object):void{
+			if (value is Array)
+			{
+				translatableCollection = new ArrayCollection(value as Array);
+			}
+			else if (value is ICollectionView)
+			{
+				translatableCollection = ICollectionView(value);
+			}
+			else if (value is IList)
+			{
+				translatableCollection = new ListCollectionView(IList(value));
+			}
+			else if (value is XMLList)
+			{
+				translatableCollection = new XMLListCollection(value as XMLList);
+			}
+			else
+			{
+				// convert it to an array containing this one item
+				var tmp:Array = [value];
+				translatableCollection = new ArrayCollection(tmp);
+			}
+			
+			dataProvider = localizeCollection(translatableCollection);
 		}
 		
-		public function get prefixedValue():Object{
-			return _prefixedValue;
+		public function get localizedDataProvider():Object{
+			return translatableCollection;
+		}
+		
+		private function localizeCollection(value:ICollectionView):ArrayCollection{
+			var collectionCopy:ArrayCollection = new ArrayCollection();
+			var iterator:IViewCursor = value.createCursor();
+			while(!iterator.afterLast){
+				var item:Object = iterator.current;
+				var itemCopy:Object = ObjectUtil.copy(item);
+				
+				itemCopy.label = ResourceManager.getInstance().getString('myResources',item.label);
+				collectionCopy.addItem(itemCopy);
+				
+				iterator.moveNext();
+			}
+			return collectionCopy;
+		}
+		
+		public function set translatablePrompt(value:String):void
+		{
+			_translatablePrompt = value;
+			translatablePromptChanged = true;
+			prompt = ResourceManager.getInstance().getString('myResources',_translatablePrompt);
+		}
+		
+		public function get translatablePrompt():String{
+			return _translatablePrompt;
 		}
 	}
 }

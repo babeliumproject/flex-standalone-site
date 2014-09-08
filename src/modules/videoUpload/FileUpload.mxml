@@ -59,67 +59,26 @@
 
 
 			private var checkStatusTimer:Timer;
-			
+
 			private var compMatrix:Array;
-			
+
 
 			[Bindable]
 			public var formIsValid:Boolean=false;
-			
+
 			[Bindable]
-			private var dpExerciseTypes:ArrayCollection = new ArrayCollection([
-				{'code': 1, 'label': 'LANGUAGE_PRACTICE'},
-				{'code': 2, 'label': 'FREE_CONTEXT'},
-				{'code': 3, 'label': 'CONVERSATION'},
-				{'code': 4, 'label': 'STORYTELLING'},
-				{'code': 5, 'label': 'VOICE_OVER'},
-				{'code': 6, 'label': 'OTHER'}
-			]);
-			
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'LANGUAGE_PRACTICE'}, {'code': 2, 'label': 'FREE_CONTEXT'}, {'code': 3, 'label': 'CONVERSATION'}, {'code': 4, 'label': 'STORYTELLING'}, {'code': 5, 'label': 'VOICE_OVER'}, {'code': 6, 'label': 'OTHER'}]);
+
 			[Bindable]
-			private var dpCommSituations:ArrayCollection = new ArrayCollection([
-				{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'},
-				{'code': 1, 'label': 'STUDIES'},
-				{'code': 1, 'label': 'WORK'}
-			]);
-			
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 1, 'label': 'WORK'}]);
+
 			[Bindable]
-			private var dpCommCompetences:ArrayCollection;
-			
+			private var dpCommCompetence:ArrayCollection;
+
 			[Bindable]
-			private var dpLingAspects:ArrayCollection = new ArrayCollection([
-				{'code': 1, 'label': 'ADVERB_ADJECTIVE'},
-				{'code': 2, 'label': 'FORMS_OF_QUESTIONS'},
-				{'code': 3, 'label': 'NEGATION'},
-				{'code': 4, 'label': 'NOUN'},
-				{'code': 5, 'label': 'PRONOUNS'},
-				{'code': 6, 'label': 'PRONUNCIATION'},
-				{'code': 7, 'label': 'VERB'},
-				{'code': 8, 'label': 'VOCABULARY'}
-			]);
-			
-			private var competenceLabels:Array = [
-				'DEALING_WITH_EMERGENCY_SITUATIONS',
-				'DESCRIBING_EXPERIENCES',
-				'DEVELOPING_AN_ARGUMENT',
-				'GENERAL_WORK',
-				'GETTING_STAYING_WELL',
-				'GIVING_PRESENTATIONS',
-				'GOING_OUT_TO_EAT',
-				'GOING_SHOPPING',
-				'MAKING_A_TRIP',
-				'MAKING_ARRANGEMENTS',
-				'PARTICIPATING_IN_AN_INTERVIEW',
-				'PARTICIPATING_IN_CLASS',
-				'PARTICIPATING_IN_MEETINGS',
-				'PUBLIC_SPEAKING',
-				'SIGHTSEEING',
-				'SOCIALIZING',
-				'SPEAKING_ABOUT_ONESELF',
-				'STAYING_AT_A_HOTEL',
-				'TELEPHONING',
-				'USING_FINANCIAL_AND_POSTAL_SERVICES'
-			];
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'ADVERB_ADJECTIVE'}, {'code': 2, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 3, 'label': 'NEGATION'}, {'code': 4, 'label': 'NOUN'}, {'code': 5, 'label': 'PRONOUNS'}, {'code': 6, 'label': 'PRONUNCIATION'}, {'code': 7, 'label': 'VERB'}, {'code': 8, 'label': 'VOCABULARY'}]);
+
+			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GETTING_STAYING_WELL', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'MAKING_A_TRIP', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 
 			// Holds a reference to the currently focussed control on the form.
 			private var focussedFormControl:DisplayObject;
@@ -129,28 +88,33 @@
 			{
 				_strUploadUrl=strUploadUrl;
 			}
-			
-			private function onPreinit(event:FlexEvent):void{
+
+			private function onPreinit(event:FlexEvent):void
+			{
 				populateCompetenceMatrix();
-				var compCodes:Array = compMatrix[0][0];
+				var compCodes:Array=compMatrix[0][0];
 				populateCommCompetences(compCodes);
 			}
-			
-			protected function populateCompetenceMatrix():void{
-				compMatrix = new Array();
+
+			protected function populateCompetenceMatrix():void
+			{
+				compMatrix=new Array();
 				//compMatrix[x][y], x: situation, y: level
+				compMatrix[0]=[0, 1, 2, 3, 4];
 				compMatrix[0][0]=[17, 8, 18, 16, 14];
 				compMatrix[0][1]=[17, 8, 7, 18, 20, 5, 9, 15, 16, 1, 2, 14];
 				compMatrix[0][2]=[8, 7, 18, 20, 9, 15, 16, 1, 19, 2, 3, 14];
 				compMatrix[0][3]=[8, 7, 18, 20, 9, 16, 1, 19, 2, 3, 14];
 				compMatrix[0][4]=[5, 20, 15, 16, 2, 14];
-				
+
+				compMatrix[1]=[0, 1, 2, 3, 4];
 				compMatrix[1][0]=[12];
 				compMatrix[1][1]=[6, 12, 10];
 				compMatrix[1][2]=[6, 12];
 				compMatrix[1][3]=[6, 12, 10];
 				compMatrix[1][4]=[6, 12, 10];
-				
+
+				compMatrix[2]=[0, 1, 2, 3, 4];
 				compMatrix[2][0]=[11];
 				compMatrix[2][1]=[4, 19, 11];
 				compMatrix[2][2]=[4, 19, 13, 11];
@@ -317,7 +281,7 @@
 				progBar.validateNow();
 			}
 
-			
+
 
 			private function changeUploadMethod(event:ItemClickEvent):void
 			{
@@ -617,21 +581,21 @@
 			{
 
 			}
-			
+
 			/**
-			 * Exercise categorization functions 
+			 * Exercise categorization functions
 			 */
 			protected function onConditionalComboChange(event:ListEvent):void
 			{
-				
+
 				var dispatchingComponent:LocalizedComboBox=LocalizedComboBox(event.target);
-				var listItem:Object = dispatchingComponent.selectedItem;
-				
-				var currentLevel:int = difficultySelector.selectedIndex;
-				
-				var currentSituation:int = commSituation.visible ? commSituationCombo.selectedItem['code'] : -1;
-				var currentCompetence:int = commCompetence.visible ? commCompetenceCombo.selectedItem['code'] : -1;
-				
+				var listItem:Object=dispatchingComponent.selectedItem;
+
+				var currentLevel:int=difficultySelector.selectedIndex;
+
+				var currentSituation:int=commSituation.visible ? commSituationCombo.selectedItem['code'] : -1;
+				var currentCompetence:int=commCompetence.visible ? commCompetenceCombo.selectedItem['code'] : -1;
+
 				switch (dispatchingComponent.id)
 				{
 					case "exerciseTypeCombo":
@@ -650,9 +614,10 @@
 						break;
 				}
 			}
-			
+
 			protected function displayCommExerciseFields(item:Object):void
 			{
+				trace("Ex fields: "+ObjectUtil.toString(item));
 				if (item.hasOwnProperty('code') && item['code'] == 1)
 				{ //Language practice
 					commSituation.includeInLayout=false;
@@ -672,32 +637,39 @@
 					linguisticAspect.visible=true;
 				}
 			}
-			
-			protected function updateCommCompetences(level:int, situation:int):void{
-				if(level == -1 || situation == -1 ) return;
-				var newCompetences:Array = compMatrix[situation][level];
+
+			protected function updateCommCompetences(level:int, situation:int):void
+			{
+				if (level == -1 || situation == -1)
+					return;
+				var newCompetences:Array=compMatrix[situation][level];
 				populateCommCompetences(newCompetences);
 			}
-			
-			protected function populateCommCompetences(compCodes:Array):void{
-				var startingCompetences:Array = new Array();
-				for(var i:int=0; i<compCodes.length; i++){
+
+			protected function populateCommCompetences(compCodes:Array):void
+			{
+				var startingCompetences:Array=new Array();
+				for (var i:int=0; i < compCodes.length; i++)
+				{
 					startingCompetences.push({'code': i, 'label': competenceLabels[i]});
 				}
-				dpCommCompetences = new ArrayCollection(startingCompetences);
+				dpCommCompetence=new ArrayCollection(startingCompetences);
 			}
-			
-			protected function updateDescriptors(level:int, situation:int, competence:int):void{
-				if(level == -1 || situation == -1 || competence == -1) return;
-				
+
+			protected function updateDescriptors(level:int, situation:int, competence:int):void
+			{
+				if (level == -1 || situation == -1 || competence == -1)
+					return;
+
 			}
-			
+
 			private function updateDifficulty(level:int):void
 			{
-				if(level == -1) return;
+				if (level == -1)
+					return;
 				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(level));
 			}
-			
+
 			private function getDescriptorCodesFromResourceFile():void
 			{
 				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
@@ -716,7 +688,7 @@
 					}
 				}
 			}
-			
+
 			private function addLevelDescriptors(levelcode:String):void
 			{
 				//First remove the previous elements of the container
@@ -730,14 +702,14 @@
 						var chkBox:CheckBox=new CheckBox();
 						chkBox.id=item as String;
 						chkBox.percentWidth=100;
-						
+
 						chkBox.label=resourceManager.getString("myResources", chkBox.id);
 						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item as String);
 						descriptorContainer.addElement(chkBox);
 					}
 				}
 			}
-			
+
 			private function removeLevelDescriptors():void
 			{
 				if (descriptorContainer.numElements)
@@ -746,7 +718,7 @@
 					descriptorContainer.removeAllElements();
 				}
 			}
-			
+
 			private function showHideDescriptorsClickHandler(e:MouseEvent):void
 			{
 				descriptorContainer.visible=!descriptorContainer.visible;
@@ -911,8 +883,6 @@
 				new VideoSliceEvent(VideoSliceEvent.CREATE_SLICE).dispatch();
 				infoMessage.visible=true;
 			}
-
-			
 		]]>
 	</fx:Script>
 
@@ -1022,31 +992,35 @@
 
 				<mx:FormItem id="exerciseType"
 							 required="true"
-							 label="{resourceManager.getString('myResources','EXERCISE_TYPE')}">
-					<mx:ComboBox id="exerciseTypeCombo"
-								 dataProvider="dpExerciseType"
-								 change="onConditionalComboChange(event)"/>
+							 styleName="boldLabel"
+							 label="{resourceManager.getString('myResources','EXERCISE_TYPE')}"
+							 width="100%">
+					<common:LocalizedComboBox id="exerciseTypeCombo"
+											  dataProvider="{dpExerciseType}"
+											  fontWeight="normal"
+											  change="onConditionalComboChange(event)"/>
 				</mx:FormItem>
 				<mx:FormItem id="commSituation"
+							 styleName="boldLabel"
 							 label="{resourceManager.getString('myResources', 'COMMUNICATION_SITUATION')}"
-							 includeInLayout="true"
-							 visible="true">
-					<mx:ComboBox id="commSituationCombo"
-								 dataProvider="dpCommSituation"
-								 change="onConditionalComboChange(event)"/>
+							 width="100%">
+					<common:LocalizedComboBox id="commSituationCombo"
+											  dataProvider="{dpCommSituation}"
+											  fontWeight="normal"
+											  change="onConditionalComboChange(event)"/>
 				</mx:FormItem>
 				<mx:FormItem id="commCompetence"
+							 styleName="boldLabel"
 							 label="{resourceManager.getString('myResources', 'COMMUNICATIVE_COMPETENCE')}"
-							 includeInLayout="true"
-							 visible="true">
+							 width="100%">
 					<s:HGroup width="100%">
-						<mx:ComboBox id="commCompetenceCombo"
-									 dataProvider="dpCommCompetence"
-									 change="onConditionalComboChange(event)"/>
+						<common:LocalizedComboBox id="commCompetenceCombo"
+												  dataProvider="{dpCommCompetence}"
+												  fontWeight="normal"
+												  change="onConditionalComboChange(event)"/>
 						<skins:IconButton styleName="commonLinkButton"
 										  label="{resourceManager.getString('myResources','DESCRIPTORS')}"
-										  click="showHideDescriptorsClickHandler(event)"
-										  visible="true"/>
+										  click="showHideDescriptorsClickHandler(event)"/>
 					</s:HGroup>
 					<s:VGroup id="descriptorContainer"
 							  width="100%"
@@ -1056,10 +1030,11 @@
 				</mx:FormItem>
 				<mx:FormItem id="linguisticAspect"
 							 label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}"
-							 includeInLayout="true"
-							 visible="true">
-					<mx:ComboBox id="lingAspectCombo"
-								 dataProvider="dpLingAspect"/>
+							 styleName="boldLabel"
+							 width="100%">
+					<common:LocalizedComboBox id="lingAspectCombo"
+											  dataProvider="{dpLingAspect}"
+											  fontWeight="normal"/>
 				</mx:FormItem>
 
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_SPECIFY_LICENSE')}"
