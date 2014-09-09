@@ -65,19 +65,31 @@
 
 			[Bindable]
 			public var formIsValid:Boolean=false;
+			
+			[Bindable]
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}
+			]);
 
 			[Bindable]
-			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'LANGUAGE_PRACTICE'}, {'code': 2, 'label': 'FREE_CONTEXT'}, {'code': 3, 'label': 'CONVERSATION'}, {'code': 4, 'label': 'STORYTELLING'}, {'code': 5, 'label': 'VOICE_OVER'}, {'code': 6, 'label': 'OTHER'}]);
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}
+			]);
 
 			[Bindable]
-			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 1, 'label': 'WORK'}]);
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}
+			]);
+			
+			[Bindable]
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}
+			]);
 
 			[Bindable]
 			private var dpCommCompetence:ArrayCollection;
 
-			[Bindable]
-			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'ADVERB_ADJECTIVE'}, {'code': 2, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 3, 'label': 'NEGATION'}, {'code': 4, 'label': 'NOUN'}, {'code': 5, 'label': 'PRONOUNS'}, {'code': 6, 'label': 'PRONUNCIATION'}, {'code': 7, 'label': 'VERB'}, {'code': 8, 'label': 'VOCABULARY'}]);
-
+		
 			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GETTING_STAYING_WELL', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'MAKING_A_TRIP', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 
 			// Holds a reference to the currently focussed control on the form.
@@ -92,8 +104,7 @@
 			private function onPreinit(event:FlexEvent):void
 			{
 				populateCompetenceMatrix();
-				var compCodes:Array=compMatrix[0][0];
-				populateCommCompetences(compCodes);
+				//populateCommCompetences(compCodes);
 			}
 
 			protected function populateCompetenceMatrix():void
@@ -101,25 +112,25 @@
 				compMatrix=new Array();
 				//compMatrix[x][y], x: situation, y: level
 				compMatrix[0]=[0, 1, 2, 3, 4];
-				compMatrix[0][0]=[17, 8, 18, 16, 14];
-				compMatrix[0][1]=[17, 8, 7, 18, 20, 5, 9, 15, 16, 1, 2, 14];
-				compMatrix[0][2]=[8, 7, 18, 20, 9, 15, 16, 1, 19, 2, 3, 14];
-				compMatrix[0][3]=[8, 7, 18, 20, 9, 16, 1, 19, 2, 3, 14];
+				compMatrix[0][0]=[16, 7, 17, 15, 13];
+				compMatrix[0][1]=[16, 7, 6, 17, 19, 4, 8, 14, 15, 0, 1, 13];
+				compMatrix[0][2]=[7, 6, 17, 19, 8, 14, 15, 0, 18, 1, 2, 13];
+				compMatrix[0][3]=[7, 6, 17, 19, 8, 15, 0, 18, 1, 2, 13];
 				compMatrix[0][4]=[5, 20, 15, 16, 2, 14];
 
 				compMatrix[1]=[0, 1, 2, 3, 4];
-				compMatrix[1][0]=[12];
-				compMatrix[1][1]=[6, 12, 10];
-				compMatrix[1][2]=[6, 12];
-				compMatrix[1][3]=[6, 12, 10];
-				compMatrix[1][4]=[6, 12, 10];
+				compMatrix[1][0]=[11];
+				compMatrix[1][1]=[5, 11, 9];
+				compMatrix[1][2]=[5, 11];
+				compMatrix[1][3]=[5, 11, 9];
+				compMatrix[1][4]=[5, 11, 9];
 
 				compMatrix[2]=[0, 1, 2, 3, 4];
-				compMatrix[2][0]=[11];
-				compMatrix[2][1]=[4, 19, 11];
-				compMatrix[2][2]=[4, 19, 13, 11];
-				compMatrix[2][3]=[4, 19, 13, 11];
-				compMatrix[2][4]=[4, 19, 13, 11];
+				compMatrix[2][0]=[10];
+				compMatrix[2][1]=[3, 18, 10];
+				compMatrix[2][2]=[3, 18, 12, 10];
+				compMatrix[2][3]=[3, 18, 12, 10];
+				compMatrix[2][4]=[3, 18, 12, 10];
 			}
 
 			// Initalize
@@ -135,7 +146,9 @@
 				videoTitle.addEventListener(Event.CHANGE, validateForm);
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
-				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex + 1));
+				
+				updateCommCompetences(0,0);
+				updateDescriptors(0,0,0);
 
 				if (DataModel.getInstance().loggedUser != null && DataModel.getInstance().loggedUser.isAdmin)
 				{
@@ -353,7 +366,7 @@
 						red5VideoData.reference=referenceUrl.text;
 
 						//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-						red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+						red5VideoData.avgDifficulty=difficultyLevelCombo.selectedIndex + 1;
 
 						//If the user chose any level descriptors, those must be saved too
 						var descriptors:Array=new Array();
@@ -426,7 +439,7 @@
 					red5VideoData.reference=referenceUrl.text;
 
 					//Since when uploading we only have this difficulty, it reflects the average difficulty of the exercise
-					red5VideoData.avgDifficulty=difficultySelector.selectedIndex + 1;
+					red5VideoData.avgDifficulty=difficultyLevelCombo.selectedIndex + 1;
 
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();
@@ -477,11 +490,12 @@
 
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
-				difficultySelector.selectedIndex=0;
+				difficultyLevelCombo.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
 
 				//Reset the descriptors
-				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(difficultySelector.selectedIndex + 1));
+				updateCommCompetences(0,0);
+				updateDescriptors(0,0,0);
 
 				//Reset the webcam-based upload components
 				recFromWebcamBox.resetComponent();
@@ -591,7 +605,7 @@
 				var dispatchingComponent:LocalizedComboBox=LocalizedComboBox(event.target);
 				var listItem:Object=dispatchingComponent.selectedItem;
 
-				var currentLevel:int=difficultySelector.selectedIndex;
+				var currentLevel:int=difficultyLevelCombo.selectedIndex;
 
 				var currentSituation:int=commSituation.visible ? commSituationCombo.selectedItem['code'] : -1;
 				var currentCompetence:int=commCompetence.visible ? commCompetenceCombo.selectedItem['code'] : -1;
@@ -602,10 +616,12 @@
 						displayCommExerciseFields(listItem);
 						break;
 					case "difficultySelector":
-						updateDifficulty(currentLevel);
+						updateCommCompetences(currentLevel, currentSituation);
+						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
 					case "commSituationCombo":
 						updateCommCompetences(currentLevel, currentSituation);
+						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
 					case "commCompetenceCombo":
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
@@ -617,8 +633,7 @@
 
 			protected function displayCommExerciseFields(item:Object):void
 			{
-				trace("Ex fields: "+ObjectUtil.toString(item));
-				if (item.hasOwnProperty('code') && item['code'] == 1)
+				if (item.hasOwnProperty('code') && (item['code']==0 || item['code']==5))
 				{ //Language practice
 					commSituation.includeInLayout=false;
 					commSituation.visible=false;
@@ -643,6 +658,7 @@
 				if (level == -1 || situation == -1)
 					return;
 				var newCompetences:Array=compMatrix[situation][level];
+				trace("Competences for level["+level+"] situation["+situation+"] : "+ObjectUtil.toString(newCompetences));
 				populateCommCompetences(newCompetences);
 			}
 
@@ -651,7 +667,7 @@
 				var startingCompetences:Array=new Array();
 				for (var i:int=0; i < compCodes.length; i++)
 				{
-					startingCompetences.push({'code': i, 'label': competenceLabels[i]});
+					startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
 				}
 				dpCommCompetence=new ArrayCollection(startingCompetences);
 			}
@@ -660,57 +676,57 @@
 			{
 				if (level == -1 || situation == -1 || competence == -1)
 					return;
-
-			}
-
-			private function updateDifficulty(level:int):void
-			{
-				if (level == -1)
-					return;
-				addLevelDescriptors(_dataModel.localesAndFlags.getLevelCorrespondence(level));
-			}
-
-			private function getDescriptorCodesFromResourceFile():void
-			{
-				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
-				//var descriptorPattern:RegExp=/D\d{3}_(\w{2})_(\w{2})\d{2}/;
-				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
-				for (var item:Object in resources)
-				{
-					var key:String=item as String;
-					//Filter the strings that have to do with the descriptors
-					var matches:Array=key.match(descriptorPattern);
-					if (matches && matches.length)
-					{
-						if (!_descriptors)
-							_descriptors=new Array();
-						_descriptors[key]=matches[1];
-					}
-				}
-			}
-
-			private function addLevelDescriptors(levelcode:String):void
-			{
-				//First remove the previous elements of the container
-				removeLevelDescriptors();
-				//Then add the new set of elements
-				for (var item:Object in _descriptors)
-				{
-					//Get only the descriptors of the chosen difficulty level
-					if (_descriptors[item] == levelcode)
-					{
+				
+				removeDescriptors();
+				if(!_descriptors) getDescriptorCodesFromResourceFile();
+				
+				var compDescriptors:Array = _descriptors[situation][level][competence];
+				if (compDescriptors){
+					for (var item:Object in compDescriptors){
 						var chkBox:CheckBox=new CheckBox();
-						chkBox.id=item as String;
+						chkBox.id=compDescriptors[item];
 						chkBox.percentWidth=100;
-
+					
 						chkBox.label=resourceManager.getString("myResources", chkBox.id);
-						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item as String);
+						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", compDescriptors[item] as String);
 						descriptorContainer.addElement(chkBox);
 					}
 				}
 			}
 
-			private function removeLevelDescriptors():void
+			private function getDescriptorCodesFromResourceFile():void
+			{
+				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
+					//Filter the keys that match the descriptor pattern
+					var matches:Array=key.match(descriptorPattern);
+					if (matches && matches.length)
+					{
+						if (!_descriptors)
+							_descriptors=new Array();
+						
+						var situation:int = int(matches[1])-1;
+						if(!_descriptors[situation])
+							_descriptors[situation] = new Array();
+						
+						var level:int = int(matches[2])-1;
+						if(!_descriptors[situation][level])
+							_descriptors[situation][level] = new Array();
+						
+						var competence:int = int(matches[3])-1;
+						if(!_descriptors[situation][level][competence])
+							_descriptors[situation][level][competence] = new Array();
+						
+						var dnumber:int = int(matches[4])-1;
+						_descriptors[situation][level][competence][dnumber] = key;
+					}
+				}
+			}
+
+			private function removeDescriptors():void
 			{
 				if (descriptorContainer.numElements)
 				{
@@ -872,7 +888,7 @@
 				DataModel.getInstance().tempExercise.title=videoTitle.text;
 				DataModel.getInstance().tempExercise.description=videoDescription.text;
 				DataModel.getInstance().tempExercise.tags=parseTags(videoTags.text);
-				DataModel.getInstance().tempExercise.avgDifficulty=difficultySelector.selectedIndex;
+				DataModel.getInstance().tempExercise.avgDifficulty=difficultyLevelCombo.selectedIndex;
 				DataModel.getInstance().tempExercise.language=languageSelector.selectedLabel;
 				DataModel.getInstance().tempExercise.source="Youtube";
 				DataModel.getInstance().tempExercise.userId=DataModel.getInstance().loggedUser.id;
@@ -981,8 +997,10 @@
 							 styleName="boldLabel"
 							 required="true"
 							 width="100%">
-					<common:DifficultyLevelComboBox id="difficultySelector"
-													change="onConditionalComboChange(event)"/>
+					<common:LocalizedComboBox id="difficultyLevelCombo"
+											  translatableDataProvider="{dpDifficultyLevel}"
+											  fontWeight="normal"
+											  change="onConditionalComboChange(event)"/>
 				</mx:FormItem>
 				<mx:FormItem label="{resourceManager.getString('myResources','LABEL_LANGUAGE')}"
 							 styleName="boldLabel"

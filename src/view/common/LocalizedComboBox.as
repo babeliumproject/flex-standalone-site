@@ -38,12 +38,12 @@ package view.common
 				updateLocalizedComboBox();	
 		}
 		
-		private function localeCompareFunction(item1:Object, item2:Object):int
+		protected function localeCompareFunction(item1:Object, item2:Object):int
 		{
 			var language1:String=item1.label;
 			var language2:String=item2.label;
 			
-			sorter.setStyle('locale',resourceManager.localeChain[0]);
+			sorter.setStyle('locale',ResourceManager.getInstance().localeChain[0]);
 			sorter.ignoreCase=true;
 			return sorter.compare(language1,language2);
 			//return language1.localeCompare(language2);
@@ -52,13 +52,27 @@ package view.common
 		private function updateLocalizedComboBox():void
 		{
 			if(translatableCollection){
+				
+				//Save the internal sorting index before rearranging
+				if(selectedIndex !=-1){
+					var oldSelectedItem:Object=selectedItem;
+					var internalSortingIndex:int=oldSelectedItem['code'];
+				}
+				
 				dataProvider = localizeCollection(translatableCollection);
-				//Save the selectedIndex before rearranging
-				var oldSelectedItem:Object=selectedItem;
 				//Sort the dataProvider
-				dataProvider.sort(localeCompareFunction);
+				//dataProvider.sort(localeCompareFunction);
+				(dataProvider as ArrayCollection).source.sort(localeCompareFunction);
+				
 				//Restore the saved selectedIndex
-				selectedItem=oldSelectedItem;
+				dataProvider.createCursor();
+				while(!iterator.afterLast){
+					var item:Object = iterator.current;
+					if(item.hasOwnProperty('code') && item['code']==internalSortingIndex)
+						break;
+					iterator.moveNext();
+				}
+				selectedItem=item;
 			}
 		}
 		
@@ -105,7 +119,6 @@ package view.common
 				
 				iterator.moveNext();
 			}
-			trace(ObjectUtil.toString(collectionCopy));
 			return collectionCopy;
 		}
 		
