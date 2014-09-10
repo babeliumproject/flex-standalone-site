@@ -361,6 +361,12 @@
 						red5VideoData.tags=parseTags(videoTags.text);
 						red5VideoData.language=languageSelector.selectedItem.code;
 						red5VideoData.name=DataModel.getInstance().uploadFileName;
+						
+						
+						red5VideoData.type=exerciseTypeCombo.selectedItem['code'];
+						red5VideoData.situation=commSituationCombo.selectedItem['code'];
+						red5VideoData.competence=commCompetenceCombo.selectedItem['code'];
+						red5VideoData.lingaspect=lingAspectCombo.selectedItem['code'];
 
 						red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 						red5VideoData.reference=referenceUrl.text;
@@ -435,6 +441,11 @@
 					red5VideoData.language=languageSelector.selectedItem.code;
 					red5VideoData.name=recFromWebcamBox.recordingFileName;
 
+					red5VideoData.type=exerciseTypeCombo.selectedItem['code'];
+					red5VideoData.situation=commSituationCombo.selectedItem['code'];
+					red5VideoData.competence=commCompetenceCombo.selectedItem['code'];
+					red5VideoData.lingaspect=lingAspectCombo.selectedItem['code'];
+					
 					red5VideoData.license=String(licenseSelector.selectedItem.code).toLowerCase();
 					red5VideoData.reference=referenceUrl.text;
 
@@ -612,18 +623,18 @@
 
 				switch (dispatchingComponent.id)
 				{
-					case "exerciseTypeCombo":
+					case exerciseTypeCombo.id:
 						displayCommExerciseFields(listItem);
 						break;
-					case "difficultySelector":
+					case difficultyLevelCombo.id:
 						updateCommCompetences(currentLevel, currentSituation);
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
-					case "commSituationCombo":
+					case commSituationCombo.id:
 						updateCommCompetences(currentLevel, currentSituation);
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
-					case "commCompetenceCombo":
+					case commCompetenceCombo.id:
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
 					default:

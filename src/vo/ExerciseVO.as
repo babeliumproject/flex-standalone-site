@@ -24,6 +24,11 @@ package vo
 		public var license:String;
 		public var reference:String;
 		
+		public var type:int;
+		public var situation:int;
+		public var competence:int;
+		public var lingaspect:int;
+
 		public var avgRating:Number;
 		public var ratingCount:int; //used for bayesian average rating calculation
 		

@@ -101,6 +101,7 @@ package view.common
 			}
 			
 			dataProvider = localizeCollection(translatableCollection);
+			(dataProvider as ArrayCollection).source.sort(localeCompareFunction);
 		}
 		
 		public function get localizedDataProvider():Object{
