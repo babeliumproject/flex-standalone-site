@@ -310,10 +310,11 @@ class User {
 			$exercise->insertTags($parsedTags,$videoData->id);
 
 			//Update the fields of the exercise
-			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s'
+			$sql = "UPDATE exercise SET title='%s', description='%s', tags='%s', license='%s', reference='%s', language='%s', type=%d, situation=%d, competence=%d, lingaspect=%d 
 					WHERE ( name='%s' AND fk_user_id=%d )";
 
-			$arows1 = $this->conn->_update($sql, $videoData->title, $videoData->description, implode(',',$parsedTags), $videoData->license, $videoData->reference, $videoData->language, $videoData->name, $_SESSION['uid']);
+			$arows1 = $this->conn->_update($sql, $videoData->title, $videoData->description, implode(',',$parsedTags), $videoData->license, $videoData->reference, $videoData->language,
+					  $videoData->type, $videoData->situation, $videoData->competence, $videoData->lingaspect, $videoData->name, $_SESSION['uid']);
 
 			//Turn on the autocommit, there was no errors modifying the database
 			//$this->conn->_endTransaction();

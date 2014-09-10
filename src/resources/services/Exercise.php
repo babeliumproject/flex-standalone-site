@@ -107,15 +107,15 @@ class Exercise {
 			$parsedDescriptors = $this->parseDescriptors($exercise->descriptors);
 			
 			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s') ";
+				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status, type, situation, competence, lingaspect) ";
+				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s', %d, %d, %d, %d) ";
 				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference, 'UnprocessedNoPractice' );
+				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference, 'UnprocessedNoPractice', $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
 			} else {
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s') ";
+				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, type, situation, competence, lingaspect) ";
+				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', %d, %d, %d, %d) ";
 				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference );
+				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference, $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
 			}
 			//Exercise was successfully inserted
 			if($lastExerciseId){
@@ -179,11 +179,11 @@ class Exercise {
 
 			$this->conn->_startTransaction();
 
-			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference) ";
-			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s') ";
+			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference, type, situation, competence, lingaspect) ";
+			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s', %d, %d, %d, %d) ";
 
 			$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-			$exercise->language, $_SESSION['uid'], 'default.jpg', $duration, $exercise->license, $exercise->reference );
+			$exercise->language, $_SESSION['uid'], 'default.jpg', $duration, $exercise->license, $exercise->reference, $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
 
 			if(!$lastExerciseId){
 				$this->conn->_failedTransaction();
@@ -317,11 +317,16 @@ class Exercise {
 	 */
 	public function parseDescriptors($descriptors){
 		$descriptorIds = array();
-		$pattern = "/D(\d{3})_(\w{2})_(\w{2})(\d{2})/"; //D000_A1_SP00
+		$pattern = "/D(\d)_(\d)_(\d{2})_(\d)/"; //D1_4_08_1
+		//$pattern = "/D(\d{3})_(\w{2})_(\w{2})(\d{2})/"; //D000_A1_SP00
 		foreach($descriptors as $d){
 			if(preg_match($pattern,$d,$matches)){
 				// id(1),level(2),type(3),number(4)
-				$descriptorIds[] = $matches[1];
+				$sql = "SELECT id FROM exercise_descriptor
+						WHERE situation=%d, level=%d, competence=%d, number=%d";
+				$result = $this->conn->_singleSelect($sql, $matches[1], $matches[2], $matches[3], $matches[4]);
+				if($result)
+					$descriptorIds[] = $result->id;
 			}
 		}
 		return $descriptorIds;

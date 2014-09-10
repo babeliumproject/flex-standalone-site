@@ -21,6 +21,11 @@ class ExerciseVO {
 	public $license;
 	public $reference;
 	
+	public $type;
+	public $situation;
+	public $competence;
+	public $lingaspect;
+	
 	public $avgRating;
 	public $ratingCount;
 	
