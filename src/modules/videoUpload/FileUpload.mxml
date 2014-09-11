@@ -6,7 +6,6 @@
 		  xmlns:ns2="modules.videoSlice.*"
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
-		  preinitialize="onPreinit(event)"
 		  creationComplete="onComplete()">
 
 	<fx:Script>
@@ -101,39 +100,6 @@
 				_strUploadUrl=strUploadUrl;
 			}
 
-			private function onPreinit(event:FlexEvent):void
-			{
-				populateCompetenceMatrix();
-				//populateCommCompetences(compCodes);
-			}
-
-			protected function populateCompetenceMatrix():void
-			{
-				compMatrix=new Array();
-				//compMatrix[x][y], x: situation, y: level
-				compMatrix[0]=[0, 1, 2, 3, 4];
-				compMatrix[0][0]=[16, 7, 17, 15, 13];
-				compMatrix[0][1]=[16, 7, 6, 17, 19, 4, 8, 14, 15, 0, 1, 13];
-				compMatrix[0][2]=[7, 6, 17, 19, 8, 14, 15, 0, 18, 1, 2, 13];
-				compMatrix[0][3]=[7, 6, 17, 19, 8, 15, 0, 18, 1, 2, 13];
-				compMatrix[0][4]=[5, 20, 15, 16, 2, 14];
-
-				compMatrix[1]=[0, 1, 2, 3, 4];
-				compMatrix[1][0]=[11];
-				compMatrix[1][1]=[5, 11, 9];
-				compMatrix[1][2]=[5, 11];
-				compMatrix[1][3]=[5, 11, 9];
-				compMatrix[1][4]=[5, 11, 9];
-
-				compMatrix[2]=[0, 1, 2, 3, 4];
-				compMatrix[2][0]=[10];
-				compMatrix[2][1]=[3, 18, 10];
-				compMatrix[2][2]=[3, 18, 12, 10];
-				compMatrix[2][3]=[3, 18, 12, 10];
-				compMatrix[2][4]=[3, 18, 12, 10];
-			}
-
-			// Initalize
 			private function onComplete():void
 			{
 				_arrUploadFiles=new Array();
@@ -147,8 +113,13 @@
 				videoDescription.addEventListener(Event.CHANGE, validateForm);
 				videoTags.addEventListener(Event.CHANGE, validateForm);
 				
-				updateCommCompetences(0,0);
-				updateDescriptors(0,0,0);
+				//Populate the lists and determine which of them should be displayed
+				var currentLevel:int=difficultyLevelCombo.selectedIndex;
+				var currentSituation:int=commSituation.visible ? commSituationCombo.selectedItem['code'] : -1;
+				updateCommCompetences(currentLevel,currentSituation);
+				var currentCompetence:int=commCompetence.visible ? commCompetenceCombo.selectedItem['code'] : -1;
+				updateDescriptors(currentLevel,currentSituation,currentCompetence);
+				displayCommExerciseFields(exerciseTypeCombo.selectedItem);
 
 				if (DataModel.getInstance().loggedUser != null && DataModel.getInstance().loggedUser.isAdmin)
 				{
@@ -370,10 +341,10 @@
 
 						var exercisetype:int=exerciseTypeCombo.selectedItem['code'];
 						if(exercisetype!=0 && exercisetype!=5){
-							red5VideoData.type=exerciseTypeCombo.selectedItem['code'];
-							red5VideoData.situation=commSituationCombo.selectedItem['code'];
-							red5VideoData.competence=commCompetenceCombo.selectedItem['code'];
-							red5VideoData.lingaspect=lingAspectCombo.selectedItem['code'];
+							red5VideoData.type=exerciseTypeCombo.selectedItem['code']+1;
+							red5VideoData.situation=commSituationCombo.selectedItem['code']+1;
+							red5VideoData.competence=commCompetenceCombo.selectedItem['code']+1;
+							red5VideoData.lingaspect=lingAspectCombo.selectedItem['code']+1;
 
 							//If the user chose any level descriptors, those must be saved too
 							var descriptors:Array=new Array();
@@ -452,10 +423,10 @@
 
 					var exercisetype:int=exerciseTypeCombo.selectedItem['code'];
 					if(exercisetype!=0 && exercisetype!=5){
-						red5VideoData.type=exerciseTypeCombo.selectedItem['code'];
-						red5VideoData.situation=commSituationCombo.selectedItem['code'];
-						red5VideoData.competence=commCompetenceCombo.selectedItem['code'];
-						red5VideoData.lingaspect=lingAspectCombo.selectedItem['code'];
+						red5VideoData.type=exerciseTypeCombo.selectedItem['code']+1;
+						red5VideoData.situation=commSituationCombo.selectedItem['code']+1;
+						red5VideoData.competence=commCompetenceCombo.selectedItem['code']+1;
+						red5VideoData.lingaspect=lingAspectCombo.selectedItem['code']+1;
 						//If the user chose any level descriptors, those must be saved too
 						var descriptors:Array=new Array();
 						for (var i:int=0; i < descriptorContainer.numElements; i++)
@@ -507,11 +478,14 @@
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultyLevelCombo.selectedIndex=0;
+				exerciseTypeCombo.selectedIndex=0;
+				commSituationCombo.selectedIndex=0;
+				lingAspectCombo.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
-
-				//Reset the descriptors
-				updateCommCompetences(0,0);
-				updateDescriptors(0,0,0);
+				commSituationCombo.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				commCompetenceCombo.selectedIndex=0;
+				commCompetenceCombo.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				
 
 				//Reset the webcam-based upload components
 				recFromWebcamBox.resetComponent();
@@ -673,7 +647,8 @@
 			{
 				if (level == -1 || situation == -1)
 					return;
-				var newCompetences:Array=compMatrix[situation][level];
+				//var newCompetences:Array=compMatrix[situation][level];
+				var newCompetences:Array=_descriptors[situation][level];
 				trace("Competences for level["+level+"] situation["+situation+"] : "+ObjectUtil.toString(newCompetences));
 				populateCommCompetences(newCompetences);
 			}
@@ -681,10 +656,17 @@
 			protected function populateCommCompetences(compCodes:Array):void
 			{
 				var startingCompetences:Array=new Array();
-				for (var i:int=0; i < compCodes.length; i++)
+				//for (var i:int=0; i < compCodes.length; i++)
+				//{
+				//	startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
+				//}
+				
+				for (var item:Object in compCodes)
 				{
-					startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
+					var key:int = item as int;
+					startingCompetences.push({'code': key, 'label': competenceLabels[key]});
 				}
+				
 				dpCommCompetence=new ArrayCollection(startingCompetences);
 			}
 

@@ -323,7 +323,7 @@ class Exercise {
 			if(preg_match($pattern,$d,$matches)){
 				// id(1),level(2),type(3),number(4)
 				$sql = "SELECT id FROM exercise_descriptor
-						WHERE situation=%d, level=%d, competence=%d, number=%d";
+						WHERE situation=%d AND level=%d AND competence=%d AND number=%d";
 				$result = $this->conn->_singleSelect($sql, $matches[1], $matches[2], $matches[3], $matches[4]);
 				if($result)
 					$descriptorIds[] = $result->id;
@@ -681,7 +681,7 @@ class Exercise {
 	}
 	
 	/**
-	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
+	 * Returns the descriptors of the provided exercise (if any) formated like this example: D1_1_01_1
 	 * @param int $exerciseId
 	 * 		The exercise id to check for descriptors
 	 * @return mixed $dcodes
@@ -691,13 +691,14 @@ class Exercise {
 		if(!$exerciseId)
 			return false;
 		$dcodes = false;
-		$sql = "SELECT ed.* FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id 
+		$sql = "SELECT ed.situation, ed.level, ed.competence, ed.number 
+				FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id 
 				WHERE red.fk_exercise_id=%d";
 		$results = $this->conn->_multipleSelect($sql,$exerciseId);
 		if($results && count($results)){
 			$dcodes = array();
 			foreach($results as $result){
-					$dcode = sprintf("D%03d_%s_%s%02d", $result->id, $result->level, $result->type, $result->number);
+					$dcode = sprintf("D%d_%d_%02d_%d", $result->situation, $result->level, $result->competence, $result->number);
 					$dcodes[] = $dcode;
 			}
 			unset($result);

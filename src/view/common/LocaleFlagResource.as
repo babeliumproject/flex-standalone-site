@@ -10,7 +10,7 @@ package view.common
 			case "_AF":
 				resource = "resources/images/flags/flag_afghanistan.png";
 				break;
-			case "_AL":
+			case "sq_AL":
 				resource = "resources/images/flags/flag_albania.png";
 				break;
 			case "_DZ":

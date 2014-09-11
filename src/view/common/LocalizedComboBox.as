@@ -61,18 +61,19 @@ package view.common
 				
 				dataProvider = localizeCollection(translatableCollection);
 				//Sort the dataProvider
-				//dataProvider.sort(localeCompareFunction);
-				(dataProvider as ArrayCollection).source.sort(localeCompareFunction);
-				
-				//Restore the saved selectedIndex
-				dataProvider.createCursor();
-				while(!iterator.afterLast){
-					var item:Object = iterator.current;
-					if(item.hasOwnProperty('code') && item['code']==internalSortingIndex)
-						break;
-					iterator.moveNext();
+				if((dataProvider as ArrayCollection).length){
+					(dataProvider as ArrayCollection).source.sort(localeCompareFunction);
+
+					//Restore the saved selectedIndex
+					dataProvider.createCursor();
+					while(!iterator.afterLast){
+						var item:Object = iterator.current;
+						if(item.hasOwnProperty('code') && item['code']==internalSortingIndex)
+							break;
+						iterator.moveNext();
+					}
+					selectedItem=item;
 				}
-				selectedItem=item;
 			}
 		}
 		
@@ -110,15 +111,17 @@ package view.common
 		
 		private function localizeCollection(value:ICollectionView):ArrayCollection{
 			var collectionCopy:ArrayCollection = new ArrayCollection();
-			var iterator:IViewCursor = value.createCursor();
-			while(!iterator.afterLast){
-				var item:Object = iterator.current;
-				var itemCopy:Object = ObjectUtil.copy(item);
-				
-				itemCopy.label = ResourceManager.getInstance().getString('myResources',item.label);
-				collectionCopy.addItem(itemCopy);
-				
-				iterator.moveNext();
+			if(value){
+				var iterator:IViewCursor = value.createCursor();
+				while(!iterator.afterLast){
+					var item:Object = iterator.current;
+					var itemCopy:Object = ObjectUtil.copy(item);
+
+					itemCopy.label = ResourceManager.getInstance().getString('myResources',item.label);
+					collectionCopy.addItem(itemCopy);
+
+					iterator.moveNext();
+				}
 			}
 			return collectionCopy;
 		}

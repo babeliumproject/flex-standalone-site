@@ -216,6 +216,10 @@ class User {
 		               	   e.status,
 		               	   license,
 		               	   reference,
+		               	   type, 
+		               	   situation, 
+		               	   competence, 
+		               	   lingaspect, 
 		               	   a.complete as isSubtitled
 				FROM exercise e
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id

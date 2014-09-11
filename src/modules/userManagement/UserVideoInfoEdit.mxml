@@ -253,8 +253,6 @@
 						
 			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GETTING_STAYING_WELL', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'MAKING_A_TRIP', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 			
-			private var compMatrix:Array;
-			
 			[Bindable] private var red5VideoData:ExerciseVO;
 			[Bindable] private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
 
@@ -275,11 +273,9 @@
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
 				difficultyLevelCombo.selectedIndex=0;
+				exerciseTypeCombo.selectedIndex=0;
+				commSituationCombo.selectedIndex=0;
 				licenseSelector.selectedIndex=0;
-
-				//Reset the descriptors
-				updateCommCompetences(0,0);
-				updateDescriptors(0,0,0);
 				
 				descriptorContainer.visible = false;
 				descriptorContainer.includeInLayout = false;
@@ -401,10 +397,10 @@
 					
 					var exercisetype:int=exerciseTypeCombo.selectedItem['code'];
 					if(exercisetype!=0 && exercisetype!=5){
-						red5VideoData.type=exerciseTypeCombo.selectedItem['code'];
-						red5VideoData.situation=commSituationCombo.selectedItem['code'];
-						red5VideoData.competence=commCompetenceCombo.selectedItem['code'];
-						red5VideoData.lingaspect=lingAspectCombo.selectedItem['code'];
+						red5VideoData.type=exerciseTypeCombo.selectedItem['code']+1;
+						red5VideoData.situation=commSituationCombo.selectedItem['code']+1;
+						red5VideoData.competence=commCompetenceCombo.selectedItem['code']+1;
+						red5VideoData.lingaspect=lingAspectCombo.selectedItem['code']+1;
 						//If the user chose any level descriptors, those must be saved too
 						var descriptors:Array=new Array();
 						for(var i:int=0; i<descriptorContainer.numElements; i++){
@@ -445,11 +441,49 @@
 				licenseSelector.dataProvider = licenseSelector.licenses;
 				licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(red5VideoData.license);
 				referenceUrl.text=red5VideoData.reference;
-				difficultyLevelCombo.selectedIndex=red5VideoData.avgDifficulty - 1;
-				difficultyLevelCombo.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				
+				var level:int=red5VideoData.avgDifficulty - 1;
+				difficultyLevelCombo.selectedIndex=level;
+				
+				var exerciseType:int = red5VideoData.type-1;
+				for each (var iet:Object in exerciseTypeCombo.dataProvider){
+					if(iet['code'] == exerciseType){
+						exerciseTypeCombo.selectedItem=iet;
+						break;
+					}
+				}
+				
+				//Only communicative exercises should have situation, competence and descriptors
+				if(exerciseType!=0 && exerciseType!=5){
+					var situation:int = red5VideoData.situation-1;
+					for each (var ics:Object in commSituationCombo.dataProvider){
+						if(ics['code'] == situation){
+							commSituationCombo.selectedItem=ics;
+							break;
+						}
+					}
+					updateCommCompetences(level,situation);
+					
+					var competence:int = red5VideoData.competence-1;
+					for each (var icc:Object in commCompetenceCombo.dataProvider){
+						if(icc['code'] == competence){
+							commCompetenceCombo.selectedItem=icc;
+							break;
+						}
+					}
+					updateDescriptors(level,situation,competence);
 
-				//The previous function should have created the descriptors of the selected level
-				selectPreviousDescriptors(red5VideoData.descriptors);
+					//The previous function should have created the descriptors of the selected level
+					selectPreviousDescriptors(red5VideoData.descriptors);
+					
+					var lingaspect:int = red5VideoData.lingaspect-1;
+					for each (var ila:Object in lingAspectCombo.dataProvider){
+						if(ila['code'] == lingaspect){
+							lingAspectCombo.selectedItem=ila;
+							break;
+						}
+					}
+				}
 				
 				VP.stopVideo();
 				VP.state=VideoPlayerBabelia.PLAY_STATE;
@@ -528,7 +562,8 @@
 			{
 				if (level == -1 || situation == -1)
 					return;
-				var newCompetences:Array=compMatrix[situation][level];
+				//var newCompetences:Array=compMatrix[situation][level];
+				var newCompetences:Array=_descriptors[situation][level];
 				trace("Competences for level["+level+"] situation["+situation+"] : "+ObjectUtil.toString(newCompetences));
 				populateCommCompetences(newCompetences);
 			}
@@ -536,10 +571,17 @@
 			protected function populateCommCompetences(compCodes:Array):void
 			{
 				var startingCompetences:Array=new Array();
-				for (var i:int=0; i < compCodes.length; i++)
+				//for (var i:int=0; i < compCodes.length; i++)
+				//{
+				//	startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
+				//}
+				
+				for (var item:Object in compCodes)
 				{
-					startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
+					var key:int = item as int;
+					startingCompetences.push({'code': key, 'label': competenceLabels[key]});
 				}
+				
 				dpCommCompetence=new ArrayCollection(startingCompetences);
 			}
 			
