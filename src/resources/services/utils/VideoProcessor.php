@@ -74,6 +74,34 @@ class VideoProcessor{
 
 	}
 
+    /**
+     * Tests if the system command execution was successful or not.
+     *
+     * @param String $cmd
+     *      A String with the command to pass to the system's shell
+     * @return Array
+     *      The output of the command in a line by line array
+     * @throws Exception
+     *      The reason why the command call was not successful
+     */
+    private function execWrapper($cmd){
+        if(!$cmd || !is_string($cmd) || empty($cmd))
+            throw new Exception("Command is not a string or is empty");
+        $lastline = exec($cmd,$output,$ret_val);
+        switch($ret_val){
+            case 0:
+                return $output;
+            case 1:
+                throw new Exception("Command failed [$lastline]: $cmd");
+            case 126:
+                throw new Exception("Permission denied: $cmd");
+            case 127:
+                throw new Exception("Command not found: $cmd");
+            default:
+                throw new Exception("Command returned a $ret_val: $cmd");
+        }
+    }
+
 	/**
 	 * Determines if the given parameter is a media container and if so retrieves information about it's
 	 * different streams and duration.
@@ -84,24 +112,44 @@ class VideoProcessor{
 	public function retrieveMediaInfo($filePath){
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
-			$output = (exec($this->ffmpegCmdPath." -i '$cleanPath' 2>&1",$cmd));
-			$strCmd = implode($cmd);
-			if($errormsg = $this->system_command_unavailable($this->ffmpegCmdPath, $strCmd)){
-				throw new Exception($errormsg);
-			} else {
-				$this->mediaContainer = new stdclass();
-				if($this->isMediaFile($strCmd)){
-					$this->mediaContainer->hash = md5_file($cleanPath);
-					$this->retrieveAudioInfo($strCmd);
-					$this->retrieveVideoInfo($strCmd);
-					$this->retrieveDuration($strCmd);
-					if($this->mediaContainer->hasVideo == true)
-						$this->retrieveVideoAspectRatio();
-					return $this->mediaContainer;
-				} else {
-					throw new Exception("Unknown media format\n");
-				}
-			}
+            $cmd_template = "%s %s '%s'";
+            $cmd_name = 'ffprobe';
+            $cmd_options = '-print_format json -show_streams -show_format -v quiet';
+            $cmd_input = $cleanPath;
+            $cmd = sprintf($cmd_template,$cmd_name,$cmd_options,$cmd_input);
+            
+           
+            $output = $this->execWrapper($cmd);
+ 
+            //Convert output array to a single string
+            $str_output = preg_replace('/\s{2,}/', ' ', implode($output));
+            $json_output = json_decode($str_output);
+            
+            //The output object should have 'format' and 'streams' properties
+            if($json_output && isset($json_output->format) && isset($json_output->streams)){
+                $this->mediaContainer = new stdClass();
+
+                //Get file content hash to look for duplicates
+                $this->mediaContainer->hash = md5_file($cleanPath);
+                
+                //Retrieve media file duration (in seconds)
+                $this->mediaContainer->duration = $json_output->format->duration;
+                
+                foreach ($json_output->streams as $stream){
+                    if($stream->codec_type == 'audio'){
+                        $this->mediaContainer->hasAudio = true;
+                        $this->retrieveAudioInfo($stream);
+                    }
+                    if($stream->codec_type == 'video'){
+                        $this->mediaContainer->hasVideo = true;
+                        $this->retrieveVideoInfo($stream);
+                    }
+                }
+                
+                return $this->mediaContainer;
+            } else {
+                throw new Exception("Unknown media format\n");
+            }
 		} else {
 			throw new Exception("Not a file\n");
 		}
@@ -156,130 +204,45 @@ class VideoProcessor{
 		}
 	}
 
-	/**
-	 * Checks if the file provided to ffmpeg is a recognizable media file.
-	 *
-	 * $ffmpegOutput should be an string that contains all the output of "ffmpeg -i fileName"
-	 *
-	 * @param string $ffmpegOutput
-	 */
-	private function isMediaFile($ffmpegOutput){
-		$error1 = strpos($ffmpegOutput, 'Unknown format');
-		$error2 = strpos($ffmpegOutput, 'Error while parsing header');
-		$error3 = strpos($ffmpegOutput, 'Invalid data found when processing input');
-		if ($error1 === false && $error2 === false && $error3 === false) {
-			return true;
-		} else {
-			return false;
-		}
+    private function retrieveAudioInfo($streamdata){
+        if($streamdata->codec_type == 'audio'){
+            $this->mediaContainer->audioCodec = $streamdata->codec_name;
+            $this->mediaContainer->audioRate = $streamdata->sample_rate;
+            $this->mediaContainer->audioChannels = $streamdata->channels;
+            $this->mediaContainer->audioBits = $streamdata->sample_fmt; // format used to store each audio sample
+            $this->mediaContainer->audioBitrate = $streamdata->bit_rate;
+        }
 	}
 
-	/**
-	 * Checks if the provided media file contains any audio streams and if so, stores all the info of that audio.
-	 * Not all audio codecs provide info about the bitrate so the last group of the regExp is optional.
-	 *
-	 * $ffmpegOutput should be an string that contains all the output of "ffmpeg -i fileName"
-	 *
-	 * @param string $ffmpegOutput
-	 */
-	private function retrieveAudioInfo($ffmpegOutput){
-		if(preg_match('/Audio: (([\w]+)[^,]*, ([\w\s\/\[\]:]+), ([\w\s\/\[\]:\.]+), ([\w\s\/\[\]:]+)(, \w+\s\w+\/s)?)/s', $ffmpegOutput, $audioinfo)){
-			$this->mediaContainer->hasAudio = true;
-			$this->mediaContainer->audioCodec = trim($audioinfo[2]);
-			$this->mediaContainer->audioRate = trim($audioinfo[3]);
-			$this->mediaContainer->audioChannels = trim($audioinfo[4]);
-			$this->mediaContainer->audioBits = trim($audioinfo[5]);
-			if(count($audioinfo) == 7)
-			$this->mediaContainer->audioBitrate = trim(str_replace(",","",$audioinfo[6]));
-		} else {
-			$this->mediaContainer->hasAudio = false;
-		}
+	private function retrieveVideoInfo($streamdata){
+        if($streamdata->codec_type == 'video'){
+            $this->mediaContainer->videoCodec = $streamdata->codec_name;
+            $this->mediaContainer->videoColorspace = $streamdata->pix_fmt;
+            $this->mediaContainer->videoTbr = $streamdata->r_frame_rate;
+            $this->mediaContainer->videoTbn = $streamdata->time_base;
+            $this->mediaContainer->videoTbc = $streamdata->codec_time_base;
+            $this->mediaContainer->videoBitrate= $streamdata->bit_rate; //expressed in bits per second
+            
+            //flv1 video streams don't provide duration and frame number information
+            if(isset($streamdata->nb_frames) && isset($streamdata->duration))
+                $this->mediaContainer->videoFps = round($streamdata->nb_frames/$streamdata->duration,2);
+            
+            $this->mediaContainer->videoWidth = $streamdata->width;
+            $this->mediaContainer->videoHeight = $streamdata->height;
+            
+            //Calculate nominal display aspect ratio
+            if($streamdata->width > $streamdata->height){
+                $originalRatio = $streamdata->width / $streamdata->height;
+                $this->mediaContainer->originalAspectRatio = $originalRatio;
+                $diff_169 = abs(((16/9)-$originalRatio));
+                $diff_43 = abs(((4/3)-$originalRatio));
+                $this->mediaContainer->suggestedTranscodingAspectRatio = ($diff_43 < $diff_169) ? 43 : 169;
+            } else{
+                $this->mediaContainer->suggestedTranscodingAspectRatio = 43;
+            }
+
+        }
 	}
-
-	/**
-	 * Checks if the provided media file contains any video streams and if so, stores all the info of that video.
-	 * Not all video codecs provide info about the bitrate so the fourth group of the regExp is optional.
-	 *
-	 * $ffmpegOutput should be an string that contains all the output of "ffmpeg -i fileName"
-	 *
-	 * @param string $ffmpegOutput
-	 */
-	private function retrieveVideoInfo($ffmpegOutput){
-		
-		if(preg_match('/Stream .+: Video: ((.*?), (.*?), (.*?), (.*?, )?(.*?, )?(.*?), (.*?), (.*?)  )/s', $ffmpegOutput, $result)){
-		//if(preg_match('/Video: (([^,]+), ([^,]+), ([^,]+), ([^,]+, )?([^,]+, )?([\w\.]+\stbr), ([\w\.]+\stbn), ([\w\.]+\stbc))/s', $ffmpegOutput, $result)){
-			$this->mediaContainer->hasVideo = true;
-			$this->mediaContainer->videoCodec = trim($result[2]);
-			$this->mediaContainer->videoColorspace = trim($result[3]);
-			$this->mediaContainer->videoResolution = trim($result[4]);
-			//After the previous parameters there's a chance the codec provides [0-2] fields that give info about the video's bitrate and fps
-			$paramCount = count($result);
-			if($paramCount == 8){
-				$this->mediaContainer->videoTbr = trim($result[5]);
-				$this->mediaContainer->videoTbn = trim($result[6]);
-				$this->mediaContainer->videoTbc = trim($result[7]);
-			}
-			if($paramCount == 9){
-				$this->mediaContainer->videoFpsBitrate = str_replace(",","",trim($result[5]));
-				$this->mediaContainer->videoTbr = trim($result[6]);
-				$this->mediaContainer->videoTbn = trim($result[7]);
-				$this->mediaContainer->videoTbc = trim($result[8]);
-			}
-			if($paramCount == 10){
-				$this->mediaContainer->videoBitrate= str_replace(",","",trim($result[5]));
-				$this->mediaContainer->videoFps = str_replace(",","",trim($result[6]));
-				$this->mediaContainer->videoTbr = trim($result[7]);
-				$this->mediaContainer->videoTbn = trim($result[8]);
-				$this->mediaContainer->videoTbc = trim($result[9]);
-			}
-
-			if($this->mediaContainer->videoResolution){
-				//Some codecs provide info about the Pixel Aspect Ratio (PAR) and Display Aspect Ratio (DAR). We don't need that info for now.
-				$resolutionWithAspectRatioInfo = explode(" ",$this->mediaContainer->videoResolution);
-				//Even if there's no AR info the explode should leave the results in the first index of the array
-				$resolution = explode("x",$resolutionWithAspectRatioInfo[0]);
-				$this->mediaContainer->videoWidth = $resolution[0];
-				$this->mediaContainer->videoHeight = $resolution[1];
-			}
-		} else {
-			$this->mediaContainer->hasVideo = false;
-		}
-	}
-
-	/**
-	 * Calculates the duration (in seconds) of the provided media file.
-	 *
-	 * @param string $ffmpegOutput
-	 */
-	private function retrieveDuration($ffmpegOutput){
-		$totalTime = 0;
-		if (preg_match('/Duration: ((\d+).(\d+).(\d+))/s', $ffmpegOutput, $time)) {
-			$totalTime = ($time[2] * 3600) + ($time[3] * 60) + $time[4];
-		}
-		$this->mediaContainer->duration = $totalTime;
-	}
-
-	/**
-	 * Determines the video file's aspect ratio and suggests an standard aspect ratio
-	 * for transcoding.
-	 */
-	private function retrieveVideoAspectRatio(){
-		if(!$this->mediaContainer->hasVideo || !$this->mediaContainer->videoHeight || !$this->mediaContainer->videoWidth)
-			throw new Exception("Operation not allowed on non-video files\n");
-			
-		if($this->mediaContainer->videoWidth > $this->mediaContainer->videoHeight){
-			$originalRatio = $this->mediaContainer->videoWidth / $this->mediaContainer->videoHeight;
-			$this->mediaContainer->originalAspectRatio = $originalRatio;
-
-			$deviation16_9 = abs(((16/9)-$originalRatio));
-			$deviation4_3 = abs(((4/3)-$originalRatio));
-			$this->mediaContainer->suggestedTranscodingAspectRatio = ($deviation4_3 < $deviation16_9) ? 43 : 169;
-		} else{
-			$this->mediaContainer->suggestedTranscodingAspectRatio = 43;
-		}
-		return $this->mediaContainer->suggestedTranscodingAspectRatio;
-	}
-
 
 	/**
 	 * Takes a thumbnail image of the provided video and leaves it at the defined destination. Checks if the provided paths

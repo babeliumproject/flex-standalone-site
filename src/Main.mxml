@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
 				new SetupConnectionEvent().dispatch();
 
-				Security.allowDomain(appModelLocator.uploadDomain);
+				//Security.allowDomain(appModelLocator.uploadDomain);
 
 			}
 
