@@ -2,30 +2,16 @@
 	
 	//This file stores the info needed to connect to the application's database
 	class Config{
+	
+		public static const FFMPEG = 'ffmpeg';
+		public static const LIBAV = 'libav';
+	
 		public $host = '';
 		public $db_username = '';
 		public $db_password = '';
 		public $db_name = 'babelium';
 		
-		//Fill when you have an alternative DB using the same red5 instance
-		public $alt_db_host = '';
-		public $alt_db_username = '';
-		public $alt_db_password = '';
-		public $alt_db_name = '';
-		
 		public $red5Path = '/opt/red5/webapps/vod/streams';
-		
-		//Youtube authentication data
-		public $yt_user = '';
-		public $yt_password = '';
-		public $yt_developerKey = '';
-		
-		//SpinVox settings
-		public $spinvox_user = '';
-		public $spinvox_password = '';
-		public $spinvox_accountId = '';
-		public $spinvox_appName = '';
-		public $spinvox_useragent = 'babelium';
 		
 		//SMTP server settings
 		public $smtp_server_host = 'smtp.googlemail.com';
@@ -42,8 +28,12 @@
 		public $frameWidth16_9 = 426;
 		public $frameWidth4_3 = 320;
 		
+		public $mediaToolSuite = FFMPEG;
+		
+		//Absolute path to media tools. If empty points to system's PATH.
+		public $mediaToolHome = '';
+		
 		//Absolute path of external commands (or path available in the PATH of all system users)
-		public $ffmpegCmdPath = 'ffmpeg';
 		public $fileCmdPath = 'file';
 		public $soxCmdPath = 'sox';
 		

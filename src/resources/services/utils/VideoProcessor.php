@@ -65,7 +65,9 @@ class VideoProcessor{
 		$this->frameWidth16_9 = $settings->frameWidth16_9;
 		$this->frameHeight = $settings->frameHeight;
 		
-		$this->ffmpegCmdPath = $settings->ffmpegCmdPath ? $settings->ffmpegCmdPath : 'ffmpeg';
+		$this->mediaToolHome = $settings->mediaToolHome;
+		$this->mediaToolSuite = $settings->mediaToolSuite;
+		
 		$this->fileCmdPath = $settings->fileCmdPath ? $settings->fileCmdPath : 'file';
 		$this->soxCmdPath = $settings->soxCmdPath ? $settings->soxCmdPath : 'sox';
 
@@ -113,12 +115,15 @@ class VideoProcessor{
 		$cleanPath = escapeshellcmd($filePath);
 		if(is_file($cleanPath) && filesize($cleanPath)>0){
             $cmd_template = "%s %s '%s'";
-            $cmd_name = 'ffprobe';
-            $cmd_options = '-print_format json -show_streams -show_format -v quiet';
+            $cmd_name = '';
+            if(!empty($this->mediaToolHome)){
+            	$cmd_name .= $this->mediaToolHome;
+            }
+            $cmd_name .= $this->mediaToolSuite == 'ffmpeg' ? 'ffprobe' : 'avprobe';
+            $cmd_options = '-of json -show_streams -show_format -v quiet';
             $cmd_input = $cleanPath;
             $cmd = sprintf($cmd_template,$cmd_name,$cmd_options,$cmd_input);
             
-           
             $output = $this->execWrapper($cmd);
  
             //Convert output array to a single string
