@@ -39,7 +39,7 @@
 				if (BabeliaBrowserManager.getInstance().moduleIndex != 11)
 					return;
 
-				if (BabeliaBrowserManager.getInstance().actionFragment != 'activate')
+				if (BabeliaBrowserManager.getInstance().action != 'activate')
 					return;
 
 				var parameters:Object=URLUtil.stringToObject(value, "&");
@@ -86,7 +86,7 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().parameters}"
 				destination="checkUrlParameters"/>
 	<fx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
 				destination="greetAndRedirect"/>

@@ -59,7 +59,7 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action");
 			}
 			
 			public function resetModule():void{
@@ -99,14 +99,14 @@
 				if (!_model.isLoggedIn)
 					return;
 				
-				switch(_urlmanager.actionFragment)
+				switch(_urlmanager.action)
 				{
 					case 'view':
 					{
-						if (_urlmanager.targetFragment != '')
+						if (_urlmanager.parameters != '')
 						{
 							// course/view?id=<courseid>
-							actionView(_urlmanager.targetFragment);
+							actionView(_urlmanager.parameters);
 						}
 						else
 						{

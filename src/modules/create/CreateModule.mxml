@@ -65,7 +65,7 @@
 			
 			public function setDataBindings(data:* = null):void{	
 				_moduleController = new CreateController();
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action");
 			}
 			
 			public function resetModule():void{
@@ -99,13 +99,13 @@
 				switch (value)
 				{
 					case 'manage':
-						actionManage(_urlmanager.targetFragment);
+						actionManage(_urlmanager.parameters);
 						break;
 					case 'add':
 						actionAddEdit();
 						break;
 					case 'edit':
-						actionAddEdit(_urlmanager.targetFragment);
+						actionAddEdit(_urlmanager.parameters);
 						break;
 					default:
 						actionIndex();
@@ -113,9 +113,9 @@
 				}
 			}
 			
-			public function actionAddEdit(fragment:String = null):void{
+			public function actionAddEdit(parameters:String = null):void{
 				
-				if(!fragment){
+				if(!parameters){
 					//Adding new exercise create/add: go to step1
 				} else {
 					//Editing an existing exercise
@@ -128,7 +128,7 @@
 				trace("create edit call");
 				_viewstackIndex=EDIT;
 				var exercise:Object = new Object();
-				exercise.exercisecode = fragment;
+				exercise.exercisecode = parameters;
 				new CreateEvent(CreateEvent.EDIT_EXERCISE, exercise).dispatch();
 			}
 			

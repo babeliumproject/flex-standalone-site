@@ -46,7 +46,7 @@
 										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
 										  visible="{DataModel.getInstance().isLoggedIn}"
 										  selected="{_urlManager.moduleIndex == 12 &amp;&amp;
-										  			 _urlManager.actionFragment == 'learn' }"
+										  			 _urlManager.action == 'learn' }"
 										  click="changeView('/course/learn',event)"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"

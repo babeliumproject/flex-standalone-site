@@ -169,7 +169,7 @@
 			{
 				//parentDocument.videoEditRequested(data);
 				trace("Exercise renderer event dispatch data: "+data.exercisecode);
-				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+data.exercisecode);
+				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+data.exercisecode+'?s=1');
 			}
 
 			/*

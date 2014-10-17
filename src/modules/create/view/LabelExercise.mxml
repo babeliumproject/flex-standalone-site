@@ -312,7 +312,7 @@
 						_descriptors[key]=matches[1];
 					}
 				}
-				trace("Descriptors in resource file: "+ObjectUtil.toString(_descriptors));
+				//trace("Descriptors in resource file: "+ObjectUtil.toString(_descriptors));
 			}
 
 			private function addLevelDescriptors(level:uint):void

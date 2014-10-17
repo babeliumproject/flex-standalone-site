@@ -58,7 +58,7 @@
 
 			public function setDataBindings(data:*=null):void
 			{
-				changewatcher=BindingUtils.bindSetter(onURLChange, urlmanager, "actionFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, urlmanager, "action");
 			}
 
 			public function resetModule():void
@@ -107,9 +107,9 @@
 				switch (value)
 				{
 					case 'view':
-						if (urlmanager.targetFragment != '')
+						if (urlmanager.parameters != '')
 						{
-							actionView(urlmanager.targetFragment);
+							actionView(urlmanager.parameters);
 						}
 						else
 						{

@@ -2,6 +2,8 @@ package control
 {
 	//import events.ViewChangeEvent;
 
+	import flash.events.Event;
+	
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
@@ -9,6 +11,7 @@ package control
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
 	import mx.utils.ObjectUtil;
+	import mx.utils.URLUtil;
 
 
 	/**
@@ -36,11 +39,11 @@ package control
 		[Bindable]
 		public var moduleName:String;
 		[Bindable]
-		public var moduleURL:String;
+		public var module:String;
 		[Bindable]
-		public var actionFragment:String;
+		public var action:String;
 		[Bindable]
-		public var targetFragment:String;
+		public var parameters:String;
 
 		/**
 		 * Constructor
@@ -53,6 +56,7 @@ package control
 			_browserManager=BrowserManager.getInstance();
 			_browserManager.init();
 			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, parseURL);
+			//_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL);
 
 			_isParsing=false;
 		}
@@ -85,6 +89,8 @@ package control
 		{
 			_isParsing=true;
 			_lastURL=e ? e.lastURL : null;
+			if(e.type == BrowserChangeEvent.BROWSER_URL_CHANGE)
+				trace("Browser issued URL change");
 
 			var modparam:String=null;
 			var actionparam:String=null;
@@ -93,72 +99,79 @@ package control
 			//Fixes a bug caused by email clients that escape url sequences
 			var uescparams:String=unescape(_browserManager.fragment);
 
-			var params:Array=uescparams.split(DELIMITER);
-			var length:Number=params.length;
+			var fragments:Array=uescparams.split(DELIMITER);
+			var numfragments:Number=fragments.length;
 
-			if (length <= 1)
+			if (numfragments <= 1)
 				redirect('/home');
 
-			if (length > 1)
+			if (numfragments > 1)
 			{ // module
-				modparam=params[1];
+				modparam=fragments[1];
 				switch (modparam)
 				{
 					case 'exercises':
 					{
-						moduleURL='modules/exercise/ExerciseModule.swf';
+						module='modules/exercise/ExerciseModule.swf';
 						break;
 					}
 					case 'course':
 					{
-						moduleURL='modules/dashboard/CourseModule.swf';
+						module='modules/dashboard/CourseModule.swf';
 						break;
 					}
 					case 'create':
 					{
-						moduleURL='modules/create/CreateModule.swf';
+						module='modules/create/CreateModule.swf';
 						break;
 					}
 					case 'login':
 					{
-						moduleURL='modules/login/LoginModule.swf';
+						module='modules/login/LoginModule.swf';
 						break;
 					}
 					case 'signup':
 					{
-						moduleURL='modules/signup/SignupModule.swf';
+						module='modules/signup/SignupModule.swf';
 						break;
 					}
 					case 'subtitle':
 					{
-						moduleURL='modules/subtitle/SubtitleModule.swf';
+						module='modules/subtitle/SubtitleModule.swf';
 						break;
 					}
 					default:
 					{
-						moduleURL='modules/home/HomeModule.swf';
+						module='modules/home/HomeModule.swf';
 						break;
 					}
 				}
 			}
 
-			if (length > 2)
+			if (numfragments > 2)
 			{
-				actionparam=params[2];
+				actionparam=fragments[2];
 			}
 
-			if (length > 3) // target
-				valueparam=params[3];
+			if (numfragments > 3)
+			{
+				valueparam=fragments[3];
+				var pattern:RegExp = /[^\?]*\?(.+)/;
+				var matches:Array = valueparam.match(pattern);
+				if(matches && matches[1]){
+					URLUtil.stringToObject(matches[1],'&',true);
+				}
+			}
 
-			targetFragment=valueparam;
-			actionFragment=actionparam;
+			parameters=valueparam;
+			action=actionparam;
 
 			_isParsing=false;
 		}
 
 		public function redirect(url:String=null):void
 		{
-			trace("URL Manager redirect to: "+url);
+			trace("Programmatic URL redirect to: "+url);
 			_browserManager.setFragment(url);
 		}
 

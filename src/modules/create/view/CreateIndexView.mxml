@@ -6,8 +6,7 @@
 		  paddingLeft="12"
 		  paddingRight="12"
 		  paddingTop="6"
-		  paddingBottom="6"
-		  creationComplete="onComplete(event)">
+		  paddingBottom="6">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -43,37 +42,7 @@
 			private function changeHandler(event:Event):void
 			{
 				var obj:Object=List(event.target).selectedItem;
-				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+obj.exercisecode);
-			}
-			
-			private var playerSprite:UIComponent;
-			private var player:Object;
-			private var loader:Loader;
-			
-			private function loadPlayer():void{
-				playerSprite = new UIComponent();
-				playerSprite.width = 640;
-				playerSprite.height = 360;
-				loader = new Loader();
-				loader.contentLoaderInfo.addEventListener(Event.INIT, onLoaderInit);
-				loader.load(new URLRequest("http://babeliumlms/babeliumPlayer.swf?locale="+ResourceManager.getInstance().localeChain[0]+"&forcertmpt=1"));
-			}
-			
-			private function onLoaderInit(event:Event):void{
-				playerSprite.addChild(loader);
-				addElement(playerSprite);
-				loader.content.addEventListener("onConnectionReady", onConnectionReady);
-			}
-			
-			private function onConnectionReady(event:Event):void{
-				trace("Connection ready event received");
-				player = loader.content;
-				player.setSize(640,360);
-			}
-			
-			protected function onComplete(event:FlexEvent):void
-			{
-				loadPlayer();
+				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+obj.exercisecode+'?s=1');
 			}
 			
 		]]>

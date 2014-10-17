@@ -765,17 +765,17 @@
 				if (waitingForAssessmentList == null || assessedByCurrentUserList == null || assessedToCurrentUserList == null)
 					return;
 
-				switch (browser.actionFragment)
+				switch (browser.action)
 				{
 					case BabeliaBrowserManager.EVALUATE:
-						if (browser.targetFragment != '')
+						if (browser.parameters != '')
 						{
 							var tmpEvaluate:EvaluationVO;
 							for each (var evEvaluate:EvaluationVO in waitingForAssessmentList)
 							{
 								var evaluateStripped:String=evEvaluate.responseFileIdentifier.replace("audio/", "");
 
-								if (evaluateStripped == browser.targetFragment)
+								if (evaluateStripped == browser.parameters)
 								{
 									tmpEvaluate=evEvaluate;
 									break;
@@ -787,7 +787,7 @@
 						break;
 
 					case BabeliaBrowserManager.REVISE:
-						if (browser.targetFragment != '')
+						if (browser.parameters != '')
 						{
 							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
 							var tmpRevise:EvaluationVO;
@@ -795,7 +795,7 @@
 							{
 								var reviseStripped:String=evRevise.responseFileIdentifier.replace("audio/", "");
 
-								if (reviseStripped == browser.targetFragment)
+								if (reviseStripped == browser.parameters)
 								{
 									tmpRevise=evRevise;
 									break;
@@ -808,14 +808,14 @@
 
 					case BabeliaBrowserManager.VIEW:
 
-						if (browser.targetFragment != '')
+						if (browser.parameters != '')
 						{
 							evaluationOptionsViewStack.selectedChild=assessedByCurrentUserBoxNavContent;
 							var tmpView:EvaluationVO;
 							for each (var evView:EvaluationVO in assessedByCurrentUserList)
 							{
 								var viewStripped:String=evView.responseFileIdentifier.replace("audio/", "");
-								if (viewStripped == browser.targetFragment)
+								if (viewStripped == browser.parameters)
 								{
 									tmpView=evView;
 									break;
@@ -1037,7 +1037,7 @@
 				destination="assessmentSavedHandler"/>
 
 
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().targetFragment}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().parameters}"
 				destination="onURLChange"/>
 
 	<s:BorderContainer styleName="sectionInfoBox"

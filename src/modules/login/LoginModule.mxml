@@ -54,7 +54,7 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "actionFragment");
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action");
 			}
 			
 			public function resetModule():void{
@@ -83,10 +83,10 @@
 					return;
 				
 				resetViews();
-				switch (_urlmanager.actionFragment)
+				switch (_urlmanager.action)
 				{
 					case 'activate':
-						actionActivate(_urlmanager.targetFragment);
+						actionActivate(_urlmanager.parameters);
 						break;
 					case 'forgotpassword':
 						actionForgotpassword();

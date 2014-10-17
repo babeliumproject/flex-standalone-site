@@ -59,7 +59,7 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().moduleURL}"
+	<fx:Binding source="{BabeliaBrowserManager.getInstance().module}"
 				destination="onURLChange"/>
 
 	<s:ModuleLoader id="modloader"
