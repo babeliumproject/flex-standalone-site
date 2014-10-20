@@ -155,12 +155,12 @@ class MediaTask{
 					$outputPath = $this->filePath .'/'. $outputName;
 
 					try {
-						$encoding_output = $this->mediaHelper->transcodeToFlv($path,$outputPath);
-							
-						//Check if the video already exists
+						$enc_preset_idx=2;
+						$this->mediaHelper->transcodeToFlv($path,$outputPath,$enc_preset_idx);
+
 						if(!$this->checkIfFileExists($outputPath)){
-							//Asuming everything went ok, take a snapshot of the video
-							$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
+							
+							$this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 
 							//move the outputFile to it's final destination
 							$renameResult = rename($outputPath, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
@@ -221,9 +221,6 @@ class MediaTask{
 							echo "          filesize: ".filesize($path)."\n";
 							echo "          input path: ".$path."\n";
 							echo "          output path: ".$this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName."\n";
-							echo "          encoding output: ".$encoding_output."\n";
-							echo "          snapshot output: ".$snapshot_output."\n";
-
 							//Remove the old file
 							@unlink($path);
 						} else {
@@ -519,7 +516,6 @@ class MediaTask{
 		}
 		unset($r);
 
-
 		$sql = "SELECT file_identifier FROM response WHERE true";
 		$result = $this->conn->_multipleSelect($sql);
 		foreach($result as $r){
@@ -538,7 +534,7 @@ class MediaTask{
 
 		foreach($mediaPaths as $path){
 			try{
-				$result = $this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
+				$this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
 			} catch(Exception $e){
 				echo $e->getMessage()."\n";
 			}

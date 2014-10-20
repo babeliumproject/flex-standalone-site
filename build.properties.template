@@ -56,7 +56,9 @@ VIDEO_FRAME_WIDTH_4_3=320
 VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
 
-CMD_FFMPEG_PATH=ffmpeg
+MEDIA_TOOL_SUITE=ffmpeg
+MEDIA_TOOL_HOME=
+
 CMD_FILE_PATH=file
 CMD_SOX_PATH=sox
 

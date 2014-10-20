@@ -3,8 +3,8 @@
 	//This file stores the info needed to connect to the application's database
 	class Config{
 	
-		public static const FFMPEG = 'ffmpeg';
-		public static const LIBAV = 'libav';
+		const FFMPEG = 'ffmpeg';
+		const LIBAV = 'libav';
 	
 		public $host = '';
 		public $db_username = '';

@@ -252,6 +252,7 @@ package modules.videoPlayer
 					_streamStatus=STREAM_SEEKING_START;
 					break;
 				case "NetStream.Seek.Complete":
+					if(_streamStatus==STREAM_STARTED)
 					_streamStatus=STREAM_SEEKING_END;
 					break;
 				case "NetStream.Connect.Closed":

@@ -611,7 +611,8 @@ package modules.videoPlayer
 					playbackState=PLAYBACK_SEEKING_START_STATE;
 					break;
 				case "NetStream.Seek.Complete":
-					playbackState=PLAYBACK_SEEKING_END_STATE;
+					if(playbackState==PLAYBACK_STARTED_STATE)
+						playbackState=PLAYBACK_SEEKING_END_STATE;
 					break;
 				default:
 					break;

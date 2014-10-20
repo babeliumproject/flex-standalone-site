@@ -46,7 +46,7 @@
 
 	<target name="flex-generate-wrapper" description="Generate the HTML wrapper for the main SWF file">
 		<html-wrapper title="Babelium Project" 
-					  file="Main.html" 
+					  file="index.html" 
 					  bgcolor="#ffffff" 
 		 			  height="100%" 
 					  width="100%" 
@@ -130,7 +130,10 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_port.+;" replace="smtp_server_port = '${SMTP_SERVER_PORT}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_FROM_MAIL}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromName.+;" replace="smtp_mail_setFromName = '${SMTP_SERVER_FROM_NAME}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="ffmpegCmdPath.+;" replace="ffmpegCmdPath = '${CMD_FFMPEG_PATH}';"/>
+		
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="mediaToolSuite.+;" replace="mediaToolSuite = '${MEDIA_TOOL_SUITE}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="mediaToolHome.+;" replace="mediaToolHome = '${MEDIA_TOOL_HOME}';"/>
+		
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="fileCmdPath.+;" replace="fileCmdPath = '${CMD_FILE_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="soxCmdPath.+;" replace="soxCmdPath = '${CMD_SOX_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameHeight.+;" replace="frameHeight = ${VIDEO_FRAME_HEIGHT};"/>
