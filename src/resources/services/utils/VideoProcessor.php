@@ -206,7 +206,7 @@ class VideoProcessor{
             $fileMimeInfo = explode($str_output, ";");
             $fileMimeType = $fileMimeInfo[0];
             $validMime = false;
-            if(strpos($implodedOutput,$mimeCategory) !== false){
+            if(strpos($str_output,$mimeCategory) !== false){
                 $validMime = true;
             }
             return $validMime;

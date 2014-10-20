@@ -143,7 +143,7 @@ class Search {
 		
 		if(count($dlist)){
 			$dlistformatted = array();
-			$pattern = "/(D\d{3}_\w{2}_\w{2}\d{2})/"; //D000_A1_SP00
+			$pattern = "/D\d_\d_\d{2}_\d/"; //D1_3_01_1
 			foreach($dlist as $d){
 				if(preg_match($pattern,$d,$matches)){
 					$dlistformatted[] = $matches[1];
@@ -241,8 +241,22 @@ class Search {
 	 */
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri, 
+					   e.adding_date as addingDate,
+		               e.duration, 
+		               u.username as userName, 
+		               avg (suggested_level) as avgDifficulty, 
+		               e.status, 
+		               license, 
+		               reference, 
+		               a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
@@ -283,14 +297,28 @@ class Search {
 	public function addDocumentIndex($idDB){
 
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.tags, e.source, e.name, e.thumbnail_uri as thumbnailUri, e.adding_date as addingDate,
-		               e.duration, u.username as userName, avg (suggested_level) as avgDifficulty, e.status, license, reference, a.complete as isSubtitled
+		$sql = "SELECT e.id as exerciseId, 
+					   e.title, 
+					   e.description, 
+					   e.language, 
+					   e.tags, 
+					   e.source, 
+					   e.name, 
+					   e.thumbnail_uri as thumbnailUri, 
+					   e.adding_date as addingDate,
+		               e.duration, 
+		               u.username as userName, 
+		               avg (suggested_level) as avgDifficulty, 
+		               e.status, 
+		               license, 
+		               reference, 
+		               a.complete as isSubtitled
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available' AND e.id='%d');
+       			WHERE e.status = 'Available' AND e.id=%d);
 				GROUP BY e.id";
 		$result = $this->conn->_singleSelect ( $sql, $idDB );
 
@@ -376,7 +404,7 @@ class Search {
 		if($results){
 			$dcodes = array();
 			foreach($results as $result){
-				$dcode = sprintf("D%03d_%s_%s%02d %s", $result->id, $result->level, $result->type, $result->number, $result->name);
+				$dcode = sprintf("D%d_%d_%02d_%d %s", $result->situation, $result->level, $result->competence, $result->number, $result->name);
 				$dcodes[] = $dcode;
 			}
 			unset($result);
@@ -404,7 +432,7 @@ class Search {
 		
 		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
 				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
-				WHERE (e.id = '%d' ) GROUP BY e.id";
+				WHERE (e.id = %d ) GROUP BY e.id";
 		if($result = $this->conn->_singleSelect($sql,$exerciseId)){
 			$exerciseAvgRating = $result->avgScore ? $result->avgScore : 0;
 			$exerciseRatingCount = $result->scoreCount ? $result->scoreCount : 1;
