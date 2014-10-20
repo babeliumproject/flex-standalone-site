@@ -10,15 +10,10 @@
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
 			import control.BabeliaBrowserManager;
-			
-			import mx.events.FlexEvent;
 			
 			import model.DataModel;
 			
@@ -26,6 +21,7 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
+			import mx.events.FlexEvent;
 			
 			import spark.components.NavigatorContent;
 			
@@ -54,11 +50,21 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action");
+				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
 			}
 			
 			public function resetModule():void{
-				changewatcher.unwatch();
+				if(changewatcher && changewatcher.isWatching())
+					changewatcher.unwatch();
+				changewatcher=null;
+				_urlmanager=null;
+				_model=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
 				resetViews();
 			}
 			
@@ -116,9 +122,8 @@
 				
 				// The Event.ADDED and Event.ADDED_TO_STAGE events are dispatched before FlexEvent.PREINITIALIZE
 				// that leaves only FlexEvent.ADD to know the component has been added as a child somewhere.
-				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
-				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
-				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
@@ -128,10 +133,6 @@
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
 				this.visible=false;
-			}
-			
-			protected function componentRemovedHandler(event:FlexEvent):void{
-				
 			}
 			
 			protected function componentUpdateCompleteHandler(event:FlexEvent):void{

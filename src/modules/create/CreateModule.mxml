@@ -69,7 +69,9 @@
 			}
 			
 			public function resetModule():void{
-				changewatcher.unwatch();
+				if(changewatcher && changewatcher.isWatching()){
+					changewatcher.unwatch();
+				}
 				_moduleController = null;
 				_model = null;
 				resetViews();
@@ -159,25 +161,28 @@
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
+				trace("["+modulename+"] FlexEvent.COMPLETE");
 				_creationComplete=true;
 			}
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
+				trace("["+modulename+"] FlexEvent.ADD");
 				this.visible=false;
 			}
 			
 			protected function componentRemovedHandler(event:FlexEvent):void{
-				
+				trace("["+modulename+"] FlexEvent.REMOVE");
 			}
 			
 			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				trace("["+modulename+"] FlexEvent.UPDATE_COMPLETE");
 				checkPermissions();
 			}
 			
 			protected function checkPermissions():void{
 				if (!DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().redirect('login');
+					BabeliaBrowserManager.getInstance().redirect('/login');
 					return;
 				}
 				this.visible=true;

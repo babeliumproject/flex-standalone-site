@@ -11,6 +11,7 @@ package control
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
 	import mx.utils.ObjectUtil;
+	import mx.utils.StringUtil;
 	import mx.utils.URLUtil;
 
 
@@ -54,9 +55,10 @@ package control
 				throw new Error("BabeliaBrowserManager is already running");
 
 			_browserManager=BrowserManager.getInstance();
+			
+			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, this.parseURL);
+			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, this.parseURL);
 			_browserManager.init();
-			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, parseURL);
-			//_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL);
 
 			_isParsing=false;
 		}
@@ -85,12 +87,16 @@ package control
 		 * @param e
 		 * 
 		 */		
-		public function parseURL(e:BrowserChangeEvent=null):void
+		public function parseURL(event:BrowserChangeEvent=null):void
 		{
 			_isParsing=true;
-			_lastURL=e ? e.lastURL : null;
-			if(e.type == BrowserChangeEvent.BROWSER_URL_CHANGE)
-				trace("Browser issued URL change");
+			_lastURL=event ? event.lastURL : null;
+			
+			if(event && event.type == BrowserChangeEvent.BROWSER_URL_CHANGE){
+				trace("Browser URL change: "+_browserManager.fragment);
+			}else{
+				trace("Programmatic URL change: "+_browserManager.fragment);
+			}
 
 			var modparam:String=null;
 			var actionparam:String=null;
@@ -102,7 +108,7 @@ package control
 			var fragments:Array=uescparams.split(DELIMITER);
 			var numfragments:Number=fragments.length;
 
-			if (numfragments <= 1)
+			if (isNaN(numfragments) || numfragments <= 1)
 				redirect('/home');
 
 			if (numfragments > 1)
@@ -171,13 +177,30 @@ package control
 
 		public function redirect(url:String=null):void
 		{
-			trace("Programmatic URL redirect to: "+url);
-			_browserManager.setFragment(url);
+			var base:String = _browserManager.base + "#";
+			var turl:String = url;
+			turl = turl.replace(base,'');
+			turl = '/'+this.ltrim(turl,'/');
+			_browserManager.setFragment(turl);
 		}
 
 		public function getLastURL():String
 		{
 			return _lastURL;
+		}
+		
+		private function ltrim(str:String,character_mask:String):String{
+			if (str == null) return '';
+			
+			var startIndex:int = 0;
+			var endIndex:int = str.length - 1;
+			while (character_mask === str.charAt(startIndex))
+				++startIndex;
+			
+			if (endIndex >= startIndex)
+				return str.slice(startIndex, endIndex + 1);
+			else
+				return "";
 		}
 
 	}

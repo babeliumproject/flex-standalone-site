@@ -5,14 +5,23 @@
 		  xmlns:userManagement="components.userManagement.*"
 		  horizontalAlign="center"
 		  width="100%"
-		  paddingTop="40">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+		  paddingTop="40"
+		  implements="modules.IGroupInterface">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			public function resetGroup():void{
+				loginForm.resetComponent();
+			}
+		]]>
+	</fx:Script>
 
 	<s:BorderContainer id="loginFormBox"
 					   minWidth="300"
 					   styleName="loginBorderContainer">
-		<userManagement:LoginRestorePassForm width="100%"/>
+		<userManagement:LoginRestorePassForm 
+			id="loginForm"
+			width="100%"/>
 	</s:BorderContainer>
 </s:VGroup>

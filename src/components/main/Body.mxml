@@ -26,8 +26,8 @@
 				moduleURL=module;
 				if(modloader.child != null){
 					var ichild:* = modloader.child as IModuleInterface;
+					trace("Reset module: "+ichild.getModuleName());
 					ichild.resetModule();
-					trace("resetModule was called");
 				}
 				modloader.unloadModule();
 				
@@ -43,8 +43,8 @@
 				var modulename:String='home';
 				if (modloader.child != null)
 				{
-					trace("Accessing module's interface");
 					modulename = ichild.getModuleName();
+					trace("Accessing module interface: "+modulename);
 					BabeliaBrowserManager.getInstance().moduleName=modulename;
 					ichild.setDataBindings();
 				}
