@@ -384,11 +384,12 @@ class Subtitle {
 	private function _subtitlesWereModified($compareSubject)
 	{
 		$modified=false;
-		$unmodifiedSubtitlesLines = $_SESSION['unmodified-subtitles'];
-		if (count($unmodifiedSubtitlesLines) != count($compareSubject))
+		$unmodifiedSubtitlesLines = isset($_SESSION['unmodified-subtitles']) ? $_SESSION['unmodified-subtitles'] : NULL;
+		if (!$unmodifiedSubtitlesLines){
 			$modified=true;
-		else
-		{
+		} else if (count($unmodifiedSubtitlesLines) != count($compareSubject)){
+			$modified=true;
+		} else{
 			for ($i=0; $i < count($unmodifiedSubtitlesLines); $i++)
 			{
 				$unmodifiedItem = $unmodifiedSubtitlesLines[$i];

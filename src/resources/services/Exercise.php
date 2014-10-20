@@ -318,15 +318,16 @@ class Exercise {
 	public function parseDescriptors($descriptors){
 		$descriptorIds = array();
 		$pattern = "/D(\d)_(\d)_(\d{2})_(\d)/"; //D1_4_08_1
-		//$pattern = "/D(\d{3})_(\w{2})_(\w{2})(\d{2})/"; //D000_A1_SP00
-		foreach($descriptors as $d){
-			if(preg_match($pattern,$d,$matches)){
-				// id(1),level(2),type(3),number(4)
-				$sql = "SELECT id FROM exercise_descriptor
-						WHERE situation=%d AND level=%d AND competence=%d AND number=%d";
-				$result = $this->conn->_singleSelect($sql, $matches[1], $matches[2], $matches[3], $matches[4]);
-				if($result)
-					$descriptorIds[] = $result->id;
+		if($descriptors){
+			foreach($descriptors as $d){
+				if(preg_match($pattern,$d,$matches)){
+					// id(1),level(2),type(3),number(4)
+					$sql = "SELECT id FROM exercise_descriptor
+							WHERE situation=%d AND level=%d AND competence=%d AND number=%d";
+					$result = $this->conn->_singleSelect($sql, $matches[1], $matches[2], $matches[3], $matches[4]);
+					if($result)
+						$descriptorIds[] = $result->id;
+				}
 			}
 		}
 		return $descriptorIds;

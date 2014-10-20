@@ -155,6 +155,8 @@ function fault_result($header, $code, $description){
  * 		The file name of the video before the transcoding stage
  */
 function success_result($filename){
+	$code = '';
+	$description = '';
 	$status = 'success';
 	$httpstatus = '<httpstatus>200</httpstatus>';
 	$response = '<filename>'. str_replace(array("\r","\n"),"",$filename) .'</filename>';
