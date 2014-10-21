@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
-						 xmlns:s="library://ns.adobe.com/flex/spark"
-						 xmlns:mx="library://ns.adobe.com/flex/mx"
-						 xmlns:skins="skins.*"
-						 keyDown="checkPressedKey(event)"
-						 creationComplete="completeHandler()" >
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:skins="skins.*"
+		 keyDown="checkPressedKey(event)"
+		 creationComplete="completeHandler()">
 
 	<s:layout>
 		<s:VerticalLayout paddingLeft="10"
@@ -16,19 +16,17 @@
 	<fx:Script>
 		<![CDATA[
 			import avmplus.getQualifiedClassName;
-			
+
 			import com.adobe.crypto.SHA1;
-			
-			import components.main.LoginPopup;
-			
+
 			import control.BabeliaBrowserManager;
-			
+
 			import events.LoginEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.login.view.LoginIndex;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
@@ -39,36 +37,37 @@
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.ObjectUtil;
-			
+
 			import skins.ActionButtonSkin;
 			import skins.CustomTitleWindowSkin;
-			
+
 			import vo.LoginVO;
 			import vo.UserVO;
 
 			private var rememberSO:SharedObject;
-			
+
 			private var _cw1:ChangeWatcher;
 			private var _cw2:ChangeWatcher;
 			private var _cw3:ChangeWatcher;
 
 			public function completeHandler():void
 			{
-				var dataModel:DataModel = DataModel.getInstance();
-				_cw1 = BindingUtils.bindSetter(wrongLogin, dataModel, "loginErrorMessage", false, true);
-				_cw2 = BindingUtils.bindSetter(loggedSuccessfully, dataModel, "isSuccessfullyLogged", false, true);
-				_cw3 = BindingUtils.bindSetter(onActivationEmailResent, dataModel,"activationEmailResent", false, true);
-				
+				var dataModel:DataModel=DataModel.getInstance();
+				_cw1=BindingUtils.bindSetter(wrongLogin, dataModel, "loginErrorMessage", false, true);
+				_cw2=BindingUtils.bindSetter(loggedSuccessfully, dataModel, "isSuccessfullyLogged", false, true);
+				_cw3=BindingUtils.bindSetter(onActivationEmailResent, dataModel, "activationEmailResent", false, true);
+
 				focusManager.setFocus(username);
 			}
-			
-			public function resetComponent():void{
+
+			public function resetComponent():void
+			{
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
 				this.removeEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
 				_cw1.unwatch();
 				_cw2.unwatch();
 				_cw3.unwatch();
-				_cw1 = _cw2 = _cw3 = null;
+				_cw1=_cw2=_cw3=null;
 			}
 
 			private function checkPressedKey(e:KeyboardEvent):void
@@ -105,7 +104,9 @@
 						restorePassword.visible=false;
 						resendEmailLink.includeInLayout=true;
 						resendEmailLink.visible=true;
-					} else {
+					}
+					else
+					{
 						restorePassword.includeInLayout=true;
 						restorePassword.visible=true;
 						resendEmailLink.includeInLayout=false;
@@ -134,17 +135,20 @@
 						username.text="";
 						password.text="";
 					}
-					var parent:Object = this.parentDocument;
-					trace("Login.parentDocument: "+getQualifiedClassName(parent));
-					if(parent is LoginIndex){
-						var lasturl:String = BabeliaBrowserManager.getInstance().getLastURL();
-						trace("LastURL is: "+ BabeliaBrowserManager.getInstance().getLastURL());
-						if(lasturl)
+					var parent:Object=this.parentDocument;
+					trace("Login.parentDocument: " + getQualifiedClassName(parent));
+					if (parent is LoginIndex)
+					{
+						var lasturl:String=BabeliaBrowserManager.getInstance().getLastURL();
+						trace("LastURL is: " + BabeliaBrowserManager.getInstance().getLastURL());
+						if (lasturl)
 							BabeliaBrowserManager.getInstance().redirect(lasturl);
+						else
+							BabeliaBrowserManager.getInstance().redirect('/home');
 					}
 					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				}
-			}	
+			}
 
 			private function showLogin(event:Event):void
 			{
@@ -157,8 +161,9 @@
 				resendEmailLink.includeInLayout=false;
 				loginViewStack.selectedChild=loginFormBoxNavContent;
 			}
-			
-			private function showRestorePass(event:Event):void{
+
+			private function showRestorePass(event:Event):void
+			{
 				//If the container's parent is an instance of Popup, close it
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				BabeliaBrowserManager.getInstance().redirect('/login/forgotpassword');
@@ -194,8 +199,6 @@
 					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				DataModel.getInstance().activationEmailResent=false;
 			}
-
-			
 		]]>
 	</fx:Script>
 
@@ -265,25 +268,25 @@
 		<s:NavigatorContent id="resendActivationEmailBoxNavContent">
 			<s:VGroup id="resendActivationEmailBox"
 					  width="100%">
-				
+
 				<!--
 				<s:Label text="{resourceManager.getString('myResources','INPUT_USER_AND_EMAIL')}"
 						 styleName="formLabel"/>
-				-->	
-						<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
-								 styleName="formLabel"/>
-						<s:TextInput id="activationUsername"
-									 styleName="searchTextInput"
-									 fontSize="16"
-									 width="100%"/>
-					
-						<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
-								 styleName="formLabel"/>
-						<s:TextInput id="activationEmail"
-									 styleName="searchTextInput"
-									 fontSize="16"
-									 width="100%"/>
-					
+				-->
+				<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="activationUsername"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
+				<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="activationEmail"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle">

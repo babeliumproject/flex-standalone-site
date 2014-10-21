@@ -119,6 +119,8 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
@@ -128,6 +130,8 @@
 			import spark.effects.animation.SimpleMotionPath;
 			
 			[Bindable] protected var _urlManager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			
+			private var popup:LoginPopup;
 
 			public function completeHandler(event:FlexEvent):void
 			{
@@ -142,13 +146,23 @@
 			public function signInClickHandler():void
 			{
 				//Create and show login popup
-				showLogin();
+				createLoginPopUp();
 			}
 
-			public function showLogin():void
+			public function createLoginPopUp():void
 			{
-				DataModel.getInstance().loginPop=PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, LoginPopup, true) as LoginPopup;
-				PopUpManager.centerPopUp(DataModel.getInstance().loginPop);
+				var parent:DisplayObject=FlexGlobals.topLevelApplication.parent;
+				var modal:Boolean=true;
+				
+				popup=PopUpManager.createPopUp(parent,LoginPopup,modal) as LoginPopup;
+				popup.addEventListener(CloseEvent.CLOSE,destroyLoginPopUp,false,0,true);
+				
+				PopUpManager.centerPopUp(popup);
+			}
+			
+			public function destroyLoginPopUp(event:CloseEvent):void{
+				PopUpManager.removePopUp(popup);
+				popup=null;
 			}
 
 			public function signUpClickHandler():void

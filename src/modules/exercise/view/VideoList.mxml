@@ -252,7 +252,7 @@
 			<s:TileLayout horizontalAlign="justify"
 						  verticalAlign="middle"
 						  columnAlign="justifyUsingWidth"
-						  columnWidth="500"/>
+						  columnWidth="130"/>
 		</s:layout>
 	</s:List>
 

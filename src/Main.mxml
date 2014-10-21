@@ -74,11 +74,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			{
 				appModelLocator=DataModel.getInstance();
 				cuePointManager=CuePointManager.getInstance();
-				browserManager=BabeliaBrowserManager.getInstance();
-
+	
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
-				new SetupConnectionEvent().dispatch();
+				//new SetupConnectionEvent().dispatch();
 
 				Security.allowDomain(appModelLocator.uploadDomain);
 
@@ -87,6 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private function onComplete():void
 			{
 				appModelLocator.appBody=content;
+				browserManager=BabeliaBrowserManager.getInstance();
 			}
 		]]>
 	</fx:Script>

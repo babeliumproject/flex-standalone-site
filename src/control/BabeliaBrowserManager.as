@@ -178,6 +178,7 @@ package control
 		public function redirect(url:String=null):void
 		{
 			var base:String = _browserManager.base + "#";
+			trace("Base to remove: "+base);
 			var turl:String = url;
 			turl = turl.replace(base,'');
 			turl = '/'+this.ltrim(turl,'/');
