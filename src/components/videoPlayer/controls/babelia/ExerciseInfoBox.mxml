@@ -19,7 +19,7 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.SearchEvent;
 			
@@ -190,14 +190,14 @@
 				DataModel.getInstance().searchField=(event.target as IconButton).label;
 				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('search');
+				URLManager.getInstance().redirect('search');
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 			
 			protected function descriptorClickHandler(event:MouseEvent):void{
 				DataModel.getInstance().searchField="\""+(event.target as IconButton).label+"\"";
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('search');
+				URLManager.getInstance().redirect('search');
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 

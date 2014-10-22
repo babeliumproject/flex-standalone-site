@@ -26,7 +26,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			//import events.ViewChangeEvent;
 			
@@ -163,15 +163,15 @@
 				if (obj.isSubtitled)
 				{
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
-					BabeliaBrowserManager.getInstance().redirect('exercises', BabeliaBrowserManager.VIEW, obj.name);
+					URLManager.getInstance().redirect('exercises', URLManager.VIEW, obj.name);
 				}
 				else
 				{
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
-					BabeliaBrowserManager.getInstance().redirect('subtitles', BabeliaBrowserManager.SUBTITLE, obj.name);
+					URLManager.getInstance().redirect('subtitles', URLManager.SUBTITLE, obj.name);
 				}
 				List(event.target).selectedItem=null;
-				BabeliaBrowserManager.getInstance().parseURL(null);
+				URLManager.getInstance().parseURL(null);
 			}
 		]]>
 	</fx:Script>

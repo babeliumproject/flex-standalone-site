@@ -10,15 +10,13 @@
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.FrontController;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLChangeEvent;
+			import control.URLManager;
 			
 			import events.UserEvent;
 			
@@ -41,23 +39,21 @@
 			public var modulename:String = 'create';
 			
 			[Bindable]
-			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			private var _urlmanager:URLManager=URLManager.getInstance();
 			
 			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
 			
-			private var _moduleController:CreateController;
-			
 			[Bindable]
 			private var _viewstackIndex:uint;
 			
+			private var _moduleController:CreateController;
 			private var _creationComplete:Boolean;
+			private var _changewatcher:ChangeWatcher;
 			
 			public static const INDEX:uint=0;
 			public static const MANAGE:uint=1;
 			public static const EDIT:uint=2;
-			
-			private var changewatcher:ChangeWatcher;
 			
 			public function getModuleName():String{
 				return modulename;
@@ -65,14 +61,17 @@
 			
 			public function setDataBindings(data:* = null):void{	
 				_moduleController = new CreateController();
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				if(data){
+					if(data['initialurl']){
+						onURLChange(data['initialurl']);
+					}
+				}
+				//_changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
 			}
 			
 			public function resetModule():void{
-				if(changewatcher && changewatcher.isWatching()){
-					changewatcher.unwatch();
-				}
-				changewatcher=null;
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
 				_urlmanager=null;
 				
 				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
@@ -101,21 +100,23 @@
 				}
 			}
 			
-			public function onURLChange(value:String):void{
-				//if (_urlmanager.moduleName != modulename)
-				//	return;
+			public function onURLChange(event:URLChangeEvent):void{
+				if(!event || !event.module) return;
+				if(event.module != modulename) return;
 				
-				resetViews();
-				switch (value)
+				//Reset the components before changing the foreground
+				//resetViews();
+				
+				switch (event.action)
 				{
 					case 'manage':
-						actionManage(_urlmanager.parameters);
+						actionManage(event.parameters);
 						break;
 					case 'add':
 						actionAddEdit();
 						break;
 					case 'edit':
-						actionAddEdit(_urlmanager.parameters);
+						actionAddEdit(event.parameters);
 						break;
 					default:
 						actionIndex();
@@ -123,34 +124,39 @@
 				}
 			}
 			
-			public function actionAddEdit(parameters:String = null):void{
-				
-				if(!parameters){
-					//Adding new exercise create/add: go to step1
-				} else {
-					//Editing an existing exercise
-					//if create/edit/<exercisecode>: go to step1
-					//if create/edit/<exercisecode>?s=1: go to step1
-					//if create/edit/<exercisecode>?s=2: go to step2
-					//if create/edit/<exercisecode>?s=3: go to step3
-				}
-				
-				trace("create edit call");
-				_viewstackIndex=EDIT;
+			public function actionAddEdit(parameters:Object = null):void{
 				var exercise:Object = new Object();
-				exercise.exercisecode = parameters;
-				new CreateEvent(CreateEvent.EDIT_EXERCISE, exercise).dispatch();
+				_viewstackIndex=EDIT;
+				if(!parameters){
+					createEdit.viewIndex=CreateEditView.STEP1;
+					new CreateEvent(CreateEvent.ADD_EXERCISE).dispatch();
+				} else {
+					var id:String = parameters['id'];
+					exercise.exercisecode = id;
+					var step:Number = parameters['s'];
+					switch(step){
+						case 3:
+							createEdit.viewIndex=CreateEditView.STEP3;
+							break;
+						case 2:
+							createEdit.viewIndex=CreateEditView.STEP2;
+							new CreateEvent(CreateEvent.GET_EXERCISE_MEDIA, exercise).dispatch();
+							break;
+						default:
+							createEdit.viewIndex=CreateEditView.STEP1;
+							new CreateEvent(CreateEvent.EDIT_EXERCISE, exercise).dispatch();
+							break;
+					}
+				}
 			}
 			
-			public function actionManage(fragment:String = null):void{
-				trace("create manage call");
+			public function actionManage(fragment:Object = null):void{
 				_viewstackIndex=MANAGE;
+				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
 			}
 			
-			public function actionIndex(fragment:String = null):void{
-				trace("create index call");
+			public function actionIndex(fragment:Object = null):void{
 				_viewstackIndex=INDEX;
-				
 				var params:Object = {'offset':0, 'rowcount':5};
 				new CreateEvent(CreateEvent.LIST_LATEST_CREATIONS, params).dispatch(); 
 			}
@@ -183,7 +189,7 @@
 			protected function checkPermissions():void{
 				if (!DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().redirect('/login');
+					URLManager.getInstance().redirect('/login');
 					return;
 				}
 				this.visible=true;

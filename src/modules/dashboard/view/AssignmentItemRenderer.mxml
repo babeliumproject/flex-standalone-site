@@ -7,13 +7,13 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import mx.events.FlexEvent;
 
 			protected function goToAssignment_clickHandler(event:MouseEvent):void
 			{
-				BabeliaBrowserManager.getInstance().redirect('/assignment/view/'+data.id);
+				URLManager.getInstance().redirect('/assignment/view/'+data.id);
 			}
 			
 			protected function initializeHandler(event:FlexEvent):void

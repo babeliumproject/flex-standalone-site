@@ -10,7 +10,7 @@
 		<![CDATA[
 			import com.hulstkamp.AhRatingComponentStarSkin;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.HomepageEvent;
 			
@@ -42,7 +42,7 @@
 				
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
 				//BabeliaBrowserManager.getInstance().parseURL(null);
-				BabeliaBrowserManager.getInstance().redirect('evaluation', BabeliaBrowserManager.REVISE, urlResponseName);
+				URLManager.getInstance().redirect('evaluation', URLManager.REVISE, urlResponseName);
 			}
 
 
@@ -54,7 +54,7 @@
 
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
 				//BabeliaBrowserManager.getInstance().parseURL(null);
-				BabeliaBrowserManager.getInstance().redirect('evaluation', BabeliaBrowserManager.VIEW, urlResponseName);
+				URLManager.getInstance().redirect('evaluation', URLManager.VIEW, urlResponseName);
 			}
 
 

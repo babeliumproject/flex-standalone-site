@@ -5,7 +5,7 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import control.BabeliaBrowserManager;
+	import control.URLManager;
 	
 	import events.*;
 	
@@ -35,7 +35,7 @@ package commands.userManagement
 			{
 				DataModel.getInstance().passRecoveryDone = !DataModel.getInstance().passRecoveryDone;
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('/home');
+				URLManager.getInstance().redirect('/home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','NEW_PASSWORD_SENT'));
 			}
 			else

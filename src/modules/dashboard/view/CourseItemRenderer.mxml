@@ -22,10 +22,10 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			protected function viewCourse_clickHandler(event:MouseEvent):void
 			{
-				BabeliaBrowserManager.getInstance().redirect('/course/view/'+data.id);
+				URLManager.getInstance().redirect('/course/view/'+data.id);
 			}
 			
 		]]>

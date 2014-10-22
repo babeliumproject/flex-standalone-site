@@ -65,7 +65,7 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			import control.CuePointManager;
 			
 			import modules.exercise.event.ExerciseEvent;

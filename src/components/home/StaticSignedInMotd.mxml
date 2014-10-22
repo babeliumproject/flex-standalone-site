@@ -8,13 +8,13 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			//import events.ViewChangeEvent;
 
 			protected function homeButtons_clickHandler(event:MouseEvent, destination:String):void
 			{
 				//new ViewChangeEvent(destination).dispatch();
-				BabeliaBrowserManager.getInstance().redirect(destination);
+				URLManager.getInstance().redirect(destination);
 			}
 		]]>
 	</fx:Script>

@@ -11,6 +11,13 @@
 			import mx.events.IndexChangedEvent;
 
 			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var viewIndex:uint;
+			
+			public static const STEP1:uint = 0;
+			public static const STEP2:uint = 1;
+			public static const STEP3:uint = 2;
 
 			protected function stepViewStack_changeHandler(event:IndexChangedEvent):void
 			{
@@ -68,7 +75,9 @@
 					  change="stepViewStack_changeHandler(event)"
 					  resizeToContent="true"
 					  width="100%"
-					  height="100%">
+					  height="100%"
+					  creationPolicy="all"
+					  selectedIndex="{viewIndex}">
 			<s:NavigatorContent id="exClassNC" label="{'1. '+resourceManager.getString('myResources', 'LABEL_THE_EXERCISE')}">
 				<view:LabelExercise id="exerciseClassification" width="100%"/>
 			</s:NavigatorContent>

@@ -19,7 +19,7 @@
 
 			import com.adobe.crypto.SHA1;
 
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 
 			import events.LoginEvent;
 
@@ -139,12 +139,12 @@
 					trace("Login.parentDocument: " + getQualifiedClassName(parent));
 					if (parent is LoginIndex)
 					{
-						var lasturl:String=BabeliaBrowserManager.getInstance().getLastURL();
-						trace("LastURL is: " + BabeliaBrowserManager.getInstance().getLastURL());
+						var lasturl:String=URLManager.getInstance().getLastURL();
+						trace("LastURL is: " + URLManager.getInstance().getLastURL());
 						if (lasturl)
-							BabeliaBrowserManager.getInstance().redirect(lasturl);
+							URLManager.getInstance().redirect(lasturl);
 						else
-							BabeliaBrowserManager.getInstance().redirect('/home');
+							URLManager.getInstance().redirect('/home');
 					}
 					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				}
@@ -166,7 +166,7 @@
 			{
 				//If the container's parent is an instance of Popup, close it
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-				BabeliaBrowserManager.getInstance().redirect('/login/forgotpassword');
+				URLManager.getInstance().redirect('/login/forgotpassword');
 			}
 
 			private function showActivationResend(even:Event):void

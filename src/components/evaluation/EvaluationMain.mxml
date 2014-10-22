@@ -19,7 +19,7 @@
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			import control.CuePointManager;
 			
 			import events.*;
@@ -444,7 +444,7 @@
 				var urlResponseName:String=_responseName.replace("audio/", "");
 
 				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.EVALUATE, urlResponseName);
-				BabeliaBrowserManager.getInstance().redirect('evaluate',BabeliaBrowserManager.EVALUATE, urlResponseName);
+				URLManager.getInstance().redirect('evaluate',URLManager.EVALUATE, urlResponseName);
 			}
 
 			private function prepareWaitingAssessment(selectedItem:EvaluationVO):void
@@ -491,7 +491,7 @@
 					var urlResponseName:String=_responseName.replace("audio/", "");
 
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.REVISE, urlResponseName);
-					BabeliaBrowserManager.getInstance().redirect('evaluation',BabeliaBrowserManager.REVISE, urlResponseName);
+					URLManager.getInstance().redirect('evaluation',URLManager.REVISE, urlResponseName);
 				}
 			}
 
@@ -543,7 +543,7 @@
 					var urlResponseName:String=_responseName.replace("audio/", "");
 
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EVALUATION_MODULE_INDEX), BabeliaBrowserManager.VIEW, urlResponseName);
-					BabeliaBrowserManager.getInstance().redirect('evaluation',BabeliaBrowserManager.VIEW,urlResponseName);
+					URLManager.getInstance().redirect('evaluation',URLManager.VIEW,urlResponseName);
 				}
 			}
 
@@ -751,7 +751,7 @@
 
 			private function set onURLChange(value:Object):void
 			{
-				var browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+				var browser:URLManager=URLManager.getInstance();
 
 				if (browser.moduleIndex != 2)
 					return;
@@ -767,7 +767,7 @@
 
 				switch (browser.action)
 				{
-					case BabeliaBrowserManager.EVALUATE:
+					case URLManager.EVALUATE:
 						if (browser.parameters != '')
 						{
 							var tmpEvaluate:EvaluationVO;
@@ -786,7 +786,7 @@
 						}
 						break;
 
-					case BabeliaBrowserManager.REVISE:
+					case URLManager.REVISE:
 						if (browser.parameters != '')
 						{
 							evaluationOptionsViewStack.selectedChild=assessedToCurrentUserBoxNavContent;
@@ -806,7 +806,7 @@
 						}
 						break;
 
-					case BabeliaBrowserManager.VIEW:
+					case URLManager.VIEW:
 
 						if (browser.parameters != '')
 						{
@@ -1037,7 +1037,7 @@
 				destination="assessmentSavedHandler"/>
 
 
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().parameters}"
+	<fx:Binding source="{URLManager.getInstance().parameters}"
 				destination="onURLChange"/>
 
 	<s:BorderContainer styleName="sectionInfoBox"

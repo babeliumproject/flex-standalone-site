@@ -20,7 +20,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import mx.binding.utils.ChangeWatcher;
 			
@@ -35,7 +35,7 @@
 			private var _changewatcher:ChangeWatcher;
 			
 			[Bindable]
-			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			private var _urlmanager:URLManager=URLManager.getInstance();
 			
 			/**
 			 * Module interface methods 
@@ -85,7 +85,7 @@
 				if (DataModel.getInstance().isLoggedIn)
 				{
 					//If the user is already logged in return to previous page or navigate to home
-					BabeliaBrowserManager.getInstance().redirect('home');
+					URLManager.getInstance().redirect('home');
 					return;
 				}
 				this.visible=true;

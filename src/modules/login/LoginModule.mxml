@@ -13,7 +13,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import model.DataModel;
 			
@@ -35,7 +35,7 @@
 			public var modulename:String = 'login';
 			
 			[Bindable]
-			private var _urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			private var _urlmanager:URLManager=URLManager.getInstance();
 			
 			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
@@ -142,7 +142,7 @@
 			protected function checkPermissions():void{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().redirect('course');
+					URLManager.getInstance().redirect('course');
 					return;
 				}
 				this.visible=true;

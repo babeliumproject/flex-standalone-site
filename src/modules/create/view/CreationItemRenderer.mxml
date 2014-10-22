@@ -114,7 +114,7 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			import control.CuePointManager;
 			
 			import events.SearchEvent;
@@ -169,7 +169,7 @@
 			{
 				//parentDocument.videoEditRequested(data);
 				trace("Exercise renderer event dispatch data: "+data.exercisecode);
-				BabeliaBrowserManager.getInstance().redirect('/create/edit/'+data.exercisecode+'?s=1');
+				URLManager.getInstance().redirect('/create/edit/'+data.exercisecode+'?s=1');
 			}
 
 			/*
@@ -276,7 +276,7 @@
 			protected function tagClickHandler(event:MouseEvent):void
 			{
 				DataModel.getInstance().searchField=(event.target as IconButton).label;
-				BabeliaBrowserManager.getInstance().redirect('/search/query/'+(event.target as IconButton).label);
+				URLManager.getInstance().redirect('/search/query/'+(event.target as IconButton).label);
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 

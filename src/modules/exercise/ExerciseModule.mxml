@@ -15,7 +15,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 
 			import flash.utils.getDefinitionByName;
 			import flash.utils.getQualifiedClassName;
@@ -41,7 +41,7 @@
 			public var modulename:String='exercises';
 
 			[Bindable]
-			public var urlmanager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			public var urlmanager:URLManager=URLManager.getInstance();
 
 			[Bindable]
 			private var viewstackIndex:uint;

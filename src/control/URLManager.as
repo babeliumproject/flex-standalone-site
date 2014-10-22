@@ -3,6 +3,7 @@ package control
 	//import events.ViewChangeEvent;
 
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	
 	import model.DataModel;
 	
@@ -13,60 +14,61 @@ package control
 	import mx.utils.ObjectUtil;
 	import mx.utils.StringUtil;
 	import mx.utils.URLUtil;
+	
+	[Event(name="change", type="control.URLChangeEvent")]
 
-
-	/**
-	 * Default URL Format: http://babelia/#/module/action/target
-	 */
-	public class BabeliaBrowserManager
+	public class URLManager extends EventDispatcher
 	{
-		/** Constants **/
+		
 		public static const DELIMITER:String="/";
 		public static const TARGET_DELIMITER:String="&";
 
-		/** Variables **/
-		public static var instance:BabeliaBrowserManager=new BabeliaBrowserManager();
+		public static var instance:URLManager=new URLManager();
 		private var _isParsing:Boolean;
 		private var _lastURL:String;
 		private var _browserManager:IBrowserManager;
 
-		/**
-		 * URL Related Constants
-		 **/
-		private var _modulesFragments:ArrayCollection;
 
-		[Bindable]
-		public var moduleIndex:int;
-		[Bindable]
-		public var moduleName:String;
-		[Bindable]
-		public var module:String;
-		[Bindable]
-		public var action:String;
-		[Bindable]
-		public var parameters:String;
+		private var _moduleUrls:Object = {
+			exercises: 'modules/exercise/ExerciseModule.swf',
+			course: 'modules/dashboard/CourseModule.swf',
+			create: 'modules/create/CreateModule.swf',
+			login: 'modules/login/LoginModule.swf',
+			signup: 'modules/signup/SignupModule.swf',
+			subtitle: 'modules/subtitle/SubtitleModule.swf',
+			home: 'modules/home/HomeModule.swf'
+		};
+
+		[Bindable] public var moduleName:String;
+		[Bindable] public var module:String;
+		[Bindable] public var action:String;
+		[Bindable] public var parameters:String;
+		
+		public var parsedParams:Object;
 
 		/**
 		 * Constructor
 		 **/
-		public function BabeliaBrowserManager()
+		public function URLManager()
 		{
 			if (instance)
 				throw new Error("BabeliaBrowserManager is already running");
+		}
 
+		// Get instance
+		public static function getInstance():URLManager
+		{
+			return instance;
+		}
+		
+		public function init():void{
 			_browserManager=BrowserManager.getInstance();
 			
 			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, this.parseURL);
 			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, this.parseURL);
 			_browserManager.init();
-
+			
 			_isParsing=false;
-		}
-
-		// Get instance
-		public static function getInstance():BabeliaBrowserManager
-		{
-			return instance;
 		}
 
 		public function addBrowserChangeListener(listenerFunction:Function):void
@@ -89,6 +91,12 @@ package control
 		 */		
 		public function parseURL(event:BrowserChangeEvent=null):void
 		{
+			var modtmp:String;
+			var actiontmp:String;
+			var paramtmp:String;
+			
+			parsedParams=null;
+			
 			_isParsing=true;
 			_lastURL=event ? event.lastURL : null;
 			
@@ -97,10 +105,6 @@ package control
 			}else{
 				trace("Programmatic URL change: "+_browserManager.fragment);
 			}
-
-			var modparam:String=null;
-			var actionparam:String=null;
-			var valueparam:String=null;
 
 			//Fixes a bug caused by email clients that escape url sequences
 			var uescparams:String=unescape(_browserManager.fragment);
@@ -112,67 +116,40 @@ package control
 				redirect('/home');
 
 			if (numfragments > 1)
-			{ // module
-				modparam=fragments[1];
-				switch (modparam)
-				{
-					case 'exercises':
-					{
-						module='modules/exercise/ExerciseModule.swf';
-						break;
-					}
-					case 'course':
-					{
-						module='modules/dashboard/CourseModule.swf';
-						break;
-					}
-					case 'create':
-					{
-						module='modules/create/CreateModule.swf';
-						break;
-					}
-					case 'login':
-					{
-						module='modules/login/LoginModule.swf';
-						break;
-					}
-					case 'signup':
-					{
-						module='modules/signup/SignupModule.swf';
-						break;
-					}
-					case 'subtitle':
-					{
-						module='modules/subtitle/SubtitleModule.swf';
-						break;
-					}
-					default:
-					{
-						module='modules/home/HomeModule.swf';
+			{
+				var tmp:String = fragments[1];
+				for (var name:String in _moduleUrls){
+					if(tmp == name){
+						moduleName = name;
+						modtmp=_moduleUrls[name];
 						break;
 					}
 				}
+				if(!modtmp) redirect('/home');
 			}
 
 			if (numfragments > 2)
 			{
-				actionparam=fragments[2];
+				actiontmp=fragments[2];
 			}
 
 			if (numfragments > 3)
 			{
-				valueparam=fragments[3];
-				var pattern:RegExp = /[^\?]*\?(.+)/;
-				var matches:Array = valueparam.match(pattern);
-				if(matches && matches[1]){
-					URLUtil.stringToObject(matches[1],'&',true);
+				paramtmp=fragments[3];
+				var pattern:RegExp = /([^\?]*)\?(.+)/;
+				var matches:Array = paramtmp.match(pattern);
+				if(matches && matches[1] && matches[2]){
+					parsedParams = URLUtil.stringToObject(matches[2],'&',true);
+					parsedParams['id'] = matches[1];
 				}
 			}
 
-			parameters=valueparam;
-			action=actionparam;
+			module=modtmp;
+			action=actiontmp;
+			parameters=paramtmp;
 
 			_isParsing=false;
+			dispatchEvent(new URLChangeEvent(URLChangeEvent.CHANGE, false, false, moduleName, action, parsedParams));
 		}
 
 		public function redirect(url:String=null):void
@@ -188,6 +165,17 @@ package control
 		public function getLastURL():String
 		{
 			return _lastURL;
+		}
+		
+		public function getModuleFileURL(modulename:String):String{
+			var fileurl:String;
+			for (var name:String in _moduleUrls){
+				if(modulename == name){
+					fileurl=_moduleUrls[name];
+					break;
+				}
+			}
+			return fileurl;
 		}
 		
 		private function ltrim(str:String,character_mask:String):String{

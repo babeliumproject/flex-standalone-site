@@ -3,7 +3,7 @@ package modules.subtitle.view
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;
 	
-	import control.BabeliaBrowserManager;
+	import control.URLManager;
 	import control.CuePointManager;
 	
 	import modules.exercise.event.ExerciseEvent;
@@ -62,7 +62,7 @@ package modules.subtitle.view
 		 */
 		private var _dataModel:DataModel=DataModel.getInstance();
 		private var _cueManager:CuePointManager=CuePointManager.getInstance();
-		private var _browser:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+		private var _browser:URLManager=URLManager.getInstance();
 
 		/**
 		 * Variables
@@ -417,7 +417,7 @@ package modules.subtitle.view
 		public function updateURL(action:String, target:String):void
 		{
 			// Update URL
-			BabeliaBrowserManager.getInstance().redirect('subtitles', action, target);
+			URLManager.getInstance().redirect('subtitles', action, target);
 		}
 
 		public function subtitleVersionComboLabelFunction(item:Object):String

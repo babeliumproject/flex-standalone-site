@@ -48,7 +48,7 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
-				retrieveExercises();
+				//retrieveExercises();
 				_creationComplete = true;
 			}
 
@@ -128,7 +128,7 @@
 				itemsToDelete=new Array();
 				editCancelHandler(null);
 				if(_creationComplete){
-					retrieveExercises();
+					//retrieveExercises();
 				}
 			}
 			

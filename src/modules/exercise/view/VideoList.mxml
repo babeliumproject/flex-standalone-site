@@ -13,7 +13,7 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import model.DataModel;
 			
@@ -95,7 +95,7 @@
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
 
 				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
+				URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
 				//callLater(updateVerticalScroll);
 			}
 

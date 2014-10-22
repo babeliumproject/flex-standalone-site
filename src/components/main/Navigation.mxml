@@ -45,7 +45,7 @@
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
 										  visible="{DataModel.getInstance().isLoggedIn}"
-										  selected="{_urlManager.moduleIndex == 12 &amp;&amp;
+										  selected="{_urlManager.moduleName == 'course' &amp;&amp;
 										  			 _urlManager.action == 'learn' }"
 										  click="changeView('/course/learn',event)"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
@@ -105,7 +105,7 @@
 				destination="this.onTagCloudClicked"/>
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.SearchEvent;
 			import events.VideoStopEvent;
@@ -118,7 +118,7 @@
 			import skins.NavigationToggleButtonSkin;
 			
 			[Bindable] protected var _model:DataModel=DataModel.getInstance();
-			[Bindable] protected var _urlManager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			[Bindable] protected var _urlManager:URLManager=URLManager.getInstance();
 
 			//Initialization method
 			private function init():void

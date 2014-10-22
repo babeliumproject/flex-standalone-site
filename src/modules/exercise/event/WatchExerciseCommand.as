@@ -3,7 +3,7 @@ package modules.exercise.event
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import control.BabeliaBrowserManager;
+	import control.URLManager;
 	
 	//import events.ViewChangeEvent;
 	
@@ -23,7 +23,7 @@ package modules.exercise.event
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));
 			//new ViewChangeEvent(ViewChangeEvent.VIEW_SUBEDITOR).dispatch();
-			BabeliaBrowserManager.getInstance().redirect('/subtitle/view/'+selectedEx.exercisecode);
+			URLManager.getInstance().redirect('/subtitle/view/'+selectedEx.exercisecode);
 		}
 		
 	}

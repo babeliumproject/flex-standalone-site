@@ -66,15 +66,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			public var appModelLocator:DataModel;
 			[Bindable]
 			public var cuePointManager:CuePointManager;
-			[Bindable]
-			public var browserManager:BabeliaBrowserManager;
+			
 
 			//Initialization method
 			private function init():void
 			{
 				appModelLocator=DataModel.getInstance();
 				cuePointManager=CuePointManager.getInstance();
-	
+				
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
 				//new SetupConnectionEvent().dispatch();
@@ -86,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private function onComplete():void
 			{
 				appModelLocator.appBody=content;
-				browserManager=BabeliaBrowserManager.getInstance();
+				
 			}
 		]]>
 	</fx:Script>

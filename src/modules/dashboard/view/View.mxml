@@ -5,7 +5,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import mx.collections.ArrayCollection;
 			
@@ -19,7 +19,7 @@
 			{
 				if(DataModel.getInstance().moduleMap.hasOwnProperty('course')){
 					_courseInfo = DataModel.getInstance().moduleMap['course'];
-					BabeliaBrowserManager.getInstance().redirect('/assignment/add/'+_courseInfo.id);
+					URLManager.getInstance().redirect('/assignment/add/'+_courseInfo.id);
 				}
 			}
 		]]>

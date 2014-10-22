@@ -46,8 +46,8 @@
 								  styleName="yellowLinkButton"
 								  label="{resourceManager.getString('myResources', 'SIGN_IN')}"
 								  click="signInClickHandler()"
-								  visible="{_urlManager.moduleIndex != 13}"
-								  includeInLayout="{_urlManager.moduleIndex != 13}"/>
+								  visible="{_urlManager.moduleName != 'login'}"
+								  includeInLayout="{_urlManager.moduleName != 'login'}"/>
 				<skins:IconButton id="signUpButton"
 								  styleName="yellowLinkButton"
 								  label="{resourceManager.getString('myResources', 'REGISTER')}"
@@ -109,7 +109,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.LoginEvent;
 			
@@ -129,7 +129,7 @@
 			import spark.effects.animation.RepeatBehavior;
 			import spark.effects.animation.SimpleMotionPath;
 			
-			[Bindable] protected var _urlManager:BabeliaBrowserManager=BabeliaBrowserManager.getInstance();
+			[Bindable] protected var _urlManager:URLManager=URLManager.getInstance();
 			
 			private var popup:LoginPopup;
 
@@ -169,13 +169,13 @@
 			{
 				//Change contentViewStack to sign up page
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('signup');
+				URLManager.getInstance().redirect('signup');
 			}
 
 			public function userOptionsItemClickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('account');
+				URLManager.getInstance().redirect('account');
 			}
 
 			public function signOutClickHandler():void
@@ -184,7 +184,7 @@
 				new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
 				// Redirecting to home
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('home');
+				URLManager.getInstance().redirect('home');
 				anonymousCP.includeInLayout=true;
 				anonymousCP.visible=true;
 				userCP.includeInLayout=false;

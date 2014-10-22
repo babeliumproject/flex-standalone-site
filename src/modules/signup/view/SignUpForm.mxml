@@ -14,7 +14,7 @@
 			import components.userManagement.MotherLanguageBox;
 			import com.adobe.crypto.SHA1;
 			
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.RegisterUserEvent;
 			//import events.ViewChangeEvent;
@@ -378,7 +378,7 @@
 			{
 				resetToInitialStatus();
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('home');
+				URLManager.getInstance().redirect('home');
 			}
 			
 			public function resetGroup():void{

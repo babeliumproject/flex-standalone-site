@@ -8,7 +8,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			//import events.ViewChangeEvent;
 			
@@ -23,7 +23,7 @@
 			protected function registerButton_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('register');
+				URLManager.getInstance().redirect('register');
 			}
 		]]>
 	</fx:Script>

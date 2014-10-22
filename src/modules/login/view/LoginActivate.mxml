@@ -7,7 +7,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import events.RegisterUserEvent;
 			//import events.ViewChangeEvent;
@@ -36,10 +36,10 @@
 
 			public function set checkUrlParameters(value:String):void
 			{
-				if (BabeliaBrowserManager.getInstance().moduleIndex != 11)
+				if (URLManager.getInstance().moduleName != 'login')
 					return;
 
-				if (BabeliaBrowserManager.getInstance().action != 'activate')
+				if (URLManager.getInstance().action != 'activate')
 					return;
 
 				var parameters:Object=URLUtil.stringToObject(value, "&");
@@ -80,13 +80,13 @@
 				redirectTimer.stop();
 				message = noActionMessage;
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('home');
+				URLManager.getInstance().redirect('home');
 			}
 			
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{BabeliaBrowserManager.getInstance().parameters}"
+	<fx:Binding source="{URLManager.getInstance().parameters}"
 				destination="checkUrlParameters"/>
 	<fx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
 				destination="greetAndRedirect"/>

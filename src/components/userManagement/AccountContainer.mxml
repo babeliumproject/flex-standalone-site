@@ -10,7 +10,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			import model.DataModel;
 			
@@ -56,7 +56,7 @@
 			protected function checkPermissions():void{
 				if (!DataModel.getInstance().isLoggedIn)
 				{
-					BabeliaBrowserManager.getInstance().redirect('login');
+					URLManager.getInstance().redirect('login');
 					//BabeliaBrowserManager.getInstance().parseURL();
 					return;
 				}

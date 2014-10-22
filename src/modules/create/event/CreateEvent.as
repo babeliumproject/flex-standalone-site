@@ -17,6 +17,7 @@ package modules.create.event
 		public static const UNPROCESSED:String = "unprocessed";
 		public static const WEBCAM:String = "webcam";
 		public static const LIST_EXERCISE_MEDIA:String = "listExerciseMedia";
+		public static const GET_EXERCISE_MEDIA:String = "getExerciseMedia";
 		
 		public var params:Object;
 		

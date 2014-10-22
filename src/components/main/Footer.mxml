@@ -8,7 +8,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import control.BabeliaBrowserManager;
+			import control.URLManager;
 			
 			//import events.ViewChangeEvent;
 			
@@ -17,13 +17,13 @@
 			protected function footerFAQ_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('help');
+				URLManager.getInstance().redirect('help');
 			}
 
 			protected function footerAboutUs_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_ABOUT_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('about');
+				URLManager.getInstance().redirect('about');
 			}
 
 			protected function footerDevelopers_clickHandler(event:MouseEvent):void
@@ -44,7 +44,7 @@
 			protected function helpFAQ_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
-				BabeliaBrowserManager.getInstance().redirect('help');
+				URLManager.getInstance().redirect('help');
 			}
 
 			protected function blogButton_clickHandler(event:MouseEvent):void
