@@ -39,6 +39,13 @@ package modules.create.service
 			pendingCall.addResponder(responder);
 		}
 		
+		public function getExerciseMedia(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
+			var pendingCall:AsyncToken = service.getExerciseMedia(query.exercisecode);
+			pendingCall.addResponder(responder);
+			
+		}
+		
 		public function getCreations(query:Object = null):void{
 			var offset:uint = query && query.hasOwnProperty('offset') ? query.offset : 0;
 			var rowcount:uint = query && query.hasOwnProperty('rowcount') ? query.rowcount : 0;

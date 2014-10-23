@@ -2,7 +2,7 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:skins="skins.*" 
+		  xmlns:skins="skins.*"
 		  xmlns:view="modules.create.view.*"
 		  width="100%"
 		  implements="modules.IGroupInterface">
@@ -11,24 +11,25 @@
 			import mx.events.IndexChangedEvent;
 
 			import spark.events.IndexChangeEvent;
-			
+
 			[Bindable]
 			public var viewIndex:uint;
-			
-			public static const STEP1:uint = 0;
-			public static const STEP2:uint = 1;
-			public static const STEP3:uint = 2;
+
+			public static const STEP1:uint=0;
+			public static const STEP2:uint=1;
+			public static const STEP3:uint=2;
 
 			protected function stepViewStack_changeHandler(event:IndexChangedEvent):void
 			{
 				// TODO Auto-generated method stub
 
 			}
-			
-			public function resetGroup():void{
-				if(exerciseClassification)
+
+			public function resetGroup():void
+			{
+				if (exerciseClassification)
 					exerciseClassification.resetComponent();
-				if(mediaUpload)
+				if (mediaUpload)
 					mediaUpload.resetComponent();
 			}
 		]]>
@@ -59,13 +60,15 @@
 							  paddingRight="16"
 							  paddingTop="16"/>
 		</s:layout>
-		<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="left">
+		<s:HGroup width="100%"
+				  verticalAlign="middle"
+				  horizontalAlign="left">
 			<s:TabBar skinClass="skins.BootstrapTabBar"
-							  dataProvider="{stepViewStack}"/>
+					  dataProvider="{stepViewStack}"/>
 		</s:HGroup>
 	</s:BorderContainer>
 
-	
+
 	<s:VGroup paddingTop="16"
 			  paddingBottom="16"
 			  paddingLeft="16"
@@ -78,13 +81,18 @@
 					  height="100%"
 					  creationPolicy="all"
 					  selectedIndex="{viewIndex}">
-			<s:NavigatorContent id="exClassNC" label="{'1. '+resourceManager.getString('myResources', 'LABEL_THE_EXERCISE')}">
-				<view:LabelExercise id="exerciseClassification" width="100%"/>
+			<s:NavigatorContent id="exClassNC"
+								label="{'1. '+resourceManager.getString('myResources', 'LABEL_THE_EXERCISE')}">
+				<view:LabelExercise id="exerciseClassification"
+									width="100%"/>
 			</s:NavigatorContent>
-			<s:NavigatorContent id="addMediaNC" label="{'2. '+resourceManager.getString('myResources', 'ADD_MEDIA')}">
-				<view:UploadMedia id="mediaUpload" width="100%"/>
+			<s:NavigatorContent id="addMediaNC"
+								label="{'2. '+resourceManager.getString('myResources', 'ADD_MEDIA')}">
+				<view:UploadMedia id="mediaUpload"
+								  width="100%"/>
 			</s:NavigatorContent>
-			<s:NavigatorContent id="previewNC" label="{'3. '+resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
+			<s:NavigatorContent id="previewNC"
+								label="{'3. '+resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
 				<s:VGroup>
 					<s:Label text="Add controls for previewing and publishing"/>
 				</s:VGroup>

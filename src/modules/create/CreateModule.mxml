@@ -50,6 +50,7 @@
 			private var _moduleController:CreateController;
 			private var _creationComplete:Boolean;
 			private var _changewatcher:ChangeWatcher;
+			private var _initialUrl:Event;
 			
 			public static const INDEX:uint=0;
 			public static const MANAGE:uint=1;
@@ -60,11 +61,10 @@
 			}
 			
 			public function setDataBindings(data:* = null):void{	
-				_moduleController = new CreateController();
-				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				_moduleController = new CreateController();	
 				if(data){
 					if(data['initialurl']){
-						onURLChange(data['initialurl']);
+						_initialUrl=data['initialurl'];
 					}
 				}
 				//_changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
@@ -100,23 +100,26 @@
 				}
 			}
 			
-			public function onURLChange(event:URLChangeEvent):void{
-				if(!event || !event.module) return;
-				if(event.module != modulename) return;
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+
+				if(!evt.module || evt.module != modulename) return;
 				
 				//Reset the components before changing the foreground
 				//resetViews();
 				
-				switch (event.action)
+				switch (evt.action)
 				{
 					case 'manage':
-						actionManage(event.parameters);
+						actionManage(evt.parameters);
 						break;
 					case 'add':
 						actionAddEdit();
 						break;
 					case 'edit':
-						actionAddEdit(event.parameters);
+						actionAddEdit(evt.parameters);
 						break;
 					default:
 						actionIndex();
@@ -175,6 +178,8 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
 			}
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
@@ -184,6 +189,7 @@
 			
 			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
 				checkPermissions();
+				
 			}
 			
 			protected function checkPermissions():void{
@@ -201,7 +207,8 @@
 				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
-				  height="100%">
+				  height="100%"
+				  creationPolicy="all">
 		<s:NavigatorContent id="index">
 			<view:CreateIndexView id="createIndex" width="100%"/>
 		</s:NavigatorContent>

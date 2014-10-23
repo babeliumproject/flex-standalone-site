@@ -145,6 +145,40 @@ class Create {
 		}
 	}
 	
+	public function getExerciseMedia($exercisecode){
+		if(!$exercisecode) return;
+		try{
+			$verifySession = new SessionValidation(true);
+		
+			
+			$component = 'exercise';
+			$sql = "SELECT id, mediacode, status, timecreated, timemodified, license, authorref, duration, level
+					FROM media 
+					WHERE component='%s' AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
+			$results = $this->conn->_multipleSelect($sql, $component, $exercisecode);
+			return $results;
+		} catch (Exception $e){
+			throw new Exception ($e->getMessage());
+		}
+	}
+	
+	public function saveExerciseMedia($data = null){
+		try{
+			$verifySession = new SessionValidation(true);
+			
+			if(!$data) return;
+			
+			$optime = time();
+			
+		}
+	}
+	
+	public function getMediaStatus($mediaid){
+		$component = 'exercise';
+		$sql = "SELECT status FROM media WHERE component='%s' AND id=%d";
+		$result = this->conn->_singleSelect($sql, $component, $mediaid);
+		return $result ? $result->status : 0;
+	}
 	
 	/**
 	 * Helper function to generate RFC4122 compliant UUIDs
@@ -152,7 +186,7 @@ class Create {
 	 * @return String $uuid
 	 * 		A RFC4122 compliant string
 	 */
-	private function uuidv4()
+	public function uuidv4()
 	{
 		//When the openssl extension is not available in *nix systems try using urandom
 		if(function_exists('openssl_random_pseudo_bytes')){

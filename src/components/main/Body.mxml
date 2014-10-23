@@ -12,6 +12,9 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLChangeEvent;
+			
+			import mx.utils.ObjectUtil;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -29,15 +32,18 @@
 			private var _dataModel:DataModel=DataModel.getInstance();
 			
 			protected function preinitializeHandler(event:FlexEvent):void{
+				initURLManager();
+			}
+
+			public function initURLManager():void{
 				_urlManager = URLManager.getInstance();
 				_urlManager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
 				_urlManager.init();
 			}
 
-			//[Bindable] public var currentModuleName:String;
-
 			public function onURLChange(event:URLChangeEvent):void
 			{
+				trace(ObjectUtil.toString(getStyle('btn-default')));
 				_lastUrlChangeEvent = event.clone();
 				if(!event) return;
 				if(event.module == _currentModule) return;
