@@ -503,6 +503,11 @@ package model
 		public var exerciseDataRetrieved:Boolean;
 		
 		[Bindable]
+		public var exerciseMedia:ArrayCollection;
+		[Bindable]
+		public var exerciseMediaRetrieved:Boolean;
+		
+		[Bindable]
 		public var latestCreations:ArrayCollection;
 		[Bindable]
 		public var latestCreationsRetrieved:Boolean;

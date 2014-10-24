@@ -42,8 +42,7 @@ package modules.create.service
 		public function getExerciseMedia(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
 			var pendingCall:AsyncToken = service.getExerciseMedia(query.exercisecode);
-			pendingCall.addResponder(responder);
-			
+			pendingCall.addResponder(responder);	
 		}
 		
 		public function getCreations(query:Object = null):void{

@@ -150,12 +150,13 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 		
-			
+			$statuses = '0,1,2,3,4';
+			$levels = '0,1,2';
 			$component = 'exercise';
 			$sql = "SELECT id, mediacode, status, timecreated, timemodified, license, authorref, duration, level
 					FROM media 
-					WHERE component='%s' AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
-			$results = $this->conn->_multipleSelect($sql, $component, $exercisecode);
+					WHERE component='%s' AND status IN (%s) AND level IN (%s) AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
+			$results = $this->conn->_multipleSelect($sql, $component, $statuses, $levels, $exercisecode);
 			return $results;
 		} catch (Exception $e){
 			throw new Exception ($e->getMessage());
@@ -170,14 +171,16 @@ class Create {
 			
 			$optime = time();
 			
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
 		}
 	}
 	
 	public function getMediaStatus($mediaid){
 		$component = 'exercise';
 		$sql = "SELECT status FROM media WHERE component='%s' AND id=%d";
-		$result = this->conn->_singleSelect($sql, $component, $mediaid);
-		return $result ? $result->status : 0;
+		$result = $this->conn->_singleSelect($sql, $component, $mediaid);
+		return $result ? $result->status : -1;
 	}
 	
 	/**
