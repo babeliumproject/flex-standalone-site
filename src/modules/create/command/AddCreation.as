@@ -19,7 +19,8 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new CreateDelegate(this).getExercise();
+			
+			new CreateDelegate(this).addExercise();
 		}
 		
 		public function result(data:Object):void

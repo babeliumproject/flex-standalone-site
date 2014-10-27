@@ -130,13 +130,16 @@
 			public function actionAddEdit(parameters:Object = null):void{
 				var exercise:Object = new Object();
 				_viewstackIndex=EDIT;
+				
 				if(!parameters){
+					createEdit.exercisecode=null;
 					createEdit.viewIndex=CreateEditView.STEP1;
-					new CreateEvent(CreateEvent.ADD_EXERCISE).dispatch();
+					new CreateEvent(CreateEvent.EDIT_EXERCISE).dispatch();
 				} else {
 					var id:String = parameters['id'];
 					exercise.exercisecode = id;
 					var step:Number = parameters['s'];
+					createEdit.exercisecode=id;
 					switch(step){
 						case 3:
 							createEdit.viewIndex=CreateEditView.STEP3;

@@ -17,7 +17,8 @@ package modules.create.service
 		
 		public function getExercise(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken = service.getExerciseByCode(query.exercisecode);
+			var param:String = query ? query.exercisecode : null;
+			var pendingCall:AsyncToken = service.getExerciseByCode(param);
 			pendingCall.addResponder(responder);
 		}
 		

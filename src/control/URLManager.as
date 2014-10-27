@@ -91,8 +91,8 @@ package control
 		 */		
 		public function parseURL(event:BrowserChangeEvent=null):void
 		{
-			var modtmp:String;
-			var actiontmp:String;
+			var modtmp:String='home';
+			var actiontmp:String='index';
 			var paramtmp:String;
 			
 			parsedParams=null;
@@ -136,11 +136,15 @@ package control
 			if (numfragments > 3)
 			{
 				paramtmp=fragments[3];
-				var pattern:RegExp = /([^\?]*)\?(.+)/;
+				var pattern:RegExp = /([^\?]*)\?(.+)?/;
 				var matches:Array = paramtmp.match(pattern);
-				if(matches && matches[1] && matches[2]){
-					parsedParams = URLUtil.stringToObject(matches[2],'&',true);
-					parsedParams['id'] = matches[1];
+				if(matches){
+					if(matches[2]){
+						parsedParams = URLUtil.stringToObject(matches[2],'&',true);
+					}
+					if(matches[1]){
+						parsedParams['id'] = matches[1];
+					}
 				}
 			}
 
@@ -165,6 +169,14 @@ package control
 		public function getLastURL():String
 		{
 			return _lastURL;
+		}
+		
+		public function getParsedURL():Object{
+			var urlobj:Object=new Object();
+			urlobj.module = moduleName;
+			urlobj.action = action;
+			urlobj.parameters = parsedParams;
+			return urlobj;
 		}
 		
 		public function getModuleFileURL(modulename:String):String{
