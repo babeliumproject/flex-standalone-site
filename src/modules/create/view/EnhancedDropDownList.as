@@ -5,7 +5,10 @@ package modules.create.view
 	import flash.text.TextFormat;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.ICollectionView;
 	import mx.collections.IList;
+	import mx.collections.IViewCursor;
+	import mx.collections.ListCollectionView;
 	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
 	import mx.resources.ResourceManager;
@@ -20,66 +23,111 @@ package modules.create.view
 		private var _sortItems:Boolean;
 		private var sortItemsChanged:Boolean;
 		
-		private var _resourceDataProvider:IList;
-		private var resourceDataProviderChanged:Boolean;
+		private var _localeAwareDataProvider:IList;
+		private var _localeAwarePrompt:String;
+		
+		private var _indexField:String = "code";
+		
+		private var localeAwarePromptChanged:Boolean;
+		private var localeAwareDataProviderChanged:Boolean;
+		private var indexFieldChanged:Boolean;
+		
+		private var oldSelectedItem:Object;
+		
+		[Bindable("localeAwareDataProviderChanged")]
+		[Bindable("localeAwarePromptChanged")]
+		[Bindable("indexFieldChanged")]
 		
 		public function EnhancedDropDownList()
 		{
 			super();
-			
+			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler);
 		}
 		
 		protected function localeChangeHandler(event:Event):void{
-			var items:IList = getLocalizedItems();
-			if(dataProvider === items) return;
-			trace("Selected item: "+ObjectUtil.toString(selectedItem));
-			dataProvider = items;
+			if(localeAwareDataProvider){
+				updateLocalizedList();
+			}
+			if(localeAwarePrompt){
+				updateLocalizedPrompt();
+			}
 		}
 		
 		override public function set dataProvider(value:IList):void{
+			if(selectedIndex !=-1){
+				oldSelectedItem=this.selectedItem;
+			}
 			super.dataProvider=value;
 			sortItemsChanged=true;
 			invalidateProperties();
 		}
 		
 		override protected function commitProperties():void{
-			super.commitProperties();
+			
 			if(sortItemsChanged){
 				sortItemsChanged=false;
 				if(_sortItems){
-					var oldSelectedItem:Object = selectedItem;
-					//FIXME casting should be to parent of ArrayCollection and should also allow ArrayList
-					(dataProvider as ArrayCollection).source.sort(localizedSorting);
+					//Save the internal sorting index before reordering the collection
+					if(selectedIndex !=-1){
+						var internalIndex:int=-1;
+						if(oldSelectedItem && oldSelectedItem.hasOwnProperty(this.indexField)){
+							internalIndex = oldSelectedItem[this.indexField];
+						}
+						if(dataProvider.length){
+							(dataProvider as ArrayCollection).source.sort(this.localizedSorting);
+							var collection:ICollectionView = new ListCollectionView(IList(dataProvider));
+							var iterator:IViewCursor = collection.createCursor();
+							while(!iterator.afterLast){
+								var item:Object = iterator.current;
+								if(item && item.hasOwnProperty(this.indexField) && item[this.indexField]===internalIndex){
+									this.selectedItem=item;
+									break;
+								}
+								iterator.moveNext();
+							}
+						}
+					}
 				}
 			}
 			
-			var item:Object = getWidestItem();
-			if(item){
-				this.typicalItem = item;
+			super.commitProperties();
+			
+			var widestItem:Object = getWidestItem();
+			if(widestItem){
+				this.typicalItem = widestItem;
 				invalidateDisplayList();
 			}
 		}
 		
-		protected function getLocalizedItems():IList{
-			var copyResDP:IList = null;
-			var dataList:IList = new ArrayCollection();
-			var o:Object;
-			var label:String;
-			copyResDP= ObjectUtil.copy(resourceDataProvider) as IList;
-			for (var i:int=0; i<copyResDP.length; i++){
-				o = copyResDP.getItemAt(i);
-				if(o is String){
-					o = ResourceManager.getInstance().getString('myResources', o as String);
-				} else {
-					trace("Item is object: "+ObjectUtil.toString(o));
-					if(o.hasOwnProperty(this.labelField)){
-						o[this.labelField] = ResourceManager.getInstance().getString('myResources', o[this.labelField]);
-						trace("Set the labelField property of the object to the translated value: "+ObjectUtil.toString(o));
+		private function updateLocalizedList():void{
+			dataProvider = localizeList(_localeAwareDataProvider);
+		}
+		
+		private function updateLocalizedPrompt():void{
+			prompt = ResourceManager.getInstance().getString('myResources', _localeAwarePrompt);
+		}
+		
+		protected function localizeList(value:IList):ArrayCollection{
+			var localizedCollection:ArrayCollection = new ArrayCollection();
+			if(value){
+				var collection:ICollectionView = new ListCollectionView(IList(value));
+				var iterator:IViewCursor = collection.createCursor();
+				while(!iterator.afterLast){
+					var item:Object = iterator.current;
+					var itemCopy:Object = ObjectUtil.clone(item);
+					if(item is String){
+						itemCopy = ResourceManager.getInstance().getString('myResources', (item as String));
+					} else {
+						if(item.hasOwnProperty(labelField)){
+							itemCopy[labelField] = ResourceManager.getInstance().getString('myResources', item[labelField]);
+						}
 					}
+					localizedCollection.addItem(itemCopy);
+					
+					iterator.moveNext();
 				}
-				dataList.addItem(o);
 			}
-			return dataList;
+			return localizedCollection;
 		}
 		
 		protected function localizedSorting(item1:Object, item2:Object):int{
@@ -125,21 +173,51 @@ package modules.create.view
 			return label;
 		}
 		
-		[Bindable("resourceDataProviderChanged")]
-		public function get resourceDataProvider():IList{
-			return _resourceDataProvider;
+		
+		public function get localeAwareDataProvider():IList{
+			return _localeAwareDataProvider;
 		}
 		
-		public function set resourceDataProvider(value:IList):void
+		public function set localeAwareDataProvider(value:IList):void
 		{   
-			if (resourceDataProvider === value)
+			if (localeAwareDataProvider === value)
 				return;
 			
-			_resourceDataProvider=value;
-			dataProvider = getLocalizedItems();
-			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler);
+			_localeAwareDataProvider=value;
+			localeAwareDataProviderChanged=true;
 			
-			dispatchEvent(new Event("resourceDataProviderChanged"));
+			dataProvider = localizeList(_localeAwareDataProvider);
+			
+			dispatchEvent(new Event("localeAwareDataProviderChanged"));
+		}
+		
+		public function set localeAwarePrompt(value:String):void{
+			if(localeAwarePrompt === value)
+				return;
+			_localeAwarePrompt = value;
+			localeAwarePromptChanged = true;
+			
+			prompt = ResourceManager.getInstance().getString('myResources', _localeAwarePrompt);
+			
+			dispatchEvent(new Event("localeAwarePromptChanged"));
+		}
+		
+		public function get localeAwarePrompt():String{
+			return _localeAwarePrompt;
+		}
+		
+		public function get indexField():String
+		{
+			return _indexField;
+		}
+		
+		public function set indexField(value:String):void
+		{
+			if (value == _indexField)
+				return 
+			_indexField = value;
+			indexFieldChanged = true;
+			invalidateProperties();
 		}
 		
 		public function set sortItems(value:Boolean):void{

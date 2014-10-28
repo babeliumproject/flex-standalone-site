@@ -55,8 +55,18 @@
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						required="true"
 						width="100%">
+				<!--
 					<common:DifficultyLevelComboBox id="difficultySelector"
 													change="onDifficultyChange(event)"/>
+				-->
+				<view:EnhancedDropDownList id="difficultySelector"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   localeAwareDataProvider="{dpDifficultyLevel}"
+										   sortItems="true"
+										   change="onConditionalDropdownChange(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 						required="true">
@@ -68,7 +78,7 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   requireSelection="true"
-										   resourceDataProvider="{dpExerciseType}"
+										   localeAwareDataProvider="{dpExerciseType}"
 										   sortItems="true"
 										   change="onConditionalDropdownChange(event)"/>
 			</s:FormItem>
@@ -78,7 +88,7 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   requireSelection="true"
-										   resourceDataProvider="{dpCommSituation}"
+										   localeAwareDataProvider="{dpCommSituation}"
 										   sortItems="true"
 										   change="onConditionalDropdownChange(event)"/>
 			</s:FormItem>
@@ -90,7 +100,7 @@
 											   cornerRadius="3"
 											   borderColor="0xcccccc"
 											   requireSelection="true"
-											   resourceDataProvider="{dpCommCompetence}"
+											   localeAwareDataProvider="{dpCommCompetence}"
 											   sortItems="true"
 											   change="onConditionalDropdownChange(event)"/>
 					<skins:IconButton id="showDescriptorsButton"
@@ -109,7 +119,7 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   requireSelection="true"
-										   resourceDataProvider="{dpLingAspect}"
+										   localeAwareDataProvider="{dpLingAspect}"
 										   sortItems="true"/>
 			</s:FormItem>		
 		</s:Form>
@@ -186,6 +196,12 @@
 			public var formIsValid:Boolean=false;
 			[Bindable]
 			private var exerciseData:ExerciseVO;
+			
+			[Bindable]
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}
+			]);
+			
 
 			private function completeHandler(event:FlexEvent):void
 			{
@@ -276,6 +292,7 @@
 
 			private function onDifficultyChange(event:ListEvent):void
 			{
+				/*
 				var dispatchingItem:DifficultyLevelComboBox=DifficultyLevelComboBox(event.target);
 				var levelIndex:int=dispatchingItem.selectedIndex;
 				if (levelIndex != -1)
@@ -283,7 +300,7 @@
 					if (!_descriptors)
 						getDescriptorCodesFromResourceFile();
 					addLevelDescriptors(levelIndex + 1);
-				}
+				}*/
 			}
 
 			private function getDescriptorCodesFromResourceFile():void
@@ -420,7 +437,7 @@
 				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
 				difficultySelector.selectedIndex=exerciseData.difficulty - 1;
-				difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				//difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 
 				//The previous function should have created the descriptors of the selected level
 				selectPreviousDescriptors(exerciseData.descriptors);
@@ -450,7 +467,15 @@
 			}
 
 			[Bindable]
-			private var dpExerciseType:ArrayCollection=new ArrayCollection(['FREE_CONTEXT', 'CONVERSATION', 'STORYTELLING', 'DUBBING', 'ERROR_DETECTION', 'TRANSLATION', 'READING']);
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([
+				{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, 
+				{'code': 1, 'label': 'FREE_CONTEXT'}, 
+				{'code': 2, 'label': 'CONVERSATION'}, 
+				{'code': 3, 'label': 'STORYTELLING'}, 
+				{'code': 4, 'label': 'VOICE_OVER'}, 
+				{'code': 5, 'label': 'OTHER'}
+			]);
+
 			[Bindable]
 			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'WORK'}, {'code': 3, 'label': 'STUDIES'}]);
 			[Bindable]
