@@ -260,11 +260,15 @@ class Exercise {
 	 * 		An array of clean tags, if any
 	 */
 	public function parseExerciseTags($tags){
+		//Set the locale for character conversion explicitly to UTF-8. The escapeshellcmd() command
+		//depends on the locale and if not set it might strip non-ASCII characters from the input text.
+		setlocale(LC_CTYPE, "UTF8", "en_US.UTF-8");
+		
 		$ptags = array();
 		//Remove a set of symbols from the tag string
 		$ctags = str_replace(array(":",";","{","}","[","]","\\","/"),'',escapeshellcmd($tags));
 		//Change new-line characters with commas, lower-case, remove html tags, and unnecessary whitespaces
-		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',strtolower(strip_tags(trim($ctags)))));
+		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',strip_tags(trim($ctags))));
 		
 		$cleanTags = array();
 		
@@ -288,8 +292,8 @@ class Exercise {
 	public function insertTags($tags, $exerciseId){
 		if($tags && is_array($tags) && count($tags) && $exerciseId){
 			foreach($tags as $tag){
-				//Check if this tag exists in the `tag` table
-				$sql = "SELECT id FROM tag WHERE name='%s'";
+				//Check if this tag exists in the `tag` table. The matching is case-sensitive
+				$sql = "SELECT id FROM tag WHERE BINARY name='%s'";
 				$exists = $this->conn->_singleSelect($sql, $tag);
 				if(!$exists){
 					$insert = "INSERT INTO tag SET name='%s'";
