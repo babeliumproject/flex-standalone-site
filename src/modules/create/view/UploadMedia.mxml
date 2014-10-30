@@ -10,26 +10,39 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import events.UploadEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.create.event.CreateEvent;
-			
+
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
 			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
-			
+
+			import spark.components.ButtonBar;
+			import spark.events.IndexChangeEvent;
+			import spark.layouts.HorizontalAlign;
+			import spark.layouts.VerticalAlign;
+
+			import view.common.CustomAlert;
+
 			public static const STATUS_UNDEF:int=0;
 			public static const STATUS_ENCODING:int=1;
 			public static const STATUS_READY:int=2;
 			public static const STATUS_DUPLICATED:int=3;
 			public static const STATUS_ERROR:int=4;
-			
+
 			public static const LEVEL_UNDEF:int=0;
 			public static const LEVEL_PRIMARY:int=1;
 			public static const LEVEL_MODEL:int=2;
+
+			public static const MEDIA_TYPE_AUDIO:String='audio';
+			public static const MEDIA_TYPE_VIDEO:String='video';
 
 			private var filereference:FileReference;
 			private var filename:String;
@@ -133,12 +146,146 @@
 			protected function set mediaRetrieved(value:Boolean):void
 			{
 				var media:ArrayCollection=DataModel.getInstance().exerciseMedia;
-				if(media){
-					for each (var item:Object in media){
-						if (item.level == LEVEL_PRIMARY){
-							
-						} else if (item.level == LEVEL_MODEL){
-							
+				if (media)
+				{
+					for each (var item:Object in media)
+					{
+						if (parseInt(item.level) == LEVEL_PRIMARY)
+						{
+							var primarycontainer:BorderContainer=new BorderContainer();
+							var layout:HorizontalLayout=new HorizontalLayout();
+							layout.paddingBottom=layout.paddingTop=layout.paddingLeft=layout.paddingRight=10;
+							layout.verticalAlign=VerticalAlign.MIDDLE;
+							layout.horizontalAlign=HorizontalAlign.CENTER;
+							primarycontainer.percentWidth=100;
+							primarycontainer.styleName='lightBorderContainer';
+							primarycontainer.visible=true;
+							primarycontainer.includeInLayout=true;
+							primarycontainer.minHeight=100;
+							primarycontainer.layout=layout;
+
+							var titlelabel:Label=new Label();
+							titlelabel.text='Primary media';
+							primarycontainer.addElement(titlelabel);
+
+							var statuslabel:Label=new Label();
+
+							switch (parseInt(item.status))
+							{
+								case STATUS_UNDEF:
+								case STATUS_ENCODING:
+									statuslabel.text='Status: Processing...';
+									break;
+								case STATUS_READY:
+									statuslabel.text='Status: Ready';
+									var filename:Label=new Label();
+									filename.text='Filename: ' + item.filename;
+									primarycontainer.addElement(filename);
+									if (item.type == MEDIA_TYPE_VIDEO)
+									{
+										var thumbbar:ButtonBar=new ButtonBar();
+										thumbbar.requireSelection=true;
+										thumbbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
+										thumbbar.selectedIndex=item.defaultthumbnail - 1;
+										thumbbar.addEventListener(IndexChangeEvent.CHANGE, setDefaultThumbnail, false, 0, true);
+										primarycontainer.addElement(thumbbar);
+									}
+									var subtitlestatus:Label=new Label();
+									subtitlestatus.text='Subtitle status: Not subtitled';
+
+									var substat:int=parseInt(item.subtitlestatus);
+									var subtitlemedia:Button=new Button();
+									subtitlemedia.label='Add subtitles';
+									if (substat == 1)
+									{
+										subtitlemedia.label='Edit subtitles';
+										subtitlestatus.text='Subtitle status: Draft';
+									}
+									if (substat == 2)
+									{
+										subtitlemedia.label='Improve subtitles';
+										subtitlestatus.text='Subtitle status: Complete';
+									}
+
+									subtitlemedia.addEventListener(MouseEvent.CLICK, subtitleMediaClickHandler, false, 0, true);
+									primarycontainer.addElement(subtitlestatus);
+									primarycontainer.addElement(subtitlemedia);
+									var deletemedia:Button=new Button();
+									deletemedia.label='Delete';
+									primarycontainer.addElement(deletemedia);
+									break;
+								case STATUS_DUPLICATED:
+									statuslabel.text='Status: Duplicated';
+									break;
+								default:
+									statuslabel.text='Status: Error. Invalid media';
+									break;
+							}
+
+							primarycontainer.addElement(statuslabel);
+
+							this.addElement(primarycontainer);
+						}
+						else if (item.level == LEVEL_MODEL)
+						{
+							var modelcontainer:BorderContainer=new BorderContainer();
+							var layout1:HorizontalLayout=new HorizontalLayout();
+							layout1.paddingBottom=layout.paddingTop=layout.paddingLeft=layout.paddingRight=10;
+							layout1.verticalAlign=VerticalAlign.MIDDLE;
+							layout1.horizontalAlign=HorizontalAlign.CENTER;
+							modelcontainer.percentWidth=100;
+							modelcontainer.styleName='lightBorderContainer';
+							modelcontainer.visible=true;
+							modelcontainer.includeInLayout=true;
+							modelcontainer.minHeight=100;
+							modelcontainer.layout=layout1;
+
+							var statuslabel1:Label=new Label();
+
+							switch (item.status)
+							{
+								case 0:
+								case 1:
+									statuslabel1.text='Status: Processing...';
+									break;
+								case 2:
+									statuslabel1.text='Status: Ready';
+									var filename1:Label=new Label();
+									filename1.text=item.filename;
+									modelcontainer.addElement(filename1);
+									if (item.type == MEDIA_TYPE_VIDEO)
+									{
+										var thumbbar1:ButtonBar=new ButtonBar();
+										thumbbar1.requireSelection=true;
+										thumbbar1.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
+										thumbbar1.selectedIndex=item.thumbnailnum - 1;
+										thumbbar1.addEventListener(IndexChangeEvent.CHANGE, setDefaultThumbnail, false, 0, true);
+										modelcontainer.addElement(thumbbar1);
+									}
+
+									var subtitlemedia1:Button=new Button();
+									if (item.subtitlestatus == 0)
+										subtitlemedia1.label='Add subtitles';
+									if (item.subtitlestatus == 1)
+										subtitlemedia1.label='Edit subtitles';
+
+									subtitlemedia1.addEventListener(MouseEvent.CLICK, subtitleMediaClickHandler, false, 0, true);
+									modelcontainer.addElement(subtitlemedia1);
+									var deletemedia1:Button=new Button();
+									deletemedia1.label='Delete';
+									modelcontainer.addElement(deletemedia1);
+									break;
+								case 3:
+									statuslabel1.text='Status: Duplicated';
+									break;
+								default:
+									statuslabel1.text='Status: Error. Invalid media';
+									break;
+							}
+
+							modelcontainer.addElement(statuslabel1);
+
+							this.addElement(modelcontainer);
 						}
 					}
 				}
@@ -146,7 +293,7 @@
 				availableMedia.visible=true;
 				availableMediaLabel.percentWidth=100;
 				availableMediaLabel.text=ObjectUtil.toString(DataModel.getInstance().exerciseMedia);
-				
+
 			}
 
 			protected function displayUploadErrors():void
@@ -175,6 +322,41 @@
 			protected function uploadCaptureClickHandler(event:Event):void
 			{
 
+			}
+
+			private function setDefaultThumbnail(event:IndexChangeEvent):void
+			{
+				if (event.eventPhase != EventPhase.AT_TARGET)
+					return;
+				var mediaid:String=(event.target as ButtonBar).id;
+				var num:int=(event.newIndex) + 1;
+				var params:Object=new Object();
+				params.num=num;
+				params.mediaid=mediaid;
+				new CreateEvent(CreateEvent.SET_DEFAULT_THUMBNAIL, params).dispatch();
+			}
+
+			private function subtitleMediaClickHandler(event:MouseEvent):void
+			{
+				var mediaid:int=(event.target as Object).id as int;
+				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
+			}
+
+			protected function deleteMediaButtonClickHandler(event:MouseEvent):void
+			{
+				CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteMediaCloseHandler, Alert.NO);
+			}
+
+			private function deleteMediaCloseHandler(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES)
+					deleteMedia();
+			}
+
+			private function deleteMedia():void
+			{
+				var mediaid:int=-1;
+				new CreateEvent(CreateEvent.DELETE_MEDIA, mediaid).dispatch();
 			}
 		]]>
 	</fx:Script>

@@ -18,6 +18,8 @@ package modules.create.event
 		public static const WEBCAM:String = "webcam";
 		public static const LIST_EXERCISE_MEDIA:String = "listExerciseMedia";
 		public static const GET_EXERCISE_MEDIA:String = "getExerciseMedia";
+		public static const SET_DEFAULT_THUMBNAIL:String = "setDefaultThumbnail";
+		public static const DELETE_MEDIA:String = "deleteMedia";
 		
 		public var params:Object;
 		

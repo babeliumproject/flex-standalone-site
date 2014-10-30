@@ -34,6 +34,17 @@ require_once 'vo/ExerciseVO.php';
  *
  */
 class Create {
+	
+	const STATUS_UNDEF=0;
+	const STATUS_ENCODING=1;
+	const STATUS_READY=2;
+	const STATUS_DUPLICATED=3;
+	const STATUS_ERROR=4;
+
+	const LEVEL_UNDEF=0;
+	const LEVEL_PRIMARY=1;
+	const LEVEL_MODEL=2;
+	
 	private $conn;
 
 	public function __construct(){
@@ -153,14 +164,37 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT id, mediacode, status, timecreated, timemodified, license, authorref, duration, level
+			$sql = "SELECT id, filename, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
 					FROM media 
 					WHERE component='%s' AND status IN (%s) AND level IN (%s) AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
 			$results = $this->conn->_multipleSelect($sql, $component, $statuses, $levels, $exercisecode);
+			if($results){
+				foreach($results as $r){
+					if($r->status==self::STATUS_READY){
+						$r->subtitlestatus=$this->getSubtitleStatus($r->id);
+					}
+				}
+			}
 			return $results;
 		} catch (Exception $e){
 			throw new Exception ($e->getMessage());
 		}
+	}
+	
+	private function getSubtitleStatus($mediaid){
+		$status=0;
+		$sql = "SELECT complete FROM subtitle WHERE fk_media_id=%d";
+		$results = $this->conn->_multipleSelect($sql, $mediaid);
+		if($results){
+			$status=1;
+			foreach($results as $r){
+				if($r->complete==1){
+					$status=2;
+					break;
+				}
+			}
+		}
+		return $status;
 	}
 	
 	public function saveExerciseMedia($data = null){
