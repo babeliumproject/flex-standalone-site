@@ -1,4 +1,4 @@
-
+DELETE FROM exercise_descriptor WHERE id>0;
 
 INSERT INTO exercise_descriptor (id,situation,level,competence,number,alte) VALUES 
 (1,1,1,13,1,0),

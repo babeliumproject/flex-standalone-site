@@ -1,14 +1,15 @@
 <?php
 
-require_once 'migrationutils.php';
+if(!defined('__ROOT__'))
+	define('__ROOT__', dirname(__FILE__));
+
+require_once __ROOT__.'/migrationutils.php';
 
 
 function generate_migration_template(){
 	global $CFG;
 	$models = get_database_models($CFG->db_name);
 	return "<?php
-
-require_once 'migrationutils';\n
 		
 function forwards(){
 	
@@ -25,13 +26,13 @@ function backwards(){
 
 function run_command($_argv) {
 	if (!isset($_argv[1])) {
-		throw new \Exception('No command specified');
+		throw new Exception('No command specified');
 	}
 	$cmd = $_argv[1];
 	$opts = array_slice($_argv, 2);
 
 	if (!in_array($cmd, array('create', 'migrate'))) {
-		throw new \Exception('Invalid Command');
+		throw new Exception('Invalid Command');
 	}
 
 	if ($cmd === 'create') {
@@ -39,22 +40,31 @@ function run_command($_argv) {
 			create_migration_file($opts[1]);
 			return;
 		} else {
-			throw new \Exception('Invalid Command');
+			throw new Exception('Invalid Command');
 		}
 	}
 
 	if ($cmd === 'migrate') {
 		$n = array_search('-n', $opts);
-		$name = $n === false ? null : $opts[$n+1];
+		$filename = $n === false ? null : $opts[$n+1];
 		$fake = array_search('--fake', $opts) === false ? false : true; // lol! php
 		$recover = !$fake && array_search('--recover', $opts) !== false;
-		run_migrations($name, $fake, $recover);
+		run_migrations($filename, $fake, $recover);
 		return;
 	}
 }
 
-function run_migrations($name, $fake, $recover){
-	
+function run_migrations($filename, $fake, $recover){
+	$path = (__ROOT__.'/'.$filename);
+	if(is_file($path)){
+		require_once $path;
+		if(!$recover){
+			echo "Applying migration '".$filename."' ...\n";
+			forwards();
+		} else {
+			backwards();
+		}
+	}
 }
 
 function create_migration_file($name) {

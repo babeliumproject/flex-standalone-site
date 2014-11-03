@@ -1,14 +1,18 @@
 <?php
 
 if(!defined('CLI_SERVICE_PATH'))
-	define('CLI_SERVICE_PATH', '/var/www/babelium/services');
+	define('CLI_SERVICE_PATH', '/var/www/babeliumlms/services');
 
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
 require_once 'Zend/Json.php';
 
-$CFG = new Config();
-$DB = new Datasource($CFG->host, $CFG->db_name, $CFG->db_username, $CFG->db_password);
+try{
+	$CFG = new Config();
+	$DB = new Datasource($CFG->host, $CFG->db_name, $CFG->db_username, $CFG->db_password);
+} catch(Exception $e){
+	echo ('Failed with ' . get_class($e) . ': ' . $e->getMessage()."\n");
+}
 
 global $DB, $CFG;
 
