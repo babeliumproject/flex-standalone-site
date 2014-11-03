@@ -45,13 +45,17 @@ class Create {
 	const LEVEL_PRIMARY=1;
 	const LEVEL_MODEL=2;
 	
+	const TYPE_VIDEO='video';
+	const TYPE_AUDIO='audio';
+	
 	private $conn;
+	private $cfg;
 
 	public function __construct(){
-		$settings = new Config();
+		$this->cfg = new Config();
 		try {
 			$verifySession = new SessionValidation();
-			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
+			$this->conn = new Datasource($this->cfg->host, $this->cfg->db_name, $this->cfg->db_username, $this->cfg->db_password);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -172,6 +176,14 @@ class Create {
 				foreach($results as $r){
 					if($r->status==self::STATUS_READY){
 						$r->subtitlestatus=$this->getSubtitleStatus($r->id);
+						if($r->type==self::TYPE_VIDEO){
+							$posterurl = $this->cfg->posterPath.'/default.jpg';
+							$thumburls=array()
+							for($i=0;$i<3;$i++){
+								$thumburls[] = $this->cfg->imagePath.'/'.$r->mediacode.'/'.$i.'.jpg';
+							}
+							$r->thumburls = $thumburls;
+						}
 					}
 				}
 			}
