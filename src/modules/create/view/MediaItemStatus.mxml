@@ -1,55 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%"
-		  styleName="lightBorderContainer"
-		  minHeight="100">
-	
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   width="100%"
+				   styleName="lightBorderContainer"
+				   minHeight="100">
+
 	<s:layout>
-		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalAlign="middle" horizontalAlign="left"/>
+		<s:VerticalLayout paddingBottom="10"
+						  paddingLeft="10"
+						  paddingRight="10"
+						  paddingTop="10"
+						  verticalAlign="middle"
+						  horizontalAlign="left"/>
 	</s:layout>
 
 	<s:Label id="mediaLevel"/>
-	
-	<s:BitmapImage id="poster" source="{data.posterurl}"/>
-	
+
+	<s:BitmapImage id="poster"/>
+
 	<s:Label id="statuslabel"/>
-	
-	<s:Button id="subtitlemedia" click="subtitleMediaClickHandler(event)" label="{resourceManager.getString('myResources','ADD_SUBTITLES')}"/>
-	<s:ButtonBar id="thumbSelect" requireSelection="true" dataProvider="{}" change="setDefaultThumbnail(event)"/>
-	<s:Button id="deleteMedia" click="deleteMediaButtonClickHandler(event)" styleName="btn-danger" label="{resourceManager.getString('myResources','DELETE')}"/>
-	
-	
+
+	<s:Button id="subtitlemediaBtn"
+			  click="subtitleMediaClickHandler(event)"
+			  styleName="btn-primary"
+			  label="{resourceManager.getString('myResources','ADD_SUBTITLES')}"/>
+	<s:ButtonBar id="thumbSelectBtnbar"
+				 requireSelection="true"
+				 change="setDefaultThumbnail(event)"/>
+	<s:Button id="deleteMediaBtn"
+			  click="deleteMediaButtonClickHandler(event)"
+			  styleName="btn-danger"
+			  label="{resourceManager.getString('myResources','DELETE')}"/>
+
+
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import mx.collections.ArrayCollection;
-			
+
 			import modules.create.event.CreateEvent;
-			
+
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
-			
+
 			import spark.events.IndexChangeEvent;
-			
+
 			import view.common.CustomAlert;
-			
+
 			public static const STATUS_UNDEF:int=0;
 			public static const STATUS_ENCODING:int=1;
 			public static const STATUS_READY:int=2;
 			public static const STATUS_DUPLICATED:int=3;
 			public static const STATUS_ERROR:int=4;
-			
+
 			public static const LEVEL_UNDEF:int=0;
 			public static const LEVEL_PRIMARY:int=1;
 			public static const LEVEL_MODEL:int=2;
-			
+
 			public static const MEDIA_TYPE_AUDIO:String='audio';
 			public static const MEDIA_TYPE_VIDEO:String='video';
-			
+
 			private function setDefaultThumbnail(event:IndexChangeEvent):void
 			{
 				if (event.eventPhase != EventPhase.AT_TARGET)
@@ -61,75 +74,75 @@
 				params.mediaid=mediaid;
 				new CreateEvent(CreateEvent.SET_DEFAULT_THUMBNAIL, params).dispatch();
 			}
-			
+
 			private function subtitleMediaClickHandler(event:MouseEvent):void
 			{
 				var mediaid:int=(event.target as Object).id as int;
 				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
 			}
-			
+
 			protected function deleteMediaButtonClickHandler(event:MouseEvent):void
 			{
 				CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteMediaCloseHandler, Alert.NO);
 			}
-			
+
 			private function deleteMediaCloseHandler(event:CloseEvent):void
 			{
 				if (event.detail == Alert.YES)
 					deleteMedia();
 			}
-			
+
 			private function deleteMedia():void
 			{
 				var mediaid:int=-1;
 				new CreateEvent(CreateEvent.DELETE_MEDIA, mediaid).dispatch();
 			}
-			
-			public function setData(data:Object):void{
-				
-				
-				
-				switch (parseInt(data.status))
+
+			public function setData(data:Object):void
+			{
+				if (data)
 				{
-					case STATUS_UNDEF:
-					case STATUS_ENCODING:
-						statuslabel.text='Status: Processing...';
-						break;
-					case STATUS_READY:
-						statuslabel.text='Status: Ready';
-						var filename:Label=new Label();
-						filename.text='Filename: ' + data.filename;
-						if (data.type == MEDIA_TYPE_VIDEO)
-						{
-							thumbSelect.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
-							thumbSelect.selectedIndex=data.defaultthumbnail - 1;
-						}
-						var subtitlestatus:Label=new Label();
-						subtitlestatus.text='Subtitle status: Not subtitled';
-						
-						var substat:int=parseInt(data.subtitlestatus);
-						if (substat == 1)
-						{
-							subtitlemedia.label='Edit subtitles';
-							subtitlestatus.text='Subtitle status: Draft';
-						}
-						if (substat == 2)
-						{
-							subtitlemedia.label='Improve subtitles';
-							subtitlestatus.text='Subtitle status: Complete';
-						}
-						
-						break;
-					case STATUS_DUPLICATED:
-						statuslabel.text='Status: Duplicated';
-						break;
-					default:
-						statuslabel.text='Status: Error. Invalid media';
-						break;
+					switch (parseInt(data.status))
+					{
+						case STATUS_UNDEF:
+						case STATUS_ENCODING:
+							statuslabel.text='Status: Processing...';
+							break;
+						case STATUS_READY:
+							statuslabel.text='Status: Ready';
+							var filename:Label=new Label();
+							filename.text='Filename: ' + data.filename;
+							if (data.type == MEDIA_TYPE_VIDEO)
+							{
+								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
+								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
+							}
+							var subtitlestatus:Label=new Label();
+							subtitlestatus.text='Subtitle status: Not subtitled';
+
+							var substat:int=parseInt(data.subtitlestatus);
+							if (substat == 1)
+							{
+								subtitlemediaBtn.label='Edit subtitles';
+								subtitlestatus.text='Subtitle status: Draft';
+							}
+							if (substat == 2)
+							{
+								subtitlemediaBtn.label='Improve subtitles';
+								subtitlestatus.text='Subtitle status: Complete';
+							}
+
+							break;
+						case STATUS_DUPLICATED:
+							statuslabel.text='Status: Duplicated';
+							break;
+						default:
+							statuslabel.text='Status: Error. Invalid media';
+							break;
+					}
 				}
-			
 			}
 		]]>
 	</fx:Script>
-	
-</s:VGroup>
+
+</s:BorderContainer>

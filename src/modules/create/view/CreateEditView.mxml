@@ -106,7 +106,7 @@
 									width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent id="addMediaNC" label="{resourceManager.getString('myResources','ADD_MEDIA')}">
-				<view:UploadMedia id="mediaUpload"
+				<view:AddMedia id="mediaUpload"
 								  width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent id="previewNC" label="{resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">

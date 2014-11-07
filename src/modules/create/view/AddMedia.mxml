@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:common="view.common.*"
+		  xmlns:videoUpload="components.videoUpload.*"
+		  xmlns:view="modules.create.view.*"
+		  xmlns:skins="skins.*">
+
+	<fx:Declarations>
+		<s:RadioButtonGroup id="includeModel"
+							itemClick="includeModelHandler(event)"/>
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+
+			import events.UploadEvent;
+
+			import model.DataModel;
+
+			import modules.create.event.CreateEvent;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+
+			import spark.components.ButtonBar;
+			import spark.components.HGroup;
+			import spark.components.Label;
+			import spark.components.RadioButton;
+			import spark.components.RadioButtonGroup;
+			import spark.events.IndexChangeEvent;
+			import spark.layouts.HorizontalAlign;
+			import spark.layouts.VerticalAlign;
+
+			import view.common.CustomAlert;
+
+			public static const STATUS_UNDEF:int=0;
+			public static const STATUS_ENCODING:int=1;
+			public static const STATUS_READY:int=2;
+			public static const STATUS_DUPLICATED:int=3;
+			public static const STATUS_ERROR:int=4;
+
+			public static const LEVEL_UNDEF:int=0;
+			public static const LEVEL_PRIMARY:int=1;
+			public static const LEVEL_MODEL:int=2;
+
+			public static const MEDIA_TYPE_AUDIO:String='audio';
+			public static const MEDIA_TYPE_VIDEO:String='video';
+
+			private var firstMediaLbl:Label;
+			private var secondMediaLbl:Label;
+			private var chooseModelGroup:HGroup;
+
+			private var primarystatus:MediaItemStatus;
+			private var modelstatus:MediaItemStatus;
+
+			private var primaryupload:MediaOriginChooser;
+			private var modelupload:MediaOriginChooser;
+
+			public function resetComponent():void
+			{
+
+			}
+
+			public function includeModelHandler(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "no")
+				{
+
+				}
+				else if (event.currentTarget.selectedValue == "yes")
+				{
+					modelupload=new MediaOriginChooser();
+					this.addElement(modelupload);
+				}
+			}
+
+			protected function set mediaRetrieved(value:Boolean):void
+			{
+				var media:ArrayCollection=DataModel.getInstance().exerciseMedia;
+
+				this.removeAllElements();
+				modelstatus = null;
+				primarystatus = null;
+
+				firstMediaLbl=new Label();
+				firstMediaLbl.styleName='sectionTitleLabel';
+				secondMediaLbl=new Label();
+				secondMediaLbl.styleName='sectionTitleLabel';
+
+				if (media)
+				{
+					var itemlevel:int;
+					for each (var item:Object in media)
+					{
+						if (item.hasOwnProperty('level'))
+						{
+							itemlevel=parseInt(item.level);
+							if (itemlevel == LEVEL_PRIMARY)
+							{
+								trace("item primary");
+								primarystatus=new MediaItemStatus();
+								primarystatus.setData(item);
+							}
+							else if (itemlevel == LEVEL_MODEL)
+							{
+								trace("item model");
+								modelstatus=new MediaItemStatus();
+								modelstatus.setData(item);
+							}
+						}
+					}
+				}
+				if (modelstatus && primarystatus)
+				{
+					trace("primary & model");
+					firstMediaLbl.text="Primary Media";
+					this.addElement(firstMediaLbl);
+					this.addElement(primarystatus);
+					secondMediaLbl.text="Model Media";
+					this.addElement(modelstatus);
+				}
+				else if (primarystatus)
+				{
+					trace("primary");
+					firstMediaLbl.text="Exercise Media";
+					this.addElement(firstMediaLbl);
+					this.addElement(primarystatus);
+					secondMediaLbl.text="Model Media";
+					this.addElement(secondMediaLbl);
+					
+					chooseModelGroup=new HGroup();
+					var lbl:Label=new Label();
+					lbl.text="Do you want to add a model media?";
+					var radiono:RadioButton=new RadioButton();
+					radiono.label=resourceManager.getString('myResources', 'NO');
+					radiono.group=includeModel;
+					radiono.value='no';
+					var radioyes:RadioButton=new RadioButton();
+					radioyes.label=resourceManager.getString('myResources', 'YES');
+					radioyes.value='yes';
+					radioyes.group=includeModel;
+					chooseModelGroup.addElement(lbl);
+					chooseModelGroup.addElement(radiono);
+					chooseModelGroup.addElement(radioyes);
+					this.addElement(chooseModelGroup);
+				}
+				else
+				{
+					trace("none");
+					firstMediaLbl.text="Exercise Media";
+					this.addElement(firstMediaLbl);
+					primaryupload=new MediaOriginChooser();
+					this.addElement(primaryupload);
+				}
+			}
+		]]>
+	</fx:Script>
+
+
+
+	<fx:Binding source="{DataModel.getInstance().exerciseMediaRetrieved}"
+				destination="this.mediaRetrieved"/>
+
+</s:VGroup>
