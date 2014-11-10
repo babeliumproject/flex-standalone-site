@@ -15,39 +15,41 @@
 						  horizontalAlign="left"/>
 	</s:layout>
 
-	<s:Label id="mediaLevel"/>
+	<s:Label id="mediaLevel" text="Media"/>
 
 	<s:BitmapImage id="poster"/>
 
-	<s:Label id="statuslabel"/>
+	<s:Label id="statuslabel" text="Status"/>
 
 	<s:Button id="subtitlemediaBtn"
 			  click="subtitleMediaClickHandler(event)"
 			  styleName="btn-primary"
-			  label="{resourceManager.getString('myResources','ADD_SUBTITLES')}"/>
+			  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
 	<s:ButtonBar id="thumbSelectBtnbar"
 				 requireSelection="true"
 				 change="setDefaultThumbnail(event)"/>
 	<s:Button id="deleteMediaBtn"
 			  click="deleteMediaButtonClickHandler(event)"
 			  styleName="btn-danger"
-			  label="{resourceManager.getString('myResources','DELETE')}"/>
+			  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
 
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
-			import mx.collections.ArrayCollection;
-
+			
 			import modules.create.event.CreateEvent;
-
+			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
-
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
 			import spark.events.IndexChangeEvent;
-
+			
 			import view.common.CustomAlert;
 
 			public static const STATUS_UNDEF:int=0;
@@ -62,6 +64,8 @@
 
 			public static const MEDIA_TYPE_AUDIO:String='audio';
 			public static const MEDIA_TYPE_VIDEO:String='video';
+			
+			private var _data:Object;
 
 			private function setDefaultThumbnail(event:IndexChangeEvent):void
 			{
@@ -97,12 +101,18 @@
 				var mediaid:int=-1;
 				new CreateEvent(CreateEvent.DELETE_MEDIA, mediaid).dispatch();
 			}
-
-			public function setData(data:Object):void
-			{
-				if (data)
+			
+			private function initCompleteHandler(event:FlexEvent):void{
+				if(!event.eventPhase == EventPhase.AT_TARGET) return;
+				if(_data) this.setDataInternal(_data);
+			}
+			
+			private function setDataInternal(data:Object):void{
+				if (data && data.hasOwnProperty('status'))
 				{
-					switch (parseInt(data.status))
+					var status:int = parseInt(data.status);
+					trace("Data: "+ObjectUtil.toString(data));
+					switch (status)
 					{
 						case STATUS_UNDEF:
 						case STATUS_ENCODING:
@@ -110,16 +120,17 @@
 							break;
 						case STATUS_READY:
 							statuslabel.text='Status: Ready';
-							var filename:Label=new Label();
-							filename.text='Filename: ' + data.filename;
+							
 							if (data.type == MEDIA_TYPE_VIDEO)
 							{
+								poster.source=data.posterurl;
 								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
 								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
 							}
 							var subtitlestatus:Label=new Label();
+							subtitlestatus.initialize();
 							subtitlestatus.text='Subtitle status: Not subtitled';
-
+							
 							var substat:int=parseInt(data.subtitlestatus);
 							if (substat == 1)
 							{
@@ -128,10 +139,10 @@
 							}
 							if (substat == 2)
 							{
-								subtitlemediaBtn.label='Improve subtitles';
+								subtitlemediaBtn.label='Edit subtitles';
 								subtitlestatus.text='Subtitle status: Complete';
 							}
-
+							
 							break;
 						case STATUS_DUPLICATED:
 							statuslabel.text='Status: Duplicated';
@@ -140,6 +151,18 @@
 							statuslabel.text='Status: Error. Invalid media';
 							break;
 					}
+				}
+			}
+
+			public function setData(data:Object):void
+			{
+				if(_data === data) return;
+				
+				_data = data;			
+				if(!this.initialized){
+					this.addEventListener(FlexEvent.CREATION_COMPLETE, initCompleteHandler, false, 0, true);
+				} else {
+					this.setDataInternal(_data);
 				}
 			}
 		]]>

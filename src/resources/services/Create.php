@@ -52,8 +52,8 @@ class Create {
 	private $cfg;
 
 	public function __construct(){
-		$this->cfg = new Config();
 		try {
+			$this->cfg = new Config();
 			$verifySession = new SessionValidation();
 			$this->conn = new Datasource($this->cfg->host, $this->cfg->db_name, $this->cfg->db_username, $this->cfg->db_password);
 		} catch (Exception $e) {
@@ -168,7 +168,7 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT id, filename, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
+			$sql = "SELECT id, filename, mediacode, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
 					FROM media 
 					WHERE component='%s' AND status IN (%s) AND level IN (%s) AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
 			$results = $this->conn->_multipleSelect($sql, $component, $statuses, $levels, $exercisecode);
@@ -177,8 +177,9 @@ class Create {
 					if($r->status==self::STATUS_READY){
 						$r->subtitlestatus=$this->getSubtitleStatus($r->id);
 						if($r->type==self::TYPE_VIDEO){
-							$posterurl = $this->cfg->posterPath.'/default.jpg';
-							$thumburls=array()
+							$posterurl = '/resources/images/posters/'.$r->mediacode.'/default.jpg';
+							$r->posterurl = $posterurl;
+							$thumburls=array();
 							for($i=0;$i<3;$i++){
 								$thumburls[] = $this->cfg->imagePath.'/'.$r->mediacode.'/'.$i.'.jpg';
 							}

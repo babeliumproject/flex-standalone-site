@@ -15,21 +15,22 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
 			import events.UploadEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.create.event.CreateEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.events.ItemClickEvent;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
-
+			
 			import spark.components.ButtonBar;
 			import spark.components.HGroup;
 			import spark.components.Label;
@@ -38,7 +39,7 @@
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.HorizontalAlign;
 			import spark.layouts.VerticalAlign;
-
+			
 			import view.common.CustomAlert;
 
 			public static const STATUS_UNDEF:int=0;
@@ -126,8 +127,9 @@
 					this.addElement(primarystatus);
 					secondMediaLbl.text="Model Media";
 					this.addElement(modelstatus);
+					return;
 				}
-				else if (primarystatus)
+				if (primarystatus && !modelstatus)
 				{
 					trace("primary");
 					firstMediaLbl.text="Exercise Media";
@@ -140,26 +142,26 @@
 					var lbl:Label=new Label();
 					lbl.text="Do you want to add a model media?";
 					var radiono:RadioButton=new RadioButton();
-					radiono.label=resourceManager.getString('myResources', 'NO');
+					radiono.initialize();
+					radiono.label=ResourceManager.getInstance().getString('myResources', 'NO');
 					radiono.group=includeModel;
 					radiono.value='no';
 					var radioyes:RadioButton=new RadioButton();
-					radioyes.label=resourceManager.getString('myResources', 'YES');
+					radioyes.initialize();
+					radioyes.label=ResourceManager.getInstance().getString('myResources', 'YES');
 					radioyes.value='yes';
 					radioyes.group=includeModel;
 					chooseModelGroup.addElement(lbl);
 					chooseModelGroup.addElement(radiono);
 					chooseModelGroup.addElement(radioyes);
 					this.addElement(chooseModelGroup);
+					return;
 				}
-				else
-				{
-					trace("none");
-					firstMediaLbl.text="Exercise Media";
-					this.addElement(firstMediaLbl);
-					primaryupload=new MediaOriginChooser();
-					this.addElement(primaryupload);
-				}
+				trace("none");
+				firstMediaLbl.text="Exercise Media";
+				this.addElement(firstMediaLbl);
+				primaryupload=new MediaOriginChooser();
+				this.addElement(primaryupload);
 			}
 		]]>
 	</fx:Script>
