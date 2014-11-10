@@ -77,7 +77,7 @@ function create_migration_file($name) {
 	$file = dirname(__FILE__) . '/' . $filename.'.php';
 	
 	$t = generate_migration_template();
-	$fh = fopen($file, 'w') or die("can't open file");
+	$fh = fopen($file, 'w') or die("Can't open file");
 	fwrite($fh, $t);
 	fclose($fh);
 	echo 'Migration code generated in file - ' . $file;

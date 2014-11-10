@@ -5,16 +5,18 @@ if(!defined('CLI_SERVICE_PATH'))
 
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
+require_once CLI_SERVICE_PATH . '/utils/VideoProcessor.php';
 require_once 'Zend/Json.php';
 
 try{
 	$CFG = new Config();
 	$DB = new Datasource($CFG->host, $CFG->db_name, $CFG->db_username, $CFG->db_password);
+	$VP = new VideoProcessor();
 } catch(Exception $e){
 	echo ('Failed with ' . get_class($e) . ': ' . $e->getMessage()."\n");
 }
 
-global $DB, $CFG;
+global $DB, $CFG, $VP;
 
 /**
  * Retrieve current database structure

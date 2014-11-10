@@ -55,10 +55,6 @@
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						required="true"
 						width="100%">
-				<!--
-					<common:DifficultyLevelComboBox id="difficultySelector"
-													change="onDifficultyChange(event)"/>
-				-->
 				<view:EnhancedDropDownList id="difficultySelector"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
@@ -66,13 +62,14 @@
 										   requireSelection="true"
 										   localeAwareDataProvider="{dpDifficultyLevel}"
 										   sortItems="true"
-										   change="onConditionalDropdownChange(event)"/>
+										   change="onConditionalComboChange(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 						required="true">
 				<common:LanguageComboBox id="languageSelector"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
+			<s:FormItem id="exerciseType"
+						label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
 				<view:EnhancedDropDownList id="exerciseTypeDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
@@ -80,9 +77,10 @@
 										   requireSelection="true"
 										   localeAwareDataProvider="{dpExerciseType}"
 										   sortItems="true"
-										   change="onConditionalDropdownChange(event)"/>
+										   change="onConditionalComboChange(event)"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
+			<s:FormItem id="commSituation"
+						label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
 				<view:EnhancedDropDownList id="commSituationDropdow"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
@@ -90,9 +88,10 @@
 										   requireSelection="true"
 										   localeAwareDataProvider="{dpCommSituation}"
 										   sortItems="true"
-										   change="onConditionalDropdownChange(event)"/>
+										   change="onConditionalComboChange(event)"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}"
+			<s:FormItem id="commCompetence"
+						label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}"
 						width="100%">
 				<s:HGroup width="100%">
 					<view:EnhancedDropDownList id="commCompetenceDropdow"
@@ -102,7 +101,7 @@
 											   requireSelection="true"
 											   localeAwareDataProvider="{dpCommCompetence}"
 											   sortItems="true"
-											   change="onConditionalDropdownChange(event)"/>
+											   change="onConditionalComboChange(event)"/>
 					<skins:IconButton id="showDescriptorsButton"
 									  styleName="btn-link"
 									  label="{resourceManager.getString('myResources','DESCRIPTORS')}"
@@ -113,7 +112,8 @@
 						  visible="false"
 						  includeInLayout="false"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}">
+			<s:FormItem id="linguisticAspect"
+						label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}">
 				<view:EnhancedDropDownList id="lingAspectDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
@@ -121,7 +121,7 @@
 										   requireSelection="true"
 										   localeAwareDataProvider="{dpLingAspect}"
 										   sortItems="true"/>
-			</s:FormItem>		
+			</s:FormItem>
 		</s:Form>
 	</s:BorderContainer>
 
@@ -161,7 +161,7 @@
 		<![CDATA[
 			import events.UserEvent;
 			
-			import skins.BootstrapCheckBox;
+			import spark.events.IndexChangeEvent;
 			
 			import model.DataModel;
 			import model.LocalesAndFlags;
@@ -178,6 +178,8 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.validators.Validator;
+			
+			import skins.BootstrapCheckBox;
 			
 			import spark.components.CheckBox;
 			
@@ -196,18 +198,31 @@
 			public var formIsValid:Boolean=false;
 			[Bindable]
 			private var exerciseData:ExerciseVO;
-			
+
 			[Bindable]
-			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([
-				{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}
-			]);
-			
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}]);
+
+			[Bindable]
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
+
+			[Bindable]
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}]);
+
+			[Bindable]
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
+
+			[Bindable]
+			private var dpCommCompetence:ArrayCollection;
+
+			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
+
 
 			private function completeHandler(event:FlexEvent):void
 			{
 				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
 				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
 				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
+				getDescriptorCodesFromResourceFile();
 			}
 
 			public function resetComponent():void
@@ -216,8 +231,6 @@
 				languageSelector.selectedIndex=0;
 				difficultySelector.selectedIndex=0;
 
-				//Reset the descriptors
-				addLevelDescriptors(difficultySelector.selectedIndex + 1);
 				descriptorContainer.visible=false;
 				descriptorContainer.includeInLayout=false;
 
@@ -289,110 +302,33 @@
 				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				return (fieldData.length < 1) ? false : true;
 			}
-
-			private function onDifficultyChange(event:ListEvent):void
-			{
-				/*
-				var dispatchingItem:DifficultyLevelComboBox=DifficultyLevelComboBox(event.target);
-				var levelIndex:int=dispatchingItem.selectedIndex;
-				if (levelIndex != -1)
-				{
-					if (!_descriptors)
-						getDescriptorCodesFromResourceFile();
-					addLevelDescriptors(levelIndex + 1);
-				}*/
-			}
-
-			private function getDescriptorCodesFromResourceFile():void
-			{
-				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
-				//var descriptorPattern:RegExp=/D\d{3}_(\w{2})_(\w{2})\d{2}/;
-				
-				/* D1_1_08_1
-				 * 	D: Descriptor
-				 *  1: Difficulty level (A1, A2, B1, B2, C)
-				 *  1: Communication situation (Everyday life & tourism, Studies, Work)
-				 *  08: Communicative competence (Staying at a hotel, Sightseeing, ...)
-				 *  1: Number of descriptor
-				 */
-				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
-				
-				for (var item:Object in resources)
-				{
-					var key:String=item as String;
-					//Filter the strings that have to do with the descriptors
-					var matches:Array=key.match(descriptorPattern);
-					if (matches && matches.length)
-					{
-						if (!_descriptors)
-							_descriptors=new Array();
-						_descriptors[key]=matches[1];
-					}
-				}
-				//trace("Descriptors in resource file: "+ObjectUtil.toString(_descriptors));
-			}
-
-			private function addLevelDescriptors(level:uint):void
-			{
-				//First remove the previous elements of the container
-				removeLevelDescriptors();
-				//Then add the new set of elements
-				for (var item:String in _descriptors)
-				{
-					//Get only the descriptors of the chosen difficulty level
-					if (_descriptors[item] == level)
-					{
-						var chkBox:CheckBox=new CheckBox();
-						chkBox.id=item;
-						chkBox.setStyle('skinClass',BootstrapCheckBox);
-						chkBox.percentWidth=100;
-						chkBox.label=resourceManager.getString("myResources", chkBox.id);
-						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", item);
-						descriptorContainer.addElement(chkBox);
-					}
-				}
-			}
-
-			private function removeLevelDescriptors():void
-			{
-				if (descriptorContainer.numElements)
-				{
-					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
-					descriptorContainer.removeAllElements();
-				}
-			}
-
-			private function selectPreviousDescriptors(savedDescriptors:*):void
-			{
+			
+			private function selectPreviousDescriptors(savedDescriptors:*):void{
 				var containsSaved:Boolean=false;
-				if (savedDescriptors)
-				{
-					var savedDescCollection:ArrayCollection=new ArrayCollection(savedDescriptors);
-					for (var i:int=0; i < descriptorContainer.numElements; i++)
-					{
-						var item:IVisualElement=descriptorContainer.getElementAt(i);
-						if ((item is CheckBox))
-						{
-							var descriptor:String=(item as CheckBox).id;
-							if (savedDescCollection.contains(descriptor))
-							{
+				if(savedDescriptors){
+					var savedDescCollection:ArrayCollection = new ArrayCollection(savedDescriptors);
+					trace(ObjectUtil.toString(savedDescCollection));
+					for(var i:int=0; i<descriptorContainer.numElements; i++){
+						var item:IVisualElement = descriptorContainer.getElementAt(i);
+						if((item is CheckBox)){
+							var descriptor:String = (item as CheckBox).id;
+							trace(descriptor);
+							if(savedDescCollection.contains(descriptor)){
 								(item as CheckBox).selected=true;
 								containsSaved=true;
 							}
 						}
 					}
 				}
-				if (containsSaved)
-				{
-					descriptorContainer.visible=true;
-					descriptorContainer.includeInLayout=true;
+				if(containsSaved){
+					descriptorContainer.visible = true;
+					descriptorContainer.includeInLayout = true;
 				}
 			}
-
-			private function showHideDescriptorsClickHandler(e:MouseEvent):void
-			{
-				descriptorContainer.visible=!descriptorContainer.visible;
-				descriptorContainer.includeInLayout=!descriptorContainer.includeInLayout;
+			
+			private function showHideDescriptorsClickHandler(e:MouseEvent):void{
+				descriptorContainer.visible = !descriptorContainer.visible;
+				descriptorContainer.includeInLayout = !descriptorContainer.includeInLayout;
 			}
 
 			private function saveChangesClickHandler(event:MouseEvent):void
@@ -461,34 +397,155 @@
 				return resourceManager.getString('myResources', 'LOCALE_' + upperLocale);
 			}
 
-			protected function onConditionalDropdownChange(event:Event):void
+			/**
+			 * Exercise categorization functions
+			 */
+			protected function onConditionalComboChange(event:IndexChangeEvent):void
 			{
 
+				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
+				var listItem:Object=dispatchingComponent.selectedItem;
+
+				var currentLevel:int=difficultySelector.selectedIndex;
+
+				var currentSituation:int=commSituation.visible ? commSituationDropdow.selectedItem['code'] : -1;
+				var currentCompetence:int=commCompetence.visible ? commCompetenceDropdow.selectedItem['code'] : -1;
+
+				switch (dispatchingComponent.id)
+				{
+					case exerciseTypeDropdown.id:
+						displayCommExerciseFields(listItem);
+						break;
+					case difficultySelector.id:
+						updateCommCompetences(currentLevel, currentSituation);
+						updateDescriptors(currentLevel, currentSituation, currentCompetence);
+						break;
+					case commSituationDropdow.id:
+						updateCommCompetences(currentLevel, currentSituation);
+						updateDescriptors(currentLevel, currentSituation, currentCompetence);
+						break;
+					case commCompetenceDropdow.id:
+						updateDescriptors(currentLevel, currentSituation, currentCompetence);
+						break;
+					default:
+						break;
+				}
 			}
 
-			[Bindable]
-			private var dpExerciseType:ArrayCollection=new ArrayCollection([
-				{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, 
-				{'code': 1, 'label': 'FREE_CONTEXT'}, 
-				{'code': 2, 'label': 'CONVERSATION'}, 
-				{'code': 3, 'label': 'STORYTELLING'}, 
-				{'code': 4, 'label': 'VOICE_OVER'}, 
-				{'code': 5, 'label': 'OTHER'}
-			]);
+			protected function displayCommExerciseFields(item:Object):void
+			{
+				if (item.hasOwnProperty('code') && (item['code'] == 0 || item['code'] == 5))
+				{ //Language practice
+					commSituation.includeInLayout=false;
+					commSituation.visible=false;
+					commCompetence.includeInLayout=false;
+					commCompetence.visible=false;
+					linguisticAspect.includeInLayout=false;
+					linguisticAspect.visible=false;
+				}
+				else
+				{ //Communicative
+					commSituationDropdow.includeInLayout=true;
+					commSituationDropdow.visible=true;
+					commCompetence.includeInLayout=true;
+					commCompetence.visible=true;
+					linguisticAspect.includeInLayout=true;
+					linguisticAspect.visible=true;
+				}
+			}
 
-			[Bindable]
-			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'WORK'}, {'code': 3, 'label': 'STUDIES'}]);
-			[Bindable]
-			private var dpCommCompetence:ArrayCollection=new ArrayCollection(['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GETTING_STAYING_WELL', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'MAKING_A_TRIP', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'USING_FINANCIAL_AND_POSTAL_SERVICES']);
+			protected function updateCommCompetences(level:int, situation:int):void
+			{
+				if (level == -1 || situation == -1)
+					return;
+				//var newCompetences:Array=compMatrix[situation][level];
+				var newCompetences:Array=_descriptors[situation][level];
+				trace("Competences for level[" + level + "] situation[" + situation + "] : " + ObjectUtil.toString(newCompetences));
+				populateCommCompetences(newCompetences);
+			}
 
-			[Bindable]
-			private var dpLingAspect:ArrayCollection=new ArrayCollection(['VERB', 'NOUN', 'PRONOUNS', 'ADVERB_ADJECTIVE', 'FORMS_OF_QUESTIONS', 'NEGATION', 'VOCABULARY', 'PRONUNCIATION']);
+			protected function populateCommCompetences(compCodes:Array):void
+			{
+				var startingCompetences:Array=new Array();
+				//for (var i:int=0; i < compCodes.length; i++)
+				//{
+				//	startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
+				//}
 
-			[Bindable]
-			private var dpleve:ArrayCollection=new ArrayCollection([ResourceManager.getInstance().getString('myResources', 'LEVEL_A1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_A2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B1'), ResourceManager.getInstance().getString('myResources', 'LEVEL_B2'), ResourceManager.getInstance().getString('myResources', 'LEVEL_C1')]);
+				for (var item:Object in compCodes)
+				{
+					var key:int=item as int;
+					startingCompetences.push({'code': key, 'label': competenceLabels[key]});
+				}
 
-			[Bindable]
-			private var dpD:ArrayCollection=new ArrayCollection(DataModel.getInstance().localesAndFlags.availableLanguages);
+				dpCommCompetence=new ArrayCollection(startingCompetences);
+			}
+
+			protected function updateDescriptors(level:int, situation:int, competence:int):void
+			{
+				if (level == -1 || situation == -1 || competence == -1)
+					return;
+
+				removeDescriptors();
+				if (!_descriptors)
+					getDescriptorCodesFromResourceFile();
+
+				var compDescriptors:Array=_descriptors[situation][level][competence];
+				if (compDescriptors)
+				{
+					for (var item:Object in compDescriptors)
+					{
+						var chkBox:CheckBox=new CheckBox();
+						chkBox.id=compDescriptors[item];
+						chkBox.percentWidth=100;
+
+						chkBox.label=resourceManager.getString("myResources", chkBox.id);
+						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", compDescriptors[item] as String);
+						descriptorContainer.addElement(chkBox);
+					}
+				}
+			}
+
+			private function getDescriptorCodesFromResourceFile():void
+			{
+				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
+					//Filter the keys that match the descriptor pattern
+					var matches:Array=key.match(descriptorPattern);
+					if (matches && matches.length)
+					{
+						if (!_descriptors)
+							_descriptors=new Array();
+
+						var situation:int=int(matches[1]) - 1;
+						if (!_descriptors[situation])
+							_descriptors[situation]=new Array();
+
+						var level:int=int(matches[2]) - 1;
+						if (!_descriptors[situation][level])
+							_descriptors[situation][level]=new Array();
+
+						var competence:int=int(matches[3]) - 1;
+						if (!_descriptors[situation][level][competence])
+							_descriptors[situation][level][competence]=new Array();
+
+						var dnumber:int=int(matches[4]) - 1;
+						_descriptors[situation][level][competence][dnumber]=key;
+					}
+				}
+			}
+
+			private function removeDescriptors():void
+			{
+				if (descriptorContainer.numElements)
+				{
+					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
+					descriptorContainer.removeAllElements();
+				}
+			}
 		]]>
 	</fx:Script>
 </s:VGroup>
