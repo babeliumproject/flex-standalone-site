@@ -12,12 +12,15 @@
 	<s:Label id="editVideoTitle"
 			 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
 			 styleName="sectionTitleLabel"/>
+	
+	<!--
 	<s:Line width="{editVideoTitle.width}">
 		<s:stroke>
 			<mx:SolidColorStroke weight="3"
 								 color="{editVideoTitle.getStyle('color')}"/>
 		</s:stroke>
 	</s:Line>
+	-->
 
 	<s:BorderContainer id="chooseMediaTypeContainer"
 					   styleName="lightBorderContainer"
@@ -55,7 +58,7 @@
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						required="true"
 						width="100%">
-				<view:EnhancedDropDownList id="difficultySelector"
+				<view:EnhancedDropDownList id="difLevelDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -81,7 +84,7 @@
 			</s:FormItem>
 			<s:FormItem id="commSituation"
 						label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
-				<view:EnhancedDropDownList id="commSituationDropdow"
+				<view:EnhancedDropDownList id="commSituationDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -94,7 +97,7 @@
 						label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}"
 						width="100%">
 				<s:HGroup width="100%">
-					<view:EnhancedDropDownList id="commCompetenceDropdow"
+					<view:EnhancedDropDownList id="commCompetenceDropdown"
 											   skinClass="skins.BootstrapDropDownList"
 											   cornerRadius="3"
 											   borderColor="0xcccccc"
@@ -137,9 +140,6 @@
 	<fx:Binding source="{DataModel.getInstance().exerciseDataRetrieved}"
 				destination="setInformation"/>
 
-	<fx:Binding source="{DataModel.getInstance().exerciseDataModified}"
-				destination="videoDataModified"/>
-
 	<fx:Declarations>
 		<mx:StringValidator id="titleValidator"
 							source="{exerciseTitle}"
@@ -161,8 +161,6 @@
 		<![CDATA[
 			import events.UserEvent;
 			
-			import spark.events.IndexChangeEvent;
-			
 			import model.DataModel;
 			import model.LocalesAndFlags;
 			import model.ResourceSubscriber;
@@ -182,6 +180,7 @@
 			import skins.BootstrapCheckBox;
 			
 			import spark.components.CheckBox;
+			import spark.events.IndexChangeEvent;
 			
 			import view.common.CustomAlert;
 			
@@ -229,7 +228,7 @@
 			{
 				//Reset the combobox components
 				languageSelector.selectedIndex=0;
-				difficultySelector.selectedIndex=0;
+				difLevelDropdown.selectedIndex=0;
 
 				descriptorContainer.visible=false;
 				descriptorContainer.includeInLayout=false;
@@ -341,7 +340,7 @@
 					exerciseData.description=exerciseDescription.htmlText;
 					exerciseData.tags=parseTags(exerciseKeywords.text);
 					exerciseData.language=languageSelector.selectedItem.code;
-					exerciseData.difficulty=difficultySelector.selectedIndex + 1;
+					exerciseData.difficulty=difLevelDropdown.selectedIndex + 1;
 
 					//If the user chose any level descriptors, those must be saved too
 					var descriptors:Array=new Array();
@@ -364,7 +363,6 @@
 
 			public function set setInformation(value:Boolean):void
 			{
-				//resetComponent();
 				var data:ExerciseVO=DataModel.getInstance().exerciseData;
 				exerciseData=data;
 				exerciseTitle.text=exerciseData.title;
@@ -372,21 +370,49 @@
 				exerciseKeywords.text=exerciseData.tags;
 				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
-				difficultySelector.selectedIndex=exerciseData.difficulty - 1;
-				//difficultySelector.dispatchEvent(new ListEvent(ListEvent.CHANGE));
-
-				//The previous function should have created the descriptors of the selected level
-				selectPreviousDescriptors(exerciseData.descriptors);
-
-			}
-
-			private function set videoDataModified(value:Boolean):void
-			{
-				if (DataModel.getInstance().exerciseDataModified == true)
-				{
-					CustomAlert.info(resourceManager.getString('myResources', 'VIDEO_DATA_SUCCESSFULLY_MODIFIED'));
-					//cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
-					DataModel.getInstance().exerciseDataModified=false;
+				
+				var level:int = parseInt(exerciseData.difficulty) - 1;
+				difLevelDropdown.selectedIndex=level;
+				
+				var exerciseType:int = exerciseData.type; // Required, 0 is valid field data
+				for each (var iet:Object in exerciseTypeDropdown.dataProvider){
+					if(iet['code'] == exerciseType){
+						exerciseTypeDropdown.selectedItem=iet;
+						break;
+					}
+				}
+				
+				//Only communicative exercises should have situation, competence and descriptors
+				displayCommExerciseFields(exerciseTypeDropdown.selectedItem);
+				
+				if(exerciseType!=0 && exerciseType!=5){
+					var situation:int = exerciseData.situation-1;
+					for each (var ics:Object in commSituationDropdown.dataProvider){
+						if(ics['code'] == situation){
+							commSituationDropdown.selectedItem=ics;
+							break;
+						}
+					}
+					updateCommCompetences(level,situation);
+					
+					var competence:int = exerciseData.competence-1;
+					for each (var icc:Object in commCompetenceDropdown.dataProvider){
+						if(icc['code'] == competence){
+							commCompetenceDropdown.selectedItem=icc;
+							break;
+						}
+					}
+					updateDescriptors(level,situation,competence);
+					//The previous function should have created the descriptors of the selected level
+					selectPreviousDescriptors(exerciseData.descriptors);
+					
+					var lingaspect:int = exerciseData.lingaspects-1;
+					for each (var ila:Object in lingAspectDropdown.dataProvider){
+						if(ila['code'] == lingaspect){
+							lingAspectDropdown.selectedItem=ila;
+							break;
+						}
+					}
 				}
 			}
 
@@ -406,25 +432,25 @@
 				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
 				var listItem:Object=dispatchingComponent.selectedItem;
 
-				var currentLevel:int=difficultySelector.selectedIndex;
+				var currentLevel:int=difLevelDropdown ? difLevelDropdown.selectedItem['code'] : 0;
 
-				var currentSituation:int=commSituation.visible ? commSituationDropdow.selectedItem['code'] : -1;
-				var currentCompetence:int=commCompetence.visible ? commCompetenceDropdow.selectedItem['code'] : -1;
+				var currentSituation:int=commSituation.visible && commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
+				var currentCompetence:int=commCompetence.visible && commCompetenceDropdown  && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : -1;
 
 				switch (dispatchingComponent.id)
 				{
 					case exerciseTypeDropdown.id:
 						displayCommExerciseFields(listItem);
 						break;
-					case difficultySelector.id:
+					case difLevelDropdown.id:
 						updateCommCompetences(currentLevel, currentSituation);
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
-					case commSituationDropdow.id:
+					case commSituationDropdown.id:
 						updateCommCompetences(currentLevel, currentSituation);
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
-					case commCompetenceDropdow.id:
+					case commCompetenceDropdown.id:
 						updateDescriptors(currentLevel, currentSituation, currentCompetence);
 						break;
 					default:
@@ -445,8 +471,8 @@
 				}
 				else
 				{ //Communicative
-					commSituationDropdow.includeInLayout=true;
-					commSituationDropdow.visible=true;
+					commSituation.includeInLayout=true;
+					commSituation.visible=true;
 					commCompetence.includeInLayout=true;
 					commCompetence.visible=true;
 					linguisticAspect.includeInLayout=true;
@@ -458,19 +484,13 @@
 			{
 				if (level == -1 || situation == -1)
 					return;
-				//var newCompetences:Array=compMatrix[situation][level];
 				var newCompetences:Array=_descriptors[situation][level];
-				trace("Competences for level[" + level + "] situation[" + situation + "] : " + ObjectUtil.toString(newCompetences));
 				populateCommCompetences(newCompetences);
 			}
 
 			protected function populateCommCompetences(compCodes:Array):void
 			{
 				var startingCompetences:Array=new Array();
-				//for (var i:int=0; i < compCodes.length; i++)
-				//{
-				//	startingCompetences.push({'code': compCodes[i], 'label': competenceLabels[compCodes[i]]});
-				//}
 
 				for (var item:Object in compCodes)
 				{
@@ -498,7 +518,7 @@
 						var chkBox:CheckBox=new CheckBox();
 						chkBox.id=compDescriptors[item];
 						chkBox.percentWidth=100;
-
+						chkBox.setStyle('skinClass',BootstrapCheckBox);
 						chkBox.label=resourceManager.getString("myResources", chkBox.id);
 						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", compDescriptors[item] as String);
 						descriptorContainer.addElement(chkBox);

@@ -505,7 +505,11 @@ class Exercise {
        				   e.difficulty, 
        				   e.status, 
        				   e.likes, 
-       				   e.dislikes
+       				   e.dislikes,
+       				   e.type,
+       				   e.competence,
+       				   e.situation,
+       				   e.lingaspects
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
        			WHERE (e.exercisecode = '%s')
 				GROUP BY e.id

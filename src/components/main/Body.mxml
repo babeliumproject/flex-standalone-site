@@ -7,7 +7,7 @@
 		  paddingBottom="40"
 		  minWidth="1000"
 		  gap="0"
-		  preinitialize="preinitializeHandler(event)">
+		  creationComplete="preinitializeHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -43,7 +43,6 @@
 
 			public function onURLChange(event:URLChangeEvent):void
 			{
-				trace(ObjectUtil.toString(getStyle('btn-default')));
 				_lastUrlChangeEvent = event.clone();
 				if(!event) return;
 				if(event.module == _currentModule) return;

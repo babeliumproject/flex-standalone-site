@@ -27,6 +27,11 @@ class ExerciseVO {
 	public $related;
 	public $media;
 	
+	public $type;
+	public $situation;
+	public $competence;
+	public $lingaspects;
+	
 	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
 	public $score;
 	public $idIndex;

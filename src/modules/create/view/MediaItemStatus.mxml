@@ -15,23 +15,37 @@
 						  horizontalAlign="left"/>
 	</s:layout>
 
-	<s:Label id="mediaLevel" text="Media"/>
+	
 
-	<s:BitmapImage id="poster"/>
-
-	<s:Label id="statuslabel" text="Status"/>
-
-	<s:Button id="subtitlemediaBtn"
-			  click="subtitleMediaClickHandler(event)"
-			  styleName="btn-primary"
-			  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
-	<s:ButtonBar id="thumbSelectBtnbar"
-				 requireSelection="true"
-				 change="setDefaultThumbnail(event)"/>
-	<s:Button id="deleteMediaBtn"
-			  click="deleteMediaButtonClickHandler(event)"
-			  styleName="btn-danger"
-			  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
+	<s:HGroup width="100%">
+		<s:BitmapImage id="poster"/>
+		<s:ButtonBar id="thumbSelectBtnbar"
+					 requireSelection="true"
+					 change="setDefaultThumbnail(event)">
+			<s:layout>
+				<s:VerticalLayout gap="-1"/>
+			</s:layout>
+		</s:ButtonBar>
+		<s:VGroup width="100%">
+			<s:Label id="mediaLevel" text="Media"/>
+			<s:Label id="statuslabel" text="Status"/>
+		</s:VGroup>
+	</s:HGroup>
+	
+	
+	
+	<s:HGroup width="100%" horizontalAlign="right">
+		<s:Button id="subtitlemediaBtn"
+				  click="subtitleMediaClickHandler(event)"
+				  styleName="btn-primary"
+				  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
+		
+		<s:Button id="deleteMediaBtn"
+				  click="deleteMediaButtonClickHandler(event)"
+				  styleName="btn-danger"
+				  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
+	</s:HGroup>
+	
 
 
 	<fx:Script>
