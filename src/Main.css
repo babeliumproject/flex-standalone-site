@@ -749,3 +749,7 @@ s|TextInput{
 	skinClass: ClassReference("skins.BootstrapTextArea");
 }
 
+.frm-label{
+	fontWeight: bold;
+	color: #515151;
+}

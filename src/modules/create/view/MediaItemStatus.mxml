@@ -15,10 +15,16 @@
 						  horizontalAlign="left"/>
 	</s:layout>
 
-	
 
 	<s:HGroup width="100%">
-		<s:BitmapImage id="poster"/>
+		<s:BorderContainer backgroundColor="0x000000"
+						   width="480"
+						   height="360">
+			<s:layout>
+				<s:BasicLayout/>
+			</s:layout>
+			<s:BitmapImage id="poster"/>
+		</s:BorderContainer>
 		<s:ButtonBar id="thumbSelectBtnbar"
 					 requireSelection="true"
 					 change="setDefaultThumbnail(event)">
@@ -27,33 +33,50 @@
 			</s:layout>
 		</s:ButtonBar>
 		<s:VGroup width="100%">
-			<s:Label id="mediaLevel" text="Media"/>
-			<s:Label id="statuslabel" text="Status"/>
+			<s:HGroup width="100%">
+				<s:Label id="mstatdec"
+						 text="Media status"
+						 styleName="frm-label"/>
+				<s:Label id="mediaStatus"
+						 text="Processing"/>
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label id="sstatdec"
+						 text="Subtitles"
+						 styleName="frm-label"/>
+				<s:Label id="subtitleStatus"
+						 text="None"/>
+			</s:HGroup>
+
 		</s:VGroup>
 	</s:HGroup>
-	
-	
-	
-	<s:HGroup width="100%" horizontalAlign="right">
+
+
+
+	<s:HGroup width="100%"
+			  horizontalAlign="right">
 		<s:Button id="subtitlemediaBtn"
 				  click="subtitleMediaClickHandler(event)"
 				  styleName="btn-primary"
+				  buttonMode="true"
 				  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
-		
+
 		<s:Button id="deleteMediaBtn"
 				  click="deleteMediaButtonClickHandler(event)"
 				  styleName="btn-danger"
+				  icon="{'/resources/images/delete.png'}"
+				  buttonMode="true"
 				  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
 	</s:HGroup>
-	
+
 
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import modules.create.event.CreateEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
@@ -61,9 +84,11 @@
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-			
+
+			import flash.events.MouseEvent;
+
 			import spark.events.IndexChangeEvent;
-			
+
 			import view.common.CustomAlert;
 
 			public static const STATUS_UNDEF:int=0;
@@ -78,14 +103,14 @@
 
 			public static const MEDIA_TYPE_AUDIO:String='audio';
 			public static const MEDIA_TYPE_VIDEO:String='video';
-			
+
 			private var _data:Object;
 
 			private function setDefaultThumbnail(event:IndexChangeEvent):void
 			{
 				if (event.eventPhase != EventPhase.AT_TARGET)
 					return;
-				var mediaid:String=(event.target as ButtonBar).id;
+				var mediaid:int=_data.id as int;
 				var num:int=(event.newIndex) + 1;
 				var params:Object=new Object();
 				params.num=num;
@@ -95,13 +120,15 @@
 
 			private function subtitleMediaClickHandler(event:MouseEvent):void
 			{
-				var mediaid:int=(event.target as Object).id as int;
+				if(!_data) return;
+				var mediaid:int=_data.id as int;
 				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
 			}
 
 			protected function deleteMediaButtonClickHandler(event:MouseEvent):void
 			{
-				CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteMediaCloseHandler, Alert.NO);
+				if(!_data) return;
+				CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteMediaCloseHandler, Alert.NO);
 			}
 
 			private function deleteMediaCloseHandler(event:CloseEvent):void
@@ -112,57 +139,60 @@
 
 			private function deleteMedia():void
 			{
-				var mediaid:int=-1;
+				if(!_data) return;
+				var mediaid:int=_data.id;
 				new CreateEvent(CreateEvent.DELETE_MEDIA, mediaid).dispatch();
 			}
-			
-			private function initCompleteHandler(event:FlexEvent):void{
-				if(!event.eventPhase == EventPhase.AT_TARGET) return;
-				if(_data) this.setDataInternal(_data);
+
+			private function initCompleteHandler(event:FlexEvent):void
+			{
+				if (!event.eventPhase == EventPhase.AT_TARGET)
+					return;
+				if (_data)
+					this.setDataInternal(_data);
 			}
-			
-			private function setDataInternal(data:Object):void{
+
+			private function setDataInternal(data:Object):void
+			{
 				if (data && data.hasOwnProperty('status'))
 				{
-					var status:int = parseInt(data.status);
-					trace("Data: "+ObjectUtil.toString(data));
+					var status:int=parseInt(data.status);
+					trace("Data: " + ObjectUtil.toString(data));
 					switch (status)
 					{
 						case STATUS_UNDEF:
 						case STATUS_ENCODING:
-							statuslabel.text='Status: Processing...';
+							mediaStatus.text='Processing';
 							break;
 						case STATUS_READY:
-							statuslabel.text='Status: Ready';
-							
+							mediaStatus.text='Ready';
+
 							if (data.type == MEDIA_TYPE_VIDEO)
 							{
 								poster.source=data.posterurl;
 								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
 								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
 							}
-							var subtitlestatus:Label=new Label();
-							subtitlestatus.initialize();
-							subtitlestatus.text='Subtitle status: Not subtitled';
-							
+							subtitleStatus.text='None';
+
 							var substat:int=parseInt(data.subtitlestatus);
 							if (substat == 1)
 							{
 								subtitlemediaBtn.label='Edit subtitles';
-								subtitlestatus.text='Subtitle status: Draft';
+								subtitleStatus.text='Draft';
 							}
 							if (substat == 2)
 							{
 								subtitlemediaBtn.label='Edit subtitles';
-								subtitlestatus.text='Subtitle status: Complete';
+								subtitleStatus.text='Complete';
 							}
-							
+
 							break;
 						case STATUS_DUPLICATED:
-							statuslabel.text='Status: Duplicated';
+							mediaStatus.text='Duplicated';
 							break;
 						default:
-							statuslabel.text='Status: Error. Invalid media';
+							mediaStatus.text='No valid media found';
 							break;
 					}
 				}
@@ -170,12 +200,16 @@
 
 			public function setData(data:Object):void
 			{
-				if(_data === data) return;
-				
-				_data = data;			
-				if(!this.initialized){
+				if (_data === data)
+					return;
+
+				_data=data;
+				if (!this.initialized)
+				{
 					this.addEventListener(FlexEvent.CREATION_COMPLETE, initCompleteHandler, false, 0, true);
-				} else {
+				}
+				else
+				{
 					this.setDataInternal(_data);
 				}
 			}
