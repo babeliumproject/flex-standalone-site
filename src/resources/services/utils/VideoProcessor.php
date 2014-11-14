@@ -595,6 +595,46 @@ class VideoProcessor{
         }
 
     }
+    
+    /**
+     * Extracts an audio sample from the two given inputs and mixes the two samples in one
+     * 
+     * @param String $input1
+     * @param String $input2
+     * @param String $output
+     * @param int $starttime
+     * @param int $endtime
+     * @param String $cutoff
+     */
+    public function audioSubsampleMix($input1, $input2, $output, $starttime = 0, $endtime = 0, $cutoff='first'){
+    	
+    	$cutoff_values = array('longest','shortest','first');  	 
+    	
+    	//Make two temp outputs for the subsamples
+    	$otmp1 = rtrim($output,'.wav').'_a.wav';
+    	$otmp2 = rtrim($output,'.wav').'_b.wav';
+    	
+    	$internalcutoff = in_array($cutoff, $cutoff_values) ? $cutoff : 'first';
+    	
+    	$this->audioSubsample($input1, $otmp1,$starttime,$endtime);
+    	$this->audioSubsample($input2, $otmp2,$starttime,$endtime);
+    	
+    	$preset = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=0 '%s'";
+    	
+    	$cmd_template = "%s %s";
+    	$cmd_name = $this->mediaToolHome;
+        $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
+        $cmd_options_t = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=3 '%s'";
+        $cmd_options = sprintf($cmd_options_t, $otmp1, $otmp2, $internalcutoff, $output);
+        
+        $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
+        
+        $rc = $this->execWrapper($cmd);
+        
+        //If exec was successful remove the temp files
+        @unlink($otmp1);
+        @unlink($otmp2);
+    }
 
     /**
      * Merges two videos in one. The first input is padded to double its width, then the second video is overlayed in the black space left by the padding.
