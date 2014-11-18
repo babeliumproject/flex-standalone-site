@@ -3,57 +3,74 @@
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
 				xmlns:hulstkamp="com.hulstkamp.*"
-				autoDrawBackground="true"
 				creationComplete="completeHandler()"
 				dataChange="dataChangeHandler()"
-				xmlns:skins="skins.*">
+				xmlns:skins="skins.*"
+				buttonMode="true">
 
 	<s:layout>
-		<s:VerticalLayout verticalAlign="middle"
-							paddingTop="4"
-							paddingBottom="4"
-							paddingLeft="8"
-							paddingRight="8"/>
+		<s:VerticalLayout verticalAlign="middle"/>
 	</s:layout>
 
-	<s:Group width="120"
-			 height="90">
-		<mx:Image id="thumbnail"
-				  scaleContent="true"
-				  source="{data.thumbnail}"
-				  autoLoad="true"
-				  width="120"
-				  height="90"
-				  toolTip="{data.title}"/>
-		<s:TextInput text="{_timeFormatter.format(data.duration)}"
-					 styleName="videoDurationLabel"
-					 x="88"
-					 y="0"
-					 width="32"
-					 height="16"
-					 editable="false"
-					 selectable="false"/>
-	</s:Group>
-	
-	<s:HGroup gap="20"
-			  verticalAlign="middle">
-		<s:HGroup gap="2"
-				  verticalAlign="middle">
-			<mx:Image width="16"
-					  height="16"
-					  toolTip="{exerciseLanguage.source}"
-					  source="{getFlagSource(data as ExerciseVO)}"
-					  id="exerciseLanguage"/>
-			<s:Label text="{getLevelCorrespondence(data.difficulty)}"
-					 styleName="boldYellowLabel"/>
-		</s:HGroup>
-		<s:Label text="{dateFormatter.format(data.timecreated)}"
-				 styleName="boldYellowLabel"/>
-	</s:HGroup>
-	
-	<s:Label id="title"
-			 text="{data.title}"
-			 width="120"/>
+	<s:BorderContainer id="container"
+					   styleName="lightBorderContainer"
+					   width="182"
+					   height="225">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="top"/>
+		</s:layout>
+
+		<s:Group width="180"
+				 height="135">
+			<mx:Image id="thumbnail"
+					  scaleContent="true"
+					  source="{data.thumbnail}"
+					  autoLoad="true"
+					  width="180"
+					  height="135"/>
+			<s:TextInput text="{_timeFormatter.format(data.duration)}"
+						 styleName="videoDurationLabel"
+						 x="148"
+						 y="0"
+						 width="32"
+						 height="16"
+						 editable="false"
+						 selectable="false"/>
+		</s:Group>
+
+		<s:VGroup horizontalAlign="right"
+				  width="180"
+				  height="88"
+				  paddingLeft="4"
+				  paddingRight="4"
+				  paddingTop="4"
+				  paddingBottom="4">
+			<s:HGroup gap="2"
+					  verticalAlign="middle"
+					  horizontalAlign="left"
+					  width="100%">
+				<s:HGroup width="100%"
+						  verticalAlign="middle">
+					<mx:Image width="16"
+							  height="16"
+							  toolTip="{exerciseLanguage.source}"
+							  source="{getFlagSource(data as ExerciseVO)}"
+							  id="exerciseLanguage"/>
+					<s:Label text="{getLevelCorrespondence(data.difficulty)}"
+							 styleName="boldYellowLabel"/>
+				</s:HGroup>
+				<s:Label text="{data.userName}"
+						 toolTip="{data.userName}"
+						 maxWidth="120"
+						 maxDisplayedLines="1"/>
+			</s:HGroup>
+			<s:Label id="title"
+					 text="{data.title}"
+					 toolTip="{data.title}"
+					 width="100%"
+					 maxDisplayedLines="3"/>
+		</s:VGroup>
+	</s:BorderContainer>
 
 	<fx:Declarations>
 		<mx:DateFormatter id="dateFormatter"
@@ -64,27 +81,27 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-			
+
 			import control.URLManager;
 			import control.CuePointManager;
-			
+
 			import modules.exercise.event.ExerciseEvent;
 			import events.SearchEvent;
 			import modules.subtitle.event.SubtitleEvent;
 			//import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.controls.LinkButton;
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
-			
+
 			import view.common.LicenseResource;
 			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-			
+
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
@@ -106,11 +123,12 @@
 			public function completeHandler():void
 			{
 				_data=data;
-				_creationComplete=true;				
+				_creationComplete=true;
 			}
-			
-			public function dataChangeHandler():void{
-				
+
+			public function dataChangeHandler():void
+			{
+
 				//setupReferenceComponent();
 			}
 
@@ -163,7 +181,6 @@
 				url=DataModel.getInstance().thumbURL + "/" + temp.exercisecode + '/default.jpg';
 				return url;
 			}
-
 		]]>
 	</fx:Script>
 

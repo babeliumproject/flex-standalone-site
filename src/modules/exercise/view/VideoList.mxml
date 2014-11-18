@@ -7,25 +7,28 @@
 		  creationComplete="onComplete()"
 		  xmlns:exercises1="commands.exercises.*"
 		  xmlns:common="view.common.*"
-		  xmlns:skins="skins.*">
+		  xmlns:skins="skins.*"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16">
 
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
-			
+
 			import control.URLManager;
-			
+
 			import model.DataModel;
-			
+
 			import modules.exercise.event.ExerciseEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
-			
+
 			import spark.components.Button;
-			
+
 			import vo.ExerciseVO;
 
 
@@ -53,12 +56,12 @@
 			{
 				//if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
 				//{
-					//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
-					_dataProvider=DataModel.getInstance().availableRecordableExercises;
+				//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
+				_dataProvider=DataModel.getInstance().availableRecordableExercises;
 
-					createPagination();
+				createPagination();
 
-					//DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
+				//DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				//}
 			}
 
@@ -95,7 +98,7 @@
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
 
 				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-				URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
+				URLManager.getInstance().redirect('/exercises/view/' + obj.exercisecode);
 				//callLater(updateVerticalScroll);
 			}
 
@@ -187,12 +190,9 @@
 				destination="handleExercisesRetrieve"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>
-	
+
 	<s:VGroup width="100%"
-			  horizontalAlign="left"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  paddingTop="16">
+			  horizontalAlign="left">
 		<s:Label text="{resourceManager.getString('myResources','PRACTICE_EXERCISE_LIST')}"
 				 styleName="sectionTitleLabel"
 				 id="exerciseListTitleLabel"/>
@@ -215,7 +215,7 @@
 					   backgroundColor="#666666"
 					   cornerRadius="8"
 					   borderVisible="false">
-		
+
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle"
 								paddingLeft="10"
@@ -223,7 +223,7 @@
 								paddingTop="10"
 								paddingBottom="10"/>
 		</s:layout>
-		
+
 		<s:Label text="{resourceManager.getString('myResources','FILTER_BY_LANGUAGE')}"
 				 verticalAlign="middle"/>
 		<common:LanguageComboBox id="filterLanguage"
@@ -249,10 +249,10 @@
 			itemRenderer="modules.exercise.view.ExerciseItemRenderer"
 			dataProvider="{_dataProvider}">
 		<s:layout>
-			<s:TileLayout horizontalAlign="justify"
-						  verticalAlign="middle"
-						  columnAlign="justifyUsingWidth"
-						  columnWidth="130"/>
+			<s:TileLayout columnWidth="182"
+						  rowHeight="225"
+						  horizontalGap="20"
+						  verticalGap="20"/>
 		</s:layout>
 	</s:List>
 
