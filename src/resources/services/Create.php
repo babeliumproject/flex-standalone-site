@@ -181,7 +181,7 @@ class Create {
 							$r->posterurl = $posterurl;
 							$thumburls=array();
 							for($i=0;$i<3;$i++){
-								$thumburls[] = $this->cfg->imagePath.'/'.$r->mediacode.'/'.$i.'.jpg';
+								$thumburls[] = '/resources/images/thumbs/'.$r->mediacode.'/'.$i.'.jpg';
 							}
 							$r->thumburls = $thumburls;
 						}

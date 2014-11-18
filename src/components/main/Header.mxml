@@ -20,21 +20,23 @@
 
 			<s:layout>
 				<s:HorizontalLayout paddingTop="4"
-									paddingBottom="4"
-									paddingLeft="4"
-									paddingRight="4"
+									paddingBottom="8"
+									paddingLeft="20"
+									paddingRight="20"
 									verticalAlign="middle"/>
 			</s:layout>
 
-
-			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
-
-			<main:LocalizationComboBox id="localeComboBox"/>
+			<mx:Image source="resources/images/babelium_logo.png"
+					  buttonMode="true"
+					  click="{URLManager.getInstance().redirect('/home')}"/>
 
 			<s:HGroup horizontalAlign="right"
 					  verticalAlign="middle"
 					  width="100%"/>
-
+			
+			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
+			<main:LocalizationComboBox id="localeComboBox"/>
+			
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"

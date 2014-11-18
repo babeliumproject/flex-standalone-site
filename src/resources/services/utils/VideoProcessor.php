@@ -675,22 +675,17 @@ class VideoProcessor{
             if(!is_readable($cleanAudioPath))
                 throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanAudioPath."\n");
         }
-
-
-        /**
-         * This preset takes two inputs: the original exercise video and the audio collage
-         * The filters separated by commas between [in] and [out] are the main filter chain
-         * [T0] and [T1] are alternate separated chains. In this script the main chain waits for each alternate chain to finish before it applies the overlay.
-         * After resizing and applying the overlays we encode the input audio to mp3 and exchange the original exercise's audio with the reencoded audio collage
-         * using stream index mapping. -map <input_number>:<stream_index>
-         */
-        $preset_merge_videos = "-y -v error -i '%s' -i '%s' -vf \"[in]settb=1/25,setpts=N/(25*TB),pad=%d:%d:0:0:0x000000, [T1]overlay=W/2:0 [out]; movie='%s':f=flv:si=0,scale=%d:%d,setpts=PTS-STARTPTS[T1]\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s'";
-
+        
+        $preset_merge_videos = "-y -v fatal -i '%s' -i '%s' -i '%s' -filter_complex \"[0:v] setpts=PTS-STARTPTS, pad=in_w+%d:in_h:0:0 [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left][right] overlay=W-w:0\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 2:0 -f flv '%s'";
+        
+        $rwidth = $this->frameHeight * (4/3);
+        $rheight = $this->frameHeight;
+        
         $cmd_template = "%s %s";
         $cmd_name = $this->mediaToolHome;
         $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
         $cmd_options_t = $preset_merge_videos;
-        $cmd_options = sprintf($cmd_options_t, $cleanInputVideoPath1, $inputAudioPath, 2*$width, $height, $cleanInputVideoPath2, $width, $height, $cleanOutputVideoPath);
+        $cmd_options = sprintf($cmd_options_t, $cleanInputVideoPath1, $cleanInputVideoPath2, $inputAudioPath, $rwidth, $rwidth, $rheight, $cleanOutputVideoPath);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
 
@@ -722,7 +717,7 @@ class VideoProcessor{
 
         $cmd_template = "%s %s";
         $cmd_name = $this->soxCmdPath;
-        $cmd_options_t = "'%s/%s_*' '%s/%collage.wav'";
+        $cmd_options_t = "'%s/%s_*' '%s/%scollage.wav'";
         $cmd_options = sprintf($cmd_options_t, $cleanInputPath, $filePrefix, $cleanOutputPath, $filePrefix);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);

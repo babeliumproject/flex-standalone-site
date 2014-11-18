@@ -64,7 +64,6 @@
 		<s:Button id="deleteMediaBtn"
 				  click="deleteMediaButtonClickHandler(event)"
 				  styleName="btn-danger"
-				  icon="{'/resources/images/delete.png'}"
 				  buttonMode="true"
 				  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
 	</s:HGroup>

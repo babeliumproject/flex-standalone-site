@@ -9,6 +9,7 @@
 			  minWidth="1000"
 			  height="100%"
 			  gap="0">
+		<!--
 		<skins:HorizontalSeparatorLine/>
 		<s:BorderContainer id="sectionLinks"
 						   borderVisible="false"
@@ -27,26 +28,42 @@
 									verticalAlign="middle"
 									clipAndEnableScrolling="true"/>
 			</s:layout>
-			<mx:Image source="resources/images/babelium_logo.png"
-					  buttonMode="true"
-					  click="changeView('/home',event)"/>
+		</s:BorderContainer>
+		<skins:HorizontalSeparatorLine alpha="0.50"/>
+		-->
+		<s:BorderContainer id="searchUploadBar"
+						   borderVisible="false"
+						   borderWeight="0"
+						   minHeight="0"
+						   width="100%"
+						   minWidth="1000"
+						   dropShadowVisible="true"
+						   backgroundColor="#268caa"
+						   backgroundAlpha="0.5">
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="200"
+									verticalAlign="middle"
+									paddingTop="4"
+									paddingBottom="4"
+									paddingRight="4"/>
+			</s:layout>
 			
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
 										  styleName="practiceLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
-						   							!DataModel.getInstance().recording &amp;&amp;
-						   							!DataModel.getInstance().playing}"
+										  !DataModel.getInstance().recording &amp;&amp;
+										  !DataModel.getInstance().playing}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 1}"
 										  click="changeView('/exercises',event)"/>
-			<mx:VRule height="40"/>
+			<mx:VRule height="40" />
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
 										  styleName="evaluateLinkButton"
 										  skinClass="skins.NavigationToggleButtonSkin"
 										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
 										  visible="{DataModel.getInstance().isLoggedIn}"
 										  selected="{_urlManager.moduleName == 'course' &amp;&amp;
-										  			 _urlManager.action == 'learn' }"
+										  _urlManager.action == 'learn' }"
 										  click="changeView('/course/learn',event)"/>
 			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 										  id="createLinkButton"
@@ -55,36 +72,6 @@
 										  enabled="{DataModel.getInstance().isLoggedIn}"
 										  selected="{DataModel.getInstance().currentContentViewStackIndex == 5}"
 										  click="changeView('/create',event)"/>
-		</s:BorderContainer>
-		<skins:HorizontalSeparatorLine alpha="0.50"/>
-		<s:BorderContainer id="searchUploadBar"
-						   borderVisible="false"
-						   borderWeight="0"
-						   minHeight="0"
-						   width="100%"
-						   minWidth="1000"
-						   dropShadowVisible="true"
-						   includeInLayout="{DataModel.getInstance().isLoggedIn}"
-						   visible="{DataModel.getInstance().isLoggedIn}">
-			<s:backgroundFill>
-				<mx:LinearGradient>
-					<mx:entries>
-						<mx:GradientEntry color="#ffffff"
-										  ratio="0"
-										  alpha="0.5"/>
-						<mx:GradientEntry color="#268caa"
-										  ratio="1"
-										  alpha="0.5"/>
-					</mx:entries>
-				</mx:LinearGradient>
-			</s:backgroundFill>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="200"
-									verticalAlign="middle"
-									paddingTop="4"
-									paddingBottom="4"
-									paddingRight="4"/>
-			</s:layout>
 			
 			<s:TextInput id="searchField"
 						 styleName="searchTextInput"
@@ -97,7 +84,9 @@
 					  enabled="true"
 					  click="launchSearch(event)"/>
 		</s:BorderContainer>
+		<!--
 		<skins:HorizontalSeparatorLine/>
+		-->
 	</s:VGroup>
 
 
@@ -136,11 +125,11 @@
 			private function unselectNavButtons(event:MouseEvent):void
 			{
 				var pressedButton:NavigationToggleButton=event.target as NavigationToggleButton;
-				for (var i:uint=0; i < sectionLinks.numElements; i++)
+				for (var i:uint=0; i < searchUploadBar.numElements; i++)
 				{
-					if (sectionLinks.getElementAt(i) is NavigationToggleButton)
+					if (searchUploadBar.getElementAt(i) is NavigationToggleButton)
 					{
-						var navButton:NavigationToggleButton=sectionLinks.getElementAt(i) as NavigationToggleButton;
+						var navButton:NavigationToggleButton=searchUploadBar.getElementAt(i) as NavigationToggleButton;
 						if (navButton != pressedButton)
 							navButton.selected=false;
 					}

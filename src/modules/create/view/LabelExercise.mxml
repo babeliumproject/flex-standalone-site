@@ -12,17 +12,8 @@
 	<s:Label id="editVideoTitle"
 			 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
 			 styleName="sectionTitleLabel"/>
-	
-	<!--
-	<s:Line width="{editVideoTitle.width}">
-		<s:stroke>
-			<mx:SolidColorStroke weight="3"
-								 color="{editVideoTitle.getStyle('color')}"/>
-		</s:stroke>
-	</s:Line>
-	-->
 
-	<s:BorderContainer id="chooseMediaTypeContainer"
+	<s:BorderContainer id="labelExerciseContainer"
 					   styleName="lightBorderContainer"
 					   width="100%">
 		<s:layout>
@@ -306,12 +297,10 @@
 				var containsSaved:Boolean=false;
 				if(savedDescriptors){
 					var savedDescCollection:ArrayCollection = new ArrayCollection(savedDescriptors);
-					trace(ObjectUtil.toString(savedDescCollection));
 					for(var i:int=0; i<descriptorContainer.numElements; i++){
 						var item:IVisualElement = descriptorContainer.getElementAt(i);
 						if((item is CheckBox)){
 							var descriptor:String = (item as CheckBox).id;
-							trace(descriptor);
 							if(savedDescCollection.contains(descriptor)){
 								(item as CheckBox).selected=true;
 								containsSaved=true;
@@ -342,18 +331,23 @@
 					exerciseData.language=languageSelector.selectedItem.code;
 					exerciseData.difficulty=difLevelDropdown.selectedIndex + 1;
 
-					//If the user chose any level descriptors, those must be saved too
-					var descriptors:Array=new Array();
-					for (var i:int=0; i < descriptorContainer.numElements; i++)
-					{
-						var item:IVisualElement=descriptorContainer.getElementAt(i);
-						if ((item is CheckBox) && (item as CheckBox).selected)
-						{
-							var descriptor:String=(item as CheckBox).id;
-							descriptors.push(descriptor);
+					var exercisetype:int=exerciseTypeDropdown.selectedItem['code'];
+					if(exercisetype!=0 && exercisetype!=5){
+						exerciseData.type=exercisetype;
+						exerciseData.situation=commSituationDropdown.selectedItem['code']+1;
+						exerciseData.competence=commCompetenceDropdown.selectedItem['code']+1;
+						exerciseData.lingaspects=lingAspectDropdown.selectedItem['code']+1;
+						//If the user chose any level descriptors, those must be saved too
+						var descriptors:Array=new Array();
+						for(var i:int=0; i<descriptorContainer.numElements; i++){
+							var item:IVisualElement = descriptorContainer.getElementAt(i);
+							if((item is CheckBox) && (item as CheckBox).selected){
+								var descriptor:String = (item as CheckBox).id;
+								descriptors.push(descriptor);
+							}
 						}
+						exerciseData.descriptors=descriptors;
 					}
-					exerciseData.descriptors=descriptors;
 
 					new CreateEvent(CreateEvent.SAVE_EXERCISE, exerciseData).dispatch();
 				}
@@ -428,34 +422,18 @@
 			 */
 			protected function onConditionalComboChange(event:IndexChangeEvent):void
 			{
-
 				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
 				var listItem:Object=dispatchingComponent.selectedItem;
 
-				var currentLevel:int=difLevelDropdown ? difLevelDropdown.selectedItem['code'] : 0;
-
-				var currentSituation:int=commSituation.visible && commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
-				var currentCompetence:int=commCompetence.visible && commCompetenceDropdown  && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : -1;
-
-				switch (dispatchingComponent.id)
-				{
-					case exerciseTypeDropdown.id:
-						displayCommExerciseFields(listItem);
-						break;
-					case difLevelDropdown.id:
-						updateCommCompetences(currentLevel, currentSituation);
-						updateDescriptors(currentLevel, currentSituation, currentCompetence);
-						break;
-					case commSituationDropdown.id:
-						updateCommCompetences(currentLevel, currentSituation);
-						updateDescriptors(currentLevel, currentSituation, currentCompetence);
-						break;
-					case commCompetenceDropdown.id:
-						updateDescriptors(currentLevel, currentSituation, currentCompetence);
-						break;
-					default:
-						break;
+				if (dispatchingComponent.id == exerciseTypeDropdown.id){
+					displayCommExerciseFields(listItem);	
 				}
+				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
+				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
+				updateCommCompetences(currentLevel, currentSituation);
+				//Update communicative competences takes a while to update the dataProvider, use the 0 index when not yet ready.
+				var currentCompetence:int=commCompetenceDropdown  && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : 0;
+				updateDescriptors(currentLevel, currentSituation, currentCompetence);
 			}
 
 			protected function displayCommExerciseFields(item:Object):void
@@ -503,6 +481,7 @@
 
 			protected function updateDescriptors(level:int, situation:int, competence:int):void
 			{
+				trace("Update descriptors: [level]: "+level+" [situation]: "+situation+" [compt]: "+competence);
 				if (level == -1 || situation == -1 || competence == -1)
 					return;
 

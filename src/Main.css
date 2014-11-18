@@ -71,8 +71,7 @@ main|HeaderClass{
 }*/
 
 .headerBorderContainer{
-	backgroundImage: Embed('/resources/images/header_bgr_pttr.png');
-	backgroundImageFillMode: repeat;
+	backgroundImage: Embed('/resources/images/rainbow_bgr.png');
 	backgroundAlpha: 1.0;
 	borderVisible: false;
 	borderWeight: 0;
