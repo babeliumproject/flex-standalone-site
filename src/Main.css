@@ -12,10 +12,10 @@ s|Application{
 	horizontalAlign: center;
 	paddingTop: 0;
 	paddingBottom: 5;
-	fontFamily: "Helvetica, Arial, sans-serif";
+	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
 	fontSize: 14;
 	fontWeight: normal;
-	color: #000000;
+	color: #333333;
 	skinClass: ClassReference('skins.ApplicationCustomSkin');
 }	
 
@@ -729,6 +729,29 @@ s|TextInput{
 	skinClass: ClassReference("skins.BootstrapButton");
 }
 
+.h1{
+	fontSize: 36;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h2{
+	fontSize: 30;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h3{
+	fontSize: 24;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h4{
+	fontSize: 18;
+	fontWeight: bold;
+	color: #268caa;
+}
 .frm-input{
 	paddingLeft: 12;
 	paddingRight: 12;

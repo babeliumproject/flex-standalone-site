@@ -108,7 +108,7 @@
 				if(!evt.module || evt.module != modulename) return;
 				
 				//Reset the components before changing the foreground
-				//resetViews();
+				resetViews();
 				
 				switch (evt.action)
 				{

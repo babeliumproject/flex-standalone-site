@@ -13,13 +13,21 @@
 					   width="100%">
 		<s:layout>
 			<s:VerticalLayout paddingTop="16"
-							  paddingBottom="16"/>
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
 		</s:layout>
 
 		<s:Label id="editVideoTitle"
 				 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
-				 styleName="sectionTitleLabel"/>
-		
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{labelExerciseContainer.getStyle('borderWeight')}"
+									alpha="{labelExerciseContainer.getStyle('borderAlpha')}"
+									color="{labelExerciseContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
 		<s:Form width="100%">
 			<s:FormItem label="{resourceManager.getString('myResources','TITLE')}"
 						width="100%"
@@ -228,7 +236,6 @@
 				exerciseTitle.removeEventListener(Event.CHANGE, validateForm);
 				exerciseDescription.removeEventListener(Event.CHANGE, validateForm);
 				exerciseKeywords.removeEventListener(Event.CHANGE, validateForm);
-
 				titleValidator.enabled=false;
 				descriptionValidator.enabled=false;
 				tagValidator.enabled=false;
@@ -236,10 +243,10 @@
 				exerciseTitle.text="";
 				exerciseDescription.htmlText="";
 				exerciseKeywords.text="";
+
 				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
 				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
 				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
-
 				titleValidator.enabled=true;
 				descriptionValidator.enabled=true;
 				tagValidator.enabled=true;
@@ -292,31 +299,38 @@
 				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				return (fieldData.length < 1) ? false : true;
 			}
-			
-			private function selectPreviousDescriptors(savedDescriptors:*):void{
+
+			private function selectPreviousDescriptors(savedDescriptors:*):void
+			{
 				var containsSaved:Boolean=false;
-				if(savedDescriptors){
-					var savedDescCollection:ArrayCollection = new ArrayCollection(savedDescriptors);
-					for(var i:int=0; i<descriptorContainer.numElements; i++){
-						var item:IVisualElement = descriptorContainer.getElementAt(i);
-						if((item is CheckBox)){
-							var descriptor:String = (item as CheckBox).id;
-							if(savedDescCollection.contains(descriptor)){
+				if (savedDescriptors)
+				{
+					var savedDescCollection:ArrayCollection=new ArrayCollection(savedDescriptors);
+					for (var i:int=0; i < descriptorContainer.numElements; i++)
+					{
+						var item:IVisualElement=descriptorContainer.getElementAt(i);
+						if ((item is CheckBox))
+						{
+							var descriptor:String=(item as CheckBox).id;
+							if (savedDescCollection.contains(descriptor))
+							{
 								(item as CheckBox).selected=true;
 								containsSaved=true;
 							}
 						}
 					}
 				}
-				if(containsSaved){
-					descriptorContainer.visible = true;
-					descriptorContainer.includeInLayout = true;
+				if (containsSaved)
+				{
+					descriptorContainer.visible=true;
+					descriptorContainer.includeInLayout=true;
 				}
 			}
-			
-			private function showHideDescriptorsClickHandler(e:MouseEvent):void{
-				descriptorContainer.visible = !descriptorContainer.visible;
-				descriptorContainer.includeInLayout = !descriptorContainer.includeInLayout;
+
+			private function showHideDescriptorsClickHandler(e:MouseEvent):void
+			{
+				descriptorContainer.visible=!descriptorContainer.visible;
+				descriptorContainer.includeInLayout=!descriptorContainer.includeInLayout;
 			}
 
 			private function saveChangesClickHandler(event:MouseEvent):void
@@ -332,17 +346,20 @@
 					exerciseData.difficulty=difLevelDropdown.selectedIndex + 1;
 
 					var exercisetype:int=exerciseTypeDropdown.selectedItem['code'];
-					if(exercisetype!=0 && exercisetype!=5){
+					if (exercisetype != 0 && exercisetype != 5)
+					{
 						exerciseData.type=exercisetype;
-						exerciseData.situation=commSituationDropdown.selectedItem['code']+1;
-						exerciseData.competence=commCompetenceDropdown.selectedItem['code']+1;
-						exerciseData.lingaspects=lingAspectDropdown.selectedItem['code']+1;
+						exerciseData.situation=commSituationDropdown.selectedItem['code'] + 1;
+						exerciseData.competence=commCompetenceDropdown.selectedItem['code'] + 1;
+						exerciseData.lingaspects=lingAspectDropdown.selectedItem['code'] + 1;
 						//If the user chose any level descriptors, those must be saved too
 						var descriptors:Array=new Array();
-						for(var i:int=0; i<descriptorContainer.numElements; i++){
-							var item:IVisualElement = descriptorContainer.getElementAt(i);
-							if((item is CheckBox) && (item as CheckBox).selected){
-								var descriptor:String = (item as CheckBox).id;
+						for (var i:int=0; i < descriptorContainer.numElements; i++)
+						{
+							var item:IVisualElement=descriptorContainer.getElementAt(i);
+							if ((item is CheckBox) && (item as CheckBox).selected)
+							{
+								var descriptor:String=(item as CheckBox).id;
 								descriptors.push(descriptor);
 							}
 						}
@@ -358,51 +375,66 @@
 			public function set setInformation(value:Boolean):void
 			{
 				var data:ExerciseVO=DataModel.getInstance().exerciseData;
-				exerciseData=data;
+				if(data){
+					exerciseData=data;
+				} else {
+					exerciseData=new ExerciseVO();
+					exerciseData.type=0;
+					exerciseData.difficulty=1;
+				}
 				exerciseTitle.text=exerciseData.title;
 				exerciseDescription.htmlText=exerciseData.description;
 				exerciseKeywords.text=exerciseData.tags;
 				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
 				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
-				
-				var level:int = parseInt(exerciseData.difficulty) - 1;
+
+				var level:int=parseInt(exerciseData.difficulty) - 1;
 				difLevelDropdown.selectedIndex=level;
-				
-				var exerciseType:int = exerciseData.type; // Required, 0 is valid field data
-				for each (var iet:Object in exerciseTypeDropdown.dataProvider){
-					if(iet['code'] == exerciseType){
+
+				var exerciseType:int=exerciseData.type; // Required, 0 is valid field data
+				for each (var iet:Object in exerciseTypeDropdown.dataProvider)
+				{
+					if (iet['code'] == exerciseType)
+					{
 						exerciseTypeDropdown.selectedItem=iet;
 						break;
 					}
 				}
-				
+
 				//Only communicative exercises should have situation, competence and descriptors
 				displayCommExerciseFields(exerciseTypeDropdown.selectedItem);
-				
-				if(exerciseType!=0 && exerciseType!=5){
-					var situation:int = exerciseData.situation-1;
-					for each (var ics:Object in commSituationDropdown.dataProvider){
-						if(ics['code'] == situation){
+
+				if (exerciseType != 0 && exerciseType != 5)
+				{
+					var situation:int=exerciseData.situation - 1;
+					for each (var ics:Object in commSituationDropdown.dataProvider)
+					{
+						if (ics['code'] == situation)
+						{
 							commSituationDropdown.selectedItem=ics;
 							break;
 						}
 					}
-					updateCommCompetences(level,situation);
-					
-					var competence:int = exerciseData.competence-1;
-					for each (var icc:Object in commCompetenceDropdown.dataProvider){
-						if(icc['code'] == competence){
+					updateCommCompetences(level, situation);
+
+					var competence:int=exerciseData.competence - 1;
+					for each (var icc:Object in commCompetenceDropdown.dataProvider)
+					{
+						if (icc['code'] == competence)
+						{
 							commCompetenceDropdown.selectedItem=icc;
 							break;
 						}
 					}
-					updateDescriptors(level,situation,competence);
+					updateDescriptors(level, situation, competence);
 					//The previous function should have created the descriptors of the selected level
 					selectPreviousDescriptors(exerciseData.descriptors);
-					
-					var lingaspect:int = exerciseData.lingaspects-1;
-					for each (var ila:Object in lingAspectDropdown.dataProvider){
-						if(ila['code'] == lingaspect){
+
+					var lingaspect:int=exerciseData.lingaspects - 1;
+					for each (var ila:Object in lingAspectDropdown.dataProvider)
+					{
+						if (ila['code'] == lingaspect)
+						{
 							lingAspectDropdown.selectedItem=ila;
 							break;
 						}
@@ -425,14 +457,15 @@
 				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
 				var listItem:Object=dispatchingComponent.selectedItem;
 
-				if (dispatchingComponent.id == exerciseTypeDropdown.id){
-					displayCommExerciseFields(listItem);	
+				if (dispatchingComponent.id == exerciseTypeDropdown.id)
+				{
+					displayCommExerciseFields(listItem);
 				}
 				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
 				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
 				updateCommCompetences(currentLevel, currentSituation);
 				//Update communicative competences takes a while to update the dataProvider, use the 0 index when not yet ready.
-				var currentCompetence:int=commCompetenceDropdown  && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : 0;
+				var currentCompetence:int=commCompetenceDropdown && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : 0;
 				updateDescriptors(currentLevel, currentSituation, currentCompetence);
 			}
 
@@ -481,7 +514,7 @@
 
 			protected function updateDescriptors(level:int, situation:int, competence:int):void
 			{
-				trace("Update descriptors: [level]: "+level+" [situation]: "+situation+" [compt]: "+competence);
+				trace("Update descriptors: [level]: " + level + " [situation]: " + situation + " [compt]: " + competence);
 				if (level == -1 || situation == -1 || competence == -1)
 					return;
 
@@ -497,7 +530,7 @@
 						var chkBox:CheckBox=new CheckBox();
 						chkBox.id=compDescriptors[item];
 						chkBox.percentWidth=100;
-						chkBox.setStyle('skinClass',BootstrapCheckBox);
+						chkBox.setStyle('skinClass', BootstrapCheckBox);
 						chkBox.label=resourceManager.getString("myResources", chkBox.id);
 						ResourceSubscriber.getInstance().subscribeElement(chkBox, "label", "myResources", compDescriptors[item] as String);
 						descriptorContainer.addElement(chkBox);

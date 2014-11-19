@@ -367,7 +367,7 @@
 		</s:layout>
 
 		<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
-				 styleName="sectionTitleLabel"/>
+				 styleName="h3"/>
 		
 		<s:Line width="100%">
 			<s:stroke>
@@ -479,11 +479,13 @@
 			<s:Button id="saveButton"
 					  label="{resourceManager.getString('myResources','REGISTER')}"
 					  click="processNewUser()"
+					  buttonMode="true"
 					  styleName="btn-primary"/>
 
 			<s:Button id="cancelButton"
 					  label="{resourceManager.getString('myResources','CANCEL')}"
 					  click="cancelButton_clickHandler(event)"
+					  buttonMode="true"
 					  styleName="btn-default"/>
 
 		</s:HGroup>
