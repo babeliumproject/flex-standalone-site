@@ -9,8 +9,8 @@
 			  minWidth="1000"
 			  height="100%"
 			  gap="0">
-		<!--
-		<skins:HorizontalSeparatorLine/>
+
+		<skins:HorizontalSeparatorLine alpha="0.5"/>
 		<s:BorderContainer id="sectionLinks"
 						   borderVisible="false"
 						   borderWeight="0"
@@ -28,9 +28,29 @@
 									verticalAlign="middle"
 									clipAndEnableScrolling="true"/>
 			</s:layout>
+
+			<mx:Image source="resources/images/babelium_logo.png"
+					  buttonMode="true"
+					  click="{URLManager.getInstance().redirect('/home')}"/>
+
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
+							enabled="{!DataModel.getInstance().recordingExercise &amp;&amp; !DataModel.getInstance().recording &amp;&amp; !DataModel.getInstance().playing}"
+							selected="{_urlManager.moduleName == 'exercises'}"
+							click="changeView('/exercises',event)"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
+							includeInLayout="{DataModel.getInstance().isLoggedIn}"
+							visible="{DataModel.getInstance().isLoggedIn}"
+							selected="{_urlManager.moduleName == 'course' &amp;&amp; _urlManager.action == 'learn' }"
+							click="changeView('/course/learn',event)"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
+							id="createLinkButton"
+							enabled="{DataModel.getInstance().isLoggedIn}"
+							selected="{_urlManager.moduleName == 'create'}"
+							click="changeView('/create',event)"/>
 		</s:BorderContainer>
-		<skins:HorizontalSeparatorLine alpha="0.50"/>
-		-->
+		<skins:HorizontalSeparatorLine alpha="0.5"/>
+
+		<!--
 		<s:BorderContainer id="searchUploadBar"
 						   borderVisible="false"
 						   borderWeight="0"
@@ -47,32 +67,9 @@
 									paddingBottom="4"
 									paddingRight="4"/>
 			</s:layout>
-			
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
-										  styleName="practiceLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{!DataModel.getInstance().recordingExercise &amp;&amp;
-										  !DataModel.getInstance().recording &amp;&amp;
-										  !DataModel.getInstance().playing}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == 1}"
-										  click="changeView('/exercises',event)"/>
-			<mx:VRule height="40" />
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
-										  styleName="evaluateLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  includeInLayout="{DataModel.getInstance().isLoggedIn}"
-										  visible="{DataModel.getInstance().isLoggedIn}"
-										  selected="{_urlManager.moduleName == 'course' &amp;&amp;
-										  _urlManager.action == 'learn' }"
-										  click="changeView('/course/learn',event)"/>
-			<skins:NavigationToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
-										  id="createLinkButton"
-										  styleName="configureLinkButton"
-										  skinClass="skins.NavigationToggleButtonSkin"
-										  enabled="{DataModel.getInstance().isLoggedIn}"
-										  selected="{DataModel.getInstance().currentContentViewStackIndex == 5}"
-										  click="changeView('/create',event)"/>
-			
+
+
+
 			<s:TextInput id="searchField"
 						 styleName="searchTextInput"
 						 width="100%"
@@ -84,36 +81,33 @@
 					  enabled="true"
 					  click="launchSearch(event)"/>
 		</s:BorderContainer>
-		<!--
 		<skins:HorizontalSeparatorLine/>
 		-->
 	</s:VGroup>
 
-
-	<fx:Binding source="{DataModel.getInstance().tagCloudClicked}"
-				destination="this.onTagCloudClicked"/>
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 			
-			import events.SearchEvent;
+			import modules.exercise.event.SearchEvent;
 			import events.VideoStopEvent;
-			//import events.ViewChangeEvent;
 			
 			import model.DataModel;
 			
 			import mx.utils.URLUtil;
 			
 			import skins.NavigationToggleButtonSkin;
-			
-			[Bindable] protected var _model:DataModel=DataModel.getInstance();
-			[Bindable] protected var _urlManager:URLManager=URLManager.getInstance();
+
+			[Bindable]
+			protected var _model:DataModel=DataModel.getInstance();
+			[Bindable]
+			protected var _urlManager:URLManager=URLManager.getInstance();
 
 			//Initialization method
 			private function init():void
 			{
 			}
-			
+
 			private function changeView(destination:String, event:MouseEvent):void
 			{
 //				if(event != null)
@@ -124,18 +118,19 @@
 
 			private function unselectNavButtons(event:MouseEvent):void
 			{
-				var pressedButton:NavigationToggleButton=event.target as NavigationToggleButton;
-				for (var i:uint=0; i < searchUploadBar.numElements; i++)
+				var pressedButton:Object=event.target as ToggleButton;
+				for (var i:uint=0; i < sectionLinks.numElements; i++)
 				{
-					if (searchUploadBar.getElementAt(i) is NavigationToggleButton)
+					if (sectionLinks.getElementAt(i) is ToggleButton)
 					{
-						var navButton:NavigationToggleButton=searchUploadBar.getElementAt(i) as NavigationToggleButton;
+						var navButton:ToggleButton=sectionLinks.getElementAt(i) as ToggleButton;
 						if (navButton != pressedButton)
 							navButton.selected=false;
 					}
 				}
 			}
 
+			/*
 			private function launchSearch(event:MouseEvent):void
 			{
 				DataModel.getInstance().searchField=searchField.text;
@@ -154,7 +149,7 @@
 					searchField.text=DataModel.getInstance().searchField;
 					DataModel.getInstance().tagCloudClicked=false;
 				}
-			}
+			}*/
 		]]>
 	</fx:Script>
 

@@ -20,23 +20,19 @@
 
 			<s:layout>
 				<s:HorizontalLayout paddingTop="4"
-									paddingBottom="8"
-									paddingLeft="20"
-									paddingRight="20"
+									paddingBottom="4"
+									paddingLeft="4"
+									paddingRight="4"
 									verticalAlign="middle"/>
 			</s:layout>
 
-			<mx:Image source="resources/images/babelium_logo.png"
-					  buttonMode="true"
-					  click="{URLManager.getInstance().redirect('/home')}"/>
+			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
+			<main:LocalizationComboBox id="localeComboBox"/>
 
 			<s:HGroup horizontalAlign="right"
 					  verticalAlign="middle"
 					  width="100%"/>
-			
-			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
-			<main:LocalizationComboBox id="localeComboBox"/>
-			
+
 			<!-- Show this box when user is not identified -->
 			<s:HGroup id="anonymousCP"
 					  horizontalAlign="right"
@@ -71,16 +67,18 @@
 					<s:Label id="uCrds"
 							 text="cr."
 							 styleName="creditLinkButton"
-							 verticalAlign="justify" 
+							 verticalAlign="justify"
 							 toolTip="{resourceManager.getString('myResources','CREDIT_COUNT')}"/>
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
 
-				<s:Graphic height="32" width="32">
+				<s:Graphic height="32"
+						   width="32">
 					<s:Path data="M 41.64446,36.192409 C 34.76647,34.603259 28.36416,33.211689 31.46483,27.355979 40.9029,9.531989 33.96654,-1.049066e-6 24.00012,-1.049066e-6 13.83727,-1.049066e-6 7.0715895,9.897849 16.53541,27.355979 c 3.19363,5.89142 -3.44948,7.28148 -10.1796305,8.83643 -6.87519,1.58822 -6.34638,5.21933 -6.34638,11.80759 H 47.9906 c 0,-6.58837 0.52882,-10.21937 -6.34614,-11.80759 z">
 						<s:stroke>
-							<s:SolidColorStroke weight="2" color="0xcccccc"/> 
+							<s:SolidColorStroke weight="2"
+												color="0xcccccc"/>
 						</s:stroke>
 						<s:fill>
 							<s:SolidColor color="0xffffff"/>
@@ -112,27 +110,28 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import events.LoginEvent;
-			
+
 			import flash.net.navigateToURL;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.core.FlexGlobals;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import spark.effects.Animate;
 			import spark.effects.animation.MotionPath;
 			import spark.effects.animation.RepeatBehavior;
 			import spark.effects.animation.SimpleMotionPath;
-			
-			[Bindable] protected var _urlManager:URLManager=URLManager.getInstance();
-			
+
+			[Bindable]
+			protected var _urlManager:URLManager=URLManager.getInstance();
+
 			private var popup:LoginPopup;
 
 			public function completeHandler(event:FlexEvent):void
@@ -155,14 +154,15 @@
 			{
 				var parent:DisplayObject=FlexGlobals.topLevelApplication.parent;
 				var modal:Boolean=true;
-				
-				popup=PopUpManager.createPopUp(parent,LoginPopup,modal) as LoginPopup;
-				popup.addEventListener(CloseEvent.CLOSE,destroyLoginPopUp,false,0,true);
-				
+
+				popup=PopUpManager.createPopUp(parent, LoginPopup, modal) as LoginPopup;
+				popup.addEventListener(CloseEvent.CLOSE, destroyLoginPopUp, false, 0, true);
+
 				PopUpManager.centerPopUp(popup);
 			}
-			
-			public function destroyLoginPopUp(event:CloseEvent):void{
+
+			public function destroyLoginPopUp(event:CloseEvent):void
+			{
 				PopUpManager.removePopUp(popup);
 				popup=null;
 			}

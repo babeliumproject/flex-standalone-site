@@ -117,7 +117,7 @@
 			import control.URLManager;
 			import control.CuePointManager;
 			
-			import events.SearchEvent;
+			import modules.exercise.event.SearchEvent;
 			import modules.subtitle.event.SubtitleEvent;
 			
 			import model.DataModel;

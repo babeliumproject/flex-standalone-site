@@ -15,20 +15,22 @@
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
-
+			
+			import modules.exercise.event.SearchEvent;
+			
 			import control.URLManager;
-
+			
 			import model.DataModel;
-
+			
 			import modules.exercise.event.ExerciseEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
-
+			
 			import spark.components.Button;
-
+			
 			import vo.ExerciseVO;
 
 
@@ -183,6 +185,16 @@
 				unfilterExerciseList();
 				filterButton.selected=false;
 			}
+			
+			public function launchSearch(event:Event):void{
+				DataModel.getInstance().searchField=searchField.text;
+				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				//{
+				//changeView(ViewChangeEvent.VIEW_SEARCH_MODULE, event);
+				URLManager.getInstance().redirect('search');
+				//}
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+			}
 		]]>
 	</fx:Script>
 
@@ -191,18 +203,23 @@
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>
 
-	<s:VGroup width="100%"
-			  horizontalAlign="left">
-		<s:Label text="{resourceManager.getString('myResources','PRACTICE_EXERCISE_LIST')}"
-				 styleName="sectionTitleLabel"
-				 id="exerciseListTitleLabel"/>
-		<s:Line width="{exerciseListTitleLabel.width}">
-			<s:stroke>
-				<mx:SolidColorStroke weight="3"
-									 color="{exerciseListTitleLabel.getStyle('color')}"/>
-			</s:stroke>
-		</s:Line>
-	</s:VGroup>
+
+	<s:Label text="{resourceManager.getString('myResources','PRACTICE_EXERCISE_LIST')}"
+			 styleName="sectionTitleLabel"
+			 id="exerciseListTitleLabel"/>
+	
+	<s:HGroup>
+		<s:TextInput id="searchField"
+					 styleName="searchTextInput"
+					 width="100%"
+					 maxChars="100"
+					 enter="launchSearch(null)"/>
+		<s:Button label="{resourceManager.getString('myResources','SEARCH')}"
+				  styleName="searchButton"
+				  buttonMode="true"
+				  enabled="true"
+				  click="launchSearch(event)"/>
+	</s:HGroup>
 
 	<s:ToggleButton id="filterButton"
 					label="{resourceManager.getString('myResources','FILTER')}"

@@ -8,18 +8,18 @@
 		  creationComplete="completeHandler(event)"
 		  xmlns:view="modules.create.view.*">
 
-
-	<s:Label id="editVideoTitle"
-			 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
-			 styleName="sectionTitleLabel"/>
-
 	<s:BorderContainer id="labelExerciseContainer"
 					   styleName="lightBorderContainer"
 					   width="100%">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout paddingTop="16"
+							  paddingBottom="16"/>
 		</s:layout>
 
+		<s:Label id="editVideoTitle"
+				 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
+				 styleName="sectionTitleLabel"/>
+		
 		<s:Form width="100%">
 			<s:FormItem label="{resourceManager.getString('myResources','TITLE')}"
 						width="100%"

@@ -21,7 +21,7 @@
 			
 			import control.URLManager;
 			
-			import events.SearchEvent;
+			import modules.exercise.event.SearchEvent;
 			
 			import model.DataModel;
 			import model.ResourceSubscriber;

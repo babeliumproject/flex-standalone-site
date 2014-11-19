@@ -11,7 +11,7 @@
 			import mx.collections.SortField;
 			import mx.collections.ArrayCollection;
 			import model.DataModel;
-			import events.SearchEvent;
+			import modules.exercise.event.SearchEvent;
 			import mx.controls.LinkButton;
 			import vo.TagVO;
 			

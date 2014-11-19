@@ -86,7 +86,7 @@
 			import control.CuePointManager;
 
 			import modules.exercise.event.ExerciseEvent;
-			import events.SearchEvent;
+			import modules.exercise.event.SearchEvent;
 			import modules.subtitle.event.SubtitleEvent;
 			//import events.ViewChangeEvent;
 
