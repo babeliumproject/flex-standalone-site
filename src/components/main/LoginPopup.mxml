@@ -7,7 +7,7 @@
 						 creationComplete="creationCompleteHandler(event)"
 						 styleName="loginPopup"
 						 autoLayout="true"
-						 minWidth="300">
+						 minWidth="300" xmlns:view="modules.account.view.*">
 	
 	<fx:Script>
 		<![CDATA[
@@ -28,6 +28,6 @@
 		]]>
 	</fx:Script>
 	
-	<userManagement:LoginRestorePassForm id="loginRestoreForm"
+	<view:LoginRestorePassForm id="loginRestoreForm"
 										 width="100%"/>
 </skins:CustomTitleWindow>

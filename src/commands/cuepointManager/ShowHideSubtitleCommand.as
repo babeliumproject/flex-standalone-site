@@ -5,7 +5,7 @@ package commands.cuepointManager
 	
 	import control.CuePointManager;
 	
-	import components.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoRecorder;
 	
 	import mx.controls.DataGrid;
 	
@@ -13,11 +13,11 @@ package commands.cuepointManager
 
 	public class ShowHideSubtitleCommand implements ICommand
 	{
-		private var VP:VideoPlayerBabelia;
+		private var VP:VideoRecorder;
 		private var dg:DataGrid;
 		public var cue:CueObject;
 
-		public function ShowHideSubtitleCommand(cue:CueObject, subHolder:VideoPlayerBabelia, dg:DataGrid=null)
+		public function ShowHideSubtitleCommand(cue:CueObject, subHolder:VideoRecorder, dg:DataGrid=null)
 		{
 			this.VP=subHolder;
 			this.dg=dg;

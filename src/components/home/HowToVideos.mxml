@@ -123,7 +123,7 @@
 		<s:Label id="howToVideoLabel"
 				 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
 				 styleName="exerciseTitleLabel"/>
-		<videoPlayer:VideoPlayerBabelia id="howToVideoPlayer"
+		<videoPlayer:VideoRecorder id="howToVideoPlayer"
 										skin="white"
 										seek="true"
 										autoPlay="false"

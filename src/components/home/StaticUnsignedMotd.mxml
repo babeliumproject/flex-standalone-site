@@ -36,7 +36,7 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="16" paddingRight="16" paddingTop="16" paddingBottom="16"/>
 		</s:layout>
-		<videoPlayer:VideoPlayerBabelia id="staticUnsignedMotdVp"
+		<videoPlayer:VideoRecorder id="staticUnsignedMotdVp"
 										skin="white"
 										autoPlay="false"
 										seek="true"

@@ -8,7 +8,7 @@ package model
 	import components.main.Body;
 	import components.main.LoginPopup;
 	import components.userManagement.KeepAliveTimer;
-	import components.userManagement.LoginRestorePassForm;
+	import modules.account.view.LoginRestorePassForm;
 	
 	import flash.media.Camera;
 	import flash.media.Microphone;

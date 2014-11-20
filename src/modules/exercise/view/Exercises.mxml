@@ -172,7 +172,7 @@
 			{
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
-				VP.state=VideoPlayerBabelia.PLAY_STATE;
+				VP.state=VideoRecorder.PLAY_STATE;
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 
 				// Retrieving available locales for selected exercise's subtitles
@@ -491,9 +491,9 @@
 
 				// Recording mode
 				if (micOnly.selected)
-					VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
+					VP.state=VideoRecorder.RECORD_MIC_STATE;
 				else
-					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
+					VP.state=VideoRecorder.RECORD_BOTH_STATE;
 
 				// Prepare arrows
 				showArrows();
@@ -534,7 +534,7 @@
 
 				// Set the videoplayer to playback both the exercise and the last response.
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.state=VideoRecorder.PLAY_BOTH_STATE;
 				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
 
 				VP.seek=false;
@@ -573,7 +573,7 @@
 				DataModel.getInstance().recordingExercise=false;
 				hideArrows();
 				VP.unattachUserDevices();
-				VP.state=VideoPlayerBabelia.PLAY_STATE;
+				VP.state=VideoRecorder.PLAY_STATE;
 				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 
 				recordingEndOptions.includeInLayout=false;
@@ -627,7 +627,7 @@
 				VP.endVideo(); // Stop video
 				VP.setSubtitle(""); // Clear subtitles if any
 				VP.videoSource=""; // Reset video source
-				VP.state=VideoPlayerBabelia.PLAY_STATE; //Reset the player window to display only the exercise
+				VP.state=VideoRecorder.PLAY_STATE; //Reset the player window to display only the exercise
 
 				VP.arrows=false; // Hide arrows
 
@@ -653,7 +653,7 @@
 				setupRecordingCommands();
 
 				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.state=VideoPlayerBabelia.PLAY_BOTH_STATE;
+				VP.state=VideoRecorder.PLAY_BOTH_STATE;
 				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
 
 				VP.seek=false;
@@ -666,7 +666,7 @@
 				setupReplayCommands();
 
 				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
-				VP.state=VideoPlayerBabelia.PLAY_STATE;
+				VP.state=VideoRecorder.PLAY_STATE;
 
 				VP.seek=false;
 			}
@@ -681,9 +681,9 @@
 
 				// Recording mode
 				if (micOnly.selected)
-					VP.state=VideoPlayerBabelia.RECORD_MIC_STATE;
+					VP.state=VideoRecorder.RECORD_MIC_STATE;
 				else
-					VP.state=VideoPlayerBabelia.RECORD_BOTH_STATE;
+					VP.state=VideoRecorder.RECORD_BOTH_STATE;
 
 				//Save this new record attempt
 				statisticRecAttempt();
@@ -841,7 +841,7 @@
 				 width="{VP.width}"
 				 styleName="sectionTitleLabel"/>
 		<!-- Video Player -->
-		<videoPlayer:VideoPlayerBabelia id="VP"
+		<videoPlayer:VideoRecorder id="VP"
 										layoutDirection="ltr"
 										autoPlay="true"
 										skin="white"

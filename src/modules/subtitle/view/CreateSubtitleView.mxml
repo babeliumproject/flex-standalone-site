@@ -19,7 +19,7 @@
 				 styleName="exerciseTitleLabel"/>
 		<s:HGroup width="100%">
 			<s:VGroup>
-				<videoPlayer:VideoPlayerBabelia id="VPSubtitle"
+				<videoPlayer:VideoRecorder id="VPSubtitle"
 												autoPlay="true"
 												skin="white"
 												seek="true"

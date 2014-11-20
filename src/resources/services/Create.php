@@ -284,8 +284,10 @@ class Create {
 				$exercise->insertTags($parsedTags,$data->id);
 		
 				//Update the fields of the exercise
-				$sql = "UPDATE exercise SET title='%s', description='%s', language='%s', difficulty=%d WHERE exercisecode='%s' AND fk_user_id=%d";
-				$arows1 = $this->conn->_update($sql, $data->title, $data->description, $data->language, $data->difficulty, $data->exercisecode, $_SESSION['uid']);
+				$sql = "UPDATE exercise SET title='%s', description='%s', language='%s', difficulty=%d, timemodified=%d, type=%d, situation=%d, competence=%d, lingaspects='%s'
+						WHERE exercisecode='%s' AND fk_user_id=%d";
+				$arows1 = $this->conn->_update($sql, $data->title, $data->description, $data->language, $data->difficulty, $optime, $data->type, 
+													 $data->situation, $data->competence, $data->lingaspects, $data->exercisecode, $_SESSION['uid']);
 				
 				//Turn on the autocommit, there was no errors modifying the database
 				//$this->conn->_endTransaction();
@@ -294,11 +296,14 @@ class Create {
 	
 			// Adding a new exercise
 			} else {
-				$data->euid;
+				//TODO use some session value to know when transitioning back&forth from 'step1' and 'step2'
 				
-				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, fk_user_id, timecreated) 
-						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d)";
-				$exerciseid = $this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, $_SESSION['uid'], $optime);
+				$exercisecode = $this->str_makerand(11,true,true);
+				
+				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, timecreated, type, situation, competence, lingaspects, fk_user_id) 
+						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, '%s', %d)";
+				$exerciseid = $this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, 
+													     $optime, $data->type, $data->situation, $data->competence, $data->lingaspects, $_SESSION['uid']);
 				
 				//Insert new exercise descriptors (if any)
 				$exercise->insertDescriptors($parsedDescriptors,$exerciseid);
@@ -308,11 +313,32 @@ class Create {
 				
 				return $exercisecode;
 			}
-	
-	
 		} catch (Exception $e){
 			//$this->conn->_failedTransaction();
 			throw new Exception ($e->getMessage());
 		}
+	}
+	
+	/**
+	 * Returns a provided character long random alphanumeric string
+	 *
+	 * @author Peter Mugane Kionga-Kamau
+	 * http://www.pmkmedia.com
+	 *
+	 * @param int $length
+	 * @param boolean $useupper
+	 * @param boolean $usenumbers
+	 */
+	public function str_makerand ($length, $useupper, $usenumbers)
+	{
+		$key= '';
+		$charset = "abcdefghijklmnopqrstuvwxyz";
+		if ($useupper)
+			$charset .= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		if ($usenumbers)
+			$charset .= "0123456789";
+		for ($i=0; $i<$length; $i++)
+			$key .= $charset[(mt_rand(0,(strlen($charset)-1)))];
+			return $key;
 	}
 }

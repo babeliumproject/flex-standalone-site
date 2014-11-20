@@ -3,18 +3,18 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import components.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoRecorder;
 	
 	import vo.CueObject;
 
 	public class StartRecordingSelectedRoleCommand implements ICommand
 	{
-		private var VP:VideoPlayerBabelia;
+		private var VP:VideoRecorder;
 		private var cue:CueObject;
 		
 //		private var executed:Boolean = false;
 
-		public function StartRecordingSelectedRoleCommand(cue:CueObject, VP:VideoPlayerBabelia)
+		public function StartRecordingSelectedRoleCommand(cue:CueObject, VP:VideoRecorder)
 		{
 			this.VP=VP;
 			this.cue = cue;

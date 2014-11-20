@@ -16,7 +16,7 @@ package modules.subtitle.view
 	import model.DataModel;
 	
 	import components.videoPlayer.VideoPlayer;
-	import components.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoRecorder;
 	import components.videoPlayer.events.VideoPlayerEvent;
 	import components.videoPlayer.events.babelia.StreamEvent;
 	import components.videoPlayer.events.babelia.SubtitlingEvent;
@@ -112,7 +112,7 @@ package modules.subtitle.view
 		 *  Visual components declaration
 		 */
 		[Bindable]
-		public var VPSubtitle:VideoPlayerBabelia=new VideoPlayerBabelia();
+		public var VPSubtitle:VideoRecorder=new VideoRecorder();
 		public var exerciseTitle:Label;
 
 		[Bindable]
@@ -161,7 +161,7 @@ package modules.subtitle.view
 		public function prepareVideoPlayer():void
 		{
 			VPSubtitle.stopVideo();
-			VPSubtitle.state=VideoPlayerBabelia.PLAY_STATE;
+			VPSubtitle.state=VideoRecorder.PLAY_STATE;
 			VPSubtitle.videoSource=EXERCISE_FOLDER + '/' + exerciseFileName;
 			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);

@@ -8,6 +8,7 @@
 		  creationComplete="completeHandler(event)">
 	<fx:Script>
 		<![CDATA[
+			import components.userManagement.FieldValidator;
 			import events.UserEvent;
 			
 			import model.DataModel;

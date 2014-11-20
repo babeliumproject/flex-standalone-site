@@ -3,15 +3,15 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 
-	import components.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoRecorder;
 
 	public class StopRecordingSelectedRoleCommand implements ICommand
 	{
-		private var VP:VideoPlayerBabelia;
+		private var VP:VideoRecorder;
 
 //		private var executed:Boolean=false;
 
-		public function StopRecordingSelectedRoleCommand(VP:VideoPlayerBabelia)
+		public function StopRecordingSelectedRoleCommand(VP:VideoRecorder)
 		{
 			this.VP=VP;
 		}

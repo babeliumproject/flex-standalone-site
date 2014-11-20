@@ -75,17 +75,17 @@
 					  creationPolicy="all"
 					  selectedIndex="{viewIndex}">
 			<s:NavigatorContent id="exClassNC"
-								label="{resourceManager.getString('myResources','LABEL_THE_EXERCISE')}">
+								label="{'1. '+resourceManager.getString('myResources','LABEL_THE_EXERCISE')}">
 				<view:LabelExercise id="exerciseClassification"
 									width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent id="addMediaNC"
-								label="{resourceManager.getString('myResources','ADD_MEDIA')}">
+								label="{'2. '+resourceManager.getString('myResources','ADD_MEDIA')}">
 				<view:AddMedia id="mediaUpload"
 							   width="100%"/>
 			</s:NavigatorContent>
 			<s:NavigatorContent id="previewNC"
-								label="{resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
+								label="{'3. '+resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
 				<s:VGroup>
 					<s:Label text="Add controls for previewing and publishing"/>
 				</s:VGroup>

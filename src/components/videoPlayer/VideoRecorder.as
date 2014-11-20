@@ -53,7 +53,7 @@ package components.videoPlayer
 	
 	import vo.ResponseVO;
 
-	public class VideoPlayerBabelia extends VideoPlayer
+	public class VideoRecorder extends VideoPlayer
 	{
 		/**
 		 * Skin related constants
@@ -152,9 +152,9 @@ package components.videoPlayer
 		/**
 		 * CONSTRUCTOR
 		 */
-		public function VideoPlayerBabelia()
+		public function VideoRecorder()
 		{
-			super("VideoPlayerBabelia"); // Required for setup skinable component
+			super("VideoRecorder"); // Required for setup skinable component
 
 			_subtitleButton=new SubtitleButton();
 			_videoBarPanel.addChild(_subtitleButton);

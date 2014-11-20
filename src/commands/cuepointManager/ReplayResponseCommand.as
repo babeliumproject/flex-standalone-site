@@ -3,16 +3,16 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import components.videoPlayer.VideoPlayerBabelia;
+	import components.videoPlayer.VideoRecorder;
 	
 	import vo.CueObject;
 
 	public class ReplayResponseCommand implements ICommand
 	{
-		private var VP:VideoPlayerBabelia;
+		private var VP:VideoRecorder;
 		public var cue:CueObject;
 		
-		public function ReplayResponseCommand(cue:CueObject, subHolder:VideoPlayerBabelia)
+		public function ReplayResponseCommand(cue:CueObject, subHolder:VideoRecorder)
 		{
 			this.VP = subHolder;
 			this.cue = cue;

@@ -9,7 +9,7 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  creationComplete="completeHandler(event)">
+		  creationComplete="completeHandler(event)" xmlns:view="modules.account.view.*">
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
@@ -209,20 +209,20 @@
 		
 
 		<!-- Modify password -->
-		<userManagement:ModifyPassword id="modifyPassword"
+		<view:ModifyPassword id="modifyPassword"
 									   includeInLayout="false"
 									   visible="false"
 									   paddingTop="16"
 									   cancelClickHandler="{editCancelHandler}"/>
 
 		<!-- Modify languages -->
-		<userManagement:ModifyLanguages id="modifyLanguages"
+		<view:ModifyLanguages id="modifyLanguages"
 										includeInLayout="false"
 										visible="false"
 										cancelClickHandler="{editCancelHandler}"/>
 		
 		<!-- Edit personal information -->
-		<userManagement:ModifyPersonalData id="modifyPersonalData"
+		<view:ModifyPersonalData id="modifyPersonalData"
 										   includeInLayout="false"
 										   visible="false"
 										   paddingTop="16"

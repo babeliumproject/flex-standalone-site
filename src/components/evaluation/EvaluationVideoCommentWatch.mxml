@@ -54,7 +54,7 @@
 			{
 				_videoPlayerReady=true;
 				VideoCommentVP.stopVideo();
-				VideoCommentVP.state=VideoPlayerBabelia.PLAY_STATE;
+				VideoCommentVP.state=VideoRecorder.PLAY_STATE;
 				VideoCommentVP.videoSource=_commentSource;
 				VideoCommentVP.controlsEnabled=true;
 			}
@@ -69,7 +69,7 @@
 	</fx:Script>
 
 	<s:VGroup id="videoPlayerBox">
-		<videoPlayer:VideoPlayerBabelia id="VideoCommentVP"
+		<videoPlayer:VideoRecorder id="VideoCommentVP"
 										autoPlay="true"
 										skin="white"
 										seek="true"

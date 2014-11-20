@@ -16,8 +16,8 @@
 			import com.adobe.crypto.SHA1;
 
 			import components.userManagement.FieldValidator;
-			import components.userManagement.LanguageKnowledgeBox;
-			import components.userManagement.MotherLanguageBox;
+			import modules.account.view.LanguageKnowledgeBox;
+			import modules.account.view.MotherLanguageBox;
 
 			import control.URLManager;
 

@@ -19,7 +19,7 @@
 		</s:layout>
 
 		<s:Label id="editVideoTitle"
-				 text="{resourceManager.getString('myResources','EDIT_VIDEO_INFO')}"
+				 text="{resourceManager.getString('myResources','LABEL_EXERCISE')}"
 				 styleName="h3"/>
 		<s:Line width="100%">
 			<s:stroke>

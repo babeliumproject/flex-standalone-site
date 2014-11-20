@@ -20,23 +20,21 @@
 						   backgroundImage="@Embed('/resources/images/rainbow_bgr.png')"
 						   backgroundImageFillMode="scale">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="8"
-									paddingRight="8"
-									paddingTop="8"
-									paddingBottom="8"
-									horizontalAlign="left"
-									verticalAlign="middle"
-									clipAndEnableScrolling="true"/>
+				<s:HorizontalLayout horizontalAlign="left"
+									verticalAlign="middle"/>
 			</s:layout>
 
-			<mx:Image source="resources/images/babelium_logo.png"
-					  buttonMode="true"
-					  click="{URLManager.getInstance().redirect('/home')}"/>
+			<s:HGroup paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="16">
+				<mx:Image source="resources/images/babelium_logo.png"
+						  buttonMode="true"
+						  click="{URLManager.getInstance().redirect('/home')}"/>
+			</s:HGroup>
 
 			<s:ToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
 							enabled="{!DataModel.getInstance().recordingExercise &amp;&amp; !DataModel.getInstance().recording &amp;&amp; !DataModel.getInstance().playing}"
 							selected="{_urlManager.moduleName == 'exercises'}"
-							click="changeView('/exercises',event)"/>
+							click="changeView('/exercises',event)"
+							height="100%"/>
 			<s:ToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
 							includeInLayout="{DataModel.getInstance().isLoggedIn}"
 							visible="{DataModel.getInstance().isLoggedIn}"
@@ -88,14 +86,14 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import modules.exercise.event.SearchEvent;
 			import events.VideoStopEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.utils.URLUtil;
-			
+
 			import skins.NavigationToggleButtonSkin;
 
 			[Bindable]

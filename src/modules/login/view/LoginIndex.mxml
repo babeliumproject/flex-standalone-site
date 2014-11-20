@@ -6,7 +6,7 @@
 		  horizontalAlign="center"
 		  width="100%"
 		  paddingTop="40"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface" xmlns:view="modules.account.view.*">
 	
 	<fx:Script>
 		<![CDATA[
@@ -20,7 +20,7 @@
 	<s:BorderContainer id="loginFormBox"
 					   minWidth="300"
 					   styleName="loginBorderContainer">
-		<userManagement:LoginRestorePassForm 
+		<view:LoginRestorePassForm 
 			id="loginForm"
 			width="100%"/>
 	</s:BorderContainer>
