@@ -73,9 +73,11 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
+			import flash.events.MouseEvent;
+			
 			import modules.create.event.CreateEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
@@ -83,11 +85,9 @@
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-
-			import flash.events.MouseEvent;
-
+			
 			import spark.events.IndexChangeEvent;
-
+			
 			import view.common.CustomAlert;
 
 			public static const STATUS_UNDEF:int=0;
@@ -109,18 +109,19 @@
 			{
 				if (event.eventPhase != EventPhase.AT_TARGET)
 					return;
-				var mediaid:int=_data.id as int;
+				var mediacode:String=_data.mediacode;
 				var num:int=(event.newIndex) + 1;
 				var params:Object=new Object();
-				params.num=num;
-				params.mediaid=mediaid;
+				params.defaultthumbnail=num;
+				params.mediacode=mediacode;
+				trace(ObjectUtil.toString(params));
 				new CreateEvent(CreateEvent.SET_DEFAULT_THUMBNAIL, params).dispatch();
 			}
 
 			private function subtitleMediaClickHandler(event:MouseEvent):void
 			{
 				if(!_data) return;
-				var mediaid:int=_data.id as int;
+				var mediaid:int=parseInt(_data.mediacode);
 				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
 			}
 

@@ -7,7 +7,20 @@
 package components.videoPlayer
 {
 	
+	import components.videoPlayer.controls.AudioSlider;
+	import components.videoPlayer.controls.ElapsedTime;
+	import components.videoPlayer.controls.PlayButton;
+	import components.videoPlayer.controls.ScrubberBar;
+	import components.videoPlayer.controls.SkinableComponent;
+	import components.videoPlayer.controls.StopButton;
+	import components.videoPlayer.events.PlayPauseEvent;
+	import components.videoPlayer.events.ScrubberBarEvent;
+	import components.videoPlayer.events.StopEvent;
+	import components.videoPlayer.events.VideoPlayerEvent;
+	import components.videoPlayer.events.VolumeEvent;
+	
 	import events.CloseConnectionEvent;
+	import events.SetupConnectionEvent;
 	import events.StartConnectionEvent;
 	
 	import flash.display.Sprite;
@@ -27,18 +40,6 @@ package components.videoPlayer
 	import flash.utils.Timer;
 	
 	import model.DataModel;
-	
-	import components.videoPlayer.controls.AudioSlider;
-	import components.videoPlayer.controls.ElapsedTime;
-	import components.videoPlayer.controls.PlayButton;
-	import components.videoPlayer.controls.ScrubberBar;
-	import components.videoPlayer.controls.SkinableComponent;
-	import components.videoPlayer.controls.StopButton;
-	import components.videoPlayer.events.PlayPauseEvent;
-	import components.videoPlayer.events.ScrubberBarEvent;
-	import components.videoPlayer.events.StopEvent;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.VolumeEvent;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.controls.Alert;
@@ -545,6 +546,8 @@ package components.videoPlayer
 
 		public function connectToStreamingServer():void
 		{
+			if (!DataModel.getInstance().netConnection)
+				new SetupConnectionEvent().dispatch();
 			if (!DataModel.getInstance().netConnection.connected)
 				new StartConnectionEvent().dispatch();
 			else

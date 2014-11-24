@@ -12,10 +12,11 @@
 
 		<![CDATA[
 			import events.CloseConnectionEvent;
+			import events.SetupConnectionEvent;
 			import events.StartConnectionEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -23,9 +24,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -173,7 +174,9 @@
 
 			private function connectToStreamingServer():void
 			{
-				if (DataModel.getInstance().netConnection.connected == false)
+				if(!DataModel.getInstance().netConnection)
+					new SetupConnectionEvent().dispatch();
+				if (!DataModel.getInstance().netConnection.connected)
 					new StartConnectionEvent(DataModel.getInstance().streamingResourcesPath).dispatch();
 				else
 					onConnectionStatus=false;

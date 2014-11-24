@@ -8,13 +8,14 @@ package model
 	import components.main.Body;
 	import components.main.LoginPopup;
 	import components.userManagement.KeepAliveTimer;
-	import modules.account.view.LoginRestorePassForm;
 	
 	import flash.media.Camera;
 	import flash.media.Microphone;
 	import flash.net.FileReference;
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
+	
+	import modules.account.view.LoginRestorePassForm;
 	
 	import mx.collections.ArrayCollection;
 	import mx.utils.ObjectProxy;
@@ -24,7 +25,7 @@ package model
 	import vo.UserVO;
 	import vo.VideoSliceVO;
 
-	public class DataModel implements IModelLocator
+	dynamic public class DataModel implements IModelLocator
 	{
 		//This solution for singleton implementation was found in
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
@@ -77,31 +78,6 @@ package model
 		public var netConnectOngoingAttempt:Boolean;
 		
 		public var bandwidthInfo:Object;
-
-		//ViewStack management variables
-		[Bindable]
-		public var currentContentViewStackIndex:int=-1;
-		[Bindable]
-		public var currentHomeViewStackIndex:uint;
-		[Bindable]
-		public var currentConfigViewStackIndex:uint;
-		[Bindable]
-		public var currentExerciseViewStackIndex:uint;
-		[Bindable]
-		public var currentEvaluationViewStackIndex:uint;
-		[Bindable]
-		public var currentSubtitleViewStackIndex:uint;
-		[Bindable]
-		public var currentUploadViewStackIndex:uint;
-		[Bindable]
-		public var currentAccountViewStackIndex:uint;
-		[Bindable]
-		public var currentCourseViewStackIndex:uint;
-
-		[Bindable]
-		public var oldContentViewStackIndex:uint;
-		[Bindable]
-		public var newContentViewStackIndex:uint;
 
 		//Application preferences value pair
 		[Bindable]
@@ -242,7 +218,7 @@ package model
 		
 		public var streamingProtocol:String=RTMP;
 		public var streamingPort:uint=1935;
-		public var streamingApp:String='vod';
+		public var streamingApp:String='babeliumlms';
 		[Bindable] public var streamingResourcesPath:String=streamingProtocol+"://" + server + ":"+ streamingPort + "/" + streamingApp;
 	
 		[Bindable] public var evaluationStreamsFolder:String="evaluations";
@@ -254,10 +230,6 @@ package model
 		public var uploadDomain:String="http://" + server + "/";
 		[Bindable]
 		public var uploadURL:String=uploadDomain + "upload.php";
-		[Bindable]
-		public var thumbURL:String=uploadDomain + "resources/images/thumbs";
-		[Bindalbe]
-		public var posterURL:String=uploadDomain + "resources/images/posters";
 
 		[Bindable]
 		public var uploadFileReference:FileReference=null;
@@ -511,6 +483,8 @@ package model
 		public var latestCreations:ArrayCollection;
 		[Bindable]
 		public var latestCreationsRetrieved:Boolean;
+		[Bindable]
+		public var defaultThumbnailModified:Boolean;
 		
 		public var moduleMap:Object = {};
 		[Bindable]

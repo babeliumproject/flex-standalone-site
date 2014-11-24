@@ -53,5 +53,11 @@ package modules.create.service
 			var pendingCall:AsyncToken = service.listUserCreations(offset, rowcount);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function setDefaultThumbnail(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
+			var pendingCall:AsyncToken = service.setDefaultThumbnail(query);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

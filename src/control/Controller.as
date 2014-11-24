@@ -3,7 +3,6 @@ package control {
 	
 	import commands.VideoStopCommand;
 	import commands.autoevaluation.*;
-	import commands.configuration.*;
 	import commands.evaluation.*;
 	import commands.home.*;
 	import commands.main.*;

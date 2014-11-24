@@ -210,6 +210,40 @@ class Create {
 		return $status;
 	}
 	
+	public function setDefaultThumbnail($data){
+		try{
+			$session = new SessionValidation(true);
+			
+			if(!$data || !isset($data->mediacode)) return;
+			
+			$thumbidx = (isset($data->defaultthumbnail) && $data->defaultthumbnail >=1 && $data->defaultthumbnail <= 3) ? $data->defaultthumbnail : 1;
+			$mediacode = $data->mediacode;
+			
+			$posterfolder = $this->cfg->posterPath .'/'. $mediacode;
+			$thumbfolder = $this->cfg->imagePath .'/'. $mediacode;
+			
+			if( is_link($thumbfolder.'/default.jpg') ){
+				unlink($thumbfolder.'/default.jpg');
+			}
+			if( is_link($posterfolder.'/default.jpg') ){
+				unlink($posterfolder.'/default.jpg');
+			}
+			if( !symlink($thumbfolder.'/0'.$thumbidx.'.jpg', $thumbfolder.'/default.jpg')  ){
+				throw new Exception ("Couldn't create link for the thumbnail $thumbfolder/0$thumbidx.jpg, $thumbfolder/default.jpg\n");
+			}
+			if( !symlink($posterfolder.'/0'.$thumbidx.'.jpg', $posterfolder.'/default.jpg') ){
+				throw new Exception ("Couldn't create link for the poster\n");
+			}
+			
+			$sql = "UPDATE media SET defaultthumbnail=%d WHERE mediacode='%s' AND type='video' AND fk_user_id=%d";
+			
+			$rowcount = $this->conn->_update($sql, $thumbidx, $mediacode, $_SESSION['uid']);
+			return $rowcount;
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
+	
 	public function saveExerciseMedia($data = null){
 		try{
 			$verifySession = new SessionValidation(true);
