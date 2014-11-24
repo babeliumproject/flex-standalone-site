@@ -19,9 +19,7 @@ package components.videoPlayer
 	import components.videoPlayer.events.VideoPlayerEvent;
 	import components.videoPlayer.events.VolumeEvent;
 	
-	import events.CloseConnectionEvent;
-	import events.SetupConnectionEvent;
-	import events.StartConnectionEvent;
+	import events.FullStreamingEvent;
 	
 	import flash.display.Sprite;
 	import flash.events.AsyncErrorEvent;
@@ -547,9 +545,9 @@ package components.videoPlayer
 		public function connectToStreamingServer():void
 		{
 			if (!DataModel.getInstance().netConnection)
-				new SetupConnectionEvent().dispatch();
+				new FullStreamingEvent(FullStreamingEvent.SETUP_CONNECTION).dispatch();
 			if (!DataModel.getInstance().netConnection.connected)
-				new StartConnectionEvent().dispatch();
+				new FullStreamingEvent(FullStreamingEvent.START_CONNECTION).dispatch();
 			else
 				onStreamNetConnect(true);
 		}
@@ -557,7 +555,7 @@ package components.videoPlayer
 		public function disconnectFromStreamingService():void
 		{
 			if (DataModel.getInstance().netConnection.connected)
-				new CloseConnectionEvent().dispatch();
+				new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 		}
 
 		private function netStatus(event:NetStatusEvent):void

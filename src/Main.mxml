@@ -51,7 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			
 			import events.LoginEvent;
 			import events.PreferenceEvent;
-			import events.SetupConnectionEvent;
 			
 			import model.DataModel;
 			

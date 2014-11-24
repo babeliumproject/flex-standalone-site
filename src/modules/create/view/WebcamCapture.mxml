@@ -11,9 +11,8 @@
 	<fx:Script>
 
 		<![CDATA[
-			import events.CloseConnectionEvent;
-			import events.SetupConnectionEvent;
-			import events.StartConnectionEvent;
+
+			import events.FullStreamingEvent;
 			
 			import model.DataModel;
 			
@@ -69,7 +68,7 @@
 			private var _mic:Microphone;
 			private var _micCamEnabled:Boolean=false;
 
-			private var _streamingServerConnection:Boolean=false;
+			private var _streamingServerConnection:Boolean;
 			private var _streamsFolder:String='';
 			private var _streamFilePrefix:String='';
 
@@ -96,7 +95,6 @@
 			[Embed(source='../../../resources/images/playerStopIcon.png')]
 			[Bindable]
 			private var stopImageEmbed:Class;
-
 
 
 			public function onComplete():void
@@ -174,10 +172,10 @@
 
 			private function connectToStreamingServer():void
 			{
-				if(!DataModel.getInstance().netConnection)
-					new SetupConnectionEvent().dispatch();
+				if (!DataModel.getInstance().netConnection)
+					new FullStreamingEvent(FullStreamingEvent.SETUP_CONNECTION).dispatch();
 				if (!DataModel.getInstance().netConnection.connected)
-					new StartConnectionEvent(DataModel.getInstance().streamingResourcesPath).dispatch();
+					new FullStreamingEvent(FullStreamingEvent.START_CONNECTION, DataModel.getInstance().streamingResourcesPath).dispatch();
 				else
 					onConnectionStatus=false;
 			}
@@ -185,7 +183,7 @@
 			private function disconnectFromStreamingServer():void
 			{
 				if (DataModel.getInstance().netConnection.connected)
-					new CloseConnectionEvent().dispatch();
+					new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 			}
 
 			private function disconnnectStreams():void
@@ -328,34 +326,42 @@
 				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
+			
+			
 
-			private function startStopRecording():void
+			private function startStopRecording(connected:Boolean=false):void
 			{
 				if (!_streamingServerConnection)
-					connectToStreamingServer();
-				if (!isRecording)
 				{
-					startStopCapture.label=resourceManager.getString('myResources', 'STOP');
-					prepareDevices();
+					connectToStreamingServer();
+					DataModel.getInstance().netConnectionDelegate.addEventListener(FullStreamingEvent.CONNECTION_READY, startStopRecording, false, 0, true);
 				}
 				else
 				{
-					if (_recordCountDown.running)
+					if (!isRecording)
 					{
-						_recordCountDown.stop();
-						_recordCountDown.reset();
-						recordCountdown.text=_timeFormatter.format(0);
-						recordCountdown.visible=false;
-					}
-					stopCamera();
-					stopAudio();
-					if (recordingFileName)
-					{
-						startStopCapture.label=resourceManager.getString('myResources', 'RECORD_AGAIN');
+						startStopCapture.label=resourceManager.getString('myResources', 'STOP');
+						prepareDevices();
 					}
 					else
 					{
-						startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
+						if (_recordCountDown.running)
+						{
+							_recordCountDown.stop();
+							_recordCountDown.reset();
+							recordCountdown.text=_timeFormatter.format(0);
+							recordCountdown.visible=false;
+						}
+						stopCamera();
+						stopAudio();
+						if (recordingFileName)
+						{
+							startStopCapture.label=resourceManager.getString('myResources', 'RECORD_AGAIN');
+						}
+						else
+						{
+							startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
+						}
 					}
 				}
 			}
@@ -618,8 +624,8 @@
 			  paddingRight="10"
 			  paddingTop="10">
 		<skins:IconButton id="cancelCapture"
-					  styleName="btn-default"
-					  label="{resourceManager.getString('myResources','CANCEL')}"/>
+						  styleName="btn-default"
+						  label="{resourceManager.getString('myResources','CANCEL')}"/>
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<skins:IconButton id="startStopCapture"

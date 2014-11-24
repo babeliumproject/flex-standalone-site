@@ -28,9 +28,9 @@ package control {
 			super();
 			
 			//Connection management commands
-			addCommand(SetupConnectionEvent.EVENT_SETUP_CONNECTION, SetupConnectionCommand);
-			addCommand(StartConnectionEvent.EVENT_START_CONNECTION, StartConnectionCommand);
-			addCommand(CloseConnectionEvent.EVENT_CLOSE_CONNECTION, CloseConnectionCommand);
+			addCommand(FullStreamingEvent.SETUP_CONNECTION, SetupConnectionCommand);
+			addCommand(FullStreamingEvent.START_CONNECTION, StartConnectionCommand);
+			addCommand(FullStreamingEvent.CLOSE_CONNECTION, CloseConnectionCommand);
 			
 			addCommand(CourseEvent.GET_COURSES, GetCourses);
 			addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
