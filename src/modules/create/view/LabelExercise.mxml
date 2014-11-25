@@ -365,7 +365,6 @@
 						}
 						exerciseData.descriptors=descriptors;
 					}
-
 					new CreateEvent(CreateEvent.SAVE_EXERCISE, exerciseData).dispatch();
 				}
 				else
@@ -382,6 +381,9 @@
 					exerciseData.type=0;
 					exerciseData.difficulty=1;
 				}
+				
+				trace(ObjectUtil.toString(exerciseData));
+				
 				exerciseTitle.text=exerciseData.title;
 				exerciseDescription.htmlText=exerciseData.description;
 				exerciseKeywords.text=exerciseData.tags;
@@ -464,8 +466,14 @@
 				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
 				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
 				updateCommCompetences(currentLevel, currentSituation);
-				//Update communicative competences takes a while to update the dataProvider, use the 0 index when not yet ready.
-				var currentCompetence:int=commCompetenceDropdown && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : 0;
+				commCompetenceDropdown.addEventListener(FlexEvent.UPDATE_COMPLETE, deferredConditionalChange, false, 0, true);
+			}
+			
+			protected function deferredConditionalChange(event:Event):void{
+				commCompetenceDropdown.removeEventListener(FlexEvent.UPDATE_COMPLETE, deferredConditionalChange);
+				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
+				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
+				var currentCompetence:int=commCompetenceDropdown && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : -1;
 				updateDescriptors(currentLevel, currentSituation, currentCompetence);
 			}
 
@@ -519,6 +527,7 @@
 					return;
 
 				removeDescriptors();
+				
 				if (!_descriptors)
 					getDescriptorCodesFromResourceFile();
 
