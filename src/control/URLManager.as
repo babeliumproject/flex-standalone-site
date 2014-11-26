@@ -36,7 +36,8 @@ package control
 			login: 'modules/login/LoginModule.swf',
 			signup: 'modules/signup/SignupModule.swf',
 			subtitle: 'modules/subtitle/SubtitleModule.swf',
-			home: 'modules/home/HomeModule.swf'
+			home: 'modules/home/HomeModule.swf',
+			error: 'modules/error/ErrorModule.swf'
 		};
 
 		[Bindable] public var moduleName:String;
@@ -136,17 +137,19 @@ package control
 			if (numfragments > 3)
 			{
 				paramtmp=fragments[3];
-				var pattern:RegExp = /([^\?]*)\?(.+)?/;
+				var pattern:RegExp = /([^\?]+)(\?(.+))?$/;
 				var matches:Array = paramtmp.match(pattern);
 				if(matches){
-					if(matches[2]){
-						parsedParams = URLUtil.stringToObject(matches[2],'&',true);
+					if(matches[3]){
+						parsedParams = URLUtil.stringToObject(matches[3],'&',true);
 					}
 					if(matches[1]){
+						if(!parsedParams) parsedParams = new Object();
 						parsedParams['id'] = matches[1];
 					}
 				}
 			}
+			trace(ObjectUtil.toString(parsedParams));
 
 			module=modtmp;
 			action=actiontmp;

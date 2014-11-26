@@ -1,6 +1,6 @@
 package control
 {
-	import business.SubtitleDelegate;
+	import modules.subtitle.service.SubtitleDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	

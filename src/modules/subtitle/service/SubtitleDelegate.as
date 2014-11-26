@@ -1,4 +1,4 @@
-package business
+package modules.subtitle.service
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
@@ -18,13 +18,13 @@ package business
 			this.responder = responder;
 		}
 		
-		public function saveSubtitles(subtitles:SubtitleAndSubtitleLinesVO):void{
+		public function saveSubtitles(subtitles:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.saveSubtitles(subtitles);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getSubtitleLines(subtitle:SubtitleAndSubtitleLinesVO):void{
+		public function getSubtitleLines(subtitle:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getSubtitleLines(subtitle);
 			pendingCall.addResponder(responder);	
@@ -36,7 +36,7 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getExerciseSubtitles(subtitle:SubtitleAndSubtitleLinesVO):void{
+		public function getExerciseSubtitles(subtitle:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
 			var pendingCall:AsyncToken = service.getExerciseSubtitles(subtitle.mediaId);
 			pendingCall.addResponder(responder);

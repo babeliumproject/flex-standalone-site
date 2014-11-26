@@ -414,12 +414,6 @@ package modules.subtitle.view
 			return String(iIndex);
 		}
 
-		public function updateURL(action:String, target:String):void
-		{
-			// Update URL
-			URLManager.getInstance().redirect('subtitles', action, target);
-		}
-
 		public function subtitleVersionComboLabelFunction(item:Object):String
 		{
 			if (item != null)

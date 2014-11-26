@@ -1,6 +1,6 @@
 package modules.subtitle.command
 {
-	import business.SubtitleDelegate;
+	import modules.subtitle.service.SubtitleDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
@@ -25,7 +25,7 @@ package modules.subtitle.command
 
 		public function execute(event:CairngormEvent):void
 		{
-			new SubtitleDelegate(this).saveSubtitles((event as SubtitleEvent).subtitle);
+			new SubtitleDelegate(this).saveSubtitles((event as SubtitleEvent).params);
 		}
 
 		public function result(data:Object):void

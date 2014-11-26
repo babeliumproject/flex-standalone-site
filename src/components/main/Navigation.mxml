@@ -34,17 +34,25 @@
 							enabled="{!DataModel.getInstance().recordingExercise &amp;&amp; !DataModel.getInstance().recording &amp;&amp; !DataModel.getInstance().playing}"
 							selected="{_urlManager.moduleName == 'exercises'}"
 							click="changeView('/exercises',event)"
-							height="100%"/>
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
 			<s:ToggleButton label="{resourceManager.getString('myResources', 'LEARN')}"
 							includeInLayout="{DataModel.getInstance().isLoggedIn}"
 							visible="{DataModel.getInstance().isLoggedIn}"
 							selected="{_urlManager.moduleName == 'course' &amp;&amp; _urlManager.action == 'learn' }"
-							click="changeView('/course/learn',event)"/>
+							click="changeView('/course/learn',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
 			<s:ToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
 							id="createLinkButton"
 							enabled="{DataModel.getInstance().isLoggedIn}"
 							selected="{_urlManager.moduleName == 'create'}"
-							click="changeView('/create',event)"/>
+							click="changeView('/create',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.5"/>
 
@@ -94,7 +102,7 @@
 
 			import mx.utils.URLUtil;
 
-			import skins.NavigationToggleButtonSkin;
+			import skins.OldNavigationToggleButtonSkin;
 
 			[Bindable]
 			protected var _model:DataModel=DataModel.getInstance();
@@ -128,26 +136,6 @@
 				}
 			}
 
-			/*
-			private function launchSearch(event:MouseEvent):void
-			{
-				DataModel.getInstance().searchField=searchField.text;
-				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
-				//{
-				//changeView(ViewChangeEvent.VIEW_SEARCH_MODULE, event);
-				_urlManager.redirect('search');
-				//}
-				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
-			}
-
-			public function set onTagCloudClicked(value:Boolean):void
-			{
-				if (DataModel.getInstance().tagCloudClicked)
-				{
-					searchField.text=DataModel.getInstance().searchField;
-					DataModel.getInstance().tagCloudClicked=false;
-				}
-			}*/
 		]]>
 	</fx:Script>
 

@@ -9,13 +9,13 @@ package skins
 
 	[Style(name="backgroundImage", type="*")]
 
-	public class NavigationToggleButton extends ToggleButton
+	public class OldNavigationToggleButton extends ToggleButton
 	{
 
 		// Define a static variable.
 		private static var classConstructed:Boolean=classConstruct();
 
-		public function NavigationToggleButton()
+		public function OldNavigationToggleButton()
 		{
 			super();
 			this.buttonMode=true;

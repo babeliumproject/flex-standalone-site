@@ -383,6 +383,7 @@
 				
 					<s:TextInput id="username"
 								 styleName="frm-input"
+								 width="300"
 								 maxChars="20"
 								 change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
 								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
@@ -392,6 +393,7 @@
 						required="true">
 					<s:TextInput id="email"
 								 styleName="frm-input"
+								 width="300"
 								 maxChars="80"
 								 change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
 								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
@@ -399,10 +401,11 @@
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','PASSWORD')}"
 						required="true">
-				
+
 					<s:TextInput id="password"
 								 styleName="frm-input"
 								 displayAsPassword="true"
+								 width="300"
 								 maxChars="40"
 								 change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
 								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
@@ -414,6 +417,7 @@
 					<s:TextInput id="repassword"
 								 styleName="frm-input"
 								 displayAsPassword="true"
+								 width="300"
 								 maxChars="40"
 								 change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
 								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
@@ -423,7 +427,7 @@
 			<s:FormItem label="{resourceManager.getString('myResources','REAL_NAME')}"
 						required="true">
 				<s:TextInput id="firstname"
-							 width="100%"
+							 width="300"
 							 styleName="frm-input"
 							 maxChars="40"
 							 change="FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"
@@ -433,7 +437,7 @@
 						required="true">
 				<s:TextInput id="lastname"
 							 styleName="frm-input"
-							 width="100%"
+							 width="300"
 							 maxChars="40"
 							 change="FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"
 							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"/>

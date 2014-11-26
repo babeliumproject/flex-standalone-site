@@ -14,17 +14,20 @@ package modules.subtitle.event
 		public static const SAVE_SUBAND_SUBLINES:String = "saveSubtitle";
 		public static const GET_EXERCISE_SUBLINES:String = "getSubtitleLines";
 		public static const GET_EXERCISE_SUBTITLES:String = "getExerciseSubtitles";
-		public var subtitle:SubtitleAndSubtitleLinesVO;
+		
+		public static const GET_MEDIA_SUBTITLES:String = "getMediaSubtitles";
+		
+		public var params:Object;
 
 		
-		public function SubtitleEvent(type:String, subtitle:SubtitleAndSubtitleLinesVO = null)
+		public function SubtitleEvent(type:String, params:Object = null)
 		{
 			super(type);
-			this.subtitle = subtitle;
+			this.params = params;
 		}
 		
 		override public function clone():Event{
-			return new SubtitleEvent(type,subtitle);
+			return new SubtitleEvent(type,params);
 		}
 		
 	}

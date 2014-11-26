@@ -121,7 +121,7 @@
 			private function subtitleMediaClickHandler(event:MouseEvent):void
 			{
 				if(!_data) return;
-				var mediaid:int=parseInt(_data.mediacode);
+				var mediaid:int=parseInt(_data.id);
 				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
 			}
 

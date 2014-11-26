@@ -19,6 +19,7 @@
     <module application="src/Main.mxml" destPath="modules/dashboard/CourseModule.swf" optimize="true" sourcePath="src/modules/dashboard/CourseModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/create/CreateModule.swf" optimize="true" sourcePath="src/modules/create/CreateModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/account/AccountModule.swf" optimize="true" sourcePath="src/modules/account/AccountModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/error/ErrorModule.swf" optimize="true" sourcePath="src/modules/error/ErrorModule.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>

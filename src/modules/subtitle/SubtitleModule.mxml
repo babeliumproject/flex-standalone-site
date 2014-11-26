@@ -1,8 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.subtitle.view.*"
+		  width="100%"
+		  implements="modules.IModuleInterface" 
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)">
+	
+	<view:CreateSubtitleView id="subtitleEdit" width="100%"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLChangeEvent;
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import modules.subtitle.command.SubtitleController;
+			import modules.subtitle.event.SubtitleEvent;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.components.NavigatorContent;
+			
+			public var modulename:String = 'subtitle';
+			
+			[Bindable]
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			
+			[Bindable]
+			private var _model:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var _viewstackIndex:uint;
+			
+			private var _moduleController:SubtitleController;
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			
+			public static const INDEX:uint=0;
+			public static const VIEW:uint=1;
+			public static const EDIT:uint=2;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{	
+				//_moduleController = new SubtitleController();	
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				if(_urlmanager) _urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				_moduleController = null;
+				_model = null;
+				resetViews();
+			}
+			
+			public function resetViews():void{
+				
+			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
+				resetViews();
+				
+				switch (evt.action)
+				{
+					case 'edit':
+						actionEdit(evt.parameters);
+						break;
+					default:
+						actionView(evt.parameters);
+						break;
+				}
+			}
+			
+			public function actionEdit(parameters:Object = null):void{
+				if(!parameters){
+					_urlmanager.redirect('/error');
+				} else {
+					var id:String = parameters['id'];
+					var subtitles:Object = new Object();
+					subtitles.id = id;
+					
+					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
+				}
+			}
+			
+			public function actionView(parameters:Object = null):void{
+				if(!parameters){
+					_urlmanager.redirect('/error');
+				} else {
+					var id:String = parameters['id'];
+					var params:Object = new Object();
+					params.id = id;
+					_viewstackIndex=VIEW;
+					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
+				}
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				if(_urlmanager) _urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					URLManager.getInstance().redirect('/login');
+					return;
+				}
+				this.visible=true;
+			}	
+		]]>
+	</fx:Script>
+	
 </s:Module>

@@ -231,6 +231,7 @@
 
 				descriptorContainer.visible=false;
 				descriptorContainer.includeInLayout=false;
+				removeDescriptors();
 
 				//Reset the video form fields
 				exerciseTitle.removeEventListener(Event.CHANGE, validateForm);
@@ -382,7 +383,7 @@
 					exerciseData.difficulty=1;
 				}
 				
-				trace(ObjectUtil.toString(exerciseData));
+				trace("Set Information");
 				
 				exerciseTitle.text=exerciseData.title;
 				exerciseDescription.htmlText=exerciseData.description;
