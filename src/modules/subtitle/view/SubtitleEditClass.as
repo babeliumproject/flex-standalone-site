@@ -55,7 +55,7 @@ package modules.subtitle.view
 	import vo.SubtitleLineVO;
 
 
-	public class CreateSubtitleViewClass extends HGroup
+	public class SubtitleEditClass extends HGroup
 	{
 		/**
 		 * Singleton objects
@@ -126,7 +126,7 @@ package modules.subtitle.view
 		public var saveSubtitleButton:IconButton;
 		public var saveSubtitleSeparator:VRule;
 
-		public function CreateSubtitleViewClass()
+		public function SubtitleEditClass()
 		{
 			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}

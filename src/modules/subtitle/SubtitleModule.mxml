@@ -8,11 +8,27 @@
 		  preinitialize="preinitializeHandler(event)"
 		  creationComplete="creationCompleteHandler(event)">
 	
-	<view:CreateSubtitleView id="subtitleEdit" width="100%"/>
+	<mx:ViewStack id="moduleViewstack"
+				  selectedIndex="{ _viewstackIndex }"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="manage">
+			<view:SubtitleManageView id="subtitleManage" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="edit">
+			<view:SubtitleEditView id="subtitleEdit" width="100%"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+	
 	
 	<fx:Script>
 		<![CDATA[
 			import control.URLChangeEvent;
+			
+			import modules.IGroupInterface;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -39,9 +55,8 @@
 			private var _creationComplete:Boolean;
 			private var _initialUrl:Event;
 			
-			public static const INDEX:uint=0;
-			public static const VIEW:uint=1;
-			public static const EDIT:uint=2;
+			public static const MANAGE:uint=0;
+			public static const EDIT:uint=1;
 			
 			public function getModuleName():String{
 				return modulename;
@@ -71,7 +86,19 @@
 			}
 			
 			public function resetViews():void{
-				
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
 			}
 			
 			public function onURLChange(event:Event):void{
@@ -86,13 +113,20 @@
 				
 				switch (evt.action)
 				{
+					case 'add':
+						actionAdd();
+						break;
 					case 'edit':
 						actionEdit(evt.parameters);
 						break;
 					default:
-						actionView(evt.parameters);
+						actionManage(evt.parameters);
 						break;
 				}
+			}
+			
+			public function actionAdd(parameters:Object = null):void{
+				
 			}
 			
 			public function actionEdit(parameters:Object = null):void{
@@ -107,14 +141,14 @@
 				}
 			}
 			
-			public function actionView(parameters:Object = null):void{
+			public function actionManage(parameters:Object = null):void{
 				if(!parameters){
 					_urlmanager.redirect('/error');
 				} else {
 					var id:String = parameters['id'];
 					var params:Object = new Object();
 					params.id = id;
-					_viewstackIndex=VIEW;
+					_viewstackIndex=MANAGE;
 					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
 				}
 			}

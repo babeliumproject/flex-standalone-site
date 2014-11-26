@@ -51,8 +51,6 @@
 		</s:VGroup>
 	</s:HGroup>
 
-
-
 	<s:HGroup width="100%"
 			  horizontalAlign="right">
 		<s:Button id="subtitlemediaBtn"
@@ -122,7 +120,12 @@
 			{
 				if(!_data) return;
 				var mediaid:int=parseInt(_data.id);
-				URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
+				var status:int=_data.hasOwnProperty('subtitlestatus') ? parseInt(_data.subtitlestatus) : 0;
+				if(!status){
+					URLManager.getInstance().redirect('/subtitle/add/' + mediaid);
+				} else {
+					URLManager.getInstance().redirect('/subtitle/manage/' + mediaid);
+				}
 			}
 
 			protected function deleteMediaButtonClickHandler(event:MouseEvent):void
