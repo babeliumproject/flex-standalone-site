@@ -232,27 +232,6 @@ package model
 		public var uploadURL:String=uploadDomain + "upload.php";
 
 		[Bindable]
-		public var uploadFileReference:FileReference=null;
-		[Bindable]
-		public var uploadFileSelected:Boolean=false;
-
-		[Bindable]
-		public var uploadProgressUpdated:Boolean=false;
-		[Bindable]
-		public var uploadBytesLoaded:int;
-		[Bindable]
-		public var uploadBytesTotal:int;
-		[Bindable]
-		public var uploadFinished:Boolean=false;
-		[Bindable]
-		public var uploadFinishedData:Boolean=false;
-		[Bindable]
-		public var uploadErrors:String='';
-		[Bindable]
-		public var uploadFileName:String='';
-
-
-		[Bindable]
 		public var newExerciseData:ExerciseVO=null;
 		[Bindable]
 		public var newYoutubeData:ExerciseVO=null;

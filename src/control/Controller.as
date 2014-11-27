@@ -78,11 +78,6 @@ package control {
 			// User Registration management
 			addCommand(RegisterUserEvent.REGISTER_USER, RegisterUserCommand);
 			addCommand(RegisterUserEvent.ACTIVATE_USER, ActivateUserCommand);
-
-			//Upload management commands
-			addCommand(UploadEvent.UPLOAD_BROWSE, UploadBrowseCommand);
-			addCommand(UploadEvent.UPLOAD_START, UploadStartCommand);
-			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
 			
 			//VideoSlice management commands
 			addCommand(VideoSliceEvent.SEARCH_URL, SearchUrlCommand);

@@ -53,6 +53,34 @@ s|Panel{
 	roundedBottomCorners: true;
 }
 
+mx|ComboBox{
+	color: #333333;
+	textRollOverColor: #333333;
+	textSelectedColor: #333333;
+	skin:ClassReference("skins.BootstrapMXComboBox");
+	textInputStyleName: "mxComboTextInput";
+}
+
+.mxComboTextInput{
+	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
+	fontSize: 14;
+	fontWeight: normal;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+}
+
+mx|TextInput{
+	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
+	fontSize: 14;
+	fontWeight: normal;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+}
+
 mx|ToolTip{
 	backgroundColor: #000000;
 	color: #FFFFFF;

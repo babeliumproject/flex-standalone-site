@@ -9,7 +9,7 @@
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface" xmlns:common="view.common.*">
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
@@ -88,6 +88,18 @@
 								label="{'3. '+resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
 				<s:VGroup>
 					<s:Label text="Add controls for previewing and publishing"/>
+					<s:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
+								styleName="boldLabel"
+								required="true">
+						<common:LicenseComboBox id="licenseSelector"/>
+					</s:FormItem>
+					<s:FormItem label="{resourceManager.getString('myResources','AUTHORS_NAME_URL')}"
+								styleName="boldLabel"
+								toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
+								width="100%">
+						<s:TextInput width="100%"
+									 id="referenceUrl"/>
+					</s:FormItem>
 				</s:VGroup>
 			</s:NavigatorContent>
 		</mx:ViewStack>

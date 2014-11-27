@@ -35,17 +35,17 @@
 		<s:VGroup width="100%">
 			<s:HGroup width="100%">
 				<s:Label id="mstatdec"
-						 text="Media status"
+						 text="{ResourceManager.getInstance().getString('myResources','MEDIA_STATUS')}"
 						 styleName="frm-label"/>
 				<s:Label id="mediaStatus"
-						 text="Processing"/>
+						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
 			</s:HGroup>
 			<s:HGroup width="100%">
 				<s:Label id="sstatdec"
-						 text="Subtitles"
+						 text="{ResourceManager.getInstance().getString('myResources','SUBTITLES')}"
 						 styleName="frm-label"/>
 				<s:Label id="subtitleStatus"
-						 text="None"/>
+						 text="{ResourceManager.getInstance().getString('myResources','NONE')}"/>
 			</s:HGroup>
 
 		</s:VGroup>
@@ -165,37 +165,38 @@
 					{
 						case STATUS_UNDEF:
 						case STATUS_ENCODING:
-							mediaStatus.text='Processing';
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','PROCESSING');
 							break;
 						case STATUS_READY:
-							mediaStatus.text='Ready';
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','READY');
 
 							if (data.type == MEDIA_TYPE_VIDEO)
 							{
 								poster.source=data.posterurl;
-								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': 'Set as default'}, {'url': '2.jpg', 'label': 'Set as default'}, {'url': '3.jpg', 'label': 'Set as default'}]);
+								var btnmsg:String = ResourceManager.getInstance().getString('myResources','SET_AS_DEFAULT');
+								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': btnmsg}, {'url': '2.jpg', 'label': btnmsg}, {'url': '3.jpg', 'label': btnmsg}]);
 								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
 							}
-							subtitleStatus.text='None';
+							subtitleStatus.text=ResourceManager.getInstance().getString('myResources','NONE');
 
 							var substat:int=parseInt(data.subtitlestatus);
 							if (substat == 1)
 							{
-								subtitlemediaBtn.label='Edit subtitles';
-								subtitleStatus.text='Draft';
+								subtitlemediaBtn.label=ResourceManager.getInstance().getString('myResources','EDIT_SUBTITLES');
+								subtitleStatus.text=ResourceManager.getInstance().getString('myResources','DRAFT');
 							}
 							if (substat == 2)
 							{
-								subtitlemediaBtn.label='Edit subtitles';
-								subtitleStatus.text='Complete';
+								subtitlemediaBtn.label=ResourceManager.getInstance().getString('myResources','EDIT_SUBTITLES');
+								subtitleStatus.text=ResourceManager.getInstance().getString('myResources','COMPLETE');
 							}
 
 							break;
 						case STATUS_DUPLICATED:
-							mediaStatus.text='Duplicated';
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','DUPLICATED');
 							break;
 						default:
-							mediaStatus.text='No valid media found';
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','NO_VALID_MEDIA_FOUND');
 							break;
 					}
 				}

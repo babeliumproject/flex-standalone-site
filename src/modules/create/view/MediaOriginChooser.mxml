@@ -6,22 +6,18 @@
 		 xmlns:videoUpload="components.videoUpload.*"
 		 xmlns:view="modules.create.view.*"
 		 xmlns:common="view.common.*">
-
-	<fx:Binding source="{DataModel.getInstance().uploadFileSelected}"
-				destination="this.uploadStart"/>
-	<fx:Binding source="{DataModel.getInstance().uploadProgressUpdated}"
-				destination="this.uploadProgress"/>
-	<fx:Binding source="{DataModel.getInstance().uploadFinishedData}"
-				destination="this.uploadComplete"/>
 	
 	<fx:Script>
 		<![CDATA[
 			import events.UploadEvent;
 			
+			import mx.resources.ResourceManager;
+			
 			import model.DataModel;
 
+
 			
-			private var filereference:FileReference;
+			private var fileUpload:FileUpload;
 			private var filename:String;
 			private var filesize:uint;
 			
@@ -33,12 +29,10 @@
 			
 			public function resetComponent():void
 			{
-				filereference=null;
+				fileUpload=null;
 				filename=null;
 				filesize=0;
 				updateUploadProgress();
-				licenseSelector.selectedIndex=0;
-				referenceUrl.text='';
 				//uploadStatus.text='';
 				uploadFilename.text='';
 				chooseMediaTypeContainer.includeInLayout=true;
@@ -51,7 +45,17 @@
 			
 			protected function uploadFile_clickHandler(event:MouseEvent):void
 			{
-				new UploadEvent(UploadEvent.UPLOAD_BROWSE).dispatch();
+				fileUpload = new FileUpload(DataModel.getInstance().maxFileSize, DataModel.getInstance().uploadURL);
+				fileUpload.addEventListener(FileUploadEvent.FILE_SELECTED, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.IO_ERROR, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.SECURITY_ERROR, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_ERROR, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.HTTP_STATUS_ERROR, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_PROGRESS, uploadProgress, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_COMPLETE, uploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_COMPLETE_DATA, uploadStart, false, 0, true);
+				
+				fileUpload.browse();
 			}
 			
 			protected function recordFile_clickHandler(event:MouseEvent):void
@@ -80,45 +84,48 @@
 				uploadProgressBar.validateNow();
 			}
 			
-			protected function set uploadStart(start:Boolean):void
+			protected function uploadStart(event:FileUploadEvent):void
 			{
-				filereference=DataModel.getInstance().uploadFileReference;
-				filename=filereference.name;
-				filesize=filereference.size;
+				filename=fileUpload.fileName();
+				filesize=fileUpload.fileSize();
 				uploadFilename.text=filename;
 				updateUploadProgress();
-				DataModel.getInstance().uploadFileSelected=false;
 				chooseMediaTypeContainer.includeInLayout=false;
 				chooseMediaTypeContainer.visible=false;
 				uploadWidget.includeInLayout=true;
 				uploadWidget.visible=true;
 				cancelUpload.visible=true;
-				new UploadEvent(UploadEvent.UPLOAD_START).dispatch();
+				fileUpload.upload();
 			}
 			
-			protected function set uploadProgress(progress:Boolean):void
+			protected function uploadProgress(event:FileUploadEvent):void
 			{
-				var bytesLoaded:int=DataModel.getInstance().uploadBytesLoaded;
-				var bytesTotal:int=DataModel.getInstance().uploadBytesTotal;
+				var bytesLoaded:int=event.bytesLoaded;
+				var bytesTotal:int=event.bytesTotal;
 				var percentLoaded:Number=Math.round((bytesLoaded / bytesTotal) * 100);
 				updateUploadProgress(percentLoaded);
 			}
 			
-			protected function set uploadComplete(complete:Boolean):void
+			protected function uploadComplete(event:FileUploadEvent):void
 			{
-				if (DataModel.getInstance().uploadErrors == '')
-				{
+				//success, data, data.filename, data.filemimetype, error
+				var messageXML:XML=new XML(event.data);
+				if (messageXML.status == "success"){
+					var uploadFileName:String = messageXML.response.filename;
+				}
+				else{
+					var uploadErrors:String=messageXML.response.message;
+				}
+				
+				
 					//uploadStatus.text=resourceManager.getString('myResources', 'UPLOADSUCCESSFULUPLOAD');
-					uploadProgressBar.label=resourceManager.getString('myResources', 'PROCESSING').toUpperCase() + ' ...';
+					uploadProgressBar.label=ResourceManager.getInstance().getString('myResources', 'PROCESSING').toUpperCase() + ' ...';
 					//cancelUpload.label=resourceManager.getString('myResources', 'DONE');
 					cancelUpload.label='Save Changes';
 					cancelUpload.enabled=false;
-				}
-				else
-				{
+				
 					displayUploadErrors();
-				}
-				clearUpload();
+				
 			}
 			
 			protected function displayUploadErrors():void
@@ -229,19 +236,7 @@
 						  visible="false"
 						  height="40"/>
 			</s:HGroup>
-			<!--<s:Label id="uploadStatus"/>-->
-			<s:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
-						styleName="boldLabel"
-						required="true">
-				<common:LicenseComboBox id="licenseSelector"/>
-			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','AUTHORS_NAME_URL')}"
-						styleName="boldLabel"
-						toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
-						width="100%">
-				<s:TextInput width="100%"
-							 id="referenceUrl"/>
-			</s:FormItem>
+			
 		</s:VGroup>
 	</s:BorderContainer>
 	
