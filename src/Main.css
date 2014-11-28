@@ -71,6 +71,12 @@ mx|ComboBox{
 	paddingLeft: 12;
 }
 
+.progress-bar{
+	barSkin: ClassReference("skins.BootstrapProgressBarSkin");
+	trackSkin: ClassReference("skins.BootstrapProgressBarTrackSkin");
+	trackHeight: 20;
+}
+
 mx|TextInput{
 	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
 	fontSize: 14;

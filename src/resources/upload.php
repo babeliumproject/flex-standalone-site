@@ -68,16 +68,27 @@ if ($_REQUEST && isset($_REQUEST['action']) && $_REQUEST['action'] == 'upload'){
 					fault_result(500, "uploadfailed", "The file upload failed. Please try again");
 				}else {
 					@chmod($clean_path, 0644);
-					$media_data = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
-					$validMime = $vp->checkMimeType($file_path . "/" . $file_name);
-							
+					try{
+						$media_data = $vp->retrieveMediaInfo($file_path . "/" . $file_name);
+					} catch(Exception $e){
+						fault_result(400,"notmediafile","File is not a media file or is corrupted");
+					}
+					try{
+						$validMime = $vp->checkMimeType($file_path . "/" . $file_name);
+					} catch (Exception $e){
+						fault_result(400,"invalidmime","File mimetype is invalid");
+					}
+					
 					//Check if the video lasts longer than the allowed duration
 					if($media_data->duration > $file_max_duration){
-						fault_result(400, "videotoolong","Maximum video duration exceeded. Should be less than ".$file_max_duration." seconds");
+						fault_result(400, "videotoolong","Media file duration is too long. Should be less than ".$file_max_duration." seconds", $file_max_duration);
+						@unlink($clean_path);
 					} else if (!$validMime || !$media_data->hasVideo){
-						fault_result(400, "notvideomedia","Provided file is not a video file");	
+						fault_result(400, "novideotrack","Media file has no video track.");
+						@unlink($clean_path);
 					} else if ($file_size > $file_max_size){
-						fault_result(400, "videotoobig", "Maximum video size exceeded. Should be less than ".($file_max_size/1048576)."MB");
+						fault_result(400, "videotoobig", "Media file is too big. Should be less than ".($file_max_size/1048576)."MB", $file_max_size);
+						@unlink($clean_path);
 					} else {
 						success_result($escaped_file_name);
 					}
@@ -138,12 +149,13 @@ function notify_fault_result($message){
  * @param String $description
  * 			A description of the problem
  */
-function fault_result($header, $code, $description){
+function fault_result($header, $code, $description, $data=null){
 	$status = 'failure';
 	$httpstatus = '<httpstatus>'. str_replace(array("\r","\n"),"",$header) .'</httpstatus>';
 	$message = '<message>'. str_replace(array("\r","\n"),"",$description) .'</message>';
 	$errorcode = '<code>'. str_replace(array("\r","\n"),"",$code) .'</code>';
-	$response = $message.$errorcode;
+	$errordata = $data ? '<data>'.str_replace(array("\r","\n"),"",$data) .'</data>' : '';
+	$response = $message.$errorcode.$errordata;
 	build_result_xml($httpstatus,$status,$response);
 	log_result($code,$description);
 }
