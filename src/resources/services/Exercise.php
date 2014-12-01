@@ -385,21 +385,7 @@ class Exercise {
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
-	/**
-	 * Retrieves the names of the directories in which different kinds of videos are stored
-	 */
-	private function _getResourceDirectories(){
-		$sql = "SELECT prefValue 
-				FROM preferences
-				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
-				ORDER BY prefName";
-		$result = $this->conn->_multipleSelect($sql);
-		if($result){
-			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
-			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
-			$this->responseFolder = $result[2] ? $result[2]->prefValue : '';
-		}
-	}
+	
 
 	/**
 	 * Gets a list of all the available exercises sorted by date

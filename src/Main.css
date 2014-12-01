@@ -336,71 +336,7 @@ s|TextInput{
 	borderColor: #FFFFFF;
 }
 
-.homeLinkButton{
-	rollOverColor: #258daa;
-	selectionColor: #20778f;
-	color: #258daa;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_home.png');
-}
 
-.practiceLinkButton{
-	rollOverColor: #38bcbe;
-	selectionColor: #2d9a9b;
-	color: #38bcbe;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_pract.png');
-}
-
-.evaluateLinkButton{
-	rollOverColor: #7b980a;
-	selectionColor: #607707;
-	color: #7b980a;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_eval.png');
-}
-
-.subtitleLinkButton{
-	rollOverColor: #962b07;
-	selectionColor: #752105;
-	color: #962b07;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_subt.png');
-}
-
-.configureLinkButton{
-	rollOverColor: #de5c04;
-	selectionColor: #bf4f04;
-	color: #de5c04;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_config.png');
-}
-
-.aboutLinkButton{
-	rollOverColor: #e6ce56;
-	selectionColor: #c0ac47;
-	color: #e6ce56;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_about.png');
-}
 
 .searchButton{
 	fontWeight: bold;
@@ -809,4 +745,11 @@ s|TextInput{
 .frm-label{
 	fontWeight: bold;
 	color: #515151;
+}
+
+.alert-danger{
+	backgroundColor: #F2DEDE;
+	cornerRadius: 4;
+	color: #A94442;
+	borderColor: #DCA7A7;	
 }

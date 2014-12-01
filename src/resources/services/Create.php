@@ -55,6 +55,7 @@ class Create {
 		try {
 			$this->cfg = new Config();
 			$verifySession = new SessionValidation();
+			$this->mediaHelper = new VideoProcessor();
 			$this->conn = new Datasource($this->cfg->host, $this->cfg->db_name, $this->cfg->db_username, $this->cfg->db_password);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -118,13 +119,13 @@ class Create {
 	
 			if(count($selectedVideos) > 0){
 				foreach($selectedVideos as $selectedVideo){
-					$whereClause .= " name = '%s' OR";
-					array_push($names, $selectedVideo->name);
+					$whereClause .= " exercisecode = '%s' OR";
+					array_push($names, $selectedVideo->exercisecode);
 				}
 				unset($selectedVideo);
 				$whereClause = substr($whereClause,0,-2);
 	
-				$sql = "UPDATE exercise SET status='Unavailable' WHERE ( fk_user_id=%d AND" . $whereClause ." )";
+				$sql = "DELETE FROM exercise WHERE (fk_user_id=%d AND " . $whereClause ." )";
 	
 				$merge = array_merge((array)$sql, (array)$_SESSION['uid'], $names);
 				$updateData = $this->conn->_update($merge);
@@ -136,6 +137,7 @@ class Create {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
 	
 	public function getExerciseData($exercisecode = null){
 		try{
@@ -168,7 +170,7 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT id, filename, mediacode, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
+			$sql = "SELECT id, instanceid as exercisecode, filename, mediacode, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
 					FROM media 
 					WHERE component='%s' AND status IN (%s) AND level IN (%s) AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
 			$results = $this->conn->_multipleSelect($sql, $component, $statuses, $levels, $exercisecode);
@@ -180,8 +182,8 @@ class Create {
 							$posterurl = '/resources/images/posters/'.$r->mediacode.'/default.jpg';
 							$r->posterurl = $posterurl;
 							$thumburls=array();
-							for($i=0;$i<3;$i++){
-								$thumburls[] = '/resources/images/thumbs/'.$r->mediacode.'/'.$i.'.jpg';
+							for($i=1;$i<4;$i++){
+								$thumburls[] = '/resources/images/thumbs/'.$r->mediacode.'/0'.$i.'.jpg';
 							}
 							$r->thumburls = $thumburls;
 						}
@@ -222,12 +224,9 @@ class Create {
 			$posterfolder = $this->cfg->posterPath .'/'. $mediacode;
 			$thumbfolder = $this->cfg->imagePath .'/'. $mediacode;
 			
-			if( is_link($thumbfolder.'/default.jpg') ){
-				unlink($thumbfolder.'/default.jpg');
-			}
-			if( is_link($posterfolder.'/default.jpg') ){
-				unlink($posterfolder.'/default.jpg');
-			}
+			@unlink($thumbfolder.'/default.jpg');
+			@unlink($posterfolder.'/default.jpg');
+			
 			if( !symlink($thumbfolder.'/0'.$thumbidx.'.jpg', $thumbfolder.'/default.jpg')  ){
 				throw new Exception ("Couldn't create link for the thumbnail $thumbfolder/0$thumbidx.jpg, $thumbfolder/default.jpg\n");
 			}
@@ -248,9 +247,49 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 			
-			if(!$data) return;
+			if(!$data || !isset($data->exercisecode) || !isset($data->filename) || !isset($data->level)) return;
+			
+			//Check if media has already been added for the given 'instanceid', 'component' and 'level'
+			$sql = "SELECT id FROM media WHERE instanceid=%d AND component='%s' AND level=%d";
+			$mediaexists = $this->conn->_multipleSelect($sql, $data->exercisecode, 'exercise', $data->level);
+			
+			if($mediaexists) return;
+			
+			$this->_getResourceDirectories();
 			
 			$optime = time();
+			$mediacode = $this->uuidv4();
+			
+			$webcammedia = $this->cfg->red5Path . '/' . $this->exerciseFolder . '/' . $data->filename;
+			$filemedia = $this->cfg->filePath . '/' . $data->filename;
+			
+			$status = self::STATUS_UNDEF; //raw video
+			
+			if(is_file($webcammedia)){
+				$medianfo = $this->mediaHelper->retrieveMediaInfo($webcammedia);
+				$filesize = filesize($webcammedia);
+				$this->mediaHelper->takeFolderedRandomSnapshots($webcammedia, $this->cfg->imagePath, $this->cfg->posterPath);
+				$status = self::STATUS_READY;
+			} else if(is_file($filemedia)){
+				$medianfo = $this->mediaHelper->retrieveMediaInfo($filemedia);
+				$filesize = filesize($filemedia);
+			} else {
+				return;
+			}
+			$contenthash = $medianfo->hash;
+			$duration = $medianfo->duration;
+			$type = $medianfo->hasVideo ? 'video' : 'audio';
+			$metadata = $this->custom_json_encode($medianfo);
+			
+			$insert = "INSERT INTO media (instanceid, component, mediacode, type, filename, contenthash, status, timecreated, duration, filesize, metadata, level, defaultthumbnail, fk_user_id) 
+					   VALUES (%d, '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, %d, %d)";
+			
+			$mediaid = $this->conn->_insert($insert, $data->exercisecode, 'exercise', $mediacode, $type, $data->filename, $contenthash, $status, $optime, $duration, $filesize, $metadata, $data->level, 1, $_SESSION['uid']);
+			
+			//TODO add raw media to asynchronous task processing queue
+			//videoworker->add_task($mediaid);
+			
+			return $this->getExerciseMedia($data->exercisecode);
 			
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
@@ -351,6 +390,37 @@ class Create {
 			//$this->conn->_failedTransaction();
 			throw new Exception ($e->getMessage());
 		}
+	}
+	
+	/**
+	 * Retrieves the names of the directories in which different kinds of videos are stored
+	 */
+	private function _getResourceDirectories(){
+		$sql = "SELECT prefValue
+		FROM preferences
+		WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder')
+		ORDER BY prefName";
+		$result = $this->conn->_multipleSelect($sql);
+		if($result){
+			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
+			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
+			$this->responseFolder = $result[2] ? $result[2]->prefValue : '';
+		}
+	}
+	
+	/**
+	 * Encode the given array using Json
+	 *
+	 * @param Array $data
+	 * @param bool $prettyprint
+	 * @return mixed $data
+	 */
+	private function custom_json_encode($data, $prettyprint=0){
+		$data = Zend_Json::encode($data,false);
+		$data = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', create_function('$match', 'return mb_convert_encoding(pack("H*", $match[1]), "UTF-8", "UCS-2BE");'), $data);
+		if($prettyprint)
+			$data = Zend_Json::prettyPrint($data);
+		return $data;
 	}
 	
 	/**

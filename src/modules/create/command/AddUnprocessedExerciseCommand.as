@@ -1,4 +1,4 @@
-package commands.videoUpload
+package modules.create.command
 {
 	import business.ExerciseDelegate;
 	

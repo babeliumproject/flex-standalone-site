@@ -27,9 +27,11 @@
 		</s:BorderContainer>
 		<s:ButtonBar id="thumbSelectBtnbar"
 					 requireSelection="true"
+					 skinClass="skins.ThumbnailButtonBar"
+					 buttonMode="true"
 					 change="setDefaultThumbnail(event)">
 			<s:layout>
-				<s:VerticalLayout gap="-1"/>
+				<s:VerticalLayout gap="2"/>
 			</s:layout>
 		</s:ButtonBar>
 		<s:VGroup width="100%">
@@ -174,7 +176,7 @@
 							{
 								poster.source=data.posterurl;
 								var btnmsg:String = ResourceManager.getInstance().getString('myResources','SET_AS_DEFAULT');
-								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'url': '1.jpg', 'label': btnmsg}, {'url': '2.jpg', 'label': btnmsg}, {'url': '3.jpg', 'label': btnmsg}]);
+								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'icon': data.thumburls[0], 'label': btnmsg}, {'icon': data.thumburls[1], 'label': btnmsg}, {'icon': data.thumburls[2], 'label': btnmsg}]);
 								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
 							}
 							subtitleStatus.text=ResourceManager.getInstance().getString('myResources','NONE');

@@ -10,23 +10,20 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UploadEvent;
-
+			
 			import model.DataModel;
-
+			
+			import modules.create.event.CreateEvent;
+			
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 
-
+			public var exercisecode:String;
+			public var medialevel:int;
 
 			private var fileUpload:FileUpload;
 			private var filename:String;
 			private var filesize:uint;
-
-
-			public function get mediaName():String
-			{
-				return filename;
-			}
 
 			public function resetComponent():void
 			{
@@ -34,7 +31,6 @@
 				filename=null;
 				filesize=0;
 				updateUploadProgress();
-				//uploadStatus.text='';
 				uploadFilename.text='';
 				methodSelection.includeInLayout=true;
 				methodSelection.visible=true;
@@ -113,7 +109,11 @@
 				if (payload.status == "success")
 				{
 					var internalFilename:String=payload.response.filename;
-
+					var params:Object=new Object();
+					params.exercisecode=exercisecode;
+					params.filename=internalFilename;
+					params.level=medialevel;
+					new CreateEvent(CreateEvent.SAVE_EXERCISE_MEDIA, params).dispatch();
 				}
 				else
 				{
@@ -270,28 +270,24 @@
 				  paddingLeft="16"
 				  paddingRight="16"
 				  paddingTop="16"
-				  horizontalAlign="left">
+				  horizontalAlign="center">
 			<s:BorderContainer width="100%"
-							   backgroundColor="0xf2dede"
-							   cornerRadius="4"
-							   color="0xa94442"
-							   borderColor="0xDCA7A7">
+							   styleName="alert-danger">
 				<s:layout>
 					<s:VerticalLayout paddingBottom="16"
 									  paddingLeft="16"
 									  paddingRight="16"
 									  paddingTop="16"/>
 				</s:layout>
-				<s:Label text="File Upload Error"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','FILE_UPLOAD_ERROR')}"
 						 fontSize="18"/>
 				<s:Label id="errorMessage"
 						 width="100%"/>
+				<s:Button click="cancelUploadFileClickHandler(event)"
+						  label="{resourceManager.getString('myResources','OK')}"
+						  styleName="btn-danger"
+						  buttonMode="true"/>
 			</s:BorderContainer>
-
-			<s:Button click="cancelUploadFileClickHandler(event)"
-					  label="{resourceManager.getString('myResources','CANCEL')}"
-					  styleName="btn-default"
-					  buttonMode="true"/>
 		</s:VGroup>
 
 	</s:BorderContainer>

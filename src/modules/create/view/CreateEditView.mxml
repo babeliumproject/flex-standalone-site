@@ -4,12 +4,13 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*"
 		  xmlns:view="modules.create.view.*"
+		  xmlns:common="view.common.*"
 		  width="100%"
 		  paddingTop="16"
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  implements="modules.IGroupInterface" xmlns:common="view.common.*">
+		  implements="modules.IGroupInterface">
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
