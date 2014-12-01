@@ -9,7 +9,6 @@ package control {
 	import commands.search.*;
 	import commands.userManagement.*;
 	import commands.videoSlice.*;
-	import commands.videoUpload.*;
 	
 	import events.*;
 	

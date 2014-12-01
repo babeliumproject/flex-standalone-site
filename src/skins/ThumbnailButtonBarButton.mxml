@@ -59,7 +59,7 @@
 		 */
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
-			var url:String=getStyle('url');
+			var url:String=getStyle('icon');
 			if(url){
 				iconImage.includeInLayout=true;
 				iconurl=url;
@@ -72,7 +72,7 @@
 				cornerRadius=cr;
 				
 				fill.radiusX=cornerRadius;
-			
+				highlight.radiusX=cornerRadius;
 				border.radiusX=cornerRadius;
 			}
 
@@ -128,12 +128,12 @@
 			radiusX="4">
 		<s:stroke>
 			<s:SolidColorStroke weight="1"
-								color="0xDDDDDD"
-								color.over="0x337AB7"
-								color.down="0x337AB7"
-								color.upAndSelected="0x337AB7"
-								color.downAndSelected="0x337AB7"
-								color.overAndSelected="0x337AB7"/>
+								color="0xCCCCCC"
+								color.over="0xADADAD"
+								color.down="0xADADAD"
+								color.upAndSelected="0xADADAD"
+								color.downAndSelected="0xADADAD"
+								color.overAndSelected="0xADADAD"/>
 		</s:stroke>
 	</s:Rect>
 	
@@ -145,6 +145,18 @@
 				   right="5"
 				   bottom="5"
 				   source="{iconurl}"/>
+	
+	<s:Rect id="highlight"
+			left="1"
+			right="1"
+			top="1"
+			bottom="1"
+			radiusX="4"
+			includeIn="over,down,upAndSelected,downAndSelected,overAndSelected">
+		<s:fill>
+			<s:SolidColor color="0xE6E6E6" alpha="0.50"/>
+		</s:fill>
+	</s:Rect>
 
 	<!-- layer 8: text -->
 	<!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
@@ -162,9 +174,9 @@
 			 alpha.over="1"
 			 alpha.down="1"
 			 alpha.upAndSelected="0"
-			 alpha.downAndSelected="1"
-			 alpha.overAndSelected="1"
-			 color="0xDDDDDD"
+			 alpha.downAndSelected="0"
+			 alpha.overAndSelected="0"
+			 color="0x333333"
 			 fontWeight="bold">
 	</s:Label>
 

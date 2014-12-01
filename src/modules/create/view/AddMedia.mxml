@@ -64,23 +64,29 @@
 
 			private var primaryupload:MediaOriginChooser;
 			private var modelupload:MediaOriginChooser;
-			
+
 			private var exercisecode:String;
-			private var psubstatus:int;
-			private var msubstatus:int;
-			private var pmediastatus:int;
-			private var mmediastatus:int;
+			
+			private var pstatus:Boolean;
+			private var mstatus:Boolean;
 
 			public function resetComponent():void
 			{
-
+				this.removeAllElements();
+				exercisecode=null;
+				modelstatus=null;
+				primarystatus=null;
+				chooseModelGroup=null;
 			}
 
 			public function includeModelHandler(event:ItemClickEvent):void
 			{
 				if (event.currentTarget.selectedValue == "no")
 				{
-					if(this.containsElement(modelupload)) this.removeElement(modelupload);
+					if (this.containsElement(modelupload)){
+						modelupload.resetComponent();
+						this.removeElement(modelupload);
+					}
 					modelupload=null;
 				}
 				else if (event.currentTarget.selectedValue == "yes")
@@ -95,15 +101,14 @@
 			protected function set mediaRetrieved(value:Boolean):void
 			{
 				var media:ArrayCollection=DataModel.getInstance().exerciseMedia;
-				this.removeAllElements();
-				exercisecode=null;
-				modelstatus = null;
-				primarystatus = null;
-				
 
-				firstMediaLbl=new Label();
+				trace(ObjectUtil.toString(media));
+				
+				if (!firstMediaLbl)
+					firstMediaLbl=new Label();
 				firstMediaLbl.styleName='sectionTitleLabel';
-				secondMediaLbl=new Label();
+				if (!secondMediaLbl)
+					secondMediaLbl=new Label();
 				secondMediaLbl.styleName='sectionTitleLabel';
 
 				if (media)
@@ -111,67 +116,95 @@
 					var itemlevel:int;
 					for each (var item:Object in media)
 					{
-						if(!exercisecode)
-							exercisecode = item.exercisecode;
+						if (!exercisecode)
+							exercisecode=item.exercisecode;
 						if (item.hasOwnProperty('level'))
 						{
 							itemlevel=parseInt(item.level);
 							if (itemlevel == LEVEL_PRIMARY)
 							{
-								trace("item primary");
-								primarystatus=new MediaItemStatus();
+								if (!primarystatus)
+									primarystatus=new MediaItemStatus();
 								primarystatus.setData(item);
+								pstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
 							}
 							else if (itemlevel == LEVEL_MODEL)
 							{
-								trace("item model");
-								modelstatus=new MediaItemStatus();
+								if (!modelstatus)
+									modelstatus=new MediaItemStatus();
 								modelstatus.setData(item);
+								mstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
 							}
 						}
 					}
 				}
+				else
+				{
+					resetComponent();
+				}
+
 				if (modelstatus && primarystatus)
 				{
-					trace("primary & model");
-					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources','PRIMARY_MEDIA');
-					this.addElement(firstMediaLbl);
-					this.addElement(primarystatus);
-					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources','MODEL_MEDIA');
-					this.addElement(modelstatus);
+					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'PRIMARY_MEDIA');
+					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA');
+					if (!this.containsElement(firstMediaLbl))
+						this.addElement(firstMediaLbl);
+					if (!this.containsElement(primarystatus))
+						this.addElement(primarystatus);
+					if (!this.containsElement(secondMediaLbl))
+						this.addElement(secondMediaLbl);
+					if (!this.containsElement(modelstatus))
+						this.addElement(modelstatus);
+					
+					if(this.containsElement(primaryupload)){
+						this.removeElement(primaryupload);
+					}
+					if(this.containsElement(modelupload)){
+						this.removeElement(modelupload);
+					}
+					
 					return;
 				}
 				if (primarystatus && !modelstatus)
 				{
-					trace("primary");
-					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources','EXERCISE_MEDIA');
-					this.addElement(firstMediaLbl);
-					this.addElement(primarystatus);
-					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources','MODEL_MEDIA');;
-					this.addElement(secondMediaLbl);
+					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
+					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA');
+
+					if (!this.containsElement(firstMediaLbl))
+						this.addElement(firstMediaLbl);
+					if (!this.containsElement(primarystatus))
+						this.addElement(primarystatus);
+					if (!this.containsElement(secondMediaLbl))
+						this.addElement(secondMediaLbl);
 					
-					chooseModelGroup=new HGroup();
-					var lbl:Label=new Label();
-					lbl.text=ResourceManager.getInstance().getString('myResources','DO_YOU_WANT_TO_ADD_A_MODEL_MEDIA');
-					var radiono:RadioButton=new RadioButton();
-					radiono.initialize();
-					radiono.label=ResourceManager.getInstance().getString('myResources', 'NO');
-					radiono.group=includeModel;
-					radiono.value='no';
-					var radioyes:RadioButton=new RadioButton();
-					radioyes.initialize();
-					radioyes.label=ResourceManager.getInstance().getString('myResources', 'YES');
-					radioyes.value='yes';
-					radioyes.group=includeModel;
-					chooseModelGroup.addElement(lbl);
-					chooseModelGroup.addElement(radiono);
-					chooseModelGroup.addElement(radioyes);
-					this.addElement(chooseModelGroup);
-					includeModel.selectedValue='no';
+					if(this.containsElement(primaryupload)){
+						this.removeElement(primaryupload);
+					}
+
+					if (!this.containsElement(chooseModelGroup))
+					{
+						chooseModelGroup=new HGroup();
+						var lbl:Label=new Label();
+						lbl.text=ResourceManager.getInstance().getString('myResources', 'DO_YOU_WANT_TO_ADD_A_MODEL_MEDIA');
+						var radiono:RadioButton=new RadioButton();
+						radiono.initialize();
+						radiono.label=ResourceManager.getInstance().getString('myResources', 'NO');
+						radiono.group=includeModel;
+						radiono.value='no';
+						var radioyes:RadioButton=new RadioButton();
+						radioyes.initialize();
+						radioyes.label=ResourceManager.getInstance().getString('myResources', 'YES');
+						radioyes.value='yes';
+						radioyes.group=includeModel;
+						chooseModelGroup.addElement(lbl);
+						chooseModelGroup.addElement(radiono);
+						chooseModelGroup.addElement(radioyes);
+						includeModel.selectedValue='no';
+						this.addElement(chooseModelGroup);
+					}
 					return;
 				}
-				trace("none");
-				firstMediaLbl.text=ResourceManager.getInstance().getString('myResources','EXERCISE_MEDIA');
+				firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
 				this.addElement(firstMediaLbl);
 				primaryupload=new MediaOriginChooser();
 				primaryupload.exercisecode=exercisecode;

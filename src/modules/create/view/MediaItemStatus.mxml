@@ -18,12 +18,12 @@
 
 	<s:HGroup width="100%">
 		<s:BorderContainer backgroundColor="0x000000"
-						   width="480"
-						   height="360">
+						   width="426"
+						   height="240">
 			<s:layout>
 				<s:BasicLayout/>
 			</s:layout>
-			<s:BitmapImage id="poster"/>
+			<s:BitmapImage id="poster" width="426" height="240"/>
 		</s:BorderContainer>
 		<s:ButtonBar id="thumbSelectBtnbar"
 					 requireSelection="true"
@@ -39,6 +39,13 @@
 				<s:Label id="mstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','MEDIA_STATUS')}"
 						 styleName="frm-label"/>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke weight="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderWeight')}"
+											alpha="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderAlpha')}"
+											color="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderColor')}"/>
+					</s:stroke>
+				</s:Line>
 				<s:Label id="mediaStatus"
 						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
 			</s:HGroup>
@@ -114,7 +121,6 @@
 				var params:Object=new Object();
 				params.defaultthumbnail=num;
 				params.mediacode=mediacode;
-				trace(ObjectUtil.toString(params));
 				new CreateEvent(CreateEvent.SET_DEFAULT_THUMBNAIL, params).dispatch();
 			}
 
@@ -161,8 +167,8 @@
 			{
 				if (data && data.hasOwnProperty('status'))
 				{
+					trace("MediaItemStatus: setDataInternal");
 					var status:int=parseInt(data.status);
-					trace("Data: " + ObjectUtil.toString(data));
 					switch (status)
 					{
 						case STATUS_UNDEF:

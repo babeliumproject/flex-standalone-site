@@ -152,7 +152,7 @@ class VideoProcessor{
                 $this->mediaContainer = new stdClass();
 
                 //Get file content hash to look for duplicates
-                $this->mediaContainer->hash = md5_file($cleanPath);
+                $this->mediaContainer->hash = sha1_file($cleanPath);
 
                 //Retrieve media file duration (in seconds)
                 $this->mediaContainer->duration = $json_output->format->duration;
@@ -235,8 +235,8 @@ class VideoProcessor{
             $this->mediaContainer->audioCodec = $streamdata->codec_name;
             $this->mediaContainer->audioRate = $streamdata->sample_rate;
             $this->mediaContainer->audioChannels = $streamdata->channels;
-            $this->mediaContainer->audioBits = isset($streamdata->sample_fmt) ? $streamdata->sample_fmt : NULL;
-            $this->mediaContainer->audioBitrate = $streamdata->bit_rate;
+            $this->mediaContainer->audioBits = isset($streamdata->sample_fmt) ? $streamdata->sample_fmt : 0;
+            $this->mediaContainer->audioBitrate = isset($streamdata->bit_rate) ? $streamdata->bit_rate : 0;
         }
     }
 
@@ -244,10 +244,10 @@ class VideoProcessor{
         if($streamdata->codec_type == 'video'){
             $this->mediaContainer->videoCodec = $streamdata->codec_name;
             $this->mediaContainer->videoColorspace = $streamdata->pix_fmt;
-            $this->mediaContainer->videoTbr = isset($streamdata->r_frame_rate) ? $streamdata->r_frame_rate : NULL;
+            $this->mediaContainer->videoTbr = isset($streamdata->r_frame_rate) ? $streamdata->r_frame_rate : 0;
             $this->mediaContainer->videoTbn = $streamdata->time_base;
             $this->mediaContainer->videoTbc = $streamdata->codec_time_base;
-            $this->mediaContainer->videoBitrate= $streamdata->bit_rate; //expressed in bits per second
+            $this->mediaContainer->videoBitrate= isset($streamdata->bit_rate) ? $streamdata->bit_rate : 0; //expressed in bits per second
 
             //flv1 video streams don't provide duration and frame number information
             if(isset($streamdata->nb_frames) && isset($streamdata->duration))

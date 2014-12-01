@@ -170,16 +170,18 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT id, instanceid as exercisecode, filename, mediacode, status, defaultthumbnail, type, timecreated, timemodified, license, authorref, duration, level
-					FROM media 
-					WHERE component='%s' AND status IN (%s) AND level IN (%s) AND instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
-			$results = $this->conn->_multipleSelect($sql, $component, $statuses, $levels, $exercisecode);
+			$sql = "SELECT m.id, m.instanceid as exerciseid, m.mediacode, m.defaultthumbnail, m.type, m.timecreated, m.timemodified, m.license, m.authorref, m.duration, m.level,
+						   mr.filename, mr.status, mr.dimension
+					FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id 
+					WHERE m.component='%s' AND m.level IN (%s) AND m.instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
+			$results = $this->conn->_multipleSelect($sql, $component, $levels, $exercisecode);
 			if($results){
 				foreach($results as $r){
+					$r->
 					if($r->status==self::STATUS_READY){
 						$r->subtitlestatus=$this->getSubtitleStatus($r->id);
 						if($r->type==self::TYPE_VIDEO){
-							$posterurl = '/resources/images/posters/'.$r->mediacode.'/default.jpg';
+							$posterurl = '/resources/images/posters/'.$r->mediacode.'/0'.$r->defaultthumbnail.'.jpg';
 							$r->posterurl = $posterurl;
 							$thumburls=array();
 							for($i=1;$i<4;$i++){
@@ -190,6 +192,7 @@ class Create {
 					}
 				}
 			}
+			//Filter by status
 			return $results;
 		} catch (Exception $e){
 			throw new Exception ($e->getMessage());
@@ -237,7 +240,18 @@ class Create {
 			$sql = "UPDATE media SET defaultthumbnail=%d WHERE mediacode='%s' AND type='video' AND fk_user_id=%d";
 			
 			$rowcount = $this->conn->_update($sql, $thumbidx, $mediacode, $_SESSION['uid']);
-			return $rowcount;
+		
+			$sql = "SELECT instanceid FROM media WHERE mediacode='%s' AND component='exercise'";
+			$result = $this->conn->_singleSelect($sql, $mediacode);
+			
+			if(!$result || !isset($result->instanceid)){
+				throw new Exception("No exercise matches the given mediacode");
+			}else{
+				require_once 'Exercise.php';
+				$exercise = new Exercise();
+				$exercisedata = $exercise->getExerciseById($result->instanceid);
+				return $this->getExerciseMedia($exercisedata->exercisecode);
+			}
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
@@ -257,6 +271,11 @@ class Create {
 			
 			$this->_getResourceDirectories();
 			
+			require_once 'Exercise.php';
+			$exercise = new Exercise();
+			$exercisedata = $exercise->getExerciseByCode($result->exercisecode);
+			$instanceid = $exercisedata->instanceid;
+			
 			$optime = time();
 			$mediacode = $this->uuidv4();
 			
@@ -267,11 +286,13 @@ class Create {
 			
 			if(is_file($webcammedia)){
 				$medianfo = $this->mediaHelper->retrieveMediaInfo($webcammedia);
+				$dimension = $medianfo->videoHeight;
 				$filesize = filesize($webcammedia);
 				$this->mediaHelper->takeFolderedRandomSnapshots($webcammedia, $this->cfg->imagePath, $this->cfg->posterPath);
 				$status = self::STATUS_READY;
 			} else if(is_file($filemedia)){
 				$medianfo = $this->mediaHelper->retrieveMediaInfo($filemedia);
+				$dimension = $medianfo->videoHeight;
 				$filesize = filesize($filemedia);
 			} else {
 				return;
@@ -281,10 +302,15 @@ class Create {
 			$type = $medianfo->hasVideo ? 'video' : 'audio';
 			$metadata = $this->custom_json_encode($medianfo);
 			
-			$insert = "INSERT INTO media (instanceid, component, mediacode, type, filename, contenthash, status, timecreated, duration, filesize, metadata, level, defaultthumbnail, fk_user_id) 
-					   VALUES (%d, '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, %d, %d)";
+			$insert = "INSERT INTO media (instanceid, component, mediacode, type, timecreated, duration, level, defaultthumbnail, fk_user_id) 
+					   VALUES (%d, '%s', '%s', '%s', %d, %d, %d, %d, %d)";
 			
-			$mediaid = $this->conn->_insert($insert, $data->exercisecode, 'exercise', $mediacode, $type, $data->filename, $contenthash, $status, $optime, $duration, $filesize, $metadata, $data->level, 1, $_SESSION['uid']);
+			$mediaid = $this->conn->_insert($insert, $instanceid, 'exercise', $mediacode, $type, $optime, $duration, $data->level, 1, $_SESSION['uid']);
+			
+			$insertr = "INSERT INTO media_rendition (fk_media_id, filename, contenthash, status, timecreated, filesize, metadata, dimension) 
+						VALUES (%d, '%s', '%s', %d, %d, %d, '%s', %d)";
+			
+			$mediarendition = $this->conn->_insert($insertr, $mediaid, $data->filename, $contenthash, $status, $optime, $filesize, $metadata, $dimension);
 			
 			//TODO add raw media to asynchronous task processing queue
 			//videoworker->add_task($mediaid);
@@ -298,8 +324,8 @@ class Create {
 	
 	public function getMediaStatus($mediaid){
 		$component = 'exercise';
-		$sql = "SELECT status FROM media WHERE component='%s' AND id=%d";
-		$result = $this->conn->_singleSelect($sql, $component, $mediaid);
+		$sql = "SELECT max(`status`) as `status` FROM media_rendition WHERE id=%d";
+		$result = $this->conn->_singleSelect($sql, $mediaid);
 		return $result ? $result->status : -1;
 	}
 	
