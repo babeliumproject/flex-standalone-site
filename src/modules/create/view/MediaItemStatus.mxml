@@ -174,10 +174,13 @@
 						case STATUS_UNDEF:
 						case STATUS_ENCODING:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','PROCESSING');
+							subtitlemediaBtn.visible=false;
+							subtitlemediaBtn.includeInLayout=false;
 							break;
 						case STATUS_READY:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','READY');
-
+							subtitlemediaBtn.visible=true;
+							subtitlemediaBtn.includeInLayout=true;
 							if (data.type == MEDIA_TYPE_VIDEO)
 							{
 								poster.source=data.posterurl;

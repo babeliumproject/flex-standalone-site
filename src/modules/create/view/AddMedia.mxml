@@ -65,7 +65,7 @@
 			private var primaryupload:MediaOriginChooser;
 			private var modelupload:MediaOriginChooser;
 
-			private var exercisecode:String;
+			private var exerciseid:int;
 			
 			private var pstatus:Boolean;
 			private var mstatus:Boolean;
@@ -73,7 +73,7 @@
 			public function resetComponent():void
 			{
 				this.removeAllElements();
-				exercisecode=null;
+				exerciseid=0;
 				modelstatus=null;
 				primarystatus=null;
 				chooseModelGroup=null;
@@ -92,7 +92,7 @@
 				else if (event.currentTarget.selectedValue == "yes")
 				{
 					modelupload=new MediaOriginChooser();
-					modelupload.exercisecode=exercisecode;
+					modelupload.exerciseid=exerciseid;
 					modelupload.medialevel=LEVEL_MODEL;
 					this.addElement(modelupload);
 				}
@@ -116,8 +116,8 @@
 					var itemlevel:int;
 					for each (var item:Object in media)
 					{
-						if (!exercisecode)
-							exercisecode=item.exercisecode;
+						if (!exerciseid)
+							exerciseid=parseInt(item.exerciseid);
 						if (item.hasOwnProperty('level'))
 						{
 							itemlevel=parseInt(item.level);
@@ -207,7 +207,7 @@
 				firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
 				this.addElement(firstMediaLbl);
 				primaryupload=new MediaOriginChooser();
-				primaryupload.exercisecode=exercisecode;
+				primaryupload.exerciseid=exerciseid;
 				primaryupload.medialevel=LEVEL_PRIMARY;
 				this.addElement(primaryupload);
 			}

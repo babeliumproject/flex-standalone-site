@@ -27,6 +27,8 @@ require_once 'utils/SessionValidation.php';
 require_once 'Exercise.php';
 require_once 'vo/ExerciseVO.php';
 
+require_once 'Zend/Json.php';
+
 /**
  * This class deals with all aspects of exercise creation
  *
@@ -170,29 +172,35 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT m.id, m.instanceid as exerciseid, m.mediacode, m.defaultthumbnail, m.type, m.timecreated, m.timemodified, m.license, m.authorref, m.duration, m.level,
-						   mr.filename, mr.status, mr.dimension
-					FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id 
+			$sql = "SELECT m.id, m.instanceid as exerciseid, m.mediacode, m.defaultthumbnail, m.type, m.timecreated, m.timemodified, m.license, m.authorref, m.duration, m.level
+					FROM media m
 					WHERE m.component='%s' AND m.level IN (%s) AND m.instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
 			$results = $this->conn->_multipleSelect($sql, $component, $levels, $exercisecode);
 			if($results){
 				foreach($results as $r){
-					$r->
-					if($r->status==self::STATUS_READY){
-						$r->subtitlestatus=$this->getSubtitleStatus($r->id);
-						if($r->type==self::TYPE_VIDEO){
-							$posterurl = '/resources/images/posters/'.$r->mediacode.'/0'.$r->defaultthumbnail.'.jpg';
-							$r->posterurl = $posterurl;
-							$thumburls=array();
-							for($i=1;$i<4;$i++){
-								$thumburls[] = '/resources/images/thumbs/'.$r->mediacode.'/0'.$i.'.jpg';
+					$mediaid = $r->id;
+					$sql_rendition = "SELECT id, fk_media_id, MAX(`status`) as `status`, filename FROM media_rendition WHERE fk_media_id=%d";
+					$rendition = $this->conn->_singleSelect($sql_rendition, $mediaid);
+					if($rendition){
+						if($rendition->status==self::STATUS_READY){
+							$r->status=self::STATUS_READY;
+							$r->filename=$rendition->filename;
+							$r->subtitlestatus=$this->getSubtitleStatus($r->id);
+							if($r->type==self::TYPE_VIDEO){
+								$posterurl = '/resources/images/posters/'.$r->mediacode.'/0'.$r->defaultthumbnail.'.jpg';
+								$r->posterurl = $posterurl;
+								$thumburls=array();
+								for($i=1;$i<4;$i++){
+									$thumburls[] = '/resources/images/thumbs/'.$r->mediacode.'/0'.$i.'.jpg';
+								}
+								$r->thumburls = $thumburls;
 							}
-							$r->thumburls = $thumburls;
+						} else {
+							$r->status=$rendition->status;
 						}
 					}
 				}
 			}
-			//Filter by status
 			return $results;
 		} catch (Exception $e){
 			throw new Exception ($e->getMessage());
@@ -261,20 +269,19 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 			
-			if(!$data || !isset($data->exercisecode) || !isset($data->filename) || !isset($data->level)) return;
+			if(!$data || !isset($data->exerciseid) || !isset($data->filename) || !isset($data->level))
+				throw new Exception("Invalid parameters", 1000);
 			
 			//Check if media has already been added for the given 'instanceid', 'component' and 'level'
 			$sql = "SELECT id FROM media WHERE instanceid=%d AND component='%s' AND level=%d";
-			$mediaexists = $this->conn->_multipleSelect($sql, $data->exercisecode, 'exercise', $data->level);
+			$mediaexists = $this->conn->_multipleSelect($sql, $data->exerciseid, 'exercise', $data->level);
 			
-			if($mediaexists) return;
+			if($mediaexists)
+				throw new Exception("The exercise already has media for that level", 1001);
 			
 			$this->_getResourceDirectories();
 			
-			require_once 'Exercise.php';
-			$exercise = new Exercise();
-			$exercisedata = $exercise->getExerciseByCode($result->exercisecode);
-			$instanceid = $exercisedata->instanceid;
+			$instanceid = $data->exerciseid;
 			
 			$optime = time();
 			$mediacode = $this->uuidv4();
@@ -295,7 +302,7 @@ class Create {
 				$dimension = $medianfo->videoHeight;
 				$filesize = filesize($filemedia);
 			} else {
-				return;
+				throw new Exception("Media file not found", 1002);
 			}
 			$contenthash = $medianfo->hash;
 			$duration = $medianfo->duration;
@@ -315,16 +322,19 @@ class Create {
 			//TODO add raw media to asynchronous task processing queue
 			//videoworker->add_task($mediaid);
 			
-			return $this->getExerciseMedia($data->exercisecode);
+			require_once 'Exercise.php';
+			$exercise = new Exercise();
+			$exercisedata = $exercise->getExerciseById($instanceid);
+			return $this->getExerciseMedia($exercisedata->exercisecode);
 			
 		} catch (Exception $e){
-			throw new Exception($e->getMessage());
+			throw new Exception($e->getMessage(), $e->getCode());
 		}
 	}
 	
 	public function getMediaStatus($mediaid){
 		$component = 'exercise';
-		$sql = "SELECT max(`status`) as `status` FROM media_rendition WHERE id=%d";
+		$sql = "SELECT max(`status`) as `status` FROM media_rendition WHERE fk_media_id=%d";
 		$result = $this->conn->_singleSelect($sql, $mediaid);
 		return $result ? $result->status : -1;
 	}

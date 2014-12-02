@@ -588,8 +588,10 @@ class Exercise {
 		
 		$component = 'exercise';
 		
-		$sql = "SELECT * FROM media WHERE component='%s' AND instanceid=%d AND status=%d AND level=%d";
-		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $status, $level);
+		$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
+				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id 
+				WHERE m.component='%s' AND m.instanceid=%d AND m.level=%d AND mr.status=%d";
+		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $level, $status);
 		return $results;
 	}
 

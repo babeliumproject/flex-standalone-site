@@ -34,9 +34,9 @@ package modules.create.service
 			pendingCall.addResponder(responder);
 		}
 		
-		public function addExerciseMedia(query:Object = null):void{
+		public function saveExerciseMedia(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
-			var pendingCall:AsyncToken = service.addExerciseMedia(query);
+			var pendingCall:AsyncToken = service.saveExerciseMedia(query);
 			pendingCall.addResponder(responder);
 		}
 		

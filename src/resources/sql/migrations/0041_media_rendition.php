@@ -15,8 +15,8 @@ function forwards(){
 				`metadata` text,
 				`dimension` int(10) DEFAULT NULL,
 			    PRIMARY KEY (`id`),
-			    KEY `FK_media_1` (`fk_media_id`),
-			    CONSTRAINT `fk_media_1` FOREIGN KEY (`fk_media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+			    KEY `FK_media_rendition_1` (`fk_media_id`),
+			    CONSTRAINT `fk_media_rendition_1` FOREIGN KEY (`fk_media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 	           ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 	$DB->_update($create);
 	
@@ -35,7 +35,7 @@ function forwards(){
 				$metadata = custom_json_encode($data);
 				array_push($params, $r->id, $r->filename, $contenthash, $r->status, $r->timecreated, $r->timemodified, $r->filesize, $metadata, $dimension );
 			} else {
-				print "File not found: $path";
+				print "File not found: $path\n (instance id: $r->instanceid)";
 			}
 		}
 		unset($line);
