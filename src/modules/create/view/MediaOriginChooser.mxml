@@ -19,6 +19,7 @@
 			import mx.utils.ObjectUtil;
 
 			public var exerciseid:int;
+			public var exercisecode:String;
 			public var medialevel:int;
 
 			private var fileUpload:FileUpload;
@@ -110,7 +111,10 @@
 				{
 					var internalFilename:String=payload.response.filename;
 					var params:Object=new Object();
-					params.exerciseid=exerciseid;
+					if(exerciseid)
+						params.exerciseid=exerciseid;
+					if(exercisecode)
+						params.exercisecode=exercisecode;
 					params.filename=internalFilename;
 					params.level=medialevel;
 					new CreateEvent(CreateEvent.SAVE_EXERCISE_MEDIA, params).dispatch();

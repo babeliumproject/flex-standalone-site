@@ -68,7 +68,8 @@
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
 						required="true">
-				<common:LanguageComboBox id="languageSelector"/>
+				<common:LanguageComboBox id="languageSelector"
+										 displayPrompt="false"/>
 			</s:FormItem>
 			<s:FormItem id="exerciseType"
 						label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
@@ -375,22 +376,26 @@
 			public function set setInformation(value:Boolean):void
 			{
 				var data:ExerciseVO=DataModel.getInstance().exerciseData;
+				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
+				trace("Set exercise data");
 				if(data){
 					exerciseData=data;
+					exerciseTitle.text=exerciseData.title;
+					exerciseDescription.htmlText=exerciseData.description;
+					exerciseKeywords.text=exerciseData.tags;
+					languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
+					
 				} else {
 					exerciseData=new ExerciseVO();
 					exerciseData.type=0;
 					exerciseData.difficulty=1;
+					
+					exerciseTitle.text="";
+					exerciseDescription.htmlText="";
+					exerciseKeywords.text="";
+					languageSelector.selectedIndex=0;
 				}
 				
-				trace("Set Information");
-				
-				exerciseTitle.text=exerciseData.title;
-				exerciseDescription.htmlText=exerciseData.description;
-				exerciseKeywords.text=exerciseData.tags;
-				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
-				languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
-
 				var level:int=parseInt(exerciseData.difficulty) - 1;
 				difLevelDropdown.selectedIndex=level;
 

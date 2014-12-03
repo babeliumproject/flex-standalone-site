@@ -26,7 +26,7 @@
 			 minWidth="21"
 			 minHeight="32"
 			 alpha.disabled="0.5">
-	<fx:Metadata>[HostComponent("skins.IconButton")]</fx:Metadata>
+	<fx:Metadata>[HostComponent("skins.StylableButton")]</fx:Metadata>
 
 	<!-- host component -->
 	<fx:Script fb:purpose="styling">
@@ -95,8 +95,8 @@
 			{
 				var icon:String=getStyle('icon');
 				if(icon){
-					iconGraphic.includeInLayout=true;
-					labelDisplay.left = 12 + 16 + 6;
+					//iconGraphic.includeInLayout=true;
+					//labelDisplay.left = 12 + 16 + 6;
 				}
 				
 				
@@ -238,6 +238,7 @@
 							 color="0x000000"
 							 tlRadius="4"
 							 trRadius="4"/>
+	<!--
 	<s:Graphic id="iconGraphic" left="12" top="8" bottom="8" width="16" height="16" includeInLayout="false">
 		<s:Path id="iconData" data="{getStyle('icon')}" verticalCenter="1">
 			<s:fill>
@@ -247,6 +248,7 @@
 			</s:fill>
 		</s:Path>
 	</s:Graphic>
+	-->
 	<s:Label id="labelDisplay"
 			 textAlign="center"
 			 maxDisplayedLines="1"

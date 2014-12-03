@@ -41,6 +41,8 @@ package components.main
 	public class LocalizationComboBox extends IconComboBox
 	{
 		
+		public static const SOURCE_LANGUAGE:String='en_US';
+		
 		private var _availableLocales:Array=DataModel.getInstance().localesAndFlags.guiLanguages;
 		
 		public function LocalizationComboBox()
@@ -96,7 +98,35 @@ package components.main
 		private function switchLocale():void
 		{
 			var newLocale:String=String(this.selectedItem.code);
-			resourceManager.localeChain=[newLocale];
+			var lchain:Array = resourceManager.localeChain;
+			var oldLocale:String = String(lchain.shift());
+			
+			if(newLocale == oldLocale)
+				return;
+			
+			//Remove the new locale from the chain
+			var nlangidx:int = lchain.indexOf(newLocale);
+			if(nlangidx != -1)
+				delete lchain[nlangidx];
+			
+			//Remove the source locale from the chain
+			var srclangidx:int = lchain.indexOf(SOURCE_LANGUAGE);
+			if(srclangidx != -1)
+				delete lchain[srclangidx];
+			
+			if(newLocale==SOURCE_LANGUAGE){
+				lchain.unshift(newLocale);
+				if(lchain.indexOf(oldLocale) == -1)
+					lchain.push(oldLocale);
+			} else {
+				lchain.unshift(newLocale, SOURCE_LANGUAGE);
+				if(lchain.indexOf(oldLocale) == -1)
+					lchain.push(oldLocale);
+			}
+			
+			trace(ObjectUtil.toString(lchain));
+			
+			resourceManager.localeChain=lchain;
 			updateLocaleComboBox();
 			DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
 		}

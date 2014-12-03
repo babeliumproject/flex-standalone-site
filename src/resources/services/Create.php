@@ -269,19 +269,31 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 			
-			if(!$data || !isset($data->exerciseid) || !isset($data->filename) || !isset($data->level))
+			if(!$data || (!isset($data->exerciseid) && !isset($data->exercisecode)) || !isset($data->filename) || !isset($data->level))
 				throw new Exception("Invalid parameters", 1000);
+			
+			//Retrieve the ID for the given exercise code
+			if(!isset($data->exerciseid)){
+				require_once 'Exercise.php';
+				$e = new Exercise();
+				$exercise = $e->getExerciseByCode($data->exercisecode);
+				if(!$exercise)
+					throw new Exception("Exercise code doesn't exist",1003);
+				$instanceid = $exercise->id;
+				$instancecode = $data->exercisecode;
+			} else {
+				$instanceid = $data->exerciseid;
+				$instancecode = $data->exercisecode;
+			}
 			
 			//Check if media has already been added for the given 'instanceid', 'component' and 'level'
 			$sql = "SELECT id FROM media WHERE instanceid=%d AND component='%s' AND level=%d";
-			$mediaexists = $this->conn->_multipleSelect($sql, $data->exerciseid, 'exercise', $data->level);
+			$mediaexists = $this->conn->_multipleSelect($sql, $instanceid, 'exercise', $data->level);
 			
 			if($mediaexists)
 				throw new Exception("The exercise already has media for that level", 1001);
 			
-			$this->_getResourceDirectories();
-			
-			$instanceid = $data->exerciseid;
+			$this->_getResourceDirectories();		
 			
 			$optime = time();
 			$mediacode = $this->uuidv4();
@@ -322,10 +334,7 @@ class Create {
 			//TODO add raw media to asynchronous task processing queue
 			//videoworker->add_task($mediaid);
 			
-			require_once 'Exercise.php';
-			$exercise = new Exercise();
-			$exercisedata = $exercise->getExerciseById($instanceid);
-			return $this->getExerciseMedia($exercisedata->exercisecode);
+			return $this->getExerciseMedia($instancecode);
 			
 		} catch (Exception $e){
 			throw new Exception($e->getMessage(), $e->getCode());

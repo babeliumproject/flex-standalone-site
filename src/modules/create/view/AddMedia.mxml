@@ -66,6 +66,7 @@
 			private var modelupload:MediaOriginChooser;
 
 			private var exerciseid:int;
+			private var exercisecode:String;
 			
 			private var pstatus:Boolean;
 			private var mstatus:Boolean;
@@ -93,6 +94,7 @@
 				{
 					modelupload=new MediaOriginChooser();
 					modelupload.exerciseid=exerciseid;
+					modelupload.exercisecode=exercisecode;
 					modelupload.medialevel=LEVEL_MODEL;
 					this.addElement(modelupload);
 				}
@@ -103,6 +105,8 @@
 				var media:ArrayCollection=DataModel.getInstance().exerciseMedia;
 
 				trace(ObjectUtil.toString(media));
+				
+				exercisecode=URLManager.getInstance().parsedParams['id'];
 				
 				if (!firstMediaLbl)
 					firstMediaLbl=new Label();
@@ -207,7 +211,7 @@
 				firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
 				this.addElement(firstMediaLbl);
 				primaryupload=new MediaOriginChooser();
-				primaryupload.exerciseid=exerciseid;
+				primaryupload.exercisecode=exercisecode;
 				primaryupload.medialevel=LEVEL_PRIMARY;
 				this.addElement(primaryupload);
 			}

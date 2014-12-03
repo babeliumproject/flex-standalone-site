@@ -11,11 +11,10 @@
 	<fx:Script>
 
 		<![CDATA[
-
 			import events.FullStreamingEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -23,9 +22,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
+
 			import skins.IconButtonSkin;
-			
+
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -83,18 +82,11 @@
 
 			private var _timeFormatter:TimeFormatter;
 
-			[Embed(source='../../../resources/images/playerPlayIcon.png')]
-			[Bindable]
-			private var playImageEmbed:Class;
-			[Embed(source='../../../resources/images/playerPauseIcon.png')]
-			[Bindable]
-			private var pauseImageEmbed:Class;
-			[Embed(source='../../../resources/images/playerRecIcon.png')]
-			[Bindable]
-			private var recImageEmbed:Class;
-			[Embed(source='../../../resources/images/playerStopIcon.png')]
-			[Bindable]
-			private var stopImageEmbed:Class;
+			
+			private var playImageEmbed:String = '/resources/images/playerPlayIcon.png';
+			private var pauseImageEmbed:String = 'resources/images/playerPauseIcon.png';
+			private var recImageEmbed:String = 'resources/images/playerRecIcon.png';
+			private var stopImageEmbed:String = 'resources/images/playerStopIcon.png';
 
 
 			public function onComplete():void
@@ -326,8 +318,8 @@
 				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
-			
-			
+
+
 
 			private function startStopRecording(connected:Boolean=false):void
 			{
@@ -602,13 +594,10 @@
 				  width="100%"
 				  gap="4">
 
-			<skins:IconButton click="playPauseRecording()"
+			<s:Button click="playPauseRecording()"
 							  id="playPauseButton"
 							  enabled="false"
-							  width="20"
-							  height="20"
-							  cornerRadius="4"
-							  skinClass="skins.IconButtonSkin"/>
+							  styleName="btn-default"/>
 			<s:HGroup width="100%"
 					  horizontalAlign="right">
 				<s:Label id="recordCountdown"
@@ -623,21 +612,20 @@
 			  paddingLeft="10"
 			  paddingRight="10"
 			  paddingTop="10">
-		<skins:IconButton id="cancelCapture"
+		<s:Button id="cancelCapture"
 						  styleName="btn-default"
 						  label="{resourceManager.getString('myResources','CANCEL')}"/>
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
-			<skins:IconButton id="startStopCapture"
-							  label="{resourceManager.getString('myResources', 'START_RECORDING')}"
-							  cornerRadius="1"
-							  skinClass="skins.IconButtonSkin"
-							  click="startStopRecording()"/>
+			<s:Button id="startStopCapture"
+					  label="{resourceManager.getString('myResources', 'START_RECORDING')}"
+					  styleName="btn-default"
+					  click="startStopRecording()"/>
 		</s:HGroup>
 		<s:Button id="uploadCapture"
 				  label="{resourceManager.getString('myResources', 'UPLOAD')}"
 				  visible="{recordingFileName != null  &amp;&amp; !isRecording}"
-				  cornerRadius="1"/>
+				  styleName="btn-default"/>
 	</s:HGroup>
 
 
