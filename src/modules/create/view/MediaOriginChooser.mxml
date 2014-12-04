@@ -10,11 +10,11 @@
 	<fx:Script>
 		<![CDATA[
 			import events.UploadEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.create.event.CreateEvent;
-			
+
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 
@@ -111,9 +111,9 @@
 				{
 					var internalFilename:String=payload.response.filename;
 					var params:Object=new Object();
-					if(exerciseid)
+					if (exerciseid)
 						params.exerciseid=exerciseid;
-					if(exercisecode)
+					if (exercisecode)
 						params.exercisecode=exercisecode;
 					params.filename=internalFilename;
 					params.level=medialevel;
@@ -183,7 +183,17 @@
 
 			protected function uploadCaptureClickHandler(event:Event):void
 			{
-
+				if (recFromWebcamBox.recordingFileName)
+				{
+					var params:Object=new Object();
+					if (exerciseid)
+						params.exerciseid=exerciseid;
+					if (exercisecode)
+						params.exercisecode=exercisecode;
+					params.filename=recFromWebcamBox.recordingFileName + '.flv';
+					params.level=medialevel;
+					new CreateEvent(CreateEvent.SAVE_EXERCISE_MEDIA, params).dispatch();
+				}
 			}
 		]]>
 	</fx:Script>

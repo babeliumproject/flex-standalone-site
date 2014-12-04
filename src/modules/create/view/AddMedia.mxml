@@ -160,6 +160,9 @@
 					if (!this.containsElement(modelstatus))
 						this.addElement(modelstatus);
 					
+					if (this.containsElement(chooseModelGroup)){
+						this.removeElement(chooseModelGroup);
+					}
 					if(this.containsElement(primaryupload)){
 						this.removeElement(primaryupload);
 					}

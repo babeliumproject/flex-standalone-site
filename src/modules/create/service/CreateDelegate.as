@@ -59,5 +59,11 @@ package modules.create.service
 			var pendingCall:AsyncToken = service.setDefaultThumbnail(query);
 			pendingCall.addResponder(responder);
 		}
+		
+		public function deleteExerciseMedia(query:Object = null):void{
+			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
+			var pendingCall:AsyncToken = service.deleteExerciseMedia(query);
+			pendingCall.addResponder(responder);
+		}
 	}
 }

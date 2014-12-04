@@ -18,6 +18,7 @@ package modules.create.command
 			addCommand(CreateEvent.LIST_CREATIONS, GetCreations);
 			addCommand(CreateEvent.GET_EXERCISE_MEDIA, GetCreationMedia);
 			addCommand(CreateEvent.SET_DEFAULT_THUMBNAIL, SetDefaultThumbnail);
+			addCommand(CreateEvent.DELETE_MEDIA, DeleteExerciseMedia);
 		}
 	}
 }

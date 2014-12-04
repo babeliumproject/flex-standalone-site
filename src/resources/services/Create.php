@@ -265,6 +265,40 @@ class Create {
 		}
 	}
 	
+	public function deleteExerciseMedia($data = null){
+		try {
+			$valid = new SessionValidation(true);
+			if(!$data || !data->id){
+				throw new Exception("Invalid parameters", 1000);
+			}
+			
+			$mediaid=$data->id;
+			
+			$sql = "SELECT instanceid FROM media WHERE id=%d";
+			$media = $this->conn->_singleSelect($sql,$mediaid);
+			if($media){
+				$exerciseid = $media->instanceid;
+				require_once 'Exercise.php';
+				$e = new Exercise();
+				$exercise = $e->getExerciseById($exerciseid);
+				if(!$exercise)
+					throw new Exception("Exercise code doesn't exist",1003);
+				$exercisecode = $exercise->exercisecode;	
+			} else {
+				throw new Exception("Media id doesn't exist", 1004);
+			}
+			
+			$sql = "DELETE FROM media WHERE id=%d";
+			$this->conn->_delete($sql,$mediaid);
+			
+			return $this->getExerciseMedia($exercisecode);
+			
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
+		}
+		
+	}
+	
 	public function saveExerciseMedia($data = null){
 		try{
 			$verifySession = new SessionValidation(true);

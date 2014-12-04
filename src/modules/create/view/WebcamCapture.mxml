@@ -11,10 +11,13 @@
 	<fx:Script>
 
 		<![CDATA[
+			import components.videoPlayer.NetStreamClient;
+			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+			
 			import events.FullStreamingEvent;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Text;
@@ -22,9 +25,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import view.common.CustomAlert;
 			import view.common.PrivacyRights;
 			import view.common.TimeFormatter;
@@ -45,9 +48,6 @@
 			 */
 			private var netConnection:NetConnection;
 
-			private var publishNetStream:NetStream;
-			private var playbackNetStream:NetStream;
-
 			[Bindable]
 			public var recordingFileName:String;
 
@@ -57,7 +57,7 @@
 			private var audio_pause:Boolean;
 
 
-			private var video:Video;
+			private var _video:Video;
 			[Bindable]
 			private var _videoHeight:int=_defaultVideoHeight;
 			[Bindable]
@@ -67,7 +67,6 @@
 			private var _mic:Microphone;
 			private var _micCamEnabled:Boolean=false;
 
-			private var _streamingServerConnection:Boolean;
 			private var _streamsFolder:String='';
 			private var _streamFilePrefix:String='';
 
@@ -81,6 +80,9 @@
 			private var anyContent:Boolean;
 
 			private var _timeFormatter:TimeFormatter;
+			
+			private var _playns:NetStreamClient;
+			private var _recordns:NetStreamClient;
 
 			
 			private var playImageEmbed:String = '/resources/images/playerPlayIcon.png';
@@ -169,7 +171,7 @@
 				if (!DataModel.getInstance().netConnection.connected)
 					new FullStreamingEvent(FullStreamingEvent.START_CONNECTION, DataModel.getInstance().streamingResourcesPath).dispatch();
 				else
-					onConnectionStatus=false;
+					onConnectSuccess(null);
 			}
 
 			private function disconnectFromStreamingServer():void
@@ -177,156 +179,141 @@
 				if (DataModel.getInstance().netConnection.connected)
 					new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 			}
+			
+			private function destroyNetstream(nc:NetStreamClient):void{
+				if (nc && nc.netStream)
+				{
+					nc.netStream.attachCamera(null);
+					nc.netStream.attachAudio(null);
+					nc.netStream.close();
+					nc=null;
+				}
+			}
+			
+			private function destroyVideo(video:Video):void{
+				if(video){
+					video.attachNetStream(null);
+					video.attachCamera(null);
+					video.clear();
+					video=null;
+					if(this.videoHolder.contains(video))
+						this.videoHolder.removeChild(video);
+				}
+			}
 
 			private function disconnnectStreams():void
 			{
-				if (playbackNetStream)
-					playbackNetStream.close();
-				if (publishNetStream)
-				{
-					publishNetStream.attachCamera(null);
-					publishNetStream.attachAudio(null);
-					publishNetStream.close();
-				}
-				if (video)
-				{
-					video.clear();
-					video.attachCamera(null);
-					video=null;
-				}
+				destroyNetstream(_playns);
+				destroyNetstream(_recordns);
+				destroyVideo(_video);
 			}
 
-			private function set onConnectionStatus(value:Boolean):void
+			private function playStream():void
 			{
-				if (DataModel.getInstance().netConnected == true)
-				{
-
-					//Get the netConnection reference
-					netConnection=DataModel.getInstance().netConnection;
-					_streamingServerConnection=true;
-
-					if (playbackNetStream)
-						playbackNetStream.close();
-					if (publishNetStream)
-						publishNetStream.close();
-
-					playbackNetStream=new NetStream(netConnection);
-					publishNetStream=new NetStream(netConnection);
-
-					playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
-
-					playbackNetStream.client=this; // onPlayStatus
-					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
-
-				}
-				else
-				{
-					if (playbackNetStream)
-						playbackNetStream.close();
-					if (publishNetStream)
-					{
-						publishNetStream.attachCamera(null);
-						publishNetStream.attachAudio(null);
-						publishNetStream.close();
-					}
-					if (video)
-					{
-						video.attachCamera(null);
-						video.clear();
-					}
-					_streamingServerConnection=false;
-				}
-			}
-
-			private function playbackStreamNetStatusHandler(event:NetStatusEvent):void
-			{
-				var info:Object=event.info;
-
-				if (info.code == "NetStream.Play.Stop")
-				{
-					startStopCapture.setStyle('icon', recImageEmbed);
-					playPauseButton.setStyle('icon', playImageEmbed);
-
-					startStopCapture.enabled=true;
-					playPauseButton.enabled=true;
-
+				if(audio_pause){
+					_playns.netStream.resume();
 					audio_pause=false;
-				}
-			}
-
-			private function playAudio():void
-			{
-				if (audio_pause)
-				{
-					playbackNetStream.resume();
-					audio_pause=false;
-				}
-				else
-				{
-					// Play the recording
-
-					if (playbackNetStream)
-						playbackNetStream.close();
-					playbackNetStream=new NetStream(netConnection);
-					playbackNetStream.addEventListener(NetStatusEvent.NET_STATUS, playbackStreamNetStatusHandler);
-					playbackNetStream.client=this; // onPlayStatus
-					playbackNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler); // onMetaData
-
-					playbackNetStream.play(_streamsFolder + "/" + recordingFileName);
-					video.attachNetStream(playbackNetStream); // JUANAN
-
+				} else {
+					
+					destroyNetstream(_playns);
+					
+					if (netConnection && netConnection.connected)
+					{
+						var filename:String = _streamsFolder + "/" + recordingFileName;
+						_playns=new NetStreamClient(netConnection,"PlaybackNetStream");
+						_playns.netStream.soundTransform=new SoundTransform(DEFAULT_MIC_GAIN);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_STARTED_PLAYING, onStreamPlayStart);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onStreamPlayFinish);
+		
+						_video.attachNetStream(_playns.netStream);
+						_video.visible=true;
+						
+						_playns.netStream.play(filename);
+					}
 				}
 
-				// It's not possible recording or save while audio is playing
 				playPauseButton.enabled=true;
 				startStopCapture.enabled=true;
 
 				startStopCapture.setStyle('icon', stopImageEmbed);
 				playPauseButton.setStyle('icon', pauseImageEmbed);
 			}
-
-			private function pauseAudio():void
+			
+			private function pauseStream():void
 			{
 				//in_ns.togglePause();
-				playbackNetStream.pause();
-
+				_playns.netStream.pause();
+				
 				audio_pause=true;
-
+				
 				// It's possible recording or save while audio is paused
 				startStopCapture.enabled=true;
 				playPauseButton.enabled=true;
-
-
+				
+				
 				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
-
-			private function stopAudio():void
+			
+			private function unpublishStream():void
 			{
-				// Close output stream
-				if (publishNetStream)
-				{
-					publishNetStream.attachAudio(null);
-					publishNetStream.close();
-				}
+				
+				destroyNetstream(_recordns);
+				
 				isRecording=false;
-
+				
 				// It's not possible playing audio while recording
 				startStopCapture.enabled=true;
 				playPauseButton.enabled=true;
-
+				
 				startStopCapture.setStyle('icon', recImageEmbed);
 				playPauseButton.setStyle('icon', playImageEmbed);
 			}
+			
+			private function onStreamPlayStart(event:Event):void{
+				
+			}
+			
+			private function onStreamPlayFinish(event:Event):void{
+				trace("["+this.className+"] Stream Play Finished");
+						
+				_video.attachNetStream(null);
+				_video.clear();
+				_video.visible=false;
+				
+				startStopCapture.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+				
+				startStopCapture.enabled=true;
+				playPauseButton.enabled=true;
+				
+				audio_pause=false;
+			}			
 
+			private function onConnectSuccess(event:FullStreamingEvent):void{
+				trace("["+this.className+"] Streaming server connection successful");
+				netConnection=DataModel.getInstance().netConnection;
+				
+				destroyNetstream(_playns);
+				destroyNetstream(_recordns);
+				
+				_recordns=new NetStreamClient(netConnection,"RecordingStream");
+				
+				startStopRecording();
+			}
+			
+			private function onConnectError(event:FullStreamingEvent):void{
+				trace("["+this.className+"] Streaming server connection error");
+				disconnnectStreams();
+			}
 
 
 			private function startStopRecording(connected:Boolean=false):void
 			{
-				if (!_streamingServerConnection)
+				if (!netConnection || !netConnection.connected)
 				{
 					connectToStreamingServer();
-					DataModel.getInstance().netConnectionDelegate.addEventListener(FullStreamingEvent.CONNECTION_READY, startStopRecording, false, 0, true);
+					DataModel.getInstance().netConnectionDelegate.addEventListener(FullStreamingEvent.CONNECTION_READY, onConnectSuccess, false, 0, true);
 				}
 				else
 				{
@@ -345,7 +332,7 @@
 							recordCountdown.visible=false;
 						}
 						stopCamera();
-						stopAudio();
+						unpublishStream();
 						if (recordingFileName)
 						{
 							startStopCapture.label=resourceManager.getString('myResources', 'RECORD_AGAIN');
@@ -360,12 +347,9 @@
 
 			private function stopCamera():void
 			{
-				// clear the videoContainer
-				video.clear();
-				video.attachCamera(null);
-				video=null;
-				if (publishNetStream)
-					publishNetStream.attachCamera(null);
+				_video.attachCamera(null);
+				_video.clear();
+				_video.visible=false;
 			}
 
 
@@ -374,25 +358,12 @@
 				switch (playPauseButton.getStyle('icon'))
 				{
 					case playImageEmbed:
-						playAudio();
+						playStream();
 						break;
 					case pauseImageEmbed:
-						pauseAudio();
+						pauseStream();
 						break;
 				}
-			}
-
-			public function onPlayStatus(o:Object):void
-			{
-				if (o.code == "NetStream.Play.Complete")
-				{
-					trace("Playback complete");
-				}
-			}
-
-			public function asyncErrorHandler(event:AsyncErrorEvent):void
-			{
-				// ignore for now
 			}
 
 			private function prepareRecording():void
@@ -402,22 +373,22 @@
 					if (_camera != null)
 					{
 						//videoHolder.setActualSize(_camera.width, _camera.height);
-						video=new Video(_camera.width, _camera.height);
-						if (publishNetStream != null)
-							publishNetStream.attachCamera(_camera);
-						video.attachCamera(_camera);
-						video.smoothing=true;
-						video.height=videoHolder.height;
-						video.width=videoHolder.width;
+						_video=new Video(_camera.width, _camera.height);
+						if (_recordns && _recordns.netStream)
+							_recordns.netStream.attachCamera(_camera);
+						_video.attachCamera(_camera);
+						_video.smoothing=true;
+						_video.height=videoHolder.height;
+						_video.width=videoHolder.width;
 
 						_countdownTxt.x=videoHolder.width / 2 - 10;
 						_countdownTxt.y=videoHolder.height / 2 - 10;
 						_countdownTxt.width=videoHolder.width;
 						_countdownTxt.height=videoHolder.height;
 
-						videoHolder.addChild(video);
+						videoHolder.addChild(_video);
 						videoHolder.addChild(_countdownTxt);
-						video.visible=false;
+						_video.visible=false;
 						_countdownTxt.visible=true;
 					}
 					if (_mic != null)
@@ -428,8 +399,8 @@
 						_mic.gain=DEFAULT_MIC_GAIN;
 
 						// Start publishing the audio output as a recorded stream
-						if (publishNetStream != null)
-							publishNetStream.attachAudio(_mic);
+						if (_recordns && _recordns.netStream)
+							_recordns.netStream.attachAudio(_mic);
 
 						// It's not possible playing audio while recording
 						startStopCapture.enabled=true;
@@ -482,7 +453,7 @@
 				if (_countdown.currentCount == _countdown.repeatCount)
 				{
 					_countdownTxt.visible=false;
-					video.visible=true;
+					_video.visible=true;
 
 					// Reset countdown timer
 					_countdownTxt.text="5";
@@ -497,13 +468,13 @@
 
 			private function startRecording():void
 			{
-				if (publishNetStream)
+				if (_recordns && _recordns.netStream)
 				{
 					var d:Date=new Date();
 					recordingFileName=_streamFilePrefix + "-" + d.getTime().toString();
 
 					// Publish the stream
-					publishNetStream.publish(_streamsFolder + "/" + recordingFileName, "record");
+					_recordns.netStream.publish(_streamsFolder + "/" + recordingFileName, "record");
 					isRecording=true;
 
 					//Recording time elpased variables
@@ -521,8 +492,9 @@
 				}
 				else
 				{
+					
 					PrivacyRights.useMicAndCamera=true;
-					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
+					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, false));
 					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
 					PopUpManager.centerPopUp(privacyRights);
 				}
@@ -557,19 +529,15 @@
 
 			public function set cancelClickHandler(cancelFunction:Function):void
 			{
-				cancelCapture.addEventListener(MouseEvent.CLICK, cancelFunction);
+				cancelCapture.addEventListener(MouseEvent.CLICK, cancelFunction, false, 0, true);
 			}
 
 			public function set uploadClickHandler(uploadFunction:Function):void
 			{
-				uploadCapture.addEventListener(MouseEvent.CLICK, uploadFunction);
+				uploadCapture.addEventListener(MouseEvent.CLICK, uploadFunction, false, 0, true);
 			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{DataModel.getInstance().netConnected}"
-				destination="onConnectionStatus"/>
-
 
 	<s:SkinnableContainer id="videoBg"
 						  backgroundColor="0x000000"
