@@ -35,7 +35,7 @@
 			</s:layout>
 		</s:ButtonBar>
 		<s:VGroup width="100%">
-			<s:HGroup width="100%">
+			<s:VGroup width="100%">
 				<s:Label id="mstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','MEDIA_STATUS')}"
 						 styleName="frm-label"/>
@@ -48,25 +48,35 @@
 				</s:Line>
 				<s:Label id="mediaStatus"
 						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
-			</s:HGroup>
-			<s:HGroup width="100%">
+			</s:VGroup>
+			<s:VGroup width="100%">
 				<s:Label id="sstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','SUBTITLES')}"
 						 styleName="frm-label"/>
-				<s:Label id="subtitleStatus"
-						 text="{ResourceManager.getInstance().getString('myResources','NONE')}"/>
-			</s:HGroup>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke weight="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderWeight')}"
+											alpha="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderAlpha')}"
+											color="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderColor')}"/>
+					</s:stroke>
+				</s:Line>
+				<s:HGroup>
+					<s:Label id="subtitleStatus"
+							 text="{ResourceManager.getInstance().getString('myResources','NONE')}"/>
+					<s:Button id="subtitlemediaBtn"
+							  click="subtitleMediaClickHandler(event)"
+							  styleName="btn-primary"
+							  buttonMode="true"
+							  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
+				</s:HGroup>
+			</s:VGroup>
 
 		</s:VGroup>
 	</s:HGroup>
 
 	<s:HGroup width="100%"
 			  horizontalAlign="right">
-		<s:Button id="subtitlemediaBtn"
-				  click="subtitleMediaClickHandler(event)"
-				  styleName="btn-primary"
-				  buttonMode="true"
-				  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
+		
 
 		<s:Button id="deleteMediaBtn"
 				  click="deleteMediaButtonClickHandler(event)"
@@ -151,8 +161,10 @@
 			private function deleteMedia():void
 			{
 				if(!_data) return;
-				var mediaid:int=_data.id;
-				new CreateEvent(CreateEvent.DELETE_MEDIA, mediaid).dispatch();
+				var mediaid:int=parseInt(_data.id);
+				var params:Object = new Object();
+				params.mediaid = mediaid;
+				new CreateEvent(CreateEvent.DELETE_MEDIA, params).dispatch();
 			}
 
 			private function initCompleteHandler(event:FlexEvent):void

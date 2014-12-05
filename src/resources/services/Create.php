@@ -268,11 +268,11 @@ class Create {
 	public function deleteExerciseMedia($data = null){
 		try {
 			$valid = new SessionValidation(true);
-			if(!$data || !data->id){
+			if(!$data || !$data->mediaid){
 				throw new Exception("Invalid parameters", 1000);
 			}
 			
-			$mediaid=$data->id;
+			$mediaid=$data->mediaid;
 			
 			$sql = "SELECT instanceid FROM media WHERE id=%d";
 			$media = $this->conn->_singleSelect($sql,$mediaid);

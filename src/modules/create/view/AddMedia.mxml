@@ -187,6 +187,10 @@
 					if(this.containsElement(primaryupload)){
 						this.removeElement(primaryupload);
 					}
+					
+					if(this.containsElement(modelstatus)){
+						this.removeElement(modelstatus);
+					}
 
 					if (!this.containsElement(chooseModelGroup))
 					{

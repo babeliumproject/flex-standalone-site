@@ -915,6 +915,7 @@ package components.videoPlayer
 		private function prepareDevices():void
 		{
 			//The devices are permitted and initialized. Time to configure them
+			/*
 			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || 
 				(state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()) ||
 				(state == UPLOAD_MODE_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
@@ -932,6 +933,7 @@ package components.videoPlayer
 
 				PopUpManager.centerPopUp(privacyRights);
 			}
+			*/
 		}
 
 		private function configureDevices():void
@@ -968,7 +970,7 @@ package components.videoPlayer
 
 		private function privacyBoxClosed(event:Event):void
 		{
-		
+		/*
 			PopUpManager.removePopUp(privacyRights);
 			_micCamEnabled=DataModel.getInstance().micCamAllowed;
 			if (state == RECORD_MIC_STATE)
@@ -984,7 +986,7 @@ package components.videoPlayer
 					configureDevices();
 				else
 					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-			}
+			}*/
 		}
 
 		// splits panel into a 2 different views

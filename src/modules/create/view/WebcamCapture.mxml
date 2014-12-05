@@ -12,6 +12,8 @@
 
 		<![CDATA[
 			import components.videoPlayer.NetStreamClient;
+			import components.videoPlayer.UserDeviceManager;
+			import components.videoPlayer.events.UserDeviceEvent;
 			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 			
 			import events.FullStreamingEvent;
@@ -84,6 +86,7 @@
 			private var _playns:NetStreamClient;
 			private var _recordns:NetStreamClient;
 
+			private var _userdevmgr:UserDeviceManager;
 			
 			private var playImageEmbed:String = '/resources/images/playerPlayIcon.png';
 			private var pauseImageEmbed:String = 'resources/images/playerPauseIcon.png';
@@ -485,47 +488,72 @@
 
 			private function prepareDevices():void
 			{
-				if (PrivacyRights.cameraReady() && PrivacyRights.microphoneReady())
-				{
-					_micCamEnabled=DataModel.getInstance().micCamAllowed;
-					configureDevices();
-				}
-				else
-				{
-					
-					PrivacyRights.useMicAndCamera=true;
-					privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, false));
-					privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
-					PopUpManager.centerPopUp(privacyRights);
-				}
+				trace("["+this.className+"] Prepare devices 1");
+				_userdevmgr = new UserDeviceManager();
+				trace("["+this.className+"] Prepare devices 2");
+				_userdevmgr.useMicAndCamera=true;
+				trace("["+this.className+"] Prepare devices 3");
+				_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
+				trace("["+this.className+"] Prepare devices 4");
+				_userdevmgr.initDevices();
+				trace("["+this.className+"] Prepare devices 5");
 			}
-
+			
 			private function configureDevices():void
 			{
-				_camera=DataModel.getInstance().camera;
+				trace("["+this.className+"] Configure devices");
 				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
-				_mic=DataModel.getInstance().microphone;
 				_mic.setUseEchoSuppression(true);
 				_mic.setLoopBack(true);
 				_mic.setSilenceLevel(0, 60000);
-
+				
 				prepareRecording();
 				startCountdown();
 			}
-
-			private function privacyBoxClosed(event:Event):void
-			{
-				PopUpManager.removePopUp(privacyRights);
-				_micCamEnabled=DataModel.getInstance().micCamAllowed;
-				if (_micCamEnabled && PrivacyRights.cameraFound && PrivacyRights.microphoneFound)
-				{
-					configureDevices();
-				}
-				else
-				{
-					CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
+			
+			private function deviceStateHandler(event:UserDeviceEvent):void{
+				var devstate:int = event.state;
+				trace("["+this.className+"] User device status: "+devstate);
+				if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
+					if(privacyRights){
+						privacyRights.displayState(devstate);
+					} else {
+						_micCamEnabled=_userdevmgr.deviceAccessGranted;
+						_mic=_userdevmgr.microphone;
+						_camera=_userdevmgr.camera;
+						configureDevices();
+					}
+				} else { //Display the privacy management popup
+					if(!privacyRights){
+						var appwindow:DisplayObjectContainer = FlexGlobals.topLevelApplication.parent;
+						var modal:Boolean=false;
+						privacyRights=new PrivacyRights();
+						privacyRights.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
+						privacyRights.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
+						privacyRights.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
+						privacyRights.displayState(devstate);
+						PopUpManager.addPopUp(privacyRights, appwindow, modal);
+						PopUpManager.centerPopUp(privacyRights);
+					}
+					if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+						_userdevmgr.showPrivacySettings();
+					}
 				}
 			}
+			
+			private function privacyAcceptHandler(event:Event):void{
+				PopUpManager.removePopUp(privacyRights);
+				configureDevices();
+			}
+			
+			private function privacyRetryHandler(event:Event):void{
+				_userdevmgr.initDevices();
+			}
+			
+			private function privacyCancelHandler(event:Event):void{
+				PopUpManager.removePopUp(privacyRights);
+				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
+			}		
 
 			public function set cancelClickHandler(cancelFunction:Function):void
 			{
