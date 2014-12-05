@@ -67,7 +67,7 @@
 
 			private var _camera:Camera;
 			private var _mic:Microphone;
-			private var _micCamEnabled:Boolean=false;
+			private var _micCamEnabled:Boolean;
 
 			private var _streamsFolder:String='';
 			private var _streamFilePrefix:String='';
@@ -77,7 +77,7 @@
 
 			private var _recordCountDown:Timer;
 
-			private var privacyRights:PrivacyRights;
+			private var _privUnlock:PrivacyRights;
 
 			private var anyContent:Boolean;
 
@@ -119,6 +119,7 @@
 
 			public function resetComponent():void
 			{
+				trace("["+this.className+"] Reset component");
 				startStopCapture.setStyle('icon', recImageEmbed);
 				startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
 				startStopCapture.enabled=true;
@@ -138,8 +139,22 @@
 					_countdownTxt.text=COUNTDOWN_TIMER_SECS.toString();
 					_countdownTxt.visible=false;
 				}
+				
+				if (_recordCountDown && _recordCountDown.running)
+				{
+					_recordCountDown.stop();
+					_recordCountDown.reset();
+					recordCountdown.text=_timeFormatter.format(0);
+					recordCountdown.visible=false;
+				}
 
-				disconnnectStreams();
+				closeStreams();
+				closeConnection();
+				_camera=null;
+				_mic=null;
+				_micCamEnabled=false;
+				_userdevmgr=null;
+				_privUnlock=null;
 			}
 
 			public function set minimumVideoDuration(duration:uint):void
@@ -177,7 +192,7 @@
 					onConnectSuccess(null);
 			}
 
-			private function disconnectFromStreamingServer():void
+			private function closeConnection():void
 			{
 				if (DataModel.getInstance().netConnection.connected)
 					new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
@@ -198,13 +213,13 @@
 					video.attachNetStream(null);
 					video.attachCamera(null);
 					video.clear();
-					video=null;
 					if(this.videoHolder.contains(video))
 						this.videoHolder.removeChild(video);
+					video=null;
 				}
 			}
 
-			private function disconnnectStreams():void
+			private function closeStreams():void
 			{
 				destroyNetstream(_playns);
 				destroyNetstream(_recordns);
@@ -260,7 +275,6 @@
 			
 			private function unpublishStream():void
 			{
-				
 				destroyNetstream(_recordns);
 				
 				isRecording=false;
@@ -307,9 +321,8 @@
 			
 			private function onConnectError(event:FullStreamingEvent):void{
 				trace("["+this.className+"] Streaming server connection error");
-				disconnnectStreams();
+				closeStreams();
 			}
-
 
 			private function startStopRecording(connected:Boolean=false):void
 			{
@@ -322,7 +335,6 @@
 				{
 					if (!isRecording)
 					{
-						startStopCapture.label=resourceManager.getString('myResources', 'STOP');
 						prepareDevices();
 					}
 					else
@@ -354,7 +366,6 @@
 				_video.clear();
 				_video.visible=false;
 			}
-
 
 			private function playPauseRecording():void
 			{
@@ -398,15 +409,11 @@
 					{
 						anyContent=true;
 
-						_mic.setLoopBack(false);
-						_mic.gain=DEFAULT_MIC_GAIN;
-
-						// Start publishing the audio output as a recorded stream
 						if (_recordns && _recordns.netStream)
 							_recordns.netStream.attachAudio(_mic);
 
-						// It's not possible playing audio while recording
 						startStopCapture.enabled=true;
+						startStopCapture.label=resourceManager.getString('myResources', 'STOP');
 						startStopCapture.setStyle('icon', stopImageEmbed);
 
 						playPauseButton.enabled=false;
@@ -425,7 +432,6 @@
 
 			private function onRecordCountDownTick(tick:TimerEvent):void
 			{
-
 				recordCountdown.text=_timeFormatter.format(_maximumVideoDuration - _recordCountDown.currentCount);
 				if (_recordCountDown.currentCount >= _minimumVideoDuration)
 				{
@@ -488,23 +494,21 @@
 
 			private function prepareDevices():void
 			{
-				trace("["+this.className+"] Prepare devices 1");
 				_userdevmgr = new UserDeviceManager();
-				trace("["+this.className+"] Prepare devices 2");
 				_userdevmgr.useMicAndCamera=true;
-				trace("["+this.className+"] Prepare devices 3");
 				_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
-				trace("["+this.className+"] Prepare devices 4");
 				_userdevmgr.initDevices();
-				trace("["+this.className+"] Prepare devices 5");
 			}
 			
 			private function configureDevices():void
 			{
-				trace("["+this.className+"] Configure devices");
+				_micCamEnabled=_userdevmgr.deviceAccessGranted;
+				_mic=_userdevmgr.microphone;
+				_camera=_userdevmgr.camera;
 				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
 				_mic.setUseEchoSuppression(true);
-				_mic.setLoopBack(true);
+				_mic.setLoopBack(false);
+				_mic.gain=DEFAULT_MIC_GAIN;
 				_mic.setSilenceLevel(0, 60000);
 				
 				prepareRecording();
@@ -513,28 +517,25 @@
 			
 			private function deviceStateHandler(event:UserDeviceEvent):void{
 				var devstate:int = event.state;
-				trace("["+this.className+"] User device status: "+devstate);
-				if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
-					if(privacyRights){
-						privacyRights.displayState(devstate);
-					} else {
-						_micCamEnabled=_userdevmgr.deviceAccessGranted;
-						_mic=_userdevmgr.microphone;
-						_camera=_userdevmgr.camera;
+				if(!_privUnlock){
+					if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
 						configureDevices();
-					}
-				} else { //Display the privacy management popup
-					if(!privacyRights){
+					} else {
 						var appwindow:DisplayObjectContainer = FlexGlobals.topLevelApplication.parent;
-						var modal:Boolean=false;
-						privacyRights=new PrivacyRights();
-						privacyRights.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
-						privacyRights.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
-						privacyRights.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
-						privacyRights.displayState(devstate);
-						PopUpManager.addPopUp(privacyRights, appwindow, modal);
-						PopUpManager.centerPopUp(privacyRights);
+						var modal:Boolean=true;
+						_privUnlock=new PrivacyRights();
+						_privUnlock.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
+						_privUnlock.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
+						_privUnlock.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
+						_privUnlock.displayState(devstate);
+						PopUpManager.addPopUp(_privUnlock, appwindow, modal);
+						PopUpManager.centerPopUp(_privUnlock);
+						if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+							_userdevmgr.showPrivacySettings();
+						}
 					}
+				} else {
+					_privUnlock.displayState(devstate);
 					if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
 						_userdevmgr.showPrivacySettings();
 					}
@@ -542,7 +543,12 @@
 			}
 			
 			private function privacyAcceptHandler(event:Event):void{
-				PopUpManager.removePopUp(privacyRights);
+				PopUpManager.removePopUp(_privUnlock);
+				_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+				_privUnlock=null;
+				_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
 				configureDevices();
 			}
 			
@@ -551,7 +557,12 @@
 			}
 			
 			private function privacyCancelHandler(event:Event):void{
-				PopUpManager.removePopUp(privacyRights);
+				PopUpManager.removePopUp(_privUnlock);
+				_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+				_privUnlock=null;
+				_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
 				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
 			}		
 

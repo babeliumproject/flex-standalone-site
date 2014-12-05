@@ -1,39 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  width="360"
-						  height="220"
-						  title="{ResourceManager.getInstance().getString('myResources','PRIVACY_SETTINGS')}"
-						  mouseOver="windowMouseOverHandler(event)">
-	
-	<s:layout>
-		<s:VerticalLayout paddingLeft="10"
-						  paddingRight="10"
-						  paddingTop="10"
-						  paddingBottom="10"/>
-	</s:layout>
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="360"
+			   height="220"
+			   skinClass="skins.DeviceTitleWindow"
+			   mouseOver="windowMouseOverHandler(event)">
 
 	<fx:Script>
 
 		<![CDATA[
 			import components.videoPlayer.UserDeviceManager;
+
+			import mx.graphics.BitmapScaleMode;
+
 			import components.videoPlayer.events.UserDeviceEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.events.CloseEvent;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
 			private var _udmgr:UserDeviceManager;
 			private var _devicesUnlocked:Boolean;
-			
-			public function set userDeviceManager(mgr:UserDeviceManager):void{
-				if(mgr) _udmgr=mgr;
-			}
-			
-			private function windowMouseOverHandler(event:MouseEvent):void{
-				if(_devicesUnlocked){
+
+			private function windowMouseOverHandler(event:MouseEvent):void
+			{
+				if (_devicesUnlocked)
+				{
 					dispatchEvent(new UserDeviceEvent(UserDeviceEvent.ACCEPT));
 				}
 			}
@@ -47,15 +42,26 @@
 			{
 				dispatchEvent(new UserDeviceEvent(UserDeviceEvent.CANCEL));
 			}
-			
-			public function displayState(state:int):void{
-				switch(state){
+
+			public function displayState(state:int):void
+			{
+				if (this.initialized)
+					internalDisplayState(state);
+				else
+					callLater(internalDisplayState, [state]);
+			}
+
+			private function internalDisplayState(state:int):void
+			{
+				var rm:IResourceManager=ResourceManager.getInstance();
+				switch (state)
+				{
 					case UserDeviceEvent.NO_CAMERA_FOUND:
 						_devicesUnlocked=false;
-						bitmap.includeInLayout=true;
-						bitmap.visible=true;
-						bitmap.source = "/resources/images/privacy_webcam_error.png";
-						msg.text = ResourceManager.getInstance().getString('myResources','CAMERA_NOT_FOUND');
+						errorlayer.visible=true;
+						bitmap.source="/resources/images/iconmonstr-webcam-3-icon-48.png";
+						msg.text=rm.getString('myResources', 'WEBCAM_NOT_FOUND') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
+						exp.visible=false;
 						retrybtn.includeInLayout=true;
 						retrybtn.visible=true;
 						ignorebtn.includeInLayout=true;
@@ -63,10 +69,10 @@
 						break;
 					case UserDeviceEvent.NO_MICROPHONE_FOUND:
 						_devicesUnlocked=false;
-						bitmap.includeInLayout=true;
-						bitmap.visible=true;
-						bitmap.source = "/resources/images/privacy_mic_error.png";
-						msg.text = ResourceManager.getInstance().getString('myResources','MIC_NOT_FOUND');
+						errorlayer.visible=true;
+						bitmap.source="/resources/images/iconmonstr-microphone-3-icon-48.png";
+						msg.text=ResourceManager.getInstance().getString('myResources', 'MICROPHONE_NOT_FOUND') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
+						exp.visible=false;
 						retrybtn.includeInLayout=true;
 						retrybtn.visible=true;
 						ignorebtn.includeInLayout=true;
@@ -74,16 +80,28 @@
 						break;
 					case UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED:
 						_devicesUnlocked=false;
+						errorlayer.visible=true;
+						bitmap.source="/resources/images/iconmonstr-warning-5-icon-48.png";
+						msg.text=ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_YET_ACTIVATED') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
+						exp.visible=true;
+						exp.text=rm.getString('myResources','SELECT_ALLOW');
+						retrybtn.includeInLayout=true;
+						retrybtn.visible=true;
+						ignorebtn.includeInLayout=true;
+						ignorebtn.visible=true;
 						break;
 					case UserDeviceEvent.DEVICE_ACCESS_GRANTED:
 						_devicesUnlocked=true;
+						errorlayer.visible=false;
+						exp.visible=true;
+						exp.text=rm.getString('myResources','NOW_CLICK_REMEMBER_AND_THEN_CLOSE');
 						break;
 					default:
 						_devicesUnlocked=false;
-						bitmap.includeInLayout=false;
-						bitmap.visible=false;
-						bitmap.source = "/resources/images/privacy_webcam_error.png";
-						msg.text = ResourceManager.getInstance().getString('myResources','CAMERA_NOT_FOUND');
+						errorlayer.visible=true;
+						bitmap.source="/resources/images/iconmonstr-error-5-icon-48.png";
+						msg.text=ResourceManager.getInstance().getString('myResources', 'DEVICES_DISABLED_BY_ADMIN') + ".";
+						exp.visible=false;
 						retrybtn.includeInLayout=false;
 						retrybtn.visible=false;
 						ignorebtn.includeInLayout=true;
@@ -91,27 +109,57 @@
 						break;
 				}
 			}
-			
 		]]>
 	</fx:Script>
-	
-	<s:HGroup width="100%">
+
+	<s:Label id="exp"
+			 text="{resourceManager.getString('myResources', 'SELECT_ALLOW')}"
+			 visible="false"
+			 width="{this.width * .85}"
+			 x="{this.width/2 - exp.width/2}"
+			 y="8"
+			 fontSize="18"
+			 color="#131313"/>
+	<s:BorderContainer width="212"
+					   height="135"
+					   borderAlpha="1"
+					   borderColor="#666666"
+					   borderWeight="1"
+					   backgroundColor="#FFFFFF"
+					   id="errorlayer"
+					   y="{(this.height-errorlayer.height)/2}"
+					   x="{(this.width-errorlayer.width)/2}">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="8"
+							  paddingLeft="8"
+							  paddingRight="8"
+							  paddingTop="8"
+							  horizontalAlign="center"/>
+		</s:layout>
+		<s:BitmapImage id="bitmap"
+					   height="32"
+					   width="32"
+					   smooth="true"
+					   source="/resources/images/iconmonstr-microphone-3-icon-48.png"/>
 		<s:Label id="msg"
 				 width="100%"
-				 text="{resourceManager.getString('myResources','MIC_NOT_FOUND')}"/>
-		<s:BitmapImage id="bitmap"
-					   source="/resources/images/privacy_mic_error.png"/>
-	</s:HGroup>
-	<s:HGroup width="100%" horizontalAlign="center">
-		<s:Button id="retrybtn"
-				  label="{resourceManager.getString('myResources','RETRY')}"
-				  click="retryButtonClickHandler(event)"
-				  buttonMode="true"/>
-		
-		<s:Button id="ignorebtn"
-				  label="{resourceManager.getString('myResources','CANCEL')}"
-				  click="cancelButtonClickHandler(event)"
-				  buttonMode="true"/>
-	</s:HGroup>
+				 fontSize="12"
+				 text="{resourceManager.getString('myResources','MICROPHONE_NOT_FOUND')}"/>
+		<s:HGroup width="100%"
+				  height="100%"
+				  horizontalAlign="center"
+				  verticalAlign="bottom">
+			<s:Button id="retrybtn"
+					  label="{resourceManager.getString('myResources','TRY_AGAIN')}"
+					  click="retryButtonClickHandler(event)"
+					  fontSize="12"
+					  buttonMode="true"/>
 
+			<s:Button id="ignorebtn"
+					  label="{resourceManager.getString('myResources','CANCEL')}"
+					  click="cancelButtonClickHandler(event)"
+					  fontSize="12"
+					  buttonMode="true"/>
+		</s:HGroup>
+	</s:BorderContainer>
 </s:TitleWindow>

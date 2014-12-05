@@ -9,13 +9,13 @@ package view.common
 	public class CustomAlert extends Alert
 	{
 
-		[Embed('/resources/images/alertError.png')]
+		[Embed('/resources/images/iconmonstr-error-5-icon-48.png')]
 		private static var errorIcon:Class;
 
-		[Embed('/resources/images/alertInfo.png')]
+		[Embed('/resources/images/iconmonstr-info-icon-48.png')]
 		private static var infoIcon:Class;
 
-		[Embed('/resources/images/alertConfirmation.png')]
+		[Embed('/resources/images/iconmonstr-warning-5-icon-48.png')]
 		private static var confirmationIcon:Class;
 
 		public function CustomAlert()

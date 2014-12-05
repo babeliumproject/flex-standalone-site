@@ -47,7 +47,7 @@
 											paddingRight="10"
 											paddingTop="4"/>
 					</s:layout>
-					<mx:Image source="@Embed('/resources/images/alertInfo.png')"/>
+					<s:BitmapImage source="/resources/images/iconmonstr-info-icon-48.png"/>
 					<s:Label width="300"
 							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBEDITION')}"/>
 				</s:BorderContainer>
@@ -74,7 +74,7 @@
 
 				<s:HGroup id="guestEditWarningBox"
 						  verticalAlign="middle">
-					<mx:Image source="@Embed(source='/resources/images/alertConfirmation.png')"/>
+					<s:BitmapImage source="/resources/images/iconmonstr-warning-5-icon-48.png"/>
 					<s:Label id="notLoggedWarning"
 							 styleName="guestVersionWarningLabel"
 							 text="{resourceManager.getString('myResources','GUEST_EDIT_WARNING')}"/>
