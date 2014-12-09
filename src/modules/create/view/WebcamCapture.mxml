@@ -6,7 +6,7 @@
 		  creationComplete="onComplete()"
 		  width="100%"
 		  height="100%"
-		  horizontalAlign="center">
+		  horizontalAlign="center" xmlns:view="view.*">
 
 	<fx:Script>
 
@@ -194,8 +194,7 @@
 
 			private function closeConnection():void
 			{
-				if (DataModel.getInstance().netConnection.connected)
-					new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
+				new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 			}
 			
 			private function destroyNetstream(nc:NetStreamClient):void{
@@ -309,6 +308,7 @@
 
 			private function onConnectSuccess(event:FullStreamingEvent):void{
 				trace("["+this.className+"] Streaming server connection successful");
+				buffering.visible=false;
 				netConnection=DataModel.getInstance().netConnection;
 				
 				destroyNetstream(_playns);
@@ -328,6 +328,7 @@
 			{
 				if (!netConnection || !netConnection.connected)
 				{
+					buffering.visible=true;
 					connectToStreamingServer();
 					DataModel.getInstance().netConnectionDelegate.addEventListener(FullStreamingEvent.CONNECTION_READY, onConnectSuccess, false, 0, true);
 				}
@@ -582,12 +583,13 @@
 						  backgroundColor="0x000000"
 						  width="100%"
 						  height="100%">
-		<s:layout>
-			<s:HorizontalLayout horizontalAlign="center"/>
-		</s:layout>
 		<mx:UIComponent id="videoHolder"
 						width="{Math.round(videoBg.height*4/3)}"
 						height="{videoBg.height}"/>
+		<view:BusyIndicator id="buffering" width="48" height="48" symbolColor="#FFFFFF" 
+							x="{(videoBg.width-buffering.width)/2}" 
+							y="{(videoBg.height-buffering.height)/2}"
+							visible="false"/>
 	</s:SkinnableContainer>
 
 	<s:SkinnableContainer width="100%"

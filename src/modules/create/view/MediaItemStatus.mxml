@@ -41,26 +41,22 @@
 						 styleName="frm-label"/>
 				<s:Line width="100%">
 					<s:stroke>
-						<s:SolidColorStroke weight="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderWeight')}"
-											alpha="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderAlpha')}"
-											color="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderColor')}"/>
+						<s:SolidColorStroke />
 					</s:stroke>
 				</s:Line>
 				<s:Label id="mediaStatus"
 						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
 			</s:VGroup>
-			<s:VGroup width="100%">
+			<s:VGroup id="substatcontainer" width="100%">
 				<s:Label id="sstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','SUBTITLES')}"
 						 styleName="frm-label"/>
 				<s:Line width="100%">
 					<s:stroke>
-						<s:SolidColorStroke weight="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderWeight')}"
-											alpha="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderAlpha')}"
-											color="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderColor')}"/>
+						<s:SolidColorStroke />
 					</s:stroke>
 				</s:Line>
-				<s:HGroup>
+				<s:HGroup verticalAlign="middle">
 					<s:Label id="subtitleStatus"
 							 text="{ResourceManager.getInstance().getString('myResources','NONE')}"/>
 					<s:Button id="subtitlemediaBtn"
@@ -186,13 +182,13 @@
 						case STATUS_UNDEF:
 						case STATUS_ENCODING:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','PROCESSING');
-							subtitlemediaBtn.visible=false;
-							subtitlemediaBtn.includeInLayout=false;
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
 							break;
 						case STATUS_READY:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','READY');
-							subtitlemediaBtn.visible=true;
-							subtitlemediaBtn.includeInLayout=true;
+							substatcontainer.includeInLayout=true;
+							substatcontainer.visible=true;
 							if (data.type == MEDIA_TYPE_VIDEO)
 							{
 								poster.source=data.posterurl;
@@ -217,9 +213,13 @@
 							break;
 						case STATUS_DUPLICATED:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','DUPLICATED');
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
 							break;
 						default:
 							mediaStatus.text=ResourceManager.getInstance().getString('myResources','NO_VALID_MEDIA_FOUND');
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
 							break;
 					}
 				}

@@ -9,9 +9,36 @@
 
 	<fx:Declarations>
 		<s:RadioButtonGroup id="includeModel"
-							itemClick="includeModelHandler(event)"/>
+							itemClick="includeModelHandler(event)"
+							selectedValue="no"/>
 	</fx:Declarations>
 
+	<s:Label id="firstMediaLbl"
+			 styleName="h3"
+			 text="{ResourceManager.getInstance().getString('myResources', 'PRIMARY_MEDIA')}"/>
+	<view:MediaOriginChooser id="primaryupload"/>
+	<view:MediaItemStatus id="primarymediainfo" includeInLayout="false" visible="false"/>
+	<s:HGroup id="chooseModelGroup" verticalAlign="middle" includeInLayout="false" visible="false">
+		<s:Label text="{ResourceManager.getInstance().getString('myResources', 'DO_YOU_WANT_TO_ADD_A_MODEL_MEDIA')}"/>
+		<s:RadioButton label="{ResourceManager.getInstance().getString('myResources', 'NO')}"
+					   group="{includeModel}"
+					   value="no"/>
+		<s:RadioButton label="{ResourceManager.getInstance().getString('myResources', 'YES')}"
+					   group="{includeModel}"
+					   value="yes"/>
+	</s:HGroup>
+	<s:Label id="secondMediaLbl"
+			 styleName="h3"
+			 text="{ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA')}" includeInLayout="false" visible="false"/>
+	<view:MediaOriginChooser id="modelupload" includeInLayout="false" visible="false"/>
+	<view:MediaItemStatus id="modelmediainfo" includeInLayout="false" visible="false"/>
+	<s:Button id="savebutton"
+			  buttonMode="true"
+			  styleName="btn-success"
+			  label="{ResourceManager.getInstance().getString('myResources','SAVE_AND_CONTINUE')}"
+			  click="saveClickHandler(event)"
+			  enabled="false"/>
+	
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
@@ -24,6 +51,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.Button;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.events.ItemClickEvent;
@@ -55,49 +83,41 @@
 			public static const MEDIA_TYPE_AUDIO:String='audio';
 			public static const MEDIA_TYPE_VIDEO:String='video';
 
-			private var firstMediaLbl:Label;
-			private var secondMediaLbl:Label;
-			private var chooseModelGroup:HGroup;
-
-			private var primarystatus:MediaItemStatus;
-			private var modelstatus:MediaItemStatus;
-
-			private var primaryupload:MediaOriginChooser;
-			private var modelupload:MediaOriginChooser;
-
 			private var exerciseid:int;
 			private var exercisecode:String;
 			
 			private var pstatus:Boolean;
 			private var mstatus:Boolean;
+			private var pinfo:Boolean;
+			private var minfo:Boolean;
 
 			public function resetComponent():void
 			{
-				this.removeAllElements();
-				exerciseid=0;
-				modelstatus=null;
-				primarystatus=null;
-				chooseModelGroup=null;
+
 			}
 
 			public function includeModelHandler(event:ItemClickEvent):void
 			{
 				if (event.currentTarget.selectedValue == "no")
 				{
-					if (this.containsElement(modelupload)){
-						modelupload.resetComponent();
-						this.removeElement(modelupload);
-					}
-					modelupload=null;
+					modelupload.resetComponent();
+					
+					modelupload.includeInLayout=false;
+					modelupload.visible=false;
 				}
 				else if (event.currentTarget.selectedValue == "yes")
 				{
-					modelupload=new MediaOriginChooser();
 					modelupload.exerciseid=exerciseid;
 					modelupload.exercisecode=exercisecode;
 					modelupload.medialevel=LEVEL_MODEL;
-					this.addElement(modelupload);
+					
+					modelupload.includeInLayout=true;
+					modelupload.visible=true;
 				}
+			}
+			
+			private function saveClickHandler(event:MouseEvent):void{
+				URLManager.getInstance().redirect('/create/edit/' + exercisecode + '?s=3');
 			}
 
 			protected function set mediaRetrieved(value:Boolean):void
@@ -108,13 +128,8 @@
 				
 				exercisecode=URLManager.getInstance().parsedParams['id'];
 				
-				if (!firstMediaLbl)
-					firstMediaLbl=new Label();
-				firstMediaLbl.styleName='sectionTitleLabel';
-				if (!secondMediaLbl)
-					secondMediaLbl=new Label();
-				secondMediaLbl.styleName='sectionTitleLabel';
-
+				pinfo=minfo=pstatus=mstatus=false;
+				
 				if (media)
 				{
 					var itemlevel:int;
@@ -127,101 +142,97 @@
 							itemlevel=parseInt(item.level);
 							if (itemlevel == LEVEL_PRIMARY)
 							{
-								if (!primarystatus)
-									primarystatus=new MediaItemStatus();
-								primarystatus.setData(item);
+								pinfo=true;
+								primarymediainfo.setData(item);
 								pstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
 							}
 							else if (itemlevel == LEVEL_MODEL)
 							{
-								if (!modelstatus)
-									modelstatus=new MediaItemStatus();
-								modelstatus.setData(item);
+								minfo=true;
+								modelmediainfo.setData(item);
 								mstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
 							}
 						}
 					}
 				}
-				else
-				{
-					resetComponent();
-				}
-
-				if (modelstatus && primarystatus)
-				{
-					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'PRIMARY_MEDIA');
-					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA');
-					if (!this.containsElement(firstMediaLbl))
-						this.addElement(firstMediaLbl);
-					if (!this.containsElement(primarystatus))
-						this.addElement(primarystatus);
-					if (!this.containsElement(secondMediaLbl))
-						this.addElement(secondMediaLbl);
-					if (!this.containsElement(modelstatus))
-						this.addElement(modelstatus);
-					
-					if (this.containsElement(chooseModelGroup)){
-						this.removeElement(chooseModelGroup);
-					}
-					if(this.containsElement(primaryupload)){
-						this.removeElement(primaryupload);
-					}
-					if(this.containsElement(modelupload)){
-						this.removeElement(modelupload);
-					}
-					
-					return;
-				}
-				if (primarystatus && !modelstatus)
-				{
-					firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
-					secondMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA');
-
-					if (!this.containsElement(firstMediaLbl))
-						this.addElement(firstMediaLbl);
-					if (!this.containsElement(primarystatus))
-						this.addElement(primarystatus);
-					if (!this.containsElement(secondMediaLbl))
-						this.addElement(secondMediaLbl);
-					
-					if(this.containsElement(primaryupload)){
-						this.removeElement(primaryupload);
-					}
-					
-					if(this.containsElement(modelstatus)){
-						this.removeElement(modelstatus);
-					}
-
-					if (!this.containsElement(chooseModelGroup))
-					{
-						chooseModelGroup=new HGroup();
-						var lbl:Label=new Label();
-						lbl.text=ResourceManager.getInstance().getString('myResources', 'DO_YOU_WANT_TO_ADD_A_MODEL_MEDIA');
-						var radiono:RadioButton=new RadioButton();
-						radiono.initialize();
-						radiono.label=ResourceManager.getInstance().getString('myResources', 'NO');
-						radiono.group=includeModel;
-						radiono.value='no';
-						var radioyes:RadioButton=new RadioButton();
-						radioyes.initialize();
-						radioyes.label=ResourceManager.getInstance().getString('myResources', 'YES');
-						radioyes.value='yes';
-						radioyes.group=includeModel;
-						chooseModelGroup.addElement(lbl);
-						chooseModelGroup.addElement(radiono);
-						chooseModelGroup.addElement(radioyes);
-						includeModel.selectedValue='no';
-						this.addElement(chooseModelGroup);
-					}
-					return;
-				}
-				firstMediaLbl.text=ResourceManager.getInstance().getString('myResources', 'EXERCISE_MEDIA');
-				this.addElement(firstMediaLbl);
-				primaryupload=new MediaOriginChooser();
-				primaryupload.exercisecode=exercisecode;
-				primaryupload.medialevel=LEVEL_PRIMARY;
-				this.addElement(primaryupload);
+				updateComponentList();
 			}
+			
+			private function updateComponentList():void{
+				savebutton.enabled=false;
+				if (minfo && pinfo)
+				{
+					
+					primaryupload.resetComponent();
+					modelupload.resetComponent();
+					includeModel.selectedValue='no';
+					
+					primaryupload.includeInLayout=false;
+					primaryupload.visible=false;
+					chooseModelGroup.includeInLayout=false;
+					chooseModelGroup.visible=false;
+					modelupload.includeInLayout=false;
+					modelupload.visible=false;
+					
+					firstMediaLbl.includeInLayout=true;
+					firstMediaLbl.visible=true;
+					primarymediainfo.includeInLayout=true;
+					primarymediainfo.visible=true;
+					
+					secondMediaLbl.includeInLayout=true;
+					secondMediaLbl.visible=true;
+					modelmediainfo.includeInLayout=true;
+					modelmediainfo.visible=true;
+					
+					savebutton.enabled = pstatus && mstatus;
+				}
+				if (pinfo && !minfo)
+				{
+					primaryupload.resetComponent();
+					
+					primaryupload.includeInLayout=false;
+					primaryupload.visible=false;
+					secondMediaLbl.includeInLayout=false;
+					secondMediaLbl.visible=false;
+					modelmediainfo.includeInLayout=false;
+					modelmediainfo.visible=false;
+					
+					firstMediaLbl.includeInLayout=true;
+					firstMediaLbl.visible=true;
+					primarymediainfo.includeInLayout=true;
+					primarymediainfo.visible=true;
+					
+					chooseModelGroup.includeInLayout=true;
+					chooseModelGroup.visible=true;
+					
+					savebutton.enabled = pstatus && (includeModel.selectedValue == 'no');
+				}
+				if(!pinfo && !minfo){
+					primaryupload.resetComponent();
+					primaryupload.includeInLayout=true;
+					primaryupload.visible=true;
+					
+					includeModel.selectedValue='no';
+					chooseModelGroup.includeInLayout=false;
+					chooseModelGroup.visible=false;
+					
+					modelupload.includeInLayout=false;
+					modelupload.visible=false;
+					
+					firstMediaLbl.includeInLayout=true;
+					firstMediaLbl.visible=true;
+					primarymediainfo.includeInLayout=false;
+					primarymediainfo.visible=false;
+					
+					secondMediaLbl.includeInLayout=false;
+					secondMediaLbl.visible=false;
+					modelmediainfo.includeInLayout=false;
+					modelmediainfo.visible=false;
+					
+					savebutton.enabled = pstatus;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 
