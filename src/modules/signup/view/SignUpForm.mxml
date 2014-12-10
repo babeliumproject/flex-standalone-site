@@ -326,6 +326,9 @@
 	<fx:Binding source="{DataModel.getInstance().registrationResponse}"
 				destination="onRegisterResponse"/>
 
+	<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
+			 styleName="h2"/>
+
 	<s:VGroup id="errorMessageBox"
 			  width="100%"
 			  paddingBottom="16"
@@ -366,9 +369,9 @@
 							  paddingRight="16"/>
 		</s:layout>
 
-		<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
+		<s:Label text="{resourceManager.getString('myResources','GENERAL')}"
 				 styleName="h3"/>
-		
+
 		<s:Line width="100%">
 			<s:stroke>
 				<s:SolidColorStroke weight="{signupContainer.getStyle('borderWeight')}"
@@ -378,53 +381,53 @@
 		</s:Line>
 
 		<s:Form width="100%">
-			<s:FormItem label="{resourceManager.getString('myResources','USER_NAME')}"
+			<s:FormItem label="{resourceManager.getString('myResources','USERNAME')}"
 						required="true">
-				
-					<s:TextInput id="username"
-								 styleName="frm-input"
-								 width="300"
-								 maxChars="20"
-								 change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
-								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
-				
+
+				<s:TextInput id="username"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="20"
+							 change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
+
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','EMAIL')}"
+			<s:FormItem label="{resourceManager.getString('myResources','EMAIL_ADDRESS')}"
 						required="true">
-					<s:TextInput id="email"
-								 styleName="frm-input"
-								 width="300"
-								 maxChars="80"
-								 change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
-								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
-				
+				<s:TextInput id="email"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
+
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','PASSWORD')}"
 						required="true">
 
-					<s:TextInput id="password"
-								 styleName="frm-input"
-								 displayAsPassword="true"
-								 width="300"
-								 maxChars="40"
-								 change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
-								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
-				
+				<s:TextInput id="password"
+							 styleName="frm-input"
+							 displayAsPassword="true"
+							 width="300"
+							 maxChars="40"
+							 change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
+
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','REPASSWORD')}"
+			<s:FormItem label="{resourceManager.getString('myResources','CONFIRM_PASSWORD')}"
 						required="true">
-				
-					<s:TextInput id="repassword"
-								 styleName="frm-input"
-								 displayAsPassword="true"
-								 width="300"
-								 maxChars="40"
-								 change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
-								 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
-				
+
+				<s:TextInput id="repassword"
+							 styleName="frm-input"
+							 displayAsPassword="true"
+							 width="300"
+							 maxChars="40"
+							 change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
+
 			</s:FormItem>
 			<mx:Spacer/>
-			<s:FormItem label="{resourceManager.getString('myResources','REAL_NAME')}"
+			<s:FormItem label="{resourceManager.getString('myResources','FIRST_NAME')}"
 						required="true">
 				<s:TextInput id="firstname"
 							 width="300"
@@ -433,7 +436,7 @@
 							 change="FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"
 							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"/>
 			</s:FormItem>
-			<s:FormItem label="{resourceManager.getString('myResources','REAL_SURNAME')}"
+			<s:FormItem label="{resourceManager.getString('myResources','SURNAME')}"
 						required="true">
 				<s:TextInput id="lastname"
 							 styleName="frm-input"
@@ -443,33 +446,9 @@
 							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"/>
 			</s:FormItem>
 		</s:Form>
-		<s:Form width="100%">
-			<s:Label text="{resourceManager.getString('myResources','MAIN_LANGUAGE')}"/>
-			<mx:Spacer/>
-			<s:FormItem label="{resourceManager.getString('myResources','FIRST_LANGUAGE')}"
-						required="true">
-				<s:HGroup>
-					<s:VGroup id="motherLanguagesBox"/>
-					<skins:IconButton id="addAnotherMotherLang"
-									  click="addAnotherMotherLang_clickHandler(event)"
-									  label="{resourceManager.getString('myResources','ADD_ANOTHER')}"
-									  styleName="addLanguageLinkButton"/>
-				</s:HGroup>
-			</s:FormItem>
-
-			<s:Label text="{resourceManager.getString('myResources','WHICH_LANGUAGES_WOULD_YOU_LIKE_TO_PRACTICE')}"/>
-			<mx:Spacer/>
-			<s:FormItem label="{resourceManager.getString('myResources','INTEREST_LANGUAGES')}"
-						styleName="boldLabel">
-				<s:HGroup>
-					<s:VGroup id="interestLanguagesBox"/>
-					<skins:IconButton id="addAnotherInterestLang"
-									  click="addAnotherInterestLang_clickHandler(event)"
-									  label="{resourceManager.getString('myResources','ADD_ANOTHER')}"
-									  styleName="addLanguageLinkButton"/>
-				</s:HGroup>
-			</s:FormItem>
-		</s:Form>
+		<s:Label id="languagesLbl"
+				 text="{resourceManager.getString('myResources','LANGUAGES')}"
+				 styleName="h3"/>
 		<s:Line width="100%">
 			<s:stroke>
 				<s:SolidColorStroke weight="{signupContainer.getStyle('borderWeight')}"
@@ -477,22 +456,49 @@
 									color="{signupContainer.getStyle('borderColor')}"/>
 			</s:stroke>
 		</s:Line>
-		<s:HGroup width="100%"
-				  horizontalAlign="center"
-				  verticalAlign="middle">
-			<s:Button id="saveButton"
-					  label="{resourceManager.getString('myResources','REGISTER')}"
-					  click="processNewUser()"
-					  buttonMode="true"
-					  styleName="btn-primary"/>
+		<s:Form width="100%">
+			<s:Label text="{resourceManager.getString('myResources','I_SPEAK')+':'}"
+					 styleName="boldLabel" fontSize="16"/>
+			<s:Label text="{resourceManager.getString('myResources','PLASE_CHOOSE_ONLY_LANGUAGES_IN_WHICH_YOU_ARE_EITHER_NATIVE_OR_ADVANCED')}"/>
+			<s:FormItem>
+				<s:VGroup>
+					<s:VGroup id="motherLanguagesBox"/>
+					<s:Button id="addAnotherMotherLang"
+							  click="addAnotherMotherLang_clickHandler(event)"
+							  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+							  styleName="btn-link"/>
+				</s:VGroup>
+			</s:FormItem>
 
-			<s:Button id="cancelButton"
-					  label="{resourceManager.getString('myResources','CANCEL')}"
-					  click="cancelButton_clickHandler(event)"
-					  buttonMode="true"
-					  styleName="btn-default"/>
-
-		</s:HGroup>
+			<s:Label text="{resourceManager.getString('myResources','I_WOULD_LIKE_TO_LEARN')+':'}"
+					 styleName="boldLabel" fontSize="16"/>
+			<s:Label text="{resourceManager.getString('myResources','PLEASE_CHOOSE_AT_LEAST_ONE_LANGUAGE')}"/>
+			<s:FormItem>
+				<s:VGroup>
+					<s:VGroup id="interestLanguagesBox"/>
+					<s:Button id="addAnotherInterestLang"
+							  click="addAnotherInterestLang_clickHandler(event)"
+							  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+							  styleName="btn-link"/>
+				</s:VGroup>
+			</s:FormItem>
+		</s:Form>
 	</s:BorderContainer>
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  label="{resourceManager.getString('myResources','REGISTER')}"
+				  click="processNewUser()"
+				  buttonMode="true"
+				  styleName="btn-success"/>
+
+		<s:Button id="cancelButton"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  click="cancelButton_clickHandler(event)"
+				  buttonMode="true"
+				  styleName="btn-default"/>
+
+	</s:HGroup>
 
 </s:VGroup>

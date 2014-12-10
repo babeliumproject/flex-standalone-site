@@ -20,8 +20,7 @@
 	</fx:Script>
 
 	<common:LanguageComboBox id="languageCombo"/>
-	<s:Label text="{resourceManager.getString('myResources', 'LANGUAGE_KNOWLEDGE')}"
-			 fontWeight="normal"/>
+	<s:Label text="{resourceManager.getString('myResources', 'LEVEL')+':'}"/>
 	<common:DifficultyLevelComboBox id="levelCombo"/>
 	<skins:IconButton id="deleteButton"
 					  styleName="removeLanguageLinkButton"

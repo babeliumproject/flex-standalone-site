@@ -20,12 +20,13 @@
 	 @playerversion AIR 1.5
 	 @productversion Flex 4
 -->
-<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
-			 xmlns:s="library://ns.adobe.com/flex/spark"
-			 xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
-			 minWidth="21"
-			 minHeight="32"
-			 alpha.disabled="0.5">
+<skins:StylableSparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+							   xmlns:s="library://ns.adobe.com/flex/spark"
+							   xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+							   xmlns:skins="skins.*"
+							   minWidth="21"
+							   minHeight="32"
+							   alpha.disabled="0.5">
 	<fx:Metadata>[HostComponent("skins.StylableButton")]</fx:Metadata>
 
 	<!-- host component -->
@@ -55,13 +56,13 @@
 			private var textColor_hover:uint=textColor;
 			[Bindable]
 			private var textColor_active:uint=textColor;
-			
+
 			[Bindable]
 			private var backgroundAlpha:Number=1.0;
-			
+
 			[Bindable]
 			private var borderAlpha:Number=1.0;
-			
+
 			[Bindable]
 			private var textDecoration:String='none';
 			[Bindable]
@@ -93,13 +94,6 @@
 			 */
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
-				var icon:String=getStyle('icon');
-				if(icon){
-					//iconGraphic.includeInLayout=true;
-					//labelDisplay.left = 12 + 16 + 6;
-				}
-				
-				
 				var ts1:uint=getStyle('bgrColor');
 				if (ts1)
 					backgroundColor=ts1;
@@ -130,19 +124,19 @@
 				if (ts9)
 					textColor_active=ts9;
 				var ts10:Number=getStyle('bgrAlpha');
-				if(!isNaN(ts10))
+				if (!isNaN(ts10))
 					backgroundAlpha=ts10;
 				var ts11:Number=getStyle('bAlpha');
-				if(!isNaN(ts11))
+				if (!isNaN(ts11))
 					borderAlpha=ts11;
 				var ts12:String=getStyle('tDecoration');
-				if(ts12)
+				if (ts12)
 					textDecoration=ts12;
 				var ts13:String=getStyle('tDecorationOver');
-				if(ts13)
+				if (ts13)
 					textDecoration_hover=ts13;
 				var ts14:String=getStyle('tDecorationDown');
-				if(ts14)
+				if (ts14)
 					textDecoration_active=ts14;
 
 				var cr:Number=getStyle("cornerRadius");
@@ -158,8 +152,9 @@
 						hldownstroke.trRadius=cornerRadius;
 					}
 				}
-				
-				if(backgroundAlpha == 0 && hldownstroke){
+
+				if (backgroundAlpha == 0 && hldownstroke)
+				{
 					hldownstroke.alpha=0;
 				}
 
@@ -169,12 +164,12 @@
 	</fx:Script>
 
 	<!-- states -->
-	<s:states>
+	<skins:states>
 		<s:State name="up"/>
 		<s:State name="over"/>
 		<s:State name="down"/>
 		<s:State name="disabled"/>
-	</s:states>
+	</skins:states>
 
 	<!--
 	<s:Rect id="outline"
@@ -266,5 +261,4 @@
 			 textDecoration.over="{textDecoration_hover}"
 			 textDecoration.down="{textDecoration_active}">
 	</s:Label>
-
-</s:SparkSkin>
+</skins:StylableSparkButtonSkin>
