@@ -66,7 +66,8 @@
 	<s:TabBar id="createSteps"
 			  skinClass="skins.BootstrapTabBar"
 			  changing="createSteps_changingHandler(event)"
-			  dataProvider="{stepViewStack}"/>
+			  dataProvider="{stepViewStack}"
+			  buttonMode="true"/>
 
 	<s:VGroup width="100%">
 		<mx:ViewStack id="stepViewStack"
@@ -87,21 +88,8 @@
 			</s:NavigatorContent>
 			<s:NavigatorContent id="previewNC"
 								label="{'3. '+resourceManager.getString('myResources', 'PREVIEW_PUBLISH')}">
-				<s:VGroup>
-					<s:Label text="Add controls for previewing and publishing"/>
-					<s:FormItem label="{resourceManager.getString('myResources','SPECIFY_LICENSE')}"
-								styleName="boldLabel"
-								required="true">
-						<common:LicenseComboBox id="licenseSelector"/>
-					</s:FormItem>
-					<s:FormItem label="{resourceManager.getString('myResources','AUTHORS_NAME_URL')}"
-								styleName="boldLabel"
-								toolTip="{resourceManager.getString('myResources','VIDEO_OWNER_AUTHOR')}"
-								width="100%">
-						<s:TextInput width="100%"
-									 id="referenceUrl"/>
-					</s:FormItem>
-				</s:VGroup>
+				<view:PreviewPublish id="previewpublish"
+									 width="100%"/>
 			</s:NavigatorContent>
 		</mx:ViewStack>
 

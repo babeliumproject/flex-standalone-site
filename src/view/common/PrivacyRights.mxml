@@ -2,8 +2,8 @@
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   width="360"
-			   height="220"
+			   width="420"
+			   height="280"
 			   skinClass="skins.DeviceTitleWindow"
 			   mouseOver="windowMouseOverHandler(event)">
 
@@ -59,6 +59,7 @@
 					case UserDeviceEvent.NO_CAMERA_FOUND:
 						_devicesUnlocked=false;
 						errorlayer.visible=true;
+						confirmimage.visible=false;
 						bitmap.source="/resources/images/iconmonstr-webcam-3-icon-48.png";
 						msg.text=rm.getString('myResources', 'WEBCAM_NOT_FOUND') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
 						exp.visible=false;
@@ -70,6 +71,7 @@
 					case UserDeviceEvent.NO_MICROPHONE_FOUND:
 						_devicesUnlocked=false;
 						errorlayer.visible=true;
+						confirmimage.visible=false;
 						bitmap.source="/resources/images/iconmonstr-microphone-3-icon-48.png";
 						msg.text=ResourceManager.getInstance().getString('myResources', 'MICROPHONE_NOT_FOUND') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
 						exp.visible=false;
@@ -81,6 +83,7 @@
 					case UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED:
 						_devicesUnlocked=false;
 						errorlayer.visible=true;
+						confirmimage.visible=false;
 						bitmap.source="/resources/images/iconmonstr-warning-5-icon-48.png";
 						msg.text=ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_YET_ACTIVATED') + ". " + rm.getString('myResources', 'PLEASE_TRY_AGAIN_TO_PROCEED') + ".";
 						exp.visible=true;
@@ -93,12 +96,14 @@
 					case UserDeviceEvent.DEVICE_ACCESS_GRANTED:
 						_devicesUnlocked=true;
 						errorlayer.visible=false;
+						confirmimage.visible=true;
 						exp.visible=true;
 						exp.text=rm.getString('myResources','NOW_CLICK_REMEMBER_AND_THEN_CLOSE');
 						break;
 					default:
 						_devicesUnlocked=false;
 						errorlayer.visible=true;
+						confirmimage.visible=false;
 						bitmap.source="/resources/images/iconmonstr-error-5-icon-48.png";
 						msg.text=ResourceManager.getInstance().getString('myResources', 'DEVICES_DISABLED_BY_ADMIN') + ".";
 						exp.visible=false;
@@ -113,11 +118,12 @@
 	</fx:Script>
 
 	<s:Label id="exp"
+			 textAlign="center"
 			 text="{resourceManager.getString('myResources', 'SELECT_ALLOW')}"
 			 visible="false"
 			 width="{this.width * .85}"
 			 x="{this.width/2 - exp.width/2}"
-			 y="8"
+			 y="16"
 			 fontSize="18"
 			 color="#131313"/>
 	<s:BorderContainer width="212"
@@ -144,7 +150,8 @@
 		<s:Label id="msg"
 				 width="100%"
 				 fontSize="12"
-				 text="{resourceManager.getString('myResources','MICROPHONE_NOT_FOUND')}"/>
+				 text="{resourceManager.getString('myResources','MICROPHONE_NOT_FOUND')}"
+				 textAlign="center"/>
 		<s:HGroup width="100%"
 				  height="100%"
 				  horizontalAlign="center"
@@ -162,4 +169,12 @@
 					  buttonMode="true"/>
 		</s:HGroup>
 	</s:BorderContainer>
+	<s:BitmapImage id="confirmimage"
+				   height="96"
+				   width="96"
+				   smooth="true"
+				   source="/resources/images/iconmonstr-headphones-6-icon-128.png"
+				   visible="false"
+				   y="{(this.height-confirmimage.height)/2}"
+				   x="{(this.width-confirmimage.width)/2}"/>
 </s:TitleWindow>

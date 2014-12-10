@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:view="modules.create.view.*"
+		  xmlns:common="view.common.*"
+		  width="100%"
+		  implements="modules.IGroupInterface">
+
+	<fx:Binding source="{DataModel.getInstance().exercisePreviewRetrieved}"
+				destination="exerciseData"/>
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.resources.ResourceManager;
+
+
+			[Bindable]
+			private var dpVisibility:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'PRIVATE'}, {'code': 1, 'label': 'PUBLIC'}]);
+
+			private var exercisecode:String;
+			private var exerciseid:int;
+
+			public function resetGroup():void
+			{
+				primarym.resetComponent();
+				modelm.resetComponent();
+			}
+			
+			public function set exerciseData(value:Boolean):void{
+				
+			}
+			
+			private function saveChangesClickHandler(event:MouseEvent):void{
+				
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="previewPublishContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
+
+		<s:Label id="editVideoTitle"
+				 text="{ResourceManager.getInstance().getString('myResources','PREVIEW_PUBLISH')}"
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{previewPublishContainer.getStyle('borderWeight')}"
+									alpha="{previewPublishContainer.getStyle('borderAlpha')}"
+									color="{previewPublishContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+
+		<s:Form width="100%">
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','PRIMARY_MEDIA')}"
+						styleName="boldLabel">
+				<videoPlayer:VideoRecorder id="primarym"
+										   autoPlay="false"
+										   skin="white"
+										   seek="true"
+										   subtitles="true"
+										   autoScale="false"
+										   arrows="false"
+										   subtitlingControls="false"
+										   width="640"
+										   height="360"
+										   controlsEnabled="true"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','MODEL_MEDIA')}"
+						styleName="boldLabel" visible="false" includeInLayout="false">
+				<videoPlayer:VideoRecorder id="modelm"
+										   autoPlay="false"
+										   skin="white"
+										   seek="true"
+										   subtitles="true"
+										   autoScale="false"
+										   arrows="false"
+										   subtitlingControls="false"
+										   width="640"
+										   height="360"
+										   controlsEnabled="true"/>
+			</s:FormItem>
+			
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke weight="{previewPublishContainer.getStyle('borderWeight')}"
+										alpha="{previewPublishContainer.getStyle('borderAlpha')}"
+										color="{previewPublishContainer.getStyle('borderColor')}"/>
+				</s:stroke>
+			</s:Line>
+			
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','LICENCE')}"
+						styleName="boldLabel"
+						required="true">
+				<common:LicenseComboBox id="licenseSelector"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','AUTHORS_NAME_URL')}"
+						styleName="boldLabel"
+						toolTip="{ResourceManager.getInstance().getString('myResources','VIDEO_OWNER_AUTHOR')}"
+						width="100%">
+				<s:TextInput width="100%"
+							 id="referenceUrl"
+							 styleName="frm-input"/>
+			</s:FormItem>
+
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','VISIBILITY')}"
+						styleName="boldLabel"
+						width="100%"
+						required="true">
+				<view:EnhancedDropDownList id="visibilitydropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   localeAwareDataProvider="{dpVisibility}"
+										   sortItems="true"/>
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  styleName="btn-success"
+				  label="{resourceManager.getString('myResources','SAVE')}"
+				  click="saveChangesClickHandler(event)"
+				  buttonMode="true"/>
+	</s:HGroup>
+
+
+</s:VGroup>

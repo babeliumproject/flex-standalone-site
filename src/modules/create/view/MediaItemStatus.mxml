@@ -35,7 +35,7 @@
 			</s:layout>
 		</s:ButtonBar>
 		<s:VGroup width="100%">
-			<s:VGroup width="100%">
+			<s:VGroup width="100%" paddingBottom="16">
 				<s:Label id="mstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','MEDIA_STATUS')}"
 						 styleName="frm-label"/>
@@ -47,7 +47,7 @@
 				<s:Label id="mediaStatus"
 						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
 			</s:VGroup>
-			<s:VGroup id="substatcontainer" width="100%">
+			<s:VGroup id="substatcontainer" width="100%" paddingBottom="16">
 				<s:Label id="sstatdec"
 						 text="{ResourceManager.getInstance().getString('myResources','SUBTITLES')}"
 						 styleName="frm-label"/>
@@ -72,8 +72,6 @@
 
 	<s:HGroup width="100%"
 			  horizontalAlign="right">
-		
-
 		<s:Button id="deleteMediaBtn"
 				  click="deleteMediaButtonClickHandler(event)"
 				  styleName="btn-danger"

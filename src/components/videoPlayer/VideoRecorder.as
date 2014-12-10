@@ -5,7 +5,23 @@
 
 package components.videoPlayer
 {
-	import modules.exercise.event.ResponseEvent;
+	import components.videoPlayer.controls.PlayButton;
+	import components.videoPlayer.controls.babelia.ArrowPanel;
+	import components.videoPlayer.controls.babelia.MicActivityBar;
+	import components.videoPlayer.controls.babelia.RecStopButton;
+	import components.videoPlayer.controls.babelia.RoleTalkingPanel;
+	import components.videoPlayer.controls.babelia.SubtitleButton;
+	import components.videoPlayer.controls.babelia.SubtitleStartEndButton;
+	import components.videoPlayer.controls.babelia.SubtitleTextBox;
+	import components.videoPlayer.events.PlayPauseEvent;
+	import components.videoPlayer.events.UserDeviceEvent;
+	import components.videoPlayer.events.VideoPlayerEvent;
+	import components.videoPlayer.events.babelia.RecStopButtonEvent;
+	import components.videoPlayer.events.babelia.RecordingEvent;
+	import components.videoPlayer.events.babelia.StreamEvent;
+	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
+	import components.videoPlayer.events.babelia.SubtitlingEvent;
+	import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 	
 	import flash.display.*;
 	import flash.events.*;
@@ -16,22 +32,7 @@ package components.videoPlayer
 	
 	import model.DataModel;
 	
-	import components.videoPlayer.controls.PlayButton;
-	import components.videoPlayer.controls.babelia.ArrowPanel;
-	import components.videoPlayer.controls.babelia.MicActivityBar;
-	import components.videoPlayer.controls.babelia.RecStopButton;
-	import components.videoPlayer.controls.babelia.RoleTalkingPanel;
-	import components.videoPlayer.controls.babelia.SubtitleButton;
-	import components.videoPlayer.controls.babelia.SubtitleStartEndButton;
-	import components.videoPlayer.controls.babelia.SubtitleTextBox;
-	import components.videoPlayer.events.PlayPauseEvent;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.babelia.RecStopButtonEvent;
-	import components.videoPlayer.events.babelia.RecordingEvent;
-	import components.videoPlayer.events.babelia.StreamEvent;
-	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
-	import components.videoPlayer.events.babelia.SubtitlingEvent;
-	import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+	import modules.exercise.event.ResponseEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Image;
@@ -120,7 +121,8 @@ package components.videoPlayer
 
 		private var _micCamEnabled:Boolean=false;
 
-		private var privacyRights:PrivacyRights;
+		private var _userdevmgr:UserDeviceManager;
+		private var _privUnlock:PrivacyRights;
 
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -909,35 +911,17 @@ package components.videoPlayer
 		}
 
 
-		/**
-		 * Methods to prepare the recording
-		 */
 		private function prepareDevices():void
 		{
-			//The devices are permitted and initialized. Time to configure them
-			/*
-			if ((state == RECORD_MIC_STATE && PrivacyRights.microphoneReady()) || 
-				(state == RECORD_BOTH_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()) ||
-				(state == UPLOAD_MODE_STATE && PrivacyRights.cameraReady() && PrivacyRights.microphoneReady()))
-			{
-				configureDevices();
-			}
-			else
-			{
-				if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
-					PrivacyRights.useMicAndCamera=true;
-				if (state == RECORD_MIC_STATE)
-					PrivacyRights.useMicAndCamera=false;
-				privacyRights=PrivacyRights(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, PrivacyRights, true));
-				privacyRights.addEventListener(CloseEvent.CLOSE, privacyBoxClosed);
-
-				PopUpManager.centerPopUp(privacyRights);
-			}
-			*/
+			_userdevmgr = new UserDeviceManager();
+			_userdevmgr.useMicAndCamera=true;
+			_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
+			_userdevmgr.initDevices();
 		}
 
 		private function configureDevices():void
 		{	
+			_micCamEnabled=_userdevmgr.deviceAccessGranted;
 			if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
 			{
 				_camera=DataModel.getInstance().camera;
@@ -956,38 +940,68 @@ package components.videoPlayer
 			startCountdown();
 		}
 
+		private function deviceStateHandler(event:UserDeviceEvent):void{
+			var devstate:int = event.state;
+			if(!_privUnlock){
+				if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
+					configureDevices();
+				} else {
+					var appwindow:DisplayObjectContainer = FlexGlobals.topLevelApplication.parent;
+					var modal:Boolean=true;
+					_privUnlock=new PrivacyRights();
+					_privUnlock.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
+					_privUnlock.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
+					_privUnlock.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
+					_privUnlock.displayState(devstate);
+					PopUpManager.addPopUp(_privUnlock, appwindow, modal);
+					PopUpManager.centerPopUp(_privUnlock);
+					if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+						_userdevmgr.showPrivacySettings();
+					}
+				}
+			} else {
+				_privUnlock.displayState(devstate);
+				if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+					_userdevmgr.showPrivacySettings();
+				}
+			}
+		}
+		
+		private function privacyAcceptHandler(event:Event):void{
+			PopUpManager.removePopUp(_privUnlock);
+			_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+			_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+			_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+			_privUnlock=null;
+			_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
+			configureDevices();
+		}
+		
+		private function privacyRetryHandler(event:Event):void{
+			_userdevmgr.initDevices();
+		}
+		
+		private function privacyCancelHandler(event:Event):void{
+			PopUpManager.removePopUp(_privUnlock);
+			_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+			_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+			_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+			_privUnlock=null;
+			_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
+			dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
+		}
+		
 		/*
 		public function micActivityHandler(event:ActivityEvent):void
 		{
-			//The mic has received an input louder than the 0% volume, so there's a mic working correctly.
-			if (event.activating)
-			{
-				DataModel.getInstance().gapsWithNoSound=0;
-				DataModel.getInstance().soundDetected=true;
-				DataModel.getInstance().microphone.removeEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
-			}
-		}*/
-
-		private function privacyBoxClosed(event:Event):void
+		//The mic has received an input louder than the 0% volume, so there's a mic working correctly.
+		if (event.activating)
 		{
-		/*
-			PopUpManager.removePopUp(privacyRights);
-			_micCamEnabled=DataModel.getInstance().micCamAllowed;
-			if (state == RECORD_MIC_STATE)
-			{
-				if (_micCamEnabled && PrivacyRights.microphoneFound)
-					configureDevices();
-				else
-					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-			}
-			if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
-			{
-				if (_micCamEnabled && PrivacyRights.microphoneFound && PrivacyRights.cameraFound)
-					configureDevices();
-				else
-					dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
-			}*/
+		DataModel.getInstance().gapsWithNoSound=0;
+		DataModel.getInstance().soundDetected=true;
+		DataModel.getInstance().microphone.removeEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
 		}
+		}*/
 
 		// splits panel into a 2 different views
 		private function prepareRecording():void
@@ -1279,6 +1293,10 @@ package components.videoPlayer
 				}
 				_ppBtn.State=PlayButton.PAUSE_STATE;
 			}
+		}
+		
+		public function resetComponent():void{
+			
 		}
 	}
 }

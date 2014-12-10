@@ -12,6 +12,10 @@
 							itemClick="includeModelHandler(event)"
 							selectedValue="no"/>
 	</fx:Declarations>
+	
+	
+	<fx:Binding source="{DataModel.getInstance().exerciseMediaRetrieved}"
+				destination="this.mediaRetrieved"/>
 
 	<s:Label id="firstMediaLbl"
 			 styleName="h3"
@@ -235,10 +239,5 @@
 			
 		]]>
 	</fx:Script>
-
-
-
-	<fx:Binding source="{DataModel.getInstance().exerciseMediaRetrieved}"
-				destination="this.mediaRetrieved"/>
 
 </s:VGroup>

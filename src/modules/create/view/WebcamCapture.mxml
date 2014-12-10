@@ -79,8 +79,6 @@
 
 			private var _privUnlock:PrivacyRights;
 
-			private var anyContent:Boolean;
-
 			private var _timeFormatter:TimeFormatter;
 			
 			private var _playns:NetStreamClient;
@@ -111,7 +109,6 @@
 				_countdownTxt.selectable=false;
 				_countdownTxt.visible=false;
 
-				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
 
@@ -126,11 +123,12 @@
 				playPauseButton.setStyle('icon', playImageEmbed);
 				playPauseButton.enabled=false;
 
-				anyContent=false;
 				audio_pause=false;
 				isRecording=false;
 
 				recordingFileName=null;
+				
+				buffering.visible=false;
 
 				if (_countdown && _countdown.running)
 				{
@@ -150,6 +148,7 @@
 
 				closeStreams();
 				closeConnection();
+				
 				_camera=null;
 				_mic=null;
 				_micCamEnabled=false;
@@ -239,8 +238,8 @@
 						var filename:String = _streamsFolder + "/" + recordingFileName;
 						_playns=new NetStreamClient(netConnection,"PlaybackNetStream");
 						_playns.netStream.soundTransform=new SoundTransform(DEFAULT_MIC_GAIN);
-						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_STARTED_PLAYING, onStreamPlayStart);
-						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onStreamPlayFinish);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_STARTED_PLAYING, onStreamPlayStart, false, 0, true);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onStreamPlayFinish, false, 0, true);
 		
 						_video.attachNetStream(_playns.netStream);
 						_video.visible=true;
@@ -408,8 +407,6 @@
 					}
 					if (_mic != null)
 					{
-						anyContent=true;
-
 						if (_recordns && _recordns.netStream)
 							_recordns.netStream.attachAudio(_mic);
 
@@ -585,7 +582,9 @@
 						  height="100%">
 		<mx:UIComponent id="videoHolder"
 						width="{Math.round(videoBg.height*4/3)}"
-						height="{videoBg.height}"/>
+						height="{videoBg.height}"
+						x="{(videoBg.width-videoHolder.width)/2}" 
+						y="{(videoBg.height-videoHolder.height)/2}"/>
 		<view:BusyIndicator id="buffering" width="48" height="48" symbolColor="#FFFFFF" 
 							x="{(videoBg.width-buffering.width)/2}" 
 							y="{(videoBg.height-buffering.height)/2}"
@@ -602,7 +601,6 @@
 				  verticalAlign="middle"
 				  width="100%"
 				  gap="4">
-
 			<s:Button click="playPauseRecording()"
 							  id="playPauseButton"
 							  enabled="false"

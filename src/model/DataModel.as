@@ -459,6 +459,11 @@ package model
 		public var exerciseMediaRetrieved:Boolean;
 		
 		[Bindable]
+		public var exercisePreview:ArrayCollection;
+		[Bindable]
+		public var exercisePreviewRetrieved:Boolean;
+		
+		[Bindable]
 		public var latestCreations:ArrayCollection;
 		[Bindable]
 		public var latestCreationsRetrieved:Boolean;
