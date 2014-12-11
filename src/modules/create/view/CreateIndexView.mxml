@@ -3,13 +3,12 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*"
-		  paddingLeft="12"
-		  paddingRight="12"
-		  paddingTop="6"
-		  paddingBottom="6" xmlns:main="components.main.*">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+		  xmlns:main="components.main.*"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  horizontalAlign="center">
 
 	<fx:Binding source="{DataModel.getInstance().latestCreationsRetrieved}"
 				destination="latestCreationsRetrieved"/>
@@ -17,15 +16,15 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import mx.core.UIComponent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
-			
+
 			import spark.core.SpriteVisualElement;
 
 			[Bindable]
@@ -42,16 +41,21 @@
 			private function changeHandler(event:Event):void
 			{
 				var obj:Object=List(event.target).selectedItem;
-				URLManager.getInstance().redirect('/create/edit/'+obj.exercisecode+'?s=1');
+				URLManager.getInstance().redirect('/create/edit/' + obj.exercisecode + '?s=1');
 			}
-			
 		]]>
 	</fx:Script>
 
-	<skins:IconButton id="addnewexercise"
-					  label="{resourceManager.getString('myResources','ADD_NEW_EXERCISE')}"
-					  click="{URLManager.getInstance().redirect('/create/add')}"
-					  styleName="btn-primary"/>
+	<s:VGroup paddingTop="16" paddingBottom="16">
+		<s:Button id="addnewexercise"
+				  label="{resourceManager.getString('myResources','CREATE_NEW_EXERCISE')}"
+				  click="{URLManager.getInstance().redirect('/create/add')}"
+				  styleName="btn-primary"
+				  height="60"
+				  fontSize="18"
+				  buttonMode="true"/>
+	</s:VGroup>
+
 
 	<!-- Display user's latest 5 exercise creations and a link to see all creations -->
 	<s:Panel title="{resourceManager.getString('myResources','MY_LATEST_CREATIONS')}"

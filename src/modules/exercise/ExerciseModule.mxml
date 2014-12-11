@@ -9,10 +9,6 @@
 		<s:VerticalLayout/>
 	</s:layout>
 
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
@@ -26,7 +22,7 @@
 			import modules.exercise.model.ExerciseModel;
 			import modules.exercise.view.Exercises;
 			import modules.IGroupInterface;
-			import modules.exercise.view.VideoList;
+			import modules.exercise.view.ExerciseList;
 
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -131,7 +127,7 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="index">
-			<view:VideoList id="exerciseIndex"/>
+			<view:ExerciseList id="exerciseIndex"/>
 		</s:NavigatorContent>
 		<s:NavigatorContent id="view">
 			<view:Exercises id="exerciseView"/>

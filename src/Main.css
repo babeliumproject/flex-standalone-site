@@ -61,6 +61,7 @@ mx|ComboBox{
 	textInputStyleName: "mxComboTextInput";
 }
 
+/*
 .mxComboTextInput{
 	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
 	fontSize: 14;
@@ -70,6 +71,7 @@ mx|ComboBox{
 	paddingBottom: 6;
 	paddingLeft: 12;
 }
+*/
 
 .progress-bar{
 	barSkin: ClassReference("skins.BootstrapProgressBarSkin");
@@ -77,6 +79,7 @@ mx|ComboBox{
 	trackHeight: 20;
 }
 
+/*
 mx|TextInput{
 	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
 	fontSize: 14;
@@ -86,6 +89,7 @@ mx|TextInput{
 	paddingBottom: 6;
 	paddingLeft: 12;
 }
+*/
 
 mx|ToolTip{
 	backgroundColor: #000000;
@@ -512,6 +516,7 @@ s|TextInput{
 	tabGap: 4;
 }
 
+/*
 .sectionInfoBox{
 	backgroundImage: Embed('/resources/images/pattern.jpg');
 	backgroundImageFillMode: repeat;
@@ -519,6 +524,7 @@ s|TextInput{
 	borderWeight: 0;
 	borderVisible: false;
 }
+*/
 
 .roundedPurpleBox{
 	cornerRadius: 4;

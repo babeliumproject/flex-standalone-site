@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:main="components.main.*"
+		  width="100%"
+		  creationComplete="onComplete()"
+		  xmlns:exercises1="commands.exercises.*"
+		  xmlns:common="view.common.*"
+		  xmlns:skins="skins.*"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16" xmlns:view="modules.create.view.*">
+
+	<fx:Script>
+		<![CDATA[
+			import components.main.VideoPaginator;
+			
+			import mx.resources.ResourceManager;
+			
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import modules.exercise.event.ExerciseEvent;
+			import modules.exercise.event.SearchEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.ListEvent;
+			
+			import spark.components.Button;
+			import spark.events.IndexChangeEvent;
+			
+			import vo.ExerciseVO;
+
+
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+
+			private var _filteredResults:ArrayCollection;
+			private var _filterLang:String;
+			private var _filterDif:int;
+
+			[Bindable]
+			private var _currentPage:int=1;
+			
+			[Bindable]
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}]);
+			
+			[Bindable]
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
+			
+			[Bindable]
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}]);
+			
+			[Bindable]
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
+			
+			[Bindable]
+			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'NAME'},{'code': 1, 'label': 'DATE'}, {'code': 2, 'label': 'VIEW_COUNT'}, {'code': 3, 'label': 'RATING'}]);
+			
+			[Bindable]
+			private var dpCommCompetence:ArrayCollection;
+			
+			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
+
+
+			public function onComplete():void
+			{
+				filterLanguage.selectedIndex=-1;
+				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+				
+				//languageSelector.selectedIndex=0;
+			}
+
+			public function set handleExercisesRetrieve(value:Boolean):void
+			{
+				//if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
+				//{
+				//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
+				_dataProvider=DataModel.getInstance().availableRecordableExercises;
+
+				createPagination();
+
+				//DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
+				//}
+			}
+
+			public function set retrieveCustomizedExercises(value:Boolean):void
+			{
+				//trace("get recordable exercises");
+				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+			}
+
+			public function createPagination():void
+			{
+				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
+				refreshDataProvider();
+			}
+
+			private function navigateToPage(event:MouseEvent):void
+			{
+				//Go to the page
+				_currentPage=int((event.target as Button).id);
+				//Refresh the pagination controls
+				createPagination();
+			}
+
+			public function refreshDataProvider():void
+			{
+				var current:int=_currentPage - 1;
+				var pageSize:int=DataModel.getInstance().pageSize;
+				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				exerciseListDataGroup.dataProvider=dataTemp;
+			}
+
+			private function changeHandler(event:Event):void
+			{
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+
+				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
+				URLManager.getInstance().redirect('/exercises/view/' + obj.exercisecode);
+				//callLater(updateVerticalScroll);
+			}
+
+			public function thumbSet(data:Object):String
+			{
+				return data.thumbnailUri;
+			}
+
+			public function updateVerticalScroll():void
+			{
+				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
+			}
+			
+			protected function onFilterDropdownChange(event:IndexChangeEvent):void{
+				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
+				var listItem:Object=dispatchingComponent.selectedItem;
+				
+				if (dispatchingComponent.id == difLevelDropdown.id){
+					_filterDif=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
+					filterExerciseList(_filterLang, _filterDif);
+				}
+			}
+
+			protected function filterLanguage_changeHandler(event:ListEvent):void
+			{
+				//Store the chosen language code
+				var lCode:String=(event.target as LanguageComboBox).selectedItem.code as String;
+				_filterLang=lCode;
+				filterExerciseList(_filterLang, _filterDif);
+			}
+
+			protected function filterExerciseList(lFilter:String, dFilter:int):void
+			{
+
+				var fullList:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
+				var filteredList:ArrayCollection=new ArrayCollection();
+				for each (var e:ExerciseVO in fullList)
+				{
+					if (lFilter && !dFilter)
+					{
+						if (e.language == lFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+					else if (dFilter && !lFilter)
+					{
+						if (e.difficulty == dFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+					else if (dFilter && lFilter)
+					{
+						if (e.difficulty == dFilter && e.language == lFilter)
+						{
+							filteredList.addItem(e);
+						}
+					}
+				}
+				_dataProvider=filteredList;
+				_currentPage=1;
+				createPagination();
+			}
+
+			protected function unfilterExerciseList():void
+			{
+				filterLanguage.selectedIndex=-1;
+				//filterDifficulty.selectedIndex=-1;
+				_filterLang=null;
+				_filterDif=0;
+				_dataProvider=DataModel.getInstance().availableRecordableExercises;
+				_currentPage=1;
+				createPagination();
+			}
+
+			protected function filterRemoveButton_clickHandler(event:MouseEvent):void
+			{
+				unfilterExerciseList();
+			}
+
+			public function removeFilters():void
+			{
+				unfilterExerciseList();
+				//filterButton.selected=false;
+			}
+
+			public function launchSearch(event:Event):void
+			{
+				DataModel.getInstance().searchField=searchField.text;
+				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
+				//{
+				//changeView(ViewChangeEvent.VIEW_SEARCH_MODULE, event);
+				URLManager.getInstance().redirect('search');
+				//}
+				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().availableRecordableExercisesRetrieved}"
+				destination="handleExercisesRetrieve"/>
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveCustomizedExercises"/>
+
+
+	<s:Label text="{resourceManager.getString('myResources','EXERCISES')}"
+			 styleName="h2"
+			 id="exerciseListTitleLabel"/>
+
+	<s:HGroup id="contents" width="100%">
+		<s:VGroup id="searchResultsGroup" width="100%" gap="16" paddingLeft="16" paddingRight="16">
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:HGroup width="100%">
+					<s:TextInput id="searchField"
+								 styleName="frm-input"
+								 width="100%"
+								 maxChars="100"
+								 enter="launchSearch(null)"/>
+					<s:Button label=""
+							  styleName="btn-primary"
+							  buttonMode="true"
+							  icon="/resources/images/iconmonstr-magnifier-5-icon-16.png"
+							  click="launchSearch(event)"/>
+				</s:HGroup>
+				<s:HGroup horizontalAlign="right" width="250" verticalAlign="middle">
+					<s:Label id="sortbylbl" text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
+					<view:EnhancedDropDownList id="sortByDropdown"
+											   skinClass="skins.BootstrapDropDownList"
+											   cornerRadius="3"
+											   borderColor="0xcccccc"
+											   requireSelection="true"
+											   localeAwareDataProvider="{dpSortField}"
+											   sortItems="true"
+											   change="onFilterDropdownChange(event)"/>
+				</s:HGroup>
+			</s:HGroup>
+
+			<s:List id="exerciseListDataGroup"
+					width="100%"
+					minHeight="0"
+					change="changeHandler(event)"
+					borderVisible="false"
+					skinClass="skins.TransparentBgListSkin"
+					enabled="{!DataModel.getInstance().recordingExercise}"
+					itemRenderer="modules.exercise.view.ExerciseItemRenderer"
+					dataProvider="{_dataProvider}">
+				<s:layout>
+					<s:TileLayout columnWidth="182"
+								  rowHeight="225"
+								  horizontalGap="20"
+								  verticalGap="20"/>
+				</s:layout>
+			</s:List>
+
+			<s:HGroup id="paginationBox"
+					  horizontalAlign="center"
+					  verticalAlign="middle"
+					  width="100%"
+					  height="100%"/>
+		</s:VGroup>
+
+		<s:VGroup id="filtersGroup">
+			<s:Panel id="langfilterCont" title="Filters" width="100%">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+				</s:layout>
+				<common:LanguageComboBox id="filterLanguage"
+										 change="filterLanguage_changeHandler(event)"/>
+				<view:EnhancedDropDownList id="difLevelDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   localeAwarePrompt="ALL_DIFFICULTIES"
+										   localeAwareDataProvider="{dpDifficultyLevel}"
+										   sortItems="true"
+										   change="onFilterDropdownChange(event)"
+										   width="100%"/>
+				<view:EnhancedDropDownList id="exerciseTypeDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   localeAwarePrompt="ALL_TYPES"
+										   localeAwareDataProvider="{dpExerciseType}"
+										   sortItems="true"
+										   change="onFilterDropdownChange(event)"
+										   width="100%"/>
+			</s:Panel>
+			
+			<s:Panel id="sitfilter" title="Narrow by situation" width="100%">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+				</s:layout>
+				<view:EnhancedDropDownList id="commSituationDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   localeAwareDataProvider="{dpCommSituation}"
+										   sortItems="true"
+										   change="onFilterDropdownChange(event)"
+										   width="100%"/>
+			</s:Panel>
+			
+			<skins:IconButton id="filterRemoveButton"
+								  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
+								  styleName="commonLinkButton"
+								  click="filterRemoveButton_clickHandler(event)"/>
+		</s:VGroup>
+	</s:HGroup>
+
+</s:VGroup>
