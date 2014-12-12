@@ -55,54 +55,15 @@
 							buttonMode="true"/>
 		</s:BorderContainer>
 		<skins:HorizontalSeparatorLine alpha="0.5"/>
-
-		<!--
-		<s:BorderContainer id="searchUploadBar"
-						   borderVisible="false"
-						   borderWeight="0"
-						   minHeight="0"
-						   width="100%"
-						   minWidth="1000"
-						   dropShadowVisible="true"
-						   backgroundColor="#268caa"
-						   backgroundAlpha="0.5">
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="200"
-									verticalAlign="middle"
-									paddingTop="4"
-									paddingBottom="4"
-									paddingRight="4"/>
-			</s:layout>
-
-
-
-			<s:TextInput id="searchField"
-						 styleName="searchTextInput"
-						 width="100%"
-						 maxChars="100"
-						 enter="launchSearch(null)"/>
-			<s:Button label="{resourceManager.getString('myResources','SEARCH')}"
-					  styleName="searchButton"
-					  buttonMode="true"
-					  enabled="true"
-					  click="launchSearch(event)"/>
-		</s:BorderContainer>
-		<skins:HorizontalSeparatorLine/>
-		-->
 	</s:VGroup>
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 
-			import modules.exercise.event.SearchEvent;
-			import events.VideoStopEvent;
-
 			import model.DataModel;
 
 			import mx.utils.URLUtil;
-
-			import skins.OldNavigationToggleButtonSkin;
 
 			[Bindable]
 			protected var _model:DataModel=DataModel.getInstance();

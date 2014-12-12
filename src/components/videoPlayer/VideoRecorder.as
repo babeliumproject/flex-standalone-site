@@ -23,6 +23,8 @@ package components.videoPlayer
 	import components.videoPlayer.events.babelia.SubtitlingEvent;
 	import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
 	
+	import events.FullStreamingEvent;
+	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.Matrix;
@@ -1296,7 +1298,44 @@ package components.videoPlayer
 		}
 		
 		public function resetComponent():void{
+			setSubtitle('');
+			videoSource='';
+			state=VideoRecorder.PLAY_STATE;
+			arrows=false;
 			
+			closeStreams();
+			closeConnection();
+		}
+		
+		private function closeStreams():void
+		{
+			destroyNetstream(_outNs);
+			destroyNetstream(_inNs);
+			destroyVideo(_video);
+		}
+		
+		private function destroyNetstream(nc:NetStreamClient):void{
+			if (nc && nc.netStream)
+			{
+				nc.netStream.attachCamera(null);
+				nc.netStream.attachAudio(null);
+				nc.netStream.close();
+				nc=null;
+			}
+		}
+		
+		private function destroyVideo(video:Video):void{
+			if(video){
+				video.attachNetStream(null);
+				video.attachCamera(null);
+				video.clear();
+				video=null;
+			}
+		}
+		
+		private function closeConnection():void
+		{
+			new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 		}
 	}
 }

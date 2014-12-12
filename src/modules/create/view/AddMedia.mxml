@@ -47,8 +47,6 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import events.UploadEvent;
-			
 			import model.DataModel;
 			
 			import modules.create.event.CreateEvent;

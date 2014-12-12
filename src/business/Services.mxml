@@ -46,11 +46,6 @@
 						 showBusyCursor="true"
 						 source="Exercise"/>
 
-		<mx:RemoteObject id="searchRO"
-						 destination="babeliumService"
-						 showBusyCursor="true"
-						 source="Search"/>
-
 		<mx:RemoteObject id="youtubeRO"
 						 destination="babeliumService"
 						 showBusyCursor="false"

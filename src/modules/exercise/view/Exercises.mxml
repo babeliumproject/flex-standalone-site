@@ -808,25 +808,6 @@
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
 
-	<s:BorderContainer styleName="sectionInfoBox"
-					   width="100%"
-					   minHeight="0">
-		<s:layout>
-			<s:VerticalLayout paddingTop="16"/>
-		</s:layout>
-		<s:Label text="{resourceManager.getString('myResources','EXERCISES')}"
-				 paddingLeft="16"
-				 paddingRight="16"
-				 styleName="sectionInfoTitleLabel"/>
-		<s:Label text="{resourceManager.getString('myResources','EXERCISE_SECTION_DESCRIPTION')}"
-				 paddingBottom="16"
-				 paddingLeft="16"
-				 paddingRight="16"/>
-		<skins:HorizontalSeparatorLine width="100%"/>
-	</s:BorderContainer>
-
-
-
 	<s:VGroup id="videoPlayerAndRecordingControls"
 			  width="100%"
 			  horizontalAlign="left"
@@ -839,7 +820,7 @@
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"
 				 width="{VP.width}"
-				 styleName="sectionTitleLabel"/>
+				 styleName="h2"/>
 		<!-- Video Player -->
 		<videoPlayer:VideoRecorder id="VP"
 										layoutDirection="ltr"

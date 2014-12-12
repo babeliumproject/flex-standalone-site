@@ -16,8 +16,6 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import mx.resources.ResourceManager;
-			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -29,6 +27,7 @@
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
 			
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
@@ -211,13 +210,15 @@
 
 			public function launchSearch(event:Event):void
 			{
-				DataModel.getInstance().searchField=searchField.text;
-				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
-				//{
-				//changeView(ViewChangeEvent.VIEW_SEARCH_MODULE, event);
-				URLManager.getInstance().redirect('search');
-				//}
-				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+				var terms:String = searchField.text;
+				if(!terms.length) return;
+				var tb:String = terms.replace(/[\r\n]+/g,"");
+				var ts:String = tb.replace(/[\s]+/g,"");
+				if(!ts.length) return;	
+				var te:String = encodeURIComponent(tb);
+				var tp:String = te.replace(/%20/g,"+");
+				
+				URLManager.getInstance().redirect('/exercises/search/'+tp);
 			}
 		]]>
 	</fx:Script>
@@ -311,7 +312,7 @@
 										   width="100%"/>
 			</s:Panel>
 			
-			<s:Panel id="sitfilter" title="Narrow by situation" width="100%">
+			<s:Panel id="sitfilter" title="Narrow by situation" width="100%" minHeight="20">
 				<s:layout>
 					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
 				</s:layout>

@@ -9,7 +9,6 @@
 
 	<fx:Script>
 		<![CDATA[
-			import events.UploadEvent;
 
 			import model.DataModel;
 

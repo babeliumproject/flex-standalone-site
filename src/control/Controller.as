@@ -1,12 +1,10 @@
 package control {
 	import com.adobe.cairngorm.control.FrontController;
 	
-	import commands.VideoStopCommand;
 	import commands.autoevaluation.*;
 	import commands.evaluation.*;
 	import commands.home.*;
 	import commands.main.*;
-	import commands.search.*;
 	import commands.userManagement.*;
 	import commands.videoSlice.*;
 	
@@ -63,9 +61,6 @@ package control {
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
-		
-			//Search management commands
-			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
 
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);
@@ -122,9 +117,6 @@ package control {
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW, GetExercisesReviewSubtitlesCommand);
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);
-			
-			// Video stop after tab changing
-			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);
 			
 		}
 
