@@ -20,7 +20,7 @@
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
 			import control.URLManager;
-			import control.CuePointManager;
+			import components.videoPlayer.CuePointManager;
 			
 			import events.*;
 			

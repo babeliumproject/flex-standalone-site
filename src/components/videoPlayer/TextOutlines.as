@@ -1,4 +1,4 @@
-package view
+package components.videoPlayer
 {
 	import flash.display.Sprite;
 	import flash.utils.ByteArray;

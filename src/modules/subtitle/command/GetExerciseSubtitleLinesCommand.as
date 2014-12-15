@@ -5,7 +5,7 @@ package modules.subtitle.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import control.CuePointManager;
+	import components.videoPlayer.CuePointManager;
 	
 	import modules.subtitle.event.SubtitleEvent;
 	

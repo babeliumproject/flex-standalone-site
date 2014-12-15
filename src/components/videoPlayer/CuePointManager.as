@@ -1,10 +1,10 @@
-package control
+package components.videoPlayer
 {
 	import modules.subtitle.service.SubtitleDelegate;
 	
 	import com.adobe.cairngorm.commands.ICommand;
 	
-	import events.CueManagerEvent;
+	import components.videoPlayer.events.CueManagerEvent;
 	
 	import flash.events.*;
 	import flash.net.*;

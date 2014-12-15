@@ -4,7 +4,7 @@ package modules.subtitle.view
 	import commands.cuepointManager.ShowHideSubtitleCommand;
 	
 	import control.URLManager;
-	import control.CuePointManager;
+	import components.videoPlayer.CuePointManager;
 	
 	import modules.exercise.event.ExerciseEvent;
 	import modules.subtitle.event.SubtitleEvent;

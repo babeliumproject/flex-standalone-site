@@ -3,14 +3,15 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:main="components.main.*"
-		  width="100%"
-		  creationComplete="onComplete()"
-		  xmlns:exercises1="commands.exercises.*"
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
+		  xmlns:view="modules.create.view.*"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  paddingTop="16" xmlns:view="modules.create.view.*">
+		  paddingTop="16"
+		  implements="modules.IGroupInterface"
+		  width="100%"
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
@@ -28,63 +29,126 @@
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
 			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			import mx.utils.URLUtil;
 			
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
 			
 			import vo.ExerciseVO;
 
+			public static const LANGUAGE_PRACTICE:int=0;
+			public static const OTHER:int=0;
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
 
-			private var _filteredResults:ArrayCollection;
-			private var _filterLang:String;
-			private var _filterDif:int;
-
+			public var searchTerm:String;
+			public var diffFilter:int;
+			public var typeFilter:int;
+			public var langFilter:String;
+			public var sitFilter:int;
+			public var sortFilter:int;
+			private var comptFilters:Array;
+			
 			[Bindable]
 			private var _currentPage:int=1;
-			
+
 			[Bindable]
 			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}]);
-			
+
 			[Bindable]
 			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
-			
+
 			[Bindable]
 			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}]);
-			
+
 			[Bindable]
 			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
-			
+
 			[Bindable]
-			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'NAME'},{'code': 1, 'label': 'DATE'}, {'code': 2, 'label': 'VIEW_COUNT'}, {'code': 3, 'label': 'RATING'}]);
-			
+			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'NAME'}, {'code': 1, 'label': 'DATE'}, {'code': 2, 'label': 'VIEW_COUNT'}, {'code': 3, 'label': 'RATING'}]);
+
 			[Bindable]
 			private var dpCommCompetence:ArrayCollection;
-			
+
+			[Bindable]
+			private var dpLangs:ArrayCollection;
+
 			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 
+			private var _descriptors:Array;
 
 			public function onComplete():void
 			{
-				filterLanguage.selectedIndex=-1;
-				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
-				
-				//languageSelector.selectedIndex=0;
+				getDescriptorCodesFromResourceFile();
+				getLangCodesFromResourceFile();
+			}
+
+			private function getDescriptorCodesFromResourceFile():void
+			{
+				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
+					//Filter the keys that match the descriptor pattern
+					var matches:Array=key.match(descriptorPattern);
+					if (matches && matches.length)
+					{
+						if (!_descriptors)
+							_descriptors=new Array();
+
+						var situation:int=int(matches[1]) - 1;
+						if (!_descriptors[situation])
+							_descriptors[situation]=new Array();
+
+						var level:int=int(matches[2]) - 1;
+						if (!_descriptors[situation][level])
+							_descriptors[situation][level]=new Array();
+
+						var competence:int=int(matches[3]) - 1;
+						if (!_descriptors[situation][level][competence])
+							_descriptors[situation][level][competence]=new Array();
+
+						var dnumber:int=int(matches[4]) - 1;
+						_descriptors[situation][level][competence][dnumber]=key;
+					}
+				}
+			}
+			
+			private function getLangCodesFromResourceFile():void{
+				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var pattern:RegExp=/LANGUAGE_(\w{2})$/;
+				var tmpLangs:Array= new Array();
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
+					//Filter the keys that match the descriptor pattern
+					var matches:Array=key.match(pattern);
+					if(matches && matches.length){
+						tmpLangs.push({'code': (matches[1] as String).toLowerCase(), 'label': key});
+					}
+				}
+				dpLangs=new ArrayCollection(tmpLangs);	
+			}
+
+			public function resetGroup():void
+			{
+				langFilterDD.selectedIndex=-1;
+				exerciseTypeFilterDD.selectedIndex=-1;
+				commSituationFilterDD.selectedIndex=-1;
+
+				diffFilter=0;
+				typeFilter=0;
+				langFilter=null;
 			}
 
 			public function set handleExercisesRetrieve(value:Boolean):void
 			{
-				//if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
-				//{
-				//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
 
 				createPagination();
-
-				//DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
-				//}
 			}
 
 			public function set retrieveCustomizedExercises(value:Boolean):void
@@ -101,9 +165,7 @@
 
 			private function navigateToPage(event:MouseEvent):void
 			{
-				//Go to the page
 				_currentPage=int((event.target as Button).id);
-				//Refresh the pagination controls
 				createPagination();
 			}
 
@@ -117,11 +179,8 @@
 
 			private function changeHandler(event:Event):void
 			{
-				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
-
-				//new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, obj).dispatch();
-				URLManager.getInstance().redirect('/exercises/view/' + obj.exercisecode);
-				//callLater(updateVerticalScroll);
+				var item:Object=List(event.target).selectedItem;
+				URLManager.getInstance().redirect('/exercises/view/' + item.exercisecode);
 			}
 
 			public function thumbSet(data:Object):String
@@ -129,75 +188,112 @@
 				return data.thumbnailUri;
 			}
 
-			public function updateVerticalScroll():void
+			protected function onFilterDropdownChange(event:IndexChangeEvent):void
 			{
-				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
-			}
-			
-			protected function onFilterDropdownChange(event:IndexChangeEvent):void{
 				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
 				var listItem:Object=dispatchingComponent.selectedItem;
-				
-				if (dispatchingComponent.id == difLevelDropdown.id){
-					_filterDif=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
-					filterExerciseList(_filterLang, _filterDif);
-				}
-			}
 
-			protected function filterLanguage_changeHandler(event:ListEvent):void
-			{
-				//Store the chosen language code
-				var lCode:String=(event.target as LanguageComboBox).selectedItem.code as String;
-				_filterLang=lCode;
-				filterExerciseList(_filterLang, _filterDif);
-			}
-
-			protected function filterExerciseList(lFilter:String, dFilter:int):void
-			{
-
-				var fullList:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
-				var filteredList:ArrayCollection=new ArrayCollection();
-				for each (var e:ExerciseVO in fullList)
+				if (dispatchingComponent.id == difLevelFilterDD.id)
 				{
-					if (lFilter && !dFilter)
-					{
-						if (e.language == lFilter)
-						{
-							filteredList.addItem(e);
-						}
-					}
-					else if (dFilter && !lFilter)
-					{
-						if (e.difficulty == dFilter)
-						{
-							filteredList.addItem(e);
-						}
-					}
-					else if (dFilter && lFilter)
-					{
-						if (e.difficulty == dFilter && e.language == lFilter)
-						{
-							filteredList.addItem(e);
-						}
-					}
+					diffFilter=difLevelFilterDD && difLevelFilterDD.selectedItem != undefined ? difLevelFilterDD.selectedItem['code'] : 0;
 				}
-				_dataProvider=filteredList;
-				_currentPage=1;
-				createPagination();
+				if (dispatchingComponent.id == exerciseTypeFilterDD.id)
+				{
+					typeFilter=exerciseTypeFilterDD && exerciseTypeFilterDD.selectedItem != undefined ? exerciseTypeFilterDD.selectedItem['code'] : 0;
+				}
+				if (dispatchingComponent.id == langFilterDD.id)
+				{
+					langFilter=langFilterDD && langFilterDD.selectedItem != undefined ? langFilterDD.selectedItem['code'] : null;
+				}
+				if (dispatchingComponent.id == sortByDropdown.id)
+				{
+					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : 0;
+				}
+
+				if (typeFilter != LANGUAGE_PRACTICE && typeFilter != OTHER)
+				{
+					sitfilterPnl.includeInLayout=true;
+					sitfilterPnl.visible=true;
+					comptfilterPnl.includeInLayout=true;
+					comptfilterPnl.visible=true;
+				}
+				else
+				{
+					sitfilterPnl.includeInLayout=false;
+					sitfilterPnl.visible=false;
+					comptfilterPnl.includeInLayout=false;
+					comptfilterPnl.visible=false;
+
+					sitFilter=0;
+					comptFilters=null;
+				}
+
+				buildSearchQuery();
+			}
+
+			protected function buildSearchQuery():void
+			{
+				var url:String='/exercises';
+				if (searchTerm)
+				{
+					url+='/search/';
+				}
+				else if (langFilter || diffFilter || typeFilter)
+				{
+					url+='/filter/';
+				}
+
+				var params:Object=new Object();
+				if(langFilter)
+				{
+					//var litem:Object=findInCollection(dpLangs, findCode(langFilter));
+					params.lang=langFilter;
+				}
+				if(diffFilter)
+				{
+					params.difficulty=diffFilter;
+				}
+				if(typeFilter)
+				{
+					params.type=typeFilter;
+				}
+				if(sitFilter)
+				{
+					params.situation=sitFilter;
+				}
+				if(sortFilter){
+					params.sort=sortFilter;
+				}
+				
+				var fragment:String = URLUtil.objectToString(params);
+				trace(ObjectUtil.toString(fragment));
+
+				URLManager.getInstance().redirect(url+fragment);
+			}
+
+			public function findInCollection(c:ArrayCollection, find:Function):Object
+			{
+				var matches:Array=c.source.filter(find);
+				return (matches.length > 0 ? matches[0] : null);
+			}
+
+			public function findCode(code:*):Function
+			{
+				return function(element:*, index:int, array:Array):Boolean
+				{
+					return element.code == code;
+				}
 			}
 
 			protected function unfilterExerciseList():void
 			{
-				filterLanguage.selectedIndex=-1;
-				//filterDifficulty.selectedIndex=-1;
-				_filterLang=null;
-				_filterDif=0;
+				langFilterDD.selectedIndex=-1;
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
 				_currentPage=1;
 				createPagination();
 			}
 
-			protected function filterRemoveButton_clickHandler(event:MouseEvent):void
+			protected function removeAllFilters(event:MouseEvent):void
 			{
 				unfilterExerciseList();
 			}
@@ -205,20 +301,23 @@
 			public function removeFilters():void
 			{
 				unfilterExerciseList();
-				//filterButton.selected=false;
 			}
 
-			public function launchSearch(event:Event):void
+			public function onSearchTextInputChange(event:Event):void
 			{
-				var terms:String = searchField.text;
-				if(!terms.length) return;
-				var tb:String = terms.replace(/[\r\n]+/g,"");
-				var ts:String = tb.replace(/[\s]+/g,"");
-				if(!ts.length) return;	
-				var te:String = encodeURIComponent(tb);
-				var tp:String = te.replace(/%20/g,"+");
-				
-				URLManager.getInstance().redirect('/exercises/search/'+tp);
+				var terms:String=searchField.text;
+				if (!terms.length)
+					return;
+				var tb:String=terms.replace(/[\r\n]+/g, "");
+				var ts:String=tb.replace(/[\s]+/g, "");
+				if (!ts.length)
+					return;
+				var te:String=encodeURIComponent(tb);
+				var tp:String=te.replace(/%20/g, "+");
+
+				searchTerm=tp;
+
+				buildSearchQuery();
 			}
 		]]>
 	</fx:Script>
@@ -233,23 +332,33 @@
 			 styleName="h2"
 			 id="exerciseListTitleLabel"/>
 
-	<s:HGroup id="contents" width="100%">
-		<s:VGroup id="searchResultsGroup" width="100%" gap="16" paddingLeft="16" paddingRight="16">
-			<s:HGroup width="100%" verticalAlign="middle">
+	<s:HGroup id="contents"
+			  width="100%">
+		<s:VGroup id="searchResultsGroup"
+				  width="100%"
+				  gap="16"
+				  paddingLeft="16"
+				  paddingRight="16">
+			<s:HGroup width="100%"
+					  verticalAlign="middle">
 				<s:HGroup width="100%">
 					<s:TextInput id="searchField"
 								 styleName="frm-input"
 								 width="100%"
 								 maxChars="100"
-								 enter="launchSearch(null)"/>
-					<s:Button label=""
+								 enter="onSearchTextInputChange(null)"/>
+					<s:Button id="searchbtn"
+							  label=""
 							  styleName="btn-primary"
 							  buttonMode="true"
-							  icon="/resources/images/iconmonstr-magnifier-5-icon-16.png"
-							  click="launchSearch(event)"/>
+							  click="onSearchTextInputChange(event)"
+							  icon="/resources/images/iconmonstr-magnifier-5-icon-16.png"/>
 				</s:HGroup>
-				<s:HGroup horizontalAlign="right" width="250" verticalAlign="middle">
-					<s:Label id="sortbylbl" text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
+				<s:HGroup horizontalAlign="right"
+						  width="250"
+						  verticalAlign="middle">
+					<s:Label id="sortbylbl"
+							 text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
 					<view:EnhancedDropDownList id="sortByDropdown"
 											   skinClass="skins.BootstrapDropDownList"
 											   cornerRadius="3"
@@ -286,13 +395,25 @@
 		</s:VGroup>
 
 		<s:VGroup id="filtersGroup">
-			<s:Panel id="langfilterCont" title="Filters" width="100%">
+			<s:Panel id="langfilterCont"
+					 title="Filters"
+					 width="100%">
 				<s:layout>
-					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
 				</s:layout>
-				<common:LanguageComboBox id="filterLanguage"
-										 change="filterLanguage_changeHandler(event)"/>
-				<view:EnhancedDropDownList id="difLevelDropdown"
+				<view:EnhancedDropDownList id="langFilterDD"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   localeAwarePrompt="ALL_LANGUAGES"
+										   localeAwareDataProvider="{dpLangs}"
+										   sortItems="true"
+										   change="onFilterDropdownChange(event)"
+										   width="100%"/>
+				<view:EnhancedDropDownList id="difLevelFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -301,7 +422,7 @@
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
-				<view:EnhancedDropDownList id="exerciseTypeDropdown"
+				<view:EnhancedDropDownList id="exerciseTypeFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -311,12 +432,20 @@
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
 			</s:Panel>
-			
-			<s:Panel id="sitfilter" title="Narrow by situation" width="100%" minHeight="20">
+
+			<s:Panel id="sitfilterPnl"
+					 title="{ResourceManager.getInstance().getString('myResources','NARROW_BY_SITUATION')}"
+					 width="100%"
+					 minHeight="20"
+					 visible="false"
+					 includeInLayout="false">
 				<s:layout>
-					<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
 				</s:layout>
-				<view:EnhancedDropDownList id="commSituationDropdown"
+				<view:EnhancedDropDownList id="commSituationFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -326,11 +455,25 @@
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
 			</s:Panel>
-			
-			<skins:IconButton id="filterRemoveButton"
-								  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
-								  styleName="commonLinkButton"
-								  click="filterRemoveButton_clickHandler(event)"/>
+
+			<s:Panel id="comptfilterPnl"
+					 title="{ResourceManager.getInstance().getString('myResources','NARROW_BY_COMPETENCE')}"
+					 width="100%"
+					 minHeight="20"
+					 visible="false"
+					 includeInLayout="false">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
+				</s:layout>
+			</s:Panel>
+
+			<s:Button id="filterRemoveButton"
+					  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
+					  styleName="btn-link"
+					  click="removeAllFilters(event)"/>
 		</s:VGroup>
 	</s:HGroup>
 

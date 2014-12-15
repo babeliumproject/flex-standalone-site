@@ -69,7 +69,6 @@ package modules.create.view
 
 		override protected function commitProperties():void
 		{
-
 			if (sortItemsChanged)
 			{
 				sortItemsChanged=false;
@@ -83,9 +82,13 @@ package modules.create.view
 						{
 							internalIndex=oldSelectedItem[this.indexField];
 						}
-						if (dataProvider.length)
-						{
-							(dataProvider as ArrayCollection).source.sort(this.localizedSorting);
+					}
+					if (dataProvider && dataProvider.length)
+					{
+						//Sort the collection
+						(dataProvider as ArrayCollection).source.sort(this.localizedSorting);
+						//Restore the internal sorting index
+						if(internalIndex !=-1){
 							var collection:ICollectionView=new ListCollectionView(IList(dataProvider));
 							var iterator:IViewCursor=collection.createCursor();
 							while (!iterator.afterLast)
@@ -99,7 +102,7 @@ package modules.create.view
 								iterator.moveNext();
 							}
 						}
-					}
+					}	
 				}
 			}
 

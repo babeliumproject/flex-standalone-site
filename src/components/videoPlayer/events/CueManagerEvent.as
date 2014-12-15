@@ -1,4 +1,4 @@
-package events
+package components.videoPlayer.events
 {
 	
 	import com.adobe.cairngorm.control.CairngormEvent;

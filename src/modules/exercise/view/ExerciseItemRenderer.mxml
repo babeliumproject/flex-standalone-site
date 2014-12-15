@@ -83,7 +83,7 @@
 			import com.adobe.utils.StringUtil;
 
 			import control.URLManager;
-			import control.CuePointManager;
+			import components.videoPlayer.CuePointManager;
 
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;

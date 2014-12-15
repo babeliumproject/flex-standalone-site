@@ -26,9 +26,9 @@
 			import components.videoPlayer.events.babelia.StreamEvent;
 			
 			import control.URLManager;
-			import control.CuePointManager;
+			import components.videoPlayer.CuePointManager;
 			
-			import events.CueManagerEvent;
+			import components.videoPlayer.events.CueManagerEvent;
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
 			

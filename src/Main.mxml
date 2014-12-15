@@ -63,15 +63,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 			[Bindable]
 			public var appModelLocator:DataModel;
-			[Bindable]
-			public var cuePointManager:CuePointManager;
 			
 
 			//Initialization method
 			private function init():void
 			{
 				appModelLocator=DataModel.getInstance();
-				cuePointManager=CuePointManager.getInstance();
 				
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
