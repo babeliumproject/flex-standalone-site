@@ -107,8 +107,8 @@ package components.videoPlayer
 		private const DEFAULT_VOLUME:Number=40;
 		private const COUNTDOWN_TIMER_SECS:int=5;
 
-		private var _outNs:NetStreamClient;
-		private var _inNs:NetStreamClient;
+		private var _recordns:NetStreamClient;
+		private var _secondns:NetStreamClient;
 		private var _secondStreamSource:String;
 
 		private var _mic:Microphone;
@@ -131,7 +131,6 @@ package components.videoPlayer
 
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
-
 	
 
 		public static const SECONDSTREAM_READY_STATE:int=0;
@@ -424,10 +423,10 @@ package components.videoPlayer
 				(flag) ? _mic.gain=0 : _mic.gain=DEFAULT_VOLUME;
 			else if (state == PLAY_BOTH_STATE)
 			{
-				if (flag && _inNs && _inNs.netStream){
-					_inNs.netStream.soundTransform=new SoundTransform(0);
-				}else if (_inNs && _inNs.netStream){
-					_inNs.netStream.soundTransform=new SoundTransform(DEFAULT_VOLUME / 100);
+				if (flag && _secondns && _secondns.netStream){
+					_secondns.netStream.soundTransform=new SoundTransform(0);
+				}else if (_secondns && _secondns.netStream){
+					_secondns.netStream.soundTransform=new SoundTransform(DEFAULT_VOLUME / 100);
 				}
 			}
 		}
@@ -694,10 +693,10 @@ package components.videoPlayer
 				_roleTalkingPanel.pauseTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
-				_outNs.netStream.pause();
+				_recordns.netStream.pause();
 
 			if (state == PLAY_BOTH_STATE){
-				_inNs.netStream.pause();
+				_secondns.netStream.pause();
 			}
 		}
 
@@ -714,10 +713,10 @@ package components.videoPlayer
 				_roleTalkingPanel.resumeTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled) // TODO: test
-				_outNs.netStream.resume();
+				_recordns.netStream.resume();
 
 			if (state == PLAY_BOTH_STATE){
-				_inNs.netStream.resume();
+				_secondns.netStream.resume();
 			}
 		}
 
@@ -734,13 +733,13 @@ package components.videoPlayer
 				_roleTalkingPanel.stopTalk();
 
 			if (state & RECORD_FLAG && _micCamEnabled)
-				_outNs.netStream.close();
+				_recordns.netStream.close();
 
 			if (state == PLAY_BOTH_STATE)
 			{
-				if (_inNs && _inNs.netStream)
+				if (_secondns && _secondns.netStream)
 				{
-					_inNs.netStream.play(false);
+					_secondns.netStream.play(false);
 				}
 			}
 
@@ -751,10 +750,10 @@ package components.videoPlayer
 		{
 			super.endVideo();
 
-			if (state == PLAY_BOTH_STATE && _inNs && _inNs.netStream)
+			if (state == PLAY_BOTH_STATE && _secondns && _secondns.netStream)
 			{
-				_inNs.netStream.dispose();
-				_inNs=null;
+				_secondns.netStream.dispose();
+				_secondns=null;
 			}
 		}
 
@@ -1026,7 +1025,7 @@ package components.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				_outNs=new NetStreamClient(_nc,"outNs");
+				_recordns=new NetStreamClient(_nc,"outNs");
 				disableControls();
 			}
 			
@@ -1038,7 +1037,7 @@ package components.videoPlayer
 				//	splitVideoPanel();
 				_camVideo.visible=false;
 				_micImage.visible=false;
-				_outNs=new NetStreamClient(_nc,"outNs");
+				_recordns=new NetStreamClient(_nc,"outNs");
 			}
 
 			_micActivityBar.visible=true;
@@ -1065,16 +1064,16 @@ package components.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				_outNs.netStream.attachAudio(_mic);
+				_recordns.netStream.attachAudio(_mic);
 				muteRecording(true); // mic starts muted
 			}
 
 			if (state == RECORD_BOTH_STATE)
-				_outNs.netStream.attachCamera(_camera);
+				_recordns.netStream.attachCamera(_camera);
 
 			_ppBtn.State=PlayButton.PAUSE_STATE;
 
-			_outNs.netStream.publish(responseFilename, "record");
+			_recordns.netStream.publish(responseFilename, "record");
 
 			trace("[INFO] Response stream: Started recording " + _fileName);
 
@@ -1254,10 +1253,10 @@ package components.videoPlayer
 		*/
 		
 		public function unattachUserDevices():void{
-			if (_outNs && _outNs.netStream)
+			if (_recordns && _recordns.netStream)
 			{
-				_outNs.netStream.attachCamera(null);
-				_outNs.netStream.attachAudio(null);
+				_recordns.netStream.attachCamera(null);
+				_recordns.netStream.attachAudio(null);
 				_camVideo.clear();
 				_camVideo.attachCamera(null);
 			}
@@ -1268,21 +1267,21 @@ package components.videoPlayer
 		 **/
 		private function playSecondStream():void
 		{
-			if (_inNs && _inNs.netStream){
-				_inNs.netStream.dispose();
+			if (_secondns && _secondns.netStream){
+				_secondns.netStream.dispose();
 			}
 
 			if (_nc && _nc.connected)
 			{
-				_inNs=new NetStreamClient(_nc,"inNs");
-				_inNs.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
+				_secondns=new NetStreamClient(_nc,"inNs");
+				_secondns.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
 
 				_camVideo.clear();
-				_camVideo.attachNetStream(_inNs.netStream);
+				_camVideo.attachNetStream(_secondns.netStream);
 				_camVideo.visible=true;
 				_micImage.visible=true;
 
-				_inNs.netStream.play(_secondStreamSource);
+				_secondns.netStream.play(_secondStreamSource);
 
 				// Needed for video mute
 				muteRecording(false);
@@ -1297,7 +1296,7 @@ package components.videoPlayer
 			}
 		}
 		
-		public function resetComponent():void{
+		override public function resetComponent():void{
 			setSubtitle('');
 			videoSource='';
 			state=VideoRecorder.PLAY_STATE;
@@ -1309,8 +1308,8 @@ package components.videoPlayer
 		
 		private function closeStreams():void
 		{
-			destroyNetstream(_outNs);
-			destroyNetstream(_inNs);
+			destroyNetstream(_recordns);
+			destroyNetstream(_secondns);
 			destroyVideo(_video);
 		}
 		

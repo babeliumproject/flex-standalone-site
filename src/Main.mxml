@@ -47,7 +47,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<![CDATA[
 			import control.*;
 			
-			import mx.utils.ObjectUtil;
+			import org.as3commons.logging.api.LOGGER_FACTORY;
+			import org.as3commons.logging.setup.HierarchicalSetup;
+			import org.as3commons.logging.setup.LevelTargetSetup;
+			import org.as3commons.logging.setup.LogSetupLevel;
+			import org.as3commons.logging.setup.log4j.Log4JStyleSetup;
+			import org.as3commons.logging.setup.log4j.log4jPropertiesToSetup;
 			
 			import events.LoginEvent;
 			import events.PreferenceEvent;
@@ -56,6 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
+			import mx.utils.ObjectUtil;
 			
 			import skins.ApplicationCustomSkin;
 
@@ -81,8 +87,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private function onComplete():void
 			{
 				appModelLocator.appBody=content;
-				
+				loadLoggingConfig('logging.properties');
 			}
+			
+			private function loadLoggingConfig(url:String):void{
+				var loader:URLLoader = new URLLoader();
+				loader.addEventListener(Event.COMPLETE, parseLoggingConfig);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, urlNotAvailable);
+				loader.load(new URLRequest(url));
+			}
+			
+			private function parseLoggingConfig(event:Event):void{
+				LOGGER_FACTORY.setup = log4jPropertiesToSetup(event.target.data);
+			}
+			
+			private function urlNotAvailable(e:IOErrorEvent):void{
+				trace("Couldn't load the specified resource from the url. "+e.text);
+			}
+			
 		]]>
 	</fx:Script>
 

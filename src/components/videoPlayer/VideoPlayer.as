@@ -554,8 +554,7 @@ package components.videoPlayer
 
 		public function disconnectFromStreamingService():void
 		{
-			if (DataModel.getInstance().netConnection.connected)
-				new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
+			new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 		}
 
 		private function netStatus(event:NetStatusEvent):void
@@ -966,6 +965,10 @@ package components.videoPlayer
 			_video.attachNetStream(null);
 			_video.visible=false;
 			_eTime.updateElapsedTime(0, 0);
+		}
+		
+		public function resetComponent():void{
+			
 		}
 	}
 }
