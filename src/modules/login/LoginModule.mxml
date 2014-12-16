@@ -15,6 +15,8 @@
 		<![CDATA[
 			import control.URLManager;
 			
+			import vo.NewUserVO;
+			
 			import events.RegisterUserEvent;
 			
 			import model.DataModel;
@@ -118,7 +120,7 @@
 						var user:Object;
 						user.username=parameters.user;
 						user.hash=parameters.hash;
-						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user).dispatch();
+						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user as NewUserVO).dispatch();
 					}
 				}
 			}
