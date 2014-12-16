@@ -27,7 +27,6 @@ require_once 'utils/SessionValidation.php';
 require_once 'utils/CosineMeasure.php';
 
 require_once 'vo/ExerciseVO.php';
-require_once 'vo/ExerciseRoleVO.php';
 require_once 'vo/SubtitleLineVO.php';
 require_once 'vo/SubtitleAndSubtitleLinesVO.php';
 require_once 'vo/UserVO.php';

@@ -915,7 +915,9 @@ package components.videoPlayer
 		private function prepareDevices():void
 		{
 			_userdevmgr = new UserDeviceManager();
-			_userdevmgr.useMicAndCamera=true;
+			
+			//Use webcam when: state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE
+			_userdevmgr.useMicAndCamera= (state == RECORD_MIC_STATE) ? false : true;
 			_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
 			_userdevmgr.initDevices();
 		}
@@ -925,10 +927,10 @@ package components.videoPlayer
 			_micCamEnabled=_userdevmgr.deviceAccessGranted;
 			if (state == RECORD_BOTH_STATE || state == UPLOAD_MODE_STATE)
 			{
-				_camera=DataModel.getInstance().camera;
+				_camera=_userdevmgr.camera;
 				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
 			}
-			_mic=DataModel.getInstance().microphone;
+			_mic=_userdevmgr.microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setLoopBack(true);
 			_mic.setSilenceLevel(0, 60000000);

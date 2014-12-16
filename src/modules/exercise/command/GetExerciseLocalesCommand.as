@@ -5,9 +5,9 @@ package modules.exercise.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.exercise.event.ExerciseEvent;
-	
 	import model.DataModel;
+	
+	import modules.exercise.event.ExerciseEvent;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -21,12 +21,14 @@ package modules.exercise.command
 
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseDelegate(this).getExerciseLocales((event as ExerciseEvent).exercise);
+			var mediaid:int = (event as ExerciseEvent).exercise.id;
+			new ExerciseDelegate(this).getExerciseLocales(mediaid);
 		}
 		
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
+			
 			if (result is Array && (result as Array).length > 0 )
 			{
 				var resultList:Array = result as Array;

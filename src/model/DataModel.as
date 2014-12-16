@@ -166,6 +166,11 @@ package model
 		public var numberOfPagesNav:int=7; //This number must be odd and greater than three
 
 		//The info of the current video
+		
+		[Bindable]
+		public var watchExerciseDataRetrieved:Boolean;
+		public var watchExerciseData:Object;
+		
 		[Bindable]
 		public var currentExercise:ArrayCollection=new ArrayCollection(new Array(null, null));
 		[Bindable]

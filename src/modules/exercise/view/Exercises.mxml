@@ -21,14 +21,14 @@
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
+			import components.videoPlayer.CuePointManager;
+			import components.videoPlayer.events.CueManagerEvent;
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
 			
 			import control.URLManager;
-			import components.videoPlayer.CuePointManager;
 			
-			import components.videoPlayer.events.CueManagerEvent;
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
 			
@@ -448,31 +448,27 @@
 			 **/
 			private function set onExerciseSelected(value:Boolean):void
 			{
+				//Reset the videoplayer and the panels
+				recordingError();
 
-				if (value == true)
-				{
-					//Reset the videoplayer and the panels
-					recordingError();
+				// Retrieving selected exercise information
+				var tmp:ExerciseVO=DataModel.getInstance().watchExerciseData as ExerciseVO;
+				trace(ObjectUtil.toString(tmp));
+				_exerciseName=tmp.exercisecode;
+				_exerciseTitle=tmp.title;
+				_mediaId=tmp.media[0].id;
+				_currentExercise=tmp;
 
-					// Retrieving selected exercise information
-					var tmp:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.RECORDING_MODULE) as ExerciseVO;
-					_exerciseName=tmp.exercisecode;
-					_exerciseTitle=tmp.title;
-					_mediaId=tmp.media[0].id;
-					_currentExercise=tmp;
+				
+				// Need to retrieve again exercise's information
+				_rolesReady=false;
+				_localesReady=false;
+				_cueManagerReady=false;
 
-					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
-
-					// Need to retrieve again exercise's information
-					_rolesReady=false;
-					_localesReady=false;
-					_cueManagerReady=false;
-
-					showSelectedExercise();
-					prepareExercise();
-					resetCueManager();
-					ratingShareReport.exerciseData=tmp;
-				}
+				showSelectedExercise();
+				prepareExercise();
+				resetCueManager();
+				ratingShareReport.exerciseData=tmp;
 			}
 
 			/**
@@ -792,7 +788,7 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().watchExerciseDataRetrieved}"
 				destination="this.onExerciseSelected"/>
 	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
 				destination="this.onTabChange"/>

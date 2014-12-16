@@ -21,6 +21,8 @@ package modules.exercise.command
 	public class ExerciseSelectedCommand implements ICommand, IResponder
 	{
 		
+		private var dmodel:DataModel=DataModel.getInstance();
+		
 		public function execute(event:CairngormEvent):void
 		{
 			var exercisehash:String = (event as ExerciseEvent).exercise.exercisecode;
@@ -33,11 +35,8 @@ package modules.exercise.command
 			
 			if (result)
 			{
-				DataModel.getInstance().currentExercise.setItemAt(result, 1);
-				DataModel.getInstance().currentExerciseRetrieved.setItemAt(true,1);
-				trace(ObjectUtil.toString(result));
-				//DataModel.getInstance().currentExercise.setItemAt(selectedEx, 1);
-				//DataModel.getInstance().currentExerciseRetrieved.setItemAt(true, 1);
+				dmodel.watchExerciseData=result;
+				dmodel.watchExerciseDataRetrieved=!dmodel.watchExerciseDataRetrieved;
 			} else {
 				//The exercise was not found or you don't have permission to see the requested exercise
 			}

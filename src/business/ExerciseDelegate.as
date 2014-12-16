@@ -45,9 +45,9 @@ package business
 			pendingCall.addResponder(responder);
 		}
 
-		public function getExerciseLocales(exercise:ExerciseVO):void{
+		public function getExerciseLocales(mediaid:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getExerciseLocales(exercise.id);
+			var pendingCall:AsyncToken=service.getExerciseLocales(mediaid);
 			pendingCall.addResponder(responder);
 		}
 		
