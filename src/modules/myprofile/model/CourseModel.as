@@ -1,4 +1,4 @@
-package modules.dashboard.model
+package modules.myprofile.model
 {
 	import mx.collections.ArrayCollection;
 

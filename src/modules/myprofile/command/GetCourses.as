@@ -1,13 +1,13 @@
-package modules.dashboard.command
+package modules.myprofile.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
 	
-	import modules.dashboard.event.CourseEvent;
-	import modules.dashboard.model.CourseModel;
-	import modules.dashboard.service.CourseDelegate;
+	import modules.myprofile.event.CourseEvent;
+	import modules.myprofile.model.CourseModel;
+	import modules.myprofile.service.CourseDelegate;
 	
 	import mx.collections.ArrayCollection;
 	import mx.messaging.messages.RemotingMessage;

@@ -21,7 +21,7 @@ package modules.exercise.command
 
 		public function execute(event:CairngormEvent):void
 		{
-			var mediaid:int = (event as ExerciseEvent).exercise.id;
+			var mediaid:int = (event as ExerciseEvent).params.id;
 			new ExerciseDelegate(this).getExerciseLocales(mediaid);
 		}
 		

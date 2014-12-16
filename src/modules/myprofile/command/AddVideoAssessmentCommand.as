@@ -1,4 +1,4 @@
-package commands.evaluation
+package modules.myprofile.command
 {
 	import business.EvaluationDelegate;
 	
@@ -17,19 +17,18 @@ package commands.evaluation
 	import view.common.CustomAlert;
 	
 	import vo.UserVO;
-
-	public class AddAssessmentCommand implements ICommand, IResponder
+	
+	public class AddVideoAssessmentCommand implements ICommand, IResponder
 	{
-		private var dataModel:DataModel=DataModel.getInstance();
-
+		private var dataModel:DataModel = DataModel.getInstance();
+		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).addAssessment((event as EvaluationEvent).evaluation);
+			new EvaluationDelegate(this).addVideoAssessment((event as EvaluationEvent).evaluation);
 		}
-
+		
 		public function result(data:Object):void
 		{
-
 			var result:Object=data.result;
 			if (!result is UserVO)
 			{
@@ -44,7 +43,7 @@ package commands.evaluation
 				dataModel.creditUpdateRetrieved=true;
 			}
 		}
-
+		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));

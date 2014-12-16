@@ -1,4 +1,4 @@
-package modules.dashboard.event
+package modules.myprofile.event
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	

@@ -39,9 +39,9 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getRecordableExercises():void{
+		public function getRecordableExercises(params:Object):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getRecordableExercises();
+			var pendingCall:AsyncToken=service.getRecordableExercises(params);
 			pendingCall.addResponder(responder);
 		}
 

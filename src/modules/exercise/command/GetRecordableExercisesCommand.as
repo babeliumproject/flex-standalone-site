@@ -7,6 +7,8 @@ package modules.exercise.command
 	
 	import model.DataModel;
 	
+	import modules.exercise.event.ExerciseEvent;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -24,7 +26,8 @@ package modules.exercise.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseDelegate(this).getRecordableExercises();
+			var params:Object=(event as ExerciseEvent).params;
+			new ExerciseDelegate(this).getRecordableExercises(params);
 		}
 		
 		public function result(data:Object):void

@@ -1,4 +1,4 @@
-package commands.evaluation
+package modules.myprofile.command
 {
 	import business.EvaluationDelegate;
 	
@@ -17,14 +17,13 @@ package commands.evaluation
 	
 	import view.common.CustomAlert;
 	
-	public class GetEvaluationChartDataCommand implements ICommand, IResponder
+	public class GetResponsesAssessedByCurrentUserCommand implements ICommand, IResponder
 	{
-		
 		private var dataModel:DataModel = DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getEvaluationChartData((event as EvaluationEvent).responseId);
+			new EvaluationDelegate(this).getResponsesAssessedByCurrentUser();
 		}
 		
 		public function result(data:Object):void
@@ -36,17 +35,17 @@ package commands.evaluation
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.evaluationChartData = resultCollection;
+				dataModel.assessedByCurrentUserData = resultCollection;
 			} else {
-				dataModel.evaluationChartData = new ArrayCollection();
+				dataModel.assessedByCurrentUserData = new ArrayCollection();
 			}
-			dataModel.evaluationChartDataRetrieved = !dataModel.evaluationChartDataRetrieved;
+			dataModel.assessedByCurrentUserDataRetrieved = !dataModel.assessedByCurrentUserDataRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CHART_DATA'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_YOU_ASSESSED'));
 		}
 	}
 }

@@ -252,8 +252,8 @@ class Auth{
 				$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->username,
-						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#',
-						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$activationHash.'&user='.$user->username,
+						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/',
+						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/#/login/activate/?hash='.$activationHash.'&user='.$user->username,
 						'SIGNATURE' => 'The Babelium Project Team');
 
 				if ( !$mail->makeTemplate("mail_activation", $args, $usersFirstMotherTongue) )

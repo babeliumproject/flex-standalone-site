@@ -5,7 +5,8 @@
 		  implements="modules.IModuleInterface"
 		  width="100%"
 		  preinitialize="preinitializeHandler(event)"
-		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.dashboard.view.*">
+		  creationComplete="creationCompleteHandler(event)"
+		  xmlns:view="modules.myprofile.view.*">
 	
 	<s:layout>
 		<s:VerticalLayout/>
@@ -24,10 +25,10 @@
 			
 			import model.DataModel;
 			
-			import modules.dashboard.command.GetCourses;
-			import modules.dashboard.command.ViewCourse;
-			import modules.dashboard.event.CourseEvent;
-			import modules.dashboard.model.CourseModel;
+			import modules.myprofile.command.GetCourses;
+			import modules.myprofile.command.ViewCourse;
+			import modules.myprofile.event.CourseEvent;
+			import modules.myprofile.model.CourseModel;
 			import modules.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
@@ -36,7 +37,7 @@
 			import mx.events.FlexEvent;
 
 			
-			public var modulename:String = 'course';
+			public var modulename:String = 'myprofile';
 			
 			[Bindable]
 			private var _urlmanager:URLManager=URLManager.getInstance();
@@ -67,9 +68,9 @@
 			}
 			
 			public function resetViews():void{
-				if (courseViewstack)
+				if (moduleViewstack)
 				{
-					var views:Array=courseViewstack.getChildren();
+					var views:Array=moduleViewstack.getChildren();
 					for each (var nc:NavigatorContent in views)
 					{
 						if (nc.deferredContentCreated)
@@ -166,7 +167,7 @@
 		]]>
 	</fx:Script>
 	
-	<mx:ViewStack id="courseViewstack"
+	<mx:ViewStack id="moduleViewstack"
 				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"

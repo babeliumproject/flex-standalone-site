@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:view="modules.exercise.view.*"
@@ -609,15 +609,6 @@
 				VP.removeArrows();
 			}
 
-			/**
-			 * On tab change - reset selected video and stop streaming
-			 **/
-			private function set onTabChange(value:Boolean):void
-			{
-				if (_creationComplete && DataModel.getInstance().oldContentViewStackIndex == 1)
-					resetComponent();
-			}
-
 			private function resetComponent():void
 			{
 				VP.endVideo(); // Stop video
@@ -790,8 +781,6 @@
 
 	<fx:Binding source="{DataModel.getInstance().watchExerciseDataRetrieved}"
 				destination="this.onExerciseSelected"/>
-	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
-				destination="this.onTabChange"/>
 	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved"/>
 	<!--
@@ -911,11 +900,6 @@
 								  borderVisible="false"/>
 		<s:TabBar id="exerciseInfoTabs" dataProvider="{exerciseInfoStack}"/>
 		<mx:ViewStack id="exerciseInfoStack" width="{VP.width}" resizeToContent="true">
-			<s:NavigatorContent id="descNC" label="Description">
-				<s:VGroup id="description" width="100%" top="16">
-					<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
-				</s:VGroup>
-			</s:NavigatorContent>
 			<s:NavigatorContent id="addInfNC" label="Add. Info" width="100%">
 				<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
 			</s:NavigatorContent>
@@ -928,4 +912,9 @@
 
 
 	</s:VGroup>
-</s:VGroup>
+	<s:VGroup>
+		<s:BorderContainer id="exDescContainer" styleName="lightBorderContainer">
+			<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
+		</s:BorderContainer>
+	</s:VGroup>
+</s:HGroup>

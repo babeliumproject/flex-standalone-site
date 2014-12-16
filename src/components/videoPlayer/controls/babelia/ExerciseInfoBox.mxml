@@ -21,12 +21,11 @@
 			
 			import control.URLManager;
 			
-			import modules.exercise.event.SearchEvent;
-			
 			import model.DataModel;
 			import model.ResourceSubscriber;
 			
 			import modules.exercise.event.ExerciseEvent;
+			import modules.exercise.event.SearchEvent;
 			
 			import mx.controls.LinkButton;
 			import mx.core.Application;
@@ -107,7 +106,7 @@
 				if (DataModel.getInstance().isLoggedIn)
 				{
 					//new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
-					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, null, report, null).dispatch();
+					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, report).dispatch();
 				}
 			}
 
@@ -187,18 +186,13 @@
 
 			protected function tagClickHandler(event:MouseEvent):void
 			{
-				DataModel.getInstance().searchField=(event.target as IconButton).label;
-				//if (DataModel.getInstance().currentContentViewStackIndex != ViewChangeEvent.VIEWSTACK_SEARCH_MODULE_INDEX)
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				URLManager.getInstance().redirect('search');
-				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+				var term:String =(event.target as IconButton).label;
+				URLManager.getInstance().redirect('/exercise/search/?q='+term);
 			}
 			
 			protected function descriptorClickHandler(event:MouseEvent):void{
-				DataModel.getInstance().searchField="\""+(event.target as IconButton).label+"\"";
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_SEARCH_MODULE).dispatch();
-				URLManager.getInstance().redirect('search');
-				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
+				var term:String="\""+(event.target as IconButton).label+"\"";
+				URLManager.getInstance().redirect('/exercise/search/?q='+term);
 			}
 
 			/*

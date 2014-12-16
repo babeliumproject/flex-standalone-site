@@ -31,7 +31,7 @@ package control
 
 		private var _moduleUrls:Object = {
 			exercises: 'modules/exercise/ExerciseModule.swf',
-			course: 'modules/dashboard/CourseModule.swf',
+			myprofile: 'modules/myprofile/MyprofileModule.swf',
 			create: 'modules/create/CreateModule.swf',
 			login: 'modules/login/LoginModule.swf',
 			signup: 'modules/signup/SignupModule.swf',
@@ -137,7 +137,7 @@ package control
 			if (numfragments > 3)
 			{
 				paramtmp=fragments[3];
-				var pattern:RegExp = /([^\?]+)(\?(.+))?$/;
+				var pattern:RegExp = /([^\?]*)?(\?(.+))?$/;
 				var matches:Array = paramtmp.match(pattern);
 				if(matches){
 					if(matches[3]){

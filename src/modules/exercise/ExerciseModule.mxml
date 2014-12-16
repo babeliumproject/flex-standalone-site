@@ -12,26 +12,26 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
 			import flash.utils.getDefinitionByName;
 			import flash.utils.getQualifiedClassName;
-
+			
 			import model.DataModel;
-
+			
+			import modules.IGroupInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.model.ExerciseModel;
-			import modules.exercise.view.Exercises;
-			import modules.IGroupInterface;
 			import modules.exercise.view.ExerciseList;
-
+			import modules.exercise.view.Exercises;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.core.IVisualElement;
 			import mx.core.IVisualElementContainer;
 			import mx.utils.ObjectUtil;
-
+			
 			import spark.components.Group;
-
+			
 			import vo.ExerciseVO;
 
 			public var modulename:String='exercises';
@@ -88,24 +88,38 @@
 				new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
 			}
 
-			private function actionIndex(fragment:String=null):void
+			private function actionIndex(parameters:Object=null):void
 			{
 				viewstackIndex=INDEX;
-				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
+				
+				if(parameters){
+					exerciseIndex.sortFilter=parameters.hasOwnProperty('sort') ? parameters.sort : null;
+					exerciseIndex.langFilter=parameters.hasOwnProperty('lang') ? parameters.lang : null;
+					exerciseIndex.diffFilter=parameters.hasOwnProperty('difficulty') ? parameters.difficulty : 0;
+					exerciseIndex.typeFilter=parameters.hasOwnProperty('type') ? parameters.type : 0;
+					exerciseIndex.sitFilter=parameters.hasOwnProperty('situation') ? parameters.situation : 0;
+					exerciseIndex.searchTerm=parameters.hasOwnProperty('q') ? parameters.q : null;
+				}
+				
+				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES, parameters).dispatch();
 			}
 
-			public function onURLChange(value:Object):void
-			{
-				if (urlmanager.moduleName != modulename)
-					return;
-
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
 				resetViews();
-				switch (value)
+				
+				switch (evt.action)
 				{
 					case 'view':
-						if (urlmanager.parameters != '')
+						if (evt.parameters)
 						{
-							actionView(urlmanager.parameters);
+							actionView(evt.parameters);
 						}
 						else
 						{
@@ -113,8 +127,10 @@
 							return;
 						}
 						break;
+					case 'filter':
+					case 'search':
 					default:
-						actionIndex();
+						actionIndex(evt.parameters);
 						break;
 				}
 			}

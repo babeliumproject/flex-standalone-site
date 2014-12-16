@@ -5,9 +5,9 @@ package modules.exercise.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.exercise.event.ExerciseEvent;
-	
 	import model.DataModel;
+	
+	import modules.exercise.event.ExerciseEvent;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -16,12 +16,15 @@ package modules.exercise.command
 	
 	import view.common.CustomAlert;
 	
+	import vo.ExerciseReportVO;
+	
 	public class ReportInappropriateExerciseCommand implements ICommand, IResponder
 	{
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseDelegate(this).addInappropriateExerciseReport((event as ExerciseEvent).report);
+			var report:ExerciseReportVO=(event as ExerciseEvent).params as ExerciseReportVO;
+			new ExerciseDelegate(this).addInappropriateExerciseReport(report);
 		}
 		
 		public function result(data:Object):void

@@ -5,9 +5,9 @@ package modules.exercise.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.exercise.event.ExerciseEvent;
-	
 	import model.DataModel;
+	
+	import modules.exercise.event.ExerciseEvent;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -17,6 +17,7 @@ package modules.exercise.command
 	
 	import view.common.CustomAlert;
 	
+	import vo.ExerciseScoreVO;
 	import vo.ExerciseVO;
 
 	public class RateExerciseCommand implements ICommand, IResponder
@@ -24,7 +25,8 @@ package modules.exercise.command
 
 		public function execute(event:CairngormEvent):void
 		{
-			new ExerciseDelegate(this).addExerciseScore((event as ExerciseEvent).score);
+			var score:ExerciseScoreVO=(event as ExerciseEvent).params as ExerciseScoreVO;
+			new ExerciseDelegate(this).addExerciseScore(score);
 		}
 
 		public function result(data:Object):void

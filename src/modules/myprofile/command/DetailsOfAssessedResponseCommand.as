@@ -1,4 +1,4 @@
-package commands.evaluation
+package modules.myprofile.command
 {
 	import business.EvaluationDelegate;
 	
@@ -17,13 +17,15 @@ package commands.evaluation
 	
 	import view.common.CustomAlert;
 	
-	public class GetResponsesAssessedByCurrentUserCommand implements ICommand, IResponder
+	public class DetailsOfAssessedResponseCommand implements ICommand, IResponder
 	{
 		private var dataModel:DataModel = DataModel.getInstance();
+		private var cgEvent:CairngormEvent;
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getResponsesAssessedByCurrentUser();
+			cgEvent = event;
+			new EvaluationDelegate(this).detailsOfAssessedResponse((event as EvaluationEvent).responseId);
 		}
 		
 		public function result(data:Object):void
@@ -35,17 +37,20 @@ package commands.evaluation
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.assessedByCurrentUserData = resultCollection;
+				dataModel.detailsOfAssessedResponseData = resultCollection;
 			} else {
-				dataModel.assessedByCurrentUserData = new ArrayCollection();
+				dataModel.detailsOfAssessedResponseData = new ArrayCollection();
 			}
-			dataModel.assessedByCurrentUserDataRetrieved = !dataModel.assessedByCurrentUserDataRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER)
+				dataModel.detailsOfResponseAssessedToUserRetrieved = !dataModel.detailsOfResponseAssessedToUserRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER)
+				dataModel.detailsOfResponseAssessedByUserRetrieved = !dataModel.detailsOfResponseAssessedByUserRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_YOU_ASSESSED'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSMENTS'))
 		}
 	}
 }

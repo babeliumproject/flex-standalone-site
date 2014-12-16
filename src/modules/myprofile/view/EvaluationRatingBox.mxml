@@ -9,7 +9,7 @@
 				   visible="false"
 				   creationComplete="onComplete(event)"
 				   cornerRadius="8"
-				   backgroundAlpha="0" xmlns:view="modules.create.view.*">
+				   backgroundAlpha="0" xmlns:view="modules.create.view.*" xmlns:view1="modules.myprofile.view.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -208,15 +208,15 @@
 			<s:VGroup width="50%">
 				<s:Label text="{resourceManager.getString('myResources','COMPULSORY_EVALUATION_DATA') + ':'}"
 						 styleName="boldLabel"/>
-				<evaluation:ScoreParameterBox id="userIntonationScore"
+				<view1:ScoreParameterBox id="userIntonationScore"
 											  parameter="INTONATION"/>
-				<evaluation:ScoreParameterBox id="userFluencyScore"
+				<view1:ScoreParameterBox id="userFluencyScore"
 											  parameter="FLUENCY"/>
-				<evaluation:ScoreParameterBox id="userRhythmScore"
+				<view1:ScoreParameterBox id="userRhythmScore"
 											  parameter="RHYTHM"/>
-				<evaluation:ScoreParameterBox id="userSpontaneityScore"
+				<view1:ScoreParameterBox id="userSpontaneityScore"
 											  parameter="SPONTANEITY"/>
-				<evaluation:ScoreParameterBox id="userOverallScore"
+				<view1:ScoreParameterBox id="userOverallScore"
 											  parameter="OVERALL_SCORE"/>
 			</s:VGroup>
 

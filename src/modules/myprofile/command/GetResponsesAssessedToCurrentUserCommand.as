@@ -1,4 +1,4 @@
-package commands.evaluation
+package modules.myprofile.command
 {
 	import business.EvaluationDelegate;
 	

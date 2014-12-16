@@ -48,7 +48,7 @@
 			public var typeFilter:int;
 			public var langFilter:String;
 			public var sitFilter:int;
-			public var sortFilter:int;
+			public var sortFilter:String;
 			private var comptFilters:Array;
 			
 			[Bindable]
@@ -67,7 +67,7 @@
 			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
 
 			[Bindable]
-			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'NAME'}, {'code': 1, 'label': 'DATE'}, {'code': 2, 'label': 'VIEW_COUNT'}, {'code': 3, 'label': 'RATING'}]);
+			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 'title', 'label': 'NAME'}, {'code': 'timecreated', 'label': 'DATE'}, {'code': 'viewcount', 'label': 'VIEW_COUNT'}, {'code': 'likes', 'label': 'RATING'}]);
 
 			[Bindable]
 			private var dpCommCompetence:ArrayCollection;
@@ -207,7 +207,7 @@
 				}
 				if (dispatchingComponent.id == sortByDropdown.id)
 				{
-					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : 0;
+					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : null;
 				}
 
 				if (typeFilter != LANGUAGE_PRACTICE && typeFilter != OTHER)
@@ -356,7 +356,9 @@
 				</s:HGroup>
 				<s:HGroup horizontalAlign="right"
 						  width="250"
-						  verticalAlign="middle">
+						  verticalAlign="middle"
+						  includeInLayout="false"
+						  visible="false">
 					<s:Label id="sortbylbl"
 							 text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
 					<view:EnhancedDropDownList id="sortByDropdown"

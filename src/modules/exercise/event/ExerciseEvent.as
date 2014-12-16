@@ -20,20 +20,16 @@ package modules.exercise.event
 		public static const USER_RATED_EXERCISE:String="userRatedExercise";
 		public static const USER_REPORTED_EXERCISE:String="userReportedExercise";
 
-		public var exercise:ExerciseVO;
-		public var report:ExerciseReportVO;
-		public var score:ExerciseScoreVO;
+		public var params:Object;
 
-		public function ExerciseEvent(type:String, exercise:ExerciseVO = null, report:ExerciseReportVO = null, score:ExerciseScoreVO = null)
+		public function ExerciseEvent(type:String, params:Object=null)
 		{
 			super(type);
-			this.exercise=exercise;
-			this.report=report;
-			this.score=score;
+			this.params = params;
 		}
 		
 		override public function clone():Event{
-			return new ExerciseEvent(type,exercise,report,score);
+			return new ExerciseEvent(type,params);
 		}
 
 	}

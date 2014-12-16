@@ -18,7 +18,7 @@ package modules.exercise.event
 
 		public function execute(event:CairngormEvent):void
 		{
-			var selectedEx:ExerciseVO = (event as ExerciseEvent).exercise;
+			var selectedEx:ExerciseVO = (event as ExerciseEvent).params as ExerciseVO;
 			var recModuleCurrentExerciseRetr:Boolean = DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));

@@ -15,6 +15,8 @@
 		<![CDATA[
 			import control.URLManager;
 			
+			import events.RegisterUserEvent;
+			
 			import model.DataModel;
 			
 			import modules.IGroupInterface;
@@ -107,8 +109,18 @@
 				_viewstackIndex = INDEX;
 			}
 			
-			public function actionActivate(fragment:String):void{
+			public function actionActivate(parameters:Object):void{
 				_viewstackIndex = ACTIVATE;
+				if (parameters != null)
+				{
+					if (parameters.hash != '' && parameters.user != '')
+					{
+						var user:Object;
+						user.username=parameters.user;
+						user.hash=parameters.hash;
+						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user).dispatch();
+					}
+				}
 			}
 			
 			public function actionForgotpassword():void{

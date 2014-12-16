@@ -33,6 +33,8 @@ require_once 'vo/ExerciseLevelVO.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
 
+require_once 'Search.php';
+
 /**
  * Class to perform exercise related operations
  *
@@ -424,6 +426,7 @@ class Exercise {
 		}
 	}
 
+
 	/**
 	 * Gets a list of all the exercises that are available and ready to be practiced (it has subtitles and those subtitles are marked as complete).
 	 * If there's an active user session the list is filtered using the user's set of preferred languages.
@@ -431,23 +434,31 @@ class Exercise {
 	 * @return mixed
 	 * 		An array of stdClass on which each element has information about an exercises, or false on error
 	 */
-	public function getRecordableExercises(){
-		$sql = "SELECT e.id, 
-			       e.title, 
-			       e.description, 
-			       e.language, 
-			       e.exercisecode, 
-       			   e.timecreated,  
-			       u.username as userName, 
-       			   e.difficulty,
-			       e.status, 
-			       e.likes,
-			       e.dislikes 
-			       FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id
-       			 WHERE e.status = 1
-				 ORDER BY e.timecreated DESC, e.language DESC";
+	public function getRecordableExercises($data){
 		
-		$searchResults = $this->conn->_multipleSelect($sql);
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated, u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
+				FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id WHERE e.status = 1";
+		
+		$q = isset($data->q) && strlen($data->q) ? $data->q : null;
+		//$sort = isset($data->sort) ? $data->sort : null;
+		$lang = isset($data->lang) ? $data->lang : null;
+		$difficulty = isset($data->difficulty) ? $data->difficulty : 0;
+		$type = isset($data->type) ? $data->type : 0;
+		$situation = isset($data->situation) ? $data->situation : 0;
+		
+		if($q){
+			$search = new Search();
+			$searchResults = $search->launchSearch($q);
+		} else {
+			$sql .= " ORDER BY e.timecreated DESC, e.language DESC";
+			$searchResults = $this->conn->_multipleSelect($sql);
+		}
+		
+		$filtered = $this->filterByLang($searchResults, $lang);
+		$filtered = $this->filterByDifficulty($filtered, $difficulty);
+		$filtered = $this->filterByType($filtered, $type);
+		$filtered = $this->filterBySituation($filtered, $situation);
+		
 		foreach($searchResults as $searchResult){
 			$data = $this->getPrimaryMediaMinData($searchResult->id);
 			$searchResult->thumbnail = $data ? $data->thumbnail : null;
@@ -463,7 +474,50 @@ class Exercise {
 		} catch (Exception $e) {
 			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
 		}
-
+	}
+	
+	private function filterByLang($list, $lang){
+		if(!$lang) return;
+		$result = array();
+		foreach($list as $e){
+			if(strpos($e->lang, $lang) !== false){
+				array_push($result, $e);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterByDifficulty($list, $difficulty){
+		if(!$difficulty) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->difficulty==$difficulty){
+				array_push($result,$l);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterByType($list, $type){
+		if(!$type) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->type == $type){
+				array_push($result,$l);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterBySituation($list, $situation){
+		if(!$situation) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->situation == $situation){
+				array_push($result,$l);
+			}
+		}
+		return $result;
 	}
 
 	/**

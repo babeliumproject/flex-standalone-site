@@ -85,7 +85,7 @@ class Register{
 				$firstname = $user->firstname ? $user->firstname : "unknown";
 				$lastname = $user->lastname ? $user->lastname : "unknown";
 
-				$result = $this->_create ($insert, $user->username, $user->pass, $user->email, $firstname, $lastname, $initialCredits, $hash);
+				$result = $this->_create ($insert, $user->username, $user->password, $user->email, $firstname, $lastname, $initialCredits, $hash);
 				if ($result)
 				{
 					//Add the languages selected by the user
@@ -104,14 +104,14 @@ class Register{
 					}
 
 					// Submit activation email
-					$mail = new Mailer($user->name);
+					$mail = new Mailer($user->username);
 
 					$subject = 'Babelium Project: Account Activation';
 
 					//$params = new stdClass();
 					//$params->name = $user->name;
 					//$params->activationHash = $hash;
-					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->username);	
+					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/#/login/activate/?hash='.$hash.'&user='.$user->username);	
 
 					$args = array(
 						'PROJECT_NAME' => 'Babelium Project',

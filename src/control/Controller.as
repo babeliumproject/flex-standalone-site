@@ -12,8 +12,8 @@ package control {
 	
 	import flash.utils.getDefinitionByName;
 	
-	import modules.dashboard.command.*;
-	import modules.dashboard.event.*;
+	import modules.myprofile.command.*;
+	import modules.myprofile.event.*;
 	import modules.exercise.command.*;
 	import modules.exercise.event.*;
 	import modules.subtitle.command.*;

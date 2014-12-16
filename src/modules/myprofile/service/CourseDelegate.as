@@ -1,4 +1,4 @@
-package modules.dashboard.service
+package modules.myprofile.service
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
