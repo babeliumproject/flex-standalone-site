@@ -33,18 +33,15 @@ package modules.exercise.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var resultCollection:ArrayCollection;
-			
+		
 			if (result is Array)
 			{
+				var resultCollection:ArrayCollection;
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				//Set the data to the application's model
 				dataModel.availableRecordableExercises=resultCollection;
-				//Reflect the visual changes
 			} else {
-				dataModel.availableRecordableExercises.removeAll();
+				dataModel.availableRecordableExercises=null;
 			}
-			//dataModel.availableExercisesRetrieved.setItemAt(!dataModel.availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE), DataModel.RECORDING_MODULE);
 			dataModel.availableRecordableExercisesRetrieved = !dataModel.availableRecordableExercisesRetrieved;
 		}
 		

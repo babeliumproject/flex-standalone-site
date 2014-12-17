@@ -774,6 +774,7 @@
 			
 			public function resetGroup():void{
 				resetComponent();
+				VP.resetComponent();
 			}
 			
 		]]>

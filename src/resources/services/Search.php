@@ -44,7 +44,7 @@ class Search {
 	/**
 	 * These fields won't be included in the search queries
 	 */
-	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
+	private $unindexedFields = array('difficulty','fk_user_id','status','visible','fk_scope_id','timecreated','timemodified','likes','dislikes','type','situation','competence','lingaspects');
 
 	/**
 	 * Constructor function
@@ -119,7 +119,7 @@ class Search {
 			foreach($hits as $hit){
 				$searchResult = new stdClass();
 				foreach($fields as $field){
-					if($field == "exerciseId"){
+					if($field == "exerciseid"){
 						$searchResult->id = $hit->$field;
 					} else {
 						$searchResult->$field = $hit->$field;
@@ -143,7 +143,7 @@ class Search {
 		
 		if(count($dlist)){
 			$dlistformatted = array();
-			$pattern = "/(D\d{3}_\w{2}_\w{2}\d{2})/"; //D000_A1_SP00
+			$pattern = "/(D\d_\d_\d{2}_\d)/";
 			foreach($dlist as $d){
 				if(preg_match($pattern,$d,$matches)){
 					$dlistformatted[] = $matches[1];
@@ -241,12 +241,8 @@ class Search {
 	 */
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.exercisecode, e.timecreated,
-		                u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
-				FROM exercise e 
-					 INNER JOIN user u ON e.fk_user_id= u.id
-       			WHERE e.status = 1
-				GROUP BY e.id";
+		$sql = "SELECT id as exerciseid, exercisecode, title, description, language
+				FROM exercise WHERE status=1 AND visible=1";
 		$result = $this->conn->_multipleSelect ( $sql );
 		if($result){
 			//Create the index
@@ -256,8 +252,8 @@ class Search {
 			Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
 			foreach ( $result as $line ) {
-				$tags = $this->getExerciseTags($line->exerciseId);
-				$descriptors = $this->getExerciseDescriptors($line->exerciseId,$line->language);
+				$tags = $this->getExerciseTags($line->exerciseid);
+				$descriptors = $this->getExerciseDescriptors($line->exerciseid,$line->language);
 				
 				$line->tags = $tags ? implode("\n",$tags): '';
 				$line->descriptors = $descriptors ? implode("\n",$descriptors) : '';
@@ -278,12 +274,8 @@ class Search {
 	public function addDocumentIndex($idDB){
 
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.title, e.description, e.language, e.exercisecode, e.timecreated,
-		               u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
-				FROM exercise e 
-					 INNER JOIN user u ON e.fk_user_id= u.id
-       			WHERE e.status = 1 AND e.id=%d);
-				GROUP BY e.id";
+		$sql = "SELECT e.id as exerciseId, e.exercisecode, e.title, e.description, e.language
+				FROM exercise e WHERE e.status=1 AND e.visible=1 AND e.id=%d";
 		$result = $this->conn->_singleSelect ( $sql, $idDB );
 
 		//We expect only one record to match this query
@@ -349,7 +341,7 @@ class Search {
 	
 	
 	/**
-	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
+	 * Returns the descriptors of the provided exercise (if any)
 	 * @param int $exerciseId
 	 * 		The exercise id to check for descriptors
 	 * @return mixed $dcodes
@@ -360,14 +352,16 @@ class Search {
 			return false;
 		$dcodes = false;
 		$sql = "SELECT ed.*, ed18n.name
-				FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
-     			     INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
+				FROM rel_exercise_descriptor red 
+				INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
+				INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
 				WHERE (red.fk_exercise_id=%d AND ed18n.locale='%s')";
 		$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
 		if($results){
 			$dcodes = array();
 			foreach($results as $result){
-				$dcode = sprintf("D%03d_%s_%s%02d %s", $result->id, $result->level, $result->type, $result->number, $result->name);
+				
+				$dcode = sprintf("D%d_%d_%02d_%d %s", $result->situation, $result->level, $result->competence, $result->number, $result->name);
 				$dcodes[] = $dcode;
 			}
 			unset($result);

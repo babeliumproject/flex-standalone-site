@@ -2,7 +2,6 @@ package control {
 	import com.adobe.cairngorm.control.FrontController;
 	
 	import commands.autoevaluation.*;
-	import commands.evaluation.*;
 	import commands.home.*;
 	import commands.main.*;
 	import commands.userManagement.*;

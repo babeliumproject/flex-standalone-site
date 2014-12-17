@@ -19,6 +19,8 @@
 			
 			import control.URLManager;
 			
+			import flash.sampler.getInvocationCount;
+			
 			import model.DataModel;
 			
 			import modules.exercise.event.ExerciseEvent;
@@ -144,11 +146,38 @@
 				langFilter=null;
 			}
 
-			public function set handleExercisesRetrieve(value:Boolean):void
+			public function set setComponentData(value:Boolean):void
 			{
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
-
 				createPagination();
+				
+				if(!_dataProvider){
+					noresultLbl.includeInLayout=true;
+					noresultLbl.visible=false;
+				} else {
+					noresultLbl.includeInLayout=false;
+					noresultLbl.visible=false;
+				}
+				
+				setActiveFilters();
+			}
+			
+			private function setActiveFilters():void{
+				if(langFilter){
+					trace(ObjectUtil.toString(ArrayCollection(langFilterDD.dataProvider)));
+					var il:Object = findInCollection(ArrayCollection(langFilterDD.dataProvider),findCode(langFilter));
+					if(il) langFilterDD.selectedItem=il;
+				}
+				
+				if(diffFilter){
+					var id:Object = findInCollection(ArrayCollection(difLevelFilterDD.dataProvider), findCode(diffFilter));
+					if(id) difLevelFilterDD.selectedItem=id;
+				}
+				
+				if(typeFilter){
+					var it:Object = findInCollection(ArrayCollection(exerciseTypeFilterDD.dataProvider),findCode(typeFilter));
+					if(it) exerciseTypeFilterDD.selectedItem=it;
+				}
 			}
 
 			public function set retrieveCustomizedExercises(value:Boolean):void
@@ -268,7 +297,7 @@
 				var fragment:String = URLUtil.objectToString(params);
 				trace(ObjectUtil.toString(fragment));
 
-				URLManager.getInstance().redirect(url+fragment);
+				URLManager.getInstance().redirect(url+'?'+fragment);
 			}
 
 			public function findInCollection(c:ArrayCollection, find:Function):Object
@@ -323,7 +352,7 @@
 	</fx:Script>
 
 	<fx:Binding source="{DataModel.getInstance().availableRecordableExercisesRetrieved}"
-				destination="handleExercisesRetrieve"/>
+				destination="setComponentData"/>
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="retrieveCustomizedExercises"/>
 
@@ -357,7 +386,7 @@
 				<s:HGroup horizontalAlign="right"
 						  width="250"
 						  verticalAlign="middle"
-						  includeInLayout="false"
+						  includeInLayout="true"
 						  visible="false">
 					<s:Label id="sortbylbl"
 							 text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
@@ -371,6 +400,11 @@
 											   change="onFilterDropdownChange(event)"/>
 				</s:HGroup>
 			</s:HGroup>
+			
+			<s:Label id="noresultLbl" 
+					 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
+					 includeInLayout="false" 
+					 visible="false"/>
 
 			<s:List id="exerciseListDataGroup"
 					width="100%"

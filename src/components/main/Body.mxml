@@ -12,9 +12,6 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLChangeEvent;
-			
-			import mx.utils.ObjectUtil;
-			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -23,6 +20,7 @@
 			
 			import mx.events.FlexEvent;
 			import mx.events.ModuleEvent;
+			import mx.utils.ObjectUtil;
 
 			private var _currentModuleFile:String;
 			private var _currentModule:String;
@@ -53,8 +51,7 @@
 					trace("Reset module: "+ichild.getModuleName());
 					ichild.resetModule();
 				}
-				modloader.unloadModule();
-				
+				modloader.unloadModule();	
 				modloader.loadModule(_currentModuleFile);
 			}
 
@@ -75,8 +72,12 @@
 				else
 				{
 					URLManager.getInstance().moduleName=modulename;
-					trace("Uh oh. The mod.child property is null");
+					trace("Error. The mod.child property is null");
 				}
+			}
+			
+			protected function moduleErrorHandler(event:ModuleEvent):void{
+				trace(event.errorText);
 			}
 			
 			protected function sharedData():Object{
@@ -96,6 +97,7 @@
 
 	<s:ModuleLoader id="modloader"
 					ready="moduleReadyHandler(event)"
+					error="moduleErrorHandler(event)"
 					width="100%"
 					height="100%"/>
 </s:VGroup>
