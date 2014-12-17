@@ -104,32 +104,25 @@ class Search {
 		Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 		Zend_Search_Lucene_Search_Query_Fuzzy::setDefaultPrefixLength(0);
 
-			
 		$finalSearch=$this->fuzzySearch($search);
 		$query = Zend_Search_Lucene_Search_QueryParser::parse($finalSearch);
-			
-		//We do the search and send it
+
 		try {
 			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit
 			//which has far more properties than those the client needs to know
 			$hits = $this->index->find($query);
-			//Ensure the fields are stored with the exact names you want them to be returned otherways this won't work
+			//Ensure the fields are stored with the exact names you want them to be returned otherwise this won't work
 			$fields = $this->index->getFieldNames();
 			$searchResults = array();
 			foreach($hits as $hit){
-				$searchResult = new stdClass();
 				foreach($fields as $field){
 					if($field == "exerciseid"){
-						$searchResult->id = $hit->$field;
-					} else {
-						$searchResult->$field = $hit->$field;
+						array_push($searchResults, $hit->$field);
+						break;
 					}
-					if($field == "descriptors")
-						$searchResult->descriptors = $this->parseHitDescriptors($hit->$field);
 				}
-				array_push($searchResults,$searchResult);
 			}
-			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			return $searchResults;
 		}
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());

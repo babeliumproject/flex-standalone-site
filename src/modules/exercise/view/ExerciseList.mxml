@@ -47,7 +47,7 @@
 
 			public var searchTerm:String;
 			public var diffFilter:int;
-			public var typeFilter:int;
+			public var typeFilter:int=-1;
 			public var langFilter:String;
 			public var sitFilter:int;
 			public var sortFilter:String;
@@ -57,7 +57,7 @@
 			private var _currentPage:int=1;
 
 			[Bindable]
-			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}]);
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'LEVEL_A1'}, {'code': 2, 'label': 'LEVEL_A2'}, {'code': 3, 'label': 'LEVEL_B1'}, {'code': 4, 'label': 'LEVEL_B2'}, {'code': 5, 'label': 'LEVEL_C1'}]);
 
 			[Bindable]
 			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
@@ -120,7 +120,7 @@
 			}
 			
 			private function getLangCodesFromResourceFile():void{
-				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var resources:Object=ResourceManager.getInstance().getResourceBundle("en_US", "myResources").content;
 				var pattern:RegExp=/LANGUAGE_(\w{2})$/;
 				var tmpLangs:Array= new Array();
 				for (var item:Object in resources)
@@ -138,33 +138,41 @@
 			public function resetGroup():void
 			{
 				langFilterDD.selectedIndex=-1;
+				difLevelFilterDD.selectedIndex=-1;
 				exerciseTypeFilterDD.selectedIndex=-1;
 				commSituationFilterDD.selectedIndex=-1;
-
+				searchField.text='';
+				
+				searchTerm=null;
 				diffFilter=0;
-				typeFilter=0;
+				typeFilter=-1;
 				langFilter=null;
 			}
 
 			public function set setComponentData(value:Boolean):void
 			{
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
-				createPagination();
-				
+				var length:int = _dataProvider ? _dataProvider.length : 0;
+				trace("Exercise list component data: "+length);
 				if(!_dataProvider){
 					noresultLbl.includeInLayout=true;
-					noresultLbl.visible=false;
+					noresultLbl.visible=true;
 				} else {
 					noresultLbl.includeInLayout=false;
-					noresultLbl.visible=false;
-				}
-				
+					noresultLbl.visible=false;	
+					createPagination();
+				}	
 				setActiveFilters();
 			}
 			
 			private function setActiveFilters():void{
+				if(searchTerm){
+					var te:String = searchTerm.replace(/\+/g, " ");
+					var ts:String = decodeURIComponent(te);
+					searchField.text=ts;
+				}
+				
 				if(langFilter){
-					trace(ObjectUtil.toString(ArrayCollection(langFilterDD.dataProvider)));
 					var il:Object = findInCollection(ArrayCollection(langFilterDD.dataProvider),findCode(langFilter));
 					if(il) langFilterDD.selectedItem=il;
 				}
@@ -174,16 +182,10 @@
 					if(id) difLevelFilterDD.selectedItem=id;
 				}
 				
-				if(typeFilter){
+				if(typeFilter>-1){
 					var it:Object = findInCollection(ArrayCollection(exerciseTypeFilterDD.dataProvider),findCode(typeFilter));
 					if(it) exerciseTypeFilterDD.selectedItem=it;
 				}
-			}
-
-			public function set retrieveCustomizedExercises(value:Boolean):void
-			{
-				//trace("get recordable exercises");
-				//new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES).dispatch();
 			}
 
 			public function createPagination():void
@@ -228,7 +230,7 @@
 				}
 				if (dispatchingComponent.id == exerciseTypeFilterDD.id)
 				{
-					typeFilter=exerciseTypeFilterDD && exerciseTypeFilterDD.selectedItem != undefined ? exerciseTypeFilterDD.selectedItem['code'] : 0;
+					typeFilter=exerciseTypeFilterDD && exerciseTypeFilterDD.selectedItem != undefined ? exerciseTypeFilterDD.selectedItem['code'] : -1;
 				}
 				if (dispatchingComponent.id == langFilterDD.id)
 				{
@@ -239,7 +241,7 @@
 					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : null;
 				}
 
-				if (typeFilter != LANGUAGE_PRACTICE && typeFilter != OTHER)
+				if (typeFilter >-1 && typeFilter!= LANGUAGE_PRACTICE && typeFilter != OTHER)
 				{
 					sitfilterPnl.includeInLayout=true;
 					sitfilterPnl.visible=true;
@@ -273,6 +275,9 @@
 				}
 
 				var params:Object=new Object();
+				if(searchTerm){
+					params.q=searchTerm;
+				}
 				if(langFilter)
 				{
 					//var litem:Object=findInCollection(dpLangs, findCode(langFilter));
@@ -282,7 +287,7 @@
 				{
 					params.difficulty=diffFilter;
 				}
-				if(typeFilter)
+				if(typeFilter>-1)
 				{
 					params.type=typeFilter;
 				}
@@ -294,7 +299,7 @@
 					params.sort=sortFilter;
 				}
 				
-				var fragment:String = URLUtil.objectToString(params);
+				var fragment:String = URLUtil.objectToString(params,'&',false);
 				trace(ObjectUtil.toString(fragment));
 
 				URLManager.getInstance().redirect(url+'?'+fragment);
@@ -316,10 +321,7 @@
 
 			protected function unfilterExerciseList():void
 			{
-				langFilterDD.selectedIndex=-1;
-				_dataProvider=DataModel.getInstance().availableRecordableExercises;
-				_currentPage=1;
-				createPagination();
+				//TODO
 			}
 
 			protected function removeAllFilters(event:MouseEvent):void
@@ -353,9 +355,6 @@
 
 	<fx:Binding source="{DataModel.getInstance().availableRecordableExercisesRetrieved}"
 				destination="setComponentData"/>
-	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
-				destination="retrieveCustomizedExercises"/>
-
 
 	<s:Label text="{resourceManager.getString('myResources','EXERCISES')}"
 			 styleName="h2"
@@ -412,7 +411,6 @@
 					change="changeHandler(event)"
 					borderVisible="false"
 					skinClass="skins.TransparentBgListSkin"
-					enabled="{!DataModel.getInstance().recordingExercise}"
 					itemRenderer="modules.exercise.view.ExerciseItemRenderer"
 					dataProvider="{_dataProvider}">
 				<s:layout>

@@ -437,7 +437,7 @@ class Exercise {
 	public function getRecordableExercises($data){
 		
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated, u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
-				FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id WHERE e.status = 1";
+				FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id WHERE e.status = 1 AND e.visible=1";
 		
 		$q = isset($data->q) && strlen($data->q) ? $data->q : null;
 		//$sort = isset($data->sort) ? $data->sort : null;
@@ -448,23 +448,41 @@ class Exercise {
 		
 		if($q){
 			$search = new Search();
-			$searchResults = $search->launchSearch($q);
+			$exidarray = $search->launchSearch($q);
+			if(count($exidarray)){
+				$exids = implode($exidarray,',');
+				$sql .= " AND e.id IN (%s) ";
+				$sql .= " ORDER BY e.timecreated DESC, e.language DESC";
+				$searchResults = $this->conn->_multipleSelect($sql,$exids);
+			} else {
+				$searchResults=null;	
+			}
 		} else {
 			$sql .= " ORDER BY e.timecreated DESC, e.language DESC";
 			$searchResults = $this->conn->_multipleSelect($sql);
 		}
 		
-		$filtered = $this->filterByLang($searchResults, $lang);
-		$filtered = $this->filterByDifficulty($filtered, $difficulty);
-		$filtered = $this->filterByType($filtered, $type);
-		$filtered = $this->filterBySituation($filtered, $situation);
+		if($searchResults){
+			$filtered = $searchResults;
+			if($lang) 
+				$filtered = $this->filterByLang($filtered, $lang);
+			if($difficulty) 
+				$filtered = $this->filterByDifficulty($filtered, $difficulty);
+			if($type) 
+				$filtered = $this->filterByType($filtered, $type);
+			if($situation) 
+				$filtered = $this->filterBySituation($filtered, $situation);
 		
-		foreach($searchResults as $searchResult){
-			$data = $this->getPrimaryMediaMinData($searchResult->id);
-			$searchResult->thumbnail = $data ? $data->thumbnail : null;
-			$searchResult->duration = $data ? $data->duration : 0;
-			$searchResult->tags = $this->getExerciseTags($searchResult->id);
-			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
+			if($filtered){
+				foreach($filtered as $r){
+					$data = $this->getPrimaryMediaMinData($r->id);
+					$r->thumbnail = $data ? $data->thumbnail : null;
+					$r->duration = $data ? $data->duration : 0;
+					$r->tags = $this->getExerciseTags($r->id);
+					$r->descriptors = $this->getExerciseDescriptors($r->id);
+				}
+			}
+			$searchResults = $filtered;
 		}
 
 		try {
@@ -477,10 +495,10 @@ class Exercise {
 	}
 	
 	private function filterByLang($list, $lang){
-		if(!$lang) return;
+		if(!$lang || !$list) return;
 		$result = array();
 		foreach($list as $e){
-			if(strpos($e->lang, $lang) !== false){
+			if(strpos($e->language, $lang) !== false){
 				array_push($result, $e);
 			}
 		}
@@ -488,7 +506,7 @@ class Exercise {
 	}
 	
 	private function filterByDifficulty($list, $difficulty){
-		if(!$difficulty) return;
+		if(!$difficulty || !$list) return;
 		$result = array();
 		foreach($list as $l){
 			if($l->difficulty==$difficulty){
@@ -499,7 +517,7 @@ class Exercise {
 	}
 	
 	private function filterByType($list, $type){
-		if(!$type) return;
+		if(!$type || !$list) return;
 		$result = array();
 		foreach($list as $l){
 			if($l->type == $type){
@@ -510,7 +528,7 @@ class Exercise {
 	}
 	
 	private function filterBySituation($list, $situation){
-		if(!$situation) return;
+		if(!$situation || !$list) return;
 		$result = array();
 		foreach($list as $l){
 			if($l->situation == $situation){

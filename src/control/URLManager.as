@@ -65,11 +65,9 @@ package control
 		public function init():void{
 			_browserManager=BrowserManager.getInstance();
 			
-			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, this.parseURL);
-			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, this.parseURL);
+			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, parseURL, false, 0, true);
+			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL, false, 0, true);
 			_browserManager.init();
-			
-			_isParsing=false;
 		}
 
 		public function addBrowserChangeListener(listenerFunction:Function):void
@@ -90,23 +88,21 @@ package control
 		 * @param e
 		 * 
 		 */		
-		public function parseURL(event:BrowserChangeEvent=null):void
+		public function parseURL(event:BrowserChangeEvent):void
 		{
+			if(_isParsing) return;
+			trace(event.type+": "+_browserManager.fragment);
+			
+			_isParsing=true;
+			
 			var modtmp:String='home';
 			var actiontmp:String='index';
 			var paramtmp:String;
 			
 			parsedParams=null;
 			
-			_isParsing=true;
-			_lastURL=event ? event.lastURL : null;
+			_lastURL=event ? Object(event).lastURL : null;	
 			
-			if(event && event.type == BrowserChangeEvent.BROWSER_URL_CHANGE){
-				trace("Browser URL change: "+_browserManager.fragment);
-			}else{
-				trace("Programmatic URL change: "+_browserManager.fragment);
-			}
-
 			//Fixes a bug caused by email clients that escape url sequences
 			var uescparams:String=unescape(_browserManager.fragment);
 
@@ -162,10 +158,10 @@ package control
 		public function redirect(url:String=null):void
 		{
 			var base:String = _browserManager.base + "#";
-			trace("Base to remove: "+base);
 			var turl:String = url;
 			turl = turl.replace(base,'');
 			turl = '/'+this.ltrim(turl,'/');
+			trace("Redirect to: "+turl);
 			_browserManager.setFragment(turl);
 		}
 
