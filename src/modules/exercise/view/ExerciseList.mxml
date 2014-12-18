@@ -172,6 +172,11 @@
 					searchField.text=ts;
 				}
 				
+				if(sortFilter){
+					var iso:Object = findInCollection(ArrayCollection(sortByDropdown.dataProvider),findCode(sortFilter));
+					if(iso) sortByDropdown.selectedItem=iso;
+				}
+				
 				if(langFilter){
 					var il:Object = findInCollection(ArrayCollection(langFilterDD.dataProvider),findCode(langFilter));
 					if(il) langFilterDD.selectedItem=il;
@@ -185,6 +190,39 @@
 				if(typeFilter>-1){
 					var it:Object = findInCollection(ArrayCollection(exerciseTypeFilterDD.dataProvider),findCode(typeFilter));
 					if(it) exerciseTypeFilterDD.selectedItem=it;
+					
+					if(typeFilter!= LANGUAGE_PRACTICE && typeFilter != OTHER)
+					{
+						sitfilterPnl.includeInLayout=true;
+						sitfilterPnl.visible=true;
+						comptfilterPnl.includeInLayout=true;
+						comptfilterPnl.visible=true;
+						
+						if(sitFilter){
+							var isit:Object = findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
+							if(isit) commSituationFilterDD.selectedItem=isit;
+							//Build the competence filter panel, defer the compFilters check until displayObject is done
+						}
+						if(comptFilters){
+							var icm:Object;
+							var icmlist:Array = new Array();
+							for(var i:int=0; i<comptFilters.length; i++){
+								icm = findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
+								if(icm) icmlist.push(icm);
+							}
+							//setActiveCheckboxes(container,icmlist);
+						}
+					}
+					else
+					{
+						sitfilterPnl.includeInLayout=false;
+						sitfilterPnl.visible=false;
+						comptfilterPnl.includeInLayout=false;
+						comptfilterPnl.visible=false;
+						
+						sitFilter=0;
+						comptFilters=null;
+					}
 				}
 			}
 
@@ -240,23 +278,10 @@
 				{
 					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : null;
 				}
-
-				if (typeFilter >-1 && typeFilter!= LANGUAGE_PRACTICE && typeFilter != OTHER)
+				
+				if (dispatchingComponent.id == commSituationFilterDD.id)
 				{
-					sitfilterPnl.includeInLayout=true;
-					sitfilterPnl.visible=true;
-					comptfilterPnl.includeInLayout=true;
-					comptfilterPnl.visible=true;
-				}
-				else
-				{
-					sitfilterPnl.includeInLayout=false;
-					sitfilterPnl.visible=false;
-					comptfilterPnl.includeInLayout=false;
-					comptfilterPnl.visible=false;
-
-					sitFilter=0;
-					comptFilters=null;
+					sitFilter=commSituationFilterDD && commSituationFilterDD.selectedItem != undefined ? commSituationFilterDD['code'] : 0;
 				}
 
 				buildSearchQuery();
@@ -269,7 +294,7 @@
 				{
 					url+='/search/';
 				}
-				else if (langFilter || diffFilter || typeFilter)
+				else if (langFilter || diffFilter || typeFilter>-1 || sortFilter)
 				{
 					url+='/filter/';
 				}
@@ -280,7 +305,6 @@
 				}
 				if(langFilter)
 				{
-					//var litem:Object=findInCollection(dpLangs, findCode(langFilter));
 					params.lang=langFilter;
 				}
 				if(diffFilter)
@@ -300,9 +324,10 @@
 				}
 				
 				var fragment:String = URLUtil.objectToString(params,'&',false);
+				if (fragment) fragment = '?'+fragment;
 				trace(ObjectUtil.toString(fragment));
 
-				URLManager.getInstance().redirect(url+'?'+fragment);
+				URLManager.getInstance().redirect(url+fragment);
 			}
 
 			public function findInCollection(c:ArrayCollection, find:Function):Object
@@ -319,19 +344,10 @@
 				}
 			}
 
-			protected function unfilterExerciseList():void
-			{
-				//TODO
-			}
-
 			protected function removeAllFilters(event:MouseEvent):void
 			{
-				unfilterExerciseList();
-			}
-
-			public function removeFilters():void
-			{
-				unfilterExerciseList();
+				resetGroup();
+				buildSearchQuery();
 			}
 
 			public function onSearchTextInputChange(event:Event):void
@@ -507,7 +523,8 @@
 			<s:Button id="filterRemoveButton"
 					  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
 					  styleName="btn-link"
-					  click="removeAllFilters(event)"/>
+					  click="removeAllFilters(event)"
+					  buttonMode="true"/>
 		</s:VGroup>
 	</s:HGroup>
 
