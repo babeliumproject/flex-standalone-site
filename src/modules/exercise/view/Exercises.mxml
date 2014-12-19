@@ -173,7 +173,12 @@
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
 				VP.state=VideoRecorder.PLAY_STATE;
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+				
+				var media:Object=new Object();
+				media.mediaUrl=EXERCISE_FOLDER + '/' + _exerciseName;
+				media.netConnectionUrl=_streamSource;
+				
+				VP.loadVideoByUrl(media);
 
 				// Retrieving available locales for selected exercise's subtitles
 				var auxEx:ExerciseVO=new ExerciseVO();
@@ -529,9 +534,15 @@
 				DataModel.getInstance().recordingExercise=false;
 
 				// Set the videoplayer to playback both the exercise and the last response.
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.state=VideoRecorder.PLAY_BOTH_STATE;
-				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
+				
+				var media:Object=new Object();
+				var items:Array=[
+					{'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource},
+					{'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}
+				];
+				media.parallelMedia = items;
+				
+				VP.loadVideoByUrl(media);
 
 				VP.seek=false;
 				VP.stopVideo();
@@ -611,12 +622,7 @@
 
 			private function resetComponent():void
 			{
-				VP.endVideo(); // Stop video
-				VP.setSubtitle(""); // Clear subtitles if any
-				VP.videoSource=""; // Reset video source
-				VP.state=VideoRecorder.PLAY_STATE; //Reset the player window to display only the exercise
-
-				VP.arrows=false; // Hide arrows
+				VP.resetComponent();
 
 				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
 				_currentExercise=null; // Reset current exercise
@@ -639,9 +645,14 @@
 				showArrows();
 				setupRecordingCommands();
 
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
-				VP.state=VideoRecorder.PLAY_BOTH_STATE;
-				VP.secondSource=RESPONSE_FOLDER + '/' + _recordedFilename
+				var media:Object=new Object();
+				var items:Array=[
+					{'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource},
+					{'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}
+				];
+				media.parallelMedia = items;
+				
+				VP.loadVideoByUrl(media);
 
 				VP.seek=false;
 			}
@@ -652,8 +663,11 @@
 				showArrows();
 				setupReplayCommands();
 
-				VP.videoSource=RESPONSE_FOLDER + '/' + _recordedFilename;
-				VP.state=VideoRecorder.PLAY_STATE;
+				var media:Object=new Object();
+				media.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename;
+				media.netConnectionUrl=_streamSource;
+
+				VP.loadVideoByUrl(media);
 
 				VP.seek=false;
 			}
@@ -661,7 +675,14 @@
 			// Record again
 			private function onRecordAgain(e:Event):void
 			{
-				VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
+				var media:Object=new Object();
+				var play:Object={'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource};
+				var record:Object={'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource};
+				media.playbackMedia = play;
+				media.recordMedia = record;
+				
+				//VP.recordVideo(media,eventdata);
+				
 				setupRecordingCommands();
 				showArrows();
 				DataModel.getInstance().recordingExercise=true;
@@ -819,7 +840,6 @@
 										subtitlingControls="false"
 										width="640"
 										height="360"
-										streamSource="{_streamSource}"
 										controlsEnabled="{_exerciseSelected}"/>
 
 		<s:VGroup id="guestEditWarningBox"

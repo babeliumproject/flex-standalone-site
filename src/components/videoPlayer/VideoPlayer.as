@@ -13,11 +13,15 @@ package components.videoPlayer
 	import components.videoPlayer.controls.ScrubberBar;
 	import components.videoPlayer.controls.SkinableComponent;
 	import components.videoPlayer.controls.StopButton;
+	import components.videoPlayer.events.MediaStatusEvent;
 	import components.videoPlayer.events.PlayPauseEvent;
 	import components.videoPlayer.events.ScrubberBarEvent;
 	import components.videoPlayer.events.StopEvent;
 	import components.videoPlayer.events.VideoPlayerEvent;
 	import components.videoPlayer.events.VolumeEvent;
+	import components.videoPlayer.media.AMediaManager;
+	import components.videoPlayer.media.ARTMPManager;
+	import components.videoPlayer.media.AVideoManager;
 	
 	import events.FullStreamingEvent;
 	
@@ -36,6 +40,7 @@ package components.videoPlayer
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
+	import flash.utils.getQualifiedClassName;
 	
 	import model.DataModel;
 	
@@ -67,11 +72,7 @@ package components.videoPlayer
 		 *
 		 */
 		protected var _video:Video;
-		protected var _ns:NetStream;
-		protected var _nc:NetConnection;
 
-		private var _videoSource:String=null;
-		protected var _streamSource:String=null;
 		private var _state:String=null;
 		private var _autoPlay:Boolean=false;
 		private var _smooth:Boolean=true;
@@ -93,35 +94,19 @@ package components.videoPlayer
 		protected var _videoWidth:Number=320;
 
 		private var _timer:Timer;
-		//private var _reconnectionTimer:Timer;
-		//private var _reconnectionDelay:uint = 5000; //5 seconds
-
-		public static const PLAYBACK_READY_STATE:int=0;
-		public static const PLAYBACK_STARTED_STATE:int=1;
-		public static const PLAYBACK_STOPPED_STATE:int=2;
-		public static const PLAYBACK_FINISHED_STATE:int=3;
-		public static const PLAYBACK_PAUSED_STATE:int=4;
-		public static const PLAYBACK_UNPAUSED_STATE:int=5;
-		public static const PLAYBACK_BUFFERING_STATE:int=6;
-		public static const PLAYBACK_SEEKING_START_STATE:int=7;
-		public static const PLAYBACK_SEEKING_END_STATE:int=8;
-		
-		/*
-		* Allowed values are -2, -1, 0, or a positive number. 
-		* The default value is -2, which looks for a live stream, then a recorded stream, and if it finds neither, opens a live stream. You cannot use -2 with MP3 files. 
-		* If -1, plays only a live stream. 
-		* If 0 or a positive number, plays a recorded stream, beginning start seconds in.
-		*/
-		private const PLAY_MODE_WAIT_LIVE:int=-2;
-		private const PLAY_MODE_ONLY_LIVE:int=-1;
-		private const PLAY_MODE_ONLY_RECORDED:int=0;
-		
-		private var _defaultPlayMode:int = PLAY_MODE_ONLY_RECORDED;
-		
-		private var _streamFinishBuffer:Object = {"NetStream.Buffer.Empty": 0, "NetStream.Buffer.Flush": 0, "NetStream.Play.Stop": 0};
 
 		[Bindable]
 		public var playbackState:int;
+		
+		
+		protected var _media:AMediaManager;
+		private var _mediaUrl:String;
+		private var _netConnectionUrl:String;
+		private var _mediaReady:Boolean;
+		private var _currentVolume:Number;
+		private var _forcePlay:Boolean;
+		private var _videoPlaying:Boolean;
+		
 
 		/**
 		 * CONSTRUCTOR
@@ -188,42 +173,125 @@ package components.videoPlayer
 			// Loads default skin
 			skin="default";
 		}
-
-
-		/**
-		 * Video streaming source
-		 *
-		 */
-		public function set videoSource(location:String):void
-		{
-			//if(!DataModel.getInstance().netConnected)
-			//	return;
-			_videoSource=location;
-			_video.visible=true;
-
-			if (location != "")
-				dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_SOURCE_CHANGED));
-			else
+		
+		public function loadVideoByUrl(param:Object):void{
+			var netConnectionUrl:String;
+			var mediaUrl:String;
+			if(getQualifiedClassName(param) == 'Object')
+			{
+				if(!param.mediaUrl){
+					return;
+				}
+				mediaUrl=param.mediaUrl;
+				netConnectionUrl = param.netConnectionUrl || null;
+			}
+			else if (param is String)
+			{
+				mediaUrl=String(param) || null;
+			} else {
+				return;
+			}
+			
+			_mediaUrl=mediaUrl;
+			_netConnectionUrl=netConnectionUrl;
+			
+			loadVideo();
+		}
+		
+		protected function loadVideo():void{
+			_mediaReady=false;
+			if (_mediaUrl != '')
+			{
 				resetAppearance();
+				
+				
+				if(!_autoPlay){
+					//_posterSprite = new BitmapSprite(_videoPosterUrl, _lastWidth, _lastHeight);
+					//_topLayer.addChild(_posterSprite);
+				}
+				
+				if (streamReady(_media))
+				{
+					_media.netStream.dispose();
+				}
+				
+				_media=null;
+				if(_netConnectionUrl){
+					_media=new ARTMPManager("playbackStream");
+					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
+					_media.setup(_netConnectionUrl, _mediaUrl);
+				} else {
+					_media=new AVideoManager("playbackStream");
+					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
+					_media.setup(_mediaUrl);
+				}
+			}
 		}
-
-		public function get videoSource():String
-		{
-			return _videoSource;
+		
+		protected function streamReady(stream:AMediaManager):Boolean{
+			return stream && stream.netStream;
 		}
-
-		/**
-		 * Flash server
-		 */
-		public function set streamSource(location:String):void
-		{
-			_streamSource=location;
+		
+		protected function onStreamSuccess(event:Event):void{
+			var evt:Object=Object(event);
+			//logger.debug("NetStreamClient {0} is ready", [evt.streamId]);
+			_video.attachNetStream(_media.netStream);
+			_video.visible=true;
+			_media.volume=_currentVolume;
+			_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
+			_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
+			if (_mediaUrl != '')
+			{
+				_mediaReady=true;
+				if (_autoPlay || _forcePlay)
+				{
+					startVideo();
+					_forcePlay=false;
+				}
+			}
 		}
-
-		public function get streamSource():String
-		{
-			return _streamSource;
+		
+		protected function onStreamFailure(event:Event):void{
+			var evt:Object=Object(event);
+			//_errorSprite=new ErrorSprite(evt.message, _lastWidth, _lastHeight);
+			//_topLayer.removeChildren();
+			//_topLayer.addChild(_errorSprite);
 		}
+		
+		protected function onStreamStateChange(event:MediaStatusEvent):void{
+			if (event.state == AMediaManager.STREAM_FINISHED)
+			{
+				//logger.debug("StreamFinished Event received");
+				//stopVideo();
+				_video.clear();
+				_videoPlaying=false;
+			}
+			if (event.state == AMediaManager.STREAM_STARTED)
+			{
+				_videoPlaying=true;
+			}
+			
+			//dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_STATE_CHANGED, event.state));
+		}
+		
+		protected function startVideo():void{
+			if (!_mediaReady)
+				return;
+			try
+			{
+				//_nsc.play("exercises/"+_videoUrl);
+				//_topLayer.removeChildren();
+				_media.play();
+			}
+			catch (e:Error)
+			{
+				_mediaReady=false;
+				//logger.error("Error while loading video. [{0}] {1}", [e.errorID, e.message]);
+			}
+		}
+		
 
 		/**
 		 * Autoplay
@@ -485,304 +553,82 @@ package components.videoPlayer
 		 */
 		private function onComplete(e:FlexEvent):void
 		{
-			//Establish a binding to listen the status of netConnection
-			BindingUtils.bindSetter(onStreamNetConnect, DataModel.getInstance(), "netConnected");
-
-			// Dispatch CREATION_COMPLETE event
 			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CREATION_COMPLETE));
 		}
-
-		/**
-		 * On stream connect
-		 */
-		protected function onStreamNetConnect(value:Boolean):void
-		{
-
-			if (DataModel.getInstance().netConnected == true)
-			{
-				//if(_reconnectionTimer != null)
-				//	stopReconnectionTimer();
-				//Get the netConnection reference
-				_nc=DataModel.getInstance().netConnection;
-
-				playVideo();
-				_ppBtn.State=PlayButton.PAUSE_STATE;
-				if(!_autoPlay)
-					pauseVideo();
-
-				enableControls();
-
-				this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.CONNECTED));
-			}
-			else{
-				disableControls();
-				if (_streamSource){
-					//if(_reconnectionTimer == null || !_reconnectionTimer.running){
-						//startReconnectionTimer();
-						connectToStreamingServer();
-					//}
-				}
-			}
-		}
 		
-		//public function startReconnectionTimer():void{
-		//	connectToStreamingServer();
-		//	_reconnectionTimer = new Timer(_reconnectionDelay,0);
-		//	_reconnectionTimer.start();
-		//	_reconnectionTimer.addEventListener(TimerEvent.TIMER, onReconnectionTimerTick);
-		//	
-		//}
-		//
-		//public function stopReconnectionTimer():void{
-		//	_reconnectionTimer.stop();
-		//	_reconnectionTimer.removeEventListener(TimerEvent.TIMER, onReconnectionTimerTick);
-		//}
-		//
-		//public function onReconnectionTimerTick(event:TimerEvent):void{
-		//	connectToStreamingServer();
-		//}
-
-		public function connectToStreamingServer():void
-		{
-			if (!DataModel.getInstance().netConnection)
-				new FullStreamingEvent(FullStreamingEvent.SETUP_CONNECTION).dispatch();
-			if (!DataModel.getInstance().netConnection.connected)
-				new FullStreamingEvent(FullStreamingEvent.START_CONNECTION).dispatch();
-			else
-				onStreamNetConnect(true);
-		}
-
-		public function disconnectFromStreamingService():void
-		{
-			new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
-		}
-
-		private function netStatus(event:NetStatusEvent):void
-		{
-			//trace("[INFO] Exercise stream: Status code " + e.info.code);
-			var info:Object=event.info;
-			var messageClientId:int=info.clientid ? info.clientid : -1;
-			var messageCode:String=info.code;
-			var messageDescription:String=info.description ? info.description : '';
-			var messageDetails:String=info.details ? info.details : '';
-			var messageLevel:String=info.level;
-			trace("NetStatus [{0}] {1} {2}", [messageLevel, messageCode, messageDescription]);	
-			
-			switch (messageCode)
-			{
-				case "NetStream.Buffer.Full":
-					if (playbackState == PLAYBACK_READY_STATE)
-					{
-						playbackState=PLAYBACK_STARTED_STATE;
-						dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_STARTED_PLAYING));
-					}
-					if (playbackState == PLAYBACK_BUFFERING_STATE)
-						playbackState=PLAYBACK_STARTED_STATE;
-					if (playbackState == PLAYBACK_UNPAUSED_STATE)
-						playbackState=PLAYBACK_STARTED_STATE;
-					if (playbackState == PLAYBACK_SEEKING_END_STATE)
-						playbackState=PLAYBACK_STARTED_STATE;
-					break;
-				case "NetStream.Buffer.Empty":
-					playbackState=PLAYBACK_BUFFERING_STATE;
-					break;
-				case "NetStream.Play.Start":
-					playbackState=PLAYBACK_STARTED_STATE;
-					break;
-				case "NetStream.Play.Stop":
-					playbackState=PLAYBACK_STOPPED_STATE;
-					break;
-				
-				case "NetStream.Play.StreamNotFound":
-					trace("[ERROR] Exercise stream: Stream " + _videoSource + " could not be found");
-					dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_NOT_FOUND));
-					break;
-				
-				case "NetStream.Pause.Notify":
-					playbackState=PLAYBACK_PAUSED_STATE;
-					break;
-				case "NetStream.Unpause.Notify":
-					playbackState=PLAYBACK_UNPAUSED_STATE;
-					break;
-				case "NetStream.Seek.Notify":
-					playbackState=PLAYBACK_SEEKING_START_STATE;
-					break;
-				case "NetStream.SeekStart.Notify":
-					playbackState=PLAYBACK_SEEKING_START_STATE;
-					break;
-				case "NetStream.Seek.Complete":
-					playbackState=PLAYBACK_SEEKING_END_STATE;
-					break;
-				default:
-					break;
-			}
-			
-			if(checkEndingBuffer(messageCode)){
-				playbackState=PLAYBACK_FINISHED_STATE;
-				dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_FINISHED_PLAYING));
-			}
-		}
-		
-		private function checkEndingBuffer(currentNetStatus:String):uint{
-			if(_streamFinishBuffer.hasOwnProperty(currentNetStatus)){
-				_streamFinishBuffer[currentNetStatus] = 1;
-			} else {
-				for(var k:String in _streamFinishBuffer){
-					_streamFinishBuffer[k]=0;
-				}
-			}
-			var result:uint=1;
-			for each(var val:int in _streamFinishBuffer){
-				result &= val;
-			}
-			return result;
-		}
-
-		protected function asyncErrorHandler(event:AsyncErrorEvent):void
-		{
-			// Avoid debug messages
-		}
-
-		protected function netIOError(event:IOErrorEvent):void
-		{
-			// Avoid debug messages
-		}
-
-		public function onCuePoint(obj:Object):void
-		{
-			// Avoid debug messages
-		}
-
-		/**
-		 * Stream controls
-		 */
 		public function playVideo():void
 		{
-			if(!_nc){
-				_ppBtn.State=PlayButton.PLAY_STATE;
+			if (!streamReady(_media)){
+				//logger.debug("Stream is not ready");
 				return;
 			}
-			if (!_nc.connected)
-			{
-				_ppBtn.State=PlayButton.PLAY_STATE;
-				return;
-			}
-
-			if (_ns != null)
-				_ns.close();
-
-			_ns=new NetStream(_nc);
-			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
-			_ns.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
-			_ns.client=this;
-			_video.attachNetStream(_ns);
-
-			if (_videoSource != '')
-			{
-				try
-				{
-					trace("[INFO] Exercise stream: Selected video " + _videoSource);
-					var stream:String = _videoSource;
-					if(stream.search(/\.flv$/) !=-1)
-						stream = stream.slice(0,-4);
-					_ns.play(stream,_defaultPlayMode);
-				}
-				catch (e:Error)
-				{
-					trace("[ERROR] Exercise stream: Can't play. Not connected to the server");
-					return;
-				}
-
-				_started=true;
-
-				if (_timer)
-					_timer.stop();
-				_timer=new Timer(300);
-				_timer.addEventListener(TimerEvent.TIMER, updateProgress);
-				_timer.start();
-			}
-		}
-
-
-		public function stopVideo():void
-		{
-			//if(!DataModel.getInstance().netConnected)
-			//	return;
 			
-			if (_ns)
+			if (_media.streamState == AMediaManager.STREAM_SEEKING_START){
+				//logger.debug("Cannot start playing while previous seek is not complete");
+				return;
+			}				
+			if (_media.streamState == AMediaManager.STREAM_PAUSED)
 			{
-				_ns.play(false);
-				_video.clear();
-				//_ns.pause();
-				//_ns.seek(0);
+				resumeVideo();
 			}
-
-			_ppBtn.State=PlayButton.PLAY_STATE;
+			if (_media.streamState == AMediaManager.STREAM_UNREADY){
+				//logger.debug("[PlayVideo] stream not ready");
+				_forcePlay=true;
+				loadVideoByUrl(_mediaUrl);
+			}
+			if (_media.streamState == AMediaManager.STREAM_READY || _media.streamState == AMediaManager.STREAM_FINISHED){
+				//logger.debug("[PlayVideo] stream ready or finished");
+				startVideo();
+			}
+			
 		}
-
-		public function endVideo():void
-		{
-			stopVideo();
-			if (_ns)
-				_ns.close();
-			if(_timer && _timer.running)
-				_timer.stop();
-		}
-
 
 		public function pauseVideo():void
 		{
-			if (_ns)
-			{
-				_ns.pause();
-			}
-			_ppBtn.State=PlayButton.PLAY_STATE;
+			if (_media.streamState == AMediaManager.STREAM_SEEKING_START)
+				return;
+			if (streamReady(_media) && (_media.streamState == AMediaManager.STREAM_STARTED || _media.streamState == AMediaManager.STREAM_BUFFERING))
+				_media.netStream.togglePause();
 		}
-
+		
 		public function resumeVideo():void
 		{
-			if (_ns)
-			{
-				//_ns.seek(_currentTime);
-				_ns.resume();
-				//trace(_currentTime, _ns.time);
-			}
-			_ppBtn.State=PlayButton.PAUSE_STATE;
+			if (_media.streamState == AMediaManager.STREAM_SEEKING_START)
+				return;
+			if (streamReady(_media) && _media.streamState == AMediaManager.STREAM_PAUSED)
+				_media.netStream.togglePause();
 		}
-
-
-		public function onPlayStatus(e:Object):void
-		{
-			//trace(e);
-		}
-
-		/**
-		 * On video information retrieved
-		 */
-		public function onMetaData(msg:Object):void
-		{
 		
-			/*
-			   trace("metadata: ");
-
-			   for (var a:* in msg)
-			   trace(a + " : " + msg[a]);
-			 */
-
-			_duration=msg.duration;
-
-			this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.METADATA_RETRIEVED));
-
-			_video.width=msg.width;
-			_video.height=msg.height;
-
-			scaleVideo();
-			drawBG();
-		}
-
-		public function onBWDone():void
+		public function stopVideo():void
 		{
-
+			if (streamReady(_media))
+			{
+				//_nsc.play(false);
+				_media.stop();
+				_video.clear();
+				//_videoReady=false;
+			}
+		}
+		
+		public function endVideo():void
+		{
+			stopVideo();
+			if (streamReady(_media)){
+				_media.netStream.close(); //Cleans the cache of the video
+				_media = null;
+				_mediaReady=false;
+			}
+		}
+		
+		public function onMetaData(event:MediaStatusEvent):void
+		{
+			_duration=_media.duration;
+			_video.width=_media.videoWidth;
+			_video.height=_media.videoHeight;
+			
+			this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.METADATA_RETRIEVED));
+			
+			scaleVideo();
 		}
 
 		/**
@@ -802,24 +648,7 @@ package components.videoPlayer
 		 */
 		protected function onPPBtnChanged(e:PlayPauseEvent):void
 		{
-			if(!_ns)
-				return;
-			if (_ppBtn.getState() == PlayButton.PAUSE_STATE)
-			{
-				if (_ns.time !=0)
-				{
-					resumeVideo();
-				}
-				else
-				{
-					playVideo();
-				}
-
-			}
-			else
-			{
-				pauseVideo();
-			}
+			playVideo();
 		}
 
 		/**
@@ -835,15 +664,15 @@ package components.videoPlayer
 		 */
 		private function updateProgress(e:TimerEvent):void
 		{
-			if (!_ns)
+			if (!_media)
 				return; //Fail safe in case someone drags the scrubber.
 
-			_currentTime=_ns.time;
+			_currentTime=_media.currentTime;
 			_sBar.updateProgress(_currentTime, _duration);
 
 			// if not streaming show loading progress
-			if (!_streamSource)
-				_sBar.updateLoaded(_ns.bytesLoaded / _ns.bytesTotal);
+			if (!_netConnectionUrl)
+				_sBar.updateLoaded(_media.bytesLoaded / _media.bytesTotal);
 
 			_eTime.updateElapsedTime(_currentTime, _duration);
 		}
@@ -854,17 +683,17 @@ package components.videoPlayer
 		 */
 		protected function onScrubberDropped(e:Event):void
 		{
-			if (!_ns)
+			if (!_media)
 				return;
 
 			_timer.stop();
 
-			_ns.seek(_sBar.seekPosition(_duration));
+			_media.seek(_sBar.seekPosition(_duration));
 
 			if (_state == PlayButton.PAUSE_STATE) // before seek was playing, so resume video
 			{
 				_ppBtn.State=PlayButton.PAUSE_STATE;
-				_ns.resume();
+				_media.resume();
 			}
 
 			_timer.start();
@@ -875,7 +704,7 @@ package components.videoPlayer
 		 **/
 		private function onScrubberDragging(e:Event):void
 		{
-			if (!_ns)
+			if (!_media)
 				return;
 
 			_state=_ppBtn.getState();
@@ -883,7 +712,7 @@ package components.videoPlayer
 			if (_ppBtn.getState() == PlayButton.PAUSE_STATE) // do pause
 			{
 				_ppBtn.State=PlayButton.PLAY_STATE;
-				_ns.pause();
+				_media.pause();
 				_timer.stop();
 			}
 		}
@@ -893,7 +722,7 @@ package components.videoPlayer
 		 */
 		protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
 		{
-			trace("[INFO] Exercise stream: Finished playing video "+_videoSource);
+			trace("[INFO] Exercise stream: Finished playing video "+_mediaUrl);
 			stopVideo();
 		}
 
@@ -903,12 +732,10 @@ package components.videoPlayer
 		 */
 		private function onVolumeChange(e:VolumeEvent):void
 		{
-			if (!_ns)
+			if (!_media)
 				return;
 
-			_ns.soundTransform=new SoundTransform(e.volumeAmount);
-
-			//trace(_ns.soundTransform.volume, e.volumeAmount);
+			_media.volume=e.volumeAmount;
 		}
 
 		/**

@@ -28,8 +28,7 @@
 												arrows="false"
 												width="400"
 												height="250"
-												subtitlingControls="true"
-												streamSource="{streamSource}"/>
+												subtitlingControls="true"/>
 				<s:BorderContainer id="simultaneousEditNotice"
 								   minHeight="0"
 								   includeInLayout="false"

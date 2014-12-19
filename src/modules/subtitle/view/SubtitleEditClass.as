@@ -3,23 +3,23 @@ package modules.subtitle.view
 
 	import commands.cuepointManager.ShowHideSubtitleCommand;
 	
-	import control.URLManager;
 	import components.videoPlayer.CuePointManager;
+	import components.videoPlayer.VideoPlayer;
+	import components.videoPlayer.VideoRecorder;
+	import components.videoPlayer.media.AMediaManager;
+	import components.videoPlayer.events.VideoPlayerEvent;
+	import components.videoPlayer.events.babelia.StreamEvent;
+	import components.videoPlayer.events.babelia.SubtitlingEvent;
 	
-	import modules.exercise.event.ExerciseEvent;
-	import modules.subtitle.event.SubtitleEvent;
-	//import events.ViewChangeEvent;
+	import control.URLManager;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import model.DataModel;
 	
-	import components.videoPlayer.VideoPlayer;
-	import components.videoPlayer.VideoRecorder;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.babelia.StreamEvent;
-	import components.videoPlayer.events.babelia.SubtitlingEvent;
+	import modules.exercise.event.ExerciseEvent;
+	import modules.subtitle.event.SubtitleEvent;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
@@ -71,7 +71,7 @@ package modules.subtitle.view
 		private var videoPlayerReady:Boolean=false;
 
 		[Bindable]
-		public var videoPlaybackStartedState:int=VideoPlayer.PLAYBACK_STARTED_STATE;
+		public var videoPlaybackStartedState:int=AMediaManager.STREAM_STARTED;
 
 		[Bindable]
 		public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
@@ -160,9 +160,14 @@ package modules.subtitle.view
 
 		public function prepareVideoPlayer():void
 		{
-			VPSubtitle.stopVideo();
-			VPSubtitle.state=VideoRecorder.PLAY_STATE;
-			VPSubtitle.videoSource=EXERCISE_FOLDER + '/' + exerciseFileName;
+			var netConnectionUrl:String='';
+			
+			var media:Object=new Object();
+			media.netConnectionUrl = netConnectionUrl;
+			media.mediaUrl = EXERCISE_FOLDER+'/'+exerciseFileName;
+			
+			VPSubtitle.loadVideoByUrl(media);
+			
 			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
 		}
@@ -559,10 +564,7 @@ package modules.subtitle.view
 		{
 			if (creationComplete && _dataModel.oldContentViewStackIndex == 6)
 			{
-				VPSubtitle.endVideo();
-				VPSubtitle.setSubtitle(""); // Clear subtitles if any
-				VPSubtitle.videoSource=""; // Reset video source
-				VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+				VPSubtitle.resetComponent();
 				_cueManager.reset();
 
 				subtitleVersionBox.includeInLayout=false;

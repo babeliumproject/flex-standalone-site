@@ -5,23 +5,11 @@
 
 package components.videoPlayer
 {
-	import components.videoPlayer.controls.PlayButton;
-	import components.videoPlayer.controls.babelia.ArrowPanel;
-	import components.videoPlayer.controls.babelia.MicActivityBar;
-	import components.videoPlayer.controls.babelia.RecStopButton;
-	import components.videoPlayer.controls.babelia.RoleTalkingPanel;
-	import components.videoPlayer.controls.babelia.SubtitleButton;
-	import components.videoPlayer.controls.babelia.SubtitleStartEndButton;
-	import components.videoPlayer.controls.babelia.SubtitleTextBox;
-	import components.videoPlayer.events.PlayPauseEvent;
-	import components.videoPlayer.events.UserDeviceEvent;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.babelia.RecStopButtonEvent;
-	import components.videoPlayer.events.babelia.RecordingEvent;
-	import components.videoPlayer.events.babelia.StreamEvent;
-	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
-	import components.videoPlayer.events.babelia.SubtitlingEvent;
-	import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+	import components.videoPlayer.controls.*;
+	import components.videoPlayer.controls.babelia.*;
+	import components.videoPlayer.events.*;
+	import components.videoPlayer.events.babelia.*;
+	import components.videoPlayer.media.*;
 	
 	import events.FullStreamingEvent;
 	
@@ -52,6 +40,7 @@ package components.videoPlayer
 	import spark.components.Button;
 	import spark.primitives.BitmapImage;
 	
+	import view.BusyIndicator;
 	import view.common.PrivacyRights;
 	
 	import vo.ResponseVO;
@@ -107,8 +96,8 @@ package components.videoPlayer
 		private const DEFAULT_VOLUME:Number=40;
 		private const COUNTDOWN_TIMER_SECS:int=5;
 
-		private var _recordns:NetStreamClient;
-		private var _secondns:NetStreamClient;
+		private var _recordns:AMediaManager;
+		private var _secondns:AMediaManager;
 		private var _secondStreamSource:String;
 
 		private var _mic:Microphone;
@@ -125,6 +114,7 @@ package components.videoPlayer
 
 		private var _userdevmgr:UserDeviceManager;
 		private var _privUnlock:PrivacyRights;
+		private var _busyIndicator:BusyIndicator;
 
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -187,6 +177,11 @@ package components.videoPlayer
 			_countdownTxt.setStyle("fontSize", 30);
 			_countdownTxt.selectable=false;
 			_countdownTxt.visible=false;
+			
+			_busyIndicator=new BusyIndicator();
+			_busyIndicator.width=48;
+			_busyIndicator.height=48;
+			_busyIndicator.visible=false;
 
 			_camVideo=new Video();
 			_camVideo.visible=false;
@@ -237,7 +232,7 @@ package components.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_videoBarPanel);
 			addChild(_countdownTxt);
-			
+			addChild(_busyIndicator);
 
 			addChild(_overlayButton);
 
@@ -442,7 +437,7 @@ package components.videoPlayer
 
 			_secondStreamSource=source;
 
-			if (_nc == null)
+			if (_media == null)
 			{
 				if (_video != null)
 					_video.clear();
@@ -475,7 +470,7 @@ package components.videoPlayer
 		 **/
 		public function get streamTime():Number
 		{
-			return _ns ? _ns.time : 0;
+			return _media.currentTime;
 		}
 
 		/**
@@ -560,6 +555,10 @@ package components.videoPlayer
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
 			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
+			
+			_busyIndicator.x=(_videoWidth-_busyIndicator.width)/2;
+			_busyIndicator.y=(_videoHeight-_busyIndicator.height)/2;
+			_busyIndicator.setStyle('symbolColor',0xFFFFFF);
 
 			//Play overlay
 			_overlayButton.width=_videoWidth;
@@ -676,8 +675,8 @@ package components.videoPlayer
 		 */
 		private function onEnterFrame(e:TimerEvent):void
 		{
-			if (_ns != null)
-				this.dispatchEvent(new StreamEvent(StreamEvent.ENTER_FRAME, _ns.time));
+			if (_media != null)
+				this.dispatchEvent(new StreamEvent(StreamEvent.ENTER_FRAME, _media.currentTime));
 		}
 
 		/**
@@ -825,8 +824,7 @@ package components.videoPlayer
 		 */
 		public function onSubtitlingEvent(e:SubtitlingEvent):void
 		{
-			var time:Number=_ns != null ? _ns.time : 0;
-
+			var time:Number=_media.currentTime;
 			this.dispatchEvent(new SubtitlingEvent(e.type, time - SUBTILE_INSERT_DELAY));
 		}
 
@@ -1027,7 +1025,7 @@ package components.videoPlayer
 
 			if (state & RECORD_FLAG)
 			{
-				_recordns=new NetStreamClient(_nc,"outNs");
+				_recordns=new ARTMPManager("outNs");
 				disableControls();
 			}
 			
@@ -1039,7 +1037,7 @@ package components.videoPlayer
 				//	splitVideoPanel();
 				_camVideo.visible=false;
 				_micImage.visible=false;
-				_recordns=new NetStreamClient(_nc,"outNs");
+				_recordns=new ARTMPManager("outNs");
 			}
 
 			_micActivityBar.visible=true;
@@ -1273,9 +1271,9 @@ package components.videoPlayer
 				_secondns.netStream.dispose();
 			}
 
-			if (_nc && _nc.connected)
+			if (streamReady(_media))
 			{
-				_secondns=new NetStreamClient(_nc,"inNs");
+				_secondns=new ARTMPManager("inNs");
 				_secondns.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
 
 				_camVideo.clear();
@@ -1289,10 +1287,10 @@ package components.videoPlayer
 				muteRecording(false);
 				muteRecording(true);
 
-				if (_ns != null)
+				if (_media != null)
 				{
 					//_ns.resume();
-					_ns.play(super.videoSource);
+					_media.play();
 				}
 				_ppBtn.State=PlayButton.PAUSE_STATE;
 			}
@@ -1300,7 +1298,7 @@ package components.videoPlayer
 		
 		override public function resetComponent():void{
 			setSubtitle('');
-			videoSource='';
+			
 			state=VideoRecorder.PLAY_STATE;
 			arrows=false;
 			
@@ -1315,7 +1313,7 @@ package components.videoPlayer
 			destroyVideo(_video);
 		}
 		
-		private function destroyNetstream(nc:NetStreamClient):void{
+		private function destroyNetstream(nc:AMediaManager):void{
 			if (nc && nc.netStream)
 			{
 				nc.netStream.attachCamera(null);

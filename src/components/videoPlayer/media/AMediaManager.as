@@ -1,5 +1,8 @@
 package components.videoPlayer.media
 {	
+	import components.videoPlayer.events.MediaStatusEvent;
+	import components.videoPlayer.events.StreamingEvent;
+	
 	import flash.events.AsyncErrorEvent;
 	import flash.events.DRMErrorEvent;
 	import flash.events.DRMStatusEvent;
@@ -134,7 +137,7 @@ package components.videoPlayer.media
 				initiateStream();
 			} else {
 				//Dispatch an event to let the player know the netConnection failed for some reason.
-				dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.NETSTREAM_ERROR, _id, -1, "NO_CONNECTION"));
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "NO_CONNECTION"));
 			}
 		}
 		
@@ -154,7 +157,7 @@ package components.videoPlayer.media
 				
 				_ns.bufferTime=2;
 				
-				dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.NETSTREAM_READY, _id));
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_SUCCESS, false, false, _id));
 			}
 			catch (e:Error)
 			{
@@ -364,7 +367,7 @@ package components.videoPlayer.media
 			
 			_canSeekToEnd=metaData.canSeekToEnd ? metaData.canSeekToEnd : _canSeekToEnd;
 			
-			dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.METADATA_RETRIEVED, _id));
+			dispatchEvent(new MediaStatusEvent(MediaStatusEvent.METADATA_RETRIEVED, false, false, _id));
 		}
 		
 		public function onPlayStatus(playStatus:Object):void{

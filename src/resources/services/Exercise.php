@@ -436,14 +436,15 @@ class Exercise {
 	 */
 	public function getRecordableExercises($data){
 		
-		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated, u.username as userName, e.difficulty, e.status, e.likes, e.dislikes
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated, u.username as userName, 
+					   e.difficulty, e.status, e.likes, e.dislikes, e.type, e.situation, e.competence, e.lingaspects
 				FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id WHERE e.status = 1 AND e.visible=1";
 		
 		$q = isset($data->q) && strlen($data->q) ? $data->q : null;
 		//$sort = isset($data->sort) ? $data->sort : null;
 		$lang = isset($data->lang) ? $data->lang : null;
 		$difficulty = isset($data->difficulty) ? $data->difficulty : 0;
-		$type = isset($data->type) ? $data->type : 0;
+		$type = isset($data->type) ? $data->type : -1;
 		$situation = isset($data->situation) ? $data->situation : 0;
 		
 		if($q){
@@ -468,7 +469,7 @@ class Exercise {
 				$filtered = $this->filterByLang($filtered, $lang);
 			if($difficulty) 
 				$filtered = $this->filterByDifficulty($filtered, $difficulty);
-			if($type) 
+			if($type>-1) 
 				$filtered = $this->filterByType($filtered, $type);
 			if($situation) 
 				$filtered = $this->filterBySituation($filtered, $situation);

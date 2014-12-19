@@ -1,5 +1,8 @@
 package components.videoPlayer.media
 {
+	import components.videoPlayer.events.MediaStatusEvent;
+	import components.videoPlayer.events.StreamingEvent;
+	
 	import flash.events.AsyncErrorEvent;
 	import flash.events.DRMErrorEvent;
 	import flash.events.DRMStatusEvent;
@@ -140,7 +143,7 @@ package components.videoPlayer.media
 					if (_streamStatus == STREAM_READY)
 					{
 						_streamStatus=STREAM_STARTED;
-						dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.PLAYBACK_STARTED, _id));
+						dispatchEvent(new MediaStatusEvent(MediaStatusEvent.PLAYBACK_STARTED, false, false, _id));
 					}
 					if (_streamStatus == STREAM_BUFFERING)
 						_streamStatus=STREAM_STARTED;
@@ -169,7 +172,7 @@ package components.videoPlayer.media
 				case "NetStream.Play.NoSupportedTrackFound":
 					break;
 				case "NetStream.Play.StreamNotFound":
-					dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.NETSTREAM_ERROR, _id, -1, "ERROR_STREAM_NOT_FOUND"));
+					dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "ERROR_STREAM_NOT_FOUND"));
 					break;
 				case "NetStream.Play.Transition":
 					break;
@@ -189,7 +192,7 @@ package components.videoPlayer.media
 				default:
 					break;
 			}
-			dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.STATE_CHANGED, _id, _streamStatus));
+			dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STATE_CHANGED, false, false, _id, _streamStatus));
 		}
 	}
 }

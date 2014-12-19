@@ -1,5 +1,8 @@
 package components.videoPlayer.media
 {	
+	import components.videoPlayer.events.MediaStatusEvent;
+	import components.videoPlayer.events.StreamingEvent;
+	
 	import flash.errors.IOError;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.IOErrorEvent;
@@ -30,7 +33,7 @@ package components.videoPlayer.media
 		private var _encoding:uint;
 		private var _proxy:String;
 
-		private var _streamingServerUrl:String;
+		private var _netConnectionUrl:String;
 
 		private var _netConnectOngoingAttempt:Boolean;
 
@@ -71,12 +74,12 @@ package components.videoPlayer.media
 		
 		override public function setup(... args):void{
 			if(args && args.length){
-				_streamingServerUrl = (args[0] is String) ? args[0] : null;
+				_netConnectionUrl = (args[0] is String) ? args[0] : null;
 				_streamUrl = (args[1] is String) ? args[1] : null;
 			}
 			//logger.debug("Streaming server: {0} stream name: {1}" [_serverUrl, _streamUrl]);
-			this.addEventListener(StreamingEvent.CONNECTED_CHANGE, onConnectionStatusChange);
-			connect(_streamingServerUrl);
+			this.addEventListener(StreamingEvent.CONNECTED_CHANGE, onConnectionStatusChange, false, 0, true);
+			connect(_netConnectionUrl);
 		}
 
 		private function connect(... args):void
@@ -106,16 +109,16 @@ package components.videoPlayer.media
 				_nc.proxyType=_proxy;
 		
 				// Setup the NetConnection and listen for NetStatusEvent and SecurityErrorEvent events.
-				_nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
-				_nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
-				_nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
-				_nc.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+				_nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus, false, 0, true);
+				_nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError, false, 0, true);
+				_nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError, false, 0, true);
+				_nc.addEventListener(IOErrorEvent.IO_ERROR, onIoError, false, 0, true);
 				// connect to server
 				try
 				{
-					logger.info("Connecting to {0}", [_streamingServerUrl]);
+					logger.info("Connecting to {0}", [_netConnectionUrl]);
 					// Create connection with the server.
-					_nc.connect(_streamingServerUrl);
+					_nc.connect(_netConnectionUrl);
 				}
 				catch (e:ArgumentError)
 				{
@@ -123,13 +126,13 @@ package components.videoPlayer.media
 					switch (e.errorID)
 					{
 						case 2004:
-							logger.error("Invalid server location: {0}", [_streamingServerUrl]);
+							logger.error("Invalid server location: {0}", [_netConnectionUrl]);
 							_netConnectOngoingAttempt=false;
 							_connected=false;
 							dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 							break;
 						default:
-							logger.error("Undetermined problem while connecting with: {0}", [_streamingServerUrl]);
+							logger.error("Undetermined problem while connecting with: {0}", [_netConnectionUrl]);
 							_netConnectOngoingAttempt=false;
 							_connected=false;
 							dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
@@ -138,21 +141,21 @@ package components.videoPlayer.media
 				}
 				catch (e:IOError)
 				{
-					logger.error("IO error while connecting to: {0}", [_streamingServerUrl]);
+					logger.error("IO error while connecting to: {0}", [_netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 				}
 				catch (e:SecurityError)
 				{
-					logger.error("Security error while connecting to: {0}", [_streamingServerUrl]);
+					logger.error("Security error while connecting to: {0}", [_netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 				}
 				catch (e:Error)
 				{
-					logger.error("Unidentified error while connecting to: {0}", [_streamingServerUrl]);
+					logger.error("Unidentified error while connecting to: {0}", [_netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
@@ -236,7 +239,7 @@ package components.videoPlayer.media
 						if (_streamStatus == STREAM_READY)
 						{
 							_streamStatus=STREAM_STARTED;
-							dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.PLAYBACK_STARTED, _id));
+							dispatchEvent(new MediaStatusEvent(MediaStatusEvent.PLAYBACK_STARTED, false, false, _id));
 						}
 						if (_streamStatus == STREAM_BUFFERING)
 							_streamStatus=STREAM_STARTED;
@@ -280,7 +283,7 @@ package components.videoPlayer.media
 					case "NetStream.Play.NoSupportedTrackFound":
 						break;
 					case "NetStream.Play.StreamNotFound":
-						dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.NETSTREAM_ERROR, _id, -1, "ERROR_STREAM_NOT_FOUND"));
+						dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "ERROR_STREAM_NOT_FOUND"));
 						break;
 					case "NetStream.Play.Transition":
 						break;
@@ -308,7 +311,7 @@ package components.videoPlayer.media
 				}
 				if(checkEndingBuffer(_netStatusCode))
 					_streamStatus=STREAM_FINISHED;
-				dispatchEvent(new NetStreamClientEvent(NetStreamClientEvent.STATE_CHANGED, _id, _streamStatus));
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STATE_CHANGED, false, false, _id, _streamStatus));
 			}
 		}
 		
