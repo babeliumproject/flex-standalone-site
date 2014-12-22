@@ -21,7 +21,7 @@
 			<s:VGroup>
 				<videoPlayer:VideoRecorder id="VPSubtitle"
 												autoPlay="true"
-												skin="white"
+												skinUrl="resources/videoPlayer/skin/white.xml"
 												seek="true"
 												subtitles="true"
 												autoScale="false"

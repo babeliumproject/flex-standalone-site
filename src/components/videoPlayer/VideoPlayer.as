@@ -8,11 +8,14 @@ package components.videoPlayer
 {
 	
 	import components.videoPlayer.controls.AudioSlider;
+	import components.videoPlayer.controls.BitmapSprite;
 	import components.videoPlayer.controls.ElapsedTime;
+	import components.videoPlayer.controls.ErrorSprite;
 	import components.videoPlayer.controls.PlayButton;
 	import components.videoPlayer.controls.ScrubberBar;
 	import components.videoPlayer.controls.SkinableComponent;
 	import components.videoPlayer.controls.StopButton;
+	import components.videoPlayer.controls.XMLSkinableComponent;
 	import components.videoPlayer.events.MediaStatusEvent;
 	import components.videoPlayer.events.PlayPauseEvent;
 	import components.videoPlayer.events.ScrubberBarEvent;
@@ -55,17 +58,10 @@ package components.videoPlayer
 	
 	import view.BusyIndicator;
 
-	public class VideoPlayer extends SkinableComponent
+	public class VideoPlayer extends XMLSkinableComponent
 	{
 		protected static const logger:ILogger = getLogger(VideoPlayer);
 		
-		/**
-		 * Skin related variables
-		 */
-		private const SKIN_PATH:String=DataModel.getInstance().uploadDomain+"resources/videoPlayer/skin/";
-		private var _skinableComponents:Dictionary;
-		private var _skinLoader:URLLoader;
-		private var _loadingSkin:Boolean=false;
 		public static const BG_COLOR:String="bgColor";
 		public static const BORDER_COLOR:String="borderColor";
 		public static const VIDEOBG_COLOR:String="videoBgColor";
@@ -96,7 +92,10 @@ package components.videoPlayer
 		protected var _videoHeight:Number=200;
 		protected var _videoWidth:Number=320;
 		
-		
+		protected var _mediaPosterUrl:String;
+		protected var _topLayer:Sprite;
+		protected var _posterSprite:BitmapSprite;
+		protected var _errorSprite:ErrorSprite;
 		protected var _media:AMediaManager;
 		private var _mediaUrl:String;
 		private var _netConnectionUrl:String;
@@ -104,6 +103,8 @@ package components.videoPlayer
 		private var _currentVolume:Number;
 		private var _forcePlay:Boolean;
 		private var _videoPlaying:Boolean;
+		private var _lastWidth:int;
+		private var _lastHeight:int;
 		
 		
 		protected var _busyIndicator:BusyIndicator;
@@ -119,9 +120,8 @@ package components.videoPlayer
 			_skinableComponents=new Dictionary();
 
 			_bg=new Sprite();
-
 			_bgVideo=new Sprite();
-
+			_topLayer=new Sprite();
 			_video=new Video();
 			_video.smoothing=_smooth;
 			
@@ -165,6 +165,7 @@ package components.videoPlayer
 			addChild(_bgVideo);
 			addChild(_video);
 			addChild(_videoBarPanel);
+			addChild(_topLayer);
 			addChild(_busyIndicator);
 
 			/**
@@ -176,20 +177,19 @@ package components.videoPlayer
 			putSkinableComponent(_ppBtn.COMPONENT_NAME, _ppBtn);
 			putSkinableComponent(_sBar.COMPONENT_NAME, _sBar);
 			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
-
-			// Loads default skin
-			skin="default";
 		}
 		
 		public function loadVideoByUrl(param:Object):void{
 			var netConnectionUrl:String;
 			var mediaUrl:String;
+			var mediaPosterUrl:String;
 			if(getQualifiedClassName(param) == 'Object')
 			{
 				if(!param.mediaUrl){
 					return;
 				}
 				mediaUrl=param.mediaUrl;
+				mediaPosterUrl= param.mediaPosterUrl || null;
 				netConnectionUrl = param.netConnectionUrl || null;
 			}
 			else if (param is String)
@@ -200,6 +200,7 @@ package components.videoPlayer
 			}
 			
 			_mediaUrl=mediaUrl;
+			_mediaPosterUrl=mediaPosterUrl;
 			_netConnectionUrl=netConnectionUrl;
 			
 			loadVideo();
@@ -215,8 +216,10 @@ package components.videoPlayer
 				resetAppearance();
 		
 				if(!_autoPlay){
-					//_posterSprite = new BitmapSprite(_videoPosterUrl, _lastWidth, _lastHeight);
-					//_topLayer.addChild(_posterSprite);
+					if(_mediaPosterUrl){
+						_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
+						_topLayer.addChild(_posterSprite);
+					}
 				}
 				
 				if (streamReady(_media))
@@ -264,9 +267,9 @@ package components.videoPlayer
 		
 		protected function onStreamFailure(event:Event):void{
 			var evt:Object=Object(event);
-			//_errorSprite=new ErrorSprite(evt.message, _lastWidth, _lastHeight);
-			//_topLayer.removeChildren();
-			//_topLayer.addChild(_errorSprite);
+			_errorSprite=new ErrorSprite(evt.message, _lastWidth, _lastHeight);
+			_topLayer.removeChildren();
+			_topLayer.addChild(_errorSprite);
 			
 			_busyIndicator.visible=false;
 		}
@@ -401,81 +404,11 @@ package components.videoPlayer
 		}
 
 		/**
-		 * Skin HashMap related commands
-		 */
-		protected function putSkinableComponent(name:String, cmp:SkinableComponent):void
-		{
-			_skinableComponents[name]=cmp;
-		}
-
-		protected function getSkinableComponent(name:String):SkinableComponent
-		{
-			return _skinableComponents[name];
-		}
-
-		public function setSkin(fileName:String):void
-		{
-			skin=fileName;
-		}
-
-		/**
 		 * Duration
 		 */
 		public function get duration():Number
 		{
 			return _duration;
-		}
-
-		/**
-		 * Skin loader
-		 */
-		public function set skin(name:String):void
-		{
-
-			var fileName:String=SKIN_PATH + name + ".xml";
-
-			if (_loadingSkin)
-			{ // Maybe some skins will try to load at same time
-				flash.utils.setTimeout(setSkin, 20, name);
-				return;
-			}
-
-			var xmlURL:URLRequest=new URLRequest(fileName);
-			_skinLoader=new URLLoader(xmlURL);
-			_skinLoader.addEventListener(Event.COMPLETE, onSkinFileRead);
-			_skinLoader.addEventListener(IOErrorEvent.IO_ERROR, onSkinFileReadingError);
-			_loadingSkin=true;
-		}
-
-		/**
-		 * Parses Skin file
-		 */
-		public function onSkinFileRead(e:Event):void
-		{
-			var xml:XML=new XML(_skinLoader.data);
-
-			for each (var xChild:XML in xml.child("Component"))
-			{
-				var componentName:String=xChild.attribute("name").toString();
-				var cmp:SkinableComponent=getSkinableComponent(componentName);
-
-				if (cmp == null)
-					continue;
-				for each (var xElement:XML in xChild.child("Property"))
-				{
-					var propertyName:String=xElement.attribute("name").toString();
-					var propertyValue:String=xElement.toString();
-					cmp.setSkinProperty(propertyName, propertyValue);
-				}
-			}
-
-			updateDisplayList(0, 0); // repaint();
-			_loadingSkin=false;
-		}
-
-		public function onSkinFileReadingError(e:Event):void
-		{
-			_loadingSkin=false;
 		}
 
 		/** Overriden */

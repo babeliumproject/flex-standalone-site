@@ -66,7 +66,7 @@
 						styleName="boldLabel">
 				<videoPlayer:VideoRecorder id="primarym"
 										   autoPlay="false"
-										   skin="white"
+										   skinUrl="resources/videoPlayer/skin/white.xml"
 										   seek="true"
 										   subtitles="true"
 										   autoScale="false"
@@ -80,7 +80,7 @@
 						styleName="boldLabel" visible="false" includeInLayout="false">
 				<videoPlayer:VideoRecorder id="modelm"
 										   autoPlay="false"
-										   skin="white"
+										   skinUrl="resources/videoPlayer/skin/white.xml"
 										   seek="true"
 										   subtitles="true"
 										   autoScale="false"

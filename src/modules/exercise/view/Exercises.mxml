@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:view="modules.exercise.view.*"
@@ -13,33 +13,36 @@
 		  paddingTop="16"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface" xmlns:view1="modules.create.view.*">
 
 	<fx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
+
+			import mx.core.UIComponent;
+
 			import commands.cuepointManager.ReplayResponseCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-			
+
 			import components.videoPlayer.CuePointManager;
 			import components.videoPlayer.events.CueManagerEvent;
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
-			
+
 			import control.URLManager;
-			
+
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
-			
+
 			import model.DataModel;
-			
+
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
@@ -47,14 +50,15 @@
 			import mx.core.FlexGlobals;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.collections.Sort;
 			import spark.collections.SortField;
 			import spark.globalization.SortingCollator;
-			
+
 			import view.common.*;
-			
+
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -175,11 +179,11 @@
 				// Prepare new video in VideoPlayer
 				VP.stopVideo();
 				VP.state=VideoRecorder.PLAY_STATE;
-				
+
 				var media:Object=new Object();
 				media.mediaUrl=EXERCISE_FOLDER + '/' + _exerciseName;
 				media.netConnectionUrl=_streamSource;
-				
+
 				VP.loadVideoByUrl(media);
 
 				// Retrieving available locales for selected exercise's subtitles
@@ -466,13 +470,13 @@
 				_mediaId=tmp.media[0].id;
 				_currentExercise=tmp;
 
-				
+
 				var data:Object=new Object();
-				data.netConnectionUrl = DataModel.getInstance().streamingResourcesPath;
-				data.mediaUrl = EXERCISE_FOLDER + '/' + _exerciseName;
-				
+				data.netConnectionUrl=DataModel.getInstance().streamingResourcesPath;
+				data.mediaUrl=EXERCISE_FOLDER + '/' + _exerciseName;
+
 				VP.loadVideoByUrl(data);
-				
+
 				// Need to retrieve again exercise's information
 				_rolesReady=false;
 				_localesReady=false;
@@ -542,14 +546,11 @@
 				DataModel.getInstance().recordingExercise=false;
 
 				// Set the videoplayer to playback both the exercise and the last response.
-				
+
 				var media:Object=new Object();
-				var items:Array=[
-					{'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource},
-					{'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}
-				];
-				media.parallelMedia = items;
-				
+				var items:Array=[{'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource}, {'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}];
+				media.parallelMedia=items;
+
 				VP.loadVideoByUrl(media);
 
 				VP.seek=false;
@@ -654,12 +655,9 @@
 				setupRecordingCommands();
 
 				var media:Object=new Object();
-				var items:Array=[
-					{'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource},
-					{'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}
-				];
-				media.parallelMedia = items;
-				
+				var items:Array=[{'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource}, {'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}];
+				media.parallelMedia=items;
+
 				VP.loadVideoByUrl(media);
 
 				VP.seek=false;
@@ -672,7 +670,7 @@
 				setupReplayCommands();
 
 				var media:Object=new Object();
-				media.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename;
+				media.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename;
 				media.netConnectionUrl=_streamSource;
 
 				VP.loadVideoByUrl(media);
@@ -684,13 +682,13 @@
 			private function onRecordAgain(e:Event):void
 			{
 				var media:Object=new Object();
-				var play:Object={'mediaUrl':EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource};
-				var record:Object={'mediaUrl':RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource};
-				media.playbackMedia = play;
-				media.recordMedia = record;
-				
+				var play:Object={'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource};
+				var record:Object={'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource};
+				media.playbackMedia=play;
+				media.recordMedia=record;
+
 				//VP.recordVideo(media,eventdata);
-				
+
 				setupRecordingCommands();
 				showArrows();
 				DataModel.getInstance().recordingExercise=true;
@@ -777,7 +775,7 @@
 				}
 			}
 
-			
+
 
 			public function set onLogout(value:Boolean):void
 			{
@@ -800,12 +798,12 @@
 					recordingEndOptions.includeInLayout=false;
 				}
 			}
-			
-			public function resetGroup():void{
+
+			public function resetGroup():void
+			{
 				resetComponent();
 				VP.resetComponent();
 			}
-			
 		]]>
 	</fx:Script>
 
@@ -819,131 +817,162 @@
 	-->
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
-	
+
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
 
-	<s:VGroup id="videoPlayerAndRecordingControls"
-			  width="100%"
-			  horizontalAlign="left"
-			  verticalAlign="middle"
-			  paddingTop="16"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  gap="2">
+	<s:Label id="exerciseTitle"
+			 text="{_exerciseTitle}"
+			 width="{VP.width}"
+			 styleName="h2"/>
 
-		<s:Label id="exerciseTitle"
-				 text="{_exerciseTitle}"
-				 width="{VP.width}"
-				 styleName="h2"/>
-		<!-- Video Player -->
-		<videoPlayer:VideoRecorder id="VP"
-										layoutDirection="ltr"
-										autoPlay="true"
-										skin="white"
-										seek="true"
-										subtitles="true"
-										autoScale="false"
-										arrows="false"
-										subtitlingControls="false"
-										width="640"
-										height="360"
-										controlsEnabled="{_exerciseSelected}"/>
+	<s:HGroup width="100%">
 
-		<s:VGroup id="guestEditWarningBox"
-				  width="{VP.width}"
-				  paddingTop="5"
-				  paddingBottom="20">
+		<s:VGroup id="videoPlayerAndRecordingControls"
+				  width="100%">
+			<videoPlayer:VideoRecorder id="VP"
+									   layoutDirection="ltr"
+									   autoPlay="true"
+									   skinUrl="resources/videoPlayer/skin/white.xml"
+									   seek="true"
+									   subtitles="true"
+									   autoScale="false"
+									   arrows="false"
+									   subtitlingControls="false"
+									   width="640"
+									   height="360"
+									   controlsEnabled="{_exerciseSelected}"/>
 
-			<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
-					 fontWeight="bold"
-					 fontSize="14"/>
+			<s:VGroup id="guestEditWarningBox"
+					  width="{VP.width}"
+					  paddingTop="5"
+					  paddingBottom="20">
 
-			<s:HGroup width="100%"
-					  verticalAlign="middle">
-				<mx:Image id="groupLogo"
-						  source="resources/images/about_section_title_icon.png"
-						  height="30"
-						  width="30"/>
-				<mx:Text htmlText="{resourceManager.getString('myResources','GUEST_RECORD_WARNING')}"
-						 width="100%"
-						 fontSize="14"/>
-			</s:HGroup>
-		</s:VGroup>
+				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+						 styleName="h5"/>
 
-		<!-- Selected Exercise Panel -->
-		<s:BorderContainer id="panelSelectedExercise"
-						   includeInLayout="false"
-						   visible="false"
-						   borderVisible="false"
-						   backgroundAlpha="0"
-						   width="{VP.width}">
-			<s:layout>
-				<s:VerticalLayout paddingTop="5"
-								  paddingLeft="0"
-								  paddingRight="0"
-								  paddingBottom="5"
-								  verticalAlign="middle"/>
-			</s:layout>
-
-			<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
-					 fontWeight="bold"
-					 fontSize="14"/>
-
-			<s:HGroup width="100%"
-					  verticalAlign="middle">
-				<s:VGroup width="100%"
+				<s:HGroup width="100%"
 						  verticalAlign="middle">
-					<s:HGroup verticalAlign="middle">
-						<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
-						<mx:ComboBox id="availableRoles"
-									 dataProvider="{_characterNames}"
-									 enabled="{!DataModel.getInstance().recordingExercise}"/>
-					</s:HGroup>
+					<mx:Image id="groupLogo"
+							  source="resources/images/about_section_title_icon.png"
+							  height="30"
+							  width="30"/>
+					<mx:Text htmlText="{resourceManager.getString('myResources','GUEST_RECORD_WARNING')}"
+							 width="100%"
+							 fontSize="14"/>
+				</s:HGroup>
+			</s:VGroup>
 
-					<s:HGroup verticalAlign="middle">
-						<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_REC_METHOD')}"/>
-						<s:RadioButton id="micOnly"
-									   selected="true"
-									   groupName="recMode"
-									   label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
-						<s:RadioButton id="micAndCam"
-									   groupName="recMode"
-									   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
-					</s:HGroup>
-				</s:VGroup>
+			<!-- Selected Exercise Panel -->
+			<s:BorderContainer id="panelSelectedExercise"
+							   includeInLayout="false"
+							   visible="false"
+							   styleName="lightBorderContainer"
+							   width="{VP.width}">
+				<s:layout>
+					<s:VerticalLayout paddingTop="8"
+									  paddingLeft="8"
+									  paddingRight="8"
+									  paddingBottom="8"
+									  verticalAlign="middle"/>
+				</s:layout>
 
-				<skins:IconButton id="startRecordingButton"
-								  styleName="recStartLinkButton"
-								  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
-								  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'START_RECORDING') }"
-								  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
-								  click="onStartRecordingClicked(event)"/>
-			</s:HGroup>
-		</s:BorderContainer>
-		<view:RecordingEndOptions id="recordingEndOptions"
-								  includeInLayout="false"
-								  visible="false"
-								  width="{VP.width}"
-								  backgroundAlpha="0"
-								  borderVisible="false"/>
-		<s:TabBar id="exerciseInfoTabs" dataProvider="{exerciseInfoStack}"/>
-		<mx:ViewStack id="exerciseInfoStack" width="{VP.width}" resizeToContent="true">
-			<s:NavigatorContent id="addInfNC" label="Add. Info" width="100%">
-				<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
-			</s:NavigatorContent>
-		</mx:ViewStack>
+				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+						 styleName="h5"/>
 
-		<babelia:ExerciseInfoBox id="ratingShareReport"
-								 borderVisible="false"
-								 backgroundAlpha="0"
-								 width="{VP.width}"/>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke weight="{UIComponent(parent).getStyle('borderWeight')}"
+											alpha="{UIComponent(parent).getStyle('borderAlpha')}"
+											color="{UIComponent(parent).getStyle('borderColor')}"/>
+					</s:stroke>
+				</s:Line>
+				
+				<s:HGroup width="100%"
+						  verticalAlign="middle">
+					<s:VGroup width="100%"
+							  verticalAlign="middle">
+						<s:HGroup verticalAlign="middle">
+							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
+							<view1:EnhancedDropDownList id="availableRoles"
+										 dataProvider="{_characterNames}"
+										 enabled="{!DataModel.getInstance().recordingExercise}"
+										 skinClass="skins.BootstrapDropDownList"
+										 cornerRadius="3"
+										 borderColor="0xcccccc"
+										 sortItems="true"
+										 requireSelection="true"/>
+						</s:HGroup>
+
+						<s:HGroup verticalAlign="middle">
+							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_REC_METHOD')}"/>
+							<s:RadioButton id="micOnly"
+										   selected="true"
+										   groupName="recMode"
+										   label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
+							<s:RadioButton id="micAndCam"
+										   groupName="recMode"
+										   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
+						</s:HGroup>
+					</s:VGroup>
+
+					<skins:IconButton id="startRecordingButton"
+									  styleName="recStartLinkButton"
+									  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
+									  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'START_RECORDING') }"
+									  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
+									  click="onStartRecordingClicked(event)"/>
+				</s:HGroup>
+			</s:BorderContainer>
+			<view:RecordingEndOptions id="recordingEndOptions"
+									  includeInLayout="false"
+									  visible="false"
+									  width="{VP.width}"
+									  backgroundAlpha="0"
+									  borderVisible="false"/>
+			<s:TabBar id="exerciseInfoTabs"
+					  dataProvider="{exerciseInfoStack}"/>
+			<mx:ViewStack id="exerciseInfoStack"
+						  width="{VP.width}"
+						  resizeToContent="true">
+				<s:NavigatorContent id="addInfNC"
+									label="Add. Info"
+									width="100%">
+					<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
+				</s:NavigatorContent>
+			</mx:ViewStack>
+
+			<babelia:ExerciseInfoBox id="ratingShareReport"
+									 borderVisible="false"
+									 backgroundAlpha="0"
+									 width="{VP.width}"/>
 
 
-	</s:VGroup>
-	<s:VGroup>
-		<s:BorderContainer id="exDescContainer" styleName="lightBorderContainer">
-			<mx:Text htmlText="{_currentExercise.description}" width="100%"/>
-		</s:BorderContainer>
-	</s:VGroup>
-</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="100%">
+			<s:BorderContainer id="exDescContainer"
+							   styleName="lightBorderContainer"
+							   width="100%"
+							   height="{videoPlayerAndRecordingControls.height}">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
+				</s:layout>
+				<s:Label id="descLbl"
+						 styleName="h5"
+						 text="{ResourceManager.getInstance().getString('myResources','DESCRIPTION')}"/>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke weight="{UIComponent(parent).getStyle('borderWeight')}"
+											alpha="{UIComponent(parent).getStyle('borderAlpha')}"
+											color="{UIComponent(parent).getStyle('borderColor')}"/>
+					</s:stroke>
+				</s:Line>
+				<mx:Text htmlText="{_currentExercise.description}"
+						 width="100%"/>
+			</s:BorderContainer>
+		</s:VGroup>
+	</s:HGroup>
+</s:VGroup>

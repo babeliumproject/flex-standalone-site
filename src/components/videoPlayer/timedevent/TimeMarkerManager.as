@@ -1,42 +1,13 @@
 package components.videoPlayer.timedevent
 {
-	import events.PollingEvent;
-	
-	import flash.events.*;
-	import flash.net.*;
-	import flash.utils.*;
-	
-	import mx.utils.ObjectUtil;
-
-	public class EventPointManager extends EventDispatcher
+	public class TimeMarkerManager extends TimelineActionDispatcher
 	{
+		public function TimeMarkerManager()
+		{
+			super();
+		}
 		
-		private var targetInstance:Object;
-		private var eventList:Array;
-		private var currentEventTime:Number;
-
-		public function EventPointManager()
-		{
-			eventList = new Array();
-		}
-
-		public function pollEventPoints(ev:PollingEvent):void
-		{
-			var curTime:Number=ev.time * 1000;
-			var delayThreshold:Number = 80;
-			for each (var cueobj:Object in eventList)
-			{
-				if (((curTime - delayThreshold) < cueobj.time && cueobj.time < (curTime + delayThreshold)) && cueobj.time != currentEventTime)
-				{
-					//Don't fire the same event more than once
-					currentEventTime=cueobj.time;
-					cueobj.event.executeActions();
-					break;
-				}
-			}
-		}
-
-		public function parseEventPoints(points:Object, targetInstance:Object):Boolean
+		public function parseTimeMarkers(points:Object, targetInstance:Object):Boolean
 		{
 			if (!points || !targetInstance)
 				return false;
@@ -66,17 +37,16 @@ package components.videoPlayer.timedevent
 					eventList.push(cueobj);
 				}
 			}
-			//trace(ObjectUtil.toString(eventList));
 			return true;
 		}
-
+		
 		public function parseActionValue(targetStream:String, actions:Object):*
 		{
 			if (!actions || !actions.hasOwnProperty('action') /*|| !actions.hasOwnProperty('value')*/)
 				return null;
 			var action:String=actions.action;
 			var value:String= actions.hasOwnProperty(value) ? actions.value : null;
-
+			
 			
 			//return targetInstance.hasOwnProperty(action) ? targetInstance[action] : null;
 			
@@ -93,11 +63,11 @@ package components.videoPlayer.timedevent
 					if (targetStream == 'response')
 						return this.targetInstance.setVolumeRecording;
 				case 'subtitlechange':
-				//return videoPlayerInstance.setSubtitle;
+					//return videoPlayerInstance.setSubtitle;
 				case 'roleboxchange':
-				//return videoPlayerInstance.setRolebox;
+					//return videoPlayerInstance.setRolebox;
 				case 'highlightctrlchange':
-				//return videoPlayerInstance.setHighlightControls;
+					//return videoPlayerInstance.setHighlightControls;
 				default:
 					return null;
 			}
@@ -118,20 +88,5 @@ package components.videoPlayer.timedevent
 			}
 			return func;
 		}
-
-		public function timeToSeconds(time:String):Number
-		{
-			var seconds:Number;
-			var milliseconds:Number;
-			var timeExp:RegExp=/(\d{2}):(\d{2}):(\d{2})\.(\d{3})/;
-			var matches:Array=time.match(timeExp);
-			if (matches && matches.length)
-			{
-				seconds=(matches[1] * 3600) + (matches[2] * 60) + (matches[3] * 1) + (matches[4] * .001);
-				milliseconds = seconds * 1000;
-			}
-			return milliseconds;
-		}
-
 	}
 }

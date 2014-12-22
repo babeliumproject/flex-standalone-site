@@ -728,6 +728,13 @@ s|TextInput{
 	fontWeight: bold;
 	color: #268caa;
 }
+
+.h5{
+	fontSize: 16;
+	fontWeight: bold;
+	color: #268caa;
+}
+
 .frm-input{
 	paddingLeft: 12;
 	paddingRight: 12;

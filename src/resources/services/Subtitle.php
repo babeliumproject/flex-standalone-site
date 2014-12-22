@@ -113,6 +113,65 @@ class Subtitle {
         }
         return $parsed_subtitles;
     }
+    
+    private function parseSubtitles2($subtitle){
+    	$parsed_subtitles = FALSE;
+    	if($subtitle){
+    		$serialized = $this->unpackblob($subtitle->serialized_subtitles);
+    		$plain = Zend_Json::decode($serialized);
+    		$parsed_subtitles = array();
+    		foreach($plain as $num => $data){
+    			$sitem = new stdClass();
+    			$sitem->action='showCaption';
+    			$sitem->value=$data['text'];
+    			$sitem->voice=$data['meta']['voice'];
+    			$start_time=ms2time($data['start_time'], true, true);
+    			$parsed_subtitles[$start_time] = $sitem;
+    			
+    			$hitem = new stdClass();
+    			$hitem->action = 'hideCaption';
+    			$end_time=ms2time($data['end_time'], true, true);
+    			$parsed_subtitles[$end_time] = $hitem;
+    		}
+    	}
+    	return $parsed_subtitles;
+    }
+    
+    private function ms2time($milliseconds, $displayHours, $displayMs) {
+    	$p_num = $milliseconds * 1000;
+    	$num_ms = $p_num>>0;
+    	//Efficient integer division in js: a/b>>0
+    
+    	$hours = $num_ms/3600000>>0;
+    	$minutes = ($num_ms - ($hours*3600000))/60000>>0;
+    	$seconds = ($num_ms - ($hours*3600000) - ($minutes*60000))/1000>>0;
+    	$ms = $num_ms - ($hours * 3600000) - ($minutes * 60000) - ($seconds * 1000);
+    
+    	//Format the numbers
+    	if ($hours   < 10) {
+    		$hours   = "0".$hours;
+    	}
+    	if ($minutes < 10) {
+    		$minutes = "0".$minutes;
+    	}
+    	if ($seconds < 10) {
+    		$seconds = "0".$seconds;
+    	}
+    	$ms_str = $ms;
+    	if ($ms < 100) {
+    		$ms_str = "0".$ms;
+    	}
+    	if ($ms < 10) {
+    		$ms_str = "0".$ms_str;
+    	}
+    	$time = $minutes.':'.$seconds;
+    	if($displayHours)
+    		$time = $hours.':'.$time;
+    	if($displayMs)
+    		$time = $time . "." . $ms_str;
+    
+    	return $time;
+    }
 
     /**
      * Returns an array of subtitle lines for the given exercise.
