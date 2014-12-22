@@ -38,15 +38,15 @@ package components.videoPlayer.controls
 		 * 
 		 */
 		
-		public function set State( state:String ):void
+		public function set state(value:String):void
 		{
-			_state = state;
-			
-			invalidateDisplayList();
+			if(value && _state != value){
+				_state = value;
+				invalidateDisplayList();
+			}
 		}
 		
-		public function getState( ):String
-		{
+		public function get state():String{
 			return _state;
 		}
 		
@@ -55,16 +55,16 @@ package components.videoPlayer.controls
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
 			if( _state == PLAY_STATE )
-				CreatePlayButton();
+				drawPlayIcon();
 			else
-				CreatePauseButton();
+				drawPauseIcon();
 			btn.x = this.width/2 - btn.width/2;
 			btn.y = this.height/2 - btn.height/2;
 			addChild(btn);
 		}
 		
 		
-		private function CreatePlayButton():void
+		private function drawPlayIcon():void
 		{
 			var g:Sprite = btn;
 			g.graphics.clear();
@@ -76,7 +76,7 @@ package components.videoPlayer.controls
 		}
 		
 		
-		private function CreatePauseButton():void
+		private function drawPauseIcon():void
 		{
 			var g:Sprite = btn;
 			g.graphics.clear();
@@ -84,16 +84,6 @@ package components.videoPlayer.controls
 			g.graphics.drawRect( 0, 0, 3, 10 );
 			g.graphics.drawRect( 6, 0, 3, 10 );
 			g.graphics.endFill();
-		}
-		
-		
-		override protected function onClick( e:MouseEvent ) : void
-		{
-			trace( "play/pause btn pressed" );
-			this.State = _state == PLAY_STATE ? PAUSE_STATE : PLAY_STATE;
-			
-			dispatchEvent( new PlayPauseEvent( PlayPauseEvent.STATE_CHANGED ) );
-		}
-		
+		}	
 	}
 }

@@ -147,13 +147,13 @@ package components.videoPlayer.media
 				_ns=new NetStream(_nc);
 				_ns.client=this;
 				logger.debug("[{0}] Initiating NetStream...", [_id]);
-				_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
-				_ns.addEventListener(DRMErrorEvent.DRM_ERROR, onDrmError);
-				_ns.addEventListener(DRMStatusEvent.DRM_STATUS, onDrmStatus);
-				_ns.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
-				_ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, onMediaTypeData);
-				_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
-				_ns.addEventListener(StatusEvent.STATUS, onStatus);
+				_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError, false, 0, true);
+				_ns.addEventListener(DRMErrorEvent.DRM_ERROR, onDrmError, false, 0, true);
+				_ns.addEventListener(DRMStatusEvent.DRM_STATUS, onDrmStatus, false, 0, true);
+				_ns.addEventListener(IOErrorEvent.IO_ERROR, onIoError, false, 0, true);
+				_ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, onMediaTypeData, false, 0, true);
+				_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus, false, 0, true);
+				_ns.addEventListener(StatusEvent.STATUS, onStatus, false, 0, true);
 				
 				_ns.bufferTime=2;
 				

@@ -40,7 +40,6 @@ package components.videoPlayer
 	import spark.components.Button;
 	import spark.primitives.BitmapImage;
 	
-	import view.BusyIndicator;
 	import view.common.PrivacyRights;
 	
 	import vo.ResponseVO;
@@ -114,7 +113,6 @@ package components.videoPlayer
 
 		private var _userdevmgr:UserDeviceManager;
 		private var _privUnlock:PrivacyRights;
-		private var _busyIndicator:BusyIndicator;
 
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -177,11 +175,6 @@ package components.videoPlayer
 			_countdownTxt.setStyle("fontSize", 30);
 			_countdownTxt.selectable=false;
 			_countdownTxt.visible=false;
-			
-			_busyIndicator=new BusyIndicator();
-			_busyIndicator.width=48;
-			_busyIndicator.height=48;
-			_busyIndicator.visible=false;
 
 			_camVideo=new Video();
 			_camVideo.visible=false;
@@ -232,7 +225,6 @@ package components.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_videoBarPanel);
 			addChild(_countdownTxt);
-			addChild(_busyIndicator);
 
 			addChild(_overlayButton);
 
@@ -393,7 +385,7 @@ package components.videoPlayer
 			_ppBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 		}
 
-		override protected function onPPBtnChanged(e:PlayPauseEvent):void
+		override protected function onPPBtnChanged(e:Event):void
 		{
 			super.onPPBtnChanged(e);
 			if(_overlayButton.visible)
@@ -448,11 +440,6 @@ package components.videoPlayer
 
 			// splits video panel into 2 views
 			splitVideoPanel();
-		}
-
-		private function netSecurityError(e:SecurityErrorEvent):void
-		{
-			//Avoid debug messages
 		}
 
 		/**
@@ -555,10 +542,6 @@ package components.videoPlayer
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
 			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
-			
-			_busyIndicator.x=(_videoWidth-_busyIndicator.width)/2;
-			_busyIndicator.y=(_videoHeight-_busyIndicator.height)/2;
-			_busyIndicator.setStyle('symbolColor',0xFFFFFF);
 
 			//Play overlay
 			_overlayButton.width=_videoWidth;
@@ -1071,7 +1054,7 @@ package components.videoPlayer
 			if (state == RECORD_BOTH_STATE)
 				_recordns.netStream.attachCamera(_camera);
 
-			_ppBtn.State=PlayButton.PAUSE_STATE;
+			_ppBtn.state=PlayButton.PAUSE_STATE;
 
 			_recordns.netStream.publish(responseFilename, "record");
 
@@ -1157,15 +1140,6 @@ package components.videoPlayer
 				_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
 				_camVideo.y+=_defaultMargin;
 				_camVideo.x+=(w + _defaultMargin);
-				
-				//trace("[INFO] Video player Babelium: CAM SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" cam dimensions: "+_camVideo.width+"x"+_camVideo.height+" cam placement: x="+_camVideo.x+" y="+_camVideo.y+" last video area heigth: "+_lastVideoHeight);
-				
-				
-				// 1 black pixel, being smarter
-				//_camVideo.y+=1;
-				//_camVideo.height-=2;
-				//_camVideo.x+=1;
-				//_camVideo.width-=2;
 			} else {
 				_camVideo.y=_defaultMargin + 2;
 				_camVideo.height-=4;
@@ -1292,7 +1266,7 @@ package components.videoPlayer
 					//_ns.resume();
 					_media.play();
 				}
-				_ppBtn.State=PlayButton.PAUSE_STATE;
+				_ppBtn.state=PlayButton.PAUSE_STATE;
 			}
 		}
 		

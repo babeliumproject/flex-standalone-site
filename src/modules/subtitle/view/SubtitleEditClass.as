@@ -6,10 +6,11 @@ package modules.subtitle.view
 	import components.videoPlayer.CuePointManager;
 	import components.videoPlayer.VideoPlayer;
 	import components.videoPlayer.VideoRecorder;
-	import components.videoPlayer.media.AMediaManager;
+	import components.videoPlayer.events.MediaStatusEvent;
 	import components.videoPlayer.events.VideoPlayerEvent;
 	import components.videoPlayer.events.babelia.StreamEvent;
 	import components.videoPlayer.events.babelia.SubtitlingEvent;
+	import components.videoPlayer.media.AMediaManager;
 	
 	import control.URLManager;
 	
@@ -223,10 +224,16 @@ package modules.subtitle.view
 				_cueManager.setCueAt(endEntry, _cueManager.getCueIndex(startEntry));
 			}
 		}
+		
+		private var _mediaStatus:int;
+		
+		public function onMediaStateChange(e:MediaStatusEvent):void{
+			_mediaStatus = e.state;
+		}
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			if(VPSubtitle.playbackState == videoPlaybackStartedState){
+			if(_mediaStatus == videoPlaybackStartedState){
 				VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
 			}else{
 				if(subtitleCollection && subtitleCollection.length > 0){

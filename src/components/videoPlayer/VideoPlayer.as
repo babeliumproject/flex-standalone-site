@@ -29,6 +29,7 @@ package components.videoPlayer
 	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
@@ -49,12 +50,14 @@ package components.videoPlayer
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	
-	//import org.as3commons.logging.api.ILogger;
-	//import org.as3commons.logging.api.getLogger;
+	import org.as3commons.logging.api.ILogger;
+	import org.as3commons.logging.api.getLogger;
+	
+	import view.BusyIndicator;
 
 	public class VideoPlayer extends SkinableComponent
 	{
-		//protected static const logger:ILogger = getLogger(VideoPlayer);
+		protected static const logger:ILogger = getLogger(VideoPlayer);
 		
 		/**
 		 * Skin related variables
@@ -92,11 +95,6 @@ package components.videoPlayer
 		protected var _audioSlider:AudioSlider;
 		protected var _videoHeight:Number=200;
 		protected var _videoWidth:Number=320;
-
-		private var _timer:Timer;
-
-		[Bindable]
-		public var playbackState:int;
 		
 		
 		protected var _media:AMediaManager;
@@ -106,6 +104,9 @@ package components.videoPlayer
 		private var _currentVolume:Number;
 		private var _forcePlay:Boolean;
 		private var _videoPlaying:Boolean;
+		
+		
+		protected var _busyIndicator:BusyIndicator;
 		
 
 		/**
@@ -123,6 +124,11 @@ package components.videoPlayer
 
 			_video=new Video();
 			_video.smoothing=_smooth;
+			
+			_busyIndicator=new BusyIndicator();
+			_busyIndicator.width=48;
+			_busyIndicator.height=48;
+			_busyIndicator.visible=false;
 
 			_videoBarPanel=new UIComponent();
 
@@ -145,12 +151,12 @@ package components.videoPlayer
 			_videoBarPanel.addChild(_audioSlider);
 
 			//Event Listeners
-			addEventListener(VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange);
-			addEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
-			addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying);
-			_ppBtn.addEventListener(PlayPauseEvent.STATE_CHANGED, onPPBtnChanged);
-			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick);
-			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange);
+			addEventListener(VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange, false, 0, true);
+			addEventListener(FlexEvent.CREATION_COMPLETE, onComplete, false, 0, true);
+			addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying, false, 0, true);
+			_ppBtn.addEventListener(MouseEvent.CLICK, onPPBtnChanged, false, 0, true);
+			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
+			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange, false, 0, true);
 
 			/**
 			 * Adds components to player
@@ -159,6 +165,7 @@ package components.videoPlayer
 			addChild(_bgVideo);
 			addChild(_video);
 			addChild(_videoBarPanel);
+			addChild(_busyIndicator);
 
 			/**
 			 * Adds skinable components to dictionary
@@ -200,11 +207,13 @@ package components.videoPlayer
 		
 		protected function loadVideo():void{
 			_mediaReady=false;
+			logger.info("Load video: {0}",[_netConnectionUrl+'/'+_mediaUrl]); 
 			if (_mediaUrl != '')
 			{
+				
+				_busyIndicator.visible=true;
 				resetAppearance();
-				
-				
+		
 				if(!_autoPlay){
 					//_posterSprite = new BitmapSprite(_videoPosterUrl, _lastWidth, _lastHeight);
 					//_topLayer.addChild(_posterSprite);
@@ -226,7 +235,7 @@ package components.videoPlayer
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_media.setup(_mediaUrl);
-				}
+				}		
 			}
 		}
 		
@@ -236,7 +245,7 @@ package components.videoPlayer
 		
 		protected function onStreamSuccess(event:Event):void{
 			var evt:Object=Object(event);
-			//logger.debug("NetStreamClient {0} is ready", [evt.streamId]);
+				
 			_video.attachNetStream(_media.netStream);
 			_video.visible=true;
 			_media.volume=_currentVolume;
@@ -258,19 +267,35 @@ package components.videoPlayer
 			//_errorSprite=new ErrorSprite(evt.message, _lastWidth, _lastHeight);
 			//_topLayer.removeChildren();
 			//_topLayer.addChild(_errorSprite);
+			
+			_busyIndicator.visible=false;
 		}
 		
 		protected function onStreamStateChange(event:MediaStatusEvent):void{
 			if (event.state == AMediaManager.STREAM_FINISHED)
 			{
-				//logger.debug("StreamFinished Event received");
-				//stopVideo();
+				_busyIndicator.visible=false;
 				_video.clear();
 				_videoPlaying=false;
 			}
 			if (event.state == AMediaManager.STREAM_STARTED)
 			{
+				_busyIndicator.visible=false;
 				_videoPlaying=true;
+				_ppBtn.state=PlayButton.PAUSE_STATE;
+			}
+			
+			if(event.state == AMediaManager.STREAM_PAUSED){
+				_busyIndicator.visible=false;
+				_ppBtn.state=PlayButton.PLAY_STATE;
+			}
+			
+			if(event.state == AMediaManager.STREAM_BUFFERING){
+				_busyIndicator.visible=true;
+			}
+			
+			if(event.state == AMediaManager.STREAM_SEEKING_START){
+				_busyIndicator.visible=true;
 			}
 			
 			//dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_STATE_CHANGED, event.state));
@@ -293,12 +318,9 @@ package components.videoPlayer
 		}
 		
 
-		/**
-		 * Autoplay
-		 */
-		public function set autoPlay(tf:Boolean):void
+		public function set autoPlay(value:Boolean):void
 		{
-			_autoPlay=tf;
+			_autoPlay=value;
 		}
 
 		public function get autoPlay():Boolean
@@ -306,12 +328,9 @@ package components.videoPlayer
 			return _autoPlay;
 		}
 
-		/**
-		 * Smooting
-		 */
-		public function set videoSmooting(tf:Boolean):void
+		public function set videoSmooting(value:Boolean):void
 		{
-			_autoPlay=_smooth;
+			_smooth=value;
 		}
 
 		public function get videoSmooting():Boolean
@@ -319,12 +338,9 @@ package components.videoPlayer
 			return _smooth;
 		}
 
-		/**
-		 * Autoscale
-		 */
-		public function set autoScale(flag:Boolean):void
+		public function set autoScale(value:Boolean):void
 		{
-			_autoScale=flag;
+			_autoScale=value;
 		}
 
 		public function get autoScale():Boolean
@@ -497,6 +513,10 @@ package components.videoPlayer
 
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
+			
+			_busyIndicator.x=(_videoWidth-_busyIndicator.width)/2;
+			_busyIndicator.y=(_videoHeight-_busyIndicator.height)/2;
+			_busyIndicator.setStyle('symbolColor',0xFFFFFF);
 
 			drawBG();
 		}
@@ -595,8 +615,9 @@ package components.videoPlayer
 		{
 			if (_media.streamState == AMediaManager.STREAM_SEEKING_START)
 				return;
-			if (streamReady(_media) && _media.streamState == AMediaManager.STREAM_PAUSED)
+			if (streamReady(_media) && _media.streamState == AMediaManager.STREAM_PAUSED){
 				_media.netStream.togglePause();
+			}
 		}
 		
 		public function stopVideo():void
@@ -629,6 +650,7 @@ package components.videoPlayer
 			this.dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.METADATA_RETRIEVED));
 			
 			scaleVideo();
+			this.addEventListener(Event.ENTER_FRAME, updateProgress, false, 0, true);
 		}
 
 		/**
@@ -637,7 +659,7 @@ package components.videoPlayer
 		public function onSourceChange(e:VideoPlayerEvent):void
 		{
 			playVideo();
-			_ppBtn.State=PlayButton.PAUSE_STATE;
+			_ppBtn.state=PlayButton.PAUSE_STATE;
 
 			if (!autoPlay)
 				pauseVideo();
@@ -646,9 +668,15 @@ package components.videoPlayer
 		/**
 		 * On play button clicked
 		 */
-		protected function onPPBtnChanged(e:PlayPauseEvent):void
+		protected function onPPBtnChanged(e:Event):void
 		{
-			playVideo();
+			if(_mediaReady){
+				if(_media.streamState==AMediaManager.STREAM_PAUSED){
+					playVideo();
+				}else{	
+					pauseVideo();
+				}
+			}
 		}
 
 		/**
@@ -662,11 +690,11 @@ package components.videoPlayer
 		/**
 		 * Updatting video progress
 		 */
-		private function updateProgress(e:TimerEvent):void
+		private function updateProgress(e:Event):void
 		{
 			if (!_media)
-				return; //Fail safe in case someone drags the scrubber.
-
+				return;
+			
 			_currentTime=_media.currentTime;
 			_sBar.updateProgress(_currentTime, _duration);
 
@@ -677,44 +705,18 @@ package components.videoPlayer
 			_eTime.updateElapsedTime(_currentTime, _duration);
 		}
 
-		/**
-		 * Seek & Resume video when scrubber stops dragging
-		 * or when progress bar has been clicked
-		 */
 		protected function onScrubberDropped(e:Event):void
 		{
 			if (!_media)
 				return;
 
-			_timer.stop();
-
 			_media.seek(_sBar.seekPosition(_duration));
-
-			if (_state == PlayButton.PAUSE_STATE) // before seek was playing, so resume video
-			{
-				_ppBtn.State=PlayButton.PAUSE_STATE;
-				_media.resume();
-			}
-
-			_timer.start();
 		}
 
-		/**
-		 * Pauses video when scrubber starts dragging
-		 **/
 		private function onScrubberDragging(e:Event):void
 		{
 			if (!_media)
 				return;
-
-			_state=_ppBtn.getState();
-
-			if (_ppBtn.getState() == PlayButton.PAUSE_STATE) // do pause
-			{
-				_ppBtn.State=PlayButton.PLAY_STATE;
-				_media.pause();
-				_timer.stop();
-			}
 		}
 
 		/**

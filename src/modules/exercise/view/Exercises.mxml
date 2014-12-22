@@ -6,11 +6,13 @@
 		  xmlns:common="view.common.*"
 		  xmlns:videoPlayer="components.videoPlayer.*"
 		  xmlns:babelia="components.videoPlayer.controls.babelia.*"
-		  verticalAlign="top"
-		  horizontalAlign="center"
+		  xmlns:skins="skins.*"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  xmlns:skins="skins.*"
 		  implements="modules.IGroupInterface">
 
 	<fx:Script>
@@ -464,6 +466,12 @@
 				_mediaId=tmp.media[0].id;
 				_currentExercise=tmp;
 
+				
+				var data:Object=new Object();
+				data.netConnectionUrl = DataModel.getInstance().streamingResourcesPath;
+				data.mediaUrl = EXERCISE_FOLDER + '/' + _exerciseName;
+				
+				VP.loadVideoByUrl(data);
 				
 				// Need to retrieve again exercise's information
 				_rolesReady=false;
