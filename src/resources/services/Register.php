@@ -183,16 +183,17 @@ class Register{
 		$sql = "SELECT language
 				FROM user AS u INNER JOIN user_languages AS ul ON u.id = ul.fk_user_id 
 				WHERE (u.username = '%s' AND u.activation_hash = '%s') LIMIT 1";
-		$result = $this->conn->_singleSelect($sql, $user->name, $user->activationHash);
+		$result = $this->conn->_singleSelect($sql, $user->username, $user->activation_hash);
 
-		if ( $result )
+		if ($result)
 		{
 			$sql = "UPDATE user SET active = 1, activation_hash = ''
 			        WHERE (username = '%s' AND activation_hash = '%s')";
-			$update = $this->conn->_update($sql, $user->username, $user->activationHash);
+			$update = $this->conn->_update($sql, $user->username, $user->activation_hash);
 		}
 
-		return ($result && $update)? $result->language : NULL ;
+		$active = ($result && $update) ? $result->language : NULL;
+		return $active;
 	}
 
 

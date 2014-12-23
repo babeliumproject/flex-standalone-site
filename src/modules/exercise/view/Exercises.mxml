@@ -13,7 +13,7 @@
 		  paddingTop="16"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  implements="modules.IGroupInterface" xmlns:view1="modules.create.view.*">
+		  implements="modules.IGroupInterface" xmlns:view1="modules.create.view.*" xmlns:components="components.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -894,7 +894,7 @@
 							  verticalAlign="middle">
 						<s:HGroup verticalAlign="middle">
 							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
-							<view1:EnhancedDropDownList id="availableRoles"
+							<components:EnhancedDropDownList id="availableRoles"
 										 dataProvider="{_characterNames}"
 										 enabled="{!DataModel.getInstance().recordingExercise}"
 										 skinClass="skins.BootstrapDropDownList"

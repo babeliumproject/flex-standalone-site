@@ -64,9 +64,9 @@
 			{
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
 				this.removeEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
-				_cw1.unwatch();
-				_cw2.unwatch();
-				_cw3.unwatch();
+				if(_cw1) _cw1.unwatch();
+				if(_cw2) _cw2.unwatch();
+				if(_cw3) _cw3.unwatch();
 				_cw1=_cw2=_cw3=null;
 			}
 

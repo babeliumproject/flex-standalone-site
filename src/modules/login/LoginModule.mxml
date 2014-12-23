@@ -4,7 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:view="modules.login.view.*"
 		  width="100%"
-		  implements="modules.IModuleInterface"
+		  implements="modules.IModuleInterface" 
 		  preinitialize="preinitializeHandler(event)"
 		  creationComplete="creationCompleteHandler(event)">
 	<s:layout>
@@ -13,9 +13,11 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import control.URLManager;
+			import control.URLChangeEvent;
 			
-			import vo.NewUserVO;
+			import mx.utils.ObjectUtil;
+			
+			import control.URLManager;
 			
 			import events.RegisterUserEvent;
 			
@@ -29,53 +31,55 @@
 			
 			import spark.components.NavigatorContent;
 			
+			import vo.NewUserVO;
+			
 			public static const INDEX:uint=0;
 			public static const ACTIVATE:uint=1;
 			public static const FORGOTPASSWORD:uint=2;
-
-			
-			private var changewatcher:ChangeWatcher;
 			
 			public var modulename:String = 'login';
-			
-			[Bindable]
-			private var _urlmanager:URLManager=URLManager.getInstance();
-			
-			[Bindable]
-			private var _model:DataModel=DataModel.getInstance();
 			
 			[Bindable]
 			private var _viewstackIndex:uint;
 			
 			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			private var _moduleController:*;
+			
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			private var _model:DataModel=DataModel.getInstance();	
 			
 			public function getModuleName():String{
 				return modulename;
 			}
 			
 			public function setDataBindings(data:* = null):void{
-				changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
+				_moduleController = new Object();	
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
 			}
 			
 			public function resetModule():void{
-				if(changewatcher && changewatcher.isWatching())
-					changewatcher.unwatch();
-				changewatcher=null;
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
 				_urlmanager=null;
-				_model=null;
 				
 				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
 				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
 				
+				_moduleController = null;
+				_model = null;
 				resetViews();
 			}
 			
 			public function resetViews():void{
-				if (loginViewstack)
+				if (moduleViewstack)
 				{
-					var views:Array=loginViewstack.getChildren();
+					var views:Array=moduleViewstack.getChildren();
 					for each (var nc:NavigatorContent in views)
 					{
 						if (nc.deferredContentCreated)
@@ -88,15 +92,21 @@
 				}
 			}
 			
-			public function onURLChange(value:String):void{
-				if (_urlmanager.moduleName != modulename)
-					return;
+			public function onURLChange(event:Event):void{
 				
+		
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
 				resetViews();
-				switch (_urlmanager.action)
-				{
+				
+				switch (evt.action){
 					case 'activate':
-						actionActivate(_urlmanager.parameters);
+						actionActivate(evt.parameters);
 						break;
 					case 'forgotpassword':
 						actionForgotpassword();
@@ -117,10 +127,10 @@
 				{
 					if (parameters.hash != '' && parameters.user != '')
 					{
-						var user:Object;
-						user.username=parameters.user;
-						user.hash=parameters.hash;
-						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, user as NewUserVO).dispatch();
+						var data:Object = new Object();
+						data.username=parameters.user;
+						data.activation_hash=parameters.hash;
+						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, data).dispatch();
 					}
 				}
 			}
@@ -143,6 +153,8 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
 			}
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
@@ -156,7 +168,7 @@
 			protected function checkPermissions():void{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					URLManager.getInstance().redirect('course');
+					URLManager.getInstance().redirect('/course');
 					return;
 				}
 				this.visible=true;
@@ -165,7 +177,7 @@
 		]]>
 	</fx:Script>
 	
-	<mx:ViewStack id="loginViewstack"
+	<mx:ViewStack id="moduleViewstack"
 				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"

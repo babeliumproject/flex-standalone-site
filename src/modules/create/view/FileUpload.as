@@ -15,15 +15,16 @@ package modules.create.view
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
+	import modules.create.event.FileUploadEvent;
 	
-	[Event(name="fileSelected", type="modules.create.view.FileUploadEvent")]
-	[Event(name="ioError", type="modules.create.view.FileUploadEvent")]
-	[Event(name="securityError", type="modules.create.view.FileUploadEvent")]
-	[Event(name="uploadError", type="modules.create.view.FileUploadEvent")]
-	[Event(name="httpStatusError", type="modules.create.view.FileUploadEvent")]
-	[Event(name="uploadProgress", type="modules.create.view.FileUploadEvent")]
-	[Event(name="uploadComplete", type="modules.create.view.FileUploadEvent")]
-	[Event(name="uploadCompleteData", type="modules.create.view.FileUploadEvent")]
+	[Event(name="fileSelected", type="modules.create.event.FileUploadEvent")]
+	[Event(name="ioError", type="modules.create.event.FileUploadEvent")]
+	[Event(name="securityError", type="modules.create.event.FileUploadEvent")]
+	[Event(name="uploadError", type="modules.create.event.FileUploadEvent")]
+	[Event(name="httpStatusError", type="modules.create.event.FileUploadEvent")]
+	[Event(name="uploadProgress", type="modules.create.event.FileUploadEvent")]
+	[Event(name="uploadComplete", type="modules.create.event.FileUploadEvent")]
+	[Event(name="uploadCompleteData", type="modules.create.event.FileUploadEvent")]
 	
 	public class FileUpload extends EventDispatcher
 	{

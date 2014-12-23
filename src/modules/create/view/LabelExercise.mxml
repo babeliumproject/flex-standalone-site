@@ -6,7 +6,7 @@
 		  xmlns:skins="skins.*"
 		  width="100%"
 		  creationComplete="completeHandler(event)"
-		  xmlns:view="modules.create.view.*">
+		  xmlns:view="modules.create.view.*" xmlns:components="components.*">
 
 	<s:BorderContainer id="labelExerciseContainer"
 					   styleName="lightBorderContainer"
@@ -57,7 +57,7 @@
 			<s:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
 						required="true"
 						width="100%">
-				<view:EnhancedDropDownList id="difLevelDropdown"
+				<components:EnhancedDropDownList id="difLevelDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -73,7 +73,7 @@
 			</s:FormItem>
 			<s:FormItem id="exerciseType"
 						label="{resourceManager.getString('myResources', 'EXERCISE_TYPE')}">
-				<view:EnhancedDropDownList id="exerciseTypeDropdown"
+				<components:EnhancedDropDownList id="exerciseTypeDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -84,7 +84,7 @@
 			</s:FormItem>
 			<s:FormItem id="commSituation"
 						label="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')}">
-				<view:EnhancedDropDownList id="commSituationDropdown"
+				<components:EnhancedDropDownList id="commSituationDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -97,7 +97,7 @@
 						label="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')}"
 						width="100%">
 				<s:HGroup width="100%">
-					<view:EnhancedDropDownList id="commCompetenceDropdown"
+					<components:EnhancedDropDownList id="commCompetenceDropdown"
 											   skinClass="skins.BootstrapDropDownList"
 											   cornerRadius="3"
 											   borderColor="0xcccccc"
@@ -117,7 +117,7 @@
 			</s:FormItem>
 			<s:FormItem id="linguisticAspect"
 						label="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')}">
-				<view:EnhancedDropDownList id="lingAspectDropdown"
+				<components:EnhancedDropDownList id="lingAspectDropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -159,6 +159,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import components.EnhancedDropDownList;
 			import events.UserEvent;
 			
 			import model.DataModel;

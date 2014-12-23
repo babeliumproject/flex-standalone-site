@@ -11,6 +11,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
+			
 			public function resetGroup():void{
 				loginForm.resetComponent();
 			}

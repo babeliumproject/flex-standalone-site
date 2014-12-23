@@ -11,7 +11,7 @@
 		  paddingTop="16"
 		  implements="modules.IGroupInterface"
 		  width="100%"
-		  creationComplete="onComplete()">
+		  creationComplete="onComplete()" xmlns:components="components.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -405,7 +405,7 @@
 						  visible="false">
 					<s:Label id="sortbylbl"
 							 text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
-					<view:EnhancedDropDownList id="sortByDropdown"
+					<components:EnhancedDropDownList id="sortByDropdown"
 											   skinClass="skins.BootstrapDropDownList"
 											   cornerRadius="3"
 											   borderColor="0xcccccc"
@@ -454,7 +454,7 @@
 									  paddingRight="16"
 									  paddingTop="16"/>
 				</s:layout>
-				<view:EnhancedDropDownList id="langFilterDD"
+				<components:EnhancedDropDownList id="langFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -463,7 +463,7 @@
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
-				<view:EnhancedDropDownList id="difLevelFilterDD"
+				<components:EnhancedDropDownList id="difLevelFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -472,7 +472,7 @@
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
-				<view:EnhancedDropDownList id="exerciseTypeFilterDD"
+				<components:EnhancedDropDownList id="exerciseTypeFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
@@ -495,7 +495,7 @@
 									  paddingRight="16"
 									  paddingTop="16"/>
 				</s:layout>
-				<view:EnhancedDropDownList id="commSituationFilterDD"
+				<components:EnhancedDropDownList id="commSituationFilterDD"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"

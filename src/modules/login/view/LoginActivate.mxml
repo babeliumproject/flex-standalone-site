@@ -2,14 +2,19 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  gap="14">
+		  paddingBottom="16" 
+		  paddingLeft="16" 
+		  paddingTop="16"
+		  paddingRight="16"
+		  width="100%"
+		  implements="modules.IGroupInterface">
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
 			import model.DataModel;
-
+			
 			import mx.events.FlexEvent;
 
 			private var noActionMessage:String='No action was requested.';
@@ -21,32 +26,36 @@
 			private var message:String=noActionMessage;
 
 			private var redirectTimer:Timer;
+			
+			public function resetGroup():void{
+				if(redirectTimer){
+					redirectTimer.stop();
+					redirectTimer.reset();
+					redirectTimer.removeEventListener(TimerEvent.TIMER, redirectToHomePage);
+				}
+				redirectTimer=null;
+				message=noActionMessage;
+			}
 
 			public function set greetAndRedirect(value:Boolean):void
 			{
-				if (DataModel.getInstance().accountActivationRetrieved == true)
+				if (DataModel.getInstance().accountActivationStatus)
 				{
-					if (DataModel.getInstance().accountActivationStatus)
-					{
-						message=successfulActivationMessage;
-						redirectTimer=new Timer(3000, 1);
-						redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage);
-						redirectTimer.start();
-					}
-					else
-					{
-						message=wrongActivationMessage;
-					}
-					DataModel.getInstance().accountActivationRetrieved=false;
+					message=successfulActivationMessage;
+					redirectTimer=new Timer(3000, 1);
+					redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage, false, 0, true);
+					redirectTimer.start();
+				}
+				else
+				{
+					message=wrongActivationMessage;
 				}
 			}
 
 			public function redirectToHomePage(event:TimerEvent):void
 			{
 				redirectTimer.stop();
-				message=noActionMessage;
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				URLManager.getInstance().redirect('/home');
+				URLManager.getInstance().redirect('/exercises');
 			}
 		]]>
 	</fx:Script>
@@ -56,7 +65,12 @@
 
 	<s:Label text="{resourceManager.getString('myResources','ACCOUNT_ACTIVATION')}"
 			 styleName="h2"/>
-	<mx:HRule width="100%"/>
-	<s:Label id="activating"
-			 text="{message}"/>
+	<s:BorderContainer id="msgcontainer" styleName="lightBorderContainer" width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
+		<s:Label id="activating"
+				 text="{message}"/>
+	</s:BorderContainer>
+	
 </s:VGroup>

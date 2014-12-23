@@ -1,4 +1,4 @@
-package modules.create.view
+package components
 {
 	import flash.events.Event;
 	import flash.text.TextField;

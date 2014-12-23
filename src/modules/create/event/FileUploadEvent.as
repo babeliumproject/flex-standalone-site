@@ -1,4 +1,4 @@
-package modules.create.view
+package modules.create.event
 {
 	import flash.events.Event;
 

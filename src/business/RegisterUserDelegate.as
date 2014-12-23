@@ -17,13 +17,13 @@ package business
 			this.responder = responder;
 		}
 		
-		public function processRegister(user:NewUserVO):void{
+		public function processRegister(user:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("registerRO");
 			var pendingCall:AsyncToken = service.register(user);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function activateUser(user:NewUserVO):void{
+		public function activateUser(user:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("registerRO");
 			var pendingCall:AsyncToken = service.activate(user);
 			pendingCall.addResponder(responder);

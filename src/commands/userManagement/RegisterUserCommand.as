@@ -28,7 +28,8 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			new RegisterUserDelegate(this).processRegister((event as RegisterUserEvent).user);
+			var params:Object = (event as RegisterUserEvent).user;
+			new RegisterUserDelegate(this).processRegister(params);
 		}
 		
 		public function result(data:Object):void

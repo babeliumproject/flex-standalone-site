@@ -6,7 +6,7 @@
 		  xmlns:view="modules.create.view.*"
 		  xmlns:common="view.common.*"
 		  width="100%"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface" xmlns:components="components.*">
 
 	<fx:Binding source="{DataModel.getInstance().exercisePreviewRetrieved}"
 				destination="exerciseData"/>
@@ -117,7 +117,7 @@
 						styleName="boldLabel"
 						width="100%"
 						required="true">
-				<view:EnhancedDropDownList id="visibilitydropdown"
+				<components:EnhancedDropDownList id="visibilitydropdown"
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
