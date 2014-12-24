@@ -9,7 +9,7 @@
 				   visible="false"
 				   creationComplete="onComplete(event)"
 				   cornerRadius="8"
-				   backgroundAlpha="0" xmlns:view="modules.create.view.*" xmlns:view1="modules.myprofile.view.*">
+				   backgroundAlpha="0" xmlns:view="modules.create.view.*" xmlns:view1="modules.profile.view.*">
 
 	<fx:Script>
 		<![CDATA[

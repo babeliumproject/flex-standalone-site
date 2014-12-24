@@ -1,4 +1,4 @@
-package modules.myprofile.command
+package modules.profile.command
 {
 	import business.EvaluationDelegate;
 	
@@ -17,13 +17,15 @@ package modules.myprofile.command
 	
 	import view.common.CustomAlert;
 	
-	public class GetResponsesWaitingAssessmentCommand implements ICommand, IResponder
+	public class DetailsOfAssessedResponseCommand implements ICommand, IResponder
 	{
 		private var dataModel:DataModel = DataModel.getInstance();
+		private var cgEvent:CairngormEvent;
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new EvaluationDelegate(this).getResponsesWaitingAssessment();
+			cgEvent = event;
+			new EvaluationDelegate(this).detailsOfAssessedResponse((event as EvaluationEvent).responseId);
 		}
 		
 		public function result(data:Object):void
@@ -35,18 +37,20 @@ package modules.myprofile.command
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.waitingForAssessmentData = resultCollection;
+				dataModel.detailsOfAssessedResponseData = resultCollection;
 			} else {
-				dataModel.waitingForAssessmentData = new ArrayCollection();
+				dataModel.detailsOfAssessedResponseData = new ArrayCollection();
 			}
-			dataModel.waitingForAssessmentDataRetrieved = !dataModel.waitingForAssessmentDataRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER)
+				dataModel.detailsOfResponseAssessedToUserRetrieved = !dataModel.detailsOfResponseAssessedToUserRetrieved;
+			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER)
+				dataModel.detailsOfResponseAssessedByUserRetrieved = !dataModel.detailsOfResponseAssessedByUserRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_WAITING'));
-
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSMENTS'))
 		}
 	}
 }

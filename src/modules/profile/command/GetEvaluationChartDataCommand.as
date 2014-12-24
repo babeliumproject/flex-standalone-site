@@ -1,4 +1,4 @@
-package modules.myprofile.command
+package modules.profile.command
 {
 	import business.EvaluationDelegate;
 	
@@ -17,39 +17,36 @@ package modules.myprofile.command
 	
 	import view.common.CustomAlert;
 	
-	public class GetResponsesAssessedToCurrentUserCommand implements ICommand, IResponder
+	public class GetEvaluationChartDataCommand implements ICommand, IResponder
 	{
+		
 		private var dataModel:DataModel = DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var sortField:String = (event as EvaluationEvent).sortField;
-			var pageNumber:uint = (event as EvaluationEvent).pageNumber;
-			new EvaluationDelegate(this).getResponsesAssessedToCurrentUser(sortField, pageNumber);
+			new EvaluationDelegate(this).getEvaluationChartData((event as EvaluationEvent).responseId);
 		}
 		
 		public function result(data:Object):void
 		{
-			var hitCount:uint = data.result.hitCount;
-			var result:Object=data.result.data;
+			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
 			
 			if (result is Array && (result as Array).length > 0 )
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.assessedToCurrentUserData = resultCollection;
+				dataModel.evaluationChartData = resultCollection;
 			} else {
-				dataModel.assessedToCurrentUserData = new ArrayCollection();
+				dataModel.evaluationChartData = new ArrayCollection();
 			}
-			dataModel.assessedByCurrentUserCount = hitCount;
-			dataModel.assessedToCurrentUserDataRetrieved = !dataModel.assessedToCurrentUserDataRetrieved;
+			dataModel.evaluationChartDataRetrieved = !dataModel.evaluationChartDataRetrieved;
 		}
 		
 		public function fault(info:Object):void
 		{
 			trace(ObjectUtil.toString(info));
-			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_RESPONSES_ASSESSED_BY_OTHERS'));
+			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CHART_DATA'));
 		}
 	}
 }

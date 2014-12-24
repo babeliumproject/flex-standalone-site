@@ -157,7 +157,7 @@ class Create {
 				$_SESSION['euid'] = $euid;
 				return $euid;
 			} else {
-				
+				$exercisedata->media = $this->getExerciseMedia($exercisecode);
 			}
 		} catch (Exception $e){
 			throw new Exception ($e->getMessage());
@@ -172,7 +172,7 @@ class Create {
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';
 			$component = 'exercise';
-			$sql = "SELECT m.id, m.instanceid as exerciseid, m.mediacode, m.defaultthumbnail, m.type, m.timecreated, m.timemodified, m.license, m.authorref, m.duration, m.level
+			$sql = "SELECT m.id, m.instanceid as exerciseid, m.mediacode, m.defaultthumbnail, m.type, m.timecreated, m.timemodified, m.duration, m.level
 					FROM media m
 					WHERE m.component='%s' AND m.level IN (%s) AND m.instanceid=(SELECT id FROM exercise WHERE exercisecode='%s')";
 			$results = $this->conn->_multipleSelect($sql, $component, $levels, $exercisecode);

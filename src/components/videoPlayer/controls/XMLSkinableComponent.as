@@ -51,7 +51,6 @@ package components.videoPlayer.controls
 			dispatchEvent(new Event("skinUrlChanged"));
 			
 			loadSkinFile(_skinUrl);
-			invalidateProperties();
 		}
 		
 		public function get skinUrl():String
@@ -87,6 +86,7 @@ package components.videoPlayer.controls
 				}
 			}
 			_loadingSkin=false;
+			invalidateDisplayList();
 		}
 		
 		protected function onSkinFileReadingError(e:IOErrorEvent):void

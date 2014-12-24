@@ -32,7 +32,7 @@
 	
 	<s:List width="100%" 
 			borderVisible="false" 
-			itemRenderer="modules.myprofile.view.AssignmentItemRenderer"
+			itemRenderer="modules.profile.view.AssignmentItemRenderer"
 			dataProvider="{_assignmentData}">
 		<s:layout>
 			<s:VerticalLayout/>

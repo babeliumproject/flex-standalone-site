@@ -43,6 +43,8 @@
 					exerciseClassification.resetComponent();
 				if (mediaUpload)
 					mediaUpload.resetComponent();
+				if (previewpublish)
+					previewpublish.resetComponent();
 			}
 
 			protected function createSteps_changingHandler(event:IndexChangeEvent):void

@@ -5,8 +5,7 @@
 		  xmlns:videoPlayer="components.videoPlayer.*"
 		  xmlns:view="modules.create.view.*"
 		  xmlns:common="view.common.*"
-		  width="100%"
-		  implements="modules.IGroupInterface" xmlns:components="components.*">
+		  width="100%" xmlns:components="components.*">
 
 	<fx:Binding source="{DataModel.getInstance().exercisePreviewRetrieved}"
 				destination="exerciseData"/>
@@ -24,7 +23,7 @@
 			private var exercisecode:String;
 			private var exerciseid:int;
 
-			public function resetGroup():void
+			public function resetComponent():void
 			{
 				primarym.resetComponent();
 				modelm.resetComponent();

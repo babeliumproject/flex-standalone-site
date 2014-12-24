@@ -325,40 +325,37 @@ class Exercise {
 	 * @return stdClass
 	 * 		An object with information about the requested exercise or false on error
 	 */
-	public function getExerciseByCode($exercisecode = null){
+	public function getExerciseByCodeWithMedia($exercisecode = null){
 		if(!$exercisecode)
 			return;
 			
-		$sql = "SELECT e.id, 
-					   e.title, 
-					   e.description, 
-					   e.language, 
-					   e.exercisecode, 
-       				   e.timecreated, 
-       				   u.username as userName, 
-       				   e.difficulty, 
-       				   e.status, 
-       				   e.likes, 
-       				   e.dislikes,
-       				   e.type,
-       				   e.competence,
-       				   e.situation,
-       				   e.lingaspects
-				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
-       			WHERE (e.exercisecode = '%s')
-				GROUP BY e.id
-				LIMIT 1";
-
-		$result = $this->conn->_singleSelect($sql,$exercisecode);
+		$result = $this->getExerciseByCode($exercisecode);
 		if($result){
 			$data = $this->getPrimaryMediaMinData($result->id);
 			$result->thumbnail = $data ? $data->thumbnail : null;
 			$result->duration = $data ? $data->duration : 0;
-			$result->tags = $this->getExerciseTags($result->id);
-			$result->descriptors = $this->getExerciseDescriptors($result->id);
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);
+	}
+	
+	public getExerciseByCode($exercisecode){
+		if(!$exercisecode)
+			return;
+			
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated,
+					   u.username as userName, e.difficulty, e.status, e.likes, e.dislikes, e.type,
+					   e.competence, e.situation, e.lingaspects
+				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
+				WHERE (e.exercisecode = '%s')
+				GROUP BY e.id LIMIT 1";
+		
+		$result = $this->conn->_singleSelect($sql,$exercisecode);
+		if($result){
+			$result->tags = $this->getExerciseTags($result->id);
+			$result->descriptors = $this->getExerciseDescriptors($result->id);
+		}
+		return $result;
 	}
 	
 	private function getRelatedExercises($exercise, $howmany=5){

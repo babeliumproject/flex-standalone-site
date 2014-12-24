@@ -6,15 +6,11 @@
 		  width="100%"
 		  preinitialize="preinitializeHandler(event)"
 		  creationComplete="creationCompleteHandler(event)"
-		  xmlns:view="modules.myprofile.view.*">
+		  xmlns:view="modules.profile.view.*">
 	
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
-	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
@@ -25,10 +21,10 @@
 			
 			import model.DataModel;
 			
-			import modules.myprofile.command.GetCourses;
-			import modules.myprofile.command.ViewCourse;
-			import modules.myprofile.event.CourseEvent;
-			import modules.myprofile.model.CourseModel;
+			import modules.profile.command.GetCourses;
+			import modules.profile.command.ViewCourse;
+			import modules.profile.event.CourseEvent;
+			import modules.profile.model.CourseModel;
 			import modules.IGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
@@ -37,7 +33,7 @@
 			import mx.events.FlexEvent;
 
 			
-			public var modulename:String = 'myprofile';
+			public var modulename:String = 'profile';
 			
 			[Bindable]
 			private var _urlmanager:URLManager=URLManager.getInstance();

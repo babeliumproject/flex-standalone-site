@@ -134,20 +134,14 @@ package components.videoPlayer
 
 			_ppBtn=new PlayButton();
 			_stopBtn=new StopButton();
-
+			_sBar=new ScrubberBar();
+			_eTime=new ElapsedTime();
+			_audioSlider=new AudioSlider();
+			
 			_videoBarPanel.addChild(_ppBtn);
 			_videoBarPanel.addChild(_stopBtn);
-
-			_sBar=new ScrubberBar();
-
 			_videoBarPanel.addChild(_sBar);
-
-			_eTime=new ElapsedTime();
-
 			_videoBarPanel.addChild(_eTime);
-
-			_audioSlider=new AudioSlider();
-
 			_videoBarPanel.addChild(_audioSlider);
 
 			//Event Listeners
@@ -158,9 +152,6 @@ package components.videoPlayer
 			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
 			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange, false, 0, true);
 
-			/**
-			 * Adds components to player
-			 */
 			addChild(_bg);
 			addChild(_bgVideo);
 			addChild(_video);
