@@ -16,9 +16,12 @@ package modules.subtitle.view
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.globalization.DateTimeFormatter;
+	import flash.globalization.DateTimeStyle;
 	
 	import model.DataModel;
 	
+	import modules.IGroupInterface;
 	import modules.exercise.event.ExerciseEvent;
 	import modules.subtitle.event.SubtitleEvent;
 	
@@ -31,6 +34,7 @@ package modules.subtitle.view
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
 	import mx.utils.StringUtil;
 	
@@ -56,14 +60,13 @@ package modules.subtitle.view
 	import vo.SubtitleLineVO;
 
 
-	public class SubtitleEditClass extends HGroup
+	public class SubtitleEditClass extends HGroup implements IGroupInterface
 	{
 		/**
 		 * Singleton objects
 		 */
 		private var _dataModel:DataModel=DataModel.getInstance();
 		private var _cueManager:CuePointManager=CuePointManager.getInstance();
-		private var _browser:URLManager=URLManager.getInstance();
 
 		/**
 		 * Variables
@@ -141,13 +144,6 @@ package modules.subtitle.view
 			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved");
 			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved");
 			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved");
-			BindingUtils.bindSetter(onTabChange, _dataModel, "stopVideoFlag");
-			BindingUtils.bindSetter(onLogout, _dataModel, "isLoggedIn");
-
-			BindingUtils.bindProperty(saveSubtitleButton, "enabled", _dataModel, "isLoggedIn");
-			BindingUtils.bindProperty(saveSubtitleButton, "includeInLayout", _dataModel, "isLoggedIn");
-			BindingUtils.bindProperty(saveSubtitleButton, "visible", _dataModel, "isLoggedIn");
-			BindingUtils.bindProperty(saveSubtitleSeparator, "visible", _dataModel, "isLoggedIn");
 
 			creationComplete=true;
 
@@ -155,8 +151,8 @@ package modules.subtitle.view
 
 		public function setupVideoPlayer():void
 		{
-			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler);
-			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler);
+			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler, false, 0, true);
+			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler, false, 0, true);
 		}
 
 		public function prepareVideoPlayer():void
@@ -170,7 +166,7 @@ package modules.subtitle.view
 			VPSubtitle.loadVideoByUrl(media);
 			
 			VPSubtitle.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+			VPSubtitle.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints, false, 0, true);
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -428,8 +424,11 @@ package modules.subtitle.view
 
 		public function subtitleVersionComboLabelFunction(item:Object):String
 		{
+			var currentLocale:String = ResourceManager.getInstance().localeChain[0];
+			var dFormatter:DateTimeFormatter=new DateTimeFormatter(currentLocale, DateTimeStyle.SHORT, DateTimeStyle.SHORT);
+			
 			if (item != null)
-				return "[" + item.addingDate + "]  " + item.userName;
+				return "[" + dFormatter.format(new Date(item.timecreated)) + "]  " + item.userName;
 			else
 				return "";
 		}
@@ -453,7 +452,7 @@ package modules.subtitle.view
 
 			CuePointManager.getInstance().reset();
 
-			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, exerciseId, '', '')).dispatch();
+			new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, exerciseId, '', '')).dispatch();
 			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
 			new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, exerciseToWatch).dispatch();
 		}
@@ -499,18 +498,27 @@ package modules.subtitle.view
 
 		private function onSubtitlesRetrieved(value:Boolean):void
 		{
-			if (DataModel.getInstance().availableSubtitles.length > 1)
+			var subversions:int = DataModel.getInstance().availableSubtitles ? DataModel.getInstance().availableSubtitles.length : 0;
+			trace("Subtitle versions: "+subversions);
+			availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
+			if (subversions > 1)
 			{
 				subtitleVersionBox.includeInLayout=true;
-				subtitleVersionBox.visible=true;
-				availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
+				subtitleVersionBox.visible=true;	
+				var currentmostSub:Object=availableSubtitleVersions.getItemAt(0);
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, currentmostSub).dispatch();
+			} 
+			else if (subversions == 1)
+			{
+				subtitleVersionBox.includeInLayout=false;
+				subtitleVersionBox.visible=false;
+				var sub:Object=availableSubtitleVersions.getItemAt(0);
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, sub).dispatch();
 			}
 			else
 			{
 				subtitleVersionBox.includeInLayout=false;
 				subtitleVersionBox.visible=false;
-				availableSubtitleVersions.removeAll();
-				availableSubtitleVersions=new ArrayCollection();
 			}
 		}
 
@@ -537,7 +545,6 @@ package modules.subtitle.view
 						var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 						cData.addItem(deleteLine);
 					}
-					comboData.removeAll();
 					comboData=cData;
 
 				}
@@ -545,7 +552,6 @@ package modules.subtitle.view
 				{
 					var deleteOptionEmpty:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 					cData.addItem(deleteOptionEmpty);
-					comboData.removeAll();
 					comboData=cData;
 				}
 				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.SUBMODULE);
@@ -561,40 +567,20 @@ package modules.subtitle.view
 				DataModel.getInstance().subtitleSaved=false;
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
 
-				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', '')).dispatch();
+				new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', '')).dispatch();
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
 			}
-
 		}
 
-		public function onTabChange(value:Boolean):void
+		public function resetGroup():void
 		{
-			if (creationComplete && _dataModel.oldContentViewStackIndex == 6)
-			{
-				VPSubtitle.resetComponent();
-				_cueManager.reset();
+			VPSubtitle.resetComponent();
+			_cueManager.reset();
 
-				subtitleVersionBox.includeInLayout=false;
-				subtitleVersionBox.visible=false;
-				availableSubtitleVersions=new ArrayCollection();
-				comboData=new ArrayCollection();
-			}
+			subtitleVersionBox.includeInLayout=false;
+			subtitleVersionBox.visible=false;
+			availableSubtitleVersions=null;
+			comboData=null;
 		}
-
-		public function onLogout(value:Boolean):void
-		{
-			if (DataModel.getInstance().isLoggedIn == false)
-			{
-				guestEditWarningBox.includeInLayout=true;
-				guestEditWarningBox.visible=true;
-				onTabChange(false);
-			}
-			else
-			{
-				guestEditWarningBox.includeInLayout=false;
-				guestEditWarningBox.visible=false;
-			}
-		}
-
 	}
 }

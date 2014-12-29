@@ -36,9 +36,10 @@ package modules.subtitle.service
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getExerciseSubtitles(subtitle:Object):void{
+		public function getMediaSubtitles(params:Object):void{
+			var mediaid:int = params.hasOwnProperty('id') ? params.id : 0;
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("subtitleRO");
-			var pendingCall:AsyncToken = service.getExerciseSubtitles(subtitle.mediaId);
+			var pendingCall:AsyncToken = service.getMediaSubtitles(mediaid);
 			pendingCall.addResponder(responder);
 		}
 		

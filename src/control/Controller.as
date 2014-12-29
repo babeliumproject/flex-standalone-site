@@ -115,7 +115,7 @@ package control {
 			addCommand(SubtitleEvent.GET_EXERCISE_SUBLINES, GetExerciseSubtitleLinesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW, GetExercisesReviewSubtitlesCommand);
-			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_MEDIA_SUBTITLES, GetMediaSubtitlesCommand);
 			
 		}
 

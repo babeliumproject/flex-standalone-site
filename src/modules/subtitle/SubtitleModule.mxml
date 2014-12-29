@@ -114,8 +114,6 @@
 				switch (evt.action)
 				{
 					case 'add':
-						actionAdd();
-						break;
 					case 'edit':
 						actionEdit(evt.parameters);
 						break;
@@ -136,8 +134,8 @@
 					var id:String = parameters['id'];
 					var subtitles:Object = new Object();
 					subtitles.id = id;
-					
-					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBTITLES, subtitles).dispatch();
+					_viewstackIndex=EDIT;
+					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, subtitles).dispatch();
 				}
 			}
 			
@@ -146,10 +144,10 @@
 					_urlmanager.redirect('/error');
 				} else {
 					var id:String = parameters['id'];
-					var params:Object = new Object();
-					params.id = id;
+					var p:Object = new Object();
+					p.id = id;
 					_viewstackIndex=MANAGE;
-					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
+					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, p).dispatch();	
 				}
 			}
 			

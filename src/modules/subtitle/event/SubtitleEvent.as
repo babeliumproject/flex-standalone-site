@@ -13,7 +13,6 @@ package modules.subtitle.event
 		
 		public static const SAVE_SUBAND_SUBLINES:String = "saveSubtitle";
 		public static const GET_EXERCISE_SUBLINES:String = "getSubtitleLines";
-		public static const GET_EXERCISE_SUBTITLES:String = "getExerciseSubtitles";
 		
 		public static const GET_MEDIA_SUBTITLES:String = "getMediaSubtitles";
 		

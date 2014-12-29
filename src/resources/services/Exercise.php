@@ -339,7 +339,7 @@ class Exercise {
 		return $this->conn->recast('ExerciseVO',$result);
 	}
 	
-	public getExerciseByCode($exercisecode){
+	public function getExerciseByCode($exercisecode){
 		if(!$exercisecode)
 			return;
 			
@@ -355,7 +355,7 @@ class Exercise {
 			$result->tags = $this->getExerciseTags($result->id);
 			$result->descriptors = $this->getExerciseDescriptors($result->id);
 		}
-		return $result;
+		return $this->conn->recast('ExerciseVO',$result);
 	}
 	
 	private function getRelatedExercises($exercise, $howmany=5){

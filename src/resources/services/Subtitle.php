@@ -187,14 +187,13 @@ class Subtitle {
         if(!$subtitle)
             return false;
         $subtitleId = $subtitle->id;
-        $mediaId = $subtitle->mediaId;
-        $language = $subtitle->language;
+        $mediaId = $subtitle->mediaid;
 
         if(!$subtitleId){
             //Get the latest subtitle version for this exercise
-            $sql = "SELECT * FROM subtitle WHERE id = (SELECT MAX(id) FROM subtitle WHERE fk_media_id=%d AND language='%s')";
+            $sql = "SELECT * FROM subtitle WHERE id = (SELECT MAX(id) FROM subtitle WHERE fk_media_id=%d)";
 
-            $subtitle = $this->conn->_singleSelect($sql, $mediaId, $language);
+            $subtitle = $this->conn->_singleSelect($sql, $mediaid);
         } else {
             $sql = "SELECT * FROM subtitle WHERE id=%d";
             $subtitle = $this->conn->_singleSelect($sql, $subtitleId);
@@ -461,21 +460,21 @@ class Subtitle {
      * @return mixed
      *      An array of stdClass with info about the subtitles of an exercise. False on error
      */
-    public function getExerciseSubtitles($exerciseId = 0){
-        if(!$exerciseId)
+    public function getMediaSubtitles($mediaid = 0){
+        if(!$mediaid)
             return false;
         $sql = "SELECT s.id, 
-                       s.fk_media_id as exerciseId, 
-                       u.username as userName, 
+                       s.fk_media_id as mediaid, 
+                       u.username as username, 
                        s.language, 
                        s.translation, 
-                       s.adding_date as addingDate
+                       s.timecreated
                 FROM subtitle s inner join user u on s.fk_user_id=u.id
                 WHERE fk_media_id=%d
-                ORDER BY s.adding_date DESC";
-        $searchResults = $this->conn->_multipleSelect ( $sql, $exerciseId );
+                ORDER BY s.timecreated DESC";
+        $searchResults = $this->conn->_multipleSelect ($sql, $mediaid);
 
-        return $this->conn->multipleRecast('SubtitleAndSubtitleLinesVO', $searchResults);
+        return $searchResults;
     }
 
     /**

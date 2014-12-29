@@ -2,6 +2,11 @@ package components.videoPlayer.timedevent
 {
 	public class CaptionManager extends TimelineActionDispatcher
 	{
+		
+		
+		private var roleColors:Array = [0xffffff, 0xfffd22, 0x69fc00, 0xfd7200, 0x056cf9, 0xff0f0b, 0xc314c9, 0xff6be5];
+		public var colorDictionary:Array = new Array();
+		
 		public function CaptionManager()
 		{
 			super();

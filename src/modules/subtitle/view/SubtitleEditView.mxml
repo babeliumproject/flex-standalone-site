@@ -71,13 +71,6 @@
 
 				<s:Label text="{resourceManager.getString('myResources','SUBEDITOR')}"/>
 
-				<s:HGroup id="guestEditWarningBox"
-						  verticalAlign="middle">
-					<s:BitmapImage source="/resources/images/iconmonstr-warning-5-icon-48.png"/>
-					<s:Label id="notLoggedWarning"
-							 styleName="guestVersionWarningLabel"
-							 text="{resourceManager.getString('myResources','GUEST_EDIT_WARNING')}"/>
-				</s:HGroup>
 				<s:VGroup id="subtitleVersionBox"
 						  includeInLayout="false"
 						  visible="false"
@@ -159,11 +152,6 @@
 					</mx:columns>
 				</mx:DataGrid>
 				<mx:Spacer height="10"/>
-				<s:HGroup width="100%" verticalAlign="middle">
-					<mx:Image id="groupLogo"
-						  	  source="resources/images/about_section_title_icon.png"/>
-					<mx:Text htmlText="{resourceManager.getString('myResources','COMPLETE_SUBINFO')}" width="100%" fontSize="14"/>
-				</s:HGroup>
 				<s:HGroup height="40"
 						  width="100%"
 						  horizontalAlign="center">

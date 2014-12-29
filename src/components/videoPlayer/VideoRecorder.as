@@ -971,18 +971,6 @@ package components.videoPlayer
 			_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
 			dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 		}
-		
-		/*
-		public function micActivityHandler(event:ActivityEvent):void
-		{
-		//The mic has received an input louder than the 0% volume, so there's a mic working correctly.
-		if (event.activating)
-		{
-		DataModel.getInstance().gapsWithNoSound=0;
-		DataModel.getInstance().soundDetected=true;
-		DataModel.getInstance().microphone.removeEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
-		}
-		}*/
 
 		// splits panel into a 2 different views
 		private function prepareRecording():void
@@ -1210,18 +1198,6 @@ package components.videoPlayer
 			else
 				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
 		}
-
-		/**
-		 * Flash 11.2.x has a bug that makes audio only FLV files non-playable. This workaround adds a dummy video stream to those files to recover
-		 * the playback functionality while Adobe fixes this bug.
-		 */
-		/*
-		protected function addDummyVideo():void{
-			var r:ResponseVO = new ResponseVO();
-			r.fileIdentifier = _fileName;
-			new ResponseEvent(ResponseEvent.ADD_DUMMY_VIDEO,r).dispatch();
-		}
-		*/
 		
 		public function unattachUserDevices():void{
 			if (_recordns && _recordns.netStream)
