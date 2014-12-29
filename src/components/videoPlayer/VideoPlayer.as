@@ -73,10 +73,12 @@ package components.videoPlayer
 		protected var _video:Video;
 
 		private var _state:String=null;
-		private var _autoPlay:Boolean=false;
-		private var _smooth:Boolean=true;
-		private var _currentTime:Number=0;
-		private var _autoScale:Boolean=true;
+		
+		protected var _smooth:Boolean=true;
+		protected var _autoScale:Boolean=true;
+		protected var _currentTime:Number=0;
+		protected var _autoPlay:Boolean=false;
+		protected var _lastAutoplay:Boolean;
 		protected var _duration:Number=0;
 		protected var _started:Boolean=false;
 		protected var _defaultMargin:Number=0;
@@ -84,6 +86,7 @@ package components.videoPlayer
 		private var _bgVideo:Sprite;
 		public var _ppBtn:PlayButton;
 		public var _stopBtn:StopButton;
+		
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
 		protected var _videoBarPanel:UIComponent;
@@ -97,14 +100,14 @@ package components.videoPlayer
 		protected var _posterSprite:BitmapSprite;
 		protected var _errorSprite:ErrorSprite;
 		protected var _media:AMediaManager;
-		private var _mediaUrl:String;
-		private var _netConnectionUrl:String;
-		private var _mediaReady:Boolean;
-		private var _currentVolume:Number;
-		private var _forcePlay:Boolean;
-		private var _videoPlaying:Boolean;
-		private var _lastWidth:int;
-		private var _lastHeight:int;
+		protected var _mediaUrl:String;
+		protected var _netConnectionUrl:String;
+		protected var _mediaReady:Boolean;
+		protected var _currentVolume:Number;
+		protected var _forcePlay:Boolean;
+		protected var _videoPlaying:Boolean;
+		protected var _lastWidth:int;
+		protected var _lastHeight:int;
 		
 		
 		protected var _busyIndicator:BusyIndicator;
@@ -171,6 +174,11 @@ package components.videoPlayer
 		}
 		
 		public function loadVideoByUrl(param:Object):void{
+			parseLoadVideoByUrl(param);
+			loadVideo();
+		}
+		
+		protected function parseLoadVideoByUrl(param:Object):void{
 			var netConnectionUrl:String;
 			var mediaUrl:String;
 			var mediaPosterUrl:String;
@@ -193,8 +201,6 @@ package components.videoPlayer
 			_mediaUrl=mediaUrl;
 			_mediaPosterUrl=mediaPosterUrl;
 			_netConnectionUrl=netConnectionUrl;
-			
-			loadVideo();
 		}
 		
 		protected function loadVideo():void{

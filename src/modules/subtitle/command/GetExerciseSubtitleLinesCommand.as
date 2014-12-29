@@ -5,8 +5,6 @@ package modules.subtitle.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import components.videoPlayer.CuePointManager;
-	
 	import modules.subtitle.event.SubtitleEvent;
 	
 	import model.DataModel;
@@ -26,7 +24,6 @@ package modules.subtitle.command
 
 	public class GetExerciseSubtitleLinesCommand implements ICommand, IResponder
 	{
-		private var cueManager:CuePointManager=CuePointManager.getInstance();
 
 		private var subtitleRoles:ArrayCollection=new ArrayCollection();
 
@@ -45,18 +42,7 @@ package modules.subtitle.command
 			resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 			if (resultCollection.length > 0)
 			{
-				if (resultCollection[0] is SubtitleLineVO)
-				{
-					cueManager.colorDictionary = new Array();
-					for (var i:int=0; i < resultCollection.length; i++)
-					{
-						var item:SubtitleLineVO=resultCollection.getItemAt(i) as SubtitleLineVO;
-						generateRoleArray(item);
-						untouchedSubtitles.addItem(new CueObject(item.subtitleId, item.showTime, item.hideTime, item.text, item.exerciseRoleId, item.exerciseRoleName));
-						
-						cueManager.addCueFromSubtitleLine(item);
-					}
-				}
+
 			}
 			//Exercise Role bindings
 			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBMODULE);

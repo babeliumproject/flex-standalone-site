@@ -8,26 +8,34 @@ package components.videoPlayer.timedevent
 	import flash.utils.*;
 	
 	import mx.utils.ObjectUtil;
+	
+	import spark.collections.Sort;
+	import spark.collections.SortField;
 
-	public class TimelineActionDispatcher extends EventDispatcher
+	public class TimelineEventDispatcher extends EventDispatcher
 	{
+		
+		public static const DELAY_THRESHOLD:int = 80;
 		
 		protected var targetInstance:Object;
 		protected var eventList:Array;
 		protected var currentEventTime:Number;
 
-		public function TimelineActionDispatcher()
+		public function TimelineEventDispatcher()
 		{
 			eventList = new Array();
+		}
+		
+		public function reset():void{
+			eventList = new Array();	
 		}
 
 		public function pollEventPoints(ev:PollingEvent):void
 		{
 			var curTime:Number=ev.time * 1000;
-			var delayThreshold:Number = 80;
 			for each (var cueobj:Object in eventList)
 			{
-				if (((curTime - delayThreshold) < cueobj.time && cueobj.time < (curTime + delayThreshold)) && cueobj.time != currentEventTime)
+				if (((curTime - DELAY_THRESHOLD) < cueobj.time && cueobj.time < (curTime + DELAY_THRESHOLD)) && cueobj.time != currentEventTime)
 				{
 					//Don't fire the same event more than once
 					currentEventTime=cueobj.time;
@@ -47,9 +55,10 @@ package components.videoPlayer.timedevent
 			{
 				seconds=(matches[1] * 3600) + (matches[2] * 60) + (matches[3] * 1) + (matches[4] * .001);
 				milliseconds = seconds * 1000;
+			} else {
+				milliseconds = parseInt(time);
 			}
 			return milliseconds;
 		}
-
 	}
 }

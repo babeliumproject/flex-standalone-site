@@ -83,7 +83,6 @@
 			import com.adobe.utils.StringUtil;
 
 			import control.URLManager;
-			import components.videoPlayer.CuePointManager;
 
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
@@ -164,22 +163,6 @@
 			public function getFlagSource(temp:ExerciseVO):String
 			{
 				return LocaleFlagResource.getFlagResource(temp.language);
-			}
-
-			public function getImageSource(temp:ExerciseVO):String
-			{
-				var url:String='';
-				/*
-				if (temp.source == "Red5")
-					if (temp.thumbnailUri != 'nothumb.png')
-						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
-					else
-						url=DataModel.getInstance().thumbURL + '/nothumb.png';
-				else
-					url=temp.thumbnailUri;
-				*/
-				url=DataModel.getInstance().thumbURL + "/" + temp.exercisecode + '/default.jpg';
-				return url;
 			}
 		]]>
 	</fx:Script>

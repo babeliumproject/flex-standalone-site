@@ -22,7 +22,7 @@
 
 	<mx:Image id="thumbnail"
 			  scaleContent="true"
-			  source="{getImageSource(data as ExerciseVO)}"
+			  source="{data.thumbnail}"
 			  autoLoad="true"
 			  width="120"
 			  height="90"
@@ -115,7 +115,6 @@
 			import com.adobe.utils.StringUtil;
 			
 			import control.URLManager;
-			import components.videoPlayer.CuePointManager;
 			
 			import modules.exercise.event.SearchEvent;
 			import modules.subtitle.event.SubtitleEvent;
@@ -232,22 +231,6 @@
 			{
 				return LocaleFlagResource.getFlagResource(temp.language);
 			}
-
-			public function getImageSource(temp:ExerciseVO):String
-			{
-				var url:String='';
-				/*
-				if (temp.source == "Red5")
-					if (temp.thumbnailUri != 'nothumb.png')
-						url=DataModel.getInstance().thumbURL + "/" + temp.name + '/default.jpg';
-					else
-						url=DataModel.getInstance().thumbURL + '/nothumb.png';
-				else
-					url=temp.thumbnailUri;
-				*/
-				url = DataModel.getInstance().thumbURL + "/" + temp.exercisecode + "/default.jpg";
-				return url;
-			}
 			
 			private function addTagLinkButtons():void
 			{
@@ -275,7 +258,6 @@
 			
 			protected function tagClickHandler(event:MouseEvent):void
 			{
-				DataModel.getInstance().searchField=(event.target as IconButton).label;
 				URLManager.getInstance().redirect('/search/query/'+(event.target as IconButton).label);
 				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}

@@ -3,8 +3,6 @@ package commands.cuepointManager
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import components.videoPlayer.CuePointManager;
-	
 	import components.videoPlayer.VideoRecorder;
 	
 	import mx.controls.DataGrid;
@@ -28,14 +26,14 @@ package commands.cuepointManager
 		{
 			if (cue)
 			{
-				VP.setSubtitle(cue.text,cue.textColor);
-				var index:int = CuePointManager.getInstance().getCueIndex(cue);
+				VP.showCaption(cue.text,cue.textColor);
+				var index:int = (dg as Object).getCueIndex(cue);
 				if(dg != null && dg.rowCount > index)
 					dg.selectedIndex = index;
 			}
 			else
 			{
-				VP.setSubtitle('');
+				VP.hideCaption();
 			}
 		}
 	}

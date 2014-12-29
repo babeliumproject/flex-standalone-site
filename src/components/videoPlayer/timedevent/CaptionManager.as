@@ -1,9 +1,8 @@
 package components.videoPlayer.timedevent
 {
-	public class CaptionManager extends TimelineActionDispatcher
+	public class CaptionManager extends TimelineEventDispatcher
 	{
-		
-		
+			
 		private var roleColors:Array = [0xffffff, 0xfffd22, 0x69fc00, 0xfd7200, 0x056cf9, 0xff0f0b, 0xc314c9, 0xff6be5];
 		public var colorDictionary:Array = new Array();
 		
@@ -12,7 +11,62 @@ package components.videoPlayer.timedevent
 			super();
 		}
 		
-		public function parseCaptions(captions:Object, targetInstance:Object):Boolean
+		public function parseCaptions(captions:Object, targetInstance:Object):Boolean{
+			if (!captions || !targetInstance)
+				return false;
+			this.targetInstance=targetInstance;
+			eventList = new Array();
+			colorDictionary = new Array();
+			for each (var caption:Object in captions)
+			{	
+				//Show caption
+				var showTime:Number = timeToSeconds(caption.showTime);
+				var sclosure:Function = targetInstance['showCaption'];
+				var params:Object = new Object();
+				params.text = caption.text;
+				params.color = voiceColor(caption.exerciseRoleName);
+				
+				var scpar:Array = new Array();
+				scpar.push({func: sclosure, params: params});
+				
+				var sevent:EventTrigger=new EventTrigger(scpar);
+				var smarker:Object = {time: showTime, event: sevent};
+	
+				eventList.push(smarker);
+				
+				//Hide caption
+				var hideTime:Number = timeToSeconds(caption.hideTime);
+				var hclosure:Function = targetInstance['hideCaption'];
+				
+				var hcpar:Array = new Array();
+				hcpar.push({func: hclosure, params: null});
+				
+				var hevent:EventTrigger=new EventTrigger(hcpar);
+				var hmarker:Object = {time: hideTime, event: hevent};
+	
+				eventList.push(hmarker);
+			}
+			return true;
+		}
+		
+		private function voiceColor(voice:String):int{
+			var found:Boolean = false;
+			var color:uint = roleColors[0];
+			for(var i:uint =0; i < colorDictionary.length; i++){
+				if(colorDictionary[i] == voice){
+					found = true;
+					color = roleColors[i];
+					break;
+				}
+			}
+			if(!found){
+				colorDictionary.push(voice);
+				color = roleColors[colorDictionary.length-1];
+			}
+			return color;
+		}
+		
+		private function parseTimestampCaptions(captions:Object, targetInstance:Object):Boolean
 		{
 			if (!captions || !targetInstance)
 				return false;
@@ -33,6 +87,7 @@ package components.videoPlayer.timedevent
 					eventList.push(cueobj);
 				}
 			}
+			return true;
 		}
 	}
 }

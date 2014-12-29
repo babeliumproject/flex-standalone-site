@@ -18,47 +18,43 @@
 	<fx:Script>
 		<![CDATA[
 			import commands.cuepointManager.RecordingOtherRoleCommand;
-
-			import mx.core.UIComponent;
-
 			import commands.cuepointManager.ReplayResponseCommand;
 			import commands.cuepointManager.ShowHideSubtitleCommand;
 			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
 			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
-
-			import components.videoPlayer.CuePointManager;
-			import components.videoPlayer.events.CueManagerEvent;
+			
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import control.URLManager;
-
+			
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-
+			
 			import spark.collections.Sort;
 			import spark.collections.SortField;
 			import spark.globalization.SortingCollator;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -116,7 +112,7 @@
 			/**
 			 * Video player related vaiables
 			 **/
-			private var _cueManager:CuePointManager=CuePointManager.getInstance();
+
 			[Bindable]
 			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
 			private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
@@ -211,8 +207,6 @@
 						//availableLocales.enabled=true;
 						_localesReady=true;
 
-						// Preparing subtitles
-						prepareCueManager();
 					}
 
 					DataModel.getInstance().availableExerciseLocalesRetrieved=false;
@@ -305,116 +299,11 @@
 			}
 
 			/**
-			 * Reset Cuepoint Manager
-			 **/
-			private function resetCueManager():void
-			{
-				_cueManager.reset();
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-
-			}
-
-			/**
-			 * Prepare Cuepoint Manager
-			 **/
-			private function prepareCueManager():void
-			{
-				var cached:Boolean=_cueManager.setMedia(_mediaId);
-
-				_cueManager.addEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-				//_cueManager.setCuesFromSubtitleUsingLocale(availableLocales.selectedItem.code);
-				_cueManager.setCuesFromSubtitleUsingLocale(_locales[0]);
-
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-				VP.addEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
-			}
-
-			/**
-			 * On subtitles retrieved
-			 **/
-			private function onSubtitlesRetrieved(e:CueManagerEvent):void
-			{
-				setupPlayCommands();
-			}
-
-			/**
-			 * Setup commands for playing sample video
-			 **/
-			private function setupPlayCommands():void
-			{
-				var auxList:ArrayCollection=_cueManager.getCuelist();
-
-				if (auxList.length <= 0)
-					return;
-
-				prepareRoles(auxList);
-
-				for each (var cueobj:CueObject in auxList)
-				{
-					cueobj.setStartCommand(new ShowHideSubtitleCommand(cueobj, VP));
-					cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
-				}
-
-				_cueManagerReady=true;
-				onVideoStartedPlaying(null);
-			}
-
-			/**
-			 * Setup commands for playing the recorded response
-			 **/
-			private function setupReplayCommands():void
-			{
-				var auxList:ArrayCollection=_cueManager.getCuelist();
-
-				if (auxList.length <= 0)
-					return;
-
-				for each (var cueobj:CueObject in auxList)
-				{
-					cueobj.setStartCommand(new ReplayResponseCommand(cueobj, VP));
-					cueobj.setEndCommand(new ReplayResponseCommand(null, VP));
-				}
-
-				_cueManagerReady=true;
-			}
-
-			/**
-			 * Setup recording commands
-			 **/
-			private function setupRecordingCommands():void
-			{
-				var auxList:ArrayCollection=_cueManager.getCuelist();
-
-				if (auxList.length <= 0)
-					return;
-
-				for each (var cueobj:CueObject in auxList)
-				{
-					if (cueobj.role != _selectedRole)
-					{
-						cueobj.setStartCommand(new RecordingOtherRoleCommand(cueobj, VP));
-
-						cueobj.setEndCommand(new ShowHideSubtitleCommand(null, VP));
-					}
-					else
-					{
-						cueobj.setStartCommand(new StartRecordingSelectedRoleCommand(cueobj, VP));
-
-						cueobj.setEndCommand(new StopRecordingSelectedRoleCommand(VP));
-					}
-				}
-
-				_cueManagerReady=true;
-			}
-
-			/**
 			 * On locale combo box changed
 			 **/
 			private function onLocaleComboChanged(e:Event):void
 			{
-				resetCueManager();
-				prepareCueManager();
+				
 			}
 
 			/**
@@ -484,7 +373,6 @@
 
 				showSelectedExercise();
 				prepareExercise();
-				resetCueManager();
 				ratingShareReport.exerciseData=tmp;
 			}
 
@@ -500,7 +388,6 @@
 
 				// Commands with selected role
 				_selectedRole=availableRoles.selectedItem.toString();
-				setupRecordingCommands();
 
 				// Recording mode
 				if (micOnly.selected)
@@ -508,8 +395,6 @@
 				else
 					VP.state=VideoRecorder.RECORD_BOTH_STATE;
 
-				// Prepare arrows
-				showArrows();
 
 				// Disable events and tabs
 				DataModel.getInstance().recordingExercise=true;
@@ -521,7 +406,7 @@
 			private function statisticRecAttempt():void
 			{
 				var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
-				var subtitleId:int=_cueManager.currentSubtitle;
+				var subtitleId:int=subtitleId;
 				var roleId:int=0;
 				for each (var role:ExerciseRoleVO in _roles)
 				{
@@ -587,10 +472,9 @@
 			private function recordingError():void
 			{
 				DataModel.getInstance().recordingExercise=false;
-				hideArrows();
-				VP.unattachUserDevices();
+				
 				VP.state=VideoRecorder.PLAY_STATE;
-				VP.removeEventListener(StreamEvent.ENTER_FRAME, _cueManager.monitorCuePoints);
+		
 
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
@@ -611,24 +495,6 @@
 
 			}
 
-			/**
-			 * Show Arrows
-			 **/
-			private function showArrows():void
-			{
-				VP.arrows=true;
-				VP.setArrows(_cueManager.cues2rolearray(), _selectedRole);
-			}
-
-			/**
-			 * Hide Arrows
-			 **/
-			private function hideArrows():void
-			{
-				VP.arrows=false;
-				VP.removeArrows();
-			}
-
 			private function resetComponent():void
 			{
 				VP.resetComponent();
@@ -638,12 +504,7 @@
 
 				hideSelectedExercise(); // Information of selected exercise
 
-				//exerciseList.exerciseListDataGroup.selectedIndex=-1;
-				//exerciseList.removeFilters();
-
-				// Remove cueManager's Listeners
-				_cueManager.removeEventListener(CueManagerEvent.SUBTITLES_RETRIEVED, onSubtitlesRetrieved);
-
+				
 				//Remove the current exercise's info
 				ratingShareReport.exerciseData=null;
 			}
@@ -651,8 +512,6 @@
 			// Watch both
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
-				showArrows();
-				setupRecordingCommands();
 
 				var media:Object=new Object();
 				var items:Array=[{'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource}, {'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}];
@@ -666,9 +525,6 @@
 			// Watch response
 			private function onWatchResponse(e:Event):void
 			{
-				showArrows();
-				setupReplayCommands();
-
 				var media:Object=new Object();
 				media.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename;
 				media.netConnectionUrl=_streamSource;
@@ -686,18 +542,10 @@
 				var record:Object={'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource};
 				media.playbackMedia=play;
 				media.recordMedia=record;
+				
+				var timemarkers:Object;
 
-				//VP.recordVideo(media,eventdata);
-
-				setupRecordingCommands();
-				showArrows();
-				DataModel.getInstance().recordingExercise=true;
-
-				// Recording mode
-				if (micOnly.selected)
-					VP.state=VideoRecorder.RECORD_MIC_STATE;
-				else
-					VP.state=VideoRecorder.RECORD_BOTH_STATE;
+				VP.recordVideo(media, !micOnly.selected, timemarkers);
 
 				//Save this new record attempt
 				statisticRecAttempt();
@@ -707,7 +555,6 @@
 			{
 				recordingError();
 				prepareExercise();
-				resetCueManager();
 			}
 
 			// Save response
@@ -720,7 +567,7 @@
 				{
 					//This must be changed by some function that takes a snapshot of the Response video
 					var responseThumbnail:String="nothumb.png";
-					var subtitleId:int=_cueManager.currentSubtitle;
+					var subtitleId:int=subtitleId;
 					var responseData:ResponseVO=new ResponseVO(0, _currentExercise.id, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
 
 					//Third, save response				
@@ -745,7 +592,7 @@
 				if (DataModel.getInstance().savedResponseId)
 				{
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
-					var subtitleId:int=_cueManager.currentSubtitle;
+					var subtitleId:int=subtitleId;
 					var roleId:int=0;
 					var responseId:int=DataModel.getInstance().savedResponseId;
 					for each (var role:ExerciseRoleVO in _roles)
@@ -768,7 +615,7 @@
 				{
 					_exerciseStartedPlaying=false;
 					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
-					var subtitleId:int=_cueManager.currentSubtitle;
+					var subtitleId:int=subtitleId;
 					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId, 0);
 					if (_mediaId > 0 && subtitleId > 0)
 						new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();

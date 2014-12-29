@@ -10,6 +10,8 @@ package components.videoPlayer
 	import components.videoPlayer.events.*;
 	import components.videoPlayer.events.babelia.*;
 	import components.videoPlayer.media.*;
+	import components.videoPlayer.timedevent.CaptionManager;
+	import components.videoPlayer.timedevent.TimeMarkerManager;
 	
 	import events.FullStreamingEvent;
 	
@@ -114,6 +116,11 @@ package components.videoPlayer
 		private var _userdevmgr:UserDeviceManager;
 		private var _privUnlock:PrivacyRights;
 
+		private var _captionmgr:CaptionManager;
+		private var _markermgr:TimeMarkerManager;
+		
+		private var _timeMarkers:Object;
+		
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
 
@@ -240,14 +247,35 @@ package components.videoPlayer
 			putSkinableComponent(_micActivityBar.COMPONENT_NAME, _micActivityBar);
 		}
 
-
-		/**
-		 * Setters and Getters
-		 *
-		 */
-		public function setSubtitle(text:String, textColor:uint=0xffffff):void
+		public function setCaptions(captions:Object):void
 		{
-			_subtitleBox.setText(text, textColor);
+			if(!captions) return;
+			
+			if(!_captionmgr) 
+				_captionmgr = new CaptionManager();
+			
+			_captionmgr.parseCaptions(captions, this);
+		}
+		
+		public function setTimeMarkers(markers:Object):void{
+			if(!markers) return;
+			
+			if(!_markermgr)
+				_markermgr = new TimeMarkerManager();
+			
+			_markermgr.parseTimeMarkers(markers, this);
+		}
+		
+		public function showCaption(... args):void{
+			if(args && args.length==2){
+				var text:String=String(args[0]) || '';
+				var color:uint=int(args[1]) || 0xFFFFFF;
+				_subtitleBox.setText(text, color);
+			}
+		}
+		
+		public function hideCaption(... args):void{
+			_subtitleBox.setText('',0x000000);
 		}
 
 		public function set subtitles(flag:Boolean):void
@@ -722,7 +750,7 @@ package components.videoPlayer
 				}
 			}
 
-			setSubtitle("");
+			hideCaption();
 		}
 
 		override public function endVideo():void
@@ -744,7 +772,7 @@ package components.videoPlayer
 		{
 			super.onScrubberDropped(e);
 
-			this.setSubtitle("");
+			hideCaption();
 		}
 
 		/**
@@ -1243,8 +1271,67 @@ package components.videoPlayer
 			}
 		}
 		
+		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):String{
+			
+			unattachUserDevices();
+			if(_markermgr){
+				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.pollEventPoints);
+			}
+			
+			if(timemarkers){
+				if(setTimeMarkers(timemarkers)){
+					_timeMarkers = timemarkers;
+					//Add a listener to poll for event points
+					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.pollEventPoints, false, 0, true);
+				} else {
+					logger.debug("No event points found in given recdata");
+				}
+			} else {
+				_timeMarkers = null;
+			}
+			
+			//Enable the polling timer
+			//streamPositionTimer(true);
+			
+			//Set autoplay to false to avoid the exercise from playing once loading is done
+			_lastAutoplay=_autoPlay;
+			_autoPlay=false;
+			//_videoPlaying=false;
+			
+			if(media){
+				//Load the exercise to play alongside the recording, if any
+				loadVideoByUrl(media);
+				//Remove the exercise poster, we don't need it when about to record something
+				_topLayer.removeChildren();
+			} else {
+				_mediaUrl=null;
+				endVideo();
+			}
+			
+			//Ask for a slot in the server to record the new stream
+			var recSlot:Array = requestRecordingSlot();
+			var _recordingUrl:String = recSlot['url'];
+			var _maxRecTime:String = recSlot['maxduration'];
+			
+			//Set the video player's state to recording
+			//var newState:int = useWebcam ? VideoRecorder.RECORD_MICANDCAM_STATE : VideoRecorder.RECORD_MIC_STATE;
+			//setState(newState);
+			
+			return _recordingUrl;
+		}
+		
+		private function requestRecordingSlot():Array{	
+			var d:Date=new Date();
+			var responseId:String="resp-" + d.getTime().toString();
+			var recordUri:String = DataModel.getInstance().streamingResourcesPath + "responses/" + responseId;
+			var a:Array = new Array();
+			a['url'] = recordUri;
+			a['maxduration'] = DataModel.getInstance().maxExerciseDuration;
+			return a;	
+		}
+		
 		override public function resetComponent():void{
-			setSubtitle('');
+			hideCaption();
 			
 			state=VideoRecorder.PLAY_STATE;
 			arrows=false;

@@ -1,6 +1,6 @@
 package components.videoPlayer.timedevent
 {
-	public class TimeMarkerManager extends TimelineActionDispatcher
+	public class TimeMarkerManager extends TimelineEventDispatcher
 	{
 		public function TimeMarkerManager()
 		{
