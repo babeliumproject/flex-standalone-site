@@ -11,23 +11,29 @@ package components.videoPlayer.timedevent
 			super();
 		}
 		
-		public function parseCaptions(captions:Object, targetInstance:Object):Boolean{
-			if (!captions || !targetInstance)
+		public function parseCaptions(captions:Object, playerInstance:Object, captioningInstance:Object=null):Boolean{
+			if (!captions || !playerInstance)
 				return false;
-			this.targetInstance=targetInstance;
+			this.targetInstance=playerInstance;
 			eventList = new Array();
 			colorDictionary = new Array();
 			for each (var caption:Object in captions)
 			{	
 				//Show caption
 				var showTime:Number = timeToSeconds(caption.showTime);
-				var sclosure:Function = targetInstance['showCaption'];
+				var sclosure:Function = playerInstance['showCaption'];
 				var params:Object = new Object();
 				params.text = caption.text;
 				params.color = voiceColor(caption.exerciseRoleName);
 				
 				var scpar:Array = new Array();
 				scpar.push({func: sclosure, params: params});
+				
+				if(captioningInstance){
+					var capclosure:Function = captioningInstance['highlightSubtitle'];
+					var capparam:Number = showTime;
+					scpar.push({func: capclosure, params: capparam});
+				}
 				
 				var sevent:EventTrigger=new EventTrigger(scpar);
 				var smarker:Object = {time: showTime, event: sevent};
@@ -36,7 +42,7 @@ package components.videoPlayer.timedevent
 				
 				//Hide caption
 				var hideTime:Number = timeToSeconds(caption.hideTime);
-				var hclosure:Function = targetInstance['hideCaption'];
+				var hclosure:Function = playerInstance['hideCaption'];
 				
 				var hcpar:Array = new Array();
 				hcpar.push({func: hclosure, params: null});

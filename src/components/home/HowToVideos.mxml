@@ -127,7 +127,7 @@
 										skin="white"
 										seek="true"
 										autoPlay="false"
-										subtitles="true"
+										displayCaptions="true"
 										autoScale="false"
 										arrows="false"
 										width="854"

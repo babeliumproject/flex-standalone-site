@@ -47,6 +47,8 @@ package modules.subtitle.view
 	import spark.components.Label;
 	import spark.components.VGroup;
 	
+	import utils.CollectionUtils;
+	
 	import view.common.CustomAlert;
 	import view.common.IconComboBox;
 	
@@ -135,14 +137,13 @@ package modules.subtitle.view
 		{
 			setupVideoPlayer();
 
-			BindingUtils.bindSetter(onExerciseSelected, _dataModel, "currentExerciseRetrieved");
-			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved");
-			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved");
-			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved");
-			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved");
+			BindingUtils.bindSetter(onExerciseSelected, _dataModel, "currentExerciseRetrieved", false, true);
+			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved", false, true);
+			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved", false, true);
+			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved", false, true);
+			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved", false, true);
 
 			creationComplete=true;
-
 		}
 
 		public function setupVideoPlayer():void
@@ -168,7 +169,7 @@ package modules.subtitle.view
 			var label:String="";
 			for each (var dp:RoleComboDataVO in comboData)
 			{
-				if (dp.roleId == item.roleId)
+				if (dp.roleId == item.exerciseRoleId)
 				{
 					label=dp.charName;
 					break;
@@ -295,6 +296,13 @@ package modules.subtitle.view
 			{
 				var tempEntry:Object=subtitleList.selectedIndex as Object;
 				VPSubtitle.seekTo(tempEntry.startTime);
+			}
+		}
+		
+		public function highlightSubtitle(time:Number):void{
+			if(!isNaN(time) && subtitleList && subtitleList.rowCount){
+				var item:Object = CollectionUtils.findInCollection(subtitleCollection, CollectionUtils.findField('showTime', time) as Function);
+				if(item) subtitleList.selectedItem = item;
 			}
 		}
 
@@ -484,18 +492,10 @@ package modules.subtitle.view
 			}
 		}
 
-		public function onSubtitleLinesRetrieved(value:Boolean):void
-		{
-			subtitleCollection=DataModel.getInstance().availableSubtitleLines;
-			if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length > 0)
-				setSelectedSubtitleVersion(DataModel.getInstance().unmodifiedAvailableSubtitleLines.getItemAt(0).subtitleId);
-			for each (var cueObj:CueObject in subtitleCollection)
-			{
-				cueObj.setStartCommand(new ShowHideSubtitleCommand(cueObj, VPSubtitle, subtitleList));
-				cueObj.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle, subtitleList));
-			}
-		}
-
+		/**
+		 * Called each time the property "availableSubtitlesRetrieved" changes in the model
+		 * 	@param value
+		 */		
 		private function onSubtitlesRetrieved(value:Boolean):void
 		{
 			var subversions:int=DataModel.getInstance().availableSubtitles ? DataModel.getInstance().availableSubtitles.length : 0;
@@ -521,40 +521,45 @@ package modules.subtitle.view
 				subtitleVersionBox.visible=false;
 			}
 		}
+		
+		public function onSubtitleLinesRetrieved(value:Boolean):void
+		{
+			subtitleCollection=DataModel.getInstance().availableSubtitleLines;
+			trace(ObjectUtil.toString(subtitleCollection));
+			VPSubtitle.setCaptions(subtitleCollection, this);
+			
+			if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length > 0)
+				setSelectedSubtitleVersion(DataModel.getInstance().unmodifiedAvailableSubtitleLines.getItemAt(0).subtitleId);
+		}
 
 		private function onRolesRetrieved(value:Boolean):void
 		{
-
-			if (DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.SUBMODULE) == true)
+			var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles;
+			var cData:ArrayCollection=new ArrayCollection();
+			var insertOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+			cData.addItem(insertOption);
+			if (avrol && avrol.length > 0)
 			{
-				var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.SUBMODULE) as ArrayCollection;
-				var cData:ArrayCollection=new ArrayCollection;
-				var insertOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
-				cData.addItem(insertOption);
-				if (avrol.length > 0)
+				for each (var itemIns:ExerciseRoleVO in avrol)
 				{
-					for each (var itemIns:ExerciseRoleVO in avrol)
-					{
-						var selectLine:RoleComboDataVO=new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
-						cData.addItem(selectLine);
-					}
-					var deleteOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
-					cData.addItem(deleteOption);
-					for each (var itemDel:ExerciseRoleVO in avrol)
-					{
-						var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
-						cData.addItem(deleteLine);
-					}
-					comboData=cData;
+					var selectLine:RoleComboDataVO=new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					cData.addItem(selectLine);
+				}
+				var deleteOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+				cData.addItem(deleteOption);
+				for each (var itemDel:ExerciseRoleVO in avrol)
+				{
+					var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					cData.addItem(deleteLine);
+				}
+				comboData=cData;
 
-				}
-				else
-				{
-					var deleteOptionEmpty:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
-					cData.addItem(deleteOptionEmpty);
-					comboData=cData;
-				}
-				DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.SUBMODULE);
+			}
+			else
+			{
+				var deleteOptionEmpty:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
+				cData.addItem(deleteOptionEmpty);
+				comboData=cData;
 			}
 		}
 

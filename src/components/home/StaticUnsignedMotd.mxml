@@ -40,7 +40,7 @@
 										skin="white"
 										autoPlay="false"
 										seek="true"
-										subtitles="true"
+										displayCaptions="true"
 										autoScale="false"
 										arrows="false"
 										width="400"

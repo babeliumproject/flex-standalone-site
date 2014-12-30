@@ -23,7 +23,7 @@
 												autoPlay="true"
 												skinUrl="resources/videoPlayer/skin/white.xml"
 												seek="true"
-												subtitles="true"
+												displayCaptions="true"
 												autoScale="false"
 												arrows="false"
 												width="400"
@@ -56,8 +56,7 @@
 			<s:BorderContainer id="subtitleEditor"
 							   width="100%"
 							   height="100%"
-							   backgroundAlpha="0"
-							   cornerRadius="8"
+							   styleName="lightBorderContainer"
 							   minHeight="500">
 
 				<s:layout>
@@ -84,6 +83,9 @@
 									dataProvider="{availableSubtitleVersions}"
 									change="{onSubtitleVersionChange(event)}"
 									labelFunction="{subtitleVersionComboLabelFunction}"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
 									minWidth="250"
 									requireSelection="true"/>
 					</s:HGroup>
@@ -125,7 +127,7 @@
 										   itemRenderer="modules.subtitle.view.HideNumericStepperRenderer"/>
 						<mx:DataGridColumn id="comboColumn"
 										   width="150"
-										   dataField="roleId"
+										   dataField="exerciseRoleId"
 										   headerText="{resourceManager.getString('myResources','ROLE')}"
 										   rendererIsEditor="true"
 										   labelFunction="{resolveIdToRole}"

@@ -56,7 +56,7 @@ package components.videoPlayer.timedevent
 				seconds=(matches[1] * 3600) + (matches[2] * 60) + (matches[3] * 1) + (matches[4] * .001);
 				milliseconds = seconds * 1000;
 			} else {
-				milliseconds = parseInt(time);
+				milliseconds = parseFloat(time)*1000;
 			}
 			return milliseconds;
 		}

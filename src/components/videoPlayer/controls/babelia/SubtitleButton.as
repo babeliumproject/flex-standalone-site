@@ -1,12 +1,12 @@
 package components.videoPlayer.controls.babelia
 {
+	import components.videoPlayer.controls.SkinableComponent;
+	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
+	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
-	
-	import components.videoPlayer.controls.SkinableComponent;
-	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
 	
 	import spark.components.ToggleButton;
 	
@@ -38,6 +38,7 @@ package components.videoPlayer.controls.babelia
 		private var _boxHeight:Number = 20;
 		private var _boxColor:uint = 0xFFFFFF;
 		private var _defaultHeight:Number = 20;
+		private var _selected:Boolean;
 		
 		public function SubtitleButton(state:Boolean = false)
 		{
@@ -81,11 +82,20 @@ package components.videoPlayer.controls.babelia
 			_button.y = (height - _button.height) / 2;
 		}
 		
-		public function setEnabled(flag:Boolean) : void
+		public function set selected(value:Boolean):void{
+			if(enabled){
+				if(_selected == value) return;
+				
+				_selected = value;
+				_button.selected = _selected;
+				_button.toolTip = _selected ? resourceManager.getString('myResources','HIDE_SUBTITLES') : resourceManager.getString('myResources','SHOW_SUBTITLES');
+			}
+		}
+		
+		override public function set enabled(value:Boolean) : void
 		{
-			_button.selected = (!flag) ? false : true;
-			_button.toolTip = _button.selected ? resourceManager.getString('myResources','HIDE_SUBTITLES') : resourceManager.getString('myResources','SHOW_SUBTITLES');
-			_button.enabled = flag;
+			_button.enabled = value;
+			super.enabled=value;
 		}
 		
 		private function showHideSubtitles(e:MouseEvent) : void

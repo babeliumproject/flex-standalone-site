@@ -281,9 +281,9 @@ package model
 
 		//Used to store exercise's roles added by the user  
 		[Bindable]
-		public var availableExerciseRoles:ArrayCollection=new ArrayCollection(new Array(null, null));
+		public var availableExerciseRoles:ArrayCollection;
 		[Bindable]
-		public var availableExerciseRolesRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
+		public var availableExerciseRolesRetrieved:Boolean;
 
 		//Used to store subtitle-lines and roles in the same DP
 		[Bindable]

@@ -96,6 +96,8 @@ package components.videoPlayer
 		private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 		private const DEFAULT_VOLUME:Number=40;
 		private const COUNTDOWN_TIMER_SECS:int=5;
+		
+		public static const TIMELINE_TIMER_DELAY:int=50;
 
 		private var _recordns:AMediaManager;
 		private var _secondns:AMediaManager;
@@ -117,9 +119,11 @@ package components.videoPlayer
 		private var _privUnlock:PrivacyRights;
 
 		private var _captionmgr:CaptionManager;
+		private var _captionsLoaded:Boolean;
 		private var _markermgr:TimeMarkerManager;
 		
 		private var _timeMarkers:Object;
+		private var _pollTimeline:Boolean;
 		
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -127,6 +131,7 @@ package components.videoPlayer
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
 	
+		private var _displayCaptions:Boolean;
 
 		public static const SECONDSTREAM_READY_STATE:int=0;
 		public static const SECONDSTREAM_STARTED_STATE:int=1;
@@ -139,7 +144,7 @@ package components.videoPlayer
 		[Bindable]
 		public var secondStreamState:int;
 
-		private var _cuePointTimer:Timer;
+		private var _ttimer:Timer;
 
 		public static const SUBTILE_INSERT_DELAY:Number=0.5;
 
@@ -247,14 +252,22 @@ package components.videoPlayer
 			putSkinableComponent(_micActivityBar.COMPONENT_NAME, _micActivityBar);
 		}
 
-		public function setCaptions(captions:Object):void
+		public function setCaptions(captions:Object, cinstance:Object=null):void
 		{
 			if(!captions) return;
 			
 			if(!_captionmgr) 
 				_captionmgr = new CaptionManager();
 			
-			_captionmgr.parseCaptions(captions, this);
+			_captionsLoaded = _captionmgr.parseCaptions(captions, this, cinstance);
+			
+			if(_captionsLoaded) 
+				_subtitleButton.enabled=true;
+			
+			if(_displayCaptions){
+				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints, false, 0, true);
+				pollTimeline=true;
+			}
 		}
 		
 		public function setTimeMarkers(markers:Object):void{
@@ -278,16 +291,56 @@ package components.videoPlayer
 			_subtitleBox.setText('',0x000000);
 		}
 
-		public function set subtitles(flag:Boolean):void
+		public function set displayCaptions(value:Boolean):void
 		{
-			_subtitlePanel.visible=flag;
-			_subtitleButton.setEnabled(flag);
+			if(_displayCaptions == value) return;
+			
+			if(_captionsLoaded){
+				_displayCaptions=value;
+				_subtitlePanel.visible=_displayCaptions;
+				_subtitleButton.selected=_displayCaptions;
+			}
 			this.updateDisplayList(0, 0);
 		}
 
-		public function get subtitlePanelVisible():Boolean
+		public function get displayCaptions():Boolean
 		{
-			return _subtitlePanel.visible;
+			return _displayCaptions;
+		}
+		
+		public function set pollTimeline(value:Boolean):void{
+			if(_pollTimeline == value) return;
+			
+			_pollTimeline = value;
+			
+			if(_pollTimeline){
+				if(!_ttimer){
+					_ttimer=new Timer(TIMELINE_TIMER_DELAY, 0);
+				}
+				_ttimer.addEventListener(TimerEvent.TIMER, onTimerTick, false, 0, true);
+				_ttimer.start();
+			} else {
+				if(_ttimer){
+					_ttimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
+					_ttimer.reset();
+				}
+			}
+		}
+		
+		public function get pollTimeline():Boolean{
+			return _pollTimeline;
+		}
+		
+		private function onTimerTick(e:TimerEvent):void
+		{
+			if (streamReady(_media))
+				this.dispatchEvent(new PollingEvent(PollingEvent.ENTER_FRAME, _media.currentTime));
+			//if (streamReady(_recNsc)){
+			//	//If the user didn't stop recording after _maxRecTime elapsed, force a stop
+			//	if ((_maxRecTime - _recNsc.netStream.time) <=0){
+			//		abortRecording();
+			//	}
+			//}
 		}
 
 		/**
@@ -351,31 +404,6 @@ package components.videoPlayer
 		{
 			return _subtitlingControls.visible;
 		}
-
-		/*
-		public function set recControls(value:Boolean):void
-		{
-			_recStopBtn.recMode=value;	
-		}
-		
-		public function get recControls():Boolean
-		{
-			return _recStopBtn.recMode;
-		}
-		
-		public function onRecStopEvent(event:RecStopButtonEvent):void{
-			if(recControls){
-				if(event.state==RecStopButton.REC_STATE){
-					state=UPLOAD_MODE_STATE;
-				}else{
-					Alert.show("Stop recording");
-					onVideoFinishedPlaying(new VideoPlayerEvent(VideoPlayerEvent.VIDEO_FINISHED_PLAYING));
-				}
-			} else {
-				stopVideo();
-			}
-		}
-		*/
 		
 		/**
 		 * Autoplay
@@ -669,22 +697,12 @@ package components.videoPlayer
 			if(state == PLAY_BOTH_STATE)
 				playSecondStream();
 
-			if (!_cuePointTimer)
+			if (!_ttimer)
 			{
-				_cuePointTimer=new Timer(20, 0); //Try to tick every 20ms
-				_cuePointTimer.addEventListener(TimerEvent.TIMER, onEnterFrame);
-				_cuePointTimer.start();
+				_ttimer=new Timer(20, 0); //Try to tick every 20ms
+				_ttimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				_ttimer.start();
 			}
-		}
-
-		/**
-		 * Gives parent component an ENTER_FRAME event
-		 * with current stream time (CuePointManager should catch this)
-		 */
-		private function onEnterFrame(e:TimerEvent):void
-		{
-			if (_media != null)
-				this.dispatchEvent(new StreamEvent(StreamEvent.ENTER_FRAME, _media.currentTime));
 		}
 
 		/**

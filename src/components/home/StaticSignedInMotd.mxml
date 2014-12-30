@@ -57,7 +57,7 @@
 				<skins:IconButton id="homeSubtitleButton"
 								  styleName="homeSubtitleButton"
 								  label="{resourceManager.getString('myResources','SUBTITLE')}"
-								  click="homeButtons_clickHandler(event, 'subtitles')"/>
+								  click="homeButtons_clickHandler(event, 'components.videoPlayer.displayCaptions')"/>
 				<skins:IconButton id="homeEvaluateButton"
 								  styleName="homeEvaluateButton"
 								  label="{resourceManager.getString('myResources','EVALUATIONS')}"

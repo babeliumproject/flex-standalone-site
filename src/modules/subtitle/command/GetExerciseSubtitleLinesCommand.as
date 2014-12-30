@@ -1,13 +1,12 @@
 package modules.subtitle.command
 {
-	import modules.subtitle.service.SubtitleDelegate;
-	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import modules.subtitle.event.SubtitleEvent;
-	
 	import model.DataModel;
+	
+	import modules.subtitle.event.SubtitleEvent;
+	import modules.subtitle.service.SubtitleDelegate;
 	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
@@ -25,7 +24,8 @@ package modules.subtitle.command
 	public class GetExerciseSubtitleLinesCommand implements ICommand, IResponder
 	{
 
-		private var subtitleRoles:ArrayCollection=new ArrayCollection();
+		private var _model:DataModel=DataModel.getInstance();
+		private var _subtitleRoles:ArrayCollection;
 
 		public function execute(event:CairngormEvent):void
 		{
@@ -42,25 +42,28 @@ package modules.subtitle.command
 			resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 			if (resultCollection.length > 0)
 			{
-
+				_subtitleRoles = new ArrayCollection();
+				for (var i:int=0; i<resultCollection.length; i++){
+					
+					generateRoleArray(resultCollection.getItemAt(i));
+				}
+				untouchedSubtitles=resultCollection;
 			}
-			//Exercise Role bindings
-			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.SUBMODULE);
-			DataModel.getInstance().availableExerciseRoles.setItemAt(subtitleRoles, DataModel.RECORDING_MODULE);
-			DataModel.getInstance().availableExerciseRolesRetrieved = new ArrayCollection(new Array (true, true));
 			
+			_model.availableExerciseRoles=_subtitleRoles;
+			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 			
-			//Subtitle editor bindings
-			DataModel.getInstance().unmodifiedAvailableSubtitleLines=untouchedSubtitles;
-			DataModel.getInstance().availableSubtitleLinesRetrieved=true;
+			_model.unmodifiedAvailableSubtitleLines=untouchedSubtitles;
+			_model.availableSubtitleLines=resultCollection;
+			_model.availableSubtitleLinesRetrieved=!_model.availableSubtitleLinesRetrieved;
 		}
 
-		private function generateRoleArray(subtitleLine:SubtitleLineVO):void
+		private function generateRoleArray(subtitleLine:Object):void
 		{
 			var containsElement:Boolean = false;
 			var tempRole:ExerciseRoleVO=new ExerciseRoleVO(subtitleLine.exerciseRoleId, 0, subtitleLine.exerciseRoleName);
 			
-			for each(var roleItem:ExerciseRoleVO in subtitleRoles){
+			for each(var roleItem:ExerciseRoleVO in _subtitleRoles){
 				if(roleItem.id == tempRole.id){
 					containsElement=true;
 					break;
@@ -68,7 +71,7 @@ package modules.subtitle.command
 			}
 			if (!containsElement)
 			{
-				subtitleRoles.addItem(tempRole);
+				_subtitleRoles.addItem(tempRole);
 			}
 		}
 

@@ -73,7 +73,7 @@
 										autoPlay="true"
 										skin="white"
 										seek="true"
-										subtitles="false"
+										displayCaptions="false"
 										autoScale="false"
 										arrows="false"
 										subtitlingControls="false"

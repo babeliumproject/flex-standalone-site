@@ -405,7 +405,7 @@
 
 			private function statisticRecAttempt():void
 			{
-				var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
+				var subtitlesAreUsed:Boolean=VP.displayCaptions;
 				var subtitleId:int=subtitleId;
 				var roleId:int=0;
 				for each (var role:ExerciseRoleVO in _roles)
@@ -591,7 +591,7 @@
 			{
 				if (DataModel.getInstance().savedResponseId)
 				{
-					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
+					var subtitlesAreUsed:Boolean=VP.displayCaptions;
 					var subtitleId:int=subtitleId;
 					var roleId:int=0;
 					var responseId:int=DataModel.getInstance().savedResponseId;
@@ -614,7 +614,7 @@
 				if (DataModel.getInstance().isLoggedIn && _cueManagerReady && _rolesReady && _localesReady && _exerciseStartedPlaying)
 				{
 					_exerciseStartedPlaying=false;
-					var subtitlesAreUsed:Boolean=VP.subtitlePanelVisible;
+					var subtitlesAreUsed:Boolean=VP.displayCaptions;
 					var subtitleId:int=subtitleId;
 					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId, 0);
 					if (_mediaId > 0 && subtitleId > 0)
@@ -682,7 +682,7 @@
 									   autoPlay="true"
 									   skinUrl="resources/videoPlayer/skin/white.xml"
 									   seek="true"
-									   subtitles="true"
+									   displayCaptions="true"
 									   autoScale="false"
 									   arrows="false"
 									   subtitlingControls="false"

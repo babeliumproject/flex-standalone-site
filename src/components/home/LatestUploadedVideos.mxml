@@ -57,7 +57,7 @@
 				else
 				{
 					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
-					URLManager.getInstance().redirect('subtitles', URLManager.SUBTITLE, obj.name);
+					URLManager.getInstance().redirect('components.videoPlayer.displayCaptions', URLManager.SUBTITLE, obj.name);
 				}
 				List(event.target).selectedItem = null;
 				URLManager.getInstance().parseURL(null);

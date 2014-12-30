@@ -1085,7 +1085,7 @@
 											autoPlay="true"
 											skin="white"
 											seek="false"
-											subtitles="true"
+											displayCaptions="true"
 											autoScale="false"
 											arrows="false"
 											subtitlingControls="false"

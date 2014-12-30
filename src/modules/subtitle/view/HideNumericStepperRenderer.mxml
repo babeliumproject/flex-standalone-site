@@ -15,15 +15,15 @@
 			import model.DataModel;
 			public function get value():Number
 			{
-				return (data.endTime);
+				return (data.hideTime);
 			}
 
 			override public function set data(value:Object):void
 			{
-				if(value && value.startTime < HideTimeStepper.minimum)
-					value.startTime = HideTimeStepper.minimum;
+				if(value && value.showTime < HideTimeStepper.minimum)
+					value.showTime = HideTimeStepper.minimum;
 				super.data=value;
-				HideTimeStepper.value=data.endTime;
+				HideTimeStepper.value=data.hideTime;
 			}
 		]]>
 	</fx:Script>
@@ -34,7 +34,7 @@
 						  minimum="0.5"
 						  maximum="{DataModel.getInstance().maxExerciseDuration}"
 						  formatter="{formater1}"
-						  valueCommit="{data.endTime = Number(HideTimeStepper.value); }"/>
+						  valueCommit="{data.hideTime = Number(HideTimeStepper.value); }"/>
 
 	<fx:Declarations>
 		<common:TimeFormatter id="formater1"
