@@ -94,7 +94,7 @@ package components.videoPlayer.controls.babelia
 		
 		override public function set enabled(value:Boolean) : void
 		{
-			_button.enabled = value;
+			if(_button) _button.enabled = value;
 			super.enabled=value;
 		}
 		

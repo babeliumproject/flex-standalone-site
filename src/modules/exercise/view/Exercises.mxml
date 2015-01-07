@@ -13,15 +13,12 @@
 		  paddingTop="16"
 		  width="100%"
 		  creationComplete="onComplete()"
-		  implements="modules.IGroupInterface" xmlns:view1="modules.create.view.*" xmlns:components="components.*">
+		  implements="modules.IGroupInterface" 
+		  xmlns:view1="modules.create.view.*"
+		  xmlns:components="components.*">
 
 	<fx:Script>
 		<![CDATA[
-			import commands.cuepointManager.RecordingOtherRoleCommand;
-			import commands.cuepointManager.ReplayResponseCommand;
-			import commands.cuepointManager.ShowHideSubtitleCommand;
-			import commands.cuepointManager.StartRecordingSelectedRoleCommand;
-			import commands.cuepointManager.StopRecordingSelectedRoleCommand;
 			
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
@@ -173,12 +170,12 @@
 			private function prepareExercise():void
 			{
 				// Prepare new video in VideoPlayer
-				VP.stopVideo();
+				//VP.stopVideo();
 				VP.state=VideoRecorder.PLAY_STATE;
 
 				var media:Object=new Object();
-				media.mediaUrl=EXERCISE_FOLDER + '/' + _exerciseName;
-				media.netConnectionUrl=_streamSource;
+				media.mediaUrl='http://babeliumlms/media/'+EXERCISE_FOLDER + '/' + _exerciseName+'.flv';
+				//media.netConnectionUrl=_streamSource;
 
 				VP.loadVideoByUrl(media);
 
@@ -306,20 +303,6 @@
 				
 			}
 
-			/**
-			 * Show/Hide selected exercise
-			 **/
-			private function showSelectedExercise():void
-			{
-				//videoPlayerAndRecordingControls.includeInLayout=true;
-				//videoPlayerAndRecordingControls.visible=true;
-
-				// Update URL
-				//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, _exerciseName);
-				//BabeliaBrowserManager.getInstance().updateURL('exercises', BabeliaBrowserManager.VIEW, _exerciseName);
-				_exerciseSelected=true;
-			}
-
 			private function hideSelectedExercise():void
 			{
 				//videoPlayerAndRecordingControls.includeInLayout=false;
@@ -346,11 +329,8 @@
 			/**
 			 * On select an exercise from list
 			 **/
-			private function set onExerciseSelected(value:Boolean):void
+			private function set exerciseDataRetrieved(value:Boolean):void
 			{
-				//Reset the videoplayer and the panels
-				recordingError();
-
 				// Retrieving selected exercise information
 				var tmp:ExerciseVO=DataModel.getInstance().watchExerciseData as ExerciseVO;
 				trace(ObjectUtil.toString(tmp));
@@ -361,8 +341,8 @@
 
 
 				var data:Object=new Object();
-				data.netConnectionUrl=DataModel.getInstance().streamingResourcesPath;
-				data.mediaUrl=EXERCISE_FOLDER + '/' + _exerciseName;
+				//data.netConnectionUrl=DataModel.getInstance().streamingResourcesPath;
+				data.mediaUrl='http://babeliumlms/media/'+EXERCISE_FOLDER + '/' + _exerciseName+'.flv';
 
 				VP.loadVideoByUrl(data);
 
@@ -370,9 +350,9 @@
 				_rolesReady=false;
 				_localesReady=false;
 				_cueManagerReady=false;
-
-				showSelectedExercise();
-				prepareExercise();
+				_exerciseSelected=true;
+				
+				
 				ratingShareReport.exerciseData=tmp;
 			}
 
@@ -655,7 +635,7 @@
 	</fx:Script>
 
 	<fx:Binding source="{DataModel.getInstance().watchExerciseDataRetrieved}"
-				destination="this.onExerciseSelected"/>
+				destination="this.exerciseDataRetrieved"/>
 	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved"/>
 	<!--
