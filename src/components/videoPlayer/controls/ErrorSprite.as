@@ -24,14 +24,17 @@ package components.videoPlayer.controls
 
 		private var frame:Shape;
 		private var textHolder:TextField;
-		private var message:String;
+		
+		private var _localeAwareErrorMessage:String;
+		private var localeAwareErrorMessageChanged:Boolean=false;
+		
+		private var message:String = "An error occurred. Please try again later.";
 		
 		public function ErrorSprite(errorCode:String, unscaledWidth:uint, unscaledHeight:uint)
 		{
 			super();
 		
-			var msg:String=ResourceManager.getInstance().getString('myResources',errorCode);
-			message = msg ? msg : "An error occurred. Please try again later.";
+			setLocaleAwareErrorMessage(errorCode);
 			updateDisplayList(unscaledWidth,unscaledHeight);
 		}
 		
@@ -39,6 +42,8 @@ package components.videoPlayer.controls
 			
 			container_width  = !unscaledWidth  ? container_width  : unscaledWidth;
 			container_height = !unscaledHeight ? container_height : unscaledHeight;
+			
+			this.removeChildren();
 			
 			var m:Matrix = new Matrix();
 			m.createGradientBox(container_width, container_height, 90*Math.PI/180, 0, 0);
@@ -65,7 +70,24 @@ package components.videoPlayer.controls
 			textHolder.setTextFormat(_textFormat);
 			
 			this.addChild(textHolder);
+		}
+		
+		public function setLocaleAwareErrorMessage(value:String):void{
+			if (getLocaleAwareErrorMessage() === value)
+				return;
 			
+			_localeAwareErrorMessage=value;
+			localeAwareErrorMessageChanged=true;
+			
+			var msg:String=ResourceManager.getInstance().getString('myResources',_localeAwareErrorMessage);
+			message = msg ? msg : message;
+			
+			updateDisplayList(0, 0);
+		}
+		
+		public function getLocaleAwareErrorMessage():String
+		{
+			return _localeAwareErrorMessage;
 		}
 		
 	}

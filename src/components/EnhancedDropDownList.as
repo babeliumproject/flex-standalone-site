@@ -41,7 +41,7 @@ package components
 		public function EnhancedDropDownList()
 		{
 			super();
-			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler);
+			ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, false, 0, true);
 		}
 
 		protected function localeChangeHandler(event:Event):void
@@ -74,10 +74,10 @@ package components
 				sortItemsChanged=false;
 				if (_sortItems)
 				{
+					var internalIndex:int=-1;
 					//Save the internal sorting index before reordering the collection
 					if (selectedIndex != -1)
 					{
-						var internalIndex:int=-1;
 						if (oldSelectedItem && oldSelectedItem.hasOwnProperty(this.indexField))
 						{
 							internalIndex=oldSelectedItem[this.indexField];
@@ -112,7 +112,7 @@ package components
 			if (widestItem)
 			{
 				this.typicalItem=widestItem;
-				invalidateDisplayList();
+				//invalidateDisplayList();
 			}
 		}
 

@@ -280,7 +280,7 @@ package components.videoPlayer
 		}
 		
 		public function showCaption(... args):void{
-			if(args && args.length==2){
+			if(args && args.length){
 				var text:String=String(args[0]) || '';
 				var color:uint=int(args[1]) || 0xFFFFFF;
 				_subtitleBox.setText(text, color);
@@ -685,6 +685,8 @@ package components.videoPlayer
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
 			_bg.graphics.drawRect(0, 0, width, height);
 			_bg.graphics.endFill();
+			
+			_errorSprite.updateDisplayList(width,height);
 		}
 
 		/**

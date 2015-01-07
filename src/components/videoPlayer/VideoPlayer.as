@@ -146,6 +146,8 @@ package components.videoPlayer
 			_videoBarPanel.addChild(_sBar);
 			_videoBarPanel.addChild(_eTime);
 			_videoBarPanel.addChild(_audioSlider);
+			
+			_errorSprite=new ErrorSprite(null, width, height);
 
 			//Event Listeners
 			addEventListener(VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange, false, 0, true);
@@ -264,29 +266,28 @@ package components.videoPlayer
 		
 		protected function onStreamFailure(event:Event):void{
 			var evt:Object=Object(event);
-			_errorSprite=new ErrorSprite(evt.message, _lastWidth, _lastHeight);
+			_errorSprite.setLocaleAwareErrorMessage(evt.message);
 			_topLayer.removeChildren();
-			_topLayer.addChild(_errorSprite);
-			
+			_topLayer.addChild(_errorSprite);		
 			_busyIndicator.visible=false;
+			invalidateDisplayList();
 		}
 		
 		protected function onStreamStateChange(event:MediaStatusEvent):void{
+			_busyIndicator.visible=false;
 			if (event.state == AMediaManager.STREAM_FINISHED)
 			{
-				_busyIndicator.visible=false;
 				_video.clear();
 				_videoPlaying=false;
 			}
 			if (event.state == AMediaManager.STREAM_STARTED)
 			{
-				_busyIndicator.visible=false;
 				_videoPlaying=true;
 				_ppBtn.state=PlayButton.PAUSE_STATE;
 			}
 			
 			if(event.state == AMediaManager.STREAM_PAUSED){
-				_busyIndicator.visible=false;
+				
 				_ppBtn.state=PlayButton.PLAY_STATE;
 			}
 			
@@ -295,7 +296,7 @@ package components.videoPlayer
 			}
 			
 			if(event.state == AMediaManager.STREAM_SEEKING_START){
-				_busyIndicator.visible=true;
+				//
 			}
 			
 			//dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_STATE_CHANGED, event.state));
@@ -425,6 +426,8 @@ package components.videoPlayer
 			_videoBarPanel.height=20;
 			_videoBarPanel.y=_defaultMargin + _videoHeight;
 			_videoBarPanel.x=_defaultMargin;
+			
+			
 
 			_ppBtn.x=0;
 			_ppBtn.refresh();
@@ -496,6 +499,8 @@ package components.videoPlayer
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
 			_bg.graphics.drawRect(3, 3, width - 6, height - 6);
 			_bg.graphics.endFill();
+			
+			_errorSprite.updateDisplayList(width,height);
 		}
 
 		/**

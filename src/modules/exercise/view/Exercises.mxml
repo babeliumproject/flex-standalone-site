@@ -19,6 +19,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import avmplus.getQualifiedClassName;
 			
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
@@ -71,7 +72,7 @@
 			 * Exercise Related variables
 			 **/
 			[Bindable]
-			private var _currentExercise:ExerciseVO;
+			private var _currentExercise:Object;
 			[Bindable]
 			private var _exerciseTitle:String;
 			[Bindable]
@@ -81,7 +82,6 @@
 			[Bindable]
 			private var _characterNames:ArrayCollection=new ArrayCollection();
 			private var _roles:ArrayCollection=new ArrayCollection();
-			private var _exerciseName:String;
 			private var _mediaId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
@@ -105,6 +105,11 @@
 			 * Options menus
 			 **/
 			private var _evaluationRequest:EvaluationRequest;
+			
+			protected var _currentMediaData:Object;
+			protected var _primaryMediaData:Object;
+			protected var _modelMediaData:Object;
+			
 
 			/**
 			 * Video player related vaiables
@@ -173,11 +178,12 @@
 				//VP.stopVideo();
 				VP.state=VideoRecorder.PLAY_STATE;
 
-				var media:Object=new Object();
-				media.mediaUrl='http://babeliumlms/media/'+EXERCISE_FOLDER + '/' + _exerciseName+'.flv';
-				//media.netConnectionUrl=_streamSource;
-
-				VP.loadVideoByUrl(media);
+				//Load the primary media file
+				var params:Object=new Object();
+				params.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+				params.mediaUrl = _currentMediaData.mediaUrl || null;
+				
+				VP.loadVideoByUrl(params);
 
 				// Retrieving available locales for selected exercise's subtitles
 				var auxEx:ExerciseVO=new ExerciseVO();
@@ -326,34 +332,55 @@
 				_exerciseSelected=false;
 			}
 
-			/**
-			 * On select an exercise from list
-			 **/
 			private function set exerciseDataRetrieved(value:Boolean):void
 			{
-				// Retrieving selected exercise information
-				var tmp:ExerciseVO=DataModel.getInstance().watchExerciseData as ExerciseVO;
-				trace(ObjectUtil.toString(tmp));
-				_exerciseName=tmp.exercisecode;
-				_exerciseTitle=tmp.title;
-				_mediaId=tmp.media[0].id;
-				_currentExercise=tmp;
+				if(DataModel.getInstance().watchExerciseData){
+					_currentExercise=DataModel.getInstance().watchExerciseData;
+					
+					_exerciseTitle=_currentExercise.title;
+					
+					_primaryMediaData = null;
+					if(_currentExercise.hasOwnProperty('media')){
+						if(getQualifiedClassName(_currentExercise.media) == 'Array'){
+							for (var item:Object in _currentExercise.media){
+								if(item.level == 1 && !_primaryMediaData){
+									_primaryMediaData = item;
+									break;
+								}
+								if(item.level == 2 && !_modelMediaData){
+									_modelMediaData = item;
+									break;
+								}
+							}
+						} else if (getQualifiedClassName(_currentExercise.media) == 'Object'){
+							_primaryMediaData = _currentExercise.media;
+						}
+						
+					}
+					_currentMediaData = _primaryMediaData;
 
-
-				var data:Object=new Object();
-				//data.netConnectionUrl=DataModel.getInstance().streamingResourcesPath;
-				data.mediaUrl='http://babeliumlms/media/'+EXERCISE_FOLDER + '/' + _exerciseName+'.flv';
-
-				VP.loadVideoByUrl(data);
-
-				// Need to retrieve again exercise's information
-				_rolesReady=false;
-				_localesReady=false;
-				_cueManagerReady=false;
-				_exerciseSelected=true;
+					//Load the primary media file
+					var params:Object=new Object();
+					params.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+					params.mediaUrl = _currentMediaData.mediaUrl || null;
+					
+					VP.loadVideoByUrl(params);
+					
+					// Need to retrieve again exercise's information
+					_rolesReady=false;
+					_localesReady=false;
+					_cueManagerReady=false;
+					_exerciseSelected=true;
+					
+					
+					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
+					
+				} else {
+					
+				}
 				
 				
-				ratingShareReport.exerciseData=tmp;
+				
 			}
 
 			/**
@@ -412,8 +439,19 @@
 
 				// Set the videoplayer to playback both the exercise and the last response.
 
+				var items:Array = new Array();
+				
+				var leftitem:Object = new Object();
+				leftitem.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+				leftitem.mediaUrl = _currentMediaData.mediaUrl || null;
+				items.push(leftitem);
+				
+				var rightitem:Object = new Object();
+				rightitem.netConnectionUrl = _streamSource || null;
+				rightitem.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename || null;
+				items.push(rightitem);
+				
 				var media:Object=new Object();
-				var items:Array=[{'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource}, {'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}];
 				media.parallelMedia=items;
 
 				VP.loadVideoByUrl(media);
@@ -493,8 +531,19 @@
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
 
+				var items:Array = new Array();
+				
+				var leftitem:Object = new Object();
+				leftitem.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+				leftitem.mediaUrl = _currentMediaData.mediaUrl || null;
+				items.push(leftitem);
+				
+				var rightitem:Object = new Object();
+				rightitem.netConnectionUrl = _streamSource || null;
+				rightitem.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename || null;
+				items.push(rightitem);
+				
 				var media:Object=new Object();
-				var items:Array=[{'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource}, {'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource}];
 				media.parallelMedia=items;
 
 				VP.loadVideoByUrl(media);
@@ -517,9 +566,16 @@
 			// Record again
 			private function onRecordAgain(e:Event):void
 			{
+				var play:Object = new Object();
+				play.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+				play.mediaUrl = _currentMediaData.mediaUrl || null;
+				
+				var record:Object = new Object();
+				record.netConnectionUrl = _streamSource || null;
+				record.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename || null;
+				
 				var media:Object=new Object();
-				var play:Object={'mediaUrl': EXERCISE_FOLDER + '/' + _exerciseName, 'netConnectionUrl': _streamSource};
-				var record:Object={'mediaUrl': RESPONSE_FOLDER + '/' + _recordedFilename, 'netConnectionUrl': _streamSource};
+		
 				media.playbackMedia=play;
 				media.recordMedia=record;
 				

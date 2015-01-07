@@ -272,7 +272,7 @@ class Exercise {
 		$exdata = $this->getExerciseByCode($exercisecode);
 		if($exdata){
 			$status = 2;
-			$level = 1;
+			$level = array(1,2);
 			$media = $this->getExerciseMedia($exdata->id, $status, $level);
 			if($media)
 				$exdata->media = $media;
@@ -659,9 +659,37 @@ class Exercise {
 		$component = 'exercise';
 		
 		$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
-				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id 
-				WHERE m.component='%s' AND m.instanceid=%d AND m.level=%d AND mr.status=%d";
-		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $level, $status);
+				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+				WHERE m.component='%s' AND m.instanceid=%d";
+		
+		if(is_array($status)){
+			if(count($status)>1){
+				$sparam = implode(",",$status);
+				$sql.=" AND mr.status IN (%s) ";
+			} else {
+				$sparam = $status[0];
+				$sql.=" AND mr.status=%d ";
+			}	
+		} else {
+			$sparam=$status;
+			$sql.=" AND mr.status=%d ";
+		}
+		
+		if(is_array($level)){
+			if(count($level)>1){
+				$lparam = implode(",",$level);
+				$sql.=" AND m.level IN (%s) ";
+			} else {
+				$lparam = $level[0];
+				$sql.=" AND m.level=%d ";
+			}
+		} else {
+			$lparam = $level;
+			$sql.=" AND m.level=%d ";
+		}
+		
+		
+		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $sparam, $lparam);
 		return $results;
 	}
 
