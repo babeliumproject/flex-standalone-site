@@ -5,6 +5,8 @@
 
 package components.videoPlayer
 {
+	import avmplus.getQualifiedClassName;
+	
 	import components.videoPlayer.controls.*;
 	import components.videoPlayer.controls.babelia.*;
 	import components.videoPlayer.events.*;
@@ -119,11 +121,11 @@ package components.videoPlayer
 		private var _privUnlock:PrivacyRights;
 
 		private var _captionmgr:CaptionManager;
-		private var _captionsLoaded:Boolean;
+		private var _captionsLoaded:Boolean=false;
 		private var _markermgr:TimeMarkerManager;
 		
 		private var _timeMarkers:Object;
-		private var _pollTimeline:Boolean;
+		private var _pollTimeline:Boolean=false;
 		
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
@@ -131,7 +133,7 @@ package components.videoPlayer
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
 	
-		private var _displayCaptions:Boolean;
+		private var _displayCaptions:Boolean=false;
 
 		public static const SECONDSTREAM_READY_STATE:int=0;
 		public static const SECONDSTREAM_STARTED_STATE:int=1;
@@ -159,6 +161,8 @@ package components.videoPlayer
 		{
 			super("VideoRecorder"); // Required for setup skinable component
 
+			_captionmgr=new CaptionManager();
+			
 			_subtitleButton=new SubtitleButton();
 			_videoBarPanel.addChild(_subtitleButton);
 
@@ -264,7 +268,9 @@ package components.videoPlayer
 			if(_captionsLoaded) 
 				_subtitleButton.enabled=true;
 			
+			trace("setCaptions called");
 			if(_displayCaptions){
+				trace("setCaptions displaycaptions");
 				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints, false, 0, true);
 				pollTimeline=true;
 			}
@@ -279,10 +285,11 @@ package components.videoPlayer
 			_markermgr.parseTimeMarkers(markers, this);
 		}
 		
-		public function showCaption(... args):void{
-			if(args && args.length){
-				var text:String=String(args[0]) || '';
-				var color:uint=int(args[1]) || 0xFFFFFF;
+		public function showCaption(args:Object):void{
+			if(args && getQualifiedClassName(args) == 'Object'){
+				var text:String= args.hasOwnProperty('text') ? String(args.text) : '';
+				var color:int= args.hasOwnProperty('color') ? int(args.color) : 0xFFFFFF;
+				trace("Text: "+text+"/ Color: "+color);
 				_subtitleBox.setText(text, color);
 			}
 		}
@@ -295,12 +302,19 @@ package components.videoPlayer
 		{
 			if(_displayCaptions == value) return;
 			
-			if(_captionsLoaded){
-				_displayCaptions=value;
-				_subtitlePanel.visible=_displayCaptions;
-				_subtitleButton.selected=_displayCaptions;
+			_displayCaptions=value;
+			_subtitlePanel.visible=_displayCaptions;
+			_subtitleButton.selected=_displayCaptions;
+			
+			if(_displayCaptions){
+				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints, false, 0, true);
+				pollTimeline=true;
+			} else {
+				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints);
+				pollTimeline=false;
 			}
-			this.updateDisplayList(0, 0);
+			
+			invalidateDisplayList();
 		}
 
 		public function get displayCaptions():Boolean
@@ -333,8 +347,9 @@ package components.videoPlayer
 		
 		private function onTimerTick(e:TimerEvent):void
 		{
-			if (streamReady(_media))
+			if (streamReady(_media)){
 				this.dispatchEvent(new PollingEvent(PollingEvent.ENTER_FRAME, _media.currentTime));
+			}
 			//if (streamReady(_recNsc)){
 			//	//If the user didn't stop recording after _maxRecTime elapsed, force a stop
 			//	if ((_maxRecTime - _recNsc.netStream.time) <=0){

@@ -186,14 +186,14 @@ class Subtitle {
     public function getSubtitleLines($subtitle=null) {
         if(!$subtitle)
             return false;
-        $subtitleId = $subtitle->id;
-        $mediaId = $subtitle->mediaid;
+        $subtitleId = $subtitle->id | 0;
+        $mediaId = $subtitle->mediaid | 0;
 
         if(!$subtitleId){
             //Get the latest subtitle version for this exercise
             $sql = "SELECT * FROM subtitle WHERE id = (SELECT MAX(id) FROM subtitle WHERE fk_media_id=%d)";
 
-            $subtitle = $this->conn->_singleSelect($sql, $mediaid);
+            $subtitle = $this->conn->_singleSelect($sql, $mediaId);
         } else {
             $sql = "SELECT * FROM subtitle WHERE id=%d";
             $subtitle = $this->conn->_singleSelect($sql, $subtitleId);

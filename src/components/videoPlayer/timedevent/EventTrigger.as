@@ -1,5 +1,7 @@
 package components.videoPlayer.timedevent
 {
+	import mx.utils.ObjectUtil;
+
 	public class EventTrigger
 	{
 		private var actionValues:Array;

@@ -120,8 +120,6 @@ package components.videoPlayer
 		{
 			super(name);
 
-			_skinableComponents=new Dictionary();
-
 			_bg=new Sprite();
 			_bgVideo=new Sprite();
 			_topLayer=new Sprite();
@@ -279,6 +277,9 @@ package components.videoPlayer
 			{
 				_video.clear();
 				_videoPlaying=false;
+				_sBar.updateProgress(0,_duration);
+				_ppBtn.state=PlayButton.PLAY_STATE;
+				trace("["+event.streamid+"] Stream Finished");
 			}
 			if (event.state == AMediaManager.STREAM_STARTED)
 			{
@@ -356,8 +357,8 @@ package components.videoPlayer
 		{
 			if (flag)
 			{
-				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped);
-				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging);
+				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped, false, 0, true);
+				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging, false, 0, true);
 			}
 			else
 			{
@@ -368,10 +369,10 @@ package components.videoPlayer
 			_sBar.enableSeek(flag);
 		}
 
-		public function seekTo(time:Number):void
+		public function seekTo(seconds:Number):void
 		{
 			this.onScrubberDragging(null);
-			_sBar.updateProgress(time, _duration);
+			_sBar.updateProgress(seconds, _duration);
 			this.onScrubberDropped(null);
 		}
 
@@ -606,7 +607,7 @@ package components.videoPlayer
 		protected function onPPBtnChanged(e:Event):void
 		{
 			if(_mediaReady){
-				if(_media.streamState==AMediaManager.STREAM_PAUSED){
+				if(_media.streamState==AMediaManager.STREAM_PAUSED || !_videoPlaying){
 					playVideo();
 				}else{	
 					pauseVideo();

@@ -39,15 +39,16 @@ package modules.subtitle.command
 
 			var untouchedSubtitles:ArrayCollection=new ArrayCollection();
 
-			resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-			if (resultCollection.length > 0)
-			{
-				_subtitleRoles = new ArrayCollection();
-				for (var i:int=0; i<resultCollection.length; i++){
-					
-					generateRoleArray(resultCollection.getItemAt(i));
+			if(result){
+				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
+				if (resultCollection.length > 0)
+				{
+					_subtitleRoles = new ArrayCollection();
+					for (var i:int=0; i<resultCollection.length; i++){
+						generateRoleArray(resultCollection.getItemAt(i));
+					}
+					untouchedSubtitles=resultCollection;
 				}
-				untouchedSubtitles=resultCollection;
 			}
 			
 			_model.availableExerciseRoles=_subtitleRoles;

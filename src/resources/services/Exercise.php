@@ -76,6 +76,8 @@ class Exercise {
 			$this->mediaHelper = new VideoProcessor();
 			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
 
+			$this->netConnectionUrl = 'rtmp://'.$_SERVER['SERVER_NAME'].'/vod';
+			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -690,7 +692,36 @@ class Exercise {
 		
 		
 		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $sparam, $lparam);
+		if($results){
+			foreach($results as $r){
+				$r->netConnectionUrl = $this->netConnectionUrl;
+				$r->mediaUrl = 'exercises/'.$r->filename;
+			}
+		}
 		return $results;
+	}
+	
+	public function requestRecordingSlot(){
+		try{
+			$session = new SessionValidation(true);
+			
+			$prefix = "resp-";
+			$optime = time();
+			$mediadir = 'responses';
+			$mediafilename = $prefix.$optime.'.flv';
+			
+			$mediaUrl = $mediadir.'/'.$mediafilename;
+			
+			$data = new stdClass();
+			$data->mediaUrl = $mediaUrl;
+			$data->netConnectionUrl = $this->netConnectionUrl;
+			$data->maxDuration = 600;
+			
+			return $data;
+			
+		} catch (Exception $e){
+			throw new  Exception($e->getMessage());
+		}
 	}
 
 	/**

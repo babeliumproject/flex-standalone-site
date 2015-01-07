@@ -26,7 +26,7 @@ package commands.cuepointManager
 		{
 			if (cue)
 			{
-				VP.showCaption(cue.text,cue.textColor);
+				VP.showCaption({'text':cue.text,'color':cue.textColor});
 				var index:int = (dg as Object).getCueIndex(cue);
 				if(dg != null && dg.rowCount > index)
 					dg.selectedIndex = index;

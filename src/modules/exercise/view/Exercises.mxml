@@ -35,6 +35,7 @@
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
+			import modules.subtitle.event.SubtitleEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -109,7 +110,7 @@
 			protected var _currentMediaData:Object;
 			protected var _primaryMediaData:Object;
 			protected var _modelMediaData:Object;
-			
+			protected var _currentCaptions:Object;
 
 			/**
 			 * Video player related vaiables
@@ -334,22 +335,25 @@
 
 			private function set exerciseDataRetrieved(value:Boolean):void
 			{
+				var params:Object;
 				if(DataModel.getInstance().watchExerciseData){
 					_currentExercise=DataModel.getInstance().watchExerciseData;
 					
 					_exerciseTitle=_currentExercise.title;
-					
 					_primaryMediaData = null;
+					
 					if(_currentExercise.hasOwnProperty('media')){
 						if(getQualifiedClassName(_currentExercise.media) == 'Array'){
-							for (var item:Object in _currentExercise.media){
-								if(item.level == 1 && !_primaryMediaData){
+							var media:Array = _currentExercise.media;
+							for each (var item:Object in media){
+								var level:int = parseInt(item.level);
+								if(level == 1 && !_primaryMediaData){
 									_primaryMediaData = item;
-									break;
+									continue;
 								}
-								if(item.level == 2 && !_modelMediaData){
+								if(level == 2 && !_modelMediaData){
 									_modelMediaData = item;
-									break;
+									continue;
 								}
 							}
 						} else if (getQualifiedClassName(_currentExercise.media) == 'Object'){
@@ -360,7 +364,7 @@
 					_currentMediaData = _primaryMediaData;
 
 					//Load the primary media file
-					var params:Object=new Object();
+					params=new Object();
 					params.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
 					params.mediaUrl = _currentMediaData.mediaUrl || null;
 					
@@ -375,12 +379,20 @@
 					
 					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
 					
-				} else {
+					params=new Object();
+					params.mediaid = _currentMediaData.id;
+					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, params).dispatch();
 					
+				} else {
+					//TODO
 				}
-				
-				
-				
+			}
+			
+			public function set exerciseSubtitlesRetrieved(value:Boolean):void{
+				if(DataModel.getInstance().availableSubtitleLines){
+					_currentCaptions = DataModel.getInstance().availableSubtitleLines;
+					VP.setCaptions(_currentCaptions);
+				}
 			}
 
 			/**
@@ -692,6 +704,9 @@
 
 	<fx:Binding source="{DataModel.getInstance().watchExerciseDataRetrieved}"
 				destination="this.exerciseDataRetrieved"/>
+	<fx:Binding source="{DataModel.getInstance().availableSubtitleLinesRetrieved}"
+				destination="this.exerciseSubtitlesRetrieved"/>
+	
 	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
 				destination="this.onLocalesRetrieved"/>
 	<!--

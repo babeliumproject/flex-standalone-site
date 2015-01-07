@@ -1,5 +1,7 @@
 package components.videoPlayer.timedevent
 {
+	import mx.utils.ObjectUtil;
+
 	public class CaptionManager extends TimelineEventDispatcher
 	{
 			

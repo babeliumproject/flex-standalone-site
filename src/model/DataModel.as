@@ -170,6 +170,10 @@ package model
 		[Bindable]
 		public var watchExerciseDataRetrieved:Boolean;
 		public var watchExerciseData:Object;
+		[Bindable]
+		public var watchExerciseSubtitlesRetrieved:Boolean;
+		public var watchExerciseSubtitles:Object;
+		
 		
 		[Bindable]
 		public var currentExercise:ArrayCollection=new ArrayCollection(new Array(null, null));
@@ -293,7 +297,7 @@ package model
 		[Bindable]
 		public var availableSubtitleLinesRetrieved:Boolean=false;
 		[Bindable]
-		public var availableSubtitleLines:ArrayCollection=new ArrayCollection();
+		public var availableSubtitleLines:ArrayCollection;
 		[Bindable]
 		public var unmodifiedAvailableSubtitleLines:ArrayCollection=new ArrayCollection();
 

@@ -15,7 +15,7 @@ package components.videoPlayer.timedevent
 	public class TimelineEventDispatcher extends EventDispatcher
 	{
 		
-		public static const DELAY_THRESHOLD:int = 80;
+		public static const DELAY_THRESHOLD_MS:int = 100;
 		
 		protected var targetInstance:Object;
 		protected var eventList:Array;
@@ -32,10 +32,10 @@ package components.videoPlayer.timedevent
 
 		public function pollEventPoints(ev:PollingEvent):void
 		{
-			var curTime:Number=ev.time * 1000;
+			var curTime:Number=Math.round(ev.time * 1000);
 			for each (var cueobj:Object in eventList)
 			{
-				if (((curTime - DELAY_THRESHOLD) < cueobj.time && cueobj.time < (curTime + DELAY_THRESHOLD)) && cueobj.time != currentEventTime)
+				if (((curTime - DELAY_THRESHOLD_MS) < cueobj.time && cueobj.time < (curTime + DELAY_THRESHOLD_MS)) && cueobj.time != currentEventTime)
 				{
 					//Don't fire the same event more than once
 					currentEventTime=cueobj.time;
@@ -56,7 +56,7 @@ package components.videoPlayer.timedevent
 				seconds=(matches[1] * 3600) + (matches[2] * 60) + (matches[3] * 1) + (matches[4] * .001);
 				milliseconds = seconds * 1000;
 			} else {
-				milliseconds = parseFloat(time)*1000;
+				milliseconds = Math.floor(parseFloat(time)*1000);
 			}
 			return milliseconds;
 		}
