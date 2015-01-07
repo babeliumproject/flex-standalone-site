@@ -44,6 +44,31 @@ package components.videoPlayer.timedevent
 				}
 			}
 		}
+		
+		/**
+		 * Use with ordered Arrays only 
+		 * @param keys
+		 * @param target
+		 * @return 
+		 * 
+		 */		
+		public function binarySearch(keys:Array, target:String):int{
+			var high:int = keys.length;
+			var low:int = -1;
+			while (high - low > 1) {
+				//var probe:int = (low + high) / 2;
+				var probe:int = (low + high) >> 1;
+				if (keys[probe] > target)
+					high = probe;
+				else
+					low = probe;
+			}
+			
+			if (low == -1 || keys[low] !== target)
+				return -1;
+			else
+				return low;
+		}
 
 		public function timeToSeconds(time:String):Number
 		{
