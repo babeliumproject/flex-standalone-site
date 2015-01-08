@@ -271,7 +271,7 @@ package components.videoPlayer
 			trace("setCaptions called");
 			if(_displayCaptions){
 				trace("setCaptions displaycaptions");
-				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints, false, 0, true);
+				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
 				pollTimeline=true;
 			}
 		}
@@ -307,10 +307,10 @@ package components.videoPlayer
 			_subtitleButton.selected=_displayCaptions;
 			
 			if(_displayCaptions){
-				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints, false, 0, true);
+				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
 				pollTimeline=true;
 			} else {
-				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.pollEventPoints);
+				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer);
 				pollTimeline=false;
 			}
 			
@@ -1310,14 +1310,14 @@ package components.videoPlayer
 			
 			unattachUserDevices();
 			if(_markermgr){
-				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.pollEventPoints);
+				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
 			}
 			
 			if(timemarkers){
 				if(setTimeMarkers(timemarkers)){
 					_timeMarkers = timemarkers;
 					//Add a listener to poll for event points
-					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.pollEventPoints, false, 0, true);
+					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer, false, 0, true);
 				} else {
 					logger.debug("No event points found in given recdata");
 				}
@@ -1373,6 +1373,13 @@ package components.videoPlayer
 			
 			closeStreams();
 			closeConnection();
+		}
+		
+		override protected function onStreamStateChange(event:MediaStatusEvent):void{
+			if(event.state == AMediaManager.STREAM_SEEKING_START){
+				_captionmgr.reset();
+			}
+			super.onStreamStateChange(event);
 		}
 		
 		private function closeStreams():void

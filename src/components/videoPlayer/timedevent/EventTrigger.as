@@ -4,11 +4,15 @@ package components.videoPlayer.timedevent
 
 	public class EventTrigger
 	{
+		public var time:Number;
+		public var duration:Number;
 		private var actionValues:Array;
 		
-		public function EventTrigger(actionValues:Array)
+		public function EventTrigger(actionValues:Array, time:Number=NaN, duration:Number=NaN)
 		{
 			this.actionValues=actionValues;
+			this.time=time;
+			this.duration=duration;
 		}
 		
 		public function executeActions():void{

@@ -13,7 +13,6 @@ package components.videoPlayer.timedevent
 				return false;
 			this.targetInstance=targetInstance;
 			var time:Number;
-			eventList = new Array();
 			for (var timestamp:String in points)
 			{
 				time=timeToSeconds(timestamp);
@@ -32,9 +31,8 @@ package components.videoPlayer.timedevent
 						var funcrp:*=parseActionValue('response', rp);
 						if(funcrp != null) actval.push({func: (funcrp as Function), params: ex.value});
 					}
-					var event:EventTrigger=new EventTrigger(actval);
-					var cueobj:Object = {time: time, event: event};
-					eventList.push(cueobj);
+					var event:EventTrigger=new EventTrigger(actval,time);
+					addMarker(event);
 				}
 			}
 			return true;

@@ -17,7 +17,6 @@ package components.videoPlayer.timedevent
 			if (!captions || !playerInstance)
 				return false;
 			this.targetInstance=playerInstance;
-			eventList = new Array();
 			colorDictionary = new Array();
 			for each (var caption:Object in captions)
 			{	
@@ -37,10 +36,8 @@ package components.videoPlayer.timedevent
 					scpar.push({func: capclosure, params: capparam});
 				}
 				
-				var sevent:EventTrigger=new EventTrigger(scpar);
-				var smarker:Object = {time: showTime, event: sevent};
-	
-				eventList.push(smarker);
+				var sevent:EventTrigger=new EventTrigger(scpar, showTime);
+				addMarker(sevent);
 				
 				//Hide caption
 				var hideTime:Number = timeToSeconds(caption.hideTime);
@@ -49,11 +46,13 @@ package components.videoPlayer.timedevent
 				var hcpar:Array = new Array();
 				hcpar.push({func: hclosure, params: null});
 				
-				var hevent:EventTrigger=new EventTrigger(hcpar);
-				var hmarker:Object = {time: hideTime, event: hevent};
-	
-				eventList.push(hmarker);
+				var hevent:EventTrigger=new EventTrigger(hcpar, hideTime);
+				addMarker(hevent);
 			}
+			
+			trace(ObjectUtil.toString(temporalValueCollection));
+			trace(ObjectUtil.toString(temporalKeyCollection));
+			
 			return true;
 		}
 		
@@ -80,7 +79,6 @@ package components.videoPlayer.timedevent
 				return false;
 			this.targetInstance=targetInstance;
 			var time:Number;
-			eventList = new Array();
 			for (var timestamp:String in captions)
 			{
 				time=timeToSeconds(timestamp);
@@ -90,9 +88,8 @@ package components.videoPlayer.timedevent
 					var p:Object=captions[timestamp];
 					var closure:*=targetInstance[p['action']];
 					if(closure != null) actval.push({func: (closure as Function), params: p.value});
-					var event:EventTrigger=new EventTrigger(actval);
-					var cueobj:Object = {time: time, event: event};
-					eventList.push(cueobj);
+					var event:EventTrigger=new EventTrigger(actval, time);
+					addMarker(event);
 				}
 			}
 			return true;

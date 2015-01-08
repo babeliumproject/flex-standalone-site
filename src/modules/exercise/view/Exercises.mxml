@@ -19,7 +19,6 @@
 
 	<fx:Script>
 		<![CDATA[
-			import avmplus.getQualifiedClassName;
 			
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
