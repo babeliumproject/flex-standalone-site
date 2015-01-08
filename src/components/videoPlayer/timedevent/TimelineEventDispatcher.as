@@ -20,7 +20,7 @@ package components.videoPlayer.timedevent
 		protected var lastFiredTemporalMetadataIndex:int=-1;
 
 		protected static const CHECK_INTERVAL:Number=100; // time check interval in ms
-		protected static const TOLERANCE:Number=0.25; // time value tolerance in ms
+		protected static const TOLERANCE:Number=0.1; // 0.25 time value tolerance in ms
 
 		public static const NULL_PARAMETER:String = "Null parameter";
 		public static const INVALID_PARAMETER:String = "Invalid parameter";
@@ -35,7 +35,6 @@ package components.videoPlayer.timedevent
 		public function reset():void
 		{
 			lastFiredTemporalMetadataIndex = -1;
-
 		}
 		
 		public function get numMarkers():int
@@ -71,6 +70,11 @@ package components.videoPlayer.timedevent
 				throw new ArgumentError(INVALID_PARAMETER);
 			}
 			return removeValue("" + marker.time);
+		}
+		
+		public function removeAllMarkers():void{
+			temporalValueCollection = null;
+			temporalKeyCollection = null;
 		}
 		
 		
@@ -219,6 +223,7 @@ package components.videoPlayer.timedevent
 			var result:Boolean=false;
 			if ((temporalValueCollection[index].time >= (now - TOLERANCE)) && (temporalValueCollection[index].time <= (now + TOLERANCE)) && (index != lastFiredTemporalMetadataIndex))
 			{
+				trace("TemporalMetadata fired. metadatatime: "+temporalValueCollection[index].time+" currenttime: "+now);
 				lastFiredTemporalMetadataIndex=index;
 				dispatchTemporalEvents(index);
 				result=true;

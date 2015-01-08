@@ -26,6 +26,7 @@ package components.videoPlayer
 	
 	import model.DataModel;
 	
+	import modules.create.view.AddMedia;
 	import modules.exercise.event.ResponseEvent;
 	
 	import mx.collections.ArrayCollection;
@@ -121,6 +122,8 @@ package components.videoPlayer
 		private var _privUnlock:PrivacyRights;
 
 		private var _captionmgr:CaptionManager;
+		private var _captionText:String;
+		private var _captionColor:int;
 		private var _captionsLoaded:Boolean=false;
 		private var _markermgr:TimeMarkerManager;
 		
@@ -268,9 +271,7 @@ package components.videoPlayer
 			if(_captionsLoaded) 
 				_subtitleButton.enabled=true;
 			
-			trace("setCaptions called");
 			if(_displayCaptions){
-				trace("setCaptions displaycaptions");
 				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
 				pollTimeline=true;
 			}
@@ -286,16 +287,15 @@ package components.videoPlayer
 		}
 		
 		public function showCaption(args:Object):void{
-			if(args && getQualifiedClassName(args) == 'Object'){
-				var text:String= args.hasOwnProperty('text') ? String(args.text) : '';
-				var color:int= args.hasOwnProperty('color') ? int(args.color) : 0xFFFFFF;
-				trace("Text: "+text+"/ Color: "+color);
-				_subtitleBox.setText(text, color);
+			if(args){
+				_captionText=String(args.text);
+				_captionColor=int(args.color);
+				_subtitleBox.setText(_captionText, _captionColor);
 			}
 		}
 		
-		public function hideCaption(... args):void{
-			_subtitleBox.setText('',0x000000);
+		public function hideCaption(args:Object=null):void{
+			_subtitleBox.setText(null);
 		}
 
 		public function set displayCaptions(value:Boolean):void
@@ -1367,7 +1367,7 @@ package components.videoPlayer
 		
 		override public function resetComponent():void{
 			hideCaption();
-			
+			_captionmgr.removeAllMarkers();
 			state=VideoRecorder.PLAY_STATE;
 			arrows=false;
 			
@@ -1378,6 +1378,10 @@ package components.videoPlayer
 		override protected function onStreamStateChange(event:MediaStatusEvent):void{
 			if(event.state == AMediaManager.STREAM_SEEKING_START){
 				_captionmgr.reset();
+			}
+			if(event.state == AMediaManager.STREAM_FINISHED){
+				_captionmgr.reset();
+				hideCaption();
 			}
 			super.onStreamStateChange(event);
 		}

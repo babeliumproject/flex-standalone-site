@@ -92,10 +92,15 @@ package components.videoPlayer.controls.babelia
 		
 		public function setText(text:String,textColor:uint=0xffffff):void
 		{
-			_textFormat.color = textColor;
-			_textBox.text=text;
-			_textBox.setTextFormat(_textFormat);
-			_textBox.y = this.height - (_textBox.textHeight) - 6;
+			if(text){
+				_textBox.visible=true;
+				_textFormat.color = textColor;
+				_textBox.text=text;
+				_textBox.setTextFormat(_textFormat);
+				_textBox.y = this.height - (_textBox.textHeight) - 6;
+			} else {
+				_textBox.visible=false;
+			}
 		}
 	}
 }

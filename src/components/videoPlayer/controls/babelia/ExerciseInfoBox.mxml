@@ -169,7 +169,7 @@
 						linkTag.setStyle("fontSize", 11);
 						linkTag.setStyle("fontWeight", "normal");
 						linkTag.label=StringUtil.trim(tag);
-						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
+						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler, false, 0, true);
 						exerciseTagsBox.addElement(linkTag);
 					}
 				}
@@ -187,12 +187,12 @@
 			protected function tagClickHandler(event:MouseEvent):void
 			{
 				var term:String =(event.target as IconButton).label;
-				URLManager.getInstance().redirect('/exercise/search/?q='+term);
+				URLManager.getInstance().redirect('/exercises/search/?q='+term);
 			}
 			
 			protected function descriptorClickHandler(event:MouseEvent):void{
 				var term:String="\""+(event.target as IconButton).label+"\"";
-				URLManager.getInstance().redirect('/exercise/search/?q='+term);
+				URLManager.getInstance().redirect('/exercises/search/?q='+term);
 			}
 
 			/*
@@ -223,6 +223,14 @@
 				additionalInfoBox.includeInLayout=!additionalInfoBox.includeInLayout;
 				_lessAdtInfoStatus=!_lessAdtInfoStatus;
 			}
+			
+			protected function likeExerciseClickHandler(event:MouseEvent):void{
+				
+			}
+			
+			protected function dislikeExerciseClickHandler(event:MouseEvent):void{
+				
+			}
 		]]>
 	</fx:Script>
 
@@ -230,8 +238,18 @@
 			  width="100%">
 		<s:HGroup paddingTop="4"
 				  paddingLeft="0">
-			<s:Label id="likescount" text="Likes: 0"/>
-			<s:Label id="dislikescount" text="Dislikes: 0"/>
+			<s:Button id="likescount"
+					  styleName="btn-link"
+					  buttonMode="true"
+					  label="{_exercise.likes}"
+					  icon="/resources/images/like.png"
+					  click="likeExerciseClickHandler(event)"/>
+			<s:Button id="dislikescount"
+					  styleName="btn-link"
+					  buttonMode="true"
+					  label="{_exercise.dislikes}"
+					  icon="/resources/images/dislike.png"
+					  click="dislikeExerciseClickHandler(event)"/>
 		</s:HGroup>
 		<s:HGroup horizontalAlign="right"
 				  paddingBottom="0"
@@ -260,7 +278,7 @@
 				 fontSize="11"
 				 width="100%"/>
 		<s:VGroup id="descriptorContainer" minHeight="0"/>
-		<s:Label text="{resourceManager.getString('myResources','TAGS')}"
+		<s:Label text="{resourceManager.getString('myResources','KEYWORDS')}"
 				 fontWeight="bold"
 				 fontSize="11"/>
 		<s:TileGroup id="exerciseTagsBox"

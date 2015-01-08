@@ -93,11 +93,7 @@
 			 **/
 			[Bindable]
 			private var _rolesReady:Boolean;
-			[Bindable]
-			private var _localesReady:Boolean;
-			[Bindable]
-			private var _cueManagerReady:Boolean;
-
+			
 			private var _selectedRole:String;
 			private var _recordedFilename:String;
 
@@ -169,144 +165,32 @@
 				VP.stopVideo();
 			}
 
-			/**
-			 * Preparing exercise
-			 **/
-			private function prepareExercise():void
-			{
-				// Prepare new video in VideoPlayer
-				//VP.stopVideo();
-				VP.state=VideoRecorder.PLAY_STATE;
-
-				//Load the primary media file
-				var params:Object=new Object();
-				params.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
-				params.mediaUrl = _currentMediaData.mediaUrl || null;
-				
-				VP.loadVideoByUrl(params);
-
-				// Retrieving available locales for selected exercise's subtitles
-				var auxEx:ExerciseVO=new ExerciseVO();
-				auxEx.id=_currentExercise.media[0].id;
-				new ExerciseEvent(ExerciseEvent.GET_EXERCISE_LOCALES, auxEx).dispatch();
-			}
-
-			/**
-			 * On locales retrieved
-			 **/
-			private function set onLocalesRetrieved(value:Boolean):void
-			{
-				if (value)
-				{
-					_locales=DataModel.getInstance().availableExerciseLocales;
-
-					if (_locales == null)
-					{
-						//availableLocales.enabled=false;
-						_localesReady=false;
-					}
-					else
-					{
-						//availableLocales.enabled=true;
-						_localesReady=true;
-
-					}
-
-					DataModel.getInstance().availableExerciseLocalesRetrieved=false;
-				}
-			}
-
-			/**
-			 * On roles retrieved
-			 **/
-			/*
 			private function set onRolesRetrieved(value:Boolean):void
 			{
-				if (value)
+				_roles=null;
+				_characterNames=new ArrayCollection();
+				if (DataModel.getInstance().availableExerciseRoles)
 				{
-					_roles=DataModel.getInstance().availableExerciseRoles.getItemAt(DataModel.RECORDING_MODULE) as ArrayCollection;
-					_characterNames.removeAll();
-
-					if (_roles == null)
+					_roles=DataModel.getInstance().availableExerciseRoles;
+					for each (var role:ExerciseRoleVO in _roles)
 					{
-						availableRoles.enabled=false;
-						_rolesReady=false;
+						if (role.characterName != "NPC")
+							_characterNames.addItem(role.characterName);
 					}
-					else
-					{
-						availableRoles.enabled=true;
-						_rolesReady=true;
-
-						for each (var role:ExerciseRoleVO in _roles)
-						{
-							if (role.characterName != "NPC")
-								_characterNames.addItem(role.characterName);
-						}
-					}
-
-					DataModel.getInstance().availableExerciseRolesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
-			}
-			*/
-
-			private function prepareRoles(subtitleLines:ArrayCollection):void
-			{
-				_characterNames.removeAll();
-				_roles.removeAll();
-				if (subtitleLines.length <= 0)
+				var numVoices:int=_characterNames.length;
+				if (!numVoices)
 				{
-					availableRoles.enabled=false;
+					availableRoles.visible=false;
+					availableRoles.includeInLayout=false;
 					_rolesReady=false;
-				}
-				else
-				{
-					var tmpRoles:ArrayCollection=new ArrayCollection();
-					for each (var cueobj:CueObject in subtitleLines)
-					{
-						if (cueobj.role != "NPC" && !tmpRoles.contains(cueobj.role))
-						{
-							tmpRoles.addItem(cueobj.role);
-							_roles.addItem(new ExerciseRoleVO(cueobj.roleId, _mediaId, cueobj.role));
-						}
-					}
-
-					//var sort:Sort=new Sort();
-					//var sortfield:SortField=new SortField(null, false);
-					//sort.fields=[sortfield];
-					//sort.compareFunction=localeCompareFunction;
-					tmpRoles.source.sort(localeCompareFunction);
-					//tmpRoles.refresh();
-
-					_characterNames.addAll(tmpRoles);
-					_characterNames.refresh();
-					availableRoles.enabled=true;
+				} else {
 					_rolesReady=true;
+					if(numVoices>1) {
+						availableRoles.visible=true;
+						availableRoles.includeInLayout=true;
+					}
 				}
-			}
-
-			private function localeCompareFunction(item1:Object, item2:Object):int
-			{
-				//trace(ObjectUtil.toString(item1));
-				//trace(ObjectUtil.toString(item2));
-
-
-				//var sorter:SortingCollator=new SortingCollator();
-				sorter.setStyle('locale', resourceManager.localeChain[0]);
-				sorter.ignoreCase=true;
-				sorter.ignoreSymbols=false;
-
-				//trace(sorter.compare(item1.toString(),item2.toString()));
-
-				return sorter.compare(item1.toString(), item2.toString());
-				//return language1.localeCompare(language2);
-			}
-
-			/**
-			 * On locale combo box changed
-			 **/
-			private function onLocaleComboChanged(e:Event):void
-			{
-				
 			}
 
 			private function hideSelectedExercise():void
@@ -358,7 +242,6 @@
 						} else if (getQualifiedClassName(_currentExercise.media) == 'Object'){
 							_primaryMediaData = _currentExercise.media;
 						}
-						
 					}
 					_currentMediaData = _primaryMediaData;
 
@@ -371,8 +254,6 @@
 					
 					// Need to retrieve again exercise's information
 					_rolesReady=false;
-					_localesReady=false;
-					_cueManagerReady=false;
 					_exerciseSelected=true;
 					
 					
@@ -407,18 +288,32 @@
 				// Commands with selected role
 				_selectedRole=availableRoles.selectedItem.toString();
 
-				// Recording mode
-				if (micOnly.selected)
-					VP.state=VideoRecorder.RECORD_MIC_STATE;
-				else
-					VP.state=VideoRecorder.RECORD_BOTH_STATE;
-
-
+				prepareRecording();
+				
 				// Disable events and tabs
 				DataModel.getInstance().recordingExercise=true;
 
 				//Save statistical data
 				statisticRecAttempt();
+			}
+			
+			private function prepareRecording():void{
+				var play:Object = new Object();
+				play.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
+				play.mediaUrl = _currentMediaData.mediaUrl || null;
+				
+				var record:Object = new Object();
+				record.netConnectionUrl = _streamSource || null;
+				record.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename || null;
+				
+				var media:Object=new Object();
+				
+				media.playbackMedia=play;
+				media.recordMedia=record;
+				
+				var timemarkers:Object;
+				
+				VP.recordVideo(media, !micOnly.selected, timemarkers);
 			}
 
 			private function statisticRecAttempt():void
@@ -601,7 +496,6 @@
 			private function onAbortRecording(e:Event):void
 			{
 				recordingError();
-				prepareExercise();
 			}
 
 			// Save response
@@ -658,7 +552,7 @@
 			private function onVideoStartedPlaying(e:VideoPlayerEvent):void
 			{
 				_exerciseStartedPlaying=true;
-				if (DataModel.getInstance().isLoggedIn && _cueManagerReady && _rolesReady && _localesReady && _exerciseStartedPlaying)
+				if (DataModel.getInstance().isLoggedIn && _rolesReady && _exerciseStartedPlaying)
 				{
 					_exerciseStartedPlaying=false;
 					var subtitlesAreUsed:Boolean=VP.displayCaptions;
@@ -705,13 +599,8 @@
 				destination="this.exerciseDataRetrieved"/>
 	<fx:Binding source="{DataModel.getInstance().availableSubtitleLinesRetrieved}"
 				destination="this.exerciseSubtitlesRetrieved"/>
-	
-	<fx:Binding source="{DataModel.getInstance().availableExerciseLocalesRetrieved}"
-				destination="this.onLocalesRetrieved"/>
-	<!--
-	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved.getItemAt(DataModel.RECORDING_MODULE)}"
+	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved}"
 				destination="this.onRolesRetrieved"/>
-	-->
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
 
@@ -817,7 +706,7 @@
 									  styleName="recStartLinkButton"
 									  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
 									  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'START_RECORDING') }"
-									  enabled="{_rolesReady &amp;&amp; _localesReady &amp;&amp; _cueManagerReady}"
+									  enabled="{_rolesReady}"
 									  click="onStartRecordingClicked(event)"/>
 				</s:HGroup>
 			</s:BorderContainer>
