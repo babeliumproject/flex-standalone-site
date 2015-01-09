@@ -1,5 +1,7 @@
 package components.videoPlayer.controls
 {
+	import components.videoPlayer.events.VolumeEvent;
+	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -7,8 +9,6 @@ package components.videoPlayer.controls
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import components.videoPlayer.events.VolumeEvent;
-
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
 
@@ -63,9 +63,11 @@ package components.videoPlayer.controls
 		private var _doingMute:Boolean = false;
 		
 		
-		public function AudioSlider()
+		public function AudioSlider(initialVolume:Number)
 		{
-			super("AudioSlider"); // Required for setup skinable component
+			super("AudioSlider");
+			
+			_currentVolume=initialVolume;
 			
 			width = _defaultWidth;
 			height = _defaultHeight;

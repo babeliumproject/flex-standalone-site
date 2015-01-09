@@ -37,12 +37,12 @@ package modules.assessment.command
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				//Set the data in the application's model
-				dataModel.detailsOfAssessedResponseData = resultCollection;
+				dataModel.responseAssessmentData = resultCollection;
 			} else {
-				dataModel.detailsOfAssessedResponseData = new ArrayCollection();
+				dataModel.responseAssessmentData = new ArrayCollection();
 			}
 			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER)
-				dataModel.detailsOfResponseAssessedToUserRetrieved = !dataModel.detailsOfResponseAssessedToUserRetrieved;
+				dataModel.responseAssessmentDataRetrieved = !dataModel.responseAssessmentDataRetrieved;
 			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER)
 				dataModel.detailsOfResponseAssessedByUserRetrieved = !dataModel.detailsOfResponseAssessedByUserRetrieved;
 		}

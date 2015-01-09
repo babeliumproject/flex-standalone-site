@@ -1,8 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-</s:Group>
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:view="modules.assessment.view.*" 
+		 xmlns:videoPlayer="components.videoPlayer.*"
+		 paddingTop="16"
+		 paddingBottom="16"
+		 paddingLeft="16"
+		 paddingRight="16"
+		 implements="modules.IGroupInterface">
+	
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.core.FlexGlobals;
+			
+			import vo.EvaluationVO;
+			
+			protected var _exerciseId:int;
+			protected var _exerciseName:String;
+			[Bindable]
+			protected var _exerciseTitle:String;
+			protected var _responseId:int;
+			protected var _responseName:String;
+			protected var _responseSubtitleId:int;
+			protected var _responseCharacterName:String;
+			protected var _responseAddingDate:String;
+			protected var _responseUserName:String;
+			protected var _mergeStatus:int;
+			[Bindable]
+			protected var _evaluationSelected:Boolean;
+			
+			protected var _data:Object;
+			
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+			
+			public function resetGroup():void{
+				VP.resetComponent();
+			}
+			
+			public function updateVerticalScroll():void
+			{
+				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
+			}
+			
+			private function set submissionDataHandler(value:Boolean):void
+			{
+				_data = dataModel.submissionData;
+				
+				_exerciseId=_data.exerciseId;
+				_exerciseName=_data.exerciseName;
+				_exerciseTitle=_data.exerciseTitle;
+				
+				_responseId=_data.responseId;
+				_responseName=_data.responseFileIdentifier;
+				_responseSubtitleId=_data.responseSubtitleId;
+				_responseCharacterName=_data.responseCharacterName;
+				_responseAddingDate=_data.responseAddingDate;
+				_responseUserName=_data.responseUserName;
+				_mergeStatus=_data.mergeStatus;
+				// trace("[INFO] mergeStatus" + _mergeStatus);
+				
+				//Scroll up to see the video
+				callLater(updateVerticalScroll);
+				
+				//Retrieve the associated subtitles and prepare the videoplayer
+				prepareEvaluation();
+				_evaluationSelected=true;
+				
+				//Visualize the video player component
+				videoPlayerBox.includeInLayout=true;
+				videoPlayerBox.visible=true;
+				
+				//Prepare the component in which the user leaves the assessment
+				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
+				evaluationRatingBox.responseData(_responseId, _responseUserName, _responseName, _responseAddingDate, _responseUserName, _exerciseTitle);
+				evaluationRatingBox.includeInLayout=true;
+				evaluationRatingBox.visible=true;
+			}
+			
+			private function set assessmentSavedHandler(value:Boolean):void
+			{
+				//TODO Maybe redirect to  the profile or the pending assessment list
+			}
+			
+			protected function prepareEvaluation():void{
+				//Load the subtitles and prepare the video player
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Binding source="{dataModel.submissionDataRetrieved}"
+				destination="submissionDataHandler"/>
+	
+	<fx:Binding source="{dataModel.addAssessmentRetrieved}"
+				destination="assessmentSavedHandler"/>
+	
+	<s:VGroup id="videoPlayerBox"
+			  width="100%"
+			  horizontalAlign="center"
+			  includeInLayout="false"
+			  visible="false"
+			  paddingTop="20"
+			  paddingLeft="16"
+			  paddingRight="16">
+		<s:Label id="exerciseTitle"
+				 text="{_exerciseTitle}"
+				 width="100%"
+				 styleName="exerciseTitleLabel"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<videoPlayer:VideoRecorder id="VP"
+									   autoPlay="true"
+									   skinUrl="/resources/videoPlayer/skin/white.xml"
+									   seek="false"
+									   displayCaptions="true"
+									   autoScale="false"
+									   arrows="false"
+									   subtitlingControls="false"
+									   width="640"
+									   height="360"
+									   controlsEnabled="{_evaluationSelected}"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+	<view:EvaluationRatingBox id="evaluationRatingBox" width="100%"/>
+</s:VGroup>

@@ -37,7 +37,8 @@ package control
 			signup: 'modules/signup/SignupModule.swf',
 			subtitle: 'modules/subtitle/SubtitleModule.swf',
 			home: 'modules/home/HomeModule.swf',
-			error: 'modules/error/ErrorModule.swf'
+			error: 'modules/error/ErrorModule.swf',
+			assessments: 'modules/assessment/AssessmentModule.swf'
 		};
 
 		[Bindable] public var moduleName:String;
@@ -95,7 +96,7 @@ package control
 			
 			_isParsing=true;
 			
-			var modtmp:String='home';
+			var modtmp:String;
 			var actiontmp:String='index';
 			var paramtmp:String;
 			
@@ -122,7 +123,7 @@ package control
 						break;
 					}
 				}
-				if(!modtmp) redirect('/home');
+				if(!modtmp) redirect('/error');
 			}
 
 			if (numfragments > 2)

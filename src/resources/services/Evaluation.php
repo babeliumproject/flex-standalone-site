@@ -95,16 +95,12 @@ class Evaluation {
 		                        A.duration as responseDuration, 
 		                        F.username as responseUserName, 
 		                        B.id as exerciseId, 
-		                        B.name as exerciseName, 
-		                        B.duration as exerciseDuration, 
+		                        B.exercisecode as exerciseName, 
 		                        B.language as exerciseLanguage, 
-		                        B.thumbnail_uri as exerciseThumbnailUri, 
 		                        B.title as exerciseTitle, 
-		                        B.source as exerciseSource, 
-		                        AVG(EL.suggested_level) AS exerciseAvgDifficulty
+		                        B.difficulty exerciseAvgDifficulty
 				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
 				     INNER JOIN user AS F on A.fk_user_id = F.id
-				     LEFT OUTER JOIN exercise_level EL ON B.id=EL.fk_exercise_id 
 		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
 				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
 				AND NOT EXISTS (SELECT *
@@ -143,22 +139,18 @@ class Evaluation {
 		               A.thumbnail_uri as responseThumbnailUri, 
 		               A.duration as responseDuration,
 		               B.id as exerciseId, 
-		               B.name as exerciseName, 
-		               B.duration as exerciseDuration, 
+		               B.exercisecode as exerciseName, 
 		               B.language AS exerciseLanguage, 
-		               B.thumbnail_uri as exerciseThumbnailUri, 
 		               B.title AS exerciseTitle, 
-		               B.source as exerciseSource,
 		               AVG(C.score_overall) AS overallScoreAverage, 
 		               AVG(C.score_intonation) AS intonationScoreAverage, 
 		               AVG(score_fluency) AS fluencyScoreAverage, 
 		               AVG(score_rhythm) AS rhythmScoreAverage, 
 		               AVG(score_spontaneity) AS spontaneityScoreAverage,
-		               AVG(suggested_level) as exerciseAvgDifficulty, 
+		               B.difficulty as exerciseAvgDifficulty, 
 		               MAX(C.adding_date) AS addingDate
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
-					 LEFT OUTER JOIN exercise_level E ON B.id=E.fk_exercise_id
 				WHERE ( A.fk_user_id = '%d' ) 
 				GROUP BY A.id,B.id 
 				ORDER BY '%s'";
@@ -199,12 +191,9 @@ class Evaluation {
 		               			C.comment, 
 		               			C.adding_date as addingDate,
 		               			B.id as exerciseId, 
-		               			B.name as exerciseName, 
-		               			B.duration as exerciseDuration, 
+		               			B.exercisecode as exerciseName, 
 		               			B.language as exerciseLanguage, 
-		               			B.thumbnail_uri as exerciseThumbnailUri, 
 		               			B.title as exerciseTitle, 
-		               			B.source as exerciseSource, 
 		               			E.video_identifier as evaluationVideoFileIdentifier, 
 		               			E.thumbnail_uri as evaluationVideoThumbnailUri 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  

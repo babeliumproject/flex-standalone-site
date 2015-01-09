@@ -5,7 +5,7 @@
 		  width="100%"
 		  implements="modules.IModuleInterface" 
 		  preinitialize="preinitializeHandler(event)"
-		  creationComplete="creationCompleteHandler(event)">
+		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.assessment.view.*">
 	
 	<fx:Script>
 		<![CDATA[
@@ -21,7 +21,7 @@
 			
 			import spark.components.NavigatorContent;
 			
-			public var modulename:String = 'assessment';
+			public var modulename:String = 'assessments';
 			
 			[Bindable]
 			private var _urlmanager:URLManager=URLManager.getInstance();
@@ -108,10 +108,10 @@
 						actionFor(evt.parameters);
 						break;
 					case 'view':
-						actionView(evt.parameters);
+						actionReview(evt.parameters);
 						break;
 					case 'add':
-						actionAdd(evt.parameters);
+						actionAssess(evt.parameters);
 						break;
 					default:
 						actionIndex();
@@ -126,12 +126,12 @@
 			
 			public function actionBy(params:Object):void{
 				_viewstackIndex=BY;
-				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER).dispatch();
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER).dispatch();
 			}
 			
 			public function actionFor(params:Object):void{
 				_viewstackIndex=FOR;
-				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER).dispatch();
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER).dispatch();
 			}
 			
 			public function actionPending(params:Object):void{
@@ -139,13 +139,16 @@
 				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT).dispatch();
 			}
 			
-			public function actionView(params:Object):void{
+			public function actionReview(params:Object):void{
 				_viewstackIndex=VIEW;
-				
+				var _responseId:int = params.id;
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, null, _responseId).dispatch();
 			}
 			
-			public function actionAdd(params:Object):void{
+			public function actionAssess(params:Object):void{
 				_viewstackIndex=ADD;
+				var _responseId:int = params.id;
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSE_BY_ID, null, _responseId);
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void
@@ -189,6 +192,19 @@
 				  height="100%"
 				  creationPolicy="all">
 		<s:NavigatorContent id="pending">
+			<view:AssessmentPendingView id="assessmentPending" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="foruser">
+			<view:AssessmentForView id="assessmentFor" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="byuser">
+			<view:AssessmentByView id="assessmentBy" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="detail">
+			<view:AssessmentDetailView id="assessmentReview" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="assess">
+			<view:AssessmentAddView id="assessmentAssess" width="100%"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

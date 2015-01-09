@@ -248,14 +248,14 @@
 
 			private function set detailsOfAssessmentRetrievedHandler(value:Boolean):void
 			{
-				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
+				var doaDataprovider:ArrayCollection=dataModel.responseAssessmentData;
 				assessmentDetailList=doaDataprovider;
 				buildEvaluationDetailNavigation(0);
 			}
 			
 			private function set detailsOfAssessedByUserRetrievedHandler(flag:Boolean):void
 			{
-				var doaDataprovider:ArrayCollection=dataModel.detailsOfAssessedResponseData;
+				var doaDataprovider:ArrayCollection=dataModel.responseAssessmentData;
 				assessmentDetailList=doaDataprovider;
 				buildEvaluationDetailNavigation(1);
 			}
@@ -1028,7 +1028,7 @@
 				destination="assessedToCurrentUserRetrievedHandler"/>
 	<fx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
 				destination="assessedByCurrentUserRetrievedHandler"/>
-	<fx:Binding source="{dataModel.detailsOfResponseAssessedToUserRetrieved}"
+	<fx:Binding source="{dataModel.responseAssessmentDataRetrieved}"
 				destination="detailsOfAssessmentRetrievedHandler"/>
 	<fx:Binding source="{dataModel.detailsOfResponseAssessedByUserRetrieved}"
 				destination="detailsOfAssessedByUserRetrievedHandler"/>

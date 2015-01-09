@@ -46,18 +46,14 @@
 	<s:HGroup width="100%"
 			  verticalAlign="middle">
 
-		<mx:Image id="exerciseThumbnail"
-				  scaleContent="true"
-				  source="{getExerciseImageSource(data as EvaluationVO)}"
-				  autoLoad="true"
-				  width="120"
-				  height="90"/>
-		<mx:Image id="responseThumbnail"
-				  scaleContent="true"
-				  source="{getResponseImageSource(data as EvaluationVO)}"
-				  autoLoad="true"
-				  width="120"
-				  height="90"/>
+		<s:BitmapImage id="exerciseThumbnail"
+					   source="{data.exerciseThumbnailUri}"
+					   width="120"
+					   height="90"/>
+		<s:BitmapImage id="responseThumbnail"
+					   source="{data.responseThumbnailUri}"
+					   width="120"
+					   height="90"/>
 
 
 		<s:VGroup id="selectedRoleRatingAmountBox"
@@ -79,9 +75,8 @@
 				<s:Label text="{data.responseAddingDate}"/>
 			</s:HGroup>
 			<s:HGroup verticalAlign="middle">
-				<mx:Image id="roleIcon"
-						  source="@Embed('../../resources/images/roles.png')"
-						  toolTip="{resourceManager.getString('myResources','SELECTEDCHAR')}"/>
+				<s:BitmapImage id="roleIcon"
+							   source="/resources/images/roles.png"/>
 				<s:Label text="{data.responseCharacterName}"/>
 			</s:HGroup>
 		</s:VGroup>
@@ -150,32 +145,6 @@
 			public function getFlagSource(temp:EvaluationVO):String
 			{
 				return LocaleFlagResource.getFlagResource(temp.exerciseLanguage);
-			}
-
-			public function getExerciseImageSource(temp:EvaluationVO):String
-			{
-				var url:String='';
-				if (temp.exerciseSource == "Red5")
-					if(temp.exerciseThumbnailUri != 'nothumb.png')
-						url=DataModel.getInstance().thumbURL + "/" + temp.exerciseName + "/default.jpg";
-					else
-						url=DataModel.getInstance().thumbURL + '/nothumb.png';
-					else
-						url=temp.exerciseThumbnailUri;
-				return url;
-			}
-			
-			public function getResponseImageSource(temp:EvaluationVO):String
-			{
-				var url:String='';
-				if (temp.responseSource == "Red5")
-					if(temp.responseThumbnailUri != 'nothumb.png')
-						url=DataModel.getInstance().thumbURL + "/" + temp.responseFileIdentifier + "/default.jpg";
-					else
-						url=DataModel.getInstance().thumbURL + '/nothumb.png';
-					else
-						url=temp.responseThumbnailUri;
-				return url;
 			}
 		]]>
 	</fx:Script>

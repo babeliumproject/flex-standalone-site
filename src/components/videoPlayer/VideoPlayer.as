@@ -66,10 +66,8 @@ package components.videoPlayer
 		public static const BORDER_COLOR:String="borderColor";
 		public static const VIDEOBG_COLOR:String="videoBgColor";
 
-		/**
-		 * Variables
-		 *
-		 */
+		protected const DEFAULT_VOLUME:Number=70;
+		
 		protected var _video:Video;
 
 		private var _state:String=null;
@@ -89,11 +87,14 @@ package components.videoPlayer
 		
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
-		protected var _videoBarPanel:UIComponent;
+		protected var _playerControls:UIComponent;
 		protected var _sBar:ScrubberBar;
 		protected var _audioSlider:AudioSlider;
 		protected var _videoHeight:Number=200;
 		protected var _videoWidth:Number=320;
+		
+		protected var _videoDisplayWidth:Number;
+		protected var _videoDisplayHeight:Number;
 		
 		protected var _mediaPosterUrl:String;
 		protected var _topLayer:Sprite;
@@ -104,6 +105,8 @@ package components.videoPlayer
 		protected var _netConnectionUrl:String;
 		protected var _mediaReady:Boolean;
 		protected var _currentVolume:Number;
+		protected var _lastVolume:Number;
+		protected var _muted:Boolean=false;
 		protected var _forcePlay:Boolean;
 		protected var _videoPlaying:Boolean;
 		protected var _lastWidth:int;
@@ -119,6 +122,9 @@ package components.videoPlayer
 		public function VideoPlayer(name:String="VideoPlayer")
 		{
 			super(name);
+			
+			_currentVolume=DEFAULT_VOLUME;
+			_lastVolume=DEFAULT_VOLUME;
 
 			_bg=new Sprite();
 			_bgVideo=new Sprite();
@@ -131,19 +137,19 @@ package components.videoPlayer
 			_busyIndicator.height=48;
 			_busyIndicator.visible=false;
 
-			_videoBarPanel=new UIComponent();
+			_playerControls=new UIComponent();
 
 			_ppBtn=new PlayButton();
 			_stopBtn=new StopButton();
 			_sBar=new ScrubberBar();
 			_eTime=new ElapsedTime();
-			_audioSlider=new AudioSlider();
+			_audioSlider=new AudioSlider(_currentVolume);
 			
-			_videoBarPanel.addChild(_ppBtn);
-			_videoBarPanel.addChild(_stopBtn);
-			_videoBarPanel.addChild(_sBar);
-			_videoBarPanel.addChild(_eTime);
-			_videoBarPanel.addChild(_audioSlider);
+			_playerControls.addChild(_ppBtn);
+			_playerControls.addChild(_stopBtn);
+			_playerControls.addChild(_sBar);
+			_playerControls.addChild(_eTime);
+			_playerControls.addChild(_audioSlider);
 			
 			_errorSprite=new ErrorSprite(null, width, height);
 
@@ -158,7 +164,7 @@ package components.videoPlayer
 			addChild(_bg);
 			addChild(_bgVideo);
 			addChild(_video);
-			addChild(_videoBarPanel);
+			addChild(_playerControls);
 			addChild(_topLayer);
 			addChild(_busyIndicator);
 
@@ -409,6 +415,43 @@ package components.videoPlayer
 		{
 			return _duration;
 		}
+		
+		public function get mute():Boolean
+		{
+			return _muted;
+		}
+		
+		public function set mute(value:Boolean):void
+		{
+			_muted=value;
+			var newVolume:Number;
+			if (value)
+			{
+				//Store the volume that we had before muting to restore to that volume when unmuting
+				_lastVolume=_currentVolume;
+				newVolume=0;
+			}
+			else
+			{
+				newVolume=_lastVolume;
+			}
+			//Make sure we have a working NetStream object before setting its sound transform
+			if (_media) _media.volume=newVolume;
+		}
+		
+		public function getVolume():Number
+		{
+			return _currentVolume;
+		}
+		
+		public function setVolume(value:Number):void
+		{
+			if (!isNaN(value) && value >= 0 && value <= 100)
+			{
+				_currentVolume=value;
+				if(_media) _media.volume = value;
+			}
+		}
 
 		/** Overriden */
 
@@ -423,13 +466,11 @@ package components.videoPlayer
 			_bgVideo.graphics.drawRect(_defaultMargin, _defaultMargin, _videoWidth, _videoHeight);
 			_bgVideo.graphics.endFill();
 
-			_videoBarPanel.width=_videoWidth;
-			_videoBarPanel.height=20;
-			_videoBarPanel.y=_defaultMargin + _videoHeight;
-			_videoBarPanel.x=_defaultMargin;
+			_playerControls.width=_videoWidth;
+			_playerControls.height=20;
+			_playerControls.y=_defaultMargin + _videoHeight;
+			_playerControls.x=_defaultMargin;
 			
-			
-
 			_ppBtn.x=0;
 			_ppBtn.refresh();
 
@@ -453,6 +494,28 @@ package components.videoPlayer
 			_busyIndicator.setStyle('symbolColor',0xFFFFFF);
 
 			drawBG();
+		}
+		
+		public function set videoDisplayWidth(value:Number):void{
+			if(_videoDisplayWidth != value){
+				var nominalWidth:Number = _videoDisplayWidth;
+				width = nominalWidth;
+			}
+		}
+		
+		public function get videoDisplayWidth():Number{
+			return _videoDisplayWidth;
+		}
+		
+		public function set videoDisplayHeight(value:Number):void{
+			if(_videoDisplayHeight != value){
+				var nominalHeight:Number = _videoDisplayHeight + _playerControls.height;
+				height = nominalHeight;
+			}
+		}
+		
+		public function get videoDisplayHeight():Number{
+			return _videoDisplayHeight;
 		}
 
 		/**
@@ -490,7 +553,7 @@ package components.videoPlayer
 		 */
 		protected function drawBG():void
 		{
-			totalHeight=_defaultMargin * 2 + _videoHeight + _videoBarPanel.height;
+			totalHeight=_defaultMargin * 2 + _videoHeight + _playerControls.height;
 
 			_bg.graphics.clear();
 
@@ -670,10 +733,7 @@ package components.videoPlayer
 		 */
 		private function onVolumeChange(e:VolumeEvent):void
 		{
-			if (!_media)
-				return;
-
-			_media.volume=e.volumeAmount;
+			this.setVolume(e.volumeAmount);
 		}
 
 		/**

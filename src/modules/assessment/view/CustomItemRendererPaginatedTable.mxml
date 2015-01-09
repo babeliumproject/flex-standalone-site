@@ -50,7 +50,7 @@
 
 			public function set changeListener(changeFunction:Function):void
 			{
-				table.addEventListener(ListEvent.CHANGE, changeFunction);
+				table.addEventListener(ListEvent.CHANGE, changeFunction, false, 0, true);
 			}
 
 			public function createPagination():void

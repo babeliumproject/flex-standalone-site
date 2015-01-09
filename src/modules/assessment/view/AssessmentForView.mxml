@@ -1,8 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-</s:Group>
+		 xmlns:view="modules.assessment.view.*"
+		 paddingTop="16"
+		 paddingBottom="16"
+		 paddingLeft="16"
+		 paddingRight="16"
+		 implements="modules.IGroupInterface">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+			import mx.resources.ResourceManager;
+			
+			import vo.EvaluationVO;
+			
+			
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var assessedToCurrentUserList:ArrayCollection;
+			
+			public function resetGroup():void
+			{
+				assessedToCurrentUserList=null;
+			}
+			
+			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
+			{
+				assessedToCurrentUserList=dataModel.assessedToCurrentUserData;
+				
+				var length:int = assessedToCurrentUserList ? assessedToCurrentUserList.length : 0;
+				if(!assessedToCurrentUserList){
+					noresultLbl.includeInLayout=true;
+					noresultLbl.visible=true;
+					assessedToCurrentUserListAndPagination.visible=false;
+					assessedToCurrentUserListAndPagination.includeInLayout=false;
+				} else {
+					noresultLbl.includeInLayout=false;
+					noresultLbl.visible=false;
+					assessedToCurrentUserListAndPagination.visible=true;
+					assessedToCurrentUserListAndPagination.includeInLayout=true;
+				}
+				assessedToCurrentUserListAndPagination.dataProvider=assessedToCurrentUserList;
+			}
+			
+			private function assessedToCurrentUserChangeHandler(event:Event):void
+			{
+				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
+				reviewAssessment(selectedItem.responseId);
+			}
+			
+			private function reviewAssessment(responseid:int):void
+			{
+				URLManager.getInstance().redirect('/assessments/view/' + responseid);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
+				destination="assessedToCurrentUserRetrievedHandler"/>
+	
+	
+	<s:Label id="assessedToUserListTitleLabel"
+			 styleName="h2"
+			 text="{ResourceManager.getInstance().getString('myResources', 'RESPONSES_ASSESSED_TO_USER_LIST')}"/>
+	
+	<s:Label id="noresultLbl" 
+			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
+			 includeInLayout="false" 
+			 visible="false"/>
+	
+	<view:CustomItemRendererPaginatedTable id="assessedToCurrentUserListAndPagination"
+										   itemRenderer="{ListItemAssessedToCurrentUser}"
+										   width="100%"
+										   changeListener="{assessedToCurrentUserChangeHandler}"/>
+	
+</s:VGroup>

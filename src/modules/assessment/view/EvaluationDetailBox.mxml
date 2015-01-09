@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 					xmlns:s="library://ns.adobe.com/flex/spark"
 					xmlns:mx="library://ns.adobe.com/flex/mx"
 					xmlns:hulstkamp="com.hulstkamp.*"
-					width="100%">
+					width="100%"
+					styleName="lightBorderContainer">
 
 
 	<fx:Script>
@@ -39,7 +40,6 @@
 				if(_evaluationData.comment && _evaluationData.comment != '')
 					textComment.text=_evaluationData.comment;
 				videoCommentThumbnail.source=getImageSource(_evaluationData);
-				this.label=_evaluationData.userName;
 				if(!_evaluationData.userName || _evaluationData.userName == '')
 					_evaluationData.userName = resourceManager.getString('myResources', 'USER');
 				userEvaluationTitleLabel.text=StringUtil.substitute(resourceManager.getString('myResources', 'USER_EVALUATION'), _evaluationData.userName);
@@ -185,4 +185,4 @@
 					  visible="false"/>
 		</s:VGroup>
 	</s:HGroup>
-</s:NavigatorContent>
+</s:BorderContainer>

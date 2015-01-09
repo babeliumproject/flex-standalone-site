@@ -97,7 +97,6 @@ package components.videoPlayer
 
 		// Other constants
 		private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
-		private const DEFAULT_VOLUME:Number=40;
 		private const COUNTDOWN_TIMER_SECS:int=5;
 		
 		public static const TIMELINE_TIMER_DELAY:int=50;
@@ -107,7 +106,6 @@ package components.videoPlayer
 		private var _secondStreamSource:String;
 
 		private var _mic:Microphone;
-		private var _volumeTransform:SoundTransform=new SoundTransform();
 
 		private var _camera:Camera;
 		private var _camVideo:Video;
@@ -138,14 +136,6 @@ package components.videoPlayer
 	
 		private var _displayCaptions:Boolean=false;
 
-		public static const SECONDSTREAM_READY_STATE:int=0;
-		public static const SECONDSTREAM_STARTED_STATE:int=1;
-		public static const SECONDSTREAM_STOPPED_STATE:int=2;
-		public static const SECONDSTREAM_FINISHED_STATE:int=3;
-		public static const SECONDSTREAM_PAUSED_STATE:int=4;
-		public static const SECONDSTREAM_UNPAUSED_STATE:int=5;
-		public static const SECONDSTREAM_BUFFERING_STATE:int=6;
-
 		[Bindable]
 		public var secondStreamState:int;
 
@@ -167,7 +157,7 @@ package components.videoPlayer
 			_captionmgr=new CaptionManager();
 			
 			_subtitleButton=new SubtitleButton();
-			_videoBarPanel.addChild(_subtitleButton);
+			_playerControls.addChild(_subtitleButton);
 
 			_subtitlePanel=new UIComponent();
 
@@ -210,7 +200,7 @@ package components.videoPlayer
 			_subtitleStartEnd=new SubtitleStartEndButton();
 			_subtitleStartEnd.visible=false;
 			
-			_videoBarPanel.addChild(_subtitleStartEnd);
+			_playerControls.addChild(_subtitleStartEnd);
 
 			_micActivityBar=new MicActivityBar();
 			_micActivityBar.visible=false;
@@ -234,7 +224,7 @@ package components.videoPlayer
 			/**
 			 * Adds components to player
 			 */
-			removeChild(_videoBarPanel); // order
+			removeChild(_playerControls); // order
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
 			
@@ -242,7 +232,7 @@ package components.videoPlayer
 			addChild(_camVideo);
 
 			addChild(_subtitlePanel);
-			addChild(_videoBarPanel);
+			addChild(_playerControls);
 			addChild(_countdownTxt);
 
 			addChild(_overlayButton);
@@ -428,6 +418,20 @@ package components.videoPlayer
 			super.autoPlay=tf;
 			tf ? _overlayButton.visible=false : _overlayButton.visible=true;
 		}
+		
+		protected function getInternalState():int{
+			return _state;
+		}
+		
+		protected function setInternalState(state:int):void{
+			if(_state == state) return;
+			
+			_state=state;
+			
+			//Pause and hide the current media
+			switchPerspective();
+			//dispatchEvent(new VideoRecorderEvent(VideoRecorderEvent.RECORDER_STATE_CHANGED,_state));
+		}
 
 		/**
 		 * Video player's state
@@ -545,7 +549,7 @@ package components.videoPlayer
 			_micActivityBar.x=_defaultMargin;
 			_micActivityBar.refresh();
 
-			_arrowContainer.width=_videoBarPanel.width;
+			_arrowContainer.width=_playerControls.width;
 			_arrowContainer.height=50;
 			_arrowContainer.x=_defaultMargin;
 
@@ -574,7 +578,7 @@ package components.videoPlayer
 			_subtitleButton.refresh();
 
 			// Put subtitle box at top
-			_subtitlePanel.width=_videoBarPanel.width;
+			_subtitlePanel.width=_playerControls.width;
 			_subtitlePanel.height=_videoHeight*0.75;
 			_subtitlePanel.x=_defaultMargin;
 			/*
@@ -583,12 +587,12 @@ package components.videoPlayer
 			var y2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
 			var y3:Number=_micActivityBar.visible ? _micActivityBar.height: 0;
 
-			_videoBarPanel.y+=y3 + y2;
+			_playerControls.y+=y3 + y2;
 
-			_arrowContainer.y=_videoBarPanel.y - _arrowContainer.height;
+			_arrowContainer.y=_playerControls.y - _arrowContainer.height;
 			_subtitlePanel.y=_videoHeight - _subtitlePanel.height;
 
-			_micActivityBar.y=_videoBarPanel.y - y2 - _micActivityBar.height;
+			_micActivityBar.y=_playerControls.y - y2 - _micActivityBar.height;
 
 
 			_subtitleBox.y=0;
@@ -693,7 +697,7 @@ package components.videoPlayer
 			var h2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
 			var h4:Number=_micActivityBar.visible ? _micActivityBar.height : 0;
 
-			totalHeight=_videoHeight + h2 + h4 + _videoBarPanel.height;
+			totalHeight=_videoHeight + h2 + h4 + _playerControls.height;
 
 			_bg.graphics.clear();
 
@@ -1284,7 +1288,7 @@ package components.videoPlayer
 			if (streamReady(_media))
 			{
 				_secondns=new ARTMPManager("inNs");
-				_secondns.netStream.soundTransform=new SoundTransform(_audioSlider.getCurrentVolume());
+				_secondns.volume=_currentVolume;
 
 				_camVideo.clear();
 				_camVideo.attachNetStream(_secondns.netStream);

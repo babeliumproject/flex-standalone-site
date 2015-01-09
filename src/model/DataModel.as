@@ -306,6 +306,10 @@ package model
 		public var evaluationChartData:ArrayCollection;
 		[Bindable]
 		public var evaluationChartDataRetrieved:Boolean=false;
+		
+		[Bindable]
+		public var submissionDataRetrieved:Boolean;
+		public var submissionData:Object;
 
 		[Bindable]
 		public var waitingForAssessmentCount:uint;
@@ -329,12 +333,9 @@ package model
 		public var assessedByCurrentUserDataRetrieved:Boolean=false;
 
 		[Bindable]
-		public var detailsOfAssessedResponseData:ArrayCollection;
-		[Bindable]
-		public var detailsOfResponseAssessedToUserRetrieved:Boolean=false;
-		[Bindable]
-		public var detailsOfResponseAssessedByUserRetrieved:Boolean=false;
-
+		public var responseAssessmentDataRetrieved:Boolean=false;
+		public var responseAssessmentData:ArrayCollection;
+	
 		[Bindable]
 		public var addAssessmentRetrieved:Boolean=false;
 

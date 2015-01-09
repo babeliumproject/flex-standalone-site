@@ -1,69 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:view="modules.assessment.view.*"
-		 implements="modules.IGroupInterface">
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.assessment.view.*"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  implements="modules.IGroupInterface">
 
-	
+
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
 			import mx.resources.ResourceManager;
-			
+
 			import vo.EvaluationVO;
 
-			
+
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
-			
+
 			[Bindable]
 			private var waitingForAssessmentList:ArrayCollection;
-			
-			public function resetGroup():void{
+
+			public function resetGroup():void
+			{
 				waitingForAssessmentList=null;
 			}
-			
+
 			private function set waitingAssessmentRetrievedHandler(value:Boolean):void
 			{
 				waitingForAssessmentList=dataModel.waitingForAssessmentData;
+				var length:int = waitingForAssessmentList ? waitingForAssessmentList.length : 0;
+				if(!waitingForAssessmentList){
+					noresultLbl.includeInLayout=true;
+					noresultLbl.visible=true;
+					waitingAssessmentListAndPagination.visible=false;
+					waitingAssessmentListAndPagination.includeInLayout=false;
+				} else {
+					noresultLbl.includeInLayout=false;
+					noresultLbl.visible=false;
+					waitingAssessmentListAndPagination.visible=true;
+					waitingAssessmentListAndPagination.includeInLayout=true;
+				}
 				waitingAssessmentListAndPagination.dataProvider=waitingForAssessmentList;
 			}
-			
+
 			private function waitingAssessmentChangeHandler(event:Event):void
 			{
 				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
 				assessSubmission(selectedItem.responseId);
 			}
-			
-			private function assessSubmission(responseid:int):void{
-				URLManager.getInstance().redirect('/assessment/add/'+responseid);
+
+			private function assessSubmission(responseid:int):void
+			{
+				URLManager.getInstance().redirect('/assessment/add/' + responseid);
 			}
-			
 		]]>
 	</fx:Script>
-	
+
 	<fx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
 				destination="waitingAssessmentRetrievedHandler"/>
+
+
+	<s:Label id="assessmentPendingListTitleLabel"
+			 styleName="h2"
+			 text="{ResourceManager.getInstance().getString('myResources', 'ASSESSMENT_PENDING_RESPONSES_LIST')}"/>
+
+	<s:Label id="noresultLbl" 
+			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
+			 includeInLayout="false" 
+			 visible="false"/>
 	
-	<s:Label text="{ResourceManager.getInstance().getString('myResources','WAITING_FOR_ASSESSMENT')}"
-	<s:VGroup id="waitingAssessmentBox" width="100%" height="100%">
-		<s:Label id="assessmentPendingListTitleLabel" styleName="sectionTitleLabel" paddingTop="16" text="{ResourceManager.getInstance().getString('myResources', 'ASSESSMENT_PENDING_RESPONSES_LIST')}"/>
-		<s:Line>
-			<s:stroke>
-				<s:SolidColorStroke weight="3"
-									color="{assessmentPendingListTitleLabel.getStyle('color')}"/>
-			</s:stroke>
-		</s:Line>
-		<view:CustomItemRendererPaginatedTable id="waitingAssessmentListAndPagination"
-											   itemRenderer="{ListItemWaitingForAssessment}"
-											   width="100%"
-											   changeListener="{waitingAssessmentChangeHandler}"
-	</s:VGroup>
-	
-</s:Group>
+	<view:CustomItemRendererPaginatedTable id="waitingAssessmentListAndPagination"
+										   itemRenderer="{ListItemWaitingForAssessment}"
+										   width="100%"
+										   changeListener="{waitingAssessmentChangeHandler}"/>
+
+</s:VGroup>
