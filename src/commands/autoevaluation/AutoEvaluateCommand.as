@@ -4,7 +4,7 @@ package commands.autoevaluation {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.EvaluationEvent;
+	import modules.assessment.event.EvaluationEvent;
 	
 	import model.DataModel;
 	

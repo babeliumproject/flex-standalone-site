@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  horizontalAlign="center"
+		  width="100%"
+		  creationComplete="hgroup1_creationCompleteHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+
+			import mx.events.FlexEvent;
+
+			import model.DataModel;
+
+			[Bindable]
+			private var streamSource:String=DataModel.getInstance().streamingResourcesPath;
+
+			[Bindable]
+			private var videoSource:String='intro.flv';
+
+			protected function registerButton_clickHandler(event:MouseEvent):void
+			{
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
+				URLManager.getInstance().redirect('/register');
+			}
+
+			protected function hgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var param:Object=new Object();
+				param.netConnectionUrl=streamSource;
+				param.mediaUrl=videoSource;
+				staticUnsignedMotdVp.loadVideoByUrl(param);
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer cornerRadius="8">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="16"
+								paddingRight="16"
+								paddingTop="16"
+								paddingBottom="16"/>
+		</s:layout>
+		<videoPlayer:VideoRecorder id="staticUnsignedMotdVp"
+								   skinUrl="/resources/videoPlayer/skin/white.xml"
+								   autoPlay="false"
+								   seek="true"
+								   displayCaptions="false"
+								   autoScale="false"
+								   arrows="false"
+								   width="400"
+								   height="250"
+								   controlsEnabled="false"/>
+	</s:BorderContainer>
+
+	<s:VGroup>
+		<mx:Text htmlText="{resourceManager.getString('myResources','HOME_LOGGED_IN_STATIC_MESSAGE')}"
+				 width="500"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<s:Button id="registerButton"
+					  styleName="bigBlueButton"
+					  buttonMode="true"
+					  label="{resourceManager.getString('myResources','JOIN_US')}"
+					  click="registerButton_clickHandler(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+
+
+</s:HGroup>

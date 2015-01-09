@@ -2,15 +2,16 @@ package control {
 	import com.adobe.cairngorm.control.FrontController;
 	
 	import commands.autoevaluation.*;
-	import commands.home.*;
 	import commands.main.*;
 	import commands.userManagement.*;
 	import commands.videoSlice.*;
 	
 	import events.*;
 	
-	import flash.utils.getDefinitionByName;
-	
+	import modules.assessment.command.*;
+	import modules.assessment.event.*;
+	import modules.home.command.*;
+	import modules.home.event.*;
 	import modules.profile.command.*;
 	import modules.profile.event.*;
 	import modules.exercise.command.*;

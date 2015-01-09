@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  implements="modules.IGroupInterface">
+
+	<fx:Script>
+		<![CDATA[
+
+			import model.DataModel;
+
+			[Bindable]
+			private var _viewstackIndex:int;
+			
+			private static const VISITOR:int=0;
+			private static const USER:int=1;
+			
+			public function resetGroup():void{
+				homeVisitor.resetComponent();
+				homeUser.resetComponent();
+			}
+
+			private function set onUserAuthenticationStatus(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true){
+					_viewstackIndex=USER;
+				}else{
+					_viewstackIndex=VISITOR;
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<mx:ViewStack id="homeMainViewStack"
+				  width="100%"
+				  minWidth="1000"
+				  selectedIndex="{ _viewstackIndex }"
+				  resizeToContent="true">
+		<s:NavigatorContent id="homeUnsignedNavContent">
+			<view:HomeUnsigned id="homeVisitor"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="homeSignedInNavContent">
+			<view:HomeSignedIn id="homeUser"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="onUserAuthenticationStatus"/>
+
+</s:VGroup>

@@ -45,7 +45,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import events.EvaluationEvent;
+			import modules.assessment.event.EvaluationEvent;
 			import events.RecordingEndOptionEvent;
 			import modules.exercise.event.ResponseEvent;
 			//import events.ViewChangeEvent;

@@ -8,7 +8,7 @@
 
 	<fx:Script>
 		<![CDATA[
-			import events.EvaluationEvent;
+			import modules.assessment.event.EvaluationEvent;
 
 			import model.DataModel;
 

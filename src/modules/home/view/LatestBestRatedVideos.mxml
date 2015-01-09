@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  creationComplete="onComplete(event)">
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import modules.home.event.HomepageEvent;
+			//import events.ViewChangeEvent;
+			
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import vo.ExerciseVO;
+
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+			
+			private var creationComplete:Boolean;
+			
+			protected function onComplete(event:FlexEvent):void{
+				creationComplete=true;
+				new HomepageEvent(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN).dispatch();
+			}
+
+			protected function latestBestRatedDataGroup_changeHandler(event:IndexChangeEvent):void
+			{
+				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
+				if (obj.isSubtitled)
+				{
+					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
+					URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
+				}
+				else
+				{
+					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
+					URLManager.getInstance().redirect('/create/edit/'+obj.exercisecode+"?s=2");
+				}
+				List(event.target).selectedItem=null;
+				URLManager.getInstance().parseURL(null);
+			}
+
+			protected function set handleSignedInBestRatedVideos(value:Boolean):void
+			{
+				var sibrvDataprovider:ArrayCollection=DataModel.getInstance().signedInBestRatedVideos;
+				_dataProvider=sibrvDataprovider;
+			}
+
+			protected function set retrieveBestRatedVideos(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true)
+					new HomepageEvent(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN).dispatch();
+			}
+			
+			public function resetComponent():void{
+				_dataProvider=null;
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Binding source="{DataModel.getInstance().signedInBestRatedVideosRetrieved}"
+				destination="handleSignedInBestRatedVideos"/>
+	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
+				destination="retrieveBestRatedVideos"/>
+
+	<s:VGroup width="100%"
+			  paddingTop="16"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="16">
+		<s:Label id="latestBestRatedVideosTitle"
+				 text="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}"
+				 styleName="sectionTitleLabel"/>
+		<s:Line width="{latestBestRatedVideosTitle.width}">
+			<s:stroke>
+				<mx:SolidColorStroke weight="3"
+									 color="#268caa"/>
+			</s:stroke>
+		</s:Line>
+		
+		<s:List id="latestBestRatedDataGroup"
+				width="100%"
+				minHeight="0"
+				change="latestBestRatedDataGroup_changeHandler(event)"
+				borderVisible="false"
+				skinClass="skins.TransparentBgListSkin"
+				itemRenderer="modules.exercise.view.ExerciseItemRenderer"
+				dataProvider="{_dataProvider}">
+			<s:layout>
+				<s:TileLayout columnWidth="182"
+							  rowHeight="225"
+							  horizontalGap="20"
+							  verticalGap="20"
+							  requestedRowCount="2"/>
+			</s:layout>
+		</s:List>
+	</s:VGroup>
+
+</s:VGroup>
