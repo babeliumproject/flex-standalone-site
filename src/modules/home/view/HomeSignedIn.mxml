@@ -144,9 +144,19 @@
 			
 			public function resetComponent():void{
 				appDescriptionViewStack.removeAllElements();
-				latestExercises.resetComponent();
-				bestRatedExercises.resetComponent();
-				latestActivity.resetComponent();
+				
+				if (myHomeViewStack)
+				{
+					var views:Array=myHomeViewStack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as Object;
+							if (v) v.resetComponent();
+						}
+					}
+				}
 			}
 			
 		]]>

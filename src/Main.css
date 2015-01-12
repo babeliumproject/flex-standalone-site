@@ -516,7 +516,7 @@ s|TextInput{
 	tabGap: 4;
 }
 
-/*
+
 .sectionInfoBox{
 	backgroundImage: Embed('/resources/images/pattern.jpg');
 	backgroundImageFillMode: repeat;
@@ -524,7 +524,6 @@ s|TextInput{
 	borderWeight: 0;
 	borderVisible: false;
 }
-*/
 
 .roundedPurpleBox{
 	cornerRadius: 4;

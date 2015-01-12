@@ -60,7 +60,7 @@
 
 			private function assessSubmission(responseid:int):void
 			{
-				URLManager.getInstance().redirect('/assessment/add/' + responseid);
+				URLManager.getInstance().redirect('/assessments/add/' + responseid);
 			}
 		]]>
 	</fx:Script>
@@ -74,7 +74,7 @@
 			 text="{ResourceManager.getInstance().getString('myResources', 'ASSESSMENT_PENDING_RESPONSES_LIST')}"/>
 
 	<s:Label id="noresultLbl" 
-			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
+			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')}" 
 			 includeInLayout="false" 
 			 visible="false"/>
 	

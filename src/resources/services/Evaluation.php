@@ -262,6 +262,20 @@ class Evaluation {
 
 		return $searchResults;
 	}
+	
+	public function getSubmissionById($submissionid){
+		if(!$submissionid) return;
+		
+		$sql = "SELECT *
+				FROM response r INNER JOIN user u ON r.fk_user_id=u.id
+				WHERE r.id=%d";
+		
+		$result = $this->conn->_singleSelect($sql, $submissionid);
+		if($result){
+			//Get the title, description and info of the exercise and the filename of the media that belongs to it.
+			$exercise->getExerciseById($result->fk_exercise_id);
+		}
+	}
 
 	/**
 	 * Retrieves the assessment data of a particular response to build a chart

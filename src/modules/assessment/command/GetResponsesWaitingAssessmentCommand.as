@@ -34,11 +34,8 @@ package modules.assessment.command
 			if (result is Array && (result as Array).length > 0 )
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				//Set the data in the application's model
-				dataModel.waitingForAssessmentData = resultCollection;
-			} else {
-				dataModel.waitingForAssessmentData = new ArrayCollection();
 			}
+			dataModel.waitingForAssessmentData = resultCollection;
 			dataModel.waitingForAssessmentDataRetrieved = !dataModel.waitingForAssessmentDataRetrieved;
 		}
 		
