@@ -18,8 +18,18 @@
 			private static const USER:int=1;
 			
 			public function resetGroup():void{
-				homeVisitor.resetComponent();
-				homeUser.resetComponent();
+				if (homeMainViewStack)
+				{
+					var views:Array=homeMainViewStack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as Object;
+							if (v) v.resetComponent();
+						}
+					}
+				}
 			}
 
 			private function set onUserAuthenticationStatus(value:Boolean):void

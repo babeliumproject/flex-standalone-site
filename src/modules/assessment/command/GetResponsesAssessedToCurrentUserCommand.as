@@ -37,11 +37,8 @@ package modules.assessment.command
 			if (result is Array && (result as Array).length > 0 )
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				//Set the data in the application's model
-				dataModel.assessedToCurrentUserData = resultCollection;
-			} else {
-				dataModel.assessedToCurrentUserData = new ArrayCollection();
 			}
+			dataModel.assessedToCurrentUserData = resultCollection;
 			dataModel.assessedByCurrentUserCount = hitCount;
 			dataModel.assessedToCurrentUserDataRetrieved = !dataModel.assessedToCurrentUserDataRetrieved;
 		}

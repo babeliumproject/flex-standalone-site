@@ -32,6 +32,7 @@
 			
 			public function resetGroup():void{
 				VP.resetComponent();
+				assessmentsOfSubmission.removeAllElements();
 			}
 			
 			protected function set submissionAssessmentsHandler(value:Boolean):void{
@@ -41,8 +42,7 @@
 					noresultLbl.includeInLayout=false;
 					noresultLbl.visible=false;
 					assessmentsOfSubmission.includeInLayout=true;
-					assessmentsOfSubmission.visible=true;
-					
+					assessmentsOfSubmission.visible=true;		
 				} else {
 					noresultLbl.includeInLayout=true;
 					noresultLbl.visible=true;

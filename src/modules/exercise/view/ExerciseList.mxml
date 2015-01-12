@@ -17,6 +17,8 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
+			import mx.resources.ResourceManager;
+			
 			import control.URLManager;
 			
 			import flash.sampler.getInvocationCount;
@@ -30,7 +32,6 @@
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
-			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
 			
@@ -446,7 +447,7 @@
 
 		<s:VGroup id="filtersGroup">
 			<s:Panel id="langfilterCont"
-					 title="Filters"
+					 title="{ResourceManager.getInstance().getString('myResources','FILTERS')}"
 					 width="100%">
 				<s:layout>
 					<s:VerticalLayout paddingBottom="16"

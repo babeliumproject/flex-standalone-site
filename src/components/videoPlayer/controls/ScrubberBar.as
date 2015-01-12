@@ -1,13 +1,13 @@
 package components.videoPlayer.controls
 {
+	import components.videoPlayer.events.ScrubberBarEvent;
+	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	
-	import components.videoPlayer.events.ScrubberBarEvent;
 	
 	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
@@ -34,6 +34,16 @@ package components.videoPlayer.controls
 		public static const BG_GRADIENT_END_RATIO:String = "bgGradientEndRatio";
 		public static const BORDER_COLOR:String = "borderColor";
 		public static const BORDER_WEIGHT:String = "borderWeight";
+		
+		public static const MARKER_COLOR_UP:String="markerColorUp";
+		public static const MARKER_COLOR_HOVER:String="markerColorHover";
+		public static const MARKER_COLOR_ACTIVE:String="markerColorActive";
+		public static const MARKER_COLOR_UP_ALPHA:String="markerColorUpAlpa";
+		public static const MARKER_COLOR_HOVER_ALPHA:String="markerColorHoverAlpha";
+		public static const MARKER_COLOR_ACTIVE_ALPHA:String="markerColorActiveAlpha";
+		public static const MARKER_BORDER_COLOR:String="markerBorderColor";
+		public static const MARKER_BORDER_WEIGHT:String="markerBorderWeight";
+		
 			
 		/**
 		 * Variables
@@ -100,9 +110,9 @@ package components.videoPlayer.controls
 			
 			if ( flag )
 			{
-				_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag );
-				_bar.addEventListener( MouseEvent.CLICK, onBarClick );
-				_progBar.addEventListener( MouseEvent.CLICK, onBarClick );
+				_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberDrag, false, 0, true);
+				_bar.addEventListener( MouseEvent.CLICK, onBarClick, false, 0, true);
+				_progBar.addEventListener( MouseEvent.CLICK, onBarClick, false, 0, true);
 			}
 			else
 			{
@@ -133,8 +143,7 @@ package components.videoPlayer.controls
 			
 			this.graphics.clear();
 			
-			//createBox( _bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight );
-			createBox(_bar, 0x333333, _barWidth, _barHeight, false, 0, 0, 0.85);
+			createBox(_bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight, false, 0, 0, 0.85);
 			_bar.y = height/2 - _bar.height/2;
 			_bar.x = width/2 - _bar.width/2;
 			
@@ -142,8 +151,7 @@ package components.videoPlayer.controls
 			_loadedBar.x = _bar.x;
 			_loadedBar.y = _bar.y;
 			
-			//createBox( _progBar, getSkinColor(BAR_COLOR), 1, _barHeight );
-			createBox(_progBar, 0x000000, 1, _barHeight, false, 0, 0, 0.65);
+			createBox(_progBar, getSkinColor(BAR_COLOR), 1, _barHeight, false, 0, 0, 0.65);
 			_progBar.x = _bar.x;
 			_progBar.y = _bar.y;			
 			
@@ -280,7 +288,7 @@ package components.videoPlayer.controls
 		
 		private function doShowMark(startTime:Number, endTime:Number, duration:Number) : void
 		{
-			_marks.graphics.beginFill(0xa12829,0.85);
+			_marks.graphics.beginFill(getSkinColor(MARKER_COLOR_UP),getSkinColor(MARKER_COLOR_UP_ALPHA));
 			//_marks.graphics.drawRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, 2, _defaultHeight-4 );
 			_marks.graphics.drawRoundRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, (endTime-startTime)*(_bar.width)/duration, _defaultHeight-4,2);
 			_marks.graphics.endFill();

@@ -52,7 +52,6 @@
 						_initialUrl=data['initialurl'];
 					}
 				}
-				//_changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action", false, true);
 			}
 			
 			public function resetModule():void{
