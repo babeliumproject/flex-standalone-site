@@ -40,7 +40,7 @@
 			import vo.ExerciseVO;
 
 			public static const LANGUAGE_PRACTICE:int=0;
-			public static const OTHER:int=0;
+			public static const OTHER:int=5;
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
@@ -63,10 +63,10 @@
 			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
 
 			[Bindable]
-			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}]);
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'STUDIES'}, {'code': 3, 'label': 'WORK'}]);
 
 			[Bindable]
-			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'ADVERB_ADJECTIVE'}, {'code': 2, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 3, 'label': 'NEGATION'}, {'code': 4, 'label': 'NOUN'}, {'code': 5, 'label': 'PRONOUNS'}, {'code': 6, 'label': 'PRONUNCIATION'}, {'code': 7, 'label': 'VERB'}, {'code': 8, 'label': 'VOCABULARY'}]);
 
 			[Bindable]
 			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 'title', 'label': 'NAME'}, {'code': 'timecreated', 'label': 'DATE'}, {'code': 'viewcount', 'label': 'VIEW_COUNT'}, {'code': 'likes', 'label': 'RATING'}]);
@@ -281,7 +281,7 @@
 				
 				if (dispatchingComponent.id == commSituationFilterDD.id)
 				{
-					sitFilter=commSituationFilterDD && commSituationFilterDD.selectedItem != undefined ? commSituationFilterDD['code'] : 0;
+					sitFilter=commSituationFilterDD && commSituationFilterDD.selectedItem != undefined ? commSituationFilterDD.selectedItem['code'] : 0;
 				}
 
 				buildSearchQuery();
@@ -499,7 +499,7 @@
 										   skinClass="skins.BootstrapDropDownList"
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
-										   requireSelection="true"
+										   localeAwarePrompt="ALL_SITUATIONS"
 										   localeAwareDataProvider="{dpCommSituation}"
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"

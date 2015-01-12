@@ -517,7 +517,7 @@ class Exercise {
 	}
 	
 	private function filterByType($list, $type){
-		if(!$type || !$list) return;
+		if($type==-1 || !$list) return;
 		$result = array();
 		foreach($list as $l){
 			if($l->type == $type){

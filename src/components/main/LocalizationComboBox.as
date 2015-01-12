@@ -104,7 +104,8 @@ package components.main
 			LocaleUtils.arrangeLocaleChain(newLocale);
 			
 			updateLocaleComboBox();
-			DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
+			//DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
+					
 		}
 		
 		private function localeCompareFunction(item1:Object, item2:Object):int

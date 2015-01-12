@@ -333,6 +333,10 @@ package model
 		public var assessedByCurrentUserDataRetrieved:Boolean=false;
 
 		[Bindable]
+		public var userActivityDataRetrieved:Boolean;
+		public var userActivityData:Object;
+		
+		[Bindable]
 		public var responseAssessmentDataRetrieved:Boolean=false;
 		public var responseAssessmentData:ArrayCollection;
 	
