@@ -9,8 +9,8 @@
 			
 			import model.DataModel;
 			
-			import modules.profile.event.CourseEvent;
-			import modules.profile.model.CourseModel;
+			import modules.course.event.CourseEvent;
+			import modules.course.model.CourseModel;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
@@ -96,7 +96,7 @@
 				 includeInLayout="{userCourses &amp;&amp; userCourses.length}"
 				 visible="{userCourses &amp;&amp; userCourses.length}">
 		<mx:columns>
-			<mx:DataGridColumn itemRenderer="modules.profile.view.CourseItemRenderer"/>
+			<mx:DataGridColumn itemRenderer="modules.course.view.CourseItemRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
 	

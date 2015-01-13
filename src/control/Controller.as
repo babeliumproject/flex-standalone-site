@@ -10,10 +10,10 @@ package control {
 	
 	import modules.assessment.command.*;
 	import modules.assessment.event.*;
+	import modules.course.event.*;
+	import modules.course.command.*;
 	import modules.home.command.*;
 	import modules.home.event.*;
-	import modules.profile.command.*;
-	import modules.profile.event.*;
 	import modules.exercise.command.*;
 	import modules.exercise.event.*;
 	import modules.subtitle.command.*;

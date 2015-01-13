@@ -16,6 +16,8 @@ package components
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
 	
+	import org.as3commons.logging.util.clone;
+	
 	import spark.components.DropDownList;
 	import spark.globalization.SortingCollator;
 
@@ -63,6 +65,7 @@ package components
 			if (_sortItems)
 			{
 				previousSelectedItem=selectedItem;
+				trace("["+id+"] Previous selected item: "+ObjectUtil.toString(previousSelectedItem));
 				var sortedDataProvider:ArrayCollection=sortList(value);
 				super.dataProvider=sortedDataProvider;
 			}
@@ -70,6 +73,7 @@ package components
 			{
 				super.dataProvider=value;
 			}
+			invalidateProperties();
 		}
 
 		override protected function commitProperties():void
@@ -81,7 +85,7 @@ package components
 				sortItemsChanged=false;
 				updateDataProvider(dataProvider);
 			}
-			else
+			/*else
 			{
 				if (previousSelectedItem && previousSelectedItem.hasOwnProperty(indexField))
 				{
@@ -94,7 +98,7 @@ package components
 						selectedItem=item;
 					}
 				}
-			}
+			}*/
 
 			var widestItem:Object=getWidestItem();
 			if (widestItem)
@@ -154,11 +158,15 @@ package components
 			var sortedCollection:ArrayCollection;
 			if (value)
 			{
-				var cplist:Array = ArrayUtil.copyArray(value.toArray());
-				
-				sortedCollection=new ArrayCollection(cplist);
-				if (sortedCollection && sortedCollection.length)
-					sortedCollection.source.sort(this.localizedSorting);
+				var iarray:Array=value.toArray();
+				var oarray:Array=new Array();
+				var i:Object, copy:Object;
+				for each(i in iarray){
+					copy = ObjectUtil.clone(i);
+					oarray.push(copy);
+				}
+				oarray.sort(this.localizedSorting);
+				sortedCollection=new ArrayCollection(oarray);
 			}
 			return sortedCollection;
 		}

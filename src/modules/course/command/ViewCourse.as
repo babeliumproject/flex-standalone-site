@@ -1,13 +1,13 @@
-package modules.profile.command
+package modules.course.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
 	
-	import modules.profile.event.CourseEvent;
-	import modules.profile.model.CourseModel;
-	import modules.profile.service.CourseDelegate;
+	import modules.course.event.CourseEvent;
+	import modules.course.model.CourseModel;
+	import modules.course.service.CourseDelegate;
 	
 	import mx.messaging.messages.RemotingMessage;
 	import mx.rpc.IResponder;

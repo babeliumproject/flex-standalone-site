@@ -31,7 +31,7 @@ package control
 
 		private var _moduleUrls:Object = {
 			exercises: 'modules/exercise/ExerciseModule.swf',
-			myprofile: 'modules/myprofile/MyprofileModule.swf',
+			profile: 'modules/profile/ProfileModule.swf',
 			create: 'modules/create/CreateModule.swf',
 			login: 'modules/login/LoginModule.swf',
 			signup: 'modules/signup/SignupModule.swf',

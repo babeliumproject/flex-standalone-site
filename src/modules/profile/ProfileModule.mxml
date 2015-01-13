@@ -6,7 +6,7 @@
 		  width="100%"
 		  implements="modules.IModuleInterface"
 		  preinitialize="preinitializeHandler(event)"
-		  creationComplete="creationCompleteHandler(event)">
+		  creationComplete="creationCompleteHandler(event)" xmlns:view1="modules.course.view.*">
 	
 	<s:layout>
 		<s:VerticalLayout/>
@@ -23,10 +23,10 @@
 			import model.DataModel;
 			
 			import modules.IGroupInterface;
-			import modules.profile.command.GetCourses;
-			import modules.profile.command.ViewCourse;
-			import modules.profile.event.CourseEvent;
-			import modules.profile.model.CourseModel;
+			import modules.course.command.GetCourses;
+			import modules.course.command.ViewCourse;
+			import modules.course.event.CourseEvent;
+			import modules.course.model.CourseModel;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -179,7 +179,7 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="index">
-			<view:Index id="profileIndex" width="100%"/>
+			<view1:Index id="profileIndex" width="100%"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>
