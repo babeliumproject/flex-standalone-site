@@ -17,8 +17,6 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import mx.resources.ResourceManager;
-			
 			import control.URLManager;
 			
 			import flash.sampler.getInvocationCount;
@@ -32,6 +30,7 @@
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
 			
@@ -148,22 +147,23 @@
 				diffFilter=0;
 				typeFilter=-1;
 				langFilter=null;
+				sitFilter=0;
 			}
 
 			public function set setComponentData(value:Boolean):void
 			{
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
 				var length:int = _dataProvider ? _dataProvider.length : 0;
-				trace("Exercise list component data: "+length);
+				trace("Exercises that match the criteria: "+length);
 				if(!_dataProvider){
 					noresultLbl.includeInLayout=true;
 					noresultLbl.visible=true;
 				} else {
 					noresultLbl.includeInLayout=false;
 					noresultLbl.visible=false;	
-					createPagination();
-				}	
+				}
 				setActiveFilters();
+				createPagination();
 			}
 			
 			private function setActiveFilters():void{
@@ -185,6 +185,7 @@
 				
 				if(diffFilter){
 					var id:Object = findInCollection(ArrayCollection(difLevelFilterDD.dataProvider), findCode(diffFilter));
+					trace("DiffFilter obj: "+ObjectUtil.toString(id));
 					if(id) difLevelFilterDD.selectedItem=id;
 				}
 				

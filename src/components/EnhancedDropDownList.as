@@ -1,9 +1,11 @@
 package components
 {
+	import com.adobe.utils.ArrayUtil;
+	
 	import flash.events.Event;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.ICollectionView;
 	import mx.collections.IList;
@@ -13,7 +15,7 @@ package components
 	import mx.events.FlexEvent;
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
-
+	
 	import spark.components.DropDownList;
 	import spark.globalization.SortingCollator;
 
@@ -32,7 +34,7 @@ package components
 		private var localeAwareDataProviderChanged:Boolean;
 		private var indexFieldChanged:Boolean;
 
-		private var oldSelectedItem:Object;
+		private var previousSelectedItem:Object;
 
 		[Bindable("localeAwareDataProviderChanged")]
 		[Bindable("localeAwarePromptChanged")]
@@ -58,62 +60,53 @@ package components
 
 		override public function set dataProvider(value:IList):void
 		{
-			if (selectedIndex != -1)
+			if (_sortItems)
 			{
-				oldSelectedItem=this.selectedItem;
+				previousSelectedItem=selectedItem;
+				var sortedDataProvider:ArrayCollection=sortList(value);
+				super.dataProvider=sortedDataProvider;
 			}
-			super.dataProvider=value;
-			sortItemsChanged=true;
-			invalidateProperties();
+			else
+			{
+				super.dataProvider=value;
+			}
 		}
 
 		override protected function commitProperties():void
 		{
+			trace("[" + id + "] Commit properties");
+			super.commitProperties();
 			if (sortItemsChanged)
 			{
 				sortItemsChanged=false;
-				if (_sortItems)
+				updateDataProvider(dataProvider);
+			}
+			else
+			{
+				if (previousSelectedItem && previousSelectedItem.hasOwnProperty(indexField))
 				{
-					var internalIndex:int=-1;
-					//Save the internal sorting index before reordering the collection
-					if (selectedIndex != -1)
+					var internalSortingValue:*=previousSelectedItem[indexField];
+					var item:Object=findItemByField(dataProvider, indexField, internalSortingValue);
+					trace("[" + id + "] Previous selected item: " + ObjectUtil.toString(previousSelectedItem) + ".\n In the new collection is: " + ObjectUtil.toString(item));
+					previousSelectedItem=null;
+					if (item)
 					{
-						if (oldSelectedItem && oldSelectedItem.hasOwnProperty(this.indexField))
-						{
-							internalIndex=oldSelectedItem[this.indexField];
-						}
+						selectedItem=item;
 					}
-					if (dataProvider && dataProvider.length)
-					{
-						//Sort the collection
-						(dataProvider as ArrayCollection).source.sort(this.localizedSorting);
-						//Restore the internal sorting index
-						if(internalIndex !=-1){
-							var collection:ICollectionView=new ListCollectionView(IList(dataProvider));
-							var iterator:IViewCursor=collection.createCursor();
-							while (!iterator.afterLast)
-							{
-								var item:Object=iterator.current;
-								if (item && item.hasOwnProperty(this.indexField) && item[this.indexField] === internalIndex)
-								{
-									this.selectedItem=item;
-									break;
-								}
-								iterator.moveNext();
-							}
-						}
-					}	
 				}
 			}
-
-			super.commitProperties();
 
 			var widestItem:Object=getWidestItem();
 			if (widestItem)
 			{
 				this.typicalItem=widestItem;
-				//invalidateDisplayList();
+				invalidateDisplayList();
 			}
+		}
+
+		private function updateDataProvider(value:IList):void
+		{
+			dataProvider=value;
 		}
 
 		private function updateLocalizedList():void
@@ -154,6 +147,42 @@ package components
 				}
 			}
 			return localizedCollection;
+		}
+
+		protected function sortList(value:IList):ArrayCollection
+		{
+			var sortedCollection:ArrayCollection;
+			if (value)
+			{
+				var cplist:Array = ArrayUtil.copyArray(value.toArray());
+				
+				sortedCollection=new ArrayCollection(cplist);
+				if (sortedCollection && sortedCollection.length)
+					sortedCollection.source.sort(this.localizedSorting);
+			}
+			return sortedCollection;
+		}
+
+		protected function findItemByField(list:IList, fieldName:String, fieldValue:*):Object
+		{
+
+			if (!list || !list.length || !fieldName)
+				return null;
+
+			var foundItem:Object=null;
+			var collection:ICollectionView=new ListCollectionView(IList(list));
+			var iterator:IViewCursor=collection.createCursor();
+			while (!iterator.afterLast)
+			{
+				var item:Object=iterator.current;
+				if (item && item.hasOwnProperty(fieldName) && item[fieldName] == fieldValue)
+				{
+					foundItem=item;
+					break;
+				}
+				iterator.moveNext();
+			}
+			return foundItem;
 		}
 
 		protected function localizedSorting(item1:Object, item2:Object):int
@@ -256,7 +285,7 @@ package components
 		{
 			if (value == _indexField)
 				return;
-			
+
 			_indexField=value;
 			indexFieldChanged=true;
 			invalidateProperties();
