@@ -170,8 +170,9 @@
 					_roles=DataModel.getInstance().availableExerciseRoles;
 					for each (var role:ExerciseRoleVO in _roles)
 					{
-						if (role.characterName != "NPC")
-							_characterNames.addItem(role.characterName);
+						if (role.characterName != "NPC"){
+							_characterNames.addItem({'code':role.id, 'label':role.characterName});
+						}
 					}
 				}
 				var numVoices:int=_characterNames.length;
@@ -180,8 +181,10 @@
 				{
 					availableRoles.visible=false;
 					availableRoles.includeInLayout=false;
+					availableRoles.dataProvider=null;
 					_rolesReady=false;
 				} else {
+					availableRoles.dataProvider=_characterNames;
 					_rolesReady=true;
 					if(numVoices>1) {
 						availableRoles.visible=true;
@@ -281,24 +284,27 @@
 				panelSelectedExercise.visible=false;
 				recordingEndOptions.includeInLayout=true;
 				recordingEndOptions.visible=true;
-
-				// Commands with selected role
-				_selectedRole=availableRoles.selectedItem.toString();
-
-				prepareRecording();
 				
-				// Disable events and tabs
-				DataModel.getInstance().recordingExercise=true;
-
-				//Save statistical data
-				statisticRecAttempt();
+				if(availableRoles.selectedIndex >-1){
+					var item:Object=availableRoles.selectedItem;
+					_selectedRole=String(item.label);
+					requestRecordingSlot();
+				}
 			}
 			
 			protected function requestRecordingSlot():void{
 				new ExerciseEvent(ExerciseEvent.REQUEST_RECORDING_SLOT).dispatch();
 			}
 			
-			private function prepareRecording():void{				
+			private function prepareRecording():void{
+				
+				
+				// Disable events and tabs
+				DataModel.getInstance().recordingExercise=true;
+				
+				//Save statistical data
+				statisticRecAttempt();
+				
 				var media:Object=new Object();
 				media.playbackMedia=_currentMediaData;
 				media.recordMedia=_recordMediaData;
@@ -692,12 +698,10 @@
 						<s:HGroup verticalAlign="middle">
 							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
 							<components:EnhancedDropDownList id="availableRoles"
-										 dataProvider="{_characterNames}"
 										 skinClass="skins.BootstrapDropDownList"
 										 cornerRadius="3"
 										 borderColor="0xcccccc"
-										 sortItems="true"
-										 requireSelection="true"/>
+										 sortItems="true"/>
 						</s:HGroup>
 
 						<s:HGroup verticalAlign="middle">

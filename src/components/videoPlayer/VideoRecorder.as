@@ -39,6 +39,7 @@ package components.videoPlayer
 	import mx.events.EffectEvent;
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
+	import mx.utils.ObjectUtil;
 	
 	import skins.OverlayPlayButtonSkin;
 	
@@ -1416,11 +1417,14 @@ package components.videoPlayer
 				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
 			}
 			
+			//Set the timeline event markers
 			if(timemarkers){
 				if(setTimeMarkers(timemarkers)){
 					_timeMarkers = timemarkers;
 					//Add a listener to poll for event points
 					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer, false, 0, true);
+					//Enable the timeline timer
+					pollTimeline=true;
 				} else {
 					logger.debug("No event points found in given recdata");
 				}
@@ -1428,13 +1432,10 @@ package components.videoPlayer
 				_timeMarkers = null;
 			}
 			
-			//Enable the polling timer
-			//streamPositionTimer(true);
-			
 			//Set autoplay to false to avoid the exercise from playing once loading is done
 			_lastAutoplay=_autoPlay;
 			_autoPlay=false;
-			//_videoPlaying=false;
+			_videoPlaying=false;
 			
 			if(media){
 				//Load the exercise to play alongside the recording, if any
@@ -1445,14 +1446,40 @@ package components.videoPlayer
 				_mediaUrl=null;
 				endVideo();
 			}
-			
-			//Set the video player's state to recording
-			//var newState:int = useWebcam ? VideoRecorder.RECORD_MICANDCAM_STATE : VideoRecorder.RECORD_MIC_STATE;
-			//setInternalState(newState);
-			
-			//No, better change the state when the devices are available. Store useWebcam for later
 			_recordUseWebcam = useWebcam;
 			prepareDevices();
+		}
+		
+		protected function loadRecVideoByUrl(param:Object):void{
+			if(getQualifiedClassName(param) == 'Object')
+			{
+				if(param.playMedia){
+					var lmedia:Object=parseMediaObject(param.playMedia);
+					var rmedia:Object;
+					if(param.recordMedia){
+						rmedia=parseMediaObject(param.recordMedia);
+					}
+					if(lmedia && rmedia){
+						//
+						
+						_mediaNetConnectionUrl=lmedia.netConnectionUrl;
+						_mediaUrl=lmedia.mediaUrl;
+						_mediaPosterUrl=lmedia.mediaPosterUrl;
+						
+						_recordMediaNetConnectionUrl=rmedia.netConnectionUrl;
+						_recordMediaUrl=rmedia.mediaUrl;
+						
+						loadParallelVideo();
+						
+					} else if(lmedia){
+						setInternalState(PLAY_STATE);
+						super.loadVideoByUrl(lmedia);
+					}
+				} else {
+					setInternalState(PLAY_STATE);
+					super.loadVideoByUrl(param);
+				}
+			}
 		}
 		
 		override public function resetComponent():void{
@@ -1463,6 +1490,33 @@ package components.videoPlayer
 			
 			closeStreams();
 			closeConnection();
+		}
+		
+		override protected function onStreamSuccess(event:Event):void{
+			var mobj:Object = event.currentTarget;
+			
+			//Deep equality of Object checks if both objects have the same memref
+			if(mobj === _media){
+				_mediaReady=true;
+			}
+			if(mobj === _parallelMedia){
+				_parallelMediaReady=true;
+			}
+			if(mobj === _recordMedia){
+				_recordMediaReady=true;
+			}
+			
+			//State belongs to the recording state group
+			if(_state & RECORD_FLAG) 
+			{
+				//Determine by status if there's playback media
+				prepareDevices();
+			} 
+			else 
+			{
+				
+			}
+			super.onStreamSuccess(event);
 		}
 		
 		override protected function onStreamStateChange(event:MediaStatusEvent):void{

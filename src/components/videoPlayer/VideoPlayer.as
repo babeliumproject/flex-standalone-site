@@ -210,7 +210,7 @@ package components.videoPlayer
 				return null;
 			}
 			
-			mediaObj.netConnectionurl=netConnectionUrl;
+			mediaObj.netConnectionUrl=netConnectionUrl;
 			mediaObj.mediaUrl=mediaUrl;
 			mediaObj.mediaPosterUrl=mediaPosterUrl;
 			

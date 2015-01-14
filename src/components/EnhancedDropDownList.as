@@ -24,6 +24,8 @@ package components
 		private var _sorter:SortingCollator=new SortingCollator();
 		private var _sortItems:Boolean;
 		private var sortItemsChanged:Boolean;
+		
+		private var dataProviderSortingChanged:Boolean;
 
 		private var _localeAwareDataProvider:IList;
 		private var _localeAwarePrompt:String;
@@ -83,8 +85,9 @@ package components
 				sortItemsChanged=false;
 				updateDataProvider(dataProvider);
 			}
-			/*else
+			if(dataProviderSortingChanged)
 			{
+				dataProviderSortingChanged=false;
 				if (previousSelectedItem && previousSelectedItem.hasOwnProperty(indexField))
 				{
 					var internalSortingValue:*=previousSelectedItem[indexField];
@@ -96,7 +99,7 @@ package components
 						selectedItem=item;
 					}
 				}
-			}*/
+			}
 
 			var widestItem:Object=getWidestItem();
 			if (widestItem)
@@ -148,23 +151,41 @@ package components
 					iterator.moveNext();
 				}
 			}
+			dataProviderSortingChanged=true;
 			return localizedCollection;
 		}
 
 		protected function sortList(value:IList):ArrayCollection
 		{
 			var sortedCollection:ArrayCollection;
+			var input:Array,output:Array;
+			var i:Object,copy:Object;
 			if (value)
 			{
-				var iarray:Array=value.toArray();
-				var oarray:Array=new Array();
-				var i:Object, copy:Object;
-				for each(i in iarray){
+				input=value.toArray();
+				output=new Array();
+				
+				for each(i in input){
 					copy = ObjectUtil.clone(i);
-					oarray.push(copy);
+					output.push(copy);
 				}
-				oarray.sort(this.localizedSorting);
-				sortedCollection=new ArrayCollection(oarray);
+				output.sort(this.localizedSorting);
+				trace(ObjectUtil.toString(input));
+				trace(ObjectUtil.toString(output));
+				sortedCollection=new ArrayCollection(output);
+			}
+			return sortedCollection;
+		}
+		
+		protected function sortListIdxField(value:IList):ArrayCollection{
+			var sortedCollection:ArrayCollection;
+			var input:Array, output:Array;
+			if(value){
+				input=value.toArray();
+				trace(ObjectUtil.toString(input));
+				output=input.sort(this.localizedSorting,Array.RETURNINDEXEDARRAY);
+				trace(ObjectUtil.toString(output));
+				sortedCollection=new ArrayCollection(output);
 			}
 			return sortedCollection;
 		}

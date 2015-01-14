@@ -49,10 +49,6 @@ package components.videoPlayer.timedevent
 				var hevent:EventTrigger=new EventTrigger(hcpar, hideTime);
 				addMarker(hevent);
 			}
-			
-			trace(ObjectUtil.toString(temporalValueCollection));
-			trace(ObjectUtil.toString(temporalKeyCollection));
-			
 			return true;
 		}
 		

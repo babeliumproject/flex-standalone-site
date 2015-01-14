@@ -10,12 +10,12 @@ package control {
 	
 	import modules.assessment.command.*;
 	import modules.assessment.event.*;
-	import modules.course.event.*;
 	import modules.course.command.*;
-	import modules.home.command.*;
-	import modules.home.event.*;
+	import modules.course.event.*;
 	import modules.exercise.command.*;
 	import modules.exercise.event.*;
+	import modules.home.command.*;
+	import modules.home.event.*;
 	import modules.subtitle.command.*;
 	import modules.subtitle.event.*;
 
@@ -88,6 +88,7 @@ package control {
 			addCommand(ExerciseEvent.REPORT_EXERCISE, ReportInappropriateExerciseCommand);
 			//addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
 			addCommand(ExerciseEvent.USER_REPORTED_EXERCISE, UserReportedExerciseCommand);
+			addCommand(ExerciseEvent.REQUEST_RECORDING_SLOT, RequestRecordingSlot);
 			
 			//Evaluation management commands
 			addCommand(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT, GetResponsesWaitingAssessmentCommand);
