@@ -101,5 +101,11 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		public function requestRecordingSlot():void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.requestRecordingSlot();
+			pendingCall.addResponder(responder);
+		}
+		
 	}
 }

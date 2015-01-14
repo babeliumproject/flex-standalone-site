@@ -102,7 +102,7 @@ package components.videoPlayer
 		protected var _errorSprite:ErrorSprite;
 		protected var _media:AMediaManager;
 		protected var _mediaUrl:String;
-		protected var _netConnectionUrl:String;
+		protected var _mediaNetConnectionUrl:String;
 		protected var _mediaReady:Boolean;
 		protected var _currentVolume:Number;
 		protected var _lastVolume:Number;
@@ -180,18 +180,24 @@ package components.videoPlayer
 		}
 		
 		public function loadVideoByUrl(param:Object):void{
-			parseLoadVideoByUrl(param);
-			loadVideo();
+			var parsedMedia:Object = parseMediaObject(param);
+			if(parsedMedia){
+				_mediaNetConnectionUrl=parsedMedia.netConnectionUrl;
+				_mediaUrl=parsedMedia.mediaUrl;
+				_mediaPosterUrl=parsedMedia.mediaPosterUrl;
+				loadVideo();
+			}
 		}
 		
-		protected function parseLoadVideoByUrl(param:Object):void{
+		protected function parseMediaObject(param:Object):Object{
+			var mediaObj:Object = new Object();
 			var netConnectionUrl:String;
 			var mediaUrl:String;
 			var mediaPosterUrl:String;
 			if(getQualifiedClassName(param) == 'Object')
 			{
 				if(!param.mediaUrl){
-					return;
+					return null;
 				}
 				mediaUrl=param.mediaUrl;
 				mediaPosterUrl= param.mediaPosterUrl || null;
@@ -201,17 +207,19 @@ package components.videoPlayer
 			{
 				mediaUrl=String(param) || null;
 			} else {
-				return;
+				return null;
 			}
 			
-			_mediaUrl=mediaUrl;
-			_mediaPosterUrl=mediaPosterUrl;
-			_netConnectionUrl=netConnectionUrl;
+			mediaObj.netConnectionurl=netConnectionUrl;
+			mediaObj.mediaUrl=mediaUrl;
+			mediaObj.mediaPosterUrl=mediaPosterUrl;
+			
+			return mediaObj;
 		}
 		
 		protected function loadVideo():void{
 			_mediaReady=false;
-			logger.info("Load video: {0}",[_netConnectionUrl+'/'+_mediaUrl]); 
+			logger.info("Load video: {0}",[_mediaNetConnectionUrl+'/'+_mediaUrl]); 
 			if (_mediaUrl != '')
 			{
 				
@@ -231,11 +239,11 @@ package components.videoPlayer
 				}
 				
 				_media=null;
-				if(_netConnectionUrl){
+				if(_mediaNetConnectionUrl){
 					_media=new ARTMPManager("playbackStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
-					_media.setup(_netConnectionUrl, _mediaUrl);
+					_media.setup(_mediaNetConnectionUrl, _mediaUrl);
 				} else {
 					_media=new AVideoManager("playbackStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
@@ -698,7 +706,7 @@ package components.videoPlayer
 			_sBar.updateProgress(_currentTime, _duration);
 
 			// if not streaming show loading progress
-			if (!_netConnectionUrl)
+			if (!_mediaNetConnectionUrl)
 				_sBar.updateLoaded(_media.bytesLoaded / _media.bytesTotal);
 
 			_eTime.updateElapsedTime(_currentTime, _duration);

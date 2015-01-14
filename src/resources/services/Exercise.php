@@ -717,6 +717,8 @@ class Exercise {
 			$data->netConnectionUrl = $this->netConnectionUrl;
 			$data->maxDuration = 600;
 			
+			$_SESSION['recmedia'] = $data;
+			
 			return $data;
 			
 		} catch (Exception $e){

@@ -29,14 +29,14 @@
 		]]>
 	</fx:Script>
 	
-	<fx:Binding source="{dataModel.userActivityDataRetrived}"
-				destination="userActivityRetrived"/>
+	<fx:Binding source="{dataModel.userActivityDataRetrieved}"
+				destination="userActivityRetrieved"/>
 	
-	<s:BorderContainer>
+	<s:BorderContainer styleName="lightBorderContainer" width="640">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 		</s:layout>
-		<s:Label id="summarylbl" text="{ResourceManager.getInstance().getString('myResources','SUMMARY')}"/>
+		<s:Label id="summarylbl" text="{ResourceManager.getInstance().getString('myResources','SUMMARY')}" styleName="h1"/>
 		<s:HGroup width="100%">
 			<s:VGroup>
 				<s:Label id="respcount" text="0"/>
@@ -60,10 +60,10 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<mx:ViewStack id="userrespassess">
-			<s:NavigatorContent>
+			<s:NavigatorContent label="Responses">
 				<s:DataGrid id="latestresptbl"/>
 			</s:NavigatorContent>
-			<s:NavigatorContent>
+			<s:NavigatorContent label="Assessments">
 				<s:DataGrid id="latestassesstbl"/>
 			</s:NavigatorContent>
 		</mx:ViewStack>

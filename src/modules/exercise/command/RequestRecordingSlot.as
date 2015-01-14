@@ -1,32 +1,35 @@
-package modules.profile.command
+package modules.exercise.command
 {
+	import business.ExerciseDelegate;
+	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
 	
-	import modules.profile.event.ProfileEvent;
-	import modules.profile.service.ProfileDelegate;
+	import modules.exercise.event.ExerciseEvent;
 	
 	import mx.messaging.messages.RemotingMessage;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	
-	public class GetUserActivity implements ICommand, IResponder
+	public class RequestRecordingSlot implements ICommand, IResponder
 	{
 		private var _model:DataModel=DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var params:Object = (event as ProfileEvent).params;
-			new ProfileDelegate(this).getUserActivity(params);
+			var params:Object = (event as ExerciseEvent).params;
+			new ExerciseDelegate(this).requestRecordingSlot();
 		}
 		
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			_model.profileUserActivityData=result;
-			_model.profileUserActivityDataRetrieved=!_model.profileUserActivityDataRetrieved;
+			
+			_model.recordMediaData=result;
+			_model.recordMediaDataRetrieved=!_model.recordMediaDataRetrieved;
+
 		}
 		
 		public function fault(info:Object):void

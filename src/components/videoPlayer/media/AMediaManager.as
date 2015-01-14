@@ -85,6 +85,12 @@ package components.videoPlayer.media
 			
 		}
 		
+		public function dispose():void{
+			if(netStream){
+				netStream.dispose();
+			}
+		}
+		
 		public function play(/*params:Object*/):void
 		{
 			try

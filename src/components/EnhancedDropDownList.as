@@ -16,8 +16,6 @@ package components
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
 	
-	import org.as3commons.logging.util.clone;
-	
 	import spark.components.DropDownList;
 	import spark.globalization.SortingCollator;
 

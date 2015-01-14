@@ -174,6 +174,9 @@ package model
 		public var watchExerciseSubtitlesRetrieved:Boolean;
 		public var watchExerciseSubtitles:Object;
 		
+		[Bindable]
+		public var recordMediaDataRetrieved:Boolean;
+		public var recordMediaData:Object;
 		
 		[Bindable]
 		public var currentExercise:ArrayCollection=new ArrayCollection(new Array(null, null));

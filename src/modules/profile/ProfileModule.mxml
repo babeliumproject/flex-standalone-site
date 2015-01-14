@@ -6,7 +6,7 @@
 		  width="100%"
 		  implements="modules.IModuleInterface"
 		  preinitialize="preinitializeHandler(event)"
-		  creationComplete="creationCompleteHandler(event)" xmlns:view1="modules.course.view.*">
+		  creationComplete="creationCompleteHandler(event)">
 	
 	<s:layout>
 		<s:VerticalLayout/>
@@ -27,6 +27,7 @@
 			import modules.course.command.ViewCourse;
 			import modules.course.event.CourseEvent;
 			import modules.course.model.CourseModel;
+			import modules.profile.event.ProfileEvent;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -95,7 +96,8 @@
 			
 			public function actionIndex(fragment:String = null):void{
 				_viewstackIndex=INDEX;
-				new CourseEvent(CourseEvent.GET_COURSES, fragment).dispatch();
+				var params:int=_model.loggedUser.id;
+				new ProfileEvent(ProfileEvent.GET_USER_ACTIVITY, false, false, params).dispatch();
 			}
 			
 			public function actionView(fragment:String):void{
@@ -179,7 +181,7 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="index">
-			<view1:Index id="profileIndex" width="100%"/>
+			<view:ProfileIndexView/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

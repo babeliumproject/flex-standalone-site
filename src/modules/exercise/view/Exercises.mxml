@@ -19,7 +19,6 @@
 
 	<fx:Script>
 		<![CDATA[
-			
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
@@ -28,6 +27,8 @@
 			
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
+			
+			import flash.utils.getQualifiedClassName;
 			
 			import model.DataModel;
 			
@@ -60,37 +61,31 @@
 			import vo.ResponseVO;
 			import vo.UserVideoHistoryVO;
 
-			/**
-			 * CONSTANTS
-			 **/
 			private const SELECT_EXERCISE:String="SELECT_EXERCISE";
 
 			private var _creationComplete:Boolean=false;
 
 
-			/**
-			 * Exercise Related variables
-			 **/
+			
 			[Bindable]
 			private var _currentExercise:Object;
 			[Bindable]
 			private var _exerciseTitle:String;
 			[Bindable]
-			private var _exerciseSelected:Boolean=false;
+			private var _exerciseSelected:Boolean;
 			[Bindable]
 			private var _locales:Array;
 			[Bindable]
-			private var _characterNames:ArrayCollection=new ArrayCollection();
-			private var _roles:ArrayCollection=new ArrayCollection();
+			private var _characterNames:ArrayCollection;
+			private var _roles:ArrayCollection;
 			private var _mediaId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
+			
+			[Bindable]
+			private var _model:DataModel=DataModel.getInstance(); 
 
-			private var sorter:SortingCollator=new SortingCollator();
-
-			/**
-			 * Recording related variables
-			 **/
+			
 			[Bindable]
 			private var _rolesReady:Boolean;
 			
@@ -105,6 +100,7 @@
 			protected var _currentMediaData:Object;
 			protected var _primaryMediaData:Object;
 			protected var _modelMediaData:Object;
+			protected var _recordMediaData:Object;
 			protected var _currentCaptions:Object;
 
 			/**
@@ -143,20 +139,20 @@
 			 **/
 			private function setupVideoPlayer():void
 			{
-				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
-				VP.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying);
-				VP.addEventListener(RecordingEvent.END, onRecordingEnd);
-				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted);
-				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied);
-				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied);
+				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady, false, 0, true);
+				VP.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying, false, 0, true);
+				VP.addEventListener(RecordingEvent.END, onRecordingEnd, false, 0, true);
+				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted, false, 0, true);
+				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied, false, 0, true);
+				VP.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied, false, 0, true);
 			}
 
 			private function setupResponseOptions():void
 			{
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onAbortRecording);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onAbortRecording, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse, false, 0, true);
 			}
 
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
@@ -179,6 +175,7 @@
 					}
 				}
 				var numVoices:int=_characterNames.length;
+				trace("Number of voices found in subtitles: "+numVoices);
 				if (!numVoices)
 				{
 					availableRoles.visible=false;
@@ -219,8 +216,8 @@
 			private function set exerciseDataRetrieved(value:Boolean):void
 			{
 				var params:Object;
-				if(DataModel.getInstance().watchExerciseData){
-					_currentExercise=DataModel.getInstance().watchExerciseData;
+				if(_model.watchExerciseData){
+					_currentExercise=_model.watchExerciseData;
 					
 					_exerciseTitle=_currentExercise.title;
 					_primaryMediaData = null;
@@ -297,23 +294,34 @@
 				statisticRecAttempt();
 			}
 			
-			private function prepareRecording():void{
-				var play:Object = new Object();
-				play.netConnectionUrl = _currentMediaData.netConnectionUrl || null;
-				play.mediaUrl = _currentMediaData.mediaUrl || null;
-				
-				var record:Object = new Object();
-				record.netConnectionUrl = _streamSource || null;
-				record.mediaUrl = RESPONSE_FOLDER + '/' + _recordedFilename || null;
-				
+			protected function requestRecordingSlot():void{
+				new ExerciseEvent(ExerciseEvent.REQUEST_RECORDING_SLOT).dispatch();
+			}
+			
+			private function prepareRecording():void{				
 				var media:Object=new Object();
+				media.playbackMedia=_currentMediaData;
+				media.recordMedia=_recordMediaData;
 				
-				media.playbackMedia=play;
-				media.recordMedia=record;
+				var useWebcam:Boolean=!micOnly.selected;
 				
 				var timemarkers:Object;
 				
 				VP.recordVideo(media, !micOnly.selected, timemarkers);
+			}
+			
+			protected function set recordMediaSlotHandler(value:Boolean):void{
+				_recordMediaData=null;
+				if(_model.recordMediaData){
+					if(getQualifiedClassName(_model.recordMediaData) == 'Object'){
+						var tmp:Object=_model.recordMediaData;
+						_recordMediaData = new Object();
+						_recordMediaData.netConnectionUrl = tmp.netConnectionUrl || null;
+						_recordMediaData.mediaUrl = tmp.mediaUrl || null;
+						_recordMediaData.maxDuration = tmp.maxDuration || 0;
+						prepareRecording();
+					}
+				}
 			}
 
 			private function statisticRecAttempt():void
@@ -601,6 +609,9 @@
 				destination="this.exerciseSubtitlesRetrieved"/>
 	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved}"
 				destination="this.onRolesRetrieved"/>
+	<fx:Binding source="{_model.recordMediaDataRetrieved}"
+				destination="recordMediaSlotHandler"/>
+	
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
 				destination="statisticRecSave"/>
 
@@ -682,7 +693,6 @@
 							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
 							<components:EnhancedDropDownList id="availableRoles"
 										 dataProvider="{_characterNames}"
-										 enabled="{!DataModel.getInstance().recordingExercise}"
 										 skinClass="skins.BootstrapDropDownList"
 										 cornerRadius="3"
 										 borderColor="0xcccccc"

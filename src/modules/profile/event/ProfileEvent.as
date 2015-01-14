@@ -6,7 +6,7 @@ package modules.profile.event
 	
 	public class ProfileEvent extends CairngormEvent
 	{
-		public static const USER_ACTIVITY:String="userActivity";
+		public static const GET_USER_ACTIVITY:String="getUserActivity";
 		
 		public var params:Object;
 		
