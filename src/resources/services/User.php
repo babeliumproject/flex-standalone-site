@@ -39,9 +39,11 @@ require_once 'Exercise.php';
  */
 class User {
 	private $conn;
+	private $cfg;
 
 	public function __construct(){
 		$settings = new Config();
+		$this->cfg = $settings;
 		try {
 			$verifySession = new SessionValidation();
 			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
@@ -276,6 +278,92 @@ class User {
 			throw new Exception("Error while restoring user password");
 		}
 	}
+	
+	public function getUserActivity(){
+		try {
+			$logged = new SessionValidation(true);
+			
+			$result = new stdClass();
+			
+			$userid = $_SESSION['uid'];
+			$limit = 2;
+			
+			$responsecount = 0;
+			$evaluationcount = 0;
+			
+			$sql = "SELECT COUNT(*) as responses FROM response WHERE fk_user_id=%d";
+			$robj = $this->conn->_singleSelect($sql,$userid);
+			if($robj){
+				$responsecount = $robj->responses;
+			}
+			$sql = "SELECT COUNT(*) as evaluations FROM evaluation WHERE fk_user_id=%d";
+			$eobj = $this->conn->_singleSelect($sql, $userid);
+			if($eobj){
+				$evaluationcount = $eobj->evaluations;
+			}
+			
+			$result->responsecount = $responsecount;
+			$result->evaluationcount = $evaluationcount;
+			
+			//Get the last two (or less) responses
+			if($responsecount){
+				$sql = "SELECT id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, adding_date, rating_amount, character_name
+						FROM response WHERE fk_user_id=%d ORDER BY adding_date DESC LIMIT 0,%d";
+				$tmpresponses = $this->conn->_multipleSelect($sql,$userid,$limit);
+				$latestresponses = array();
+				foreach ($tmpresponses as $r){
+					$rf = $this->getResponseRelatedData($r);
+					array_push($latestresponses, $rf);
+				}
+				$result->responses = $latestresponses;
+			}
+			
+			//Get the last two (or less) evaluations
+			if($evaluationcount){
+				$sql = "SELECT r.id, r.fk_exercise_id, r.file_identifier, r.is_private, r.thumbnail_uri, r.adding_date, r.rating_amount, r.character_name
+						FROM evaluation e INNER JOIN response r ON e.fk_response_id=r.id 
+						WHERE e.fk_user_id=%d ORDER BY e.adding_date DESC LIMIT 0,%d";
+				$tmpevaluations = $this->conn->_multipleSelect($sql,$userid,$limit);
+				$latestevaluations = array();
+				foreach ($tmpevaluations as $r){
+					$rf = $this->getResponseRelatedData($r);
+					array_push($latestevaluations, $rf);
+				}
+				$result->evaluations = $latestevaluations;
+			}
+			
+			return $result;
+			
+		} catch (Exception $e){
+			throw new Exception($e->getMessage());
+		}
+	}
+	
+	private function getResponseRelatedData($response){
+		if(!$response) return;
+		
+		require_once 'Exercise.php';
+		$ex = new Exercise();
+		$r = $response;
+		
+		$exerciseid = $r->fk_exercise_id;
+		$etmp = $ex->getExerciseById($exerciseid);
+		$ethumburl = $ex->getExerciseDefaultThumbnail($exerciseid);
+		$rthumburl = $this->cfg->wwwroot . '/resources/images/thumbs/';
+		if ($r->thumbnail_uri == 'default.jpg') {
+			$rthumburl .= $r->file_identifier . '/default.jpg';
+		} else {
+			$rthumburl .= 'nothumb.png';
+		}
+		$r->exerciseTitle = $etmp->title;
+		$r->exerciseLanguage = $etmp->language;
+		$r->exerciseDifficulty = $etmp->difficulty;
+		$r->exerciseThumbnail = $ethumburl;
+		$r->responseThumbnail = $rthumburl;
+		
+		return $r;
+	}
+	
 
 	private function _createNewPassword()
 	{

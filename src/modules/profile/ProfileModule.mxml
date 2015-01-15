@@ -94,15 +94,16 @@
 				}
 			}
 			
-			public function actionIndex(fragment:String = null):void{
+			public function actionIndex(params:Object = null):void{
+				trace("["+getModuleName()+"] Index view");
 				_viewstackIndex=INDEX;
-				var params:int=_model.loggedUser.id;
-				new ProfileEvent(ProfileEvent.GET_USER_ACTIVITY, false, false, params).dispatch();
+				//var params:int=_model.loggedUser.id;
+				new ProfileEvent(ProfileEvent.GET_USER_ACTIVITY, false, false).dispatch();
 			}
 			
-			public function actionView(fragment:String):void{
+			public function actionView(params:Object = null):void{
 				_viewstackIndex=VIEW;
-				new CourseEvent(CourseEvent.VIEW_COURSE, fragment).dispatch();
+				new CourseEvent(CourseEvent.VIEW_COURSE, params).dispatch();
 			}
 			
 			public function onURLChange(event:Event):void{
@@ -117,24 +118,8 @@
 				
 				switch(evt.action)
 				{
-					case 'view':
-					{
-						if (evt.parameters != '')
-						{
-							// course/view?id=<courseid>
-							actionView(evt.parameters);
-						}
-						else
-						{
-							_urlmanager.redirect('/home');
-							return;
-						}
-						break;
-					}
-						
 					default:
 					{
-						// course/index?s=teach, course/index?s=learn, course/?s=learn
 						actionIndex();
 						break;
 					}
@@ -153,6 +138,8 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
 			}
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
@@ -181,7 +168,7 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="index">
-			<view:ProfileIndexView/>
+			<view:ProfileIndexView id="profileIndex"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

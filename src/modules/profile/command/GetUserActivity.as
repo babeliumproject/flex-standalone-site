@@ -25,8 +25,8 @@ package modules.profile.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			_model.profileUserActivityData=result;
-			_model.profileUserActivityDataRetrieved=!_model.profileUserActivityDataRetrieved;
+			_model.userActivityData=result;
+			_model.userActivityDataRetrieved=!_model.userActivityDataRetrieved;
 		}
 		
 		public function fault(info:Object):void

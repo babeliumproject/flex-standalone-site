@@ -48,6 +48,9 @@
 		 */ 
 		public $webRootPath = "/var/www/babelium";
 		
+		public $wwwroot = "http://babeliumlms";
+		public $streamingserver = "rtmp://babeliumlms/vod";
+		
 		public function __construct(){
 			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";

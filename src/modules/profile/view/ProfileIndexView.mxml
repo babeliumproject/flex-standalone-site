@@ -6,70 +6,158 @@
 		 paddingBottom="16"
 		 paddingLeft="16"
 		 paddingRight="16"
-		 implements="modules.IGroupInterface">
+		 implements="modules.IGroupInterface"
+		 width="100%"
+		 horizontalAlign="center">
 
 	<fx:Script>
 		<![CDATA[
+			import control.URLManager;
+			
+			import mx.utils.ObjectUtil;
+			
 			import model.DataModel;
 			
 			import mx.resources.ResourceManager;
 
 			
 			[Bindable]
-			private var dataModel:DataModel=DataModel.getInstance();
+			private var _model:DataModel=DataModel.getInstance();
+			private var _useractivity:Object;
 			
 			public function resetGroup():void{
 				
 			}
 			
 			protected function set userActivityRetrieved(value:Boolean):void{
+				if(_model.userActivityData){
+					trace(ObjectUtil.toString(_model.userActivityData));
+					var _useractivity:Object=_model.userActivityData;
+					if(_useractivity.hasOwnProperty('responsecount')){
+						respcount.text=_useractivity.responsecount;
+					}
+					if(_useractivity.hasOwnProperty('evaluationcount')){
+						assesscount.text=_useractivity.evaluationcount;
+					}
+					if(_useractivity.hasOwnProperty('responses')){
+						displayLatestResponses(_useractivity.responses);
+					}
+					if(_useractivity.hasOwnProperty('evaluations')){
+						displayLatestAssessments(_useractivity.evaluations);
+					}
+					if(_useractivity.hasOwnProperty('pending')){
+						displayLatestPendingAssessments(_useractivity.pending);
+					}
+				} else {
+					//Reset all the fields
+				}
+			}
+			
+			protected function displayLatestResponses(responses:Object):void{
+				
+			}
+			
+			protected function displayLatestAssessments(assessments:Object):void{
+				
+			}
+			
+			protected function displayLatestPendingAssessments(pending:Object):void{
 				
 			}
 			
 		]]>
 	</fx:Script>
 	
-	<fx:Binding source="{dataModel.userActivityDataRetrieved}"
+	<fx:Binding source="{_model.userActivityDataRetrieved}"
 				destination="userActivityRetrieved"/>
 	
 	<s:BorderContainer styleName="lightBorderContainer" width="640">
 		<s:layout>
-			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" 
+							  paddingBottom="16" 
+							  paddingLeft="16" 
+							  paddingRight="16" 
+							  paddingTop="16" 
+							  gap="16"/>
 		</s:layout>
-		<s:Label id="summarylbl" text="{ResourceManager.getInstance().getString('myResources','SUMMARY')}" styleName="h1"/>
-		<s:HGroup width="100%">
-			<s:VGroup>
-				<s:Label id="respcount" text="0"/>
+		<s:Label id="summarylbl" text="{ResourceManager.getInstance().getString('myResources','SUMMARY')}" styleName="h3"/>
+		<s:HGroup width="100%" gap="16">
+			<s:VGroup width="100%" horizontalAlign="center">
+				<s:Label id="respcount" text="0" fontSize="24"/>
 				<s:Label text="{ResourceManager.getInstance().getString('myResources','RESPONSES')}"/>
 			</s:VGroup>
-			<s:Line>
+			<s:Line height="30">
 				<s:stroke>
-					<s:SolidColorStroke/>
+					<s:SolidColorStroke color="0x333333" weight="2"/>
 				</s:stroke>
 			</s:Line>
-			<s:VGroup>
-				<s:Label id="assesscount" text="0"/>
+			<s:VGroup width="100%" horizontalAlign="center">
+				<s:Label id="assesscount" text="0" fontSize="24"/>
 				<s:Label text="{ResourceManager.getInstance().getString('myResources','ASSESSMENTS')}"/>
 			</s:VGroup>
 		</s:HGroup>
 	</s:BorderContainer>
 	
-	<s:TabBar dataProvider="{userrespassess}"/>
-	<s:BorderContainer>
+	<s:BorderContainer styleName="lightBorderContainer" width="100%" id="uactresp">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
 		</s:layout>
-		<mx:ViewStack id="userrespassess">
-			<s:NavigatorContent label="Responses">
-				<s:DataGrid id="latestresptbl"/>
-			</s:NavigatorContent>
-			<s:NavigatorContent label="Assessments">
-				<s:DataGrid id="latestassesstbl"/>
-			</s:NavigatorContent>
-		</mx:ViewStack>
+		<s:Label id="uactresptitle"
+				 text="{resourceManager.getString('myResources','RESPONSES')}"
+				 styleName="exerciseTitleLabel"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{uactresp.getStyle('borderWeight')}"
+									alpha="{uactresp.getStyle('borderAlpha')}"
+									color="{uactresp.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		<s:Button id="uactrespbtn" 
+				  styleName="btn-link" 
+				  buttonMode="true" 
+				  click="{URLManager.getInstance().redirect('/assessments/for')}" 
+				  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
+	</s:BorderContainer>
+	
+	<s:BorderContainer styleName="lightBorderContainer" width="100%" id="uactassess">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
+		<s:Label id="uactassesstitle"
+				 text="{resourceManager.getString('myResources','ASSESSMENTS')}"
+				 styleName="exerciseTitleLabel"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{uactassess.getStyle('borderWeight')}"
+									alpha="{uactassess.getStyle('borderAlpha')}"
+									color="{uactassess.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		<s:Button id="uactassessbtn" 
+				  styleName="btn-link" 
+				  buttonMode="true" 
+				  click="{URLManager.getInstance().redirect('/assessments/by')}"
+				  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
 	</s:BorderContainer>
 			 
-	<s:BorderContainer>
-		<s:DataGrid id="latestpendingtbl"/>
+	<s:BorderContainer styleName="lightBorderContainer" width="100%" id="uactpending">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
+		<s:Label id="uactpendingtitle"
+				 text="{resourceManager.getString('myResources','WAITING_FOR_ASSESSMENT')}"
+				 styleName="exerciseTitleLabel"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{uactpending.getStyle('borderWeight')}"
+									alpha="{uactpending.getStyle('borderAlpha')}"
+									color="{uactpending.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		<s:Button id="uactpendingbtn" 
+				  styleName="btn-link" 
+				  buttonMode="true" 
+				  click="{URLManager.getInstance().redirect('/assessments/pending')}"
+				  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
 	</s:BorderContainer>
 </s:VGroup>

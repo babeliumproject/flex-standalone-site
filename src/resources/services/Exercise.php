@@ -56,6 +56,7 @@ class Exercise {
 	private $exerciseMinRatingCount;
 
 	private $conn;
+	private $cfg;
 	private $mediaHelper;
 
 	/**
@@ -69,6 +70,7 @@ class Exercise {
 		try {
 			$verifySession = new SessionValidation();
 			$settings = new Config ( );
+			$this->cfg = $settings;
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
 			$this->posterPath = $settings->posterPath;
@@ -699,6 +701,42 @@ class Exercise {
 			}
 		}
 		return $results;
+	}
+	
+	public function getExerciseDefaultThumbnail($param){
+		if(!$param)
+			throw new Exception("Invalid parameter");
+	
+		$level = 1;
+		$component = 'exercise';
+		$exerciseid = 0;
+		
+		$thumbdir = '/resources/images/thumbs';
+		$url = $this->cfg->wwwroot . $thumbdir . '/nothumb.png';
+	
+		if(!is_numeric($param)){
+			$exercisecode=$param;
+			$data = $this->getExerciseByCode($exercisecode);
+			if($data){
+				$exerciseid = $data->id;
+			}
+		} else {
+			$exerciseid=$param;
+		}
+	
+		if($exerciseid){
+			$sql = "SELECT mediacode, defaultthumbnail
+					FROM media WHERE instanceid=%d AND component='%s' AND level=%d";
+			$mdata = $this->conn->_singleSelect($sql, $exerciseid, $component, $level);
+			if($mdata){
+				$t =  $thumbdir . '/' . $mdata->mediacode . '/%02d.jpg';
+				$fragment = sprintf($t, $mdata->defaultthumbnail);
+				if(is_file($this->cfg->webRootPath.$fragment)){
+					$url = $this->cfg->wwwroot.$fragment;
+				}
+			}
+		}
+		return $url;
 	}
 	
 	public function requestRecordingSlot(){

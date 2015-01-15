@@ -9,7 +9,7 @@ package modules.profile.service
 	public class ProfileDelegate
 	{
 		private var responder:IResponder;
-		private static const SERVICE_REMOTE_OBJECT:String = "profileRO";
+		private static const SERVICE_REMOTE_OBJECT:String = "userRO";
 		
 		public function ProfileDelegate(responder:IResponder)
 		{
