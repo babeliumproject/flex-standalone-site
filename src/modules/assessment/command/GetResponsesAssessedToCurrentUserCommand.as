@@ -30,8 +30,7 @@ package modules.assessment.command
 		
 		public function result(data:Object):void
 		{
-			var hitCount:uint = data.result.hitCount;
-			var result:Object=data.result.data;
+			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
 			
 			if (result is Array && (result as Array).length > 0 )
@@ -39,7 +38,6 @@ package modules.assessment.command
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 			}
 			dataModel.assessedToCurrentUserData = resultCollection;
-			dataModel.assessedByCurrentUserCount = hitCount;
 			dataModel.assessedToCurrentUserDataRetrieved = !dataModel.assessedToCurrentUserDataRetrieved;
 		}
 		

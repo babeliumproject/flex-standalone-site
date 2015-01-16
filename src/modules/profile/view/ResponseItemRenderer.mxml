@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				autoDrawBackground="true"
+				buttonMode="true"
+				width="100%">
+
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<s:HGroup width="100%" 
+			  paddingLeft="8" paddingTop="8" paddingRight="8" paddingBottom="8">
+		<s:BitmapImage id="exerciseThumb"
+					   source="{data.exerciseThumbnailUri}"
+					   width="120"
+					   height="90"/>
+		<s:BitmapImage id="responseThumb"
+					   source="{data.responseThumbnailUri}"
+					   width="120"
+					   height="90"/>
+		<s:VGroup width="100%">
+			<s:HGroup id="langLevelTitle"
+					  width="100%">
+				<s:BitmapImage id="countryFlag"
+							   width="16"
+							   height="16"
+							   source="{data.exerciseLanguage}"/>
+				<s:Label id="difficulty"
+						 styleName="boldYellowLabel"
+						 text="{data.exerciseAvgDifficulty}"/>
+				<s:Label id="exerciseTitle"
+						 styleName="boldLabel"
+						 text="{data.exerciseTitle}"/>
+			</s:HGroup>
+			<s:HGroup id="assessmentCount"
+					  width="100%">
+				<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_COUNT')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label text="{data.responseRatingAmount}"/>
+			</s:HGroup>
+			<s:HGroup id="itemDate"
+					  width="100%">
+				<s:Label text="{resourceManager.getString('myResources','DATE')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label text="{data.responseAddingDate}"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:HGroup>
+	<s:Line width="100%">
+		<s:stroke>
+			<s:SolidColorStroke weight="1"
+								alpha=".85"
+								color="#E0E0E0"/>
+		</s:stroke>
+	</s:Line>
+</s:ItemRenderer>

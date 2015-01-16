@@ -38,6 +38,7 @@ require_once 'vo/UserVO.php';
 class Evaluation {
 
 	private $conn;
+	private $cfg;
 
 	private $imagePath;
 	private $posterPath;
@@ -46,6 +47,7 @@ class Evaluation {
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
 	private $responseFolder = '';
+	private $evaluationThreshold = 3;
 
 	private $mediaHelper;
 
@@ -60,6 +62,7 @@ class Evaluation {
 		try {
 			$verifySession = new SessionValidation(true);
 			$settings = new Config ( );
+			$this->cfg = $settings;
 			$this->imagePath = $settings->imagePath;
 			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
@@ -70,6 +73,14 @@ class Evaluation {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	private function getAssessmentLimit(){
+		$sql = "SELECT prefValue FROM preferences WHERE (prefName='trial.threshold') ";
+		$result = $this->conn->_singleSelect ( $sql );
+		if($result){
+			$this->evaluationThreshold = $result->prefValue;
+		}
+	}
 
 	/**
 	 * Retrieves all the responses that haven't been evaluated (and can be evaluated) by the current user
@@ -77,13 +88,13 @@ class Evaluation {
 	 * @return array $searchResults
 	 * 		An array of objects with data about the responses that haven't been already evaluated by the current user
 	 */
-	public function getResponsesWaitingAssessment() {
-		$sql = "SELECT prefValue FROM preferences WHERE (prefName='trial.threshold') ";
+	public function getResponsesWaitingAssessment($offset=0, $rowcount=0) {
+		
+		$this->getAssessmentLimit();
+		$assessmentlimit=$this->evaluationThreshold;
 
-		$result = $this->conn->_singleSelect ( $sql );
-		if($result)
-		$evaluationThreshold = $result->prefValue;
-
+		$userid = $_SESSION['uid'];
+		
 		$sql = "SELECT DISTINCT A.file_identifier as responseFileIdentifier,
 								A.id as responseId, 
 								A.rating_amount as responseRatingAmount, 
@@ -108,11 +119,25 @@ class Evaluation {
                                 WHERE E.id = A.id AND D.fk_user_id = %d)
                 GROUP BY A.id
                 ORDER BY A.priority_date DESC, A.adding_date DESC";
-
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $evaluationThreshold, $_SESSION['uid'], $_SESSION['uid']));
-		$this->checkMerged($searchResults);
 		
-		// error_log(print_r($searchResults,1) . "\n", 3, "/tmp/error.log");
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid);
+		}
+		
+		$defresults = null;
+		if($tmpresults){	
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
+		
+		$searchResults = $this->conn->multipleRecast('EvaluationVO',$defresults);
 		
 		return $searchResults;
 	}
@@ -123,11 +148,8 @@ class Evaluation {
 	 * @return array $searchResults
 	 * 		An array of objects with data about the responses of the current user that have been evaluated
 	 */
-	public function getResponsesAssessedToCurrentUser(){
-
-		$querySortField = 'last_date';
-		$queryLimitOffset = 0;
-		$hitCount = 0;
+	public function getResponsesAssessedToCurrentUser($offset=0, $rowcount=0){
+		$userid = $_SESSION['uid'];
 
 		$sql = "SELECT A.file_identifier as responseFileIdentifier,
 					   A.id as responseId, 
@@ -150,20 +172,31 @@ class Evaluation {
 		               B.difficulty as exerciseAvgDifficulty, 
 		               MAX(C.adding_date) AS addingDate
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
-					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
+					 LEFT OUTER JOIN evaluation AS C ON C.fk_response_id = A.id 
 				WHERE ( A.fk_user_id = '%d' ) 
 				GROUP BY A.id,B.id 
-				ORDER BY '%s'";
-
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $_SESSION['uid'], $querySortField));
-
-		$this->checkMerged($searchResults);
+				ORDER BY A.adding_date DESC";
 		
-		$result = new stdClass();
-		$result->hitCount = $hitCount;
-		$result->data = $searchResults;
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid);
+		}
+		
+		$defresults = null;
+		if($tmpresults){
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
 
-		return $result;
+		$searchResults = $this->conn->multipleRecast('EvaluationVO',$defresults);
+
+		return $searchResults;
 	}
 
 	/**
@@ -172,7 +205,10 @@ class Evaluation {
 	 * @return	array $searchResults
 	 * 		Returns an array of objects with data about the responses the current user evaluated to another user
 	 */
-	public function getResponsesAssessedByCurrentUser(){
+	public function getResponsesAssessedByCurrentUser($offset=0, $rowcount=0){
+		
+		$userid = $_SESSION['uid'];
+		
 		$sql = "SELECT DISTINCT A.file_identifier as responseFileIdentifier,
 								A.id as responseId, 
 								A.rating_amount as responseRatingAmount, 
@@ -201,12 +237,26 @@ class Evaluation {
 			         INNER JOIN user AS U ON U.id = A.fk_user_id
 			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
 			    WHERE (C.fk_user_id = '%d')
-			    ORDER BY A.adding_date DESC";
+			    ORDER BY C.adding_date DESC";
 		
-		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-		$this->checkMerged($results);
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid);
+		}
 		
-		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
+		$defresults = null;
+		if($tmpresults){
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
+		
+		$searchResults = $this->conn->multipleRecast('EvaluationVO', $defresults);
 
 		return $searchResults;
 	}
@@ -218,19 +268,41 @@ class Evaluation {
 	 * @param array $results
 	 * 		array of EvaluationVO objects
 	 */
-	public function checkMerged($results){
+	public function checkMerged($response){
+		if(!$response) return;
 		
-		if($results && is_array($results)){	
-			foreach($results as $r){
-				//-1: unknown, 0: not merged, 1: merged
-				$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
-				$r->mergeStatus = $mergeStatus;
-				//
-				//if($mergeStatus == 1){
-				//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
-				//}
-			}
+		$r = $response;
+
+		//-1: unknown, 0: not merged, 1: merged
+		$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
+		$r->mergeStatus = $mergeStatus;
+		//
+		//if($mergeStatus == 1){
+		//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
+		//}
+		return $r;
+	}
+	
+	private function getResponseRelatedData($response){
+		if(!$response) return;
+	
+		require_once 'Exercise.php';
+		$ex = new Exercise();
+		$r = $response;
+	
+		$exerciseid = $r->exerciseId;
+		$ethumburl = $ex->getExerciseDefaultThumbnail($exerciseid);
+		$rthumburl = $this->cfg->wwwroot . '/resources/images/thumbs/';
+		if ($r->responseThumbnailUri == 'default.jpg') {
+			$rthumburl .= $r->responseFileIdentifier . '/default.jpg';
+		} else {
+			$rthumburl .= 'nothumb.png';
 		}
+		
+		$r->exerciseThumbnailUri = $ethumburl;
+		$r->responseThumbnailUri = $rthumburl;
+	
+		return $r;
 	}
 	
 	/**
@@ -250,6 +322,11 @@ class Evaluation {
 					   A.score_fluency as fluencyScore, 
 					   A.score_rhythm as rhythmScore, 
 					   A.score_spontaneity as spontaneityScore,
+					   A.score_comprehensibility as comprehensibilityScore,
+					   A.score_pronunciation as pronunciationScore,
+					   A.score_adequacy as adequacyScore,
+					   A.score_range as rangeScore,
+					   A.score_accuracy as accuracyScore,
 					   A.adding_date as addingDate, 
 					   A.comment as comment, 
 					   B.video_identifier as evaluationVideoFileIdentifier, 
@@ -351,7 +428,13 @@ class Evaluation {
 
 		$this->conn->_startTransaction();
 
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
+		                                score_comprehensibility, score_pronunciation, score_adequacy, score_range, score_accuracy, comment, adding_date) VALUES (";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -363,7 +446,7 @@ class Evaluation {
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
 		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
+		$evalData->spontaneityScore, $evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->adequacyScore, $evalData->rangeScore, $evalData->accuracyScore, $evalData->comment );
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");

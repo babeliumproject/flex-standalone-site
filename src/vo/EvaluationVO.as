@@ -11,6 +11,11 @@ package vo
 	   public var fluencyScore:uint;
 	   public var rhythmScore:uint;
 	   public var spontaneityScore:uint;
+	   public var comprehensibilityScore:uint;
+	   public var pronunciationScore:uint;
+	   public var adequacyScore:uint;
+	   public var rangeScore:uint;
+	   public var accuracyScore:uint;
 	   public var comment:String;
 	   public var addingDate:String;
 	   

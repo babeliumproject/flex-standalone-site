@@ -9,6 +9,11 @@ class EvaluationVO{
 	public $fluencyScore;
 	public $rhythmScore;
 	public $spontaneityScore;
+	public $comprehensibilityScore;
+	public $pronunciationScore;
+	public $adequacyScore;
+	public $rangeScore;
+	public $accuracyScore;
 	public $comment;
 	public $addingDate;
 	
