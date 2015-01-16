@@ -16,12 +16,12 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import model.DataModel;
+			
 			import mx.formatters.NumberBaseRoundType;
 			
-			import view.common.LocaleFlagResource;
-			
 			import spark.formatters.NumberFormatter;
-			
+
 			import view.common.TimeFormatter;
 			
 			[Bindable]
@@ -63,9 +63,10 @@
 				}
 			}
 			
-			public function getFlagSource(temp:Object):String
+			public function getFlagSource(temp:Object):Class
 			{
-				return LocaleFlagResource.getFlagResource(temp.language);
+				var dm:DataModel=DataModel.getInstance();
+				return dm.localesAndFlags.getCountryFlagClass(temp.language);
 			}
 			
 		

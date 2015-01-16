@@ -30,6 +30,8 @@ package model
 		//This solution for singleton implementation was found in
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel=new DataModel();
+		
+		public static const SOURCE_LOCALE:String='en_US';
 
 		public var appBody:Body;
 

@@ -22,10 +22,8 @@
 
 		<s:Group width="180"
 				 height="135">
-			<mx:Image id="thumbnail"
-					  scaleContent="true"
+			<s:BitmapImage id="thumbnail"
 					  source="{data.thumbnail}"
-					  autoLoad="true"
 					  width="180"
 					  height="135"/>
 			<s:TextInput text="{_timeFormatter.format(data.duration)}"
@@ -81,26 +79,25 @@
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-
+			
 			import control.URLManager;
-
+			
+			import model.DataModel;
+			
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
 			import modules.subtitle.event.SubtitleEvent;
-			//import events.ViewChangeEvent;
-
-			import model.DataModel;
-
+			
 			import mx.controls.LinkButton;
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
-
+			
+			import view.common.IconComboBox;
 			import view.common.LicenseResource;
-			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
-
+			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
 			import vo.LicenseVO;
@@ -160,9 +157,10 @@
 				}
 			}
 
-			public function getFlagSource(temp:ExerciseVO):String
+			public function getFlagSource(temp:ExerciseVO):Class
 			{
-				return LocaleFlagResource.getFlagResource(temp.language);
+				var dm:DataModel=DataModel.getInstance();
+				return dm.localesAndFlags.getCountryFlagClass(temp.language);
 			}
 		]]>
 	</fx:Script>

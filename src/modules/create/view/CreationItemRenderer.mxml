@@ -114,14 +114,15 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import control.URLManager;
+			import model.LocalesAndFlags;
 			
-			import modules.exercise.event.SearchEvent;
-			import modules.subtitle.event.SubtitleEvent;
+			import control.URLManager;
 			
 			import model.DataModel;
 			
 			import modules.exercise.event.ExerciseEvent;
+			import modules.exercise.event.SearchEvent;
+			import modules.subtitle.event.SubtitleEvent;
 			
 			import mx.controls.Text;
 			import mx.formatters.NumberBaseRoundType;
@@ -131,7 +132,6 @@
 			import skins.IconButton;
 			
 			import view.common.LicenseResource;
-			import view.common.LocaleFlagResource;
 			import view.common.TimeFormatter;
 			
 			import vo.ExerciseRoleVO;
@@ -227,9 +227,10 @@
 				}
 			}
 
-			public function getFlagSource(temp:ExerciseVO):String
+			public function getFlagSource(temp:ExerciseVO):Class
 			{
-				return LocaleFlagResource.getFlagResource(temp.language);
+				var dm:DataModel=DataModel.getInstance();
+				return dm.localesAndFlags.getCountryFlagClass(temp.language);
 			}
 			
 			private function addTagLinkButtons():void

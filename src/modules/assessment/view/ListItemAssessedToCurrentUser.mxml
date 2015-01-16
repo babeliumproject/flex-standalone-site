@@ -19,7 +19,7 @@
 			  verticalAlign="middle"
 			  gap="2"
 			  width="100%">
-		<mx:Image id="exerciseLanguage"
+		<s:BitmapImage id="exerciseLanguage"
 				  width="16"
 				  height="16"
 				  source="{getFlagSource(data as EvaluationVO)}"/>
@@ -87,14 +87,12 @@
 	<fx:Script>
 		<![CDATA[
 			import com.hulstkamp.AhRatingComponentStarSkin;
-
+			
 			import model.DataModel;
-
+			
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
-
-			import view.common.LocaleFlagResource;
-
+			
 			import vo.EvaluationVO;
 
 			private var _data:Object;
@@ -142,9 +140,10 @@
 				}
 			}
 
-			public function getFlagSource(temp:EvaluationVO):String
+			public function getFlagSource(temp:EvaluationVO):Class
 			{
-				return LocaleFlagResource.getFlagResource(temp.exerciseLanguage);
+				var dm:DataModel=DataModel.getInstance();
+				return dm.localesAndFlags.getCountryFlagClass(temp.exerciseLanguage);
 			}
 		]]>
 	</fx:Script>
