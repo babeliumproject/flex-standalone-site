@@ -320,6 +320,9 @@ class User {
 				$result->evaluations = $latestevaluations;
 			}
 			
+			$latestpending = $evaluationsrv->getResponsesWaitingAssessment(0,$limit);
+			$result->pending = $latestpending;
+			
 			return $result;
 			
 		} catch (Exception $e){

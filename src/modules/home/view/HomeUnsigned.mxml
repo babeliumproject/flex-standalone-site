@@ -188,8 +188,10 @@
 			
 			public function resetComponent():void{
 				if(creationComplete){
-					staticMotd.staticUnsignedMotdVp.resetComponent();
-					staticMotd.staticUnsignedMotdVp.autoPlay=false;
+					if(staticMotd && staticMotd.staticUnsignedMotdVp){
+						staticMotd.staticUnsignedMotdVp.resetComponent();
+						staticMotd.staticUnsignedMotdVp.autoPlay=false;
+					}
 					appDescriptionViewStack.removeAllElements();
 					latestExercises.resetComponent();
 					bestRatedExercises.resetComponent();

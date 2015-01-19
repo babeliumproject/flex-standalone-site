@@ -118,9 +118,14 @@
 				
 				switch(evt.action)
 				{
-					default:
+					case "index":
 					{
 						actionIndex();
+						break;
+					}	
+					default:
+					{
+						_urlmanager.redirect('/error');
 						break;
 					}
 				}

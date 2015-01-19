@@ -47,7 +47,7 @@ class Evaluation {
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
 	private $responseFolder = '';
-	private $evaluationThreshold = 3;
+	private $evaluationThreshold = 4;
 
 	private $mediaHelper;
 
@@ -75,7 +75,7 @@ class Evaluation {
 	}
 	
 	private function getAssessmentLimit(){
-		$sql = "SELECT prefValue FROM preferences WHERE (prefName='trial.threshold') ";
+		$sql = "SELECT prefValue FROM preferences WHERE prefName='trial.threshold'";
 		$result = $this->conn->_singleSelect ( $sql );
 		if($result){
 			$this->evaluationThreshold = $result->prefValue;
@@ -93,7 +93,23 @@ class Evaluation {
 		$this->getAssessmentLimit();
 		$assessmentlimit=$this->evaluationThreshold;
 
+		$langpurpose = 'evaluate';
+		
 		$userid = $_SESSION['uid'];
+		$userlanguages = $_SESSION['user-languages'];
+		if($userlanguages){
+			$term = "";
+			foreach($userlanguages as $ul){
+				if($ul->purpose==$langpurpose){
+					$l = substr($ul->language,0,2);
+					$term = $term . " B.language LIKE '".$l."\_%%' OR"; //% must be escaped using a double %%, otherwise vsprintf() fails
+				}
+			}
+		}
+		$finalterm=null;
+		if(!empty($term)){
+			$finalterm = "(".substr($term, 0, -2).")";
+		}
 		
 		$sql = "SELECT DISTINCT A.file_identifier as responseFileIdentifier,
 								A.id as responseId, 
@@ -112,13 +128,14 @@ class Evaluation {
 		                        B.difficulty exerciseAvgDifficulty
 				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
 				     INNER JOIN user AS F on A.fk_user_id = F.id
-		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
-				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
-				AND NOT EXISTS (SELECT *
-                                FROM evaluation AS D INNER JOIN response AS E on D.fk_response_id = E.id
-                                WHERE E.id = A.id AND D.fk_user_id = %d)
-                GROUP BY A.id
-                ORDER BY A.priority_date DESC, A.adding_date DESC";
+				WHERE B.status = 1 AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
+				AND NOT EXISTS (SELECT D.id FROM evaluation AS D WHERE D.fk_response_id = A.id AND D.fk_user_id = %d)";
+				
+		if($finalterm){
+			$sql.= " AND ".$finalterm;
+		}
+		
+        $sql .= " GROUP BY A.id ORDER BY A.priority_date DESC, A.adding_date DESC";
 		
 		if($rowcount){
 			$sql .= " LIMIT %d,%d";
@@ -229,6 +246,7 @@ class Evaluation {
 		               			B.id as exerciseId, 
 		               			B.exercisecode as exerciseName, 
 		               			B.language as exerciseLanguage, 
+		               			B.difficulty as exerciseAvgDifficulty, 
 		               			B.title as exerciseTitle, 
 		               			E.video_identifier as evaluationVideoFileIdentifier, 
 		               			E.thumbnail_uri as evaluationVideoThumbnailUri 

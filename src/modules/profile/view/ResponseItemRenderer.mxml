@@ -10,6 +10,18 @@
 		<s:VerticalLayout/>
 	</s:layout>
 
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			public function getCountryFlag(data:Object):Class{
+				var exerciselocale:String=data.exerciseLanguage;
+				var flagicon:Class = DataModel.getInstance().localesAndFlags.getCountryFlagClass(exerciselocale);
+				return flagicon;
+			}
+			
+		]]>
+	</fx:Script>
 	<s:HGroup width="100%" 
 			  paddingLeft="8" paddingTop="8" paddingRight="8" paddingBottom="8">
 		<s:BitmapImage id="exerciseThumb"
@@ -20,13 +32,13 @@
 					   source="{data.responseThumbnailUri}"
 					   width="120"
 					   height="90"/>
-		<s:VGroup width="100%">
+		<s:VGroup width="100%" verticalAlign="middle">
 			<s:HGroup id="langLevelTitle"
 					  width="100%">
 				<s:BitmapImage id="countryFlag"
 							   width="16"
 							   height="16"
-							   source="{data.exerciseLanguage}"/>
+							   source="{getCountryFlag(data)}"/>
 				<s:Label id="difficulty"
 						 styleName="boldYellowLabel"
 						 text="{data.exerciseAvgDifficulty}"/>
