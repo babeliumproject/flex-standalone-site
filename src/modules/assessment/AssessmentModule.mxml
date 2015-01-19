@@ -112,8 +112,10 @@
 					case 'add':
 						actionAssess(evt.parameters);
 						break;
+					case 'index':
+						//This module has no 'index' action redirect to error
 					default:
-						actionIndex();
+						_urlmanager.redirect('/error');
 						break;
 				}
 			}

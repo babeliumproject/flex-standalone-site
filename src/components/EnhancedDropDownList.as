@@ -170,25 +170,22 @@ package components
 					output.push(copy);
 				}
 				output.sort(this.localizedSorting);
-				trace(ObjectUtil.toString(input));
-				trace(ObjectUtil.toString(output));
 				sortedCollection=new ArrayCollection(output);
 			}
 			return sortedCollection;
 		}
 		
+		/*
 		protected function sortListIdxField(value:IList):ArrayCollection{
 			var sortedCollection:ArrayCollection;
 			var input:Array, output:Array;
 			if(value){
 				input=value.toArray();
-				trace(ObjectUtil.toString(input));
 				output=input.sort(this.localizedSorting,Array.RETURNINDEXEDARRAY);
-				trace(ObjectUtil.toString(output));
 				sortedCollection=new ArrayCollection(output);
 			}
 			return sortedCollection;
-		}
+		}*/
 
 		protected function findItemByField(list:IList, fieldName:String, fieldValue:*):Object
 		{

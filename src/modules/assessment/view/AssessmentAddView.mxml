@@ -102,8 +102,6 @@
 	<s:VGroup id="videoPlayerBox"
 			  width="100%"
 			  horizontalAlign="center"
-			  includeInLayout="false"
-			  visible="false"
 			  paddingTop="20"
 			  paddingLeft="16"
 			  paddingRight="16">
