@@ -22,21 +22,21 @@
 			import components.videoPlayer.events.VideoPlayerEvent;
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
-
+			
 			import control.URLManager;
-
+			
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
-
+			
 			import flash.utils.getQualifiedClassName;
-
+			
 			import model.DataModel;
-
+			
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
 			import modules.subtitle.event.SubtitleEvent;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
@@ -47,13 +47,13 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
-
+			
 			import spark.collections.Sort;
 			import spark.collections.SortField;
 			import spark.globalization.SortingCollator;
-
+			
 			import view.common.*;
-
+			
 			import vo.CreditHistoryVO;
 			import vo.CueObject;
 			import vo.ExerciseRoleVO;
@@ -316,13 +316,11 @@
 
 			private function prepareRecording():void
 			{
-
-
 				// Disable events and tabs
-				DataModel.getInstance().recordingExercise=true;
+				//DataModel.getInstance().recordingExercise=true;
 
 				//Save statistical data
-				statisticRecAttempt();
+				//statisticRecAttempt();
 
 				var media:Object=new Object();
 				media.playbackMedia=_currentMediaData;
@@ -332,6 +330,8 @@
 
 				var timemarkers:Object;
 
+				trace("preparerecording: "+ObjectUtil.toString(media));
+				
 				VP.recordVideo(media, !micOnly.selected, timemarkers);
 			}
 
@@ -340,15 +340,13 @@
 				_recordMediaData=null;
 				if (_model.recordMediaData)
 				{
-					if (getQualifiedClassName(_model.recordMediaData) == 'Object')
-					{
-						var tmp:Object=_model.recordMediaData;
-						_recordMediaData=new Object();
-						_recordMediaData.netConnectionUrl=tmp.netConnectionUrl || null;
-						_recordMediaData.mediaUrl=tmp.mediaUrl || null;
-						_recordMediaData.maxDuration=tmp.maxDuration || 0;
-						prepareRecording();
-					}
+					var tmp:Object=_model.recordMediaData;
+					_recordMediaData=new Object();
+					_recordMediaData.netConnectionUrl=tmp.netConnectionUrl || null;
+					_recordMediaData.mediaUrl=tmp.mediaUrl || null;
+					_recordMediaData.maxDuration=tmp.maxDuration || 0;
+					trace("Rec. media slot: "+ObjectUtil.toString(_recordMediaData));
+					prepareRecording();
 				}
 			}
 

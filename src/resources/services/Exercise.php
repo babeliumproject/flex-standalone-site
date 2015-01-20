@@ -744,7 +744,7 @@ class Exercise {
 			$session = new SessionValidation(true);
 			
 			$prefix = "resp-";
-			$optime = microtime(true)*1000; //ms precision to mimic client-side behaviour.
+			$optime = round(microtime(true)*1000); //ms precision to mimic client-side behaviour.
 			$mediadir = 'responses';
 			$mediafilename = $prefix.$optime.'.flv';
 			

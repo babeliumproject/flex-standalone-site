@@ -322,8 +322,6 @@ package components.videoPlayer
 				return;
 			try
 			{
-				//_nsc.play("exercises/"+_videoUrl);
-				//_topLayer.removeChildren();
 				_media.play();
 			}
 			catch (e:Error)

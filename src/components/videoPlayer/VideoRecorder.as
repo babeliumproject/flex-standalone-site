@@ -1355,6 +1355,26 @@ package components.videoPlayer
 						setInternalState(PLAY_STATE);
 						super.loadVideoByUrl(lmedia);
 					}
+				} else if (param.recordMedia){
+					var recmedia:Object=parseMediaObject(param.recordMedia);
+					var playmedia:Object;
+					if(param.playbackMedia){
+						playmedia=parseMediaObject(param.playbackMedia);
+					}
+					if(recmedia && playmedia){
+						_recordMediaNetConnectionUrl=recmedia.netConnectionUrl;
+						_recordMediaUrl=recmedia.mediaUrl;
+						
+						_mediaNetConnectionUrl=playmedia.netConnectionUrl;
+						_mediaUrl=playmedia.mediaUrl;
+						_mediaPosterUrl=playmedia.mediaPosterUrl;
+						
+						loadParallelVideo();
+					} else if (recmedia){
+						_recordMediaNetConnectionUrl=recmedia.netConnectionUrl;
+						_recordMediaUrl=recmedia.mediaUrl;
+						loadVideo();
+					}
 				} else {
 					setInternalState(PLAY_STATE);
 					super.loadVideoByUrl(param);
@@ -1430,6 +1450,7 @@ package components.videoPlayer
 				}
 			} else {
 				_timeMarkers = null;
+				trace("No timemarker data");
 			}
 			
 			//Set autoplay to false to avoid the exercise from playing once loading is done
@@ -1442,12 +1463,13 @@ package components.videoPlayer
 				loadVideoByUrl(media);
 				//Remove the exercise poster, we don't need it when about to record something
 				_topLayer.removeChildren();
+				trace(ObjectUtil.toString(media));
 			} else {
 				_mediaUrl=null;
 				endVideo();
 			}
 			_recordUseWebcam = useWebcam;
-			prepareDevices();
+			//prepareDevices();
 		}
 		
 		protected function loadRecVideoByUrl(param:Object):void{
