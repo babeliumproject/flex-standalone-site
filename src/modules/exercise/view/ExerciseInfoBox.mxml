@@ -27,16 +27,9 @@
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
 			
-			import mx.controls.LinkButton;
 			import mx.core.Application;
-			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
-			import mx.managers.PopUpManager;
 			
-			import view.common.ReportInappropriatePopUp;
-			
-			import vo.ExerciseReportVO;
-			import vo.ExerciseScoreVO;
 			import vo.ExerciseVO;
 
 			private var _creationComplete:Boolean=false;
@@ -48,15 +41,10 @@
 			private var _tags:Array;
 
 			[Bindable]
-			private var _exerciseRating:int=0;
-
-			[Bindable]
 			private var _dataAvailable:Boolean=false;
 
 			[Bindable]
 			private var _lessAdtInfoStatus:Boolean=false;
-
-			private var reportPopUp:ReportInappropriatePopUp;
 
 			public function completeHandler(event:FlexEvent):void
 			{
@@ -91,31 +79,19 @@
 			private function updateComponents():void
 			{
 	
-				exDescription.text=_exercise.description;
+				exDescription.htmlText=_exercise.description;
 				additionalInfoBox.visible=false;
 				additionalInfoBox.includeInLayout=false;
 				_lessAdtInfoStatus=false;
 				addDescriptors();
 				addTagLinkButtons();
-
-				var score:ExerciseScoreVO=new ExerciseScoreVO();
-				var report:ExerciseReportVO=new ExerciseReportVO();
-				score.exerciseId=_exercise.id;
-				report.exerciseId=_exercise.id;
-
-				if (DataModel.getInstance().isLoggedIn)
-				{
-					//new ExerciseEvent(ExerciseEvent.USER_RATED_EXERCISE, null, null, score).dispatch();
-					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, report).dispatch();
-				}
 			}
 
 			private function disableComponents():void
 			{
 				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
 				{
-					_exerciseRating=0;
-					exDescription.text="";
+					exDescription.htmlText="";
 					additionalInfoBox.visible=false;
 					additionalInfoBox.includeInLayout=false;
 					_lessAdtInfoStatus=false;
@@ -134,7 +110,7 @@
 					
 					descriptorContainer.addElement(sectTitle);
 					for each(var d:String in _exercise.descriptors){
-						var dlabel:IconButton=new IconButton();
+						var dlabel:Button=new Button();
 						dlabel.id=d;
 						dlabel.percentWidth=100;
 						dlabel.styleName="commonLinkButton";
@@ -164,7 +140,7 @@
 
 					for each (var tag:String in _tags)
 					{
-						var linkTag:IconButton=new IconButton();
+						var linkTag:Button=new Button();
 						linkTag.styleName="commonLinkButton";
 						linkTag.setStyle("fontSize", 11);
 						linkTag.setStyle("fontWeight", "normal");
@@ -186,35 +162,13 @@
 
 			protected function tagClickHandler(event:MouseEvent):void
 			{
-				var term:String =(event.target as IconButton).label;
+				var term:String =(event.target as Button).label;
 				URLManager.getInstance().redirect('/exercises/search/?q='+term);
 			}
 			
 			protected function descriptorClickHandler(event:MouseEvent):void{
-				var term:String="\""+(event.target as IconButton).label+"\"";
+				var term:String="\""+(event.target as Button).label+"\"";
 				URLManager.getInstance().redirect('/exercises/search/?q='+term);
-			}
-
-			/*
-			protected function ratingClickHandler(event:MouseEvent):void
-			{
-				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
-				{
-					var score:ExerciseScoreVO=new ExerciseScoreVO();
-					score.suggestedScore=rating.rating;
-					score.exerciseId=_exercise.id;
-					new ExerciseEvent(ExerciseEvent.RATE_EXERCISE, null, null, score).dispatch();
-				}
-			}*/
-
-			protected function reportVideoClickHandler(event:MouseEvent):void
-			{
-				if (DataModel.getInstance().isLoggedIn && _dataAvailable)
-				{
-					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, ReportInappropriatePopUp, true));
-					PopUpManager.centerPopUp(reportPopUp);
-					reportPopUp.exerciseData=_exercise;
-				}
 			}
 
 			protected function lessAdtInfoClickHandler(event:MouseEvent):void
@@ -223,50 +177,12 @@
 				additionalInfoBox.includeInLayout=!additionalInfoBox.includeInLayout;
 				_lessAdtInfoStatus=!_lessAdtInfoStatus;
 			}
-			
-			protected function likeExerciseClickHandler(event:MouseEvent):void{
-				
-			}
-			
-			protected function dislikeExerciseClickHandler(event:MouseEvent):void{
-				
-			}
 		]]>
 	</fx:Script>
 
-	<s:HGroup id="ratingAndReportBox"
-			  width="100%">
-		<s:HGroup paddingTop="4"
-				  paddingLeft="0">
-			<s:Button id="likescount"
-					  styleName="btn-link"
-					  buttonMode="true"
-					  label="{_exercise.likes}"
-					  icon="/resources/images/like.png"
-					  click="likeExerciseClickHandler(event)"/>
-			<s:Button id="dislikescount"
-					  styleName="btn-link"
-					  buttonMode="true"
-					  label="{_exercise.dislikes}"
-					  icon="/resources/images/dislike.png"
-					  click="dislikeExerciseClickHandler(event)"/>
-		</s:HGroup>
-		<s:HGroup horizontalAlign="right"
-				  paddingBottom="0"
-				  paddingTop="0"
-				  paddingLeft="0"
-				  paddingRight="0"
-				  width="100%">
-			<skins:IconButton id="reportVideo"
-							  label="{resourceManager.getString('myResources','REPORT')}"
-							  toolTip="{resourceManager.getString('myResources','REPORT_INNAPROPRIATE_VIDEO')}"
-							  styleName="reportLinkButton"
-							  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
-							  click="reportVideoClickHandler(event)"/>
-		</s:HGroup>
-	</s:HGroup>
 	<s:VGroup id="additionalInfoBox"
 			  width="100%"
+			  height="100%"
 			  horizontalAlign="left"
 			  paddingTop="10"
 			  paddingLeft="5"
@@ -274,7 +190,7 @@
 			  paddingBottom="5"
 			  visible="false"
 			  includeInLayout="false">
-		<s:Label id="exDescription"
+		<mx:Text id="exDescription"
 				 fontSize="11"
 				 width="100%"/>
 		<s:VGroup id="descriptorContainer" minHeight="0"/>
@@ -292,10 +208,6 @@
 			  horizontalAlign="center"
 			  gap="0">
 		<s:Line width="100%">
-			<s:filters>
-				<s:DropShadowFilter distance="0"
-									angle="0"/>
-			</s:filters>
 			<s:stroke>
 				<s:SolidColorStroke color="#666666"
 									weight="1"

@@ -143,7 +143,7 @@ package components.videoPlayer.media
 				initiateStream();
 			} else {
 				//Dispatch an event to let the player know the netConnection failed for some reason.
-				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "NO_CONNECTION"));
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "CANNOT_CONNECT_TO_STREAMING_SERVER"));
 			}
 		}
 		

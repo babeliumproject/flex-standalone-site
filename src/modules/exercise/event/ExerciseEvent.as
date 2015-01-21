@@ -20,6 +20,8 @@ package modules.exercise.event
 		public static const USER_RATED_EXERCISE:String="userRatedExercise";
 		public static const USER_REPORTED_EXERCISE:String="userReportedExercise";
 		public static const REQUEST_RECORDING_SLOT:String="requestRecordingSlot";
+		public static const LIKE_EXERCISE:String="likeExercise";
+		public static const DISLIKE_EXERCISE:String="dislikeExercise";
 
 		public var params:Object;
 

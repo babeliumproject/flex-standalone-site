@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import vo.ExerciseReportVO;
+			
+			import modules.exercise.event.ExerciseEvent;
+			
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			
+			import view.common.ReportInappropriatePopUp;
+			
+			import vo.ExerciseScoreVO;
+
+			private var reportPopUp:ReportInappropriatePopUp;			
+			private var _data:Object;
+			private var _model:DataModel=DataModel.getInstance();
+			
+			public function set componentData(data:Object):void{
+				if(!data) return;
+				
+				if(_data != data){
+					_data=data;
+					invalidateProperties();
+				}
+			}
+			
+			public function updateComponents():void{
+				var score:ExerciseScoreVO=new ExerciseScoreVO();
+				var report:ExerciseReportVO=new ExerciseReportVO();
+				score.exerciseId=_data.id;
+				report.exerciseId=_data.id;
+				
+				if (_model.isLoggedIn)
+				{
+					new ExerciseEvent(ExerciseEvent.USER_REPORTED_EXERCISE, report).dispatch();
+				}
+			}
+			
+			protected function reportVideoClickHandler(event:MouseEvent):void
+			{
+				if (_model.isLoggedIn && _data)
+				{
+					reportPopUp=ReportInappropriatePopUp(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, ReportInappropriatePopUp, true));
+					PopUpManager.centerPopUp(reportPopUp);
+					reportPopUp.exerciseData=_data;
+				}
+			}
+			
+			protected function likeExerciseClickHandler(event:MouseEvent):void{
+				var exercisecode:String=_data.exercisecode;
+				new ExerciseEvent(ExerciseEvent.LIKE_EXERCISE,exercisecode).dispatch();
+			}
+			
+			protected function dislikeExerciseClickHandler(event:MouseEvent):void{
+				var exercisecode:String=_data.exercisecode;
+				new ExerciseEvent(ExerciseEvent.DISLIKE_EXERCISE,exercisecode).dispatch();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:HGroup paddingTop="4"
+			  paddingLeft="0">
+		<s:Button id="likescount"
+				  styleName="btn-link"
+				  buttonMode="true"
+				  label="{_exercise.likes}"
+				  icon="/resources/images/like.png"
+				  click="likeExerciseClickHandler(event)"/>
+		<s:Button id="dislikescount"
+				  styleName="btn-link"
+				  buttonMode="true"
+				  label="{_exercise.dislikes}"
+				  icon="/resources/images/dislike.png"
+				  click="dislikeExerciseClickHandler(event)"/>
+	</s:HGroup>
+	<s:HGroup horizontalAlign="right"
+			  paddingBottom="0"
+			  paddingTop="0"
+			  paddingLeft="0"
+			  paddingRight="0"
+			  width="100%">
+		<skins:IconButton id="reportVideo"
+						  label="{resourceManager.getString('myResources','REPORT')}"
+						  toolTip="{resourceManager.getString('myResources','REPORT_INNAPROPRIATE_VIDEO')}"
+						  styleName="reportLinkButton"
+						  enabled="{DataModel.getInstance().isLoggedIn &amp;&amp; !DataModel.getInstance().userReportedExercise &amp;&amp; _dataAvailable}"
+						  click="reportVideoClickHandler(event)"/>
+	</s:HGroup>
+	
+</s:HGroup>

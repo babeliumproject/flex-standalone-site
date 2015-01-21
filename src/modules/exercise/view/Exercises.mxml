@@ -751,49 +751,15 @@
 									  width="{VP.width}"
 									  backgroundAlpha="0"
 									  borderVisible="false"/>
-			<s:TabBar id="exerciseInfoTabs"
-					  dataProvider="{exerciseInfoStack}"/>
-			<mx:ViewStack id="exerciseInfoStack"
-						  width="{VP.width}"
-						  resizeToContent="true">
-				<s:NavigatorContent id="addInfNC"
-									label="Add. Info"
-									width="100%">
-					<s:Label text="Add here tags, exercise type, descriptors, etc..."/>
-				</s:NavigatorContent>
-			</mx:ViewStack>
-
-			<view:ExerciseInfoBox id="ratingShareReport"
-									 borderVisible="false"
-									 backgroundAlpha="0"
-									 width="{VP.width}"/>
+			
 
 
 		</s:VGroup>
 		<s:VGroup width="100%">
-			<s:BorderContainer id="exDescContainer"
-							   styleName="lightBorderContainer"
-							   width="100%"
-							   height="{videoPlayerAndRecordingControls.height}">
-				<s:layout>
-					<s:VerticalLayout paddingBottom="16"
-									  paddingLeft="16"
-									  paddingRight="16"
-									  paddingTop="16"/>
-				</s:layout>
-				<s:Label id="descLbl"
-						 styleName="h5"
-						 text="{ResourceManager.getInstance().getString('myResources','DESCRIPTION')}"/>
-				<s:Line width="100%">
-					<s:stroke>
-						<s:SolidColorStroke weight="{UIComponent(parent).getStyle('borderWeight')}"
-											alpha="{UIComponent(parent).getStyle('borderAlpha')}"
-											color="{UIComponent(parent).getStyle('borderColor')}"/>
-					</s:stroke>
-				</s:Line>
-				<mx:Text htmlText="{_currentExercise.description}"
-						 width="100%"/>
-			</s:BorderContainer>
+			<view:ExerciseInfoBox id="ratingShareReport"
+								  styleName="lightBorderContainer"
+								  width="100%"
+								  minHeight="200"/>
 		</s:VGroup>
 	</s:HGroup>
 </s:VGroup>

@@ -445,6 +445,10 @@ package components.videoPlayer
 			if (_media) _media.volume=newVolume;
 		}
 		
+		public function setMute(value:Boolean):void{
+			mute=value;
+		}
+		
 		public function getVolume():Number
 		{
 			return _currentVolume;
