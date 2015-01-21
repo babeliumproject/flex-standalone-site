@@ -240,7 +240,7 @@ package components.videoPlayer.media
 			}
 			catch (e:Error)
 			{
-				logger.error("Error while retrieving stream volume. [{0}] {1}", [e.errorID, e.message]);
+				logger.error("[{0}] Error while retrieving stream volume. [{1}] {2}", [_id,e.errorID,e.message]);
 			}
 			return NaN;
 		}
@@ -253,7 +253,7 @@ package components.videoPlayer.media
 				var t:Number = value/100;
 				_sndTransform.volume=t;
 				if (_connected){
-					logger.debug("Soundtransform set volume: {0}", [t]);
+					logger.debug("[{0}] Soundtransform set volume: {1}", [_id,t]);
 					_ns.soundTransform=_sndTransform;
 				}
 			}

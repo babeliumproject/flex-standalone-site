@@ -64,7 +64,7 @@ package components.videoPlayer.media
 		}
 		
 		override public function stop():void{
-			logger.debug("Stop was called");
+			logger.debug("[{0}] Stop was called", [_id]);
 			_ns.close();
 		}
 		
@@ -77,9 +77,18 @@ package components.videoPlayer.media
 				_netConnectionUrl = (args[0] is String) ? args[0] : null;
 				_streamUrl = (args[1] is String) ? args[1] : null;
 			}
-			//logger.debug("Streaming server: {0} stream name: {1}" [_serverUrl, _streamUrl]);
-			this.addEventListener(StreamingEvent.CONNECTED_CHANGE, onConnectionStatusChange, false, 0, true);
-			connect(_netConnectionUrl);
+			if(validRTMPUrl(_netConnectionUrl)){
+				this.addEventListener(StreamingEvent.CONNECTED_CHANGE, onConnectionStatusChange, false, 0, true);
+				connect(_netConnectionUrl);
+			} else {
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "CANNOT_CONNECT_TO_STREAMING_SERVER"));
+			}
+		}
+		
+		private function validRTMPUrl(url:String):Boolean{
+			if(!url) return false;
+			var pattern:RegExp = new RegExp("^rtmp[t|e|s]?\:\\/\\/.+");
+			return url.match(pattern) ? true : false;
 		}
 
 		private function connect(... args):void
@@ -93,7 +102,7 @@ package components.videoPlayer.media
 
 			if (!rtmpServerUrl)
 			{
-				logger.error("No streaming url was provided");
+				logger.error("[{0}] NetConnectionUrl is null or empty", [_id]);
 				_connected=false;
 				dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 			}
@@ -116,7 +125,7 @@ package components.videoPlayer.media
 				// connect to server
 				try
 				{
-					logger.info("Connecting to {0}", [_netConnectionUrl]);
+					logger.info("[{0}] Connecting to {1}", [_id, _netConnectionUrl]);
 					// Create connection with the server.
 					_nc.connect(_netConnectionUrl);
 				}
@@ -126,13 +135,13 @@ package components.videoPlayer.media
 					switch (e.errorID)
 					{
 						case 2004:
-							logger.error("Invalid server location: {0}", [_netConnectionUrl]);
+							logger.error("[{0}] Invalid server location: {1}", [_id, _netConnectionUrl]);
 							_netConnectOngoingAttempt=false;
 							_connected=false;
 							dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 							break;
 						default:
-							logger.error("Undetermined problem while connecting with: {0}", [_netConnectionUrl]);
+							logger.error("[{0}] Undetermined problem while connecting with: {1}", [_id, _netConnectionUrl]);
 							_netConnectOngoingAttempt=false;
 							_connected=false;
 							dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
@@ -141,21 +150,21 @@ package components.videoPlayer.media
 				}
 				catch (e:IOError)
 				{
-					logger.error("IO error while connecting to: {0}", [_netConnectionUrl]);
+					logger.error("[{0}] IO error while connecting to: {1}", [_id, _netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 				}
 				catch (e:SecurityError)
 				{
-					logger.error("Security error while connecting to: {0}", [_netConnectionUrl]);
+					logger.error("[{0}] Security error while connecting to: {1}", [_id, _netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 				}
 				catch (e:Error)
 				{
-					logger.error("Unidentified error while connecting to: {0}", [_netConnectionUrl]);
+					logger.error("[{0}] Unidentified error while connecting to: {1}", [_id, _netConnectionUrl]);
 					_netConnectOngoingAttempt=false;
 					_connected=false;
 					dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
@@ -193,37 +202,37 @@ package components.videoPlayer.media
 					case "NetConnection.Connect.Success":
 						_connected=true;
 						if (event.target.connectedProxyType == "HTTPS" || event.target.usingTLS)
-							logger.info("Connected to secure server");
+							logger.info("[{0}] Connected to secure server", [_id]);
 						else
-							logger.info("Connected to server");
+							logger.info("[{0}] Connected to server", [_id]);
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;
 					case "NetConnection.Connect.Failed":
-						logger.info("Connection to server failed");
+						logger.info("[{0}] Connection to server failed", [_id]);
 						_connected=false;
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;
 
 					case "NetConnection.Connect.Closed":
-						logger.info("Connection to server closed");
+						logger.info("[{0}] Connection to server closed", [_id]);
 						_connected=false;
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;
 
 					case "NetConnection.Connect.InvalidApp":
-						logger.info("Application not found on server");
+						logger.info("[{0}] Application not found on server", [_id]);
 						_connected=false;
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;
 
 					case "NetConnection.Connect.AppShutDown":
-						logger.info("Application has been shutdown");
+						logger.info("[{0}] Application has been shutdown", [_id]);
 						_connected=false;
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;
 
 					case "NetConnection.Connect.Rejected":
-						logger.info("No permissions to connect to the application");
+						logger.info("[{0}] No permissions to connect to the application", [_id]);
 						_connected=false;
 						dispatchEvent(new StreamingEvent(StreamingEvent.CONNECTED_CHANGE));
 						break;

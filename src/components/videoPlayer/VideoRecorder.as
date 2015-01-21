@@ -91,7 +91,7 @@ package components.videoPlayer
 		public static const UPLOAD_MODE_STATE:int=4; // 0000 0100
 
 		private const SPLIT_FLAG:int=1; // XXXX XXX1
-		private const RECORD_FLAG:int=2; // XXXX XX1X
+		private const RECORD_MODE_MASK:int=2; // XXXX XX1X
 		private const UPLOAD_FLAG:int=4; // XXXX X1XX
 
 		private var _state:int;
@@ -205,7 +205,7 @@ package components.videoPlayer
 
 			_micImage=new Image();
 
-			_micImage.source = DataModel.getInstance().uploadDomain+"resources/images/player_mic_watermark.png";
+			_micImage.source = "/resources/images/player_mic_watermark.png";
 			_micImage.height = 128;
 			_micImage.width = 128;
 			_micImage.alpha = 0.7;
@@ -444,7 +444,7 @@ package components.videoPlayer
 			_state=state;
 			
 			//Pause and hide the current media
-			switchPerspective();
+			//switchPerspective();
 			//dispatchEvent(new VideoRecorderEvent(VideoRecorderEvent.RECORDER_STATE_CHANGED,_state));
 		}
 
@@ -491,7 +491,7 @@ package components.videoPlayer
 		{
 			_parallelMuted=value;
 			
-			if(_state & RECORD_FLAG){
+			if(_state & RECORD_MODE_MASK){
 				var newGain:Number;
 				if(value){
 					_micLastGain=_micCurrentGain;
@@ -738,7 +738,7 @@ package components.videoPlayer
 		override public function pauseVideo():void
 		{
 			//This won't work, exit right away
-			if (state & RECORD_FLAG && _micCamEnabled){
+			if (state & RECORD_MODE_MASK && _micCamEnabled){
 				return;
 				
 				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
@@ -768,7 +768,7 @@ package components.videoPlayer
 		override public function resumeVideo():void
 		{
 			//This won't work, exit right away
-			if (state & RECORD_FLAG && _micCamEnabled){
+			if (state & RECORD_MODE_MASK && _micCamEnabled){
 				return;
 				
 				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
@@ -802,7 +802,7 @@ package components.videoPlayer
 		{
 			super.stopVideo();
 
-			if (state & RECORD_FLAG && _micCamEnabled){
+			if (state & RECORD_MODE_MASK && _micCamEnabled){
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.stop();
@@ -829,7 +829,7 @@ package components.videoPlayer
 		{
 			super.endVideo();
 
-			if (state & RECORD_FLAG && _micCamEnabled){
+			if (state & RECORD_MODE_MASK && _micCamEnabled){
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.netStream.close(); //Cleans the cache of the video
@@ -930,38 +930,33 @@ package components.videoPlayer
 			switch (_state)
 			{
 				case RECORD_MICANDCAM_STATE:
-					prepareDevices();
+				{
+					splitVideoPanel();
 					break;
-
+				}
 				case RECORD_MIC_STATE:
-					recoverVideoPanel(); // original size
-					prepareDevices();
+				{
+					recoverVideoPanel();
 					break;
-				
+				}
 				case UPLOAD_MODE_STATE:
+				{
 					recoverVideoPanel();
 					scaleCamVideo(_videoWidth,_videoHeight,false);
-					prepareDevices();
 					break;
-
+				}
 				case PLAY_BOTH_STATE:
-					_micActivityBar.visible=false;
-					this.updateDisplayList(0,0);
+				{
+					splitVideoPanel();
 					break;
-
-				default: // PLAY_STATE
+				}
+				default:
+				{
 					recoverVideoPanel();
-					_camVideo.attachCamera(null); // TODO: deattach camera
-					_camVideo.visible=false;
-					_micImage.visible=false;
-
-					this.updateDisplayList(0, 0);
-
-					// Enable seek
-					seek=true;
-
 					break;
+				}
 			}
+			invalidateDisplayList();
 		}
 
 		/**
@@ -971,7 +966,7 @@ package components.videoPlayer
 		// Prepare countdown timer
 		private function startCountdown():void
 		{
-			_countdown=new Timer(1000, COUNTDOWN_TIMER_SECS)
+			_countdown=new Timer(1000, COUNTDOWN_TIMER_SECS);
 			_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick, false, 0, true);
 			_countdown.start();
 		}
@@ -1021,8 +1016,15 @@ package components.videoPlayer
 			_mic=_userdevmgr.microphone;
 			_mic.setUseEchoSuppression(true);
 			_mic.setSilenceLevel(0, 60000000);
-
+			_micActivityBar.mic=_mic;
+			
+			_camVideo.width=_userdevmgr.defaultCameraWidth;
+			_camVideo.height=_userdevmgr.defaultCameraHeight;
+			_camVideo.attachCamera(_camera);
+			_camVideo.smoothing=true;
+			
 			_video.visible=false;
+			_camVideo.visible=false;
 			_micImage.visible=false;
 			_countdownTxt.visible=true;
 
@@ -1081,32 +1083,18 @@ package components.videoPlayer
 			dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
 		}
 
-		// splits panel into a 2 different views
+
 		private function prepareRecording():void
 		{
 			// Disable seek
 			seek=false;
 
-			if (state & SPLIT_FLAG)
-			{
-				// Attach Camera
-				_camVideo.attachCamera(_camera);
-				_camVideo.smoothing=true;
-
-				splitVideoPanel();
-				_camVideo.visible=false;
-				_micImage.visible=false;
-				disableControls();
-			}
-
-			if (state & RECORD_FLAG)
-			{
-				disableControls();
-			}
-
+			disableControls();
+			
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
-			this.updateDisplayList(0, 0);
+			
+			switchPerspective();
 		}
 
 		/**
@@ -1114,7 +1102,7 @@ package components.videoPlayer
 		 */
 		private function startRecording():void
 		{
-			if (!(state & RECORD_FLAG))
+			if (!(state & RECORD_MODE_MASK))
 				return; // security check
 
 			//if (_started)
@@ -1122,7 +1110,7 @@ package components.videoPlayer
 			//else
 			playVideo();
 
-			if (state & RECORD_FLAG)
+			if (state & RECORD_MODE_MASK)
 			{
 				_recordMedia.netStream.attachAudio(_mic);
 				muteRecording(true); // mic starts muted
@@ -1232,7 +1220,7 @@ package components.videoPlayer
 		override protected function scaleVideo():void
 		{
 			super.scaleVideo();
-			if (state & SPLIT_FLAG)
+			if (_state & SPLIT_FLAG)
 			{
 				var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
 				var h:int=Math.ceil(w * 0.75);
@@ -1278,7 +1266,7 @@ package components.videoPlayer
 		{
 			super.onVideoFinishedPlaying(e);
 
-			if (state & RECORD_FLAG || state == UPLOAD_MODE_STATE)
+			if (state & RECORD_MODE_MASK || state == UPLOAD_MODE_STATE)
 			{
 				//addDummyVideo();
 				unattachUserDevices();
@@ -1345,7 +1333,6 @@ package components.videoPlayer
 						_mediaNetConnectionUrl=lmedia.netConnectionUrl;
 						_mediaUrl=lmedia.mediaUrl;
 						_mediaPosterUrl=lmedia.mediaPosterUrl;
-						
 						_parallelMediaNetConnectionUrl=rmedia.netConnectionUrl;
 						_parallelMediaUrl=rmedia.mediaUrl;
 						
@@ -1362,21 +1349,22 @@ package components.videoPlayer
 						playmedia=parseMediaObject(param.playbackMedia);
 					}
 					if(recmedia && playmedia){
+						
 						_recordMediaNetConnectionUrl=recmedia.netConnectionUrl;
 						_recordMediaUrl=recmedia.mediaUrl;
-						
 						_mediaNetConnectionUrl=playmedia.netConnectionUrl;
 						_mediaUrl=playmedia.mediaUrl;
 						_mediaPosterUrl=playmedia.mediaPosterUrl;
-						
-						loadParallelVideo();
+						setInternalState(_recordUseWebcam ? RECORD_MICANDCAM_STATE : RECORD_MIC_STATE);
 					} else if (recmedia){
+						_mediaNetConnectionUrl=null;
+						_mediaUrl=null;
+						_mediaPosterUrl=null;
 						_recordMediaNetConnectionUrl=recmedia.netConnectionUrl;
 						_recordMediaUrl=recmedia.mediaUrl;
-						loadVideo();
 					}
+					loadRecordVideo();
 				} else {
-					setInternalState(PLAY_STATE);
 					super.loadVideoByUrl(param);
 				}
 			}
@@ -1430,8 +1418,56 @@ package components.videoPlayer
 			}
 		}
 		
-		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{
+		public function loadRecordVideo():void{
+			_mediaReady=false;
+			_recordMediaReady=false;
 			
+			_busyIndicator.visible=true;
+			resetAppearance();
+				
+			if(!_autoPlay){
+				if(_mediaPosterUrl){
+					_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
+					_topLayer.addChild(_posterSprite);
+				}
+			}
+				
+			//Close the streams and free their resources
+			if(_media) _media.dispose();
+			if(_recordMedia) _recordMedia.dispose();
+			if(_parallelMedia) _parallelMedia.dispose();
+			_media=null;
+			_recordMedia=null;
+			_parallelMedia=null;
+			
+			if(_mediaUrl != ''){
+				if(_mediaNetConnectionUrl){
+					_media=new ARTMPManager("playStream");
+					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
+					_media.setup(_mediaNetConnectionUrl, _mediaUrl);
+				} else {
+					_media=new AVideoManager("playStream");
+					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
+					_media.setup(_mediaUrl);
+				}
+			}
+			if(_recordMediaUrl !=''){
+				if(_recordMediaNetConnectionUrl){
+					_recordMedia=new ARTMPManager("recordStream");
+					_recordMedia.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
+					_recordMedia.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
+					_recordMedia.setup(_recordMediaNetConnectionUrl, _recordMediaUrl);
+				} else {
+					//To record media a netconnectionurl is a must, if not provided
+					logger.debug("NetConnectionUrl for record media not provided. Can't record.");
+					//onStreamFailure();
+				}
+			}
+		}
+		
+		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{	
 			unattachUserDevices();
 			if(_markermgr){
 				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
@@ -1453,6 +1489,8 @@ package components.videoPlayer
 				trace("No timemarker data");
 			}
 			
+			_recordUseWebcam = useWebcam;
+			
 			//Set autoplay to false to avoid the exercise from playing once loading is done
 			_lastAutoplay=_autoPlay;
 			_autoPlay=false;
@@ -1463,44 +1501,6 @@ package components.videoPlayer
 				loadVideoByUrl(media);
 				//Remove the exercise poster, we don't need it when about to record something
 				_topLayer.removeChildren();
-				trace(ObjectUtil.toString(media));
-			} else {
-				_mediaUrl=null;
-				endVideo();
-			}
-			_recordUseWebcam = useWebcam;
-			//prepareDevices();
-		}
-		
-		protected function loadRecVideoByUrl(param:Object):void{
-			if(getQualifiedClassName(param) == 'Object')
-			{
-				if(param.playMedia){
-					var lmedia:Object=parseMediaObject(param.playMedia);
-					var rmedia:Object;
-					if(param.recordMedia){
-						rmedia=parseMediaObject(param.recordMedia);
-					}
-					if(lmedia && rmedia){
-						//
-						
-						_mediaNetConnectionUrl=lmedia.netConnectionUrl;
-						_mediaUrl=lmedia.mediaUrl;
-						_mediaPosterUrl=lmedia.mediaPosterUrl;
-						
-						_recordMediaNetConnectionUrl=rmedia.netConnectionUrl;
-						_recordMediaUrl=rmedia.mediaUrl;
-						
-						loadParallelVideo();
-						
-					} else if(lmedia){
-						setInternalState(PLAY_STATE);
-						super.loadVideoByUrl(lmedia);
-					}
-				} else {
-					setInternalState(PLAY_STATE);
-					super.loadVideoByUrl(param);
-				}
 			}
 		}
 		
@@ -1529,10 +1529,19 @@ package components.videoPlayer
 			}
 			
 			//State belongs to the recording state group
-			if(_state & RECORD_FLAG) 
+			if(_state & RECORD_MODE_MASK) 
 			{
-				//Determine by status if there's playback media
-				prepareDevices();
+				if(_mediaReady && _recordMediaReady){
+					_video.attachNetStream(_media.netStream);
+					_media.volume=_currentVolume;
+					_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
+				
+					_recordMedia.volume=_currentVolume;
+					_recordMedia.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
+					
+					prepareDevices();
+				}
 			} 
 			else 
 			{

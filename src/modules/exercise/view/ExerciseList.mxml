@@ -17,6 +17,8 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
+			import spark.layouts.TileLayout;
+			
 			import control.URLManager;
 			
 			import flash.sampler.getInvocationCount;
@@ -152,6 +154,7 @@
 
 			public function set setComponentData(value:Boolean):void
 			{
+				_currentPage=1;
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
 				var length:int = _dataProvider ? _dataProvider.length : 0;
 				trace("Exercises that match the criteria: "+length);
@@ -246,6 +249,19 @@
 				var pageSize:int=DataModel.getInstance().pageSize;
 				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
 				exerciseListDataGroup.dataProvider=dataTemp;
+				
+				refreshLayout();
+			}
+			
+			private function refreshLayout():void{
+				var tile:TileLayout=new TileLayout();
+				tile.columnWidth=182;
+				tile.rowHeight=255;
+				tile.horizontalGap=20;
+				tile.verticalGap=20;
+				
+				exerciseListDataGroup.layout=tile;
+				exerciseListDataGroup.percentWidth=100;
 			}
 
 			private function changeHandler(event:Event):void
@@ -429,14 +445,7 @@
 					change="changeHandler(event)"
 					borderVisible="false"
 					skinClass="skins.TransparentBgListSkin"
-					itemRenderer="modules.exercise.view.ExerciseItemRenderer"
-					dataProvider="{_dataProvider}">
-				<s:layout>
-					<s:TileLayout columnWidth="182"
-								  rowHeight="225"
-								  horizontalGap="20"
-								  verticalGap="20"/>
-				</s:layout>
+					itemRenderer="modules.exercise.view.ExerciseItemRenderer">
 			</s:List>
 
 			<s:HGroup id="paginationBox"

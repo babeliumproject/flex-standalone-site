@@ -14,6 +14,7 @@
 		<Property name="roleBgColor">0xFFFFFF</Property>
 		<Property name="roleBorderColor">0xa7a7a7</Property>
 		<Property name="fontFamily">Arial</Property>
+		<Property name="countdownColor">0xFFFFFF</Property>
 	</Component>
 	<Component name="ArrowPanel">
 		<Property name="bgColor">0xdbd7bf</Property>

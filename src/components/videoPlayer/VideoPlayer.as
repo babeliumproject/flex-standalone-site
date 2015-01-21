@@ -1,30 +1,9 @@
-/**
- * NOTES
- *
- * Player needs a way to tell if a video exsists when streaming video.
- */
-
 package components.videoPlayer
 {
 	
-	import components.videoPlayer.controls.AudioSlider;
-	import components.videoPlayer.controls.BitmapSprite;
-	import components.videoPlayer.controls.ElapsedTime;
-	import components.videoPlayer.controls.ErrorSprite;
-	import components.videoPlayer.controls.PlayButton;
-	import components.videoPlayer.controls.ScrubberBar;
-	import components.videoPlayer.controls.SkinableComponent;
-	import components.videoPlayer.controls.StopButton;
-	import components.videoPlayer.controls.XMLSkinableComponent;
-	import components.videoPlayer.events.MediaStatusEvent;
-	import components.videoPlayer.events.PlayPauseEvent;
-	import components.videoPlayer.events.ScrubberBarEvent;
-	import components.videoPlayer.events.StopEvent;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.VolumeEvent;
-	import components.videoPlayer.media.AMediaManager;
-	import components.videoPlayer.media.ARTMPManager;
-	import components.videoPlayer.media.AVideoManager;
+	import components.videoPlayer.controls.*;
+	import components.videoPlayer.events.*;
+	import components.videoPlayer.media.*;
 	
 	import events.FullStreamingEvent;
 	
