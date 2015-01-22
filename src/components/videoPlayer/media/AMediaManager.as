@@ -11,6 +11,8 @@ package components.videoPlayer.media
 	import flash.events.NetDataEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.StatusEvent;
+	import flash.media.Camera;
+	import flash.media.Microphone;
 	import flash.media.SoundTransform;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
@@ -26,16 +28,17 @@ package components.videoPlayer.media
 		protected static const logger:ILogger=getLogger(AMediaManager);
 		
 		//Stream state info
-		public static const STREAM_UNREADY:int=-1;
-		public static const STREAM_READY:int=0;
-		public static const STREAM_STARTED:int=1;
-		public static const STREAM_STOPPED:int=2;
-		public static const STREAM_FINISHED:int=3;
-		public static const STREAM_PAUSED:int=4;
-		public static const STREAM_UNPAUSED:int=5;
-		public static const STREAM_BUFFERING:int=6;
-		public static const STREAM_SEEKING_START:int=7;
-		public static const STREAM_SEEKING_END:int=8;
+		public static const STREAM_UNINITIALIZED:int=-1;
+		public static const STREAM_INITIALIZED:int=0;
+		public static const STREAM_READY:int=1;
+		public static const STREAM_STARTED:int=2;
+		public static const STREAM_STOPPED:int=3;
+		public static const STREAM_FINISHED:int=4;
+		public static const STREAM_PAUSED:int=5;
+		public static const STREAM_UNPAUSED:int=6;
+		public static const STREAM_BUFFERING:int=7;
+		public static const STREAM_SEEKING_START:int=8;
+		public static const STREAM_SEEKING_END:int=9;
 		
 		//protected const DEFAULT_VOLUME:Number=0.7;
 		
@@ -48,6 +51,9 @@ package components.videoPlayer.media
 		protected var _connected:Boolean;
 		protected var _netStatusCode:String;
 		protected var _bwInfo:Object;
+		
+		protected var _micref:Microphone;
+		protected var _camref:Camera;
 	
 		//Instance id
 		protected var _id:String;
@@ -76,7 +82,7 @@ package components.videoPlayer.media
 		{
 			super();
 			//_sndTransform=new SoundTransform(DEFAULT_VOLUME);
-			_streamStatus=STREAM_UNREADY;
+			_streamStatus=STREAM_UNINITIALIZED;
 			_duration=0; //Until receiving metadata set the duration to 0
 			_id=id;
 		}
@@ -111,7 +117,12 @@ package components.videoPlayer.media
 			if(_ns) _ns.play(false);
 		}
 		
-		public function publish(mode:String='record'):void{
+		public function publish(microphone:Microphone=null, camera:Camera=null, mode:String='record'):void{
+			
+		}
+		
+		public function unpublish():void
+		{
 			
 		}
 		
@@ -162,6 +173,8 @@ package components.videoPlayer.media
 				_ns.addEventListener(StatusEvent.STATUS, onStatus, false, 0, true);
 				
 				_ns.bufferTime=2;
+				
+				_streamStatus=STREAM_INITIALIZED;
 				
 				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_SUCCESS, false, false, _id));
 			}

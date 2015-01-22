@@ -165,6 +165,10 @@
 			{
 				_roles=null;
 				_characterNames=new ArrayCollection();
+				
+				chooseRoleBox.visible=false;
+				chooseRoleBox.includeInLayout=false;
+				
 				if (DataModel.getInstance().availableExerciseRoles)
 				{
 					_roles=DataModel.getInstance().availableExerciseRoles;
@@ -179,9 +183,7 @@
 				var numVoices:int=_characterNames.length;
 				trace("Number of voices found in subtitles: " + numVoices);
 				if (!numVoices)
-				{
-					availableRoles.visible=false;
-					availableRoles.includeInLayout=false;
+				{	
 					availableRoles.dataProvider=null;
 					_rolesReady=false;
 				}
@@ -191,8 +193,8 @@
 					_rolesReady=true;
 					if (numVoices > 1)
 					{
-						availableRoles.visible=true;
-						availableRoles.includeInLayout=true;
+						chooseRoleBox.visible=true;
+						chooseRoleBox.includeInLayout=true;
 					}
 				}
 			}
@@ -431,7 +433,7 @@
 			{
 				DataModel.getInstance().recordingExercise=false;
 
-				VP.state=VideoRecorder.PLAY_STATE;
+				VP.loadVideoByUrl(_currentMediaData);
 
 
 				recordingEndOptions.includeInLayout=false;
@@ -715,7 +717,7 @@
 						  verticalAlign="middle">
 					<s:VGroup width="100%"
 							  verticalAlign="middle">
-						<s:HGroup verticalAlign="middle">
+						<s:HGroup verticalAlign="middle" id="chooseRoleBox">
 							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
 							<components:EnhancedDropDownList id="availableRoles"
 															 skinClass="skins.BootstrapDropDownList"

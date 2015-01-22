@@ -566,37 +566,59 @@ package components.videoPlayer
 		
 		public function playVideo():void
 		{
-			if (!streamReady(_media)){
-				//logger.debug("Stream is not ready");
-				return;
-			}
+			var streamState:int = _media ? _media.streamState : -1;
 			
-			if (_media.streamState == AMediaManager.STREAM_SEEKING_START){
-				//logger.debug("Cannot start playing while previous seek is not complete");
-				return;
-			}				
-			if (_media.streamState == AMediaManager.STREAM_PAUSED)
+			switch(streamState)
 			{
-				resumeVideo();
+				case AMediaManager.STREAM_UNINITIALIZED:
+				{
+					logger.debug("[playVideo] Stream is uninitialized");
+					_forcePlay=true;
+					loadVideo();
+					break;
+				}
+				case AMediaManager.STREAM_INITIALIZED:
+				{
+					logger.debug("[playVideo] Stream is initialized");
+					startVideo();
+					break;
+				}
+				case AMediaManager.STREAM_SEEKING_START:
+				{
+					logger.debug("[playVideo] Cannot start playing while previous seek is not complete");
+					break;
+				}
+				case AMediaManager.STREAM_PAUSED:
+				{
+					resumeVideo();
+					break;
+				}
+				case AMediaManager.STREAM_READY:
+				{
+					logger.debug("[playVideo] Stream is ready but the buffer is not full");
+					break;
+				}
+				case AMediaManager.STREAM_FINISHED:
+				{
+					logger.debug("[playVideo] Stream is finished. Autorewind?");
+					seekTo(0);
+					pauseVideo();
+				}
+				default:
+				{
+					break;
+				}
 			}
-			if (_media.streamState == AMediaManager.STREAM_UNREADY){
-				//logger.debug("[PlayVideo] stream not ready");
-				_forcePlay=true;
-				loadVideoByUrl(_mediaUrl);
-			}
-			if (_media.streamState == AMediaManager.STREAM_READY || _media.streamState == AMediaManager.STREAM_FINISHED){
-				//logger.debug("[PlayVideo] stream ready or finished");
-				startVideo();
-			}
-			
 		}
 
 		public function pauseVideo():void
 		{
 			if (_media.streamState == AMediaManager.STREAM_SEEKING_START)
 				return;
-			if (streamReady(_media) && (_media.streamState == AMediaManager.STREAM_STARTED || _media.streamState == AMediaManager.STREAM_BUFFERING))
+			if (streamReady(_media) && (_media.streamState == AMediaManager.STREAM_STARTED || _media.streamState == AMediaManager.STREAM_BUFFERING)){
 				_media.netStream.togglePause();
+				logger.debug("[pauseVideo] TogglePause");
+			}
 		}
 		
 		public function resumeVideo():void

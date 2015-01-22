@@ -8,6 +8,8 @@ package components.videoPlayer.media
 	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.media.Camera;
+	import flash.media.Microphone;
 	import flash.net.NetConnection;
 	import flash.net.ObjectEncoding;
 	
@@ -47,13 +49,7 @@ package components.videoPlayer.media
 			try
 			{		
 				//Spec says if flv "folder/streamname" without extension. If mp3 "mp3:folder/streamname". If mp4 "mp4:folder/streamname"
-				var formattedStreamUrl:String = _streamUrl;
-				if(_streamUrl.search(/\.flv$/) !=-1)
-					formattedStreamUrl = _streamUrl.substr(0,-4);
-				if(_streamUrl.search(/\.mp3$/) !=-1)
-					formattedStreamUrl = "mp3:" + _streamUrl.substr(0,-4);
-				if(_streamUrl.search(/\.mp4$/) != -1 || _streamUrl.search(/\.f4v$/) != -1 || _streamUrl.search(/\.mov$/) != -1)
-					formattedStreamUrl = "mp4:" + _streamUrl.substr(0,-4);
+				var formattedStreamUrl:String = formatStreamUrl(_streamUrl);
 				logger.info("[{0}] Play {1}", [_id, formattedStreamUrl]);
 				_ns.play(formattedStreamUrl,_defaultPlayMode);
 			}
@@ -68,8 +64,24 @@ package components.videoPlayer.media
 			_ns.close();
 		}
 		
-		override public function publish(mode:String='record'):void{
+		override public function publish(microphone:Microphone=null, camera:Camera=null, mode:String='record'):void{
+			_micref = microphone || null;
+			_camref = camera || null;
+			var formattedStreamUrl:String = formatStreamUrl(_streamUrl);
+			logger.info("[{0}] Publish {1}. Mode: {2}", [_id,formattedStreamUrl,mode]);
 			_ns.publish(_streamUrl, mode);
+		}
+		
+		override public function unpublish():void
+		{
+			logger.info("[{0}] Unpublish {1}", [_id,_streamUrl]);
+			if(_ns){
+				_ns.attachAudio(null);
+				_ns.attachCamera(null);
+				_camref=null;
+				_micref=null;
+				_ns.close();
+			}
 		}
 		
 		override public function setup(... args):void{
@@ -83,6 +95,18 @@ package components.videoPlayer.media
 			} else {
 				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "CANNOT_CONNECT_TO_STREAMING_SERVER"));
 			}
+		}
+		
+		private function formatStreamUrl(rawurl:String):String{
+			//Spec says if flv "folder/streamname" without extension. If mp3 "mp3:folder/streamname". If mp4 "mp4:folder/streamname"
+			var formattedStreamUrl:String = rawurl;
+			if(_streamUrl.search(/\.flv$/) !=-1)
+				formattedStreamUrl = _streamUrl.substr(0,-4);
+			if(_streamUrl.search(/\.mp3$/) !=-1)
+				formattedStreamUrl = "mp3:" + _streamUrl.substr(0,-4);
+			if(_streamUrl.search(/\.mp4$/) != -1 || _streamUrl.search(/\.f4v$/) != -1 || _streamUrl.search(/\.mov$/) != -1)
+				formattedStreamUrl = "mp4:" + _streamUrl.substr(0,-4);
+			return formattedStreamUrl;
 		}
 		
 		private function validRTMPUrl(url:String):Boolean{
@@ -266,6 +290,8 @@ package components.videoPlayer.media
 						//	_streamStatus=STREAM_FINISHED;
 						break;
 					case "NetStream.Publish.Start":
+						if(_micref) _ns.attachAudio(_micref);
+						if(_camref) _ns.attachCamera(_camref);
 						break;
 					case "NetStream.Publish.Idle":
 						break;

@@ -999,6 +999,8 @@ package components.videoPlayer
 
 		private function prepareDevices():void
 		{
+			_camera=null;
+			_mic=null;
 			_userdevmgr = new UserDeviceManager();
 			_userdevmgr.useMicAndCamera= _recordUseWebcam;
 			_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
@@ -1112,20 +1114,12 @@ package components.videoPlayer
 
 			if (state & RECORD_MODE_MASK)
 			{
-				_recordMedia.netStream.attachAudio(_mic);
 				muteRecording(true); // mic starts muted
 			}
 
-			if (state == RECORD_MICANDCAM_STATE)
-				_recordMedia.netStream.attachCamera(_camera);
-
 			_ppBtn.state=PlayButton.PAUSE_STATE;
 
-			_recordMedia.publish();
-
-			trace("[INFO] Response stream: Started recording " + _fileName);
-
-			//TODO: new feature - enableControls();
+			_recordMedia.publish(_mic, _camera);
 		}
 
 
@@ -1268,10 +1262,9 @@ package components.videoPlayer
 
 			if (state & RECORD_MODE_MASK || state == UPLOAD_MODE_STATE)
 			{
-				//addDummyVideo();
-				unattachUserDevices();
+				_recordMedia.unpublish();
+				logger.info("Stream recording finished: {0}",[_recordMediaUrl]);
 
-				trace("[INFO] Response stream: Finished recording " + _fileName);
 				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
 				enableControls(); 
 			}
@@ -1280,13 +1273,21 @@ package components.videoPlayer
 		}
 		
 		public function unattachUserDevices():void{
-			if (streamReady(_recordMedia))
-			{
-				_recordMedia.netStream.attachCamera(null);
-				_recordMedia.netStream.attachAudio(null);
-				_camVideo.clear();
-				_camVideo.attachCamera(null);
+			if(_recordMedia){
+				_recordMedia.unpublish();
+				_recordMedia.removeEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess);
+				_recordMedia.removeEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure);
+				_recordMedia.removeEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange);
+				_recordMedia.removeEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData);
 			}
+			
+			_camVideo.attachNetStream(null);
+			_camVideo.attachCamera(null);
+			_camVideo.clear();
+			
+			_camera=null;
+			_mic=null;
+			_recordMedia = null;
 		}
 
 		/**
@@ -1319,20 +1320,21 @@ package components.videoPlayer
 		 * @param param
 		 */		
 		override public function loadVideoByUrl(param:Object):void{
+			unattachUserDevices();
 			if(getQualifiedClassName(param) == 'Object')
 			{
 				if(param.leftMedia){
 					var lmedia:Object=parseMediaObject(param.leftMedia);
+					_mediaNetConnectionUrl=lmedia.netConnectionUrl;
+					_mediaUrl=lmedia.mediaUrl;
+					_mediaPosterUrl=lmedia.mediaPosterUrl;
+					
 					var rmedia:Object;
 					if(param.rightMedia){
 						rmedia=parseMediaObject(param.rightMedia);
 					}
 					if(lmedia && rmedia){
 						setInternalState(PLAY_BOTH_STATE);
-						
-						_mediaNetConnectionUrl=lmedia.netConnectionUrl;
-						_mediaUrl=lmedia.mediaUrl;
-						_mediaPosterUrl=lmedia.mediaPosterUrl;
 						_parallelMediaNetConnectionUrl=rmedia.netConnectionUrl;
 						_parallelMediaUrl=rmedia.mediaUrl;
 						
@@ -1340,7 +1342,7 @@ package components.videoPlayer
 							
 					} else if(lmedia){
 						setInternalState(PLAY_STATE);
-						super.loadVideoByUrl(lmedia);
+						loadVideo();
 					}
 				} else if (param.recordMedia){
 					var recmedia:Object=parseMediaObject(param.recordMedia);
@@ -1365,7 +1367,12 @@ package components.videoPlayer
 					}
 					loadRecordVideo();
 				} else {
-					super.loadVideoByUrl(param);
+					var media:Object=parseMediaObject(param);
+					_mediaNetConnectionUrl=media.netConnectionUrl;
+					_mediaUrl=media.mediaUrl;
+					_mediaPosterUrl=media.mediaPosterUrl;
+					setInternalState(PLAY_STATE);
+					loadVideo();
 				}
 			}
 		}
@@ -1468,7 +1475,6 @@ package components.videoPlayer
 		}
 		
 		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{	
-			unattachUserDevices();
 			if(_markermgr){
 				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
 			}
@@ -1511,7 +1517,6 @@ package components.videoPlayer
 			arrows=false;
 			
 			closeStreams();
-			closeConnection();
 		}
 		
 		override protected function onStreamSuccess(event:Event):void{
@@ -1543,17 +1548,19 @@ package components.videoPlayer
 					prepareDevices();
 				}
 			} 
-			else 
+			else if (_state & SPLIT_FLAG)
 			{
-				
+				if(_parallelMediaReady && _mediaReady){
+					
+				}
+			} else {
+				super.onStreamSuccess(event);
 			}
-			super.onStreamSuccess(event);
 		}
 		
 		override protected function onStreamStateChange(event:MediaStatusEvent):void{
-			
 			var streamId:String=event.streamid;
-			
+			logger.info("[{0}] Stream state change listener", [streamId]);
 			if(event.state == AMediaManager.STREAM_SEEKING_START){
 				_captionmgr.reset();
 			}
@@ -1588,11 +1595,6 @@ package components.videoPlayer
 				video.clear();
 				video=null;
 			}
-		}
-		
-		private function closeConnection():void
-		{
-			new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
 		}
 	}
 }
