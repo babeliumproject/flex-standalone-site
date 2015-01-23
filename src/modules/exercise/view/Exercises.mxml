@@ -77,7 +77,7 @@
 			private var _locales:Array;
 			[Bindable]
 			private var _characterNames:ArrayCollection;
-			private var _roles:ArrayCollection;
+			private var _roles:Object;
 			private var _mediaId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
@@ -102,15 +102,6 @@
 			protected var _modelMediaData:Object;
 			protected var _recordMediaData:Object;
 			protected var _currentCaptions:Object;
-
-			/**
-			 * Video player related vaiables
-			 **/
-
-			[Bindable]
-			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
-			private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
-			private const RESPONSE_FOLDER:String=DataModel.getInstance().responseStreamsFolder;
 
 			public var _videoPlayerReady:Boolean=false;
 
@@ -172,11 +163,11 @@
 				if (DataModel.getInstance().availableExerciseRoles)
 				{
 					_roles=DataModel.getInstance().availableExerciseRoles;
-					for each (var role:ExerciseRoleVO in _roles)
-					{
-						if (role.characterName != "NPC")
-						{
-							_characterNames.addItem({'code': role.id, 'label': role.characterName});
+					var code:int=0;
+					for (var role:String in _roles){
+						if(role != "NPC"){
+							code++;
+							_characterNames.addItem({'code': code, 'label': role});
 						}
 					}
 				}
@@ -303,6 +294,10 @@
 				recordingEndOptions.includeInLayout=true;
 				recordingEndOptions.visible=true;
 
+				checkRoleSelected();
+			}
+			
+			private function checkRoleSelected():void{
 				if (availableRoles.selectedIndex > -1)
 				{
 					var item:Object=availableRoles.selectedItem;
@@ -330,7 +325,7 @@
 
 				var useWebcam:Boolean=!micOnly.selected;
 
-				var timemarkers:Object;
+				var timemarkers:Object = _roles[_selectedRole];
 
 				trace("preparerecording: "+ObjectUtil.toString(media));
 				
@@ -381,25 +376,13 @@
 
 				// Set the videoplayer to playback both the exercise and the last response.
 
-				var items:Array=new Array();
 
-				var leftitem:Object=new Object();
-				leftitem.netConnectionUrl=_currentMediaData.netConnectionUrl || null;
-				leftitem.mediaUrl=_currentMediaData.mediaUrl || null;
-				items.push(leftitem);
+				var parallelmedia:Object=new Object();
+				
+				parallelmedia.leftMedia=_currentMediaData;
+				parallelmedia.rightMedia=_recordMediaData;
 
-				var rightitem:Object=new Object();
-				rightitem.netConnectionUrl=_streamSource || null;
-				rightitem.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename || null;
-				items.push(rightitem);
-
-				var media:Object=new Object();
-				media.parallelMedia=items;
-
-				VP.loadVideoByUrl(media);
-
-				VP.seek=false;
-				VP.stopVideo();
+				VP.loadVideoByUrl(parallelmedia);
 			}
 
 			/**
@@ -473,60 +456,25 @@
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
 
-				var items:Array=new Array();
-
-				var leftitem:Object=new Object();
-				leftitem.netConnectionUrl=_currentMediaData.netConnectionUrl || null;
-				leftitem.mediaUrl=_currentMediaData.mediaUrl || null;
-				items.push(leftitem);
-
-				var rightitem:Object=new Object();
-				rightitem.netConnectionUrl=_streamSource || null;
-				rightitem.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename || null;
-				items.push(rightitem);
-
-				var media:Object=new Object();
-				media.parallelMedia=items;
-
-				VP.loadVideoByUrl(media);
-
-				VP.seek=false;
+				var parallelmedia:Object=new Object();
+				
+				parallelmedia.leftMedia=_currentMediaData;
+				parallelmedia.rightMedia=_recordMediaData;
+				
+				VP.loadVideoByUrl(parallelmedia);
 			}
 
 			// Watch response
 			private function onWatchResponse(e:Event):void
 			{
-				var media:Object=new Object();
-				media.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename;
-				media.netConnectionUrl=_streamSource;
-
+				var media:Object=_recordMediaData;
 				VP.loadVideoByUrl(media);
-
-				VP.seek=false;
 			}
 
 			// Record again
 			private function onRecordAgain(e:Event):void
 			{
-				var play:Object=new Object();
-				play.netConnectionUrl=_currentMediaData.netConnectionUrl || null;
-				play.mediaUrl=_currentMediaData.mediaUrl || null;
-
-				var record:Object=new Object();
-				record.netConnectionUrl=_streamSource || null;
-				record.mediaUrl=RESPONSE_FOLDER + '/' + _recordedFilename || null;
-
-				var media:Object=new Object();
-
-				media.playbackMedia=play;
-				media.recordMedia=record;
-
-				var timemarkers:Object;
-
-				VP.recordVideo(media, !micOnly.selected, timemarkers);
-
-				//Save this new record attempt
-				statisticRecAttempt();
+				checkRoleSelected();
 			}
 
 			private function onAbortRecording(e:Event):void
@@ -662,7 +610,6 @@
 									   seek="true"
 									   displayCaptions="true"
 									   autoScale="false"
-									   arrows="false"
 									   subtitlingControls="false"
 									   width="640"
 									   height="360"

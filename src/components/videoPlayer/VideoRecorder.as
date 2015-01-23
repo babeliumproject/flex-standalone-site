@@ -14,6 +14,7 @@ package components.videoPlayer
 	import components.videoPlayer.media.*;
 	import components.videoPlayer.timedevent.CaptionManager;
 	import components.videoPlayer.timedevent.TimeMarkerManager;
+	import components.videoPlayer.timedevent.TimelineEventDispatcher;
 	
 	import events.FullStreamingEvent;
 	
@@ -45,6 +46,8 @@ package components.videoPlayer
 	
 	import spark.components.Button;
 	import spark.primitives.BitmapImage;
+	
+	import utils.TimeMetadataParser;
 	
 	import view.common.PrivacyRights;
 	
@@ -131,7 +134,7 @@ package components.videoPlayer
 		private var _captionColor:int;
 		private var _captionsLoaded:Boolean=false;
 		
-		private var _markermgr:TimeMarkerManager;
+		private var _markermgr:TimelineEventDispatcher;
 		
 		private var _timeMarkers:Object;
 		private var _pollTimeline:Boolean=false;
@@ -150,6 +153,7 @@ package components.videoPlayer
 		protected var _micLastGain:Number;
 	
 		private var _displayCaptions:Boolean=false;
+		private var _displayEventArrows:Boolean=false;
 
 		[Bindable]
 		public var secondStreamState:int;
@@ -220,6 +224,8 @@ package components.videoPlayer
 			_micActivityBar=new MicActivityBar();
 			_micActivityBar.visible=false;
 			
+			_micCurrentGain=DEFAULT_MIC_GAIN;
+			
 			_overlayButton=new Button();
 			_overlayButton.setStyle("skinClass", OverlayPlayButtonSkin);
 			_overlayButton.width=128;
@@ -282,13 +288,11 @@ package components.videoPlayer
 			}
 		}
 		
-		public function setTimeMarkers(markers:Object):void{
-			if(!markers) return;
-			
+		public function setTimeMarkers(markers:Array):void{
 			if(!_markermgr)
-				_markermgr = new TimeMarkerManager();
-			
-			_markermgr.parseTimeMarkers(markers, this);
+				_markermgr = new TimelineEventDispatcher();
+			_markermgr.removeAllMarkers();
+			_markermgr.addMarkers(markers);
 		}
 		
 		public function showCaption(args:Object):void{
@@ -368,17 +372,12 @@ package components.videoPlayer
 		 * @param selectedRole: selected role by the user.
 		 * 						This makes the arrows be red or black.
 		 */
-		public function setArrows(arrows:ArrayCollection, selectedRole:String):void
+		public function setArrows(timemetadata:Object):void
 		{
-			_arrowPanel.setArrows(arrows, _duration, selectedRole);
-
-			// Extract only selected roles
-			var tmp:ArrayCollection=new ArrayCollection();
-			for (var i:Number=0; i < arrows.length; i++)
-				if (arrows.getItemAt(i).role == selectedRole)
-					tmp.addItem(arrows.getItemAt(i));
-
-			_sBar.setMarks(tmp, _duration);
+			if(!timemetadata || !_duration) return;
+			
+			_arrowPanel.setArrows(timemetadata, _duration);
+			_sBar.setMarks(timemetadata, _duration);
 		}
 
 		// remove arrows from panel
@@ -389,16 +388,20 @@ package components.videoPlayer
 		}
 
 		// show/hide arrow panel
-		public function set arrows(flag:Boolean):void
+		protected function set displayEventArrows(value:Boolean):void
 		{
 			if (_state != PLAY_STATE)
 			{
-				_arrowContainer.visible=flag;
-				this.updateDisplayList(0, 0);
+				_displayEventArrows=value;
+				_arrowContainer.visible=_displayEventArrows;
 			} else {
 				_arrowContainer.visible=false;
-				this.updateDisplayList(0, 0);
 			}
+			invalidateDisplayList();
+		}
+		
+		protected function get displayEventArrows():Boolean{
+			return _displayEventArrows;
 		}
 
 		/**
@@ -443,14 +446,16 @@ package components.videoPlayer
 			
 			_state=state;
 			
-			//Pause and hide the current media
-			//switchPerspective();
+			//Changes the layout of the items in the video display area
+			switchPerspective();
+			
 			//dispatchEvent(new VideoRecorderEvent(VideoRecorderEvent.RECORDER_STATE_CHANGED,_state));
 		}
 
 		/**
 		 * Video player's state
 		 */
+		/*
 		public function get state():int
 		{
 			return _state;
@@ -465,7 +470,7 @@ package components.videoPlayer
 
 			_state=state;
 			switchPerspective();
-		}
+		}*/
 
 		public function overlayClicked(event:MouseEvent):void
 		{
@@ -514,7 +519,7 @@ package components.videoPlayer
 				{
 					newVolume=_parallelLastVolume;
 				}
-				if (_parallelMedia) _recordMedia.volume=newVolume;
+				if (_parallelMedia) _parallelMedia.volume=newVolume;
 			}
 		}
 
@@ -719,7 +724,7 @@ package components.videoPlayer
 		override public function playVideo():void
 		{
 			super.playVideo();
-			if(state == PLAY_BOTH_STATE)
+			if(_state == PLAY_BOTH_STATE)
 				playSecondStream();
 
 			if (!_ttimer)
@@ -738,7 +743,7 @@ package components.videoPlayer
 		override public function pauseVideo():void
 		{
 			//This won't work, exit right away
-			if (state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled){
 				return;
 				
 				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
@@ -747,7 +752,7 @@ package components.videoPlayer
 				//	_recordMedia.netStream.togglePause();
 			}
 			
-			if (state == PLAY_BOTH_STATE){
+			if (_state == PLAY_BOTH_STATE){
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
 				if (streamReady(_parallelMedia) && (_parallelMedia.streamState == AMediaManager.STREAM_STARTED || _parallelMedia.streamState == AMediaManager.STREAM_BUFFERING))
@@ -768,7 +773,7 @@ package components.videoPlayer
 		override public function resumeVideo():void
 		{
 			//This won't work, exit right away
-			if (state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled){
 				return;
 				
 				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
@@ -778,7 +783,7 @@ package components.videoPlayer
 				//}
 			}
 
-			if (state == PLAY_BOTH_STATE){
+			if (_state == PLAY_BOTH_STATE){
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
 				if (streamReady(_parallelMedia) && _parallelMedia.streamState == AMediaManager.STREAM_PAUSED){
@@ -802,7 +807,7 @@ package components.videoPlayer
 		{
 			super.stopVideo();
 
-			if (state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled){
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.stop();
@@ -810,7 +815,7 @@ package components.videoPlayer
 				}
 			}
 
-			if (state == PLAY_BOTH_STATE)
+			if (_state == PLAY_BOTH_STATE)
 			{
 				if (streamReady(_parallelMedia))
 				{
@@ -829,7 +834,7 @@ package components.videoPlayer
 		{
 			super.endVideo();
 
-			if (state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled){
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.netStream.close(); //Cleans the cache of the video
@@ -838,7 +843,7 @@ package components.videoPlayer
 				}
 			}
 			
-			if (state == PLAY_BOTH_STATE)
+			if (_state == PLAY_BOTH_STATE)
 			{
 				if (streamReady(_parallelMedia)){
 					_parallelMedia.netStream.close(); //Cleans the cache of the video
@@ -936,12 +941,12 @@ package components.videoPlayer
 				}
 				case RECORD_MIC_STATE:
 				{
-					recoverVideoPanel();
+					resetVideoDisplay();
 					break;
 				}
 				case UPLOAD_MODE_STATE:
 				{
-					recoverVideoPanel();
+					resetVideoDisplay();
 					scaleCamVideo(_videoWidth,_videoHeight,false);
 					break;
 				}
@@ -950,9 +955,12 @@ package components.videoPlayer
 					splitVideoPanel();
 					break;
 				}
-				default:
+				default: //PLAY_STATE
 				{
-					recoverVideoPanel();
+					_micActivityBar.visible=false;
+					displayEventArrows=false;
+					removeArrows();
+					resetVideoDisplay();
 					break;
 				}
 			}
@@ -979,7 +987,7 @@ package components.videoPlayer
 				_countdownTxt.visible=false;
 				_video.visible=true;
 
-				if (state == RECORD_MICANDCAM_STATE || state == UPLOAD_MODE_STATE)
+				if (_state == RECORD_MICANDCAM_STATE || _state == UPLOAD_MODE_STATE)
 				{
 					_camVideo.visible=true;
 					_micImage.visible=true;
@@ -992,7 +1000,7 @@ package components.videoPlayer
 
 				startRecording();
 			}
-			else if (state != PLAY_STATE)
+			else if (_state != PLAY_STATE)
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
 		}
 
@@ -1020,8 +1028,8 @@ package components.videoPlayer
 			_mic.setSilenceLevel(0, 60000000);
 			_micActivityBar.mic=_mic;
 			
-			_camVideo.width=_userdevmgr.defaultCameraWidth;
-			_camVideo.height=_userdevmgr.defaultCameraHeight;
+			//_camVideo.width=_userdevmgr.defaultCameraWidth;
+			//_camVideo.height=_userdevmgr.defaultCameraHeight;
 			_camVideo.attachCamera(_camera);
 			_camVideo.smoothing=true;
 			
@@ -1095,8 +1103,6 @@ package components.videoPlayer
 			
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
-			
-			switchPerspective();
 		}
 
 		/**
@@ -1104,7 +1110,7 @@ package components.videoPlayer
 		 */
 		private function startRecording():void
 		{
-			if (!(state & RECORD_MODE_MASK))
+			if (!(_state & RECORD_MODE_MASK))
 				return; // security check
 
 			//if (_started)
@@ -1112,7 +1118,7 @@ package components.videoPlayer
 			//else
 			playVideo();
 
-			if (state & RECORD_MODE_MASK)
+			if (_state & RECORD_MODE_MASK)
 			{
 				muteRecording(true); // mic starts muted
 			}
@@ -1129,7 +1135,7 @@ package components.videoPlayer
 		private function splitVideoPanel():void
 		{
 			//The stage should be splitted only when the right state is set
-			if (!(state & SPLIT_FLAG))
+			if (!(_state & SPLIT_FLAG))
 				return;
 
 			var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
@@ -1140,8 +1146,6 @@ package components.videoPlayer
 
 			_videoHeight=h;
 			
-			//trace("[INFO] Video player Babelium: BEFORE SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
-
 			var scaleY:Number=h / _video.height;
 			var scaleX:Number=w / _video.width;
 			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
@@ -1154,8 +1158,6 @@ package components.videoPlayer
 			_video.width*=scaleC;
 			_video.height*=scaleC;
 
-			//trace("[INFO] Video player Babelium: AFTER SPLIT VIDEO PANEL Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
-			
 			//Resize the cam display
 			scaleCamVideo(w,h);
 
@@ -1167,9 +1169,9 @@ package components.videoPlayer
 		/**
 		 * Recover video panel's original size
 		 */
-		private function recoverVideoPanel():void
+		private function resetVideoDisplay():void
 		{
-			trace("[INFO] Video player Babelium: Recover video panel");
+			logger.info("Reset video display");
 			// NOTE: problems with _videoWrapper.width
 			if (_lastVideoHeight > _videoHeight)
 				_videoHeight=_lastVideoHeight;
@@ -1179,11 +1181,8 @@ package components.videoPlayer
 			_camVideo.visible=false;
 			_micImage.visible=false;
 			_micActivityBar.visible=false;
-
-			//trace("The video panel recovered its original size");
 		}
 
-		// Aux: scaling cam image
 		private function scaleCamVideo(w:Number, h:Number,split:Boolean=true):void
 		{
 		
@@ -1219,8 +1218,8 @@ package components.videoPlayer
 				var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
 				var h:int=Math.ceil(w * 0.75);
 
-				if (_videoHeight != h) // cause we can call twice to this method
-					_lastVideoHeight=_videoHeight; // store last value
+				if (_videoHeight != h)
+					_lastVideoHeight=_videoHeight;
 
 				_videoHeight=h;
 
@@ -1235,7 +1234,6 @@ package components.videoPlayer
 
 				_video.width*=scaleC;
 				_video.height*=scaleC;
-				//trace("[INFO] Video player babelia: AFTER SCALE Video area dimensions: "+_videoWidth+"x"+_videoHeight+" video dimensions: "+_video.width+"x"+_video.height+" video placement: x="+_video.x+" y="+_video.y+" last video area heigth: "+_lastVideoHeight);
 			}
 		}
 
@@ -1243,33 +1241,13 @@ package components.videoPlayer
 		{
 			super.resetAppearance();
 
-			if (state & SPLIT_FLAG)
+			if (_state & SPLIT_FLAG)
 			{
 				_camVideo.attachNetStream(null);
 				_camVideo.clear();
 				_camVideo.visible=false;
 				_micImage.visible=false;
 			}
-		}
-
-		/**
-		 * Overriden on recording finished:
-		 * Gives the filename to the parent component
-		 **/
-		override protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
-		{
-			super.onVideoFinishedPlaying(e);
-
-			if (state & RECORD_MODE_MASK || state == UPLOAD_MODE_STATE)
-			{
-				_recordMedia.unpublish();
-				logger.info("Stream recording finished: {0}",[_recordMediaUrl]);
-
-				dispatchEvent(new RecordingEvent(RecordingEvent.END, _fileName));
-				enableControls(); 
-			}
-			else
-				dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
 		}
 		
 		public function unattachUserDevices():void{
@@ -1319,8 +1297,9 @@ package components.videoPlayer
 		 * The overriden loadVideoByUrl accepts parallel media loading 
 		 * @param param
 		 */		
-		override public function loadVideoByUrl(param:Object):void{
+		override public function loadVideoByUrl(param:Object, timemarkers:Object=null):void{
 			unattachUserDevices();
+			hideCaption();
 			if(getQualifiedClassName(param) == 'Object')
 			{
 				if(param.leftMedia){
@@ -1375,6 +1354,7 @@ package components.videoPlayer
 					loadVideo();
 				}
 			}
+			prepareTimeMarkers(timemarkers);
 		}
 		
 		protected function loadParallelVideo():void{
@@ -1474,27 +1454,30 @@ package components.videoPlayer
 			}
 		}
 		
-		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{	
+		private function prepareTimeMarkers(timemarkers:Object):void{
 			if(_markermgr){
 				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
 			}
-			
 			//Set the timeline event markers
 			if(timemarkers){
-				if(setTimeMarkers(timemarkers)){
-					_timeMarkers = timemarkers;
+				_timeMarkers = timemarkers;
+				var parsedTimeMarkers:Array = TimeMetadataParser.parseRoleMarkers(timemarkers, this);
+				if(parsedTimeMarkers){
 					//Add a listener to poll for event points
+					setTimeMarkers(parsedTimeMarkers);
 					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer, false, 0, true);
 					//Enable the timeline timer
 					pollTimeline=true;
 				} else {
-					logger.debug("No event points found in given recdata");
+					logger.debug("No valid time markers found in given data");
 				}
 			} else {
 				_timeMarkers = null;
-				trace("No timemarker data");
+				trace("Time marker data is null");
 			}
-			
+		}
+		
+		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{
 			_recordUseWebcam = useWebcam;
 			
 			//Set autoplay to false to avoid the exercise from playing once loading is done
@@ -1504,17 +1487,18 @@ package components.videoPlayer
 			
 			if(media){
 				//Load the exercise to play alongside the recording, if any
-				loadVideoByUrl(media);
+				loadVideoByUrl(media, timemarkers);
 				//Remove the exercise poster, we don't need it when about to record something
 				_topLayer.removeChildren();
 			}
 		}
 		
 		override public function resetComponent():void{
+			_topLayer.removeChildren();
 			hideCaption();
 			_captionmgr.removeAllMarkers();
-			state=VideoRecorder.PLAY_STATE;
-			arrows=false;
+			setInternalState(PLAY_STATE);
+			displayEventArrows=false;
 			
 			closeStreams();
 		}
@@ -1551,22 +1535,49 @@ package components.videoPlayer
 			else if (_state & SPLIT_FLAG)
 			{
 				if(_parallelMediaReady && _mediaReady){
+					_video.attachNetStream(_media.netStream);
+					_media.volume=_currentVolume;
+					_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
+					_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
 					
+					_camVideo.attachNetStream(_parallelMedia.netStream);
+					_parallelMedia.volume=_currentVolume;
+					_parallelMedia.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
+					_parallelMedia.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
 				}
 			} else {
 				super.onStreamSuccess(event);
 			}
 		}
 		
+		override public function onMetaData(event:MediaStatusEvent):void{
+			super.onMetaData(event);
+			
+			//The duration of the media is required to set the arrows and the scrubber marks
+			if(_timeMarkers){
+				setArrows(_timeMarkers);
+				displayEventArrows=true;
+			}
+		}
+		
 		override protected function onStreamStateChange(event:MediaStatusEvent):void{
 			var streamId:String=event.streamid;
-			logger.info("[{0}] Stream state change listener", [streamId]);
 			if(event.state == AMediaManager.STREAM_SEEKING_START){
 				_captionmgr.reset();
 			}
 			if(event.state == AMediaManager.STREAM_FINISHED){
 				_captionmgr.reset();
 				hideCaption();
+				if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
+				{
+					_recordMedia.unpublish();
+					logger.info("Stream recording finished: {0}",[_recordMediaUrl]);
+					
+					dispatchEvent(new RecordingEvent(RecordingEvent.END, _recordMediaUrl));
+					enableControls(); 
+				}
+				else
+					dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
 			}
 			super.onStreamStateChange(event);
 		}

@@ -290,7 +290,7 @@ package model
 
 		//Used to store exercise's roles added by the user  
 		[Bindable]
-		public var availableExerciseRoles:ArrayCollection;
+		public var availableExerciseRoles:Object;
 		[Bindable]
 		public var availableExerciseRolesRetrieved:Boolean;
 

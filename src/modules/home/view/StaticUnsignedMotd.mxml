@@ -50,7 +50,6 @@
 								   seek="true"
 								   displayCaptions="false"
 								   autoScale="false"
-								   arrows="false"
 								   width="400"
 								   height="250"
 								   controlsEnabled="false"/>

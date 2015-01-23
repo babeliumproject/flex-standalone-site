@@ -12,6 +12,7 @@ package components.videoPlayer.controls
 	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
+	import mx.utils.ObjectUtil;
 
 	public class ScrubberBar extends SkinableComponent
 	{
@@ -38,18 +39,11 @@ package components.videoPlayer.controls
 		public static const MARKER_COLOR_UP:String="markerColorUp";
 		public static const MARKER_COLOR_HOVER:String="markerColorHover";
 		public static const MARKER_COLOR_ACTIVE:String="markerColorActive";
-		public static const MARKER_COLOR_UP_ALPHA:String="markerColorUpAlpa";
+		public static const MARKER_COLOR_UP_ALPHA:String="markerColorUpAlpha";
 		public static const MARKER_COLOR_HOVER_ALPHA:String="markerColorHoverAlpha";
 		public static const MARKER_COLOR_ACTIVE_ALPHA:String="markerColorActiveAlpha";
 		public static const MARKER_BORDER_COLOR:String="markerBorderColor";
 		public static const MARKER_BORDER_WEIGHT:String="markerBorderWeight";
-		
-			
-		/**
-		 * Variables
-		 * 
-		 */
-		 
 		
 		private var _bar:Sprite;
 		private var _progBar:Sprite;
@@ -68,7 +62,7 @@ package components.videoPlayer.controls
 		private var _minX:Number;
 		private var _dragging:Boolean = false;
 		
-		private var _dataProvider:ArrayCollection;
+		private var _dataProvider:Object;
 		private var _duration:Number;
 		
 		
@@ -165,8 +159,9 @@ package components.videoPlayer.controls
 			
 			// set marks
 			_marks.graphics.clear();
-			for each (var obj:Object in _dataProvider)
-				doShowMark(obj.startTime, obj.endTime, _duration);
+			for each (var obj:Object in _dataProvider){
+				doShowMark(obj.showTime, obj.hideTime, _duration);
+			}
 		}
 		
 		private function onBarClick( e:MouseEvent ) : void
@@ -279,7 +274,7 @@ package components.videoPlayer.controls
 			return Math.floor( ( _scrubber.x / ( _bar.width - _scrubber.width ) ) * duration );
 		}
 		
-		public function setMarks(data:ArrayCollection, duration:Number):void
+		public function setMarks(data:Object, duration:Number):void
 		{
 			_dataProvider=data;
 			_duration = duration;
@@ -296,8 +291,7 @@ package components.videoPlayer.controls
 		
 		public function removeMarks() : void
 		{
-			if ( _dataProvider != null )
-				_dataProvider.removeAll();
+			_dataProvider=null;
 			refresh();
 		}
 	}

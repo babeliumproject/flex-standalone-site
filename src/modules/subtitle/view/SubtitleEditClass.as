@@ -534,7 +534,7 @@ package modules.subtitle.view
 
 		private function onRolesRetrieved(value:Boolean):void
 		{
-			var avrol:ArrayCollection=DataModel.getInstance().availableExerciseRoles;
+			var avrol:ArrayCollection=getRoleLabels(DataModel.getInstance().availableExerciseRoles);
 			var cData:ArrayCollection=new ArrayCollection();
 			var insertOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_INSERT_NEW_ROLE'), RoleComboDataVO.ACTION_INSERT, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 			cData.addItem(insertOption);
@@ -561,6 +561,17 @@ package modules.subtitle.view
 				cData.addItem(deleteOptionEmpty);
 				comboData=cData;
 			}
+		}
+		
+		private function getRoleLabels(roles:Object):ArrayCollection{
+			if(!roles) return null;
+			var roleLabels:ArrayCollection=new ArrayCollection();
+			var code:int=0;
+			for (var role:String in roles){
+				code++;
+				roleLabels.addItem({'code': code, 'label': role});
+			}
+			return roleLabels.length ? roleLabels : null;
 		}
 
 		private function onSubtitleSaved(value:Boolean):void

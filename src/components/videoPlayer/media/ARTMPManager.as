@@ -69,7 +69,7 @@ package components.videoPlayer.media
 			_camref = camera || null;
 			var formattedStreamUrl:String = formatStreamUrl(_streamUrl);
 			logger.info("[{0}] Publish {1}. Mode: {2}", [_id,formattedStreamUrl,mode]);
-			_ns.publish(_streamUrl, mode);
+			_ns.publish(formattedStreamUrl, mode);
 		}
 		
 		override public function unpublish():void

@@ -72,6 +72,16 @@ package components.videoPlayer.timedevent
 			return removeValue("" + marker.time);
 		}
 		
+		public function addMarkers(markerlist:Array):void{
+			if(!markerlist || !markerlist.length) return;
+			for(var i:int=0; i<markerlist.length; i++){
+				var et:EventTrigger = markerlist[i] as EventTrigger;
+				if(et){
+					addMarker(et);
+				}
+			}
+		}
+		
 		public function removeAllMarkers():void{
 			temporalValueCollection = null;
 			temporalKeyCollection = null;

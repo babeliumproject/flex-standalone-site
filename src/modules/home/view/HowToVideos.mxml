@@ -129,7 +129,7 @@
 										autoPlay="false"
 										displayCaptions="true"
 										autoScale="false"
-										arrows="false"
+										displayEventArrows="false"
 										width="854"
 										height="480"
 										streamSource="{streamSource}"

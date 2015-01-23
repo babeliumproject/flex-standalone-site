@@ -15,6 +15,8 @@ package modules.subtitle.command
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
 	
+	import utils.TimeMetadataParser;
+	
 	import view.common.CustomAlert;
 	
 	import vo.CueObject;
@@ -39,19 +41,22 @@ package modules.subtitle.command
 
 			var untouchedSubtitles:ArrayCollection=new ArrayCollection();
 
+			var timeMarkersByRole:Object;
+			
 			if(result){
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 				if (resultCollection.length > 0)
 				{
-					_subtitleRoles = new ArrayCollection();
-					for (var i:int=0; i<resultCollection.length; i++){
-						generateRoleArray(resultCollection.getItemAt(i));
-					}
+					timeMarkersByRole=TimeMetadataParser.separateByRole(resultCollection);
+					//_subtitleRoles = new ArrayCollection();
+					//for (var i:int=0; i<resultCollection.length; i++){
+					//	generateRoleArray(resultCollection.getItemAt(i));
+					//}
 					untouchedSubtitles=resultCollection;
 				}
 			}
 			
-			_model.availableExerciseRoles=_subtitleRoles;
+			_model.availableExerciseRoles=timeMarkersByRole;
 			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 			
 			_model.unmodifiedAvailableSubtitleLines=untouchedSubtitles;

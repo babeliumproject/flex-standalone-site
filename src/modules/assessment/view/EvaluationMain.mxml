@@ -412,12 +412,12 @@
 			private function showArrows():void
 			{
 				VP.setArrows(_cueManager.cues2rolearray(), _responseCharacterName);
-				VP.arrows=true;
+				VP.displayEventArrows=true;
 			}
 
 			private function hideArrows():void
 			{
-				VP.arrows=false;
+				VP.displayEventArrows=false;
 				VP.removeArrows();
 			}
 
@@ -1087,7 +1087,7 @@
 											seek="false"
 											displayCaptions="true"
 											autoScale="false"
-											arrows="false"
+											displayEventArrows="false"
 											subtitlingControls="false"
 											width="640"
 											height="360"

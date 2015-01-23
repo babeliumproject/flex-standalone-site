@@ -135,7 +135,6 @@ package components.videoPlayer
 			//Event Listeners
 			addEventListener(VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange, false, 0, true);
 			addEventListener(FlexEvent.CREATION_COMPLETE, onComplete, false, 0, true);
-			addEventListener(VideoPlayerEvent.VIDEO_FINISHED_PLAYING, onVideoFinishedPlaying, false, 0, true);
 			_ppBtn.addEventListener(MouseEvent.CLICK, onPPBtnChanged, false, 0, true);
 			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
 			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange, false, 0, true);
@@ -158,7 +157,7 @@ package components.videoPlayer
 			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
 		}
 		
-		public function loadVideoByUrl(param:Object):void{
+		public function loadVideoByUrl(param:Object, timemarkers:Object=null):void{
 			var parsedMedia:Object = parseMediaObject(param);
 			if(parsedMedia){
 				_mediaNetConnectionUrl=parsedMedia.netConnectionUrl;
@@ -728,16 +727,6 @@ package components.videoPlayer
 			if (!_media)
 				return;
 		}
-
-		/**
-		 * On video finished playing
-		 */
-		protected function onVideoFinishedPlaying(e:VideoPlayerEvent):void
-		{
-			trace("[INFO] Exercise stream: Finished playing video "+_mediaUrl);
-			stopVideo();
-		}
-
 
 		/**
 		 * On volume change

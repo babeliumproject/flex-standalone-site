@@ -27,7 +27,7 @@ package components.videoPlayer.controls.babelia
 
 		private var _bg:Sprite;
 		private var _arrows:ArrayCollection;
-		private var _dataProvider:ArrayCollection;
+		private var _dataProvider:Object;
 		private var _boxWidth:Number=500;
 		private var _boxHeight:Number=50;
 		private var _highlight:Boolean=false;
@@ -67,12 +67,12 @@ package components.videoPlayer.controls.babelia
 			CreateBG(width, height);
 		}
 
-		public function setArrows(data:ArrayCollection, duration:Number, role:String):void
+		public function setArrows(data:Object, duration:Number):void
 		{
 			_dataProvider=data;
 
 			for each (var obj:Object in _dataProvider)
-				doShowArrow(obj.startTime, duration, obj.role == role);
+				doShowArrow(obj.showTime, duration, true);
 		}
 
 		public function removeArrows():void
@@ -85,7 +85,7 @@ package components.videoPlayer.controls.babelia
 					_arrows.removeItemAt(0);
 				}
 
-				_dataProvider.removeAll();
+				_dataProvider=null;
 			}
 		}
 

@@ -53,7 +53,7 @@ package utils
 			var markersByRole:Object = separateByRole(markers);
 			
 			for (var role:String in markersByRole){
-				parsedMarkers[role] = parseRoleMarkers(markers.role);
+				parsedMarkers[role] = parseRoleMarkers(markers.role, playerInstance);
 			}
 			return parsedMarkers;
 		}
