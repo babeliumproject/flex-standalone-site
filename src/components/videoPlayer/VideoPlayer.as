@@ -787,13 +787,37 @@ package components.videoPlayer
 		protected function resetAppearance():void
 		{
 			_sBar.updateProgress(0, 10);
-			_video.attachNetStream(null);
-			_video.visible=false;
 			_eTime.updateElapsedTime(0, 0);
+			resetVideo(_video);
 		}
 		
 		public function resetComponent():void{
-			
+			resetAppearance();
+			freeMediaResources();
+		}
+		
+		protected function freeMediaResources():void
+		{
+			freeMedia(_media);
+		}
+		
+		protected function freeMedia(media:AMediaManager):void{
+			if(media){
+				media.unpublish();
+				media.removeEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess);
+				media.removeEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure);
+				media.removeEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange);
+				media.removeEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData);
+			}
+			media=null;
+		}
+		
+		protected function resetVideo(video:Video):void{
+			if(video){
+				video.attachNetStream(null);
+				video.attachCamera(null);
+				video.clear();
+			}
 		}
 	}
 }

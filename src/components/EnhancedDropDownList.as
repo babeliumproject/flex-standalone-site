@@ -65,7 +65,7 @@ package components
 			if (_sortItems)
 			{
 				previousSelectedItem=selectedItem;
-				trace("["+id+"] Previous selected item: "+ObjectUtil.toString(previousSelectedItem));
+				//trace("["+id+"] Previous selected item: "+ObjectUtil.toString(previousSelectedItem));
 				var sortedDataProvider:ArrayCollection=sortList(value);
 				super.dataProvider=sortedDataProvider;
 			}
@@ -78,7 +78,7 @@ package components
 
 		override protected function commitProperties():void
 		{
-			trace("[" + id + "] Commit properties");
+			//trace("[" + id + "] Commit properties");
 			super.commitProperties();
 			if (sortItemsChanged)
 			{
@@ -92,7 +92,7 @@ package components
 				{
 					var internalSortingValue:*=previousSelectedItem[indexField];
 					var item:Object=findItemByField(dataProvider, indexField, internalSortingValue);
-					trace("[" + id + "] Previous selected item: " + ObjectUtil.toString(previousSelectedItem) + ".\n In the new collection is: " + ObjectUtil.toString(item));
+					//trace("[" + id + "] Previous selected item: " + ObjectUtil.toString(previousSelectedItem) + ".\n In the new collection is: " + ObjectUtil.toString(item));
 					previousSelectedItem=null;
 					if (item)
 					{

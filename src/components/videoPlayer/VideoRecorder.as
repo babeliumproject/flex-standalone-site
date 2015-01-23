@@ -1236,19 +1236,6 @@ package components.videoPlayer
 				_video.height*=scaleC;
 			}
 		}
-
-		override protected function resetAppearance():void
-		{
-			super.resetAppearance();
-
-			if (_state & SPLIT_FLAG)
-			{
-				_camVideo.attachNetStream(null);
-				_camVideo.clear();
-				_camVideo.visible=false;
-				_micImage.visible=false;
-			}
-		}
 		
 		public function unattachUserDevices():void{
 			if(_recordMedia){
@@ -1493,16 +1480,6 @@ package components.videoPlayer
 			}
 		}
 		
-		override public function resetComponent():void{
-			_topLayer.removeChildren();
-			hideCaption();
-			_captionmgr.removeAllMarkers();
-			setInternalState(PLAY_STATE);
-			displayEventArrows=false;
-			
-			closeStreams();
-		}
-		
 		override protected function onStreamSuccess(event:Event):void{
 			var mobj:Object = event.currentTarget;
 			
@@ -1582,30 +1559,28 @@ package components.videoPlayer
 			super.onStreamStateChange(event);
 		}
 		
-		private function closeStreams():void
+		override public function resetComponent():void{
+			super.resetComponent();
+			setInternalState(PLAY_STATE);
+			_autoPlay=_lastAutoplay;
+			_topLayer.removeChildren();
+			_captionmgr=null;
+			_markermgr=null;
+		}
+		
+		override protected function resetAppearance():void{
+			super.resetAppearance();
+			resetVideo(_camVideo);
+			_micImage.visible=false;
+			hideCaption();
+			displayEventArrows=false;
+		}
+		
+		override protected function freeMediaResources():void
 		{
-			destroyNetstream(_recordMedia);
-			destroyNetstream(_parallelMedia);
-			destroyVideo(_video);
-		}
-		
-		private function destroyNetstream(nc:AMediaManager):void{
-			if (nc && nc.netStream)
-			{
-				nc.netStream.attachCamera(null);
-				nc.netStream.attachAudio(null);
-				nc.netStream.close();
-				nc=null;
-			}
-		}
-		
-		private function destroyVideo(video:Video):void{
-			if(video){
-				video.attachNetStream(null);
-				video.attachCamera(null);
-				video.clear();
-				video=null;
-			}
+			super.freeMediaResources();
+			freeMedia(_recordMedia);
+			freeMedia(_parallelMedia);
 		}
 	}
 }
