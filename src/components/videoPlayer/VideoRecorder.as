@@ -415,7 +415,7 @@ package components.videoPlayer
 		}
 
 		/**
-		 * Enable/disable subtitling controls			_recordGain=value;
+		 * Enable/disable subtitling controls
 		 */
 		public function set subtitlingControls(flag:Boolean):void
 		{
@@ -1353,7 +1353,7 @@ package components.videoPlayer
 				_busyIndicator.visible=true;
 				resetAppearance();
 				
-				if(!_autoPlay){
+				if(!autoPlay){
 					if(_mediaPosterUrl){
 						_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
 						_topLayer.addChild(_posterSprite);
@@ -1399,7 +1399,7 @@ package components.videoPlayer
 			_busyIndicator.visible=true;
 			resetAppearance();
 				
-			if(!_autoPlay){
+			if(!autoPlay){
 				if(_mediaPosterUrl){
 					_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
 					_topLayer.addChild(_posterSprite);
@@ -1467,9 +1467,8 @@ package components.videoPlayer
 		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{
 			_recordUseWebcam = useWebcam;
 			
-			//Set autoplay to false to avoid the exercise from playing once loading is done
-			_lastAutoplay=_autoPlay;
-			_autoPlay=false;
+			//Override autoPlay to avoid loading until the rest is done.
+			_autoPlayOverride=true;
 			_videoPlaying=false;
 			
 			if(media){
@@ -1562,7 +1561,7 @@ package components.videoPlayer
 		override public function resetComponent():void{
 			super.resetComponent();
 			setInternalState(PLAY_STATE);
-			_autoPlay=_lastAutoplay;
+			_autoPlayOverride=false;
 			_topLayer.removeChildren();
 			_captionmgr=null;
 			_markermgr=null;

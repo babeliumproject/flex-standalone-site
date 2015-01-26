@@ -12,7 +12,8 @@
 				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
-				  height="100%">
+				  height="100%"
+				  creationPolicy="all">
 		<s:NavigatorContent id="manage">
 			<view:SubtitleManageView id="subtitleManage" width="100%"/>
 		</s:NavigatorContent>
@@ -133,11 +134,19 @@
 				if(!parameters){
 					_urlmanager.redirect('/error');
 				} else {
-					var id:String = parameters['id'];
-					var subtitles:Object = new Object();
-					subtitles.id = id;
+					var mediaid:int = parseInt(parameters['id']);
+					var subtitleid:int = parseInt(parameters['v']);
 					_viewstackIndex=EDIT;
-					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, subtitles).dispatch();
+					
+					subtitleEdit.mediaid=mediaid;
+					//Only set if editing a subtitle version other than the last
+					subtitleEdit.subtitleid=subtitleid;
+					
+					var params:Object = new Object();
+					params.id = mediaid;
+					params.version = subtitleid;
+					
+					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
 				}
 			}
 			

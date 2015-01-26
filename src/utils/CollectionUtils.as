@@ -22,9 +22,10 @@ package utils
 			{
 				if(!getQualifiedClassName((element) == 'Object'))
 					return false;
-				if(!Object(element).hasOwnProperty(field))
+				var tmpelem:Object = Object(element);
+				if(!element.hasOwnProperty(field))
 					return false;
-				return element.field == value;
+				return element[field] == value;
 			}
 		}
 	}

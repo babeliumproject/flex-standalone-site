@@ -38,6 +38,9 @@ package components.videoPlayer.media
 		private var _netConnectionUrl:String;
 
 		private var _netConnectOngoingAttempt:Boolean;
+		
+		private var _deferredPause:Boolean=false;
+		private var _deferredSeek:Number;
 
 		public function ARTMPManager(id:String)
 		{
@@ -62,6 +65,19 @@ package components.videoPlayer.media
 		override public function stop():void{
 			logger.debug("[{0}] Stop was called", [_id]);
 			_ns.close();
+		}
+		
+		override public function seek(seconds:Number):void{
+			if(streamState==STREAM_FINISHED){
+				_deferredSeek=seconds;
+				play();
+			} else if(streamState==STREAM_PAUSED){
+				_deferredSeek=seconds;
+				_deferredPause=true;
+				resume();
+			} else {
+				super.seek(seconds);	
+			}
 		}
 		
 		override public function publish(microphone:Microphone=null, camera:Camera=null, mode:String='record'):void{
@@ -266,6 +282,7 @@ package components.videoPlayer.media
 			}
 			else
 			{
+				var seconds:Number;
 				switch (_netStatusCode)
 				{
 					case "NetStream.Buffer.Full":
@@ -299,6 +316,11 @@ package components.videoPlayer.media
 						break;
 					case "NetStream.Play.Start":
 						_streamStatus=STREAM_READY;
+						if(_deferredSeek){
+							seconds=_deferredSeek;
+							_deferredSeek=NaN;
+							seek(seconds);
+						}
 						break;
 					case "NetStream.Play.Stop":
 						_streamStatus=STREAM_STOPPED;
@@ -327,6 +349,11 @@ package components.videoPlayer.media
 						break;
 					case "NetStream.Unpause.Notify":
 						_streamStatus=STREAM_UNPAUSED;
+						if(_deferredSeek){
+							seconds=_deferredSeek;
+							_deferredSeek=NaN;
+							seek(seconds);
+						}
 						break;
 					case "NetStream.Record.Start":
 						break;
@@ -340,6 +367,10 @@ package components.videoPlayer.media
 						break;
 					case "NetStream.Seek.Complete":
 						_streamStatus=STREAM_SEEKING_END;
+						if(_deferredPause){
+							_deferredPause=false;
+							pause();
+						}
 						break;
 					default:
 						break;

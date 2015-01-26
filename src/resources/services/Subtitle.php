@@ -41,6 +41,7 @@ require_once 'Zend/Json.php';
 class Subtitle {
 
     private $conn;
+    private $cfg;
 
     /**
      * Constructor function
@@ -52,6 +53,7 @@ class Subtitle {
         try {
             $verifySession = new SessionValidation();
             $settings = new Config ( );
+            $this->cfg = $settings;
             $this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -460,7 +462,7 @@ class Subtitle {
      * @return mixed
      *      An array of stdClass with info about the subtitles of an exercise. False on error
      */
-    public function getMediaSubtitles($mediaid = 0){
+    public function getMediaSubtitles($mediaid, $subtitleid=0){
         if(!$mediaid)
             return;
         
@@ -511,8 +513,8 @@ class Subtitle {
     	
     	$result = $this->conn->_singleSelect($sql, $mediaid, $sparam);
     	if($result){
-    			$result->netConnectionUrl = $this->netConnectionUrl;
-    			$result->mediaUrl = 'exercises/'.$r->filename;
+    			$result->netConnectionUrl = $this->cfg->streamingserver;
+    			$result->mediaUrl = 'exercises/'.$result->filename;
     	}
     	return $result;
     }

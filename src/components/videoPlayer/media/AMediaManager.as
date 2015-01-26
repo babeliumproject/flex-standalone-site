@@ -129,7 +129,10 @@ package components.videoPlayer.media
 		public function pause():void{
 			if (_streamStatus == AMediaManager.STREAM_SEEKING_START)
 				return;
-			if (_nc.connected && (_streamStatus == AMediaManager.STREAM_STARTED || _streamStatus == AMediaManager.STREAM_BUFFERING))
+			if (_nc.connected && (_streamStatus == AMediaManager.STREAM_STARTED || 
+								  _streamStatus == AMediaManager.STREAM_BUFFERING ||
+								  _streamStatus == AMediaManager.STREAM_SEEKING_END ||
+								  _streamStatus == AMediaManager.STREAM_UNPAUSED))
 				_ns.togglePause();
 		}
 		
@@ -143,6 +146,7 @@ package components.videoPlayer.media
 		public function seek(seconds:Number):void{
 			if (!isNaN(seconds) && seconds >= 0 && seconds < _duration && _nc.connected)
 			{
+				logger.debug("[{0}] Seek to seconds: {1}",[_id,seconds]);
 				_ns.seek(seconds);
 			}
 		}

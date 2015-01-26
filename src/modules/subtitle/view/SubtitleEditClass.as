@@ -40,12 +40,15 @@ package modules.subtitle.view
 	import skins.CustomTitleWindow;
 	import skins.IconButton;
 	
+	import spark.collections.Sort;
+	import spark.collections.SortField;
 	import spark.components.Button;
 	import spark.components.ComboBox;
 	import spark.components.DropDownList;
 	import spark.components.HGroup;
 	import spark.components.Label;
 	import spark.components.VGroup;
+	import spark.events.IndexChangeEvent;
 	
 	import utils.CollectionUtils;
 	
@@ -76,15 +79,9 @@ package modules.subtitle.view
 
 		[Bindable]
 		public var videoPlaybackStartedState:int=AMediaManager.STREAM_STARTED;
-
-		[Bindable]
-		public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
-
-		private const EXERCISE_FOLDER:String=DataModel.getInstance().exerciseStreamsFolder;
-
-		private var exerciseFileName:String;
-		private var exerciseId:int;
-		private var exerciseLanguage:String;
+		
+		public var mediaid:int;
+		public var subtitleid:int;
 
 		[Bindable]
 		private var subtitleStartTime:Number=0;
@@ -137,7 +134,6 @@ package modules.subtitle.view
 		{
 			setupVideoPlayer();
 
-			BindingUtils.bindSetter(onExerciseSelected, _dataModel, "currentExerciseRetrieved", false, true);
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved", false, true);
 			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved", false, true);
 			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved", false, true);
@@ -150,18 +146,6 @@ package modules.subtitle.view
 		{
 			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler, false, 0, true);
 			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler, false, 0, true);
-		}
-
-		public function prepareVideoPlayer():void
-		{
-			var netConnectionUrl:String='';
-
-			var media:Object=new Object();
-			media.netConnectionUrl=netConnectionUrl;
-			media.mediaUrl=EXERCISE_FOLDER + '/' + exerciseFileName;
-
-			VPSubtitle.loadVideoByUrl(media);
-
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -180,7 +164,7 @@ package modules.subtitle.view
 
 		private function setSelectedSubtitleVersion(activeSubtitleId:int):void
 		{
-			if (availableSubtitleVersions.length > 1)
+			if (availableSubtitleVersions && availableSubtitleVersions.length > 1)
 			{
 				for each (var subtVer:Object in availableSubtitleVersions)
 				{
@@ -197,11 +181,25 @@ package modules.subtitle.view
 		{
 			subtitleStartTime=(e.time < 0.5) ? 0.5 : e.time;
 			startEntry=new CueObject(0, subtitleStartTime, subtitleStartTime + 0.5, '', 0, '');
-			startEntry.setStartCommand(new ShowHideSubtitleCommand(startEntry, VPSubtitle));
-			startEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
+			addSubtitleToCollection(startEntry);
 
 			VPSubtitle.setCaptions(subtitleCollection);
 
+		}
+		
+		protected function addSubtitleToCollection(lineData:Object):void{
+			subtitleCollection.addItem(lineData);
+			sortByField(subtitleCollection,'showTime',true);
+		}
+		
+		protected function sortByField(collection:ArrayCollection, field:String, numeric:Boolean):void{
+			var fieldSort:SortField=new SortField();
+			fieldSort.name=field;
+			fieldSort.numeric=numeric;
+			var numericDataSort:Sort=new Sort();
+			numericDataSort.fields=[fieldSort];
+			collection.sort=numericDataSort;
+			collection.refresh();
 		}
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
@@ -332,7 +330,6 @@ package modules.subtitle.view
 						var subtitleLines:Array=subLines.toArray();
 						subtitlesToBeSaved=new SubtitleAndSubtitleLinesVO();
 						subtitlesToBeSaved.mediaId=currentExercise.id;
-						subtitlesToBeSaved.language=exerciseLanguage;
 						subtitlesToBeSaved.subtitleLines=subtitleLines;
 						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)
 						subtitlesToBeSaved.id=0;
@@ -445,51 +442,17 @@ package modules.subtitle.view
 				return "";
 		}
 
-		public function onSubtitleVersionChange(event:Event):void
+		public function onSubtitleVersionChange(event:IndexChangeEvent):void
 		{
-
-			var exerciseToWatch:ExerciseVO=new ExerciseVO();
-			exerciseToWatch.exercisecode=exerciseFileName;
-			exerciseToWatch.id=exerciseId;
-			exerciseToWatch.language=exerciseLanguage;
-			exerciseToWatch.title=exerciseTitle.text;
-
-			//Which subtitle version we want to retrieve
-			var subtitleId:int=subtitleVersionSelector.selectedItem.id;
-
-			//Set a flag that notices the currently selected label we're no longer dealing with the most recent subtitle.
-
-			//Request the specified subtitles and launch the same events as when we watch the latest ones.
-			var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(subtitleId, 0, '', exerciseLanguage);
-
-
-			new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, exerciseId, '', '')).dispatch();
-			new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
-			new ExerciseEvent(ExerciseEvent.WATCH_EXERCISE, exerciseToWatch).dispatch();
+			var select:Object = (event.currentTarget as DropDownList).selectedItem;
+			if(select){
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, select).dispatch();
+			}
 		}
 
 		/**
 		 * BINDING FUNCTIONS
 		 */
-
-		public function onExerciseSelected(value:Boolean):void
-		{
-			if (DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.SUBMODULE) /*&& videoPlayerReady*/)
-			{
-				//Add the subtitle editor to the stage
-				this.includeInLayout=true;
-				this.visible=true;
-
-				DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.SUBMODULE);
-				var watchExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(DataModel.SUBMODULE) as ExerciseVO;
-				exerciseFileName=watchExercise.exercisecode;
-				exerciseId=watchExercise.id;
-				exerciseLanguage=watchExercise.language;
-				exerciseTitle.text=watchExercise.title;
-
-				prepareVideoPlayer();
-			}
-		}
 
 		/**
 		 * Called each time the property "availableSubtitlesRetrieved" changes in the model
@@ -500,8 +463,14 @@ package modules.subtitle.view
 			var subversions:int=DataModel.getInstance().availableSubtitles ? DataModel.getInstance().availableSubtitles.length : 0;
 			
 			var mediaData:Object=_dataModel.subtitleMedia;
+			trace("Media data: "+ObjectUtil.toString(mediaData));
+			if(mediaData){
+				var media:Object = new Object();
+				media.netConnectionUrl = mediaData.netConnectionUrl;
+				media.mediaUrl = mediaData.mediaUrl;
+				VPSubtitle.loadVideoByUrl(media);
+			}
 			
-			trace("Subtitle media: "+ObjectUtil.toString(mediaData));
 			trace("Subtitle versions: " + subversions);
 			availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
 			if (subversions > 1)
@@ -532,8 +501,10 @@ package modules.subtitle.view
 			
 			VPSubtitle.setCaptions(subtitleCollection, this);
 			
-			if (unmodifiedSubtitleCollection && unmodifiedSubtitleCollection.length > 0)
-				setSelectedSubtitleVersion(unmodifiedSubtitleCollection.getItemAt(0).subtitleId);
+			if (unmodifiedSubtitleCollection && unmodifiedSubtitleCollection.length > 0){
+				var subtitleid:int=parseInt(unmodifiedSubtitleCollection.getItemAt(0).subtitleId);
+				setSelectedSubtitleVersion(subtitleid);
+			}
 		}
 
 		private function onRolesRetrieved(value:Boolean):void

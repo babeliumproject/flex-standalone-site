@@ -55,7 +55,7 @@ package components.videoPlayer
 		protected var _autoScale:Boolean=true;
 		protected var _currentTime:Number=0;
 		protected var _autoPlay:Boolean=false;
-		protected var _lastAutoplay:Boolean;
+		protected var _autoPlayOverride:Boolean=false;
 		protected var _duration:Number=0;
 		protected var _started:Boolean=false;
 		protected var _defaultMargin:Number=0;
@@ -204,7 +204,7 @@ package components.videoPlayer
 				_busyIndicator.visible=true;
 				resetAppearance();
 		
-				if(!_autoPlay){
+				if(!autoPlay){
 					if(_mediaPosterUrl){
 						_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
 						_topLayer.addChild(_posterSprite);
@@ -246,7 +246,7 @@ package components.videoPlayer
 			if (_mediaUrl != '')
 			{
 				_mediaReady=true;
-				if (_autoPlay || _forcePlay)
+				if (autoPlay || _forcePlay)
 				{
 					startVideo();
 					_forcePlay=false;
@@ -267,9 +267,8 @@ package components.videoPlayer
 			_busyIndicator.visible=false;
 			if (event.state == AMediaManager.STREAM_FINISHED)
 			{
-				_video.clear();
+				_video.clear(); //Clean the last frame
 				_videoPlaying=false;
-				_sBar.updateProgress(0,_duration);
 				_ppBtn.state=PlayButton.PLAY_STATE;
 				trace("["+event.streamid+"] Stream Finished");
 			}
@@ -317,7 +316,7 @@ package components.videoPlayer
 
 		public function get autoPlay():Boolean
 		{
-			return _autoPlay;
+			return _autoPlayOverride ? false: _autoPlay;
 		}
 
 		public function set videoSmooting(value:Boolean):void
@@ -361,9 +360,8 @@ package components.videoPlayer
 
 		public function seekTo(seconds:Number):void
 		{
-			this.onScrubberDragging(null);
 			_sBar.updateProgress(seconds, _duration);
-			this.onScrubberDropped(null);
+			_media.seek(seconds);
 		}
 
 		/**

@@ -171,7 +171,8 @@ package components.videoPlayer.controls
 			
 			var _x:Number = mouseX;
 			
-			if( _x > ( _bar.x + _bar.width - _scrubber.width ) ) _x = _bar.x + _bar.width - _scrubber.width;
+			if( _x > ( _bar.x + _bar.width - _scrubber.width ) ) 
+				_x = _bar.x + _bar.width - _scrubber.width;
 			
 			var a1:AnimateProperty = new AnimateProperty();
 			a1.target = _scrubber;
@@ -200,6 +201,7 @@ package components.videoPlayer.controls
 			_dragging = true;
 			this.dispatchEvent( new ScrubberBarEvent( ScrubberBarEvent.SCRUBBER_DRAGGING ) );
 			this.parentApplication.addEventListener( MouseEvent.MOUSE_UP, onScrubberStopDrag );
+			
 			_scrubber.startDrag( false, new Rectangle( _bar.x, _defaultY, ( _bar.width - _scrubber.width ), 0 ) );
 			
 			addEventListener( Event.ENTER_FRAME, updateProgWidth );
@@ -215,7 +217,7 @@ package components.videoPlayer.controls
 			this.removeEventListener( Event.ENTER_FRAME, updateProgWidth );
 			
 			_scrubber.stopDrag();
-			
+			trace("Scrubber stop dragging x:"+_scrubber.x+" :::: scrubberwidth:"+_scrubber.width);
 			updateProgWidth( );
 		}
 		
@@ -255,11 +257,17 @@ package components.videoPlayer.controls
 			bg.graphics.endFill();
 		}
 		
-		
+		/**
+		 * Set timeline bar and the scrubber position  
+		 * @param seconds
+		 * @param duration
+		 */		
 		public function updateProgress( seconds:Number, duration:Number ):void
 		{
-			if( !_dragging ) _scrubber.x = ( seconds / duration ) * ( _bar.width-_scrubber.width ) + _defaultX;
-			if( !_dragging ) _progBar.width = ( seconds / duration ) * _bar.width;
+			if( !_dragging ) 
+				_scrubber.x = ( seconds / duration ) * ( _bar.width-_scrubber.width ) + _defaultX;
+			if( !_dragging ) 
+				_progBar.width = ( seconds / duration ) * _bar.width;
 		}
 		
 		
@@ -271,7 +279,10 @@ package components.videoPlayer.controls
 		
 		public function seekPosition( duration:Number ):Number
 		{
-			return Math.floor( ( _scrubber.x / ( _bar.width - _scrubber.width ) ) * duration );
+			//Correct the margin
+			var nominalScrubberX:Number = _scrubber.x - _defaultX;
+			
+			return Math.floor( (nominalScrubberX / ( _bar.width - _scrubber.width ) ) * duration );
 		}
 		
 		public function setMarks(data:Object, duration:Number):void
