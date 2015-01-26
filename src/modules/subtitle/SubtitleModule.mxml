@@ -117,8 +117,10 @@
 					case 'edit':
 						actionEdit(evt.parameters);
 						break;
-					default:
+					case 'manage':
 						actionManage(evt.parameters);
+					default:
+						_urlmanager.redirect('/error');
 						break;
 				}
 			}

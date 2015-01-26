@@ -462,7 +462,15 @@ class Subtitle {
      */
     public function getMediaSubtitles($mediaid = 0){
         if(!$mediaid)
-            return false;
+            return;
+        
+        $readystatus = 2;
+        
+        $media = $this->getMediaById($mediaid,$readystatus);
+        if(!$media) return;
+        
+        $result = new stdClass();
+        
         $sql = "SELECT s.id, 
                        s.fk_media_id as mediaid, 
                        u.username as username, 
@@ -473,8 +481,40 @@ class Subtitle {
                 WHERE fk_media_id=%d
                 ORDER BY s.timecreated DESC";
         $searchResults = $this->conn->_multipleSelect ($sql, $mediaid);
+        
+        $result->media = $media;
+        $result->subtitles = $searchResults;
 
-        return $searchResults;
+        return $result;
+    }
+    
+    private function getMediaById($mediaid,$status){
+    	if(!$mediaid) return;
+
+    	
+    	$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
+    			FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+    			WHERE m.id=%d";
+    	
+    	if(is_array($status)){
+    		if(count($status)>1){
+    			$sparam = implode(",",$status);
+    			$sql.=" AND mr.status IN (%s) ";
+    		} else {
+    			$sparam = $status[0];
+    			$sql.=" AND mr.status=%d ";
+    		}
+    	} else {
+    		$sparam=$status;
+    		$sql.=" AND mr.status=%d ";
+    	} 	
+    	
+    	$result = $this->conn->_singleSelect($sql, $mediaid, $sparam);
+    	if($result){
+    			$result->netConnectionUrl = $this->netConnectionUrl;
+    			$result->mediaUrl = 'exercises/'.$r->filename;
+    	}
+    	return $result;
     }
 
     /**

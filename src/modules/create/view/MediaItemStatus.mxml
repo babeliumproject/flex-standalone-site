@@ -136,7 +136,9 @@
 				if(!status){
 					URLManager.getInstance().redirect('/subtitle/add/' + mediaid);
 				} else {
-					URLManager.getInstance().redirect('/subtitle/manage/' + mediaid);
+					//Manage not available in this iteration
+					//URLManager.getInstance().redirect('/subtitle/manage/' + mediaid);
+					URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
 				}
 			}
 

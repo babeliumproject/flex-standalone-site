@@ -9,7 +9,7 @@
 		  paddingBottom="20"
 		  paddingLeft="20"
 		  paddingRight="20"
-		  paddingTop="20">
+		  paddingTop="20" xmlns:view="modules.account.view.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -165,7 +165,7 @@
 				  click="allTimeClickHandler()"
 				  buttonMode="true"/>
 	</s:BorderContainer>
-	<userManagement:CreditLineChart id="lineChartContainer"
+	<view:CreditLineChart id="lineChartContainer"
 									height="300"
 									width="100%"/>
 	<mx:DataGrid width="100%"
@@ -180,8 +180,12 @@
 							   dataField="changeAmount"/>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','EXERCISE_NAME')}"
 							   dataField="videoExerciseName"
-							   labelFunction="formatVideoExerciseName"
-							   itemRenderer="components.userManagement.ExerciseClickRenderer">
+							   labelFunction="formatVideoExerciseName">
+				<mx:itemRenderer>
+					<fx:Component>
+						<mx:LinkButton label="{data.videoExerciseName}"/>
+					</fx:Component>
+				</mx:itemRenderer>
 			</mx:DataGridColumn>
 			<mx:DataGridColumn headerText="{resourceManager.getString('myResources','RESPONSE_NAME')}"
 							   dataField="videoResponseName"

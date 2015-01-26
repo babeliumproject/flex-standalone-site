@@ -233,9 +233,8 @@ package modules.subtitle.view
 			{
 				if (subtitleCollection && subtitleCollection.length > 0)
 				{
-					var lastSub:CueObject=subtitleCollection.getItemAt(subtitleCollection.length - 1) as CueObject;
-					var time:Number=lastSub.endTime + 0.25;
-					trace(time);
+					var lastSub:Object=subtitleCollection.getItemAt(subtitleCollection.length - 1);
+					var time:Number=lastSub.hideTime + 0.25;
 					this.subtitleStartHandler((new SubtitlingEvent(SubtitlingEvent.START, time)));
 				}
 				else
@@ -295,7 +294,7 @@ package modules.subtitle.view
 			if (subtitleList.selectedIndex != -1)
 			{
 				var tempEntry:Object=subtitleList.selectedIndex as Object;
-				VPSubtitle.seekTo(tempEntry.startTime);
+				VPSubtitle.seekTo(tempEntry.showTime);
 			}
 		}
 		
@@ -312,9 +311,9 @@ package modules.subtitle.view
 			var subLines:ArrayCollection=new ArrayCollection();
 			if (subtitleCollection.length > 0)
 			{
-				for each (var s:CueObject in subtitleCollection)
+				for each (var s:Object in subtitleCollection)
 				{
-					var subLine:SubtitleLineVO=new SubtitleLineVO(0, 0, s.startTime, s.endTime, s.text, s.roleId)
+					var subLine:SubtitleLineVO=new SubtitleLineVO(0, 0, s.showTime, s.hideTime, s.text, s.exerciseRoleId)
 					for each (var dp:Object in comboData)
 					{
 						if (dp.roleId == subLine.exerciseRoleId)
@@ -383,16 +382,16 @@ package modules.subtitle.view
 		private function subtitlesWereModified(compareSubject:ArrayCollection):Boolean
 		{
 			var modified:Boolean=false;
-			var unmodifiedSubtitlesLines:ArrayCollection=DataModel.getInstance().unmodifiedAvailableSubtitleLines;
+			var unmodifiedSubtitlesLines:ArrayCollection=_dataModel.unmodifiedAvailableSubtitleLines;
 			if (unmodifiedSubtitlesLines.length != compareSubject.length)
 				modified=true;
 			else
 			{
 				for (var i:int=0; i < unmodifiedSubtitlesLines.length; i++)
 				{
-					var unmodifiedItem:CueObject=unmodifiedSubtitlesLines.getItemAt(i) as CueObject;
-					var compareItem:SubtitleLineVO=compareSubject.getItemAt(i) as SubtitleLineVO;
-					if ((unmodifiedItem.text != compareItem.text) || (unmodifiedItem.startTime != compareItem.showTime) || (unmodifiedItem.endTime != compareItem.hideTime))
+					var unmodifiedItem:Object=unmodifiedSubtitlesLines.getItemAt(i);
+					var compareItem:Object=compareSubject.getItemAt(i);
+					if ((unmodifiedItem.text != compareItem.text) || (unmodifiedItem.showTime != compareItem.showTime) || (unmodifiedItem.hideTime != compareItem.hideTime))
 					{
 						modified=true;
 						break;
@@ -408,7 +407,7 @@ package modules.subtitle.view
 			//Check empty roles, time overlappings and empty texts
 			for (var i:int=0; i < subtitleCollection.length; i++)
 			{
-				if (subtitleCollection.getItemAt(i).roleId < 1)
+				if (subtitleCollection.getItemAt(i).exerciseRoleId < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY') + "\n", i + 1);
 				var lineText:String=subtitleCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
@@ -416,12 +415,12 @@ package modules.subtitle.view
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'EMPTY') + "\n", i + 1);
 				if (i > 0)
 				{
-					if ((subtitleCollection.getItemAt((i - 1)).endTime + 0.2) >= subtitleCollection.getItemAt(i).startTime)
+					if ((subtitleCollection.getItemAt((i - 1)).hideTime + 0.2) >= subtitleCollection.getItemAt(i).showTime)
 						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBOVERLAPS') + "\n", i);
 				}
-				var endTime:Number=subtitleCollection.getItemAt(i).endTime;
-				var startTime:Number=subtitleCollection.getItemAt(i).startTime;
-				if ((endTime > VPSubtitle.duration - 0.5) || endTime < 0.5 || startTime < 0.5 || startTime > VPSubtitle.duration - 0.5)
+				var hideTime:Number=subtitleCollection.getItemAt(i).hideTime;
+				var showTime:Number=subtitleCollection.getItemAt(i).showTime;
+				if ((hideTime > VPSubtitle.duration - 0.5) || hideTime < 0.5 || showTime < 0.5 || showTime > VPSubtitle.duration - 0.5)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTIME_OUT_OF_BOUNDS') + "\n", i + 1);
 			}
 			return errorMessage;
@@ -499,6 +498,10 @@ package modules.subtitle.view
 		private function onSubtitlesRetrieved(value:Boolean):void
 		{
 			var subversions:int=DataModel.getInstance().availableSubtitles ? DataModel.getInstance().availableSubtitles.length : 0;
+			
+			var mediaData:Object=_dataModel.subtitleMedia;
+			
+			trace("Subtitle media: "+ObjectUtil.toString(mediaData));
 			trace("Subtitle versions: " + subversions);
 			availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
 			if (subversions > 1)
@@ -524,12 +527,13 @@ package modules.subtitle.view
 		
 		public function onSubtitleLinesRetrieved(value:Boolean):void
 		{
-			subtitleCollection=DataModel.getInstance().availableSubtitleLines;
-			trace(ObjectUtil.toString(subtitleCollection));
+			subtitleCollection=_dataModel.availableSubtitleLines;
+			var unmodifiedSubtitleCollection:ArrayCollection=_dataModel.unmodifiedAvailableSubtitleLines;
+			
 			VPSubtitle.setCaptions(subtitleCollection, this);
 			
-			if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length > 0)
-				setSelectedSubtitleVersion(DataModel.getInstance().unmodifiedAvailableSubtitleLines.getItemAt(0).subtitleId);
+			if (unmodifiedSubtitleCollection && unmodifiedSubtitleCollection.length > 0)
+				setSelectedSubtitleVersion(unmodifiedSubtitleCollection.getItemAt(0).subtitleId);
 		}
 
 		private function onRolesRetrieved(value:Boolean):void
@@ -540,16 +544,16 @@ package modules.subtitle.view
 			cData.addItem(insertOption);
 			if (avrol && avrol.length > 0)
 			{
-				for each (var itemIns:ExerciseRoleVO in avrol)
+				for each (var itemIns:Object in avrol)
 				{
-					var selectLine:RoleComboDataVO=new RoleComboDataVO(itemIns.id, itemIns.characterName, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					var selectLine:RoleComboDataVO=new RoleComboDataVO(itemIns.code, itemIns.label, RoleComboDataVO.ACTION_SELECT, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 					cData.addItem(selectLine);
 				}
 				var deleteOption:RoleComboDataVO=new RoleComboDataVO(0, resourceManager.getString('myResources', 'OPTION_DELETE_A_ROLE'), RoleComboDataVO.ACTION_NO_ACTION, RoleComboDataVO.FONT_BOLD, RoleComboDataVO.INDENT_NONE);
 				cData.addItem(deleteOption);
-				for each (var itemDel:ExerciseRoleVO in avrol)
+				for each (var itemDel:Object in avrol)
 				{
-					var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.id, itemDel.characterName, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
+					var deleteLine:RoleComboDataVO=new RoleComboDataVO(itemDel.code, itemDel.label, RoleComboDataVO.ACTION_DELETE, RoleComboDataVO.FONT_NORMAL, RoleComboDataVO.INDENT_ROLE);
 					cData.addItem(deleteLine);
 				}
 				comboData=cData;

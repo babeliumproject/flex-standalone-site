@@ -36,7 +36,8 @@
 			public function initURLManager():void{
 				_urlManager = URLManager.getInstance();
 				_urlManager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
-				_urlManager.init();
+				
+				_urlManager.init('/home');
 			}
 
 			public function onURLChange(event:URLChangeEvent):void

@@ -38,13 +38,13 @@ package modules.subtitle.command
 		{
 			var result:Object=data.result;
 			var resultCollection:ArrayCollection;
-
-			var untouchedSubtitles:ArrayCollection=new ArrayCollection();
+			var untouchedSubtitles:ArrayCollection;
 
 			var timeMarkersByRole:Object;
 			
 			if(result){
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
+				
 				if (resultCollection.length > 0)
 				{
 					timeMarkersByRole=TimeMetadataParser.separateByRole(resultCollection);
@@ -52,7 +52,10 @@ package modules.subtitle.command
 					//for (var i:int=0; i<resultCollection.length; i++){
 					//	generateRoleArray(resultCollection.getItemAt(i));
 					//}
-					untouchedSubtitles=resultCollection;
+					
+					//Avoid reference updates. This is a copy
+					var rcopy:Object = ObjectUtil.copy(result);
+					untouchedSubtitles=new ArrayCollection(ArrayUtil.toArray(rcopy));
 				}
 			}
 			

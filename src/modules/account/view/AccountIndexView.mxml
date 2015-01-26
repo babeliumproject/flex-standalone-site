@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  xmlns:skins="skins.*"
+		  xmlns:view="modules.account.view.*"
+		  width="100%"
+		  implements="modules.IGroupInterface">
+	
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.IndexChangedEvent;
+			import mx.resources.ResourceManager;
+			
+			public function resetGroup():void{
+				accountOptionsViewStack.selectedIndex=0;
+			}
+			
+			public function onAccountTabChange(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+				switch (newIndex)
+				{
+					case accountOptionsViewStack.getChildIndex(creditHistoryContainerNavContent):
+						creditHistoryContainer.resetComponent();
+						break;
+					case accountOptionsViewStack.getChildIndex(topCollaboratorsNavContent):
+						topCollaborators.resetComponent();
+						break;
+					case accountOptionsViewStack.getChildIndex(userProfileNavContent):
+						userProfile.resetComponent();
+						break;
+					default:
+						creditHistoryContainer.resetComponent();
+						topCollaborators.resetComponent();
+						userProfile.resetComponent();
+						break;
+				}
+			}
+		]]>
+	</fx:Script>	
+	
+	<s:BorderContainer styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:Label text="{ResourceManager.getInstance().getString('myResources','TEXT_USER_ACCOUNT')}"
+				 styleName="sectionInfoTitleLabel"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<s:Label text="{ResourceManager.getInstance().getString('myResources','ACCOUNT_SECTION_DESCRIPTION')}"
+				 paddingLeft="16"
+				 paddingRight="16"/>
+		<s:HGroup horizontalAlign="right"
+				  width="100%"
+				  verticalAlign="bottom"
+				  gap="0">
+			<skins:HorizontalSeparatorLine width="100%"/>
+			<s:TabBar dataProvider="{accountOptionsViewStack}"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
+			<skins:HorizontalSeparatorLine width="16"/>
+		</s:HGroup>
+	</s:BorderContainer>
+	<mx:ViewStack id="accountOptionsViewStack"
+				  height="100%"
+				  width="100%"
+				  resizeToContent="true"
+				  change="onAccountTabChange(event)">
+		<s:NavigatorContent id="creditHistoryContainerNavContent"
+							label="{ResourceManager.getInstance().getString('myResources','CREDIT_HISTORY')}">
+			<view:CreditHistoryPanel id="creditHistoryContainer"/>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="topCollaboratorsNavContent"
+							label="{ResourceManager.getInstance().getString('myResources','TOP_COLLABORATORS')}">
+			<view:TopCollaborators id="topCollaborators"/>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="userProfileNavContent"
+							label="{ResourceManager.getInstance().getString('myResources','MY_PROFILE')}">
+			<view:UserProfile id="userProfile"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+</s:VGroup>

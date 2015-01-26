@@ -3,13 +3,13 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*"
-		  xmlns:userManagement="components.userManagement.*"
+		  xmlns:view="modules.account.view.*"
 		  width="100%"
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  creationComplete="completeHandler(event)" xmlns:view="modules.account.view.*">
+		  creationComplete="completeHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
@@ -19,8 +19,6 @@
 			import mx.events.FlexEvent;
 			
 			import skins.IconLinkSkin;
-			
-			import view.common.LocaleFlagResource;
 			
 			import vo.UserLanguageVO;
 

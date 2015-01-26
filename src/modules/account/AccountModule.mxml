@@ -2,6 +2,7 @@
 <s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.account.view.*"
 		  width="100%"
 		  implements="modules.IModuleInterface" 
 		  preinitialize="preinitializeHandler(event)"
@@ -31,6 +32,8 @@
 			private var _moduleController:*;
 			private var _creationComplete:Boolean;
 			private var _initialUrl:Event;
+			
+			public static const INDEX:uint=0;
 			
 			[Bindable]
 			private var _viewstackIndex:uint;		
@@ -88,18 +91,20 @@
 				resetViews();
 				
 				switch (evt.action){
-					case 'languages':
+					case 'index':
+						actionIndex();
 						break;
 					default:
 						break;
 				}
 			}
 			
+			protected function actionIndex():void{
+				_viewstackIndex=INDEX;
+			}
+			
 			protected function preinitializeHandler(event:FlexEvent):void
-			{
-				//if(!_model.moduleMap.hasOwnProperty(modulename))
-				//	_model.moduleMap[modulename] = new CourseModel();
-				
+			{	
 				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
 				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
 			}
@@ -136,14 +141,8 @@
 				  resizeToContent="true"
 				  width="100%"
 				  height="100%">
-		<s:NavigatorContent id="profile">
-			
-		</s:NavigatorContent>
-		<s:NavigatorContent id="languages">
-			
-		</s:NavigatorContent>
-		<s:NavigatorContent id="personaldata">
-			
+		<s:NavigatorContent id="indexnc">
+			<view:AccountIndexView id="indexAccount"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

@@ -28,14 +28,19 @@ package modules.subtitle.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var resultCollection:ArrayCollection;
-			trace(ObjectUtil.toString(result));
-			if (result is Array && (result as Array).length > 0){
-				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				DataModel.getInstance().availableSubtitles = resultCollection;
-			} else {
-				DataModel.getInstance().availableSubtitles = null;
+			var mediaData:Object;
+			var mediaSubtitles:ArrayCollection;
+			
+			if(result){
+				if(result.hasOwnProperty('media')){
+					mediaData = result.media;
+				}
+				if(result.hasOwnProperty('subtitles')){
+					mediaSubtitles=new ArrayCollection(ArrayUtil.toArray(result.subtitles));
+				}
 			}
+			DataModel.getInstance().subtitleMedia=mediaData;
+			DataModel.getInstance().availableSubtitles=mediaSubtitles;
 			DataModel.getInstance().availableSubtitlesRetrieved = !DataModel.getInstance().availableSubtitlesRetrieved;
 		}
 		

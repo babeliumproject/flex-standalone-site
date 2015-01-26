@@ -296,15 +296,14 @@ package model
 
 		//Used to store subtitle-lines and roles in the same DP
 		[Bindable]
-		public var availableSubtitles:ArrayCollection=new ArrayCollection();
-		[Bindable]
 		public var availableSubtitlesRetrieved:Boolean=false;
+		public var availableSubtitles:ArrayCollection;
+		public var subtitleMedia:Object;
+		
 		[Bindable]
 		public var availableSubtitleLinesRetrieved:Boolean=false;
-		[Bindable]
 		public var availableSubtitleLines:ArrayCollection;
-		[Bindable]
-		public var unmodifiedAvailableSubtitleLines:ArrayCollection=new ArrayCollection();
+		public var unmodifiedAvailableSubtitleLines:ArrayCollection;
 
 		//Evaluation module data
 		[Bindable]

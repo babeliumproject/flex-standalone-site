@@ -4,6 +4,7 @@ package control
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.external.ExternalInterface;
 	
 	import model.DataModel;
 	
@@ -30,15 +31,16 @@ package control
 
 
 		private var _moduleUrls:Object = {
-			exercises: 'modules/exercise/ExerciseModule.swf',
-			profile: 'modules/profile/ProfileModule.swf',
+			account: 'modules/account/AccountModule.swf',
+			assessments: 'modules/assessment/AssessmentModule.swf',
 			create: 'modules/create/CreateModule.swf',
-			login: 'modules/login/LoginModule.swf',
-			signup: 'modules/signup/SignupModule.swf',
-			subtitle: 'modules/subtitle/SubtitleModule.swf',
-			home: 'modules/home/HomeModule.swf',
 			error: 'modules/error/ErrorModule.swf',
-			assessments: 'modules/assessment/AssessmentModule.swf'
+			exercises: 'modules/exercise/ExerciseModule.swf',
+			home: 'modules/home/HomeModule.swf',
+			login: 'modules/login/LoginModule.swf',
+			profile: 'modules/profile/ProfileModule.swf',
+			signup: 'modules/signup/SignupModule.swf',
+			subtitle: 'modules/subtitle/SubtitleModule.swf'
 		};
 
 		[Bindable] public var moduleName:String;
@@ -63,12 +65,31 @@ package control
 			return instance;
 		}
 		
-		public function init():void{
+		public function init(defaultFragment:String=null,defaultTitle:String=null):void{
 			_browserManager=BrowserManager.getInstance();
 			
 			_browserManager.addEventListener(BrowserChangeEvent.URL_CHANGE, parseURL, false, 0, true);
 			_browserManager.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL, false, 0, true);
 			_browserManager.init();
+			
+			defaultFragmentWorkaround(defaultFragment);
+		}
+		
+		/**
+		 * Setting the defaultFragment doesn't work in both BrowserManagerImpl or history.js
+		 * This is a workaround to redirect to the defaultFragment after the init() is done.
+		 */
+		protected function defaultFragmentWorkaround(defaultFragment:String):void{
+			if(!defaultFragment) return;
+			trace("Workaround param: "+defaultFragment);
+			var url:String = ExternalInterface.call("BrowserHistory.getURL");
+			var pos:int = url.indexOf('#');
+			trace("Workaround: "+pos);
+			//The fragment is empty
+			if (pos == url.length - 1 && defaultFragment.length)
+			{
+				redirect(defaultFragment);
+			}
 		}
 
 		public function addBrowserChangeListener(listenerFunction:Function):void
