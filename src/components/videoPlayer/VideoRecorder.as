@@ -726,13 +726,6 @@ package components.videoPlayer
 			super.playVideo();
 			if(_state == PLAY_BOTH_STATE)
 				playSecondStream();
-
-			if (!_ttimer)
-			{
-				_ttimer=new Timer(20, 0); //Try to tick every 20ms
-				_ttimer.addEventListener(TimerEvent.TIMER, onTimerTick);
-				_ttimer.start();
-			}
 		}
 
 		/**
@@ -1547,6 +1540,7 @@ package components.videoPlayer
 				if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
 				{
 					_recordMedia.unpublish();
+					_autoPlayOverride=false;
 					logger.info("Stream recording finished: {0}",[_recordMediaUrl]);
 					
 					dispatchEvent(new RecordingEvent(RecordingEvent.END, _recordMediaUrl));
@@ -1571,7 +1565,9 @@ package components.videoPlayer
 			super.resetAppearance();
 			resetVideo(_camVideo);
 			_micImage.visible=false;
+			_micActivityBar.visible=false;
 			hideCaption();
+			removeArrows();
 			displayEventArrows=false;
 		}
 		

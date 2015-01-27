@@ -6,7 +6,7 @@
 		  horizontalAlign="center"
 		  width="100%"
 		  paddingTop="40"
-		  implements="modules.IGroupInterface" xmlns:view="modules.account.view.*">
+		  implements="modules.IGroupInterface" xmlns:view="modules.account.view.*" xmlns:main="components.main.*">
 	
 	<fx:Script>
 		<![CDATA[
@@ -21,7 +21,10 @@
 	<s:BorderContainer id="loginFormBox"
 					   minWidth="300"
 					   styleName="loginBorderContainer">
-		<view:LoginRestorePassForm 
+		<s:layout>
+			<s:VerticalLayout paddingBottom="12" paddingLeft="12" paddingRight="12" paddingTop="12"/>
+		</s:layout>
+		<main:LoginRestorePassForm 
 			id="loginForm"
 			width="100%"/>
 	</s:BorderContainer>

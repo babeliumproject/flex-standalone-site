@@ -132,8 +132,7 @@ package components.videoPlayer
 			
 			_errorSprite=new ErrorSprite(null, width, height);
 
-			//Event Listeners
-			addEventListener(VideoPlayerEvent.VIDEO_SOURCE_CHANGED, onSourceChange, false, 0, true);
+			
 			addEventListener(FlexEvent.CREATION_COMPLETE, onComplete, false, 0, true);
 			_ppBtn.addEventListener(MouseEvent.CLICK, onPPBtnChanged, false, 0, true);
 			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
@@ -658,18 +657,6 @@ package components.videoPlayer
 			
 			scaleVideo();
 			this.addEventListener(Event.ENTER_FRAME, updateProgress, false, 0, true);
-		}
-
-		/**
-		 * On video source changed
-		 */
-		public function onSourceChange(e:VideoPlayerEvent):void
-		{
-			playVideo();
-			_ppBtn.state=PlayButton.PAUSE_STATE;
-
-			if (!autoPlay)
-				pauseVideo();
 		}
 
 		/**

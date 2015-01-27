@@ -1,4 +1,4 @@
-package commands.userManagement
+package modules.account.command
 {
 	import business.RegisterUserDelegate;
 	import business.UserDelegate;

@@ -65,6 +65,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged=false;
 				DataModel.getInstance().isLoggedIn=false;
 			}
+			trace("Processlogin: "+DataModel.getInstance().isSuccessfullyLogged);
 		}
 
 		public function fault(info:Object):void

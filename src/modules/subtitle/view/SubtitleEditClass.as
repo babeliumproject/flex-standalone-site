@@ -1,8 +1,5 @@
 package modules.subtitle.view
-{
-
-	import commands.cuepointManager.ShowHideSubtitleCommand;
-	
+{	
 	import components.videoPlayer.VideoPlayer;
 	import components.videoPlayer.VideoRecorder;
 	import components.videoPlayer.events.MediaStatusEvent;
@@ -208,8 +205,6 @@ package modules.subtitle.view
 			{
 				subtitleEndTime=(e.time < (VPSubtitle.duration - 0.5)) ? e.time : VPSubtitle.duration - 0.5;
 				endEntry=new CueObject(0, subtitleStartTime, subtitleEndTime, '', 0, '');
-				endEntry.setStartCommand(new ShowHideSubtitleCommand(endEntry, VPSubtitle));
-				endEntry.setEndCommand(new ShowHideSubtitleCommand(null, VPSubtitle));
 				VPSubtitle.setCaptions(subtitleCollection);
 			}
 		}

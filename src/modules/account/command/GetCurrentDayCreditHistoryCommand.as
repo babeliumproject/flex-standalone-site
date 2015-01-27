@@ -1,4 +1,4 @@
-package commands.userManagement
+package modules.account.command
 {
 	import business.CreditsDelegate;
 	
@@ -22,7 +22,7 @@ package commands.userManagement
 	
 	import vo.CreditHistoryVO;
 
-	public class GetAllTimeCreditHistoryCommand implements ICommand, IResponder
+	public class GetCurrentDayCreditHistoryCommand implements ICommand, IResponder
 	{
 
 		public static const MILLISECONDS_IN_A_DAY:int = 86400000;
@@ -33,9 +33,9 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			new CreditsDelegate(this).getAllTimeCreditHistory();
+			new CreditsDelegate(this).getCurrentDayCreditHistory();
 		}
-		
+
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
@@ -64,14 +64,14 @@ package commands.userManagement
 				noChangesFill();
 			}
 		}
-		
+
 		public function fault(info:Object):void
 		{
-			var faultEvent: FaultEvent = FaultEvent(info);
+			var faultEvent:FaultEvent=FaultEvent(info);
 			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CREDIT_HISTORY'));
 			trace(ObjectUtil.toString(info));
 		}
-		
+
 		public function processDataForCharting():void
 		{
 			var dataProcessor:Array = new Array();
@@ -108,18 +108,14 @@ package commands.userManagement
 		
 		private function fillMissingData():void{
 			var currentDate:Date = new Date();
-			//Get current user's joining date and format it so that it can be used with Date
-			var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
-			var dateAndTime:Array = rawDbDate.split(" ");
-			var splittedDate:Array = (dateAndTime[0] as String).split("-");
-			var splittedTime:Array = (dateAndTime[1] as String).split(":");
-			var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
+			var checkDate:Date = new Date();
+			var previousDay:Date = new Date(checkDate.time - MILLISECONDS_IN_A_DAY);
 			var firstItem:Object = processedData.getItemAt(0);
 			var lastItem:Object = processedData.getItemAt(processedData.length-1);
 			var firstEntry:Date = new Date(firstItem.Date);
 			var lastEntry:Date = new Date(lastItem.Date);
-			if (ObjectUtil.dateCompare(joiningDate, firstEntry) == -1){
-				var lFirst:Object = {Date: dateFormatter.format(joiningDate), Credits: firstItem.Credits};
+			if (ObjectUtil.dateCompare(previousDay, firstEntry) == -1){
+				var lFirst:Object = {Date: dateFormatter.format(previousDay), Credits: firstItem.Credits};
 				processedData.addItem(lFirst);
 			}
 			if (ObjectUtil.dateCompare(lastEntry, currentDate) == -1){
@@ -134,14 +130,9 @@ package commands.userManagement
 			var credits:int = DataModel.getInstance().loggedUser.creditCount;
 			var currentDate:Date = new Date();
 			var checkDate:Date = new Date();
-			//Get current user's joining date
-			var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
-			var dateAndTime:Array = rawDbDate.split(" ");
-			var splittedDate:Array = (dateAndTime[0] as String).split("-");
-			var splittedTime:Array = (dateAndTime[1] as String).split(":");
-			var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
+			var previousDay:Date = new Date(checkDate.time - MILLISECONDS_IN_A_DAY);
 			var emptyArray:Array = new Array();
-			var firstItem:Object = {Date: dateFormatter.format(joiningDate), Credits: credits};
+			var firstItem:Object = {Date: dateFormatter.format(previousDay), Credits: credits};
 			var lastItem:Object = {Date: dateFormatter.format(currentDate), Credits: credits};
 			emptyArray.push(firstItem);
 			emptyArray.push(lastItem);
@@ -149,6 +140,6 @@ package commands.userManagement
 			DataModel.getInstance().creditChartData=processedData;
 			DataModel.getInstance().isChartDataRetrieved = true;
 		}
-		
+
 	}
 }

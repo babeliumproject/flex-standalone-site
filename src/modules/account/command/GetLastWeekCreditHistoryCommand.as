@@ -1,4 +1,4 @@
-package commands.userManagement
+package modules.account.command
 {
 	import business.CreditsDelegate;
 	
@@ -22,21 +22,20 @@ package commands.userManagement
 	
 	import vo.CreditHistoryVO;
 
-	public class GetLastMonthCreditHistoryCommand implements ICommand, IResponder
+	public class GetLastWeekCreditHistoryCommand implements ICommand, IResponder
 	{
-
+		
 		public static const MILLISECONDS_IN_A_DAY:int = 86400000;
 
 		private var resultCollection:ArrayCollection;
 		private var processedData:ArrayCollection;
-		private var dateFormatter:DateFormatter;
-
+		private var dateFormatter:DateFormatter; 
 
 		public function execute(event:CairngormEvent):void
 		{
-			new CreditsDelegate(this).getLastMonthCreditHistory();
+			new CreditsDelegate(this).getLastWeekCreditHistory();
 		}
-
+		
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
@@ -65,14 +64,14 @@ package commands.userManagement
 				noChangesFill();
 			}
 		}
-
+		
 		public function fault(info:Object):void
 		{
-			var faultEvent:FaultEvent=FaultEvent(info);
+			var faultEvent: FaultEvent = FaultEvent(info);
 			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_CREDIT_HISTORY'));
 			trace(ObjectUtil.toString(info));
 		}
-
+		
 		public function processDataForCharting():void
 		{
 			var dataProcessor:Array = new Array();
@@ -110,13 +109,13 @@ package commands.userManagement
 		private function fillMissingData():void{
 			var currentDate:Date = new Date();
 			var checkDate:Date = new Date();
-			var previousMonth:Date = new Date(checkDate.setMonth(checkDate.month - 1));
+			var previousWeek:Date = new Date(checkDate.time - 7*MILLISECONDS_IN_A_DAY);
 			var firstItem:Object = processedData.getItemAt(0);
 			var lastItem:Object = processedData.getItemAt(processedData.length-1);
 			var firstEntry:Date = new Date(firstItem.Date);
 			var lastEntry:Date = new Date(lastItem.Date);
-			if (ObjectUtil.dateCompare(previousMonth, firstEntry) == -1){
-				var lFirst:Object = {Date: dateFormatter.format(previousMonth), Credits: firstItem.Credits};
+			if (ObjectUtil.dateCompare(previousWeek, firstEntry) == -1){
+				var lFirst:Object = {Date: dateFormatter.format(previousWeek), Credits: firstItem.Credits};
 				processedData.addItem(lFirst);
 			}
 			if (ObjectUtil.dateCompare(lastEntry, currentDate) == -1){
@@ -131,9 +130,9 @@ package commands.userManagement
 			var credits:int = DataModel.getInstance().loggedUser.creditCount;
 			var currentDate:Date = new Date();
 			var checkDate:Date = new Date();
-			var previousMonth:Date = new Date(checkDate.setMonth(checkDate.month - 1));
+			var previousWeek:Date = new Date(checkDate.time - 7*MILLISECONDS_IN_A_DAY);
 			var emptyArray:Array = new Array();
-			var firstItem:Object = {Date: dateFormatter.format(previousMonth), Credits: credits};
+			var firstItem:Object = {Date: dateFormatter.format(previousWeek), Credits: credits};
 			var lastItem:Object = {Date: dateFormatter.format(currentDate), Credits: credits};
 			emptyArray.push(firstItem);
 			emptyArray.push(lastItem);
@@ -141,6 +140,6 @@ package commands.userManagement
 			DataModel.getInstance().creditChartData=processedData;
 			DataModel.getInstance().isChartDataRetrieved = true;
 		}
-
+		
 	}
 }

@@ -315,9 +315,11 @@ s|TextInput{
 
 .loginBorderContainer{
 	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
+	backgroundAlpha: 1.0;
 	backgroundColor: #FFFFFF;
-	cornerRadius: 8;
 	borderColor: #000000;
+	borderAlpha: 0.85;
+	cornerRadius: 8;
 }
 
 .privacyRightsPopup{

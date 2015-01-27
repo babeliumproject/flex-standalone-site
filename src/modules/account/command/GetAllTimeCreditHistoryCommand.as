@@ -1,4 +1,4 @@
-package commands.userManagement
+package modules.account.command
 {
 	import business.CreditsDelegate;
 	
@@ -22,18 +22,18 @@ package commands.userManagement
 	
 	import vo.CreditHistoryVO;
 
-	public class GetLastWeekCreditHistoryCommand implements ICommand, IResponder
+	public class GetAllTimeCreditHistoryCommand implements ICommand, IResponder
 	{
-		
+
 		public static const MILLISECONDS_IN_A_DAY:int = 86400000;
 
 		private var resultCollection:ArrayCollection;
 		private var processedData:ArrayCollection;
-		private var dateFormatter:DateFormatter; 
+		private var dateFormatter:DateFormatter;
 
 		public function execute(event:CairngormEvent):void
 		{
-			new CreditsDelegate(this).getLastWeekCreditHistory();
+			new CreditsDelegate(this).getAllTimeCreditHistory();
 		}
 		
 		public function result(data:Object):void
@@ -108,14 +108,18 @@ package commands.userManagement
 		
 		private function fillMissingData():void{
 			var currentDate:Date = new Date();
-			var checkDate:Date = new Date();
-			var previousWeek:Date = new Date(checkDate.time - 7*MILLISECONDS_IN_A_DAY);
+			//Get current user's joining date and format it so that it can be used with Date
+			var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
+			var dateAndTime:Array = rawDbDate.split(" ");
+			var splittedDate:Array = (dateAndTime[0] as String).split("-");
+			var splittedTime:Array = (dateAndTime[1] as String).split(":");
+			var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
 			var firstItem:Object = processedData.getItemAt(0);
 			var lastItem:Object = processedData.getItemAt(processedData.length-1);
 			var firstEntry:Date = new Date(firstItem.Date);
 			var lastEntry:Date = new Date(lastItem.Date);
-			if (ObjectUtil.dateCompare(previousWeek, firstEntry) == -1){
-				var lFirst:Object = {Date: dateFormatter.format(previousWeek), Credits: firstItem.Credits};
+			if (ObjectUtil.dateCompare(joiningDate, firstEntry) == -1){
+				var lFirst:Object = {Date: dateFormatter.format(joiningDate), Credits: firstItem.Credits};
 				processedData.addItem(lFirst);
 			}
 			if (ObjectUtil.dateCompare(lastEntry, currentDate) == -1){
@@ -130,9 +134,14 @@ package commands.userManagement
 			var credits:int = DataModel.getInstance().loggedUser.creditCount;
 			var currentDate:Date = new Date();
 			var checkDate:Date = new Date();
-			var previousWeek:Date = new Date(checkDate.time - 7*MILLISECONDS_IN_A_DAY);
+			//Get current user's joining date
+			var rawDbDate:String = DataModel.getInstance().loggedUser.joiningDate;
+			var dateAndTime:Array = rawDbDate.split(" ");
+			var splittedDate:Array = (dateAndTime[0] as String).split("-");
+			var splittedTime:Array = (dateAndTime[1] as String).split(":");
+			var joiningDate:Date = new Date(splittedDate[0], splittedDate[1]-1, splittedDate[2], splittedTime[0], splittedTime[1], splittedTime[2]);
 			var emptyArray:Array = new Array();
-			var firstItem:Object = {Date: dateFormatter.format(previousWeek), Credits: credits};
+			var firstItem:Object = {Date: dateFormatter.format(joiningDate), Credits: credits};
 			var lastItem:Object = {Date: dateFormatter.format(currentDate), Credits: credits};
 			emptyArray.push(firstItem);
 			emptyArray.push(lastItem);

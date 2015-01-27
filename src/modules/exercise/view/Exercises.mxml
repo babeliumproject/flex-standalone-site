@@ -103,6 +103,8 @@
 			protected var _recordMediaData:Object;
 			protected var _currentCaptions:Object;
 
+			protected var _currentTimeMarkers:Object;
+			
 			public var _videoPlayerReady:Boolean=false;
 
 			[Embed('/resources/images/button_abort.png')]
@@ -325,11 +327,11 @@
 
 				var useWebcam:Boolean=!micOnly.selected;
 
-				var timemarkers:Object = _roles[_selectedRole];
+				_currentTimeMarkers = _roles[_selectedRole];
 
 				trace("preparerecording: "+ObjectUtil.toString(media));
 				
-				VP.recordVideo(media, !micOnly.selected, timemarkers);
+				VP.recordVideo(media, !micOnly.selected, _currentTimeMarkers);
 			}
 
 			protected function set recordMediaSlotHandler(value:Boolean):void
@@ -382,7 +384,7 @@
 				parallelmedia.leftMedia=_currentMediaData;
 				parallelmedia.rightMedia=_recordMediaData;
 
-				VP.loadVideoByUrl(parallelmedia);
+				VP.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
 			}
 
 			/**

@@ -15,7 +15,7 @@ package model
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
 	
-	import modules.account.view.LoginRestorePassForm;
+	import components.main.LoginRestorePassForm;
 	
 	import mx.collections.ArrayCollection;
 	import mx.utils.ObjectProxy;

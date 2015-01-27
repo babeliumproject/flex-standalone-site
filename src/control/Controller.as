@@ -8,6 +8,7 @@ package control {
 	
 	import events.*;
 	
+	import modules.account.command.*;
 	import modules.assessment.command.*;
 	import modules.assessment.event.*;
 	import modules.course.command.*;
