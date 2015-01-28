@@ -90,7 +90,7 @@ function backwards(){
 		
 		//Populate with the content those tables had before
 		$sql = "SELECT * FROM subtitle WHERE id>0";
-		$results = DB->_multipleSelect($sql);
+		$results = $DB->_multipleSelect($sql);
 		
 		foreach($results as $s){
 			$plaindata = unpackblob($s->serialized_subtitles);
