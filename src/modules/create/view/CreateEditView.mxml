@@ -10,15 +10,21 @@
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface"
+		  creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
-			import mx.events.FlexEvent;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.core.UIComponent;
-
+			import mx.events.FlexEvent;
+			
+			import spark.components.DataGroup;
 			import spark.events.IndexChangeEvent;
 
 			[Bindable]
@@ -29,12 +35,28 @@
 			public static const STEP3:uint=2;
 
 			public var exercisecode:String;
+			
+			protected var _model:DataModel=DataModel.getInstance();
 
-			private function setTabEnabled(index:int, enabled:Boolean):void
-			{
-				var tab:UIComponent=createSteps.dataGroup.getElementAt(index) as UIComponent;
-				if (tab)
-					tab.enabled=enabled;
+			public function setEnabledCreateSteps(value:Boolean):void{
+				var enabled:Array = DataModel.getInstance().enabledCreateSteps;
+				enableTabs(createSteps,enabled);
+			}
+			
+			private function enableTabs(tabBar:TabBar, enabled:Array):void{
+				var dg:DataGroup = tabBar ? tabBar.dataGroup : null;
+				if(dg){
+					var numElements:int = dg.numElements;
+					var i:int=0;
+					for (i; i<numElements; i++){
+						var element:UIComponent = dg.getElementAt(i) as UIComponent;
+						if(enabled && enabled.indexOf(i+1) !=-1){
+							element.enabled=true;
+						} else {
+							element.enabled=false;
+						}
+					}
+				}
 			}
 
 			public function resetGroup():void
@@ -59,6 +81,13 @@
 					URLManager.getInstance().redirect('/create/add');
 				}
 			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				BindingUtils.bindSetter(setEnabledCreateSteps, _model, "enabledCreateStepsChanged", false, true);
+			}
+			
 		]]>
 	</fx:Script>
 

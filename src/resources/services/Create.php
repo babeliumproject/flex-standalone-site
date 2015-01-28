@@ -168,6 +168,12 @@ class Create {
 		if(!$exercisecode) return;
 		try{
 			$verifySession = new SessionValidation(true);
+			
+			require_once 'Exercise.php';
+			$exercise = new Exercise();
+			$exercisedata = $exercise->getExerciseByCode($exercisecode);
+			if(!$exercisedata)
+				throw new Exception("Exercise code doesn't exist",1003);
 		
 			$statuses = '0,1,2,3,4';
 			$levels = '0,1,2';

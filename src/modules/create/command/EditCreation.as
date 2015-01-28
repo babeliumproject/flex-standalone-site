@@ -32,9 +32,12 @@ package modules.create.command
 			var result:Object=data.result;
 			if(result){
 				DataModel.getInstance().exerciseData = result as ExerciseVO;
+				DataModel.getInstance().enabledCreateSteps = new Array(1,2);
 			} else {
 				DataModel.getInstance().exerciseData = null;
+				DataModel.getInstance().enabledCreateSteps = new Array(1);
 			}
+			DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
 			DataModel.getInstance().exerciseDataRetrieved = !DataModel.getInstance().exerciseDataRetrieved;
 		}
 		
