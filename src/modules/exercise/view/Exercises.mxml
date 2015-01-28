@@ -418,8 +418,9 @@
 			{
 				DataModel.getInstance().recordingExercise=false;
 
+				//The video recorder should handle the following: unattach user devices, close rightside streams,
+				//restore appearence, enable controls, restore autoplay
 				VP.loadVideoByUrl(_currentMediaData);
-
 
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
@@ -457,13 +458,12 @@
 			// Watch both
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
-
 				var parallelmedia:Object=new Object();
 				
 				parallelmedia.leftMedia=_currentMediaData;
 				parallelmedia.rightMedia=_recordMediaData;
 				
-				VP.loadVideoByUrl(parallelmedia);
+				VP.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
 			}
 
 			// Watch response

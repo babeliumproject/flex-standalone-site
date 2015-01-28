@@ -286,7 +286,7 @@ class VideoProcessor{
             throw new Exception("You don't have enough permissions to read from the input: ".$cleanPath."\n");
         if(!is_writable(dirname($cleanImagePath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanImagePath."\n");
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanPath)) ){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != sha1_file($cleanPath)) ){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanPath);
@@ -328,7 +328,7 @@ class VideoProcessor{
             throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath."\n");
         if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
             throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath.", ".$cleanPosterPath."\n");
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanVideoPath)) ){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != sha1_file($cleanVideoPath)) ){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanVideoPath);
@@ -435,7 +435,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);
@@ -495,7 +495,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);
@@ -569,7 +569,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ". $cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);

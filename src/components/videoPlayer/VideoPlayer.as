@@ -609,9 +609,12 @@ package components.videoPlayer
 
 		public function pauseVideo():void
 		{
-			if (_media.streamState == AMediaManager.STREAM_SEEKING_START)
+			var streamState:int = _media.streamState;
+			if (streamState == AMediaManager.STREAM_SEEKING_START)
 				return;
-			if (streamReady(_media) && (_media.streamState == AMediaManager.STREAM_STARTED || _media.streamState == AMediaManager.STREAM_BUFFERING)){
+			if (streamReady(_media) && (streamState == AMediaManager.STREAM_STARTED || 
+										streamState == AMediaManager.STREAM_BUFFERING || 
+										streamState == AMediaManager.STREAM_SEEKING_END)){
 				_media.netStream.togglePause();
 				logger.debug("[pauseVideo] TogglePause");
 			}

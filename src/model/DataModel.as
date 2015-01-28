@@ -451,25 +451,27 @@ package model
 		[Bindable]
 		public var userReportedExerciseFlag:Boolean=false;
 		
+		
 		[Bindable]
-		public var exerciseData:ExerciseVO;
+		public var enabledCreateStepsChanged:Boolean;
+		public var enabledCreateSteps:Array;
+		
 		[Bindable]
 		public var exerciseDataRetrieved:Boolean;
+		public var exerciseData:ExerciseVO;
 		
-		[Bindable]
-		public var exerciseMedia:ArrayCollection;
 		[Bindable]
 		public var exerciseMediaRetrieved:Boolean;
+		public var exerciseMedia:ArrayCollection;
 		
-		[Bindable]
-		public var exercisePreview:ArrayCollection;
 		[Bindable]
 		public var exercisePreviewRetrieved:Boolean;
+		public var exercisePreview:ArrayCollection;
 		
 		[Bindable]
-		public var latestCreations:ArrayCollection;
-		[Bindable]
 		public var latestCreationsRetrieved:Boolean;
+		public var latestCreations:ArrayCollection;
+		
 		[Bindable]
 		public var defaultThumbnailModified:Boolean;
 		
