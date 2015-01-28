@@ -5,12 +5,17 @@ package components.videoPlayer.media
 	
 	import flash.errors.IOError;
 	import flash.events.AsyncErrorEvent;
+	import flash.events.DRMErrorEvent;
+	import flash.events.DRMStatusEvent;
 	import flash.events.IOErrorEvent;
+	import flash.events.NetDataEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.StatusEvent;
 	import flash.media.Camera;
 	import flash.media.Microphone;
 	import flash.net.NetConnection;
+	import flash.net.NetStream;
 	import flash.net.ObjectEncoding;
 	
 	import mx.utils.ObjectUtil;
@@ -110,6 +115,35 @@ package components.videoPlayer.media
 				connect(_netConnectionUrl);
 			} else {
 				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_FAILURE, false, false, _id, -1, "CANNOT_CONNECT_TO_STREAMING_SERVER"));
+			}
+		}
+		
+		override protected function initiateStream():void{
+			try
+			{
+				_ns=new NetStream(_nc);
+				_ns.client=this;
+				logger.debug("[{0}] Initiating NetStream...", [_id]);
+				_ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError, false, 0, true);
+				_ns.addEventListener(DRMErrorEvent.DRM_ERROR, onDrmError, false, 0, true);
+				_ns.addEventListener(DRMStatusEvent.DRM_STATUS, onDrmStatus, false, 0, true);
+				_ns.addEventListener(IOErrorEvent.IO_ERROR, onIoError, false, 0, true);
+				_ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, onMediaTypeData, false, 0, true);
+				_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus, false, 0, true);
+				_ns.addEventListener(StatusEvent.STATUS, onStatus, false, 0, true);
+				
+				//Really small buffer to attempt to lessen the resume() delay
+				_ns.bufferTime=0.1;
+				
+				_streamStatus=STREAM_INITIALIZED;
+				
+				dispatchEvent(new MediaStatusEvent(MediaStatusEvent.STREAM_SUCCESS, false, false, _id));
+			}
+			catch (e:Error)
+			{
+				//netconnection is not connected
+				_connected=false;
+				logger.error("[{0}] Instantiation Error [{1}] {2}", [_id, e.name, e.message]);
 			}
 		}
 		

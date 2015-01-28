@@ -205,10 +205,11 @@
 		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}">
 			<view:LatestBestRatedVideos id="bestRatedExercises"/>
 		</s:NavigatorContent>
+		<!--
 		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_ACTIVITY')}">
 			<view:LatestUserActivity id="latestActivity"/>
 		</s:NavigatorContent>
-
+		-->
 	</mx:ViewStack>
 
 </s:VGroup>

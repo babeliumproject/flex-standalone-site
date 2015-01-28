@@ -225,6 +225,8 @@ package components.videoPlayer
 			_micActivityBar.visible=false;
 			
 			_micCurrentGain=DEFAULT_MIC_GAIN;
+			_parallelCurrentVolume=DEFAULT_VOLUME;
+			_parallelLastVolume=DEFAULT_VOLUME;
 			
 			_overlayButton=new Button();
 			_overlayButton.setStyle("skinClass", OverlayPlayButtonSkin);
@@ -950,19 +952,28 @@ package components.videoPlayer
 				}
 				default: //PLAY_STATE
 				{
-					_micActivityBar.visible=false;
-					displayEventArrows=false;
-					removeArrows();
-					resetVideoDisplay();
+					playLayout();
 					break;
 				}
 			}
 			invalidateDisplayList();
 		}
-
-		/**
-		 * Countdown before recording
-		 */
+		
+		protected function playLayout():void{
+			resetAppearance();
+			freeMedia(_recordMedia);
+			freeMedia(_parallelMedia);
+			_autoPlayOverride=false;
+			enableControls();
+		}
+		
+		protected function playParallelLayout():void{
+			
+		}
+		
+		protected function recordParallelLayout():void{
+			
+		}
 
 		// Prepare countdown timer
 		private function startCountdown():void
@@ -993,8 +1004,10 @@ package components.videoPlayer
 
 				startRecording();
 			}
-			else if (_state != PLAY_STATE)
+			else if (_state != PLAY_STATE){
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
+				logger.debug("Countdown timer visible: {0}. Countdown number: {1}, textColor: {2}", [_countdownTxt.visible,_countdownTxt.text, _countdownTxt.getStyle('color')]);
+			}
 		}
 
 
@@ -1531,11 +1544,13 @@ package components.videoPlayer
 		
 		override protected function onStreamStateChange(event:MediaStatusEvent):void{
 			var streamId:String=event.streamid;
-			if(event.state == AMediaManager.STREAM_SEEKING_START){
-				_captionmgr.reset();
+			if(event.state == AMediaManager.STREAM_SEEKING_START || event.state == AMediaManager.STREAM_READY){
+				if(_captionmgr) _captionmgr.reset();
+				if(_markermgr) _markermgr.reset();
 			}
 			if(event.state == AMediaManager.STREAM_FINISHED){
-				_captionmgr.reset();
+				if(_captionmgr) _captionmgr.reset();
+				if(_markermgr) _markermgr.reset();
 				hideCaption();
 				if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
 				{
@@ -1564,6 +1579,7 @@ package components.videoPlayer
 		override protected function resetAppearance():void{
 			super.resetAppearance();
 			resetVideo(_camVideo);
+			resetVideoDisplay();
 			_micImage.visible=false;
 			_micActivityBar.visible=false;
 			hideCaption();

@@ -214,6 +214,10 @@
 					primaryupload.includeInLayout=true;
 					primaryupload.visible=true;
 					
+					primaryupload.exercisecode=exercisecode;
+					primaryupload.exerciseid=exerciseid;
+					primaryupload.medialevel=LEVEL_PRIMARY;
+					
 					includeModel.selectedValue='no';
 					chooseModelGroup.includeInLayout=false;
 					chooseModelGroup.visible=false;

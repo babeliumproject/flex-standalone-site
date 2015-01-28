@@ -6,7 +6,7 @@
         <Property name="videoBgColor">0x000000</Property>
         <Property name="fontFamily">Arial</Property>
     </Component>
-	<Component name="VideoPlayerBabelia">
+	<Component name="VideoRecorder">
 		<Property name="bgColor">0xFFFFFF</Property>
         <Property name="camBgColor">0x000000</Property>
         <Property name="borderColor">0x000000</Property>
