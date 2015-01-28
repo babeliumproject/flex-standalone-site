@@ -3,8 +3,8 @@
 function forwards(){
 	global $DB;
 	
-	$alter_sql = "DROP FOREIGN KEY `fk_exercise_transcriptions1`;
-				  ALTER TABLE `exercise`
+	$alter_sql = "ALTER TABLE `exercise`
+				 DROP FOREIGN KEY `fk_exercise_transcriptions1`,
 				  DROP COLUMN `fk_transcription_id`, DROP COLUMN `status`,
 				  DROP COLUMN `reference`, DROP COLUMN `license`, DROP COLUMN `filehash`, DROP COLUMN `duration`, DROP COLUMN `thumbnail_uri`, DROP COLUMN `tags`, DROP COLUMN `source`,
 				  CHANGE COLUMN `title` `title` VARCHAR(80) NOT NULL AFTER `exercisecode`,
