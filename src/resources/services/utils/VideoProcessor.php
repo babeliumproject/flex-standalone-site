@@ -319,18 +319,15 @@ class VideoProcessor{
      * @param string $outputImagePath
      * @throws Exception
      */
-    public function takeFolderedRandomSnapshots($filePath, $thumbPath, $posterPath, $thumbnailWidth = 120, $thumbnailHeight = 90, $snapshotCount = 3){
+    public function takeFolderedRandomSnapshots($filePath, $thumbdir, $posterdir, $thumbnailWidth = 120, $thumbnailHeight = 90, $snapshotCount = 3){
         $cleanVideoPath = escapeshellcmd($filePath);
-        $cleanThumbPath = realpath(escapeshellcmd($thumbPath));
-        $cleanPosterPath = realpath(escapeshellcmd($posterPath));
+        $sanitizedThumbdir = escapeshellcmd($thumbdir);
+        $sanitizedPosterdir = escapeshellcmd($posterdir);
 
-        if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
-            throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath."\n");
-        if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
-            throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath.", ".$cleanPosterPath."\n");
+        if( !is_file($cleanVideoPath) )
+            throw new Exception("Value is not a file or cannot be read: ".$cleanVideoPath."\n");
         if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != sha1_file($cleanVideoPath)) ){
             try {
-                //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanVideoPath);
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
@@ -339,28 +336,22 @@ class VideoProcessor{
 
         if($this->mediaContainer->hasVideo){
 
-            //Create a folder to hold all the thumbnails, only if doesn't exist
-            $path_parts = pathinfo($cleanVideoPath);
-            $hash = $path_parts['filename'];
-            $cleanThumbPath = $cleanThumbPath . '/' . $hash;
-            $cleanPosterPath = $cleanPosterPath . '/' . $hash;
-
-            if(!is_dir($cleanThumbPath)){
-                if(!mkdir($cleanThumbPath)){
-                    throw new Exception("You don't have enough permissions to create a thumbnail folder\n");
+            if(!is_dir($sanitizedThumbdir)){
+                if(!mkdir($sanitizedThumbdir)){
+                    throw new Exception("Cannot create directory: $sanitizedThumbdir\n");
                 }
             }
-            if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
-                throw new Exception("Yon don't have enough permissions to write to the thumbnail folder\n");
+            if(!is_dir($sanitizedThumbdir) || !is_writable($sanitizedThumbdir)){
+                throw new Exception("Cannot write in directory: $sanitizedThumbdir\n");
             }
 
-            if(!is_dir($cleanPosterPath)){
-                if(!mkdir($cleanPosterPath)){
-                    throw new Exception("You don't have enough permissions to create a poster folder\n");
+            if(!is_dir($sanitizedPosterdir)){
+                if(!mkdir($sanitizedPosterdir)){
+                    throw new Exception("Cannot create directory: $sanitizedPosterdir\n");
                 }
             }
-            if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
-                throw new Exception("Yon don't have enough permissions to write to the poster folder\n");
+            if(!is_dir($sanitizedPosterdir) || !is_writable($sanitizedPosterdir)){
+                throw new Exception("Cannot write in directory: $sanitizedPosterdir\n");
             }
 
             //Default thumbnail time
@@ -372,8 +363,8 @@ class VideoProcessor{
                 $second = rand(1, ($this->mediaContainer->duration - 1));
                 $lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
 
-                $toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
-                $poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
+                $toPath = $sanitizedThumbdir . '/' . sprintf('%02d.jpg',$i+1);
+                $poPath = $sanitizedPosterdir . '/' . sprintf('%02d.jpg',$i+1);
                 if(!is_file($toPath)){
                     $cmd_template = "%s %s";
                     $cmd_name = $this->mediaToolHome;
@@ -398,18 +389,18 @@ class VideoProcessor{
                 }
             }
 
-            //Create a symbolic link to the first generated thumbnail/poster to set it as the default image
-            if( is_link($cleanThumbPath.'/default.jpg') ){
-                unlink($cleanThumbPath.'/default.jpg');
+            $tdef = $sanitizedThumbdir.'/default.jpg';
+            $pdef = $sanitizedPosterdir.'/default.jpg';
+            $tone = $sanitizedThumbdir.'/01.jpg';
+            $pone = $sanitizedPosterdir.'/01.jpg';
+            if (is_link($tdef)) unlink($tdef);
+            if (is_link($pdef)) unlink($pdef);
+            
+            if(!symlink($tone, $tdef)){
+                throw new Exception ("Cannot make a link $tdef for $tone\n");
             }
-            if( is_link($cleanPosterPath.'/default.jpg') ){
-                unlink($cleanPosterPath.'/default.jpg');
-            }
-            if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg')  ){
-                throw new Exception ("Couldn't create link for the thumbnail\n");
-            }
-            if( !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
-                throw new Exception ("Couldn't create link for the poster\n");
+            if(!symlink($pone, $pdef)){
+                throw new Exception ("Cannot make a link $pdef for $pone\n");
             }
         }
     }
@@ -426,7 +417,7 @@ class VideoProcessor{
      * @param int $preset
      * @throws Exception
      */
-    public function transcodeToFlv($inputFilepath, $outputFilepath, $preset = 1){
+    public function transcodeToFlv($inputFilepath, $outputFilepath, $preset = 1, $dimension = 240){
         $cleanInputPath = escapeshellcmd($inputFilepath);
         $cleanOutputPath = escapeshellcmd($outputFilepath);
 
@@ -445,12 +436,11 @@ class VideoProcessor{
         }
 
         if ($this->mediaContainer->suggestedTranscodingAspectRatio == 43){
-            $width = $this->frameWidth4_3;
-            $height = $this->frameHeight;
+        	$width = floor($dimension*(4/3));
         } else {
-            $width = $this->frameWidth16_9;
-            $height = $this->frameHeight;
+        	$width = floor($dimension*(16/9));
         }
+        $height = $dimension;
 
         if($this->mediaContainer->hasAudio){
             //5.1 AAC audio can't be downmixed to stereo audio using ffmpeg
@@ -766,6 +756,22 @@ class VideoProcessor{
         $output = $this->execWrapper($cmd);
 
         //Consider returning TRUE to caller
+    }
+    
+    /**
+     * Encode the given array using Json
+     *
+     * @param Array $data
+     * @param bool $prettyprint
+     * @return mixed $data
+     */
+    public function custom_json_encode($data, $prettyprint=0){
+    	require_once 'Zend/Json.php';
+    	$data = Zend_Json::encode($data,false);
+    	$data = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', create_function('$match', 'return mb_convert_encoding(pack("H*", $match[1]), "UTF-8", "UCS-2BE");'), $data);
+    	if($prettyprint)
+    		$data = Zend_Json::prettyPrint($data);
+    	return $data;
     }
 
     /**
