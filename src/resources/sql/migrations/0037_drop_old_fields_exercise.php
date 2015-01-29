@@ -12,7 +12,7 @@ function forwards(){
 				  ADD COLUMN `difficulty` INT UNSIGNED NOT NULL COMMENT '1: A1, 2: A2, 3: B1, 4: B2, 5: C' AFTER `language`,
 				  ADD COLUMN `status2` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '0: draft, 1: ready' AFTER `fk_user_id`,
 				  ADD COLUMN `visible` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0: visible only to author, 1: visible in scope' AFTER `status2`,
-				  ADD COLUMN `fk_scope_id` INT UNSIGNED NOT NULL AFTER `visible`,
+				  ADD COLUMN `fk_scope_id` INT(10) UNSIGNED NOT NULL DEFAULT 1 AFTER `visible`,
 				  ADD COLUMN `timecreated` INT NOT NULL DEFAULT '0' AFTER `fk_scope_id`,
 				  ADD COLUMN `timemodified` INT NOT NULL DEFAULT '0' AFTER `timecreated`,
 				  DROP INDEX `fk_exercise_transcriptions1`;";
