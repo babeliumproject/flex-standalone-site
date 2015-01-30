@@ -20,13 +20,10 @@
 				change="itemSelected_changeHandler(event)"
 				selected="{data.itemSelected}"/>
 
-	<mx:Image id="thumbnail"
-			  scaleContent="true"
-			  source="{data.thumbnail}"
-			  autoLoad="true"
-			  width="120"
-			  height="90"
-			  toolTip="{data.title}"/>
+	<s:BitmapImage id="thumbnail"
+				   source="{data.thumbnail}"
+				   width="120"
+				   height="90"/>
 
 
 	<s:VGroup width="100%"
@@ -46,29 +43,20 @@
 				  verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
-				<mx:Image width="16"
+				<s:BitmapImage width="16"
 						  height="16"
-						  toolTip="{exerciseLanguage.source}"
-						  source="{getFlagSource(data as ExerciseVO)}"
+						  source="{ExerciseRenderUtils.getFlagSource(data)}"
 						  id="exerciseLanguage"/>
-				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
+				<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<s:Label text="{dateFormatter.format(data.timecreated)}"
+			<s:Label text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 
 		<s:HGroup width="850" paddingTop="4" paddingBottom="4" verticalAlign="middle">
-			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"/>
-			<s:TileGroup id="exerciseTagsBox"
-						 width="750"
-						 horizontalGap="1"
-						 verticalGap="1"
-						 rowHeight="14"
-						 paddingBottom="0"
-						 paddingLeft="0"
-						 paddingRight="0"
-						 paddingTop="0"/>
+			<s:Label text="{resourceManager.getString('myResources','VISIBILITY')+':'}"/>
+			<s:Label text="{parseInt(data.visible) ? ResourceManager.getInstance().getString('myResources','PUBLIC') : ResourceManager.getInstance().getString('myResources','PRIVATE')}"/>
 		</s:HGroup>
 		<!--
 		<s:HGroup verticalAlign="middle"
@@ -94,8 +82,10 @@
 		<s:HGroup width="100%"
 				  verticalAlign="middle"
 				  paddingBottom="16">
-			<s:Label text="{resourceManager.getString('myResources','VIDEO_STATUS')+':'}"/>
-			<s:Label text="{data.status == 1 ? 'Ready' : 'Draft'}"/>
+			<s:Label id="status"
+					 text="{ResourceManager.getInstance().getString('myResources','STATUS')+':'}"/>
+			<s:Label id="statusValue"
+					 text="{parseInt(data.status) ? ResourceManager.getInstance().getString('myResources','READY') : ResourceManager.getInstance().getString('myResources','DRAFT')}"/>
 		</s:HGroup>
 		<skins:IconButton id="editVideoData"
 				  label="{resourceManager.getString('myResources','EDIT')}"
@@ -104,21 +94,19 @@
 
 	</s:VGroup>
 
-	<fx:Declarations>
-		<mx:DateFormatter id="dateFormatter"
-						  formatString="{resourceManager.getString('myResources','DATE_FORMAT')}"/>
-	</fx:Declarations>
-
-
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import model.LocalesAndFlags;
+			import utils.ExerciseRenderUtils;
 			
 			import control.URLManager;
 			
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.DateTimeStyle;
+			
 			import model.DataModel;
+			import model.LocalesAndFlags;
 			
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
@@ -128,8 +116,11 @@
 			import mx.formatters.NumberBaseRoundType;
 			import mx.formatters.NumberFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
+			import mx.resources.ResourceManager;
 			
 			import skins.IconButton;
+			
+			import utils.CollectionUtils;
 			
 			import view.common.LicenseResource;
 			import view.common.TimeFormatter;
@@ -139,19 +130,15 @@
 			import vo.LicenseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
 
-			private const MAX_DESCRIPTION_CHARS:int=120;
 
 			private var _data:Object;
 
 			private var _creationComplete:Boolean=false;
 
-			[Bindable]
-			private var _licenseData:LicenseVO=new LicenseVO();
-
-			[Bindable]
-			private var _timeFormatter:TimeFormatter=new TimeFormatter();
-
-
+			private var _model:DataModel=DataModel.getInstance();
+			
+			private var dateTimeFormatter:DateTimeFormatter;		
+			
 			public function completeHandler():void
 			{
 				_data=data;
@@ -160,8 +147,6 @@
 			}
 			
 			public function dataChangeHandler():void{
-				addTagLinkButtons();
-				//setupReferenceComponent();
 			}
 
 			protected function editExercise(event:MouseEvent):void
@@ -169,98 +154,6 @@
 				//parentDocument.videoEditRequested(data);
 				trace("Exercise renderer event dispatch data: "+data.exercisecode);
 				URLManager.getInstance().redirect('/create/edit/'+data.exercisecode+'?s=1');
-			}
-
-			/*
-			private function setupReferenceComponent():void
-			{
-				if (checkExternalUrl(data.reference))
-				{
-					referenceUrl.setStyle('textDecoration', 'underline');
-				}
-				else
-				{
-					referenceUrl.setStyle('textDecoration', 'none');
-					referenceUrl.setStyle('skin', null);
-					referenceUrl.useHandCursor=false;
-				}
-			}
-
-			private function licenseClickHandler(event:MouseEvent):void
-			{
-				navigateToURL(new URLRequest(_licenseData.licenseUrl));
-			}
-
-			private function referenceClickHandler(event:MouseEvent):void
-			{
-				if (checkExternalUrl(data.reference))
-					navigateToURL(new URLRequest(data.reference), '_blank');
-			}
-			*/
-
-			public function getLevelCorrespondence(avgDifficulty:Number):String
-			{
-				var numFormat:NumberFormatter=new NumberFormatter();
-				numFormat.precision=0;
-				numFormat.rounding=NumberBaseRoundType.NEAREST;
-				var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
-				switch (roundedAvgDifficulty)
-				{
-					case 1:
-						return 'A1';
-						break;
-					case 2:
-						return 'A2';
-						break;
-					case 3:
-						return 'B1';
-						break;
-					case 4:
-						return 'B2';
-						break;
-					case 5:
-						return 'C1';
-						break;
-					default:
-						return '';
-						break;
-				}
-			}
-
-			public function getFlagSource(temp:ExerciseVO):Class
-			{
-				var dm:DataModel=DataModel.getInstance();
-				return dm.localesAndFlags.getCountryFlagClass(temp.language);
-			}
-			
-			private function addTagLinkButtons():void
-			{
-				removeTagLinkButtons();
-				if(data.tags){
-					var tags:String = data.tags;
-					var taglist:Array=tags.split(',');
-
-					for each (var tag:String in taglist)
-					{
-						var linkTag:IconButton=new IconButton();
-						linkTag.styleName="commonLinkButton";
-						linkTag.label=StringUtil.trim(tag);
-						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler);
-						exerciseTagsBox.addElement(linkTag);
-					}
-				}
-			}
-			
-			private function removeTagLinkButtons():void
-			{
-				if (exerciseTagsBox.numElements > 0)
-					exerciseTagsBox.removeAllElements();
-			}
-			
-			protected function tagClickHandler(event:MouseEvent):void
-			{
-				URLManager.getInstance().redirect('/search/query/'+(event.target as IconButton).label);
-				new SearchEvent(SearchEvent.LAUNCH_SEARCH).dispatch();
 			}
 
 			protected function itemSelected_changeHandler(event:Event):void

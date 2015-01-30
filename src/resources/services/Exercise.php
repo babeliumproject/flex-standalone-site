@@ -731,9 +731,9 @@ class Exercise {
 			if($mdata){
 				$t =  $thumbdir . '/' . $mdata->mediacode . '/%02d.jpg';
 				$fragment = sprintf($t, $mdata->defaultthumbnail);
-				if(is_file($this->cfg->webRootPath.$fragment)){
+				//if(is_file($this->cfg->webRootPath.$fragment)){
 					$url = $this->cfg->wwwroot.$fragment;
-				}
+				//}
 			}
 		}
 		return $url;

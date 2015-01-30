@@ -31,20 +31,14 @@ package modules.assessment.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var resultCollection:ArrayCollection;
 			
-			if (result is Array && (result as Array).length > 0 )
+			if (result)
 			{
-				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				//Set the data in the application's model
-				dataModel.responseAssessmentData = resultCollection;
+				dataModel.responseAssessmentData = result;
 			} else {
-				dataModel.responseAssessmentData = new ArrayCollection();
+				dataModel.responseAssessmentData = null;
 			}
-			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER)
-				dataModel.responseAssessmentDataRetrieved = !dataModel.responseAssessmentDataRetrieved;
-			if(cgEvent.type == EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER)
-				dataModel.detailsOfResponseAssessedByUserRetrieved = !dataModel.detailsOfResponseAssessedByUserRetrieved;
+			dataModel.responseAssessmentDataRetrieved = !dataModel.responseAssessmentDataRetrieved;
 		}
 		
 		public function fault(info:Object):void

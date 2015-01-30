@@ -333,7 +333,28 @@ class Evaluation {
 	 */
 	public function detailsOfAssessedResponse($responseId = 0){
 		if(!$responseId)
-		return false;
+			throw new Exception("Invalid parameters", 1000);
+		
+		$response = $this->getResponseById($responseId);
+		if(!$response)
+			throw new Exception("Response id does not exist",1006);
+		
+		require_once 'Exercise.php';
+		$exservice = new Exercise();
+		$status = 2; //Available media
+		$level = isset($response->level) ? $response->level : 1; //By default get the primary media
+		$exmedia = $exservice->getExerciseMedia($response->fk_exercise_id,$status,$level);
+		if($exmedia && count($exmedia)==1){
+			$response->leftMedia = $exmedia[0];
+		}
+		
+		$rightMedia = new stdClass();
+		$rightMedia->netConnectionUrl = $this->cfg->streamingserver;
+		$rightMedia->mediaUrl = 'responses/'.$response->file_identifier.'.flv';
+		
+		$response->rightMedia = $rightMedia;
+		
+		
 		$sql = "SELECT C.username as userName,
 					   A.score_overall as overallScore, 
 					   A.score_intonation as intonationScore, 
@@ -353,23 +374,24 @@ class Evaluation {
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
 
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
+		$response->assessments = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
 
-		return $searchResults;
+		return $response;
 	}
 	
-	public function getSubmissionById($submissionid){
-		if(!$submissionid) return;
+	public function getResponseById($responseid){
+		if(!$responseid) return;
 		
-		$sql = "SELECT *
+		$sql = "SELECT r.*, u.username
 				FROM response r INNER JOIN user u ON r.fk_user_id=u.id
 				WHERE r.id=%d";
 		
-		$result = $this->conn->_singleSelect($sql, $submissionid);
-		if($result){
-			//Get the title, description and info of the exercise and the filename of the media that belongs to it.
-			$exercise->getExerciseById($result->fk_exercise_id);
-		}
+		$result = $this->conn->_singleSelect($sql, $responseid);
+		return $result;
+	}
+	
+	protected function getExerciseAndResponseMedia(){
+		
 	}
 
 	/**

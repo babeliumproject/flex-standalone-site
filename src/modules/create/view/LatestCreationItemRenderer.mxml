@@ -10,81 +10,54 @@
 							paddingRight="8"/>
 	</s:layout>
 
-	<fx:Declarations>
-		<s:DateTimeFormatter id="dateTimeFormatter" timeStyle="none" dateStyle="short"/>
-	</fx:Declarations>
-	
 	<fx:Script>
 		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.DateTimeNameStyle;
+			import flash.globalization.DateTimeStyle;
+			
 			import model.DataModel;
 			
 			import mx.formatters.NumberBaseRoundType;
+			import mx.resources.ResourceManager;
 			
 			import spark.formatters.NumberFormatter;
-
-			import view.common.TimeFormatter;
 			
+			import utils.CollectionUtils;
+			import utils.ExerciseRenderUtils;
+			
+			import view.common.TimeFormatter;
+
 			[Bindable]
 			private var _data:Object;
-			
+
 			private var _creationComplete:Boolean=false;
 			
-			[Bindable]
-			private var _timeFormatter:TimeFormatter=new TimeFormatter();
+			private var _model:DataModel=DataModel.getInstance();
 			
+			private var dateTimeFormatter:DateTimeFormatter;
+
 			public function completeHandler():void
 			{
 				_data=data;
-				_creationComplete=true;				
+				_creationComplete=true;
 			}
-			
-			public function getLevelCorrespondence(difficulty:int):String
-			{
-				switch (difficulty)
-				{
-					case 1:
-						return 'A1';
-						break;
-					case 2:
-						return 'A2';
-						break;
-					case 3:
-						return 'B1';
-						break;
-					case 4:
-						return 'B2';
-						break;
-					case 5:
-						return 'C1';
-						break;
-					default:
-						return '';
-						break;
-				}
-			}
-			
-			public function getFlagSource(temp:Object):Class
-			{
-				var dm:DataModel=DataModel.getInstance();
-				return dm.localesAndFlags.getCountryFlagClass(temp.language);
-			}
-			
-		
-
-			
 		]]>
 	</fx:Script>
 
 	<s:Group width="120"
 			 height="90">
-		<mx:Image id="thumbnail"
-				  scaleContent="true"
-				  source="{data.thumbnail}"
-				  autoLoad="true"
-				  width="120"
-				  height="90"
-				  toolTip="{data.title}"/>
-		<s:TextInput text="{_timeFormatter.format(data.duration)}"
+		<s:Rect width="120" height="90">
+			<s:stroke>
+				<s:SolidColorStroke weight="1" color="0"/>
+			</s:stroke>
+		</s:Rect>
+		<s:BitmapImage id="thumbnail"
+					   source="{data.thumbnail}"
+					   width="120"
+					   height="90"/>
+		<!--
+		<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.duration,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
 					 styleName="videoDurationLabel"
 					 x="88"
 					 y="0"
@@ -92,6 +65,7 @@
 					 height="16"
 					 editable="false"
 					 selectable="false"/>
+		-->
 	</s:Group>
 
 	<s:VGroup width="100%"
@@ -112,20 +86,21 @@
 				  verticalAlign="middle">
 			<s:HGroup gap="2"
 					  verticalAlign="middle">
-				<mx:Image width="16"
-						  height="16"
-						  toolTip="{exerciseLanguage.source}"
-						  source="{getFlagSource(data)}"
-						  id="exerciseLanguage"/>
-				<s:Label text="{getLevelCorrespondence(data.difficulty)}"
+				<s:BitmapImage width="16"
+							   height="16"
+							   source="{ExerciseRenderUtils.getFlagSource(data)}"
+							   id="exerciseLanguage"/>
+				<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<s:Label text="{dateTimeFormatter.format(data.timecreated)}"
+			<s:Label text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE)}"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 		<s:HGroup>
-			<s:Label id="status" text="Status: "/>
-			<s:Label id="statusValue" text="{data.status ? 'Ready' : 'Draft'}" />
+			<s:Label id="status"
+					 text="{ResourceManager.getInstance().getString('myResources','STATUS')+':'}"/>
+			<s:Label id="statusValue"
+					 text="{parseInt(data.status) ? ResourceManager.getInstance().getString('myResources','READY') : ResourceManager.getInstance().getString('myResources','DRAFT')}"/>
 		</s:HGroup>
 	</s:VGroup>
 

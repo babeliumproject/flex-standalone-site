@@ -61,6 +61,9 @@
 	<s:Panel title="{resourceManager.getString('myResources','MY_LATEST_CREATIONS')}"
 			 width="100%"
 			 minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+		</s:layout>
 		<s:Label id="nocreations"
 				 text="{resourceManager.getString('myResources','YOU_HAVENT_CREATED_ANY_EXERCISE_YET')}"
 				 includeInLayout="{!latestCreationsData.length}"

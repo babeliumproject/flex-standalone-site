@@ -44,6 +44,10 @@ package model
 		public static const PURPOSE_EVALUATE:String='evaluate';
 		public static const PURPOSE_PRACTICE:String='practice';
 		
+		
+		[Bindable]
+		public var levels:ArrayCollection = new ArrayCollection([{'level':1,'label':'A1'}, {'level':2,'label':'A2'}, {'level':3,'label':'B1'}, {'level':4,'label':'B2'}, {'level':5,'label':'C1'}]);	
+		
 		/**
 		 * RTMP: The "plain" variant of the protocol that uses TCP port 1935 by default
 		 */
@@ -342,7 +346,7 @@ package model
 		
 		[Bindable]
 		public var responseAssessmentDataRetrieved:Boolean=false;
-		public var responseAssessmentData:ArrayCollection;
+		public var responseAssessmentData:Object;
 	
 		[Bindable]
 		public var addAssessmentRetrieved:Boolean=false;

@@ -75,6 +75,7 @@ class Create {
 			e.exercisecode,
 			e.timecreated,
 			e.difficulty,
+			e.visible,
 			e.status
 			FROM exercise e
 			WHERE e.fk_user_id = %d
@@ -99,10 +100,14 @@ class Create {
 				foreach($searchResults as $searchResult){
 					//$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
 					//$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
-					$searchResult->descriptors = $exercise->getExerciseDescriptors($searchResult->id);
+					//$searchResult->descriptors = $exercise->getExerciseDescriptors($searchResult->id);
+					require_once 'Exercise.php';
+					$ex = new Exercise();
+					$url = $ex->getExerciseDefaultThumbnail($searchResult->id);
+					$searchResult->thumbnail = $url;
 				}
 			}
-			return $this->conn->multipleRecast('ExerciseVO', $searchResults);
+			return $searchResults;
 	
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
