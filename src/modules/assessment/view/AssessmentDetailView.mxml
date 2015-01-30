@@ -9,7 +9,7 @@
 		 paddingLeft="16"
 		 paddingRight="16"
 		 implements="modules.IGroupInterface"
-		 preinitialize="assessdetail_preinitializeHandler(event)">
+		 creationComplete="assessdetail_creationCompleteHandler(event)">
 	
 	<fx:Script>
 		<![CDATA[
@@ -22,14 +22,12 @@
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
 			
 			import vo.EvaluationVO;
 			
 			[Bindable]
 			protected var _exerciseTitle:String;
-			[Bindable]
-			protected var _evaluationSelected:Boolean;
-
 			
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
@@ -95,7 +93,8 @@
 			}
 			
 			protected function onSubtitlesRetrieved(value:Boolean):void{
-				_currentCaptions=DataModel.getInstance().availableSubtitleLines;
+				_currentCaptions=dataModel.availableSubtitleLines;
+				VP.setCaptions(_currentCaptions);
 			}
 			
 			protected function onRolesRetrieved(value:Boolean):void
@@ -112,12 +111,10 @@
 			}
 			
 			protected function prepareVideoPlayer():void{
-				trace("Prepare video player");
 				var parallelMedia:Object=new Object();
 				parallelMedia.leftMedia=_leftMedia;
 				parallelMedia.rightMedia=_rightMedia;
 				VP.loadVideoByUrl(parallelMedia, _currentTimeMarkers);
-				VP.setCaptions(_currentCaptions);
 			}
 			
 			protected function buildEvaluationDatalPanel():void{
@@ -132,14 +129,14 @@
 				}
 			}
 			
-			protected function assessdetail_preinitializeHandler(event:FlexEvent):void
+			protected function assessdetail_creationCompleteHandler(event:FlexEvent):void
 			{
-				removeEventListener(FlexEvent.PREINITIALIZE, assessdetail_preinitializeHandler);
+				removeEventListener(FlexEvent.CREATION_COMPLETE, assessdetail_creationCompleteHandler);
 				var commitOnly:Boolean = false;
 				var useWeakReference:Boolean = true;
 				BindingUtils.bindSetter(submissionAssessmentsHandler, dataModel, "responseAssessmentDataRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "exerciseSubtitlesRetrieved", commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
 			}
 			
 		]]>
@@ -148,7 +145,6 @@
 	<s:VGroup id="videoPlayerBox"
 			  width="100%"
 			  horizontalAlign="center"
-			  visible="false"
 			  paddingTop="20"
 			  paddingLeft="16"
 			  paddingRight="16">
@@ -168,8 +164,7 @@
 									   autoScale="false"
 									   subtitlingControls="false"
 									   width="640"
-									   height="360"
-									   controlsEnabled="{_evaluationSelected}"/>
+									   height="360"/>
 		</s:HGroup>
 	</s:VGroup>
 	

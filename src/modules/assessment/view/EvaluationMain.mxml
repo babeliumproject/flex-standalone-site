@@ -362,7 +362,7 @@
 					VP.refresh();
 				}else {
 					setupSimultaneousPlaybackCommands();
-					VP.state=VideoRecorder.PLAY_BOTH_STATE;
+					VP.state=VideoRecorder.PLAY_PARALLEL_STATE;
 					VP.videoSource=EXERCISE_FOLDER + '/' + _exerciseName;
 					VP.secondSource=RESPONSE_FOLDER + '/' + _responseName;
 					VP.addEventListener(VideoPlayerEvent.METADATA_RETRIEVED, onMetadataRetrieved);

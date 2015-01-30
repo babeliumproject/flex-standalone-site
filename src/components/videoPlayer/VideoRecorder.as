@@ -16,8 +16,6 @@ package components.videoPlayer
 	import components.videoPlayer.timedevent.TimeMarkerManager;
 	import components.videoPlayer.timedevent.TimelineEventDispatcher;
 	
-	import events.FullStreamingEvent;
-	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.Matrix;
@@ -88,7 +86,7 @@ package components.videoPlayer
 		 * XXXX XX1X: recording modes
 		 */
 		public static const PLAY_STATE:int=0;        // 0000 0000
-		public static const PLAY_BOTH_STATE:int=1;   // 0000 0001
+		public static const PLAY_PARALLEL_STATE:int=1;   // 0000 0001
 		public static const RECORD_MIC_STATE:int=2;  // 0000 0010
 		public static const RECORD_MICANDCAM_STATE:int=3; // 0000 0011
 		public static const UPLOAD_MODE_STATE:int=4; // 0000 0100
@@ -247,7 +245,10 @@ package components.videoPlayer
 			/**
 			 * Adds components to player
 			 */
-			removeChild(_playerControls); // order
+			removeChild(_playerControls);
+			removeChild(_topLayer);
+			removeChild(_busyIndicator);// order
+			
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
 			
@@ -257,7 +258,8 @@ package components.videoPlayer
 			addChild(_subtitlePanel);
 			addChild(_playerControls);
 			addChild(_countdownTxt);
-
+			addChild(_topLayer);
+			addChild(_busyIndicator);
 			addChild(_overlayButton);
 
 			/**
@@ -509,7 +511,7 @@ package components.videoPlayer
 				
 				if(_mic) _mic.gain = newGain;
 			} 
-			else if (_state == PLAY_BOTH_STATE){
+			else if (_state == PLAY_PARALLEL_STATE){
 				var newVolume:Number;
 				if (value)
 				{
@@ -725,9 +727,65 @@ package components.videoPlayer
 		 */
 		override public function playVideo():void
 		{
-			super.playVideo();
-			if(_state == PLAY_BOTH_STATE)
-				playSecondStream();
+			if(_state == PLAY_PARALLEL_STATE){
+				playVideoParallel();
+			} else {
+				super.playVideo();
+			}
+		}
+		
+		protected function playVideoParallel():void{
+			var lState:int = _media ? _media.streamState : -1;
+			var rState:int = _parallelMedia ? _parallelMedia.streamState : -1;
+			
+			switch(lState)
+			{
+				case AMediaManager.STREAM_UNINITIALIZED:
+				{
+					logger.debug("[playVideoParallel] Streams are uninitialized");
+					_forcePlay=true;
+					loadParallelVideo();
+					break;
+				}
+				case AMediaManager.STREAM_INITIALIZED:
+				{
+					logger.debug("[playVideoParallel] Streams are initialized");
+					startVideo();
+					break;
+				}
+				case AMediaManager.STREAM_SEEKING_START:
+				{
+					logger.debug("[playVideoParallel] Cannot start playing while previous seek is not complete");
+					break;
+				}
+				case AMediaManager.STREAM_PAUSED:
+				{
+					resumeVideo();
+					break;
+				}
+				case AMediaManager.STREAM_READY:
+				{
+					logger.debug("[playVideoParallel] Streams are ready but the buffer is not full");
+					break;
+				}
+				case AMediaManager.STREAM_FINISHED:
+				{
+					logger.debug("[playVideoParallel] Streams are finished. Autorewind?");
+					seekTo(0);
+					pauseVideo();
+				}
+				default:
+				{
+					break;
+				}
+			}
+		}
+		
+		override public function seekTo(seconds:Number):void{
+			super.seekTo(seconds);
+			if(_state==PLAY_PARALLEL_STATE){
+				_parallelMedia.seek(seconds);
+			}
 		}
 
 		/**
@@ -747,7 +805,7 @@ package components.videoPlayer
 				//	_recordMedia.netStream.togglePause();
 			}
 			
-			if (_state == PLAY_BOTH_STATE){
+			if (_state == PLAY_PARALLEL_STATE){
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
 				if (streamReady(_parallelMedia) && (_parallelMedia.streamState == AMediaManager.STREAM_STARTED || _parallelMedia.streamState == AMediaManager.STREAM_BUFFERING))
@@ -778,7 +836,7 @@ package components.videoPlayer
 				//}
 			}
 
-			if (_state == PLAY_BOTH_STATE){
+			if (_state == PLAY_PARALLEL_STATE){
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
 				if (streamReady(_parallelMedia) && _parallelMedia.streamState == AMediaManager.STREAM_PAUSED){
@@ -810,7 +868,7 @@ package components.videoPlayer
 				}
 			}
 
-			if (_state == PLAY_BOTH_STATE)
+			if (_state == PLAY_PARALLEL_STATE)
 			{
 				if (streamReady(_parallelMedia))
 				{
@@ -838,7 +896,7 @@ package components.videoPlayer
 				}
 			}
 			
-			if (_state == PLAY_BOTH_STATE)
+			if (_state == PLAY_PARALLEL_STATE)
 			{
 				if (streamReady(_parallelMedia)){
 					_parallelMedia.netStream.close(); //Cleans the cache of the video
@@ -945,7 +1003,7 @@ package components.videoPlayer
 					scaleCamVideo(_videoWidth,_videoHeight,false);
 					break;
 				}
-				case PLAY_BOTH_STATE:
+				case PLAY_PARALLEL_STATE:
 				{
 					splitVideoPanel();
 					break;
@@ -1293,25 +1351,25 @@ package components.videoPlayer
 		override public function loadVideoByUrl(param:Object, timemarkers:Object=null):void{
 			unattachUserDevices();
 			hideCaption();
+			if(!param) return;
 			if(getQualifiedClassName(param) == 'Object')
 			{
 				if(param.leftMedia){
 					var lmedia:Object=parseMediaObject(param.leftMedia);
+					logger.debug(ObjectUtil.toString(lmedia));
 					_mediaNetConnectionUrl=lmedia.netConnectionUrl;
 					_mediaUrl=lmedia.mediaUrl;
 					_mediaPosterUrl=lmedia.mediaPosterUrl;
-					
+
 					var rmedia:Object;
 					if(param.rightMedia){
-						rmedia=parseMediaObject(param.rightMedia);
+						rmedia=parseMediaObject((param.rightMedia as Object));
 					}
 					if(lmedia && rmedia){
-						setInternalState(PLAY_BOTH_STATE);
+						setInternalState(PLAY_PARALLEL_STATE);
 						_parallelMediaNetConnectionUrl=rmedia.netConnectionUrl;
 						_parallelMediaUrl=rmedia.mediaUrl;
-						
 						loadParallelVideo();
-							
 					} else if(lmedia){
 						setInternalState(PLAY_STATE);
 						loadVideo();
@@ -1514,21 +1572,50 @@ package components.videoPlayer
 					prepareDevices();
 				}
 			} 
-			else if (_state & SPLIT_FLAG)
+			else if (_state != PLAY_STATE)
 			{
 				if(_parallelMediaReady && _mediaReady){
 					_video.attachNetStream(_media.netStream);
+					_video.visible=true;
 					_media.volume=_currentVolume;
 					_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
 					
 					_camVideo.attachNetStream(_parallelMedia.netStream);
+					_camVideo.visible=true;
+					_micImage.visible=true;
 					_parallelMedia.volume=_currentVolume;
 					_parallelMedia.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
 					_parallelMedia.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
+					if (autoPlay || _forcePlay)
+					{
+						startVideo();
+						_forcePlay=false;
+					}
 				}
 			} else {
 				super.onStreamSuccess(event);
+			}
+		}
+		
+		override protected function startVideo():void{
+			if(_state == PLAY_STATE){
+				super.startVideo();
+			} else {
+				if(!(_state & RECORD_MODE_MASK)){
+					if (!_parallelMediaReady)
+						return;
+					try
+					{
+						_parallelMedia.play();
+						super.startVideo();
+					}
+					catch (e:Error)
+					{
+						_parallelMediaReady=false;
+						//logger.error("Error while loading video. [{0}] {1}", [e.errorID, e.message]);
+					}
+				}
 			}
 		}
 		
@@ -1551,6 +1638,7 @@ package components.videoPlayer
 			if(event.state == AMediaManager.STREAM_FINISHED){
 				if(_captionmgr) _captionmgr.reset();
 				if(_markermgr) _markermgr.reset();
+				_camVideo.clear();
 				hideCaption();
 				if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
 				{

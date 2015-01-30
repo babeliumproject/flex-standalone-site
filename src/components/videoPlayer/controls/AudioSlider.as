@@ -286,9 +286,8 @@ package components.videoPlayer.controls
 			
 			removeEventListener( Event.ENTER_FRAME, updateAmount );
 			
-			volumeChanged();
-			
 			updateAmount();
+			volumeChanged();
 		}
 		
 		

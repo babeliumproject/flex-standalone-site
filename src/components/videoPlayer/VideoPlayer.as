@@ -1,6 +1,8 @@
 package components.videoPlayer
 {
 	
+	import avmplus.getQualifiedClassName;
+	
 	import components.videoPlayer.controls.*;
 	import components.videoPlayer.events.*;
 	import components.videoPlayer.media.*;
@@ -23,7 +25,6 @@ package components.videoPlayer
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
-	import flash.utils.getQualifiedClassName;
 	
 	import model.DataModel;
 	
@@ -171,7 +172,8 @@ package components.videoPlayer
 			var netConnectionUrl:String;
 			var mediaUrl:String;
 			var mediaPosterUrl:String;
-			if(getQualifiedClassName(param) == 'Object')
+			logger.debug(getQualifiedClassName(param));
+			if(param is Object)
 			{
 				if(!param.mediaUrl){
 					return null;
@@ -315,7 +317,7 @@ package components.videoPlayer
 
 		public function get autoPlay():Boolean
 		{
-			return _autoPlayOverride ? false: _autoPlay;
+			return _autoPlayOverride ? false : _autoPlay;
 		}
 
 		public function set videoSmooting(value:Boolean):void
@@ -721,7 +723,7 @@ package components.videoPlayer
 		 */
 		private function onVolumeChange(e:VolumeEvent):void
 		{
-			this.setVolume(e.volumeAmount);
+			this.setVolume(e.volumeAmount*100);
 		}
 
 		/**
