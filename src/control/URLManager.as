@@ -27,6 +27,7 @@ package control
 		public static var instance:URLManager=new URLManager();
 		private var _isParsing:Boolean;
 		private var _lastURL:String;
+		private var _lastFragment:String;
 		private var _browserManager:IBrowserManager;
 
 
@@ -81,10 +82,9 @@ package control
 		 */
 		protected function defaultFragmentWorkaround(defaultFragment:String):void{
 			if(!defaultFragment) return;
-			trace("Workaround param: "+defaultFragment);
+		
 			var url:String = ExternalInterface.call("BrowserHistory.getURL");
 			var pos:int = url.indexOf('#');
-			trace("Workaround: "+pos);
 			//The fragment is empty
 			if (pos == url.length - 1 && defaultFragment.length)
 			{
@@ -112,9 +112,17 @@ package control
 		 */		
 		public function parseURL(event:BrowserChangeEvent):void
 		{
-			if(_isParsing) return;
-			trace(event.type+": "+_browserManager.fragment);
+			if(_isParsing){
+				trace("URL change event while parsing a previous URL.");
+				return;
+			}
+			if(_lastFragment == _browserManager.fragment){
+				trace("URL change event was recieved but the fragment did not change.");
+				return;
+			}
 			
+			trace(event.type+": "+_browserManager.fragment);
+			_lastFragment=_browserManager.fragment;
 			_isParsing=true;
 			
 			var modtmp:String;

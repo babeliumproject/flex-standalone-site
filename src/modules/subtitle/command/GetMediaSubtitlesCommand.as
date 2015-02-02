@@ -35,7 +35,7 @@ package modules.subtitle.command
 				if(result.hasOwnProperty('media')){
 					mediaData = result.media;
 				}
-				if(result.hasOwnProperty('subtitles')){
+				if(result.hasOwnProperty('subtitles') && result.subtitles){
 					mediaSubtitles=new ArrayCollection(ArrayUtil.toArray(result.subtitles));
 				}
 			}

@@ -13,19 +13,21 @@ package modules.assessment.command
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	
-	public class GetResponseById implements ICommand, IResponder
+	public class GetResponseData implements ICommand, IResponder
 	{
 		private var _model:DataModel=DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
 			var responseid:int = (event as EvaluationEvent).responseId;
-			new EvaluationDelegate(this).getResponseById(responseid);
+			new EvaluationDelegate(this).getResponseData(responseid);
 		}
 		
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
+			_model.submissionData=result;
+			_model.submissionDataRetrieved=!_model.submissionDataRetrieved;
 		}
 		
 		public function fault(info:Object):void

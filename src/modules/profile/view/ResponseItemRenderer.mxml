@@ -14,12 +14,8 @@
 		<![CDATA[
 			import model.DataModel;
 			
-			public function getCountryFlag(data:Object):Class{
-				var exerciselocale:String=data.exerciseLanguage;
-				var flagicon:Class = DataModel.getInstance().localesAndFlags.getCountryFlagClass(exerciselocale);
-				return flagicon;
-			}
-			
+			import utils.ExerciseRenderUtils;
+
 		]]>
 	</fx:Script>
 	<s:HGroup width="100%" 
@@ -38,10 +34,10 @@
 				<s:BitmapImage id="countryFlag"
 							   width="16"
 							   height="16"
-							   source="{getCountryFlag(data)}"/>
+							   source="{ExerciseRenderUtils.getFlagSource(data)}"/>
 				<s:Label id="difficulty"
 						 styleName="boldYellowLabel"
-						 text="{data.exerciseAvgDifficulty}"/>
+						 text="{ExerciseRenderUtils.getLevelLabel(data.exerciseAvgDifficulty)}"/>
 				<s:Label id="exerciseTitle"
 						 styleName="boldLabel"
 						 text="{data.exerciseTitle}"/>

@@ -11,7 +11,7 @@ package modules.assessment.event {
 		public static const GET_RESPONSES_ASSESSED_TO_CURRENT_USER:String="getResponsesAssessedToCurrentUser";
 		public static const GET_RESPONSES_ASSESSED_BY_CURRENT_USER:String="getResponsesAssessedByCurrentUser";
 		
-		public static const GET_RESPONSE_BY_ID:String="getResponseById";
+		public static const GET_RESPONSE_DATA:String="getResponseData";
 		
 		public static const ADD_ASSESSMENT:String="addAssessment";
 		public static const ADD_VIDEO_ASSESSMENT:String="addVideoAssessment";

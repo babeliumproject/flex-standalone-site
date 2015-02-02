@@ -103,7 +103,7 @@ package control {
 			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, DetailsOfAssessedResponseCommand);
 			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER, DetailsOfAssessedResponseCommand);
 			addCommand(EvaluationEvent.GET_EVALUATION_CHART_DATA, GetEvaluationChartDataCommand);
-			addCommand(EvaluationEvent.GET_RESPONSE_BY_ID, GetResponseById);
+			addCommand(EvaluationEvent.GET_RESPONSE_DATA, GetResponseData);
 			
 			//Autoevaluation management commands
 			addCommand(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, AutoEvaluateCommand);

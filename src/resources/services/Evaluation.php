@@ -75,7 +75,7 @@ class Evaluation {
 	}
 	
 	private function getAssessmentLimit(){
-		$sql = "SELECT prefValue FROM preferences WHERE prefName='trial.threshold'";
+		$sql = "SELECT prefValue FROM preferences WHERE prefName='trial_threshold'";
 		$result = $this->conn->_singleSelect ( $sql );
 		if($result){
 			$this->evaluationThreshold = $result->prefValue;
@@ -190,7 +190,7 @@ class Evaluation {
 		               MAX(C.adding_date) AS addingDate
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
 					 LEFT OUTER JOIN evaluation AS C ON C.fk_response_id = A.id 
-				WHERE ( A.fk_user_id = '%d' ) 
+				WHERE ( A.fk_user_id = '%d' AND B.status=1 ) 
 				GROUP BY A.id,B.id 
 				ORDER BY A.adding_date DESC";
 		
@@ -254,7 +254,7 @@ class Evaluation {
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
 			         INNER JOIN user AS U ON U.id = A.fk_user_id
 			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
-			    WHERE (C.fk_user_id = '%d')
+			    WHERE (C.fk_user_id = '%d' AND B.status=1)
 			    ORDER BY C.adding_date DESC";
 		
 		if($rowcount){
@@ -334,28 +334,11 @@ class Evaluation {
 	public function detailsOfAssessedResponse($responseId = 0){
 		if(!$responseId)
 			throw new Exception("Invalid parameters", 1000);
+				
+		$response = $this->getResponseData($responseId);
 		
-		$response = $this->getResponseById($responseId);
-		if(!$response)
-			throw new Exception("Response id does not exist",1006);
-		
-		require_once 'Exercise.php';
-		$exservice = new Exercise();
-		$status = 2; //Available media
-		$level = isset($response->level) ? $response->level : 1; //By default get the primary media
-		$exmedia = $exservice->getExerciseMedia($response->fk_exercise_id,$status,$level);
-		if($exmedia && count($exmedia)==1){
-			$response->leftMedia = $exmedia[0];
-		}
-		
-		$rightMedia = new stdClass();
-		$rightMedia->netConnectionUrl = $this->cfg->streamingserver;
-		$rightMedia->mediaUrl = 'responses/'.$response->file_identifier.'.flv';
-		
-		$response->rightMedia = $rightMedia;
-		
-		
-		$sql = "SELECT C.username as userName,
+		if($response){
+			$sql = "SELECT C.username as userName,
 					   A.score_overall as overallScore, 
 					   A.score_intonation as intonationScore, 
 					   A.score_fluency as fluencyScore, 
@@ -374,12 +357,13 @@ class Evaluation {
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
 
-		$response->assessments = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
+			$response->assessments = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
+		}
 
 		return $response;
 	}
 	
-	public function getResponseById($responseid){
+	protected function getResponseById($responseid){
 		if(!$responseid) return;
 		
 		$sql = "SELECT r.*, u.username
@@ -390,8 +374,30 @@ class Evaluation {
 		return $result;
 	}
 	
-	protected function getExerciseAndResponseMedia(){
+	public function getResponseData($responseId){
+		if(!$responseId)
+			throw new Exception("Invalid parameters", 1000);
 		
+		$response = $this->getResponseById($responseId);
+		if(!$response)
+			throw new Exception("Response id does not exist",1006);
+		
+		require_once 'Exercise.php';
+		$exservice = new Exercise();
+		$status = 2; //Available media
+		$level = isset($response->level) ? $response->level : 1; //By default get the primary media
+		$exmedia = $exservice->getExerciseMedia($response->fk_exercise_id,$status,$level);
+		if($exmedia && count($exmedia)==1){
+			$response->leftMedia = $exmedia[0];
+			
+			$rightMedia = new stdClass();
+			$rightMedia->netConnectionUrl = $this->cfg->streamingserver;
+			$rightMedia->mediaUrl = 'responses/'.$response->file_identifier.'.flv';
+			
+			$response->rightMedia = $rightMedia;
+		}
+		
+		return isset($response->leftMedia) ? $response : null;
 	}
 
 	/**
@@ -442,7 +448,7 @@ class Evaluation {
 	private function _responseRatingCountBelowThreshold($responseId){
 		$sql = "SELECT *
 				FROM response
-				WHERE id = '%d' AND rating_amount < (SELECT prefValue FROM preferences WHERE prefName='trial.threshold')";
+				WHERE id = '%d' AND rating_amount < (SELECT prefValue FROM preferences WHERE prefName='trial_threshold')";
 		return $this->conn->_singleSelect($sql, $responseId);
 	}
 
@@ -748,7 +754,7 @@ class Evaluation {
 						'DATE' => $evaluation->responseAddingDate,
 						'EXERCISE_TITLE' => $evaluation->exerciseTitle,
 						'EVALUATOR_NAME' => $evaluation->userName,
-						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/evaluation/revise/'.$evaluation->responseFileIdentifier,
+						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/#/assessments/view/'.$evaluation->responseId,
 						'SIGNATURE' => 'The Babelium Project Team');
 
 		if ( !$mail->makeTemplate("assessment_notify", $args, $locale) )

@@ -1,114 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:view="modules.assessment.view.*" 
-		 xmlns:videoPlayer="components.videoPlayer.*"
-		 paddingTop="16"
-		 paddingBottom="16"
-		 paddingLeft="16"
-		 paddingRight="16"
-		 implements="modules.IGroupInterface">
-	
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.assessment.view.*"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  implements="modules.IGroupInterface"
+		  creationComplete="assessadd_creationCompleteHandler(event)">
+
 	<fx:Script>
 		<![CDATA[
+			import control.URLManager;
+			
 			import model.DataModel;
 			
+			import modules.subtitle.event.SubtitleEvent;
+			
+			import mx.binding.utils.BindingUtils;
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			
 			import vo.EvaluationVO;
-			
-			protected var _exerciseId:int;
-			protected var _exerciseName:String;
-			[Bindable]
-			protected var _exerciseTitle:String;
+
 			protected var _responseId:int;
-			protected var _responseName:String;
 			protected var _responseSubtitleId:int;
-			protected var _responseCharacterName:String;
 			protected var _responseAddingDate:String;
 			protected var _responseUserName:String;
 			protected var _mergeStatus:int;
 			[Bindable]
 			protected var _evaluationSelected:Boolean;
-			
+
 			protected var _data:Object;
-			
+
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
-			
-			public function resetGroup():void{
+
+			private var _currentCaptions:Object;
+			private var _currentTimeMarkers:Object;
+			private var _rolesReady:Boolean;
+			private var _selectedRole:String;
+			private var _leftMedia:Object;
+			private var _rightMedia:Object;
+
+
+			public function resetGroup():void
+			{
 				VP.resetComponent();
+				evaluationRatingBox.resetComponent();
+				_responseId=_responseSubtitleId=_mergeStatus=0;
+				_responseAddingDate=_responseUserName=_selectedRole=null;
+				_data=_currentCaptions=_currentTimeMarkers=_leftMedia=_rightMedia=null;
+				_evaluationSelected=_rolesReady=false;
 			}
-			
-			public function updateVerticalScroll():void
+
+			protected function fetchSubtitlesById(subtitleid:int):void
 			{
-				FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
+				var params:Object=new Object();
+				params.id=subtitleid;
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, params).dispatch();
 			}
-			
-			private function set submissionDataHandler(value:Boolean):void
+
+			protected function onSubtitlesRetrieved(value:Boolean):void
 			{
-				_data = dataModel.submissionData;
-				
-				_exerciseId=_data.exerciseId;
-				_exerciseName=_data.exerciseName;
-				_exerciseTitle=_data.exerciseTitle;
-				
-				_responseId=_data.responseId;
-				_responseName=_data.responseFileIdentifier;
-				_responseSubtitleId=_data.responseSubtitleId;
-				_responseCharacterName=_data.responseCharacterName;
-				_responseAddingDate=_data.responseAddingDate;
-				_responseUserName=_data.responseUserName;
-				_mergeStatus=_data.mergeStatus;
-				// trace("[INFO] mergeStatus" + _mergeStatus);
-				
-				//Scroll up to see the video
-				callLater(updateVerticalScroll);
-				
-				//Retrieve the associated subtitles and prepare the videoplayer
-				prepareEvaluation();
-				_evaluationSelected=true;
-				
-				//Visualize the video player component
-				videoPlayerBox.includeInLayout=true;
-				videoPlayerBox.visible=true;
-				
-				//Prepare the component in which the user leaves the assessment
-				evaluationRatingBox.resetEvaluationButtonClickHandler(null);
-				evaluationRatingBox.responseData(_responseId, _responseUserName, _responseName, _responseAddingDate, _responseUserName, _exerciseTitle);
-				evaluationRatingBox.includeInLayout=true;
-				evaluationRatingBox.visible=true;
+				_currentCaptions=dataModel.availableSubtitleLines;
+				VP.setCaptions(_currentCaptions);
 			}
-			
-			private function set assessmentSavedHandler(value:Boolean):void
+
+			protected function onRolesRetrieved(value:Boolean):void
 			{
-				//TODO Maybe redirect to  the profile or the pending assessment list
+				var _roles:Object=dataModel.availableExerciseRoles;
+				if (_roles && _roles.hasOwnProperty(_selectedRole))
+				{
+					_currentTimeMarkers=_roles[_selectedRole];
+					_rolesReady=true;
+					prepareVideoPlayer();
+				}
+				else
+				{
+					_currentTimeMarkers=null;
+					_rolesReady=false;
+				}
 			}
-			
-			protected function prepareEvaluation():void{
-				//Load the subtitles and prepare the video player
+
+			protected function prepareVideoPlayer():void
+			{
+				var parallelMedia:Object=new Object();
+				parallelMedia.leftMedia=_leftMedia;
+				parallelMedia.rightMedia=_rightMedia;
+				VP.loadVideoByUrl(parallelMedia, _currentTimeMarkers);
 			}
-			
+
+			private function submissionDataHandler(value:Boolean):void
+			{
+				_data=dataModel.submissionData;
+
+				if (_data)
+				{
+					_responseId=_data.id;
+					_responseSubtitleId=_data.fk_subtitle_id;
+					_responseAddingDate=_data.adding_date;
+					_responseUserName=_data.username;
+					_mergeStatus=_data.mergeStatus;
+					
+					_selectedRole=_data.character_name;
+					
+					if(_data.hasOwnProperty('leftMedia')){
+						_leftMedia=_data.leftMedia;
+					}
+					if(_data.hasOwnProperty('rightMedia')){
+						_rightMedia=_data.rightMedia;
+					}
+
+					//Retrieve the associated subtitles and prepare the videoplayer
+					fetchSubtitlesById(_responseSubtitleId);
+
+					_evaluationSelected=true;
+
+					//Display the videoplayer
+					videoPlayerBox.includeInLayout=true;
+					videoPlayerBox.visible=true;
+
+					//Prepare the component in which the user leaves the assessment
+					evaluationRatingBox.resetEvaluationButtonClickHandler(null);
+					evaluationRatingBox.responseData(_responseId, _responseUserName, _selectedRole, _responseUserName);
+					evaluationRatingBox.includeInLayout=true;
+					evaluationRatingBox.visible=true;
+				}
+			}
+
+			private function assessmentSavedHandler(value:Boolean):void
+			{
+				URLManager.getInstance().redirect('/assessments/pending');
+			}
+
+			protected function assessadd_creationCompleteHandler(event:FlexEvent):void
+			{
+				removeEventListener(FlexEvent.CREATION_COMPLETE, assessadd_creationCompleteHandler);
+				var commitOnly:Boolean=false;
+				var useWeakReference:Boolean=true;
+				BindingUtils.bindSetter(submissionDataHandler, dataModel, "submissionDataRetrieved", commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+				BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
+			}
 		]]>
 	</fx:Script>
-	
-	<fx:Binding source="{dataModel.submissionDataRetrieved}"
-				destination="submissionDataHandler"/>
-	
-	<fx:Binding source="{dataModel.addAssessmentRetrieved}"
-				destination="assessmentSavedHandler"/>
-	
+
 	<s:VGroup id="videoPlayerBox"
 			  width="100%"
 			  horizontalAlign="center"
 			  paddingTop="20"
 			  paddingLeft="16"
 			  paddingRight="16">
+		<!--
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"
 				 width="100%"
 				 styleName="exerciseTitleLabel"/>
+		-->
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
 			<videoPlayer:VideoRecorder id="VP"
@@ -123,6 +175,7 @@
 									   controlsEnabled="{_evaluationSelected}"/>
 		</s:HGroup>
 	</s:VGroup>
-	
-	<view:EvaluationRatingBox id="evaluationRatingBox" width="100%"/>
+
+	<view:EvaluationRatingBox id="evaluationRatingBox"
+							  width="100%"/>
 </s:VGroup>

@@ -430,11 +430,12 @@ package modules.subtitle.view
 		{
 			var currentLocale:String=ResourceManager.getInstance().localeChain[0];
 			var dFormatter:DateTimeFormatter=new DateTimeFormatter(currentLocale, DateTimeStyle.SHORT, DateTimeStyle.SHORT);
-			var date:Date=new Date(item.timecreated * 1000);
-			if (item != null)
+			if (item && item.hasOwnProperty('timecreated') && item.hasOwnProperty('username')){
+				var date:Date=new Date(item.timecreated * 1000);
 				return "[" + dFormatter.format(date) + "]  " + item.username;
-			else
+			}else{
 				return "";
+			}
 		}
 
 		public function onSubtitleVersionChange(event:IndexChangeEvent):void

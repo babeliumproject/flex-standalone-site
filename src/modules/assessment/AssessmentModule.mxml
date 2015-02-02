@@ -149,7 +149,7 @@
 			public function actionAssess(params:Object):void{
 				_viewstackIndex=ADD;
 				var _responseId:int = params.id;
-				new EvaluationEvent(EvaluationEvent.GET_RESPONSE_BY_ID, null, _responseId);
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSE_DATA, null, _responseId).dispatch();
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void

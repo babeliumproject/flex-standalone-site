@@ -291,7 +291,7 @@ class User {
 			$responsecount = 0;
 			$evaluationcount = 0;
 			
-			$sql = "SELECT COUNT(*) as responses FROM response WHERE fk_user_id=%d";
+			$sql = "SELECT COUNT(*) as responses FROM response r INNER JOIN exercise e ON r.fk_exercise_id=e.id WHERE r.fk_user_id=%d AND e.status=1";
 			$robj = $this->conn->_singleSelect($sql,$userid);
 			if($robj){
 				$responsecount = $robj->responses;
