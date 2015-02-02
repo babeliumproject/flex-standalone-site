@@ -262,6 +262,7 @@ package components.videoPlayer
 			_topLayer.addChild(_errorSprite);		
 			_busyIndicator.visible=false;
 			invalidateDisplayList();
+			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.ON_ERROR, false, false, 100, evt.message));
 		}
 		
 		protected function onStreamStateChange(event:MediaStatusEvent):void{

@@ -14,19 +14,19 @@
 
 	<fx:Script>
 		<![CDATA[
-			import modules.assessment.event.EvaluationEvent;
-
-			import model.DataModel;
-
 			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
-
+			
+			import model.DataModel;
+			
+			import modules.assessment.event.EvaluationEvent;
+			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectProxy;
-
+			
 			import view.common.CustomAlert;
-
+			
 			import vo.EvaluationVO;
 
 			private var _responseDataAvailable:Boolean=false;
@@ -44,6 +44,11 @@
 			{
 
 			}
+			
+			public function disable():void{
+				sendEvaluationButton.enabled=false;
+				ratingContainer.enabled=false;
+			}
 
 			public function onResponseFinished(event:Event):void
 			{
@@ -52,6 +57,12 @@
 
 			public function responseData(responseId:uint, userName:String, responseAddingDate:String, responseUserName:String):void
 			{
+				videoComment.cancelCapture.visible=false;
+				videoComment.uploadCapture.visible=false;
+				
+				sendEvaluationButton.enabled=true;
+				ratingContainer.enabled=true;
+				
 				_responseId=responseId;
 
 				_userName=userName;
@@ -283,6 +294,7 @@
 										label="{resourceManager.getString('myResources','VIDEO_COMMENT')}">
 						<s:VGroup id="videoCommentBox"
 								  width="100%"
+								  height="{videoCommentBox.width*0.75}"
 								  horizontalAlign="center">
 							<view:WebcamCapture id="videoComment"
 												streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"

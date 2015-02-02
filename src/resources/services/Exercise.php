@@ -76,10 +76,7 @@ class Exercise {
 			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
 			$this->mediaHelper = new VideoProcessor();
-			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
-
-			$this->netConnectionUrl = 'rtmp://'.$_SERVER['SERVER_NAME'].'/vod';
-			
+			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -696,8 +693,8 @@ class Exercise {
 		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $sparam, $lparam);
 		if($results){
 			foreach($results as $r){
-				$r->netConnectionUrl = $this->netConnectionUrl;
-				$r->mediaUrl = 'exercises/'.$r->filename;
+				$r->netConnectionUrl = $this->cfg->streamingserver;
+				$r->mediaUrl = '/exercises/'.$r->filename;
 			}
 		}
 		return $results;

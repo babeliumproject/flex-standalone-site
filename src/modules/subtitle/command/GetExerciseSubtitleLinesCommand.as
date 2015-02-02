@@ -37,8 +37,8 @@ package modules.subtitle.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var resultCollection:ArrayCollection;
-			var untouchedSubtitles:ArrayCollection;
+			var resultCollection:ArrayCollection=null;
+			var untouchedSubtitles:ArrayCollection=null;
 
 			var timeMarkersByRole:Object;
 			
@@ -60,10 +60,11 @@ package modules.subtitle.command
 			}
 			
 			_model.availableExerciseRoles=timeMarkersByRole;
-			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 			
 			_model.unmodifiedAvailableSubtitleLines=untouchedSubtitles;
 			_model.availableSubtitleLines=resultCollection;
+			
+			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 			_model.availableSubtitleLinesRetrieved=!_model.availableSubtitleLinesRetrieved;
 		}
 

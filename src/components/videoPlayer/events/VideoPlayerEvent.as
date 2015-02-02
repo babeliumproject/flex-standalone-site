@@ -12,10 +12,21 @@ package components.videoPlayer.events
 		public static const CREATION_COMPLETE:String = "VideoPlayerCreationComplete";
 		public static const CONNECTED:String = "VideoConnected";
 		
-		public function VideoPlayerEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
+		public static const ON_ERROR:String="onError";
+		public static const ON_READY:String="onReady";
+		
+		public var code:int;
+		public var message:String;
+		
+		public function VideoPlayerEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, code:int=0, message:String=null)
 		{
 			super(type, bubbles, cancelable);
+			this.code = code;
+			this.message = message;
 		}
 		
+		override public function clone():Event{
+			return new VideoPlayerEvent(type,bubbles,cancelable,code,message);
+		}
 	}
 }

@@ -5,10 +5,13 @@ package modules.assessment.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.URLManager;
+	
 	import events.CreditEvent;
-	import modules.assessment.event.EvaluationEvent;
 	
 	import model.DataModel;
+	
+	import modules.assessment.event.EvaluationEvent;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -31,17 +34,18 @@ package modules.assessment.command
 		{
 
 			var result:Object=data.result;
-			if (!result is UserVO)
+			if (!result || !(result is UserVO))
 			{
 				CustomAlert.error(ResourceManager.getInstance().getString('myResources','YOUR_ASSESSMENT_COULDNT_BE_SAVE'));
 			}
-			else
+			else //Assessment successfully saved, redirect to pending list
 			{
 				var userData:UserVO=result as UserVO;
 				dataModel.loggedUser.creditCount=userData.creditCount;
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','YOUR_ASSESSMENT_HAS_BEEN_SAVED'));
 				dataModel.addAssessmentRetrieved=!dataModel.addAssessmentRetrieved;
 				dataModel.creditUpdateRetrieved=true;
+				URLManager.getInstance().redirect('/assessments/pending');
 			}
 		}
 

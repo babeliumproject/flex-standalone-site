@@ -13,6 +13,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import components.videoPlayer.events.VideoPlayerEvent;
+			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -135,6 +138,10 @@
 			{
 				URLManager.getInstance().redirect('/assessments/pending');
 			}
+			
+			protected function disableSendButton(event:VideoPlayerEvent):void{
+				evaluationRatingBox.disable();
+			}
 
 			protected function assessadd_creationCompleteHandler(event:FlexEvent):void
 			{
@@ -144,7 +151,9 @@
 				BindingUtils.bindSetter(submissionDataHandler, dataModel, "submissionDataRetrieved", commitOnly, useWeakReference);
 				BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
 				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
+				//BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
+			
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton, false, 0, true);
 			}
 		]]>
 	</fx:Script>

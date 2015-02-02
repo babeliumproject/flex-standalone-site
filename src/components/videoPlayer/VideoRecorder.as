@@ -276,6 +276,7 @@ package components.videoPlayer
 
 		public function setCaptions(captions:Object, cinstance:Object=null):void
 		{
+			if(_captionmgr) _captionmgr.removeAllMarkers();
 			if(!captions) return;
 			
 			if(!_captionmgr) 

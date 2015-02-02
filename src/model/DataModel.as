@@ -7,6 +7,7 @@ package model
 	import components.autoevaluation.Evaluation;
 	import components.main.Body;
 	import components.main.LoginPopup;
+	import components.main.LoginRestorePassForm;
 	import components.userManagement.KeepAliveTimer;
 	
 	import flash.media.Camera;
@@ -14,8 +15,6 @@ package model
 	import flash.net.FileReference;
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
-	
-	import components.main.LoginRestorePassForm;
 	
 	import mx.collections.ArrayCollection;
 	import mx.utils.ObjectProxy;
@@ -350,7 +349,7 @@ package model
 	
 		[Bindable]
 		public var addAssessmentRetrieved:Boolean=false;
-
+		public var addAssessmentData:Object;
 
 		//Homepage module data
 		[Bindable]

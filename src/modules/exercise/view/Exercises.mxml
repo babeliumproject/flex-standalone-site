@@ -20,6 +20,9 @@
 	<fx:Script>
 		<![CDATA[
 			import components.videoPlayer.events.VideoPlayerEvent;
+			
+			import mx.utils.ArrayUtil;
+			
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
 			
@@ -79,6 +82,7 @@
 			private var _characterNames:ArrayCollection;
 			private var _roles:Object;
 			private var _mediaId:int;
+			private var _subtitleId:int;
 
 			private var _exerciseStartedPlaying:Boolean=false;
 
@@ -282,6 +286,7 @@
 				if (DataModel.getInstance().availableSubtitleLines)
 				{
 					_currentCaptions=DataModel.getInstance().availableSubtitleLines;
+					_subtitleId=ArrayUtil.toArray(_currentCaptions)[0].subtitleId;
 					VP.setCaptions(_currentCaptions);
 				}
 			}
@@ -319,7 +324,7 @@
 				//DataModel.getInstance().recordingExercise=true;
 
 				//Save statistical data
-				//statisticRecAttempt();
+				statisticRecAttempt();
 
 				var media:Object=new Object();
 				media.playbackMedia=_currentMediaData;
@@ -352,7 +357,7 @@
 			private function statisticRecAttempt():void
 			{
 				var subtitlesAreUsed:Boolean=VP.displayCaptions;
-				var subtitleId:int=subtitleId;
+				var subtitleId:int=_subtitleId;
 				var roleId:int=0;
 				for each (var role:ExerciseRoleVO in _roles)
 				{
@@ -492,11 +497,15 @@
 				var credsEvalRequest:int=DataModel.getInstance().prefDic['evaluationRequestCredits'];
 				if (userCredCount - credsEvalRequest >= 0)
 				{
-					//This must be changed by some function that takes a snapshot of the Response video
-					var responseThumbnail:String="nothumb.png";
-					var subtitleId:int=subtitleId;
-					var responseData:ResponseVO=new ResponseVO(0, _currentExercise.id, _recordedFilename, true, responseThumbnail, "Red5", VP.duration, (new Date().toString()), 0, _selectedRole, 0, subtitleId);
+					var responseData:ResponseVO=new ResponseVO();
 
+					responseData.exerciseId=_currentExercise.id;
+					responseData.mediaId=_currentMediaData.id;
+					responseData.characterName=_selectedRole;
+					responseData.subtitleId=_subtitleId;
+					responseData.isPrivate=true;
+					
+					
 					//Third, save response				
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 
