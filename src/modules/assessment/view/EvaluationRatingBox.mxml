@@ -297,7 +297,7 @@
 								  height="{videoCommentBox.width*0.75}"
 								  horizontalAlign="center">
 							<view:WebcamCapture id="videoComment"
-												streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
+												streamsFolder="evaluations"
 												filePrefix="comment"
 												minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>
 						</s:VGroup>

@@ -186,7 +186,7 @@
 				if (!DataModel.getInstance().netConnection)
 					new FullStreamingEvent(FullStreamingEvent.SETUP_CONNECTION).dispatch();
 				if (!DataModel.getInstance().netConnection.connected)
-					new FullStreamingEvent(FullStreamingEvent.START_CONNECTION, DataModel.getInstance().streamingResourcesPath).dispatch();
+					new FullStreamingEvent(FullStreamingEvent.START_CONNECTION, DataModel.getInstance().defaultNetConnectionUrl).dispatch();
 				else
 					onConnectSuccess(null);
 			}

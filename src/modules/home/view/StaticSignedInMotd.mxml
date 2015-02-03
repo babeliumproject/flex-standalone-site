@@ -9,19 +9,16 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
+
 			//import events.ViewChangeEvent;
 
-			protected function homeButtons_clickHandler(event:MouseEvent, destination:String):void
+			protected function homeButtons_clickHandler(event:MouseEvent, fragment:String):void
 			{
 				//new ViewChangeEvent(destination).dispatch();
-				URLManager.getInstance().redirect(destination);
+				URLManager.getInstance().redirect(fragment);
 			}
 		]]>
 	</fx:Script>
-
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 
 	<mx:Text htmlText="{resourceManager.getString('myResources','HOME_LOGGED_IN_STATIC_MESSAGE')}"
 			 width="500"/>
@@ -45,40 +42,20 @@
 								paddingRight="16"
 								paddingTop="16"/>
 		</s:layout>
-		<s:VGroup height="100%"
-				  horizontalAlign="center">
-			<s:Label text="{resourceManager.getString('myResources','OBTAIN_CREDITS')}"
-					 styleName="boldLabel"/>
-			<s:HGroup>
-				<skins:IconButton id="homeUploadButton"
-								  styleName="homeUploadButton"
-								  label="{resourceManager.getString('myResources','UPLOAD')}"
-								  click="homeButtons_clickHandler(event, 'upload')"/>
-				<skins:IconButton id="homeSubtitleButton"
-								  styleName="homeSubtitleButton"
-								  label="{resourceManager.getString('myResources','SUBTITLE')}"
-								  click="homeButtons_clickHandler(event, 'components.videoPlayer.displayCaptions')"/>
-				<skins:IconButton id="homeEvaluateButton"
-								  styleName="homeEvaluateButton"
-								  label="{resourceManager.getString('myResources','EVALUATIONS')}"
-								  click="homeButtons_clickHandler(event, 'evaluation')"/>
-			</s:HGroup>
-		</s:VGroup>
-		<s:Line rotation="90" height="100%">
-			<s:stroke>
-				<mx:SolidColorStroke weight="3"
-									 color="#ffffff"/>
-			</s:stroke>
-		</s:Line>
-		<s:VGroup height="100%"
-				  horizontalAlign="center">
-			<s:Label text="{resourceManager.getString('myResources','SPEND_CREDITS')}"
-					 styleName="boldLabel"/>
-			<skins:IconButton id="homePracticeButton"
-							  styleName="homePracticeButton"
-							  label="{resourceManager.getString('myResources','EXERCISES')}"
-							  click="homeButtons_clickHandler(event, 'exercises')"/>
-		</s:VGroup>
+
+		<skins:IconButton id="homeUploadButton"
+						  styleName="homeUploadButton"
+						  label="{resourceManager.getString('myResources','CREATE')}"
+						  click="homeButtons_clickHandler(event, '/create')"/>
+		<skins:IconButton id="homeSubtitleButton"
+						  styleName="homeSubtitleButton"
+						  label="{resourceManager.getString('myResources','EVALUATIONS')}"
+						  click="homeButtons_clickHandler(event, '/assessments/pending')"/>
+		<skins:IconButton id="homePracticeButton"
+						  styleName="homePracticeButton"
+						  label="{resourceManager.getString('myResources','EXERCISES')}"
+						  click="homeButtons_clickHandler(event, '/exercises')"/>
+
 	</s:BorderContainer>
 
 </s:HGroup>

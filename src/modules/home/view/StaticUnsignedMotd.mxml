@@ -10,28 +10,25 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
+			import model.DataModel;
+			
 			import mx.events.FlexEvent;
 
-			import model.DataModel;
-
-			[Bindable]
-			private var streamSource:String=DataModel.getInstance().streamingResourcesPath;
-
-			[Bindable]
-			private var videoSource:String='intro.flv';
+			private const INTRO_VIDEO_URL:String='intro.flv';
 
 			protected function registerButton_clickHandler(event:MouseEvent):void
 			{
 				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
-				URLManager.getInstance().redirect('/register');
+				URLManager.getInstance().redirect('/signup');
 			}
 
 			protected function hgroup1_creationCompleteHandler(event:FlexEvent):void
 			{
+				removeEventListener(FlexEvent.CREATION_COMPLETE, hgroup1_creationCompleteHandler);
 				var param:Object=new Object();
-				param.netConnectionUrl=streamSource;
-				param.mediaUrl=videoSource;
+				param.netConnectionUrl=DataModel.getInstance().defaultNetConnectionUrl;
+				param.mediaUrl=INTRO_VIDEO_URL;
 				staticUnsignedMotdVp.loadVideoByUrl(param);
 			}
 		]]>
@@ -51,8 +48,7 @@
 								   displayCaptions="false"
 								   autoScale="false"
 								   width="400"
-								   height="250"
-								   controlsEnabled="false"/>
+								   height="250"/>
 	</s:BorderContainer>
 
 	<s:VGroup>

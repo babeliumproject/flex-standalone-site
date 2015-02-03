@@ -73,7 +73,7 @@
 			private var _creationComplete:Boolean=false;
 
 			[Bindable]
-			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			private var _streamSource:String=DataModel.getInstance().defaultNetConnectionUrl;
 
 			[Bindable]
 			public var thumbUrl:String=DataModel.getInstance().thumbURL;

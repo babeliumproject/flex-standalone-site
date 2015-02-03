@@ -20,9 +20,6 @@
 	<fx:Script>
 		<![CDATA[
 			import components.videoPlayer.events.VideoPlayerEvent;
-			
-			import mx.utils.ArrayUtil;
-			
 			import components.videoPlayer.events.babelia.RecordingEvent;
 			import components.videoPlayer.events.babelia.StreamEvent;
 			
@@ -49,6 +46,7 @@
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
+			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
 			
 			import spark.collections.Sort;
@@ -286,7 +284,11 @@
 				if (DataModel.getInstance().availableSubtitleLines)
 				{
 					_currentCaptions=DataModel.getInstance().availableSubtitleLines;
-					_subtitleId=ArrayUtil.toArray(_currentCaptions)[0].subtitleId;
+					var ccollection:ArrayCollection=_currentCaptions as ArrayCollection;
+					var item:Object = ccollection && ccollection.length ? ccollection.getItemAt(0) : null;
+					trace(ObjectUtil.toString(item));
+					
+					_subtitleId=item.subtitleId;
 					VP.setCaptions(_currentCaptions);
 				}
 			}

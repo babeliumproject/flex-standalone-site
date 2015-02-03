@@ -266,7 +266,7 @@
 		</s:VGroup>
 
 		<view:WebcamCapture id="recFromWebcamBox"
-							streamsFolder="{DataModel.getInstance().exerciseStreamsFolder}"
+							streamsFolder="exercises"
 							filePrefix="upld"
 							includeInLayout="false"
 							visible="false"

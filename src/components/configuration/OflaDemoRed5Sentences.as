@@ -34,7 +34,7 @@ package components.configuration
 		
 		public function connect():void{
 			if (DataModel.getInstance().netConnection.connected == false)
-				new StartConnectionEvent(DataModel.getInstance().streamingResourcesPath).dispatch();
+				new StartConnectionEvent(DataModel.getInstance().defaultNetConnectionUrl).dispatch();
 			else
 				netStatusHandler(false);
 		}

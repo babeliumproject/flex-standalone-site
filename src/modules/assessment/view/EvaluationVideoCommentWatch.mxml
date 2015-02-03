@@ -28,7 +28,7 @@
 			import mx.managers.PopUpManager;
 
 			[Bindable]
-			private var _streamSource:String=DataModel.getInstance().streamingResourcesPath;
+			private var _streamSource:String=DataModel.getInstance().defaultNetConnectionUrl;
 
 			[Bindable]
 			private static var _commentSource:String='';

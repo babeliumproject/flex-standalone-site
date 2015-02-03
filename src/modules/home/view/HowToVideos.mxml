@@ -1,79 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" 
-		 xmlns:videoPlayer="components.videoPlayer.*" 
-		 xmlns:skins="skins.*"
-		 creationComplete="onComplete(event)">
-	
-	<fx:Binding source="{DataModel.getInstance().stopVideoFlag}"
-				destination="onTabChange"/>
-	
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:skins="skins.*"
+		  creationComplete="onComplete(event)">
+
 	<fx:Script>
 		<![CDATA[
 			//import events.ViewChangeEvent;
-			
+
 			import model.DataModel;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
-			
+
 			private var creationComplete:Boolean;
-			
-			[Bindable] private var selectedIndex:int=0;
-			[Bindable] private var streamSource:String=DataModel.getInstance().streamingResourcesPath;
-			[Bindable] private var howToVideoArray:ArrayCollection=new ArrayCollection(new Array('config', 'record', 'evaluate', 'subtitle'));
-			
-			protected function onComplete(event:FlexEvent):void{
+
+			[Bindable]
+			private var selectedIndex:int=0;
+	
+			protected function onComplete(event:FlexEvent):void
+			{
 				creationComplete=true;
 			}
-			
+
 			protected function howToVideosVS_changeHandler(event:IndexChangedEvent):void
 			{
-				howToVideoPlayer.endVideo();
-				howToVideoPlayer.autoPlay=false;
 				var newIndex:uint=event.newIndex;
 				switch (newIndex)
 				{
 					case howToVideosVS.getChildIndex(howToConfDevNavContent):
-						//howToVideoPlayer.videoSource="config";
+						preparePlayer('config.flv');
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_CONFIGURE_YOUR_DEVICES');
 						break;
 					case howToVideosVS.getChildIndex(howToPractLangNavContent):
-						//howToVideoPlayer.videoSource="record";
+						preparePlayer('record.flv');
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_PRACTICE_A_LANGUAGE');
 						break;
 					case howToVideosVS.getChildIndex(howToAssessUsersNavContent):
-						//howToVideoPlayer.videoSource="evaluate";
+						preparePlayer('evaluate.flv');
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_ASSESS_OTHER_USERS_WORK');
 						break;
 					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
-						//howToVideoPlayer.videoSource="subtitle";
+						preparePlayer('subtitle.flv');
 						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBA_VIDEO');
 						break;
 					default:
 						break;
 				}
 			}
-			
-			private function set onTabChange(value:Boolean):void
+
+			private function resetComponent():void
 			{
-				if (creationComplete && DataModel.getInstance().oldContentViewStackIndex == 10)
-				{
-					howToVideoPlayer.endVideo();
-					//howToVideoPlayer.videoSource='';
-					howToVideoPlayer.autoPlay=false;
-					howToVideosVS.selectedIndex=0;
-				}
+				howToVideoPlayer.resetComponent();
+				howToVideoPlayer.autoPlay=false;
+				howToVideosVS.selectedIndex=0;
+			}
+
+			private function preparePlayer(mediaUrl:String):void
+			{
+				if (!mediaUrl)
+					return;
+
+				var param:Object=new Object();
+				param.netConnectionUrl=DataModel.getInstance().defaultNetConnectionUrl;
+				param.mediaUrl=mediaUrl;
+				howToVideoPlayer.loadVideoByUrl(param);
 			}
 		]]>
 	</fx:Script>
-	
+
 	<s:HGroup paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16">
-		<s:BitmapImage source="@Embed('/resources/images/icon_foot.png')"/>
+		<s:BitmapImage source="/resources/images/icon_foot.png"/>
 		<s:VGroup>
 			<s:Label id="stepByStepTitle"
 					 text="{resourceManager.getString('myResources','STEP_BY_STEP')}"
@@ -86,54 +88,49 @@
 			</s:Line>
 		</s:VGroup>
 	</s:HGroup>
-	
+
 	<s:VGroup width="100%"
 			  horizontalAlign="center"
 			  paddingTop="16"
 			  paddingLeft="16"
 			  paddingRight="16"
 			  paddingBottom="16">
-		
+
 		<s:HGroup width="100%"
 				  horizontalAlign="center"
 				  paddingBottom="16">
 			<skins:StepTabBar styleName="paginationWhiteBlueButton"
 							  dataProvider="{howToVideosVS}"/>
 		</s:HGroup>
-		
+
 		<mx:ViewStack id="howToVideosVS"
 					  change="howToVideosVS_changeHandler(event)">
 			<s:NavigatorContent id="howToConfDevNavContent"
 								label="1">
 			</s:NavigatorContent>
-			
+
 			<s:NavigatorContent id="howToPractLangNavContent"
 								label="2">
 			</s:NavigatorContent>
-			
+
 			<s:NavigatorContent id="howToAssessUsersNavContent"
 								label="3">
 			</s:NavigatorContent>
-			
+
 			<s:NavigatorContent id="howToSubtitleNavContent"
 								label="4">
 			</s:NavigatorContent>
 		</mx:ViewStack>
-		
+
 		<s:Label id="howToVideoLabel"
 				 text="{resourceManager.getString('myResources','HOW_TO_CONFIGURE_YOUR_DEVICES')}"
 				 styleName="exerciseTitleLabel"/>
 		<videoPlayer:VideoRecorder id="howToVideoPlayer"
-										skin="white"
-										seek="true"
-										autoPlay="false"
-										displayCaptions="true"
-										autoScale="false"
-										displayEventArrows="false"
-										width="854"
-										height="480"
-										streamSource="{streamSource}"
-										videoSource="{howToVideoArray.getItemAt(howToVideosVS.selectedIndex)}"
-										controlsEnabled="false"/>
+								   skinUrl="/resources/videoPlayer/skin/white.xml"
+								   autoPlay="false"
+								   displayCaptions="false"
+								   autoScale="false"
+								   width="854"
+								   height="480"/>
 	</s:VGroup>
 </s:VGroup>

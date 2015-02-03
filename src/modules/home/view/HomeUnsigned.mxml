@@ -35,15 +35,10 @@
 			[Bindable]
 			private var messageArray:ArrayCollection=new ArrayCollection();
 
-			[Bindable]
-			public var streamSource:String=DataModel.getInstance().streamingResourcesPath;
-
 			//private var slideTimer:Timer;
 
 			private var staticMotd:StaticUnsignedMotd;
 
-			[Bindable]
-			private var howToVideoArray:ArrayCollection=new ArrayCollection(new Array('config', 'record', 'evaluate', 'subtitle'));
 
 			private var creationComplete:Boolean=false;
 

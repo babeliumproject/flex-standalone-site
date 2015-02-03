@@ -36,6 +36,7 @@ require_once 'vo/PreferenceVO.php';
 class Preference {
 
 	private $conn;
+	private $cfg;
 
 	/**
 	 * Constructor function
@@ -47,6 +48,7 @@ class Preference {
 		try {
 			$verifySession = new SessionValidation();
 			$settings = new Config();
+			$this->cfg = $settings;
 			$this->conn = new Datasource($settings->host, $settings->db_name, $settings->db_username, $settings->db_password);
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
@@ -72,6 +74,16 @@ class Preference {
 				$searchResult->prefValue = $maxFileSize;
 			$preferenceData[$searchResult->prefName] = $searchResult->prefValue;
 		}
+		
+		$t = new stdClass();
+		$t->prefName = 'defaultNetConnectionUrl';
+		$t->prefValue = $this->cfg->streamingserver;
+		
+		if($searchResults && is_array($searchResults)){
+			array_push($searchResults, $t);
+			$preferenceData[$t->prefName] = $t->prefValue;
+		}
+		
 		$_SESSION['preferenceData'] = $preferenceData;
 
 		return $this->conn->multipleRecast('PreferenceVO',$searchResults);
