@@ -625,7 +625,15 @@ class Exercise {
 		$media = $this->getExerciseMedia($exerciseid, 2, 1);
 		if($media && count($media)==1){
 			$data = new stdClass();
-			$data->thumbnail = '/resources/images/thumbs/'.$media[0]->mediacode.'/default.jpg';
+			
+			$thumbdir = '/resources/images/thumbs';
+			$thumbnum = $media[0]->defaultthumbnail;
+			$mediacode = $media[0]->mediacode;
+			
+			$t =  $thumbdir . '/' . $mediacode . '/%02d.jpg';
+			$fragment = sprintf($t, $thumbnum);
+			
+			$data->thumbnail = $fragment;
 			$data->duration = $media[0]->duration;
 		}
 		return $data;

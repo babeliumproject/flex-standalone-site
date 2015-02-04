@@ -245,6 +245,7 @@ class Create {
 			$posterfolder = $this->cfg->posterPath .'/'. $mediacode;
 			$thumbfolder = $this->cfg->imagePath .'/'. $mediacode;
 			
+			/*
 			@unlink($thumbfolder.'/default.jpg');
 			@unlink($posterfolder.'/default.jpg');
 			
@@ -254,6 +255,7 @@ class Create {
 			if( !symlink($posterfolder.'/0'.$thumbidx.'.jpg', $posterfolder.'/default.jpg') ){
 				throw new Exception ("Couldn't create link for the poster\n");
 			}
+			*/
 			
 			$sql = "UPDATE media SET defaultthumbnail=%d WHERE mediacode='%s' AND type='video' AND fk_user_id=%d";
 			

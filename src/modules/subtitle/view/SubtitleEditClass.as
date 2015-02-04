@@ -74,8 +74,8 @@ package modules.subtitle.view
 		[Bindable]
 		private var videoPlayerReady:Boolean=false;
 
-		[Bindable]
-		public var videoPlaybackStartedState:int=AMediaManager.STREAM_STARTED;
+		//[Bindable]
+		//public var videoPlaybackStartedState:int=AMediaManager.STREAM_STARTED;
 		
 		public var mediaid:int;
 		public var subtitleid:int;
@@ -88,8 +88,8 @@ package modules.subtitle.view
 		private var startEntry:CueObject;
 		private var endEntry:CueObject;
 
-		[Bindable]
-		public var subtitleStarted:Boolean=false;
+		//[Bindable]
+		//public var subtitleStarted:Boolean=false;
 
 		private var creationComplete:Boolean=false;
 
@@ -103,8 +103,7 @@ package modules.subtitle.view
 		[Bindable]
 		public var comboData:ArrayCollection=new ArrayCollection();
 
-		[Bindable]
-		public var availableSubtitleVersions:ArrayCollection=new ArrayCollection();
+		public var availableSubtitleVersions:ArrayCollection;
 
 		/**
 		 *  Visual components declaration
@@ -124,18 +123,22 @@ package modules.subtitle.view
 
 		public function SubtitleEditClass()
 		{
-			this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
+			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete, false, 0, true);
 		}
 
 		private function onCreationComplete(event:FlexEvent):void
 		{
+			removeEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
+			
 			setupVideoPlayer();
 
 			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved", false, true);
 			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved", false, true);
 			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved", false, true);
 			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved", false, true);
-
+			
+			subtitleVersionSelector.addEventListener(IndexChangeEvent.CHANGE, onSubtitleVersionChange, false, 0, true);
+			
 			creationComplete=true;
 		}
 
@@ -218,7 +221,7 @@ package modules.subtitle.view
 
 		public function subtitleInsertHandler(e:MouseEvent):void
 		{
-			if (_mediaStatus == videoPlaybackStartedState)
+			if (_mediaStatus == AMediaManager.STREAM_STARTED)
 			{
 				VPSubtitle.onSubtitlingEvent(new SubtitlingEvent(SubtitlingEvent.START));
 			}
@@ -469,6 +472,7 @@ package modules.subtitle.view
 			
 			trace("Subtitle versions: " + subversions);
 			availableSubtitleVersions=DataModel.getInstance().availableSubtitles;
+			subtitleVersionSelector.dataProvider=availableSubtitleVersions;
 			if (subversions > 1)
 			{
 				subtitleVersionBox.includeInLayout=true;
@@ -492,6 +496,7 @@ package modules.subtitle.view
 		
 		public function onSubtitleLinesRetrieved(value:Boolean):void
 		{
+			trace("[SubtitleEdit: onSubtitleLinesRetrieved]\n"+ObjectUtil.toString(_dataModel.availableSubtitleLines));
 			subtitleCollection=_dataModel.availableSubtitleLines;
 			var unmodifiedSubtitleCollection:ArrayCollection=_dataModel.unmodifiedAvailableSubtitleLines;
 			
@@ -566,7 +571,15 @@ package modules.subtitle.view
 			subtitleVersionBox.includeInLayout=false;
 			subtitleVersionBox.visible=false;
 			availableSubtitleVersions=null;
+			subtitleCollection=null;
 			comboData=null;
+			
+			mediaid=subtitleid=subtitleStartTime=subtitleEndTime=0;			
+			
+			videoPlayerReady=creationComplete=false;
+			subtitlesToBeSaved=null;
+			
+			startEntry=endEntry=null;
 		}
 	}
 }

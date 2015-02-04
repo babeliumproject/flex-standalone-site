@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <view1:SubtitleEditClass xmlns:fx="http://ns.adobe.com/mxml/2009"
-							   xmlns:s="library://ns.adobe.com/flex/spark"
-							   xmlns:mx="library://ns.adobe.com/flex/mx"
-							   xmlns:subtitles="components.subtitles.*"
-							   xmlns:videoPlayer="components.videoPlayer.*"
-							   xmlns:videoUpload="components.videoUpload.*"
-							   xmlns:common="view.common.*"
-							   xmlns:skins="skins.*"
-							   paddingTop="20"
-							   paddingLeft="16"
-							   paddingRight="16" xmlns:view="modules.create.view.*" xmlns:view1="modules.subtitle.view.*">
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:subtitles="components.subtitles.*"
+						 xmlns:videoPlayer="components.videoPlayer.*"
+						 xmlns:videoUpload="components.videoUpload.*"
+						 xmlns:common="view.common.*"
+						 xmlns:skins="skins.*"
+						 paddingTop="20"
+						 paddingLeft="16"
+						 paddingRight="16"
+						 xmlns:view="modules.create.view.*"
+						 xmlns:view1="modules.subtitle.view.*">
 
 	<!-- Video Player -->
 	<s:VGroup width="100%">
@@ -20,14 +22,14 @@
 		<s:HGroup width="100%">
 			<s:VGroup>
 				<videoPlayer:VideoRecorder id="VPSubtitle"
-												autoPlay="true"
-												skinUrl="resources/videoPlayer/skin/white.xml"
-												seek="true"
-												displayCaptions="true"
-												autoScale="false"
-												width="400"
-												height="250"
-												subtitlingControls="true"/>
+										   autoPlay="true"
+										   skinUrl="resources/videoPlayer/skin/white.xml"
+										   seek="true"
+										   displayCaptions="true"
+										   autoScale="false"
+										   width="400"
+										   height="250"
+										   subtitlingControls="true"/>
 				<s:BorderContainer id="simultaneousEditNotice"
 								   minHeight="0"
 								   includeInLayout="false"
@@ -79,14 +81,12 @@
 							  width="100%">
 						<s:Label text="{resourceManager.getString('myResources','CURRENTLY_SELECTED_SUBVERSION')}"/>
 						<s:DropDownList id="subtitleVersionSelector"
-									dataProvider="{availableSubtitleVersions}"
-									change="{onSubtitleVersionChange(event)}"
-									labelFunction="{subtitleVersionComboLabelFunction}"
-									skinClass="skins.BootstrapDropDownList"
-									cornerRadius="3"
-									borderColor="0xcccccc"
-									minWidth="250"
-									requireSelection="true"/>
+										labelFunction="{subtitleVersionComboLabelFunction}"
+										skinClass="skins.BootstrapDropDownList"
+										cornerRadius="3"
+										borderColor="0xcccccc"
+										minWidth="250"
+										requireSelection="true"/>
 					</s:HGroup>
 				</s:VGroup>
 
@@ -134,9 +134,9 @@
 							<mx:itemRenderer>
 								<fx:Component>
 									<view1:GridComboBox dataProvider="{outerDocument.comboData}"
-															labelField="charName"
-															lookupField="roleId"
-															prompt="Select a role..."/>
+														labelField="charName"
+														lookupField="roleId"
+														prompt="Select a role..."/>
 								</fx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -158,7 +158,6 @@
 						  horizontalAlign="center">
 					<!-- enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}" -->
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBLINE')}"
-									  
 									  click="{subtitleInsertHandler(event)}"
 									  id="addSubtitleLine"
 									  skinClass="skins.IconButtonSkin"

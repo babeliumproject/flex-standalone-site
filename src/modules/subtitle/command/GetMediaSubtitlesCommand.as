@@ -41,6 +41,10 @@ package modules.subtitle.command
 			}
 			DataModel.getInstance().subtitleMedia=mediaData;
 			DataModel.getInstance().availableSubtitles=mediaSubtitles;
+			
+			//Set to null until a service call to retrieve subtitle lines changes its value
+			DataModel.getInstance().availableSubtitleLines=null;
+			
 			DataModel.getInstance().availableSubtitlesRetrieved = !DataModel.getInstance().availableSubtitlesRetrieved;
 		}
 		

@@ -393,15 +393,15 @@ class VideoProcessor{
             $pdef = $sanitizedPosterdir.'/default.jpg';
             $tone = $sanitizedThumbdir.'/01.jpg';
             $pone = $sanitizedPosterdir.'/01.jpg';
-            if (is_link($tdef)) unlink($tdef);
-            if (is_link($pdef)) unlink($pdef);
+            //if (is_link($tdef)) unlink($tdef);
+            //if (is_link($pdef)) unlink($pdef);
             
-            if(!symlink($tone, $tdef)){
-                throw new Exception ("Cannot make a link $tdef for $tone\n");
-            }
-            if(!symlink($pone, $pdef)){
-                throw new Exception ("Cannot make a link $pdef for $pone\n");
-            }
+            //if(!symlink($tone, $tdef)){
+            //    throw new Exception ("Cannot make a link $tdef for $tone\n");
+            //}
+            //if(!symlink($pone, $pdef)){
+            //    throw new Exception ("Cannot make a link $pdef for $pone\n");
+            //}
         }
     }
 

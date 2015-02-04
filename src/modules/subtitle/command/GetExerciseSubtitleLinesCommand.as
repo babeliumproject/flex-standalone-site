@@ -64,8 +64,8 @@ package modules.subtitle.command
 			_model.unmodifiedAvailableSubtitleLines=untouchedSubtitles;
 			_model.availableSubtitleLines=resultCollection;
 			
-			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 			_model.availableSubtitleLinesRetrieved=!_model.availableSubtitleLinesRetrieved;
+			_model.availableExerciseRolesRetrieved=!_model.availableExerciseRolesRetrieved;
 		}
 
 		private function generateRoleArray(subtitleLine:Object):void

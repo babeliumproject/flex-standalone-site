@@ -137,7 +137,7 @@ class MediaTask{
 		
 		if($rawfiles){
 			foreach($rawfiles as $file){
-				processMediaFile($file);
+				$this->processMediaFile($file);
 			}
 		}
 	}

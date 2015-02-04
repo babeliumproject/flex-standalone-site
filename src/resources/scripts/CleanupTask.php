@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('CLI_SERVICE_PATH', '/var/www/babelium/services');
+define('CLI_SERVICE_PATH', '/var/www/babeliumlms/services');
 
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
@@ -42,6 +42,9 @@ class CleanupTask{
 	private $responseFolder = '';
 	private $evaluationFolder = '';
 	private $configFolder = 'config';
+
+    const STATUS_DRAFT=0;
+    const STATUS_READY=1;
 
 	/**
 	 * Constructor function
@@ -97,10 +100,10 @@ class CleanupTask{
 		if ($result){
 			$reportsToDeletion = $result->prefValue;
 
-			$sql = "UPDATE exercise AS E SET status='Unavailable'
+			$sql = "UPDATE exercise AS E SET status=%d
 		       	    WHERE '%d' <= (SELECT count(*) 
 		        		           FROM exercise_report WHERE fk_exercise_id=E.id ) ";
-			return $this->db->_update($sql, $reportsToDeletion);
+			return $this->db->_update($sql, self::STATUS_DRAFT, $reportsToDeletion);
 		}
 	}
 	
@@ -135,13 +138,27 @@ class CleanupTask{
 		}
 	}
 
+    private function _deleteUnreferencedMedia(){
+        $this->_deleteUnreferencedExercises();
+    }
+
 	/**
 	 * Deletes the files under <RED5_APP_PATH>/streams/exercises that are not referenced in the database
 	 */
 	private function _deleteUnreferencedExercises(){
-		$sql = "SELECT name FROM exercise";
+		$component = 'exercise';
+        $sql = "SELECT mr.filename
+                FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+                WHERE m.component='%s'";
 		
-		$exercises = $this->_listFiles($this->db->_multipleSelect($sql), 'name');
+        $exercises = null;
+        $data = $this->db->_multipleSelect($sql,$component);
+        if($data){
+            $exercises = array();
+            foreach($data as $d){
+                $exercises[] = $d->filename;
+            }
+        }
 
 		if($this->exerciseFolder && !empty($this->exerciseFolder)){
 			$exercisesPath = $this->red5Path .'/'.$this->exerciseFolder;
