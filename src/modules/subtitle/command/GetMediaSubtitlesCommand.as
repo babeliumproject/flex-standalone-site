@@ -28,8 +28,8 @@ package modules.subtitle.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var mediaData:Object;
-			var mediaSubtitles:ArrayCollection;
+			var mediaData:Object=null;
+			var mediaSubtitles:ArrayCollection=null;
 			
 			if(result){
 				if(result.hasOwnProperty('media')){

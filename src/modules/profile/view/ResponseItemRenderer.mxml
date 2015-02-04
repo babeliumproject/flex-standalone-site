@@ -34,7 +34,7 @@
 				<s:BitmapImage id="countryFlag"
 							   width="16"
 							   height="16"
-							   source="{ExerciseRenderUtils.getFlagSource(data)}"/>
+							   source="{ExerciseRenderUtils.getFlagSource(data, 'exerciseLanguage')}"/>
 				<s:Label id="difficulty"
 						 styleName="boldYellowLabel"
 						 text="{ExerciseRenderUtils.getLevelLabel(data.exerciseAvgDifficulty)}"/>

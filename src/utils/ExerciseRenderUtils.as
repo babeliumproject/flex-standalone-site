@@ -24,10 +24,10 @@ package utils
 			return formattedValue ? formattedValue : dateTimeFormatter.getDateTimePattern();
 		}
 		
-		public static function getFlagSource(temp:Object):Class
+		public static function getFlagSource(temp:Object, property:String='language'):Class
 		{
 			var _model:DataModel=DataModel.getInstance();
-			return _model.localesAndFlags.getCountryFlagClass(temp.language);
+			return temp.hasOwnProperty(property) ? _model.localesAndFlags.getCountryFlagClass(temp[property]) : null;
 		}
 		
 		public static function getLevelLabel(difficulty:int):String

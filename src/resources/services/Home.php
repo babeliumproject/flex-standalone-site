@@ -261,7 +261,12 @@ class Home{
 		
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
-			$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
+			require_once 'Exercise.php';
+			$ex = new Exercise();
+			$data = $ex->getPrimaryMediaMinData($searchResult->id);
+			$searchResult->thumbnail = $data->thumbnail;
+			$searchResult->duration = $data->duration;
+			//$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
 		}
 
 		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');
@@ -316,7 +321,12 @@ class Home{
 		
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
-			$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
+			require_once 'Exercise.php';
+			$ex = new Exercise();
+			$data = $ex->getPrimaryMediaMinData($searchResult->id);
+			$searchResult->thumbnail = $data->thumbnail;
+			$searchResult->duration = $data->duration;
+			//$searchResult->tags = $exercise->getExerciseTags($searchResult->id);
 		}
 
 		$filteredResults = $exercise->filterByLanguage($searchResults, 'practice');

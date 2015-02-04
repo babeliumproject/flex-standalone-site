@@ -14,9 +14,9 @@
 	<!-- Video Player -->
 	<s:VGroup width="100%">
 		<s:Label id="exerciseTitle"
-				 text="ExerciseTitle"
+				 text="{resourceManager.getString('myResources','SUBTITLE_MEDIA')}"
 				 width="100%"
-				 styleName="exerciseTitleLabel"/>
+				 styleName="h2"/>
 		<s:HGroup width="100%">
 			<s:VGroup>
 				<videoPlayer:VideoRecorder id="VPSubtitle"

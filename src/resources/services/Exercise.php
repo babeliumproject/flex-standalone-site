@@ -694,7 +694,7 @@ class Exercise {
 		if($results){
 			foreach($results as $r){
 				$r->netConnectionUrl = $this->cfg->streamingserver;
-				$r->mediaUrl = '/exercises/'.$r->filename;
+				$r->mediaUrl = 'exercises/'.$r->filename;
 			}
 		}
 		return $results;
@@ -736,6 +736,21 @@ class Exercise {
 		return $url;
 	}
 	
+	private function thumbnailAbsUrl($mediacode, $thumbnum){
+		if(!$mediacode)
+			throw new Exception("Invalid parameter");
+		
+		$thumbdir = '/resources/images/thumbs';
+		$url = $this->cfg->wwwroot . $thumbdir . '/nothumb.png';
+		
+		$selectedthumb = ($thumbnum >= 1 && $thumbnum  <= 3) ? $thumbnum : 1;
+		$t =  $thumbdir . '/' . $mediacode . '/%02d.jpg';
+		$fragment = sprintf($t, $thumbnum);
+				
+		$url = $this->cfg->wwwroot.$fragment;
+			
+	}
+	
 	public function requestRecordingSlot(){
 		try{
 			$session = new SessionValidation(true);
@@ -749,7 +764,7 @@ class Exercise {
 			
 			$data = new stdClass();
 			$data->mediaUrl = $mediaUrl;
-			$data->netConnectionUrl = $this->netConnectionUrl;
+			$data->netConnectionUrl = $this->cfg->streamingserver;
 			$data->maxDuration = 600;
 			
 			$_SESSION['recmedia'] = $data;

@@ -43,6 +43,7 @@
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
@@ -145,9 +146,9 @@
 			private function setupResponseOptions():void
 			{
 				recordingEndOptions.addEventListener(RecordingEndOptionEvent.VIEW_BOTH, onWatchExerciseAndResponse, false, 0, true);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, onRecordAgain, false, 0, true);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, onAbortRecording, false, 0, true);
-				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, onSaveResponse, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.RECORD_AGAIN, recordAgainClickHandler, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.DISCARD_RESPONSE, abortRecordingClickHandler, false, 0, true);
+				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, saveResponseClickHandler, false, 0, true);
 			}
 
 			private function onVideoPlayerReady(e:VideoPlayerEvent):void
@@ -223,9 +224,11 @@
 				if (_model.watchExerciseData)
 				{
 					_currentExercise=_model.watchExerciseData;
-
 					_exerciseTitle=_currentExercise.title;
-					_primaryMediaData=null;
+					
+					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
+					
+					_primaryMediaData=_modelMediaData=null;
 
 					if (_currentExercise.hasOwnProperty('media'))
 					{
@@ -252,31 +255,29 @@
 							_primaryMediaData=_currentExercise.media;
 						}
 					}
-					_currentMediaData=_primaryMediaData;
-
-					//Load the primary media file
-					params=new Object();
-					params.netConnectionUrl=_currentMediaData.netConnectionUrl || null;
-					params.mediaUrl=_currentMediaData.mediaUrl || null;
-
-					VP.loadVideoByUrl(params);
-
-					// Need to retrieve again exercise's information
-					_rolesReady=false;
-					_exerciseSelected=true;
-
-
-					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
-
-					params=new Object();
-					params.mediaid=_currentMediaData.id;
-					new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, params).dispatch();
-
+					
+					loadSelectedMedia(_primaryMediaData);
 				}
 				else
 				{
 					//TODO
 				}
+			}
+			
+			protected function loadSelectedMedia(media:Object):void{
+				_currentMediaData=media;
+				
+				var param:Object=_currentMediaData;
+				VP.loadVideoByUrl(param);
+				
+				_rolesReady=false;
+				_exerciseSelected=true;
+				
+				//Load the subtitles that belong to this media
+				var args:Object=new Object();
+				args.mediaid=_currentMediaData.id;
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, args).dispatch();
+				
 			}
 
 			public function set exerciseSubtitlesRetrieved(value:Boolean):void
@@ -356,23 +357,6 @@
 				}
 			}
 
-			private function statisticRecAttempt():void
-			{
-				var subtitlesAreUsed:Boolean=VP.displayCaptions;
-				var subtitleId:int=_subtitleId;
-				var roleId:int=0;
-				for each (var role:ExerciseRoleVO in _roles)
-				{
-					if (role.characterName == _selectedRole)
-					{
-						roleId=role.id;
-						break;
-					}
-				}
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, true, 0, '', subtitlesAreUsed, subtitleId, roleId);
-				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
-			}
-
 			/**
 			 * On recording end successfully
 			 **/
@@ -448,20 +432,6 @@
 
 			}
 
-			private function resetComponent():void
-			{
-				VP.resetComponent();
-
-				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
-				_currentExercise=null; // Reset current exercise
-
-				hideSelectedExercise(); // Information of selected exercise
-
-
-				//Remove the current exercise's info
-				ratingShareReport.exerciseData=null;
-			}
-
 			// Watch both
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
@@ -481,18 +451,18 @@
 			}
 
 			// Record again
-			private function onRecordAgain(e:Event):void
+			private function recordAgainClickHandler(e:Event):void
 			{
 				checkRoleSelected();
 			}
 
-			private function onAbortRecording(e:Event):void
+			private function abortRecordingClickHandler(e:Event):void
 			{
 				recordingError();
 			}
 
 			// Save response
-			private function onSaveResponse(e:Event):void
+			private function saveResponseClickHandler(e:Event):void
 			{
 
 				var userCredCount:int=DataModel.getInstance().loggedUser.creditCount;
@@ -516,13 +486,54 @@
 					panelSelectedExercise.includeInLayout=true;
 					panelSelectedExercise.visible=true;
 
-
-					resetComponent();
+					
 				}
 				else
 				{
 					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
 				}
+			}
+			
+			protected function set responseSuccessfullySavedRetrieved(value:Boolean):void{
+				if(_model.savedResponseId){
+					
+					VP.resetComponent();
+					
+					//Check if this exercise has model media
+					if(_modelMediaData && (_modelMediaData != _currentMediaData)){
+						//Prompt the user if he wants to view the model media
+						CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), 
+											Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, 
+											watchModelPromptCloseHandler, Alert.YES);
+					} else {
+						//Recording is done and the exercise either does not have a model 
+						//media or the user just saved a model media recording. Go back to the browse section
+						URLManager.getInstance().redirect('/exercises');
+					}
+				}
+			}
+			
+			protected function watchModelPromptCloseHandler(event:CloseEvent):void{
+				if (event.detail == Alert.YES){
+					isModelLbl.visible=true;
+					isModelLbl.includeInLayout=true;
+					loadSelectedMedia(_modelMediaData);
+				} else {
+					//Recording is done and the user doesn't want to watch the model. Go back to the browse section
+					URLManager.getInstance().redirect('/exercises');
+				}
+			}
+			
+			private function statisticRecAttempt():void
+			{
+				var subtitlesAreUsed:Boolean=VP.displayCaptions;
+				var subtitleId:int=_subtitleId;
+				var exerciseId:int=_currentExercise.id;
+				var mediaId:int=_currentMediaData.id;
+				var roleName:String=_selectedRole;
+				
+				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, true, 0, '', subtitlesAreUsed, subtitleId, roleName);
+				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
 			private function set statisticRecSave(value:Boolean):void
@@ -530,18 +541,10 @@
 				if (DataModel.getInstance().savedResponseId)
 				{
 					var subtitlesAreUsed:Boolean=VP.displayCaptions;
-					var subtitleId:int=subtitleId;
-					var roleId:int=0;
+					var subtitleId:int=_subtitleId;
+					var roleName:String=_selectedRole;
 					var responseId:int=DataModel.getInstance().savedResponseId;
-					for each (var role:ExerciseRoleVO in _roles)
-					{
-						if (role.characterName == _selectedRole)
-						{
-							roleId=role.id;
-							break;
-						}
-					}
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, responseId, '', subtitlesAreUsed, subtitleId, roleName);
 					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
 				}
 			}
@@ -553,8 +556,8 @@
 				{
 					_exerciseStartedPlaying=false;
 					var subtitlesAreUsed:Boolean=VP.displayCaptions;
-					var subtitleId:int=subtitleId;
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId, 0);
+					var subtitleId:int=_subtitleId;
+					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId);
 					if (_mediaId > 0 && subtitleId > 0)
 						new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
 				}
@@ -586,7 +589,23 @@
 
 			public function resetGroup():void
 			{
-				resetComponent();
+				//Reset all properties
+				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
+				_exerciseSelected=_exerciseStartedPlaying=_rolesReady=_videoPlayerReady=false;
+				_currentExercise=_roles=_currentMediaData=_primaryMediaData=_modelMediaData=_recordMediaData=_currentCaptions=_currentTimeMarkers=null;
+				_locales=null;
+				_characterNames=null;
+				_selectedRole=_recordedFilename=null;
+				_mediaId=_subtitleId=0;
+				
+				hideSelectedExercise(); // Information of selected exercise
+				
+				
+				//Remove the current exercise's info
+				ratingShareReport.exerciseData=null;
+				
+				isModelLbl.visible=false;
+				isModelLbl.includeInLayout=false;
 				VP.resetComponent();
 			}
 		]]>
@@ -602,7 +621,7 @@
 				destination="recordMediaSlotHandler"/>
 
 	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
-				destination="statisticRecSave"/>
+				destination="responseSuccessfullySavedRetrieved"/>
 
 	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
 				destination="onLogout"/>
@@ -611,7 +630,11 @@
 			 text="{_exerciseTitle}"
 			 width="{VP.width}"
 			 styleName="h2"/>
-
+	<s:Label id="isModelLbl"
+			 text="{ResourceManager.getInstance().getString('myResources','MODEL')}"
+			 styleName="exerciseTitleLabel"
+			 includeInLayout="false"
+			 visible="false"/>
 	<s:HGroup width="100%">
 
 		<s:VGroup id="videoPlayerAndRecordingControls"

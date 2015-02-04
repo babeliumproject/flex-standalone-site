@@ -350,9 +350,9 @@
 					exerciseData.difficulty=difLevelDropdown.selectedIndex + 1;
 
 					var exercisetype:int=exerciseTypeDropdown.selectedItem['code'];
+					exerciseData.type=exercisetype;
 					if (exercisetype != 0 && exercisetype != 5)
-					{
-						exerciseData.type=exercisetype;
+					{	
 						exerciseData.situation=commSituationDropdown.selectedItem['code'] + 1;
 						exerciseData.competence=commCompetenceDropdown.selectedItem['code'] + 1;
 						exerciseData.lingaspects=lingAspectDropdown.selectedItem['code'] + 1;

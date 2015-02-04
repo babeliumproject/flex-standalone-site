@@ -86,19 +86,30 @@ class Response {
 	public function saveResponse($data = null){
 		
 		if(!$data)
-			return false;
+			throw new Exception("Invalid parameters",1000);
+		
+		if(!isset($_SESSION['recmedia']))
+			throw new Exception("Attempting to save recording without a valid session",1009);
+		
+		$recmedia = $_SESSION['recmedia'];
+			
+		$mediaUrl = $recmedia->mediaUrl;
+		
+		$responsecode = substr($mediaUrl,strrpos($mediaUrl,'/')+1,-4);
 		
 		set_time_limit(0);
 		$this->_getResourceDirectories();
 		$thumbnail = 'nothumb.png';
 		
 		try{
-			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $data->fileIdentifier . '.flv';
+			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $responsecode . '.flv';
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
 
 			if($mediaData->hasVideo){
-				$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
+				$thumbdir = $this->imagePath.'/'.$responsecode;
+				$posterdir = $this->posterPath.'/'.$responsecode;
+				$this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $thumbdir, $posterdir);
 				$thumbnail = 'default.jpg';
 			}
 		} catch (Exception $e){
@@ -106,10 +117,14 @@ class Response {
 		}
 		
 
-		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
-		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
+		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id, fk_media_id) ";
+		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d, %d ) ";
 
-		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId );
+		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
+		
+		unset($_SESSION['recmedia']);
+		
+		return $responseId;
 
 	}
 

@@ -1600,7 +1600,7 @@ package components.videoPlayer
 		}
 		
 		override protected function startVideo():void{
-			if(_state == PLAY_STATE){
+			if(_state == PLAY_STATE || _state & RECORD_MODE_MASK){
 				super.startVideo();
 			} else {
 				if(!(_state & RECORD_MODE_MASK)){

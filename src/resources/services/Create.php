@@ -96,7 +96,6 @@ class Create {
 			}
 	
 			if($searchResults){
-				$exercise = new Exercise();
 				foreach($searchResults as $searchResult){
 					//$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
 					//$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
