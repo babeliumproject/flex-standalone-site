@@ -49,18 +49,8 @@
 			protected function latestUploadedVideosDataGroup_changeHandler(event:IndexChangeEvent):void
 			{
 				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
-				if(obj.hasOwnProperty("isSubtitled") && obj.isSubtitled)
-				{
-					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_EXERCISE_MODULE_INDEX), BabeliaBrowserManager.VIEW, obj.name);
-					URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
-				}
-				else
-				{
-					//BabeliaBrowserManager.getInstance().updateURL(BabeliaBrowserManager.index2fragment(ViewChangeEvent.VIEWSTACK_SUBMODULE_INDEX), BabeliaBrowserManager.SUBTITLE, obj.name);
-					URLManager.getInstance().redirect('/create/edit/'+obj.exercisecode+"?s=2");
-				}
 				List(event.target).selectedItem = null;
-				URLManager.getInstance().parseURL(null);
+				URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
 			}
 			
 			public function resetComponent():void{

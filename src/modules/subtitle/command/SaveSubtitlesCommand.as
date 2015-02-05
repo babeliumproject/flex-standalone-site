@@ -39,7 +39,7 @@ package modules.subtitle.command
 			{
 				var userData:UserVO=result as UserVO;
 				DataModel.getInstance().loggedUser.creditCount=userData.creditCount;
-				DataModel.getInstance().subtitleSaved=true;
+				DataModel.getInstance().subtitleSaved=!DataModel.getInstance().subtitleSaved;
 				DataModel.getInstance().creditUpdateRetrieved=true;
 			}
 		}

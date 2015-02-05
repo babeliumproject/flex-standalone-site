@@ -19,6 +19,7 @@ package modules.subtitle.command
 	
 	public class GetMediaSubtitlesCommand implements ICommand, IResponder
 	{
+		private var _model:DataModel=DataModel.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
@@ -39,13 +40,15 @@ package modules.subtitle.command
 					mediaSubtitles=new ArrayCollection(ArrayUtil.toArray(result.subtitles));
 				}
 			}
-			DataModel.getInstance().subtitleMedia=mediaData;
-			DataModel.getInstance().availableSubtitles=mediaSubtitles;
+			_model.subtitleMedia=mediaData;
+			_model.availableSubtitles=mediaSubtitles;
 			
 			//Set to null until a service call to retrieve subtitle lines changes its value
-			DataModel.getInstance().availableSubtitleLines=null;
+			_model.availableSubtitleLines=null;
+			_model.unmodifiedAvailableSubtitleLines=null;
+			_model.availableExerciseRoles=null;
 			
-			DataModel.getInstance().availableSubtitlesRetrieved = !DataModel.getInstance().availableSubtitlesRetrieved;
+			_model.availableSubtitlesRetrieved = !_model.availableSubtitlesRetrieved;
 		}
 		
 		public function fault(info:Object):void

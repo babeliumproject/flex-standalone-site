@@ -3,6 +3,8 @@ package utils
 	import flash.utils.getQualifiedClassName;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.ISort;
+	import mx.collections.ISortField;
 	
 	import spark.collections.Sort;
 	import spark.collections.SortField;
@@ -33,13 +35,13 @@ package utils
 		}
 		
 		public static function sortByField(collection:ArrayCollection, field:String, numeric:Boolean):void{
-			var fieldSort:SortField=new SortField();
-			fieldSort.name=field;
-			fieldSort.numeric=numeric;
-			var numericDataSort:Sort=new Sort();
-			numericDataSort.fields=[fieldSort];
-			collection.sort=numericDataSort;
+			var sort:ISort = new Sort();
+			var sortfield:ISortField = new SortField(field,true,numeric);
+
+			sort.fields = [sortfield];
+			collection.sort = sort;
 			collection.refresh();
+			collection.sort = null;
 		}
 	}
 }

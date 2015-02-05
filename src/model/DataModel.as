@@ -160,11 +160,6 @@ package model
 		public var recordMediaData:Object;
 		
 		[Bindable]
-		public var currentExercise:ArrayCollection=new ArrayCollection(new Array(null, null));
-		[Bindable]
-		public var currentExerciseRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
-
-		[Bindable]
 		public var availableExercises:ArrayCollection;
 		[Bindable]
 		public var availableRecordableExercises:ArrayCollection;

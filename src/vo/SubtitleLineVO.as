@@ -14,11 +14,11 @@ package vo
 		public var exerciseRoleId:int;
 		public var exerciseRoleName:String;
 		
-		public function SubtitleLineVO(id:int = 0, subtitleId:int = 0, showTime:Number = 0, hideTime:Number = 0, text:String='', exerciseRoleId:int=0, exerciseRoleName:String=''){
+		public function SubtitleLineVO(id:int = 0, subtitleId:int = 0, showTime:String=null, hideTime:String=null, text:String='', exerciseRoleId:int=0, exerciseRoleName:String=''){
 			this.id = id;
 			this.subtitleId = subtitleId;
-			this.showTime = showTime;
-			this.hideTime = hideTime;
+			this.showTime = new Number(showTime);
+			this.hideTime = new Number(hideTime);
 			this.text = text;
 			this.exerciseRoleId = exerciseRoleId;
 			this.exerciseRoleName = exerciseRoleName;

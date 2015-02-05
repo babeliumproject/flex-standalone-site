@@ -98,7 +98,7 @@
 							 dataProvider="{subCollection}"
 							 rowHeight="28">
 					<mx:columns>
-						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','NUMBER')}"
+						<mx:DataGridColumn headerText="#"
 										   labelFunction="{lfRowNum}"
 										   editable="false"
 										   width="60">

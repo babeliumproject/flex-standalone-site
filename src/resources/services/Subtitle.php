@@ -269,15 +269,20 @@ class Subtitle {
 
         $result = 0;
         $subtitleLines = $subtitles->subtitleLines;
-        $exerciseId = $subtitles->exerciseId;
+        $mediaId = $subtitles->mediaId;
         
         if(!$this->_subtitlesWereModified($subtitleLines))
             return "Provided subtitles have no modifications";
  
         if(($errors = $this->_checkSubtitleErrors($subtitleLines)) != "")
             return $errors;
+        
+        $exerciseData = $this->getExerciseUsingMediaId($mediaId);
+        if(!$exerciseData)
+        	throw new Exception("Specified media could not be found",1011);
        
         $this->conn->_startTransaction(); 
+        $optime = time();
         $subtitle_data = array();
         foreach($subtitleLines as $sl){
             $subline = array();
@@ -294,8 +299,8 @@ class Subtitle {
         $serialized_subtitles = $this->custom_json_encode($subtitle_data);
         $cb64_subtitles = $this->packblob($serialized_subtitles);
         
-        $insert = "INSERT INTO subtitle (fk_exercise_id, fk_user_id, language, complete, serialized_subtitles, subtitle_count) VALUES (%d, %d, '%s', %d, '%s', %d)";
-        $subtitleId = $this->conn->_insert($insert,$subtitles->exerciseId,$_SESSION['uid'],$subtitles->language,$subtitles->complete, $cb64_subtitles, $subtitle_count);
+        $insert = "INSERT INTO subtitle (fk_media_id, fk_user_id, language, complete, serialized_subtitles, subtitle_count, timecreated) VALUES (%d, %d, '%s', %d, '%s', %d, %d)";
+        $subtitleId = $this->conn->_insert($insert,$mediaId,$_SESSION['uid'],$exerciseData->language,$subtitles->complete, $cb64_subtitles, $subtitle_count, $optime);
 
         //Update the user's credit count
         $creditUpdate = $this->_addCreditsForSubtitling();
@@ -305,7 +310,7 @@ class Subtitle {
         }
 
         //Update the credit history
-        $creditHistoryInsert = $this->_addSubtitlingToCreditHistory($exerciseId);
+        $creditHistoryInsert = $this->_addSubtitlingToCreditHistory($exerciseData->id);
         if(!$creditHistoryInsert){
             $this->conn->_failedTransaction();
             throw new Exception("Credit history update failed");
@@ -318,6 +323,21 @@ class Subtitle {
 
         return $result;
 
+    }
+    
+    protected function getExerciseUsingMediaId($mediaid){
+    	if(!$mediaid)
+    		throw new Exception("Invalid parameters",1000);
+    	$sql = "SELECT instanceid FROM media WHERE component='exercise' AND id=%d";
+    	$row = $this->conn->_singleSelect($sql,$mediaid);
+    	if($row){
+    		$exerciseid = $row->instanceid;
+    		$exsql = "SELECT * FROM exercise WHERE id=%d";
+    		$exercisedata = $this->conn->_singleSelect($exsql,$exerciseid);
+    		return $exercisedata;
+    	} else {
+    		return null;
+    	}
     }
 
     /**

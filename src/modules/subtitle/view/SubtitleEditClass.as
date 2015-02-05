@@ -64,9 +64,6 @@ package modules.subtitle.view
 
 	public class SubtitleEditClass extends HGroup implements IGroupInterface
 	{
-		/**
-		 * Singleton objects
-		 */
 		private var _dataModel:DataModel=DataModel.getInstance();
 
 		/**
@@ -98,13 +95,9 @@ package modules.subtitle.view
 
 		private var subtitlesToBeSaved:SubtitleAndSubtitleLinesVO;
 
-		/**
-		 * Retrieved data holders
-		 */
-		//[Bindable]
-		//public var subtitleCollection:ArrayCollection=new ArrayCollection();
-		
 		protected var _subCollection:ArrayCollection;
+		
+		protected var _mediaData:Object;
 		
 		[Bindable]
 		public var comboData:ArrayCollection=new ArrayCollection();
@@ -209,11 +202,14 @@ package modules.subtitle.view
 
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
-			subtitleStartTime=(e.time < 0.5) ? 0.5 : e.time;
+			var stimestr:String = e.time.toFixed(2);
+			var htimestr:String = new Number(e.time + 0.5).toFixed(2);
+			var time:Number = new Number(stimestr);
+			subtitleStartTime=time;
 			
 			//id, subtitleid, roleid, rolename are unknown at this point
-			startEntry=new SubtitleLineVO(0, 0, subtitleStartTime, subtitleStartTime + 0.5); 
-			
+			startEntry=new SubtitleLineVO(0, 0, stimestr, htimestr); 
+		
 			addSubtitleToCollection(startEntry);
 
 			//VPSubtitle.setCaptions(subtitleCollection);
@@ -221,9 +217,10 @@ package modules.subtitle.view
 		}
 		
 		protected function addSubtitleToCollection(lineData:Object):void{
+			if(!subCollection) 
+				subCollection=new ArrayCollection();
 			subCollection.addItem(lineData);
-			CollectionUtils.sortByField(subCollection,'showTime',true);
-
+			//CollectionUtils.sortByField(subCollection,'showTime',true);
 		}
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
@@ -231,8 +228,12 @@ package modules.subtitle.view
 			if (subCollection && subCollection.length > 0)
 			{
 				subtitleEndTime=(e.time < (VPSubtitle.duration - 0.5)) ? e.time : VPSubtitle.duration - 0.5;
+				
+				trace("Sub start time: "+subtitleStartTime+" Subtitle end time: "+subtitleEndTime);
+				
 				var item:Object = CollectionUtils.findInCollection(subCollection,CollectionUtils.findField('showTime',subtitleStartTime) as Function);
 				if(item){
+					trace("Subtitle found in collection: "+ObjectUtil.toString(item));
 					item.hideTime=subtitleEndTime;
 				}
 				//VPSubtitle.setCaptions(subtitleCollection);
@@ -331,7 +332,6 @@ package modules.subtitle.view
 
 		public function saveSubtitlesHandler():void
 		{
-			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 			var subLines:ArrayCollection=new ArrayCollection();
 			if (subCollection.length > 0)
 			{
@@ -352,22 +352,19 @@ package modules.subtitle.view
 					var errors:String=checkSubtitleErrors();
 					if (errors.length == 0)
 					{
-
 						var subtitleLines:Array=subLines.toArray();
 						subtitlesToBeSaved=new SubtitleAndSubtitleLinesVO();
-						subtitlesToBeSaved.mediaId=currentExercise.id;
+						subtitlesToBeSaved.mediaId=_mediaData.id;
 						subtitlesToBeSaved.subtitleLines=subtitleLines;
 						//if (DataModel.getInstance().unmodifiedAvailableSubtitleLines.length == 0)
 						subtitlesToBeSaved.id=0;
 						//else
 						//	subtitles.id=DataModel.getInstance().availableSubtitleLines.getItemAt(0).subtitleId;
 
-
-
-						var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
-						subHistoricData.videoExerciseId=currentExercise.id;
-						subHistoricData.videoExerciseName=currentExercise.exercisecode;
-						DataModel.getInstance().subHistoricData=subHistoricData;
+						//var subHistoricData:CreditHistoryVO=new CreditHistoryVO();
+						//subHistoricData.videoExerciseId=_mediaData.id;
+						//subHistoricData.videoExerciseName=_mediaData.mediacode;
+						//DataModel.getInstance().subHistoricData=subHistoricData;
 
 						CustomAlert.info(resourceManager.getString('myResources', 'CONFIRMATION_COMPLETE_SUBTITLE'), Alert.YES | Alert.NO, null, completeSubtitleConfirmation, Alert.NO);
 
@@ -406,6 +403,10 @@ package modules.subtitle.view
 		{
 			var modified:Boolean=false;
 			var unmodifiedSubtitlesLines:ArrayCollection=_dataModel.unmodifiedAvailableSubtitleLines;
+			
+			if(!unmodifiedSubtitlesLines)
+				return true;
+			
 			if (unmodifiedSubtitlesLines.length != compareSubject.length)
 				modified=true;
 			else
@@ -489,12 +490,11 @@ package modules.subtitle.view
 		{
 			var subversions:int=DataModel.getInstance().availableSubtitles ? DataModel.getInstance().availableSubtitles.length : 0;
 			
-			var mediaData:Object=_dataModel.subtitleMedia;
-			trace("Media data: "+ObjectUtil.toString(mediaData));
-			if(mediaData){
+			_mediaData=_dataModel.subtitleMedia;
+			if(_mediaData){
 				var media:Object = new Object();
-				media.netConnectionUrl = mediaData.netConnectionUrl;
-				media.mediaUrl = mediaData.mediaUrl;
+				media.netConnectionUrl = _mediaData.netConnectionUrl;
+				media.mediaUrl = _mediaData.mediaUrl;
 				VPSubtitle.loadVideoByUrl(media);
 			}
 			
@@ -515,10 +515,12 @@ package modules.subtitle.view
 				var sub:Object=availableSubtitleVersions.getItemAt(0);
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, sub).dispatch();
 			}
-			else
+			else //This media has no subtitles
 			{
 				subtitleVersionBox.includeInLayout=false;
 				subtitleVersionBox.visible=false;
+				onSubtitleLinesRetrieved(true);
+				onRolesRetrieved(true);
 			}
 		}
 		
@@ -556,7 +558,6 @@ package modules.subtitle.view
 					cData.addItem(deleteLine);
 				}
 				comboData=cData;
-
 			}
 			else
 			{
@@ -579,15 +580,14 @@ package modules.subtitle.view
 
 		private function onSubtitleSaved(value:Boolean):void
 		{
-			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
-			if (DataModel.getInstance().subtitleSaved)
-			{
-				//VPSubtitle.setCaptions(null);
-				DataModel.getInstance().subtitleSaved=false;
-				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
-
-				new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', '')).dispatch();
-				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, subtitles).dispatch();
+			if(_mediaData){
+				var mediaid:int = _mediaData.id;
+			
+				var params:Object = new Object();
+				params.id = mediaid;
+			
+				//Refresh the available subtitle versions, etc.
+				new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
 			}
 		}
 
