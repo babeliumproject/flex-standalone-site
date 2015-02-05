@@ -95,7 +95,7 @@
 							 width="100%"
 							 height="100%"
 							 editable="true"
-							 dataProvider="{this.subtitleCollection}"
+							 dataProvider="{subCollection}"
 							 rowHeight="28">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('myResources','NUMBER')}"
@@ -163,13 +163,13 @@
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/add.png')"/>
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBLINE')}"
-									  enabled="{subtitleCollection.length > 0}"
+									  enabled="{subCollection.length > 0}"
 									  click="subtitleRemoveHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/delete.png')"/>
 
 					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBLINES')}"
-									  enabled="{subtitleCollection.length > 0}"
+									  enabled="{subCollection.length > 0}"
 									  click="subtitleClearHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/cancel.png')"/>

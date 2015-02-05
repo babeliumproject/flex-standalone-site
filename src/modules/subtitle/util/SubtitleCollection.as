@@ -11,7 +11,6 @@ package modules.subtitle.util
 		
 		public function reset():void
 		{
-			
 		}
 		
 		public function get numItems():int
@@ -178,28 +177,5 @@ package modules.subtitle.util
 			}
 			return -(firstIndex);
 		}
-
-		/*
-		public function sortByStartTime():void
-		{
-			var showTimeSort:SortField=new SortField();
-			showTimeSort.name="startTime";
-			showTimeSort.numeric=true;
-			var numericDataSort:Sort=new Sort();
-			numericDataSort.fields=[showTimeSort];
-			cuelist.sort=numericDataSort;
-			cuelist.refresh();
-		}
-
-		public function sortByEndTime():void
-		{
-			var showTimeSort:SortField=new SortField();
-			showTimeSort.name="endTime";
-			showTimeSort.numeric=true;
-			var numericDataSort:Sort=new Sort();
-			numericDataSort.fields=[showTimeSort];
-			cuelist.sort=numericDataSort;
-			cuelist.refresh();
-		}*/
 	}
 }

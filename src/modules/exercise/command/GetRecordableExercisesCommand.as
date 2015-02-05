@@ -34,7 +34,7 @@ package modules.exercise.command
 		{
 			var result:Object=data.result;
 		
-			if (result is Array)
+			if (result && (result is Array))
 			{
 				var resultCollection:ArrayCollection;
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));

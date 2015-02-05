@@ -351,6 +351,9 @@
 
 					var exercisetype:int=exerciseTypeDropdown.selectedItem['code'];
 					exerciseData.type=exercisetype;
+					exerciseData.situation=0;
+					exerciseData.competence=0;
+					exerciseData.lingaspects=0;
 					if (exercisetype != 0 && exercisetype != 5)
 					{	
 						exerciseData.situation=commSituationDropdown.selectedItem['code'] + 1;

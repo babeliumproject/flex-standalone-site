@@ -28,6 +28,7 @@ package modules.subtitle.view
 	import mx.controls.VRule;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
+	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.resources.ResourceManager;
@@ -79,14 +80,16 @@ package modules.subtitle.view
 		
 		public var mediaid:int;
 		public var subtitleid:int;
+		
+		private var _mediaStatus:int;
 
 		[Bindable]
 		private var subtitleStartTime:Number=0;
 		[Bindable]
 		private var subtitleEndTime:Number=0;
 
-		private var startEntry:CueObject;
-		private var endEntry:CueObject;
+		private var startEntry:SubtitleLineVO;
+		private var endEntry:SubtitleLineVO;
 
 		//[Bindable]
 		//public var subtitleStarted:Boolean=false;
@@ -98,8 +101,11 @@ package modules.subtitle.view
 		/**
 		 * Retrieved data holders
 		 */
-		[Bindable]
-		public var subtitleCollection:ArrayCollection;
+		//[Bindable]
+		//public var subtitleCollection:ArrayCollection=new ArrayCollection();
+		
+		protected var _subCollection:ArrayCollection;
+		
 		[Bindable]
 		public var comboData:ArrayCollection=new ArrayCollection();
 
@@ -141,6 +147,30 @@ package modules.subtitle.view
 			
 			creationComplete=true;
 		}
+		
+		
+		[Bindable]
+		public function get subCollection():ArrayCollection {
+			return _subCollection;
+		}
+		
+		public function set subCollection(value:ArrayCollection):void {
+			if (value != _subCollection) {
+				if (_subCollection != null) {
+					_subCollection.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onSubtitleCollectionChanged);
+				}
+				_subCollection=value;
+				if (_subCollection != null) {
+					_subCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, onSubtitleCollectionChanged, false, 0, true);
+				}
+				onSubtitleCollectionChanged(null);
+			}
+		}
+		
+		protected function onSubtitleCollectionChanged(event:CollectionEvent):void{
+			trace("CollectionChangeEvent: "+ObjectUtil.toString(subCollection));
+			VPSubtitle.setCaptions(subCollection,this);
+		}
 
 		public function setupVideoPlayer():void
 		{
@@ -180,39 +210,34 @@ package modules.subtitle.view
 		public function subtitleStartHandler(e:SubtitlingEvent):void
 		{
 			subtitleStartTime=(e.time < 0.5) ? 0.5 : e.time;
-			startEntry=new CueObject(0, subtitleStartTime, subtitleStartTime + 0.5, '', 0, '');
+			
+			//id, subtitleid, roleid, rolename are unknown at this point
+			startEntry=new SubtitleLineVO(0, 0, subtitleStartTime, subtitleStartTime + 0.5); 
+			
 			addSubtitleToCollection(startEntry);
 
-			VPSubtitle.setCaptions(subtitleCollection);
+			//VPSubtitle.setCaptions(subtitleCollection);
 
 		}
 		
 		protected function addSubtitleToCollection(lineData:Object):void{
-			subtitleCollection.addItem(lineData);
-			sortByField(subtitleCollection,'showTime',true);
-		}
-		
-		protected function sortByField(collection:ArrayCollection, field:String, numeric:Boolean):void{
-			var fieldSort:SortField=new SortField();
-			fieldSort.name=field;
-			fieldSort.numeric=numeric;
-			var numericDataSort:Sort=new Sort();
-			numericDataSort.fields=[fieldSort];
-			collection.sort=numericDataSort;
-			collection.refresh();
+			subCollection.addItem(lineData);
+			CollectionUtils.sortByField(subCollection,'showTime',true);
+
 		}
 
 		public function subtitleEndHandler(e:SubtitlingEvent):void
 		{
-			if (subtitleCollection && subtitleCollection.length > 0)
+			if (subCollection && subCollection.length > 0)
 			{
 				subtitleEndTime=(e.time < (VPSubtitle.duration - 0.5)) ? e.time : VPSubtitle.duration - 0.5;
-				endEntry=new CueObject(0, subtitleStartTime, subtitleEndTime, '', 0, '');
-				VPSubtitle.setCaptions(subtitleCollection);
+				var item:Object = CollectionUtils.findInCollection(subCollection,CollectionUtils.findField('showTime',subtitleStartTime) as Function);
+				if(item){
+					item.hideTime=subtitleEndTime;
+				}
+				//VPSubtitle.setCaptions(subtitleCollection);
 			}
 		}
-
-		private var _mediaStatus:int;
 
 		public function onMediaStateChange(e:MediaStatusEvent):void
 		{
@@ -227,9 +252,9 @@ package modules.subtitle.view
 			}
 			else
 			{
-				if (subtitleCollection && subtitleCollection.length > 0)
+				if (subCollection && subCollection.length > 0)
 				{
-					var lastSub:Object=subtitleCollection.getItemAt(subtitleCollection.length - 1);
+					var lastSub:Object=subCollection.getItemAt(subCollection.length - 1);
 					var time:Number=lastSub.hideTime + 0.25;
 					this.subtitleStartHandler((new SubtitlingEvent(SubtitlingEvent.START, time)));
 				}
@@ -250,9 +275,10 @@ package modules.subtitle.view
 				if (previouslySelectedIndex != 0 || subtitleList.rowCount != 1)
 					indexToBeSelected=previouslySelectedIndex - 1;
 
-				VPSubtitle.setCaptions(subtitleCollection);
+				subCollection.removeItemAt(previouslySelectedIndex);
 				subtitleList.selectedIndex=indexToBeSelected;
-
+				
+				//VPSubtitle.setCaptions(subtitleCollection);
 			}
 		}
 
@@ -263,8 +289,10 @@ package modules.subtitle.view
 
 		private function subtitleClearConfirmation(event:CloseEvent):void
 		{
-			if (event.detail == Alert.YES)
-				VPSubtitle.setCaptions(null);
+			if (event.detail == Alert.YES){
+				subCollection.removeAll();
+				//VPSubtitle.setCaptions(null);
+			}
 		}
 
 		public function subtitleNextHandler():void
@@ -289,14 +317,14 @@ package modules.subtitle.view
 		{
 			if (subtitleList.selectedIndex != -1)
 			{
-				var tempEntry:Object=subtitleList.selectedIndex as Object;
+				var tempEntry:Object=subtitleList.selectedItem as Object;
 				VPSubtitle.seekTo(tempEntry.showTime);
 			}
 		}
 		
 		public function highlightSubtitle(time:Number):void{
 			if(!isNaN(time) && subtitleList && subtitleList.rowCount){
-				var item:Object = CollectionUtils.findInCollection(subtitleCollection, CollectionUtils.findField('showTime', time) as Function);
+				var item:Object = CollectionUtils.findInCollection(subCollection, CollectionUtils.findField('showTime', time) as Function);
 				if(item) subtitleList.selectedItem = item;
 			}
 		}
@@ -305,9 +333,9 @@ package modules.subtitle.view
 		{
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 			var subLines:ArrayCollection=new ArrayCollection();
-			if (subtitleCollection.length > 0)
+			if (subCollection.length > 0)
 			{
-				for each (var s:Object in subtitleCollection)
+				for each (var s:Object in subCollection)
 				{
 					var subLine:SubtitleLineVO=new SubtitleLineVO(0, 0, s.showTime, s.hideTime, s.text, s.exerciseRoleId)
 					for each (var dp:Object in comboData)
@@ -400,21 +428,21 @@ package modules.subtitle.view
 		{
 			var errorMessage:String="";
 			//Check empty roles, time overlappings and empty texts
-			for (var i:int=0; i < subtitleCollection.length; i++)
+			for (var i:int=0; i < subCollection.length; i++)
 			{
-				if (subtitleCollection.getItemAt(i).exerciseRoleId < 1)
+				if (subCollection.getItemAt(i).exerciseRoleId < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'ROLE_EMPTY') + "\n", i + 1);
-				var lineText:String=subtitleCollection.getItemAt(i).text;
+				var lineText:String=subCollection.getItemAt(i).text;
 				lineText=lineText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
 				if (lineText.length < 1)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'EMPTY') + "\n", i + 1);
 				if (i > 0)
 				{
-					if ((subtitleCollection.getItemAt((i - 1)).hideTime + 0.2) >= subtitleCollection.getItemAt(i).showTime)
+					if ((subCollection.getItemAt((i - 1)).hideTime + 0.2) >= subCollection.getItemAt(i).showTime)
 						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBOVERLAPS') + "\n", i);
 				}
-				var hideTime:Number=subtitleCollection.getItemAt(i).hideTime;
-				var showTime:Number=subtitleCollection.getItemAt(i).showTime;
+				var hideTime:Number=subCollection.getItemAt(i).hideTime;
+				var showTime:Number=subCollection.getItemAt(i).showTime;
 				if ((hideTime > VPSubtitle.duration - 0.5) || hideTime < 0.5 || showTime < 0.5 || showTime > VPSubtitle.duration - 0.5)
 					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTIME_OUT_OF_BOUNDS') + "\n", i + 1);
 			}
@@ -423,10 +451,10 @@ package modules.subtitle.view
 
 
 
-		public function lfRowNum(oItem:Object, iCol:int):String
+		public function lfRowNum(item:Object, column:DataGridColumn):String
 		{
-			var iIndex:int=int(oItem) + 1;
-			return String(iIndex);
+			var itemidx:int = subCollection.getItemIndex(item);
+			return String(itemidx+1);
 		}
 
 		public function subtitleVersionComboLabelFunction(item:Object):String
@@ -496,11 +524,10 @@ package modules.subtitle.view
 		
 		public function onSubtitleLinesRetrieved(value:Boolean):void
 		{
-			trace("[SubtitleEdit: onSubtitleLinesRetrieved]\n"+ObjectUtil.toString(_dataModel.availableSubtitleLines));
-			subtitleCollection=_dataModel.availableSubtitleLines;
+			subCollection= _dataModel.availableSubtitleLines;
 			var unmodifiedSubtitleCollection:ArrayCollection=_dataModel.unmodifiedAvailableSubtitleLines;
 			
-			VPSubtitle.setCaptions(subtitleCollection, this);
+			//VPSubtitle.setCaptions(subtitleCollection, this);
 			
 			if (unmodifiedSubtitleCollection && unmodifiedSubtitleCollection.length > 0){
 				var subtitleid:int=parseInt(unmodifiedSubtitleCollection.getItemAt(0).subtitleId);
@@ -555,7 +582,7 @@ package modules.subtitle.view
 			var currentExercise:ExerciseVO=DataModel.getInstance().currentExercise.getItemAt(0) as ExerciseVO;
 			if (DataModel.getInstance().subtitleSaved)
 			{
-				VPSubtitle.setCaptions(null);
+				//VPSubtitle.setCaptions(null);
 				DataModel.getInstance().subtitleSaved=false;
 				var subtitles:SubtitleAndSubtitleLinesVO=new SubtitleAndSubtitleLinesVO(0, currentExercise.id, '', currentExercise.language);
 
@@ -571,7 +598,7 @@ package modules.subtitle.view
 			subtitleVersionBox.includeInLayout=false;
 			subtitleVersionBox.visible=false;
 			availableSubtitleVersions=null;
-			subtitleCollection=null;
+			subCollection=null;
 			comboData=null;
 			
 			mediaid=subtitleid=subtitleStartTime=subtitleEndTime=0;			

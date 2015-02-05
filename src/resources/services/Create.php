@@ -350,15 +350,21 @@ class Create {
 			$status = self::STATUS_UNDEF; //raw video
 			
 			if(is_file($webcammedia)){
-				$medianfo = $this->mediaHelper->retrieveMediaInfo($webcammedia);
+				$filename = $mediacode.'_'.$optime.'.flv';
+				$fileabspath = $this->cfg->red5Path.'/'.$this->exerciseFolder.'/'.$filename;
+				rename($webcammedia,$fileabspath);
+				$medianfo = $this->mediaHelper->retrieveMediaInfo($fileabspath);
 				$dimension = $medianfo->videoHeight;
-				$filesize = filesize($webcammedia);
-				$this->mediaHelper->takeFolderedRandomSnapshots($webcammedia, $this->cfg->imagePath, $this->cfg->posterPath);
+				$filesize = filesize($fileabspath);
+				$thumbdir = $this->cfg->imagePath.'/'.$mediacode;
+				$posterdir = $this->cfg->posterPath.'/'.$mediacode;
+				$this->mediaHelper->takeFolderedRandomSnapshots($fileabspath, $thumbdir, $posterdir);
 				$status = self::STATUS_READY;
 			} else if(is_file($filemedia)){
+				$filename = $data->filename;
 				$medianfo = $this->mediaHelper->retrieveMediaInfo($filemedia);
 				$dimension = $medianfo->videoHeight;
-				$filesize = filesize($filemedia);
+				$filesize = filesize($filemedia);			
 			} else {
 				throw new Exception("Media file not found", 1002);
 			}
@@ -375,7 +381,7 @@ class Create {
 			$insertr = "INSERT INTO media_rendition (fk_media_id, filename, contenthash, status, timecreated, filesize, metadata, dimension) 
 						VALUES (%d, '%s', '%s', %d, %d, %d, '%s', %d)";
 			
-			$mediarendition = $this->conn->_insert($insertr, $mediaid, $data->filename, $contenthash, $status, $optime, $filesize, $metadata, $dimension);
+			$mediarendition = $this->conn->_insert($insertr, $mediaid, $filename, $contenthash, $status, $optime, $filesize, $metadata, $dimension);
 			
 			//TODO add raw media to asynchronous task processing queue
 			//videoworker->add_task($mediaid);
@@ -385,6 +391,18 @@ class Create {
 		} catch (Exception $e){
 			throw new Exception($e->getMessage(), $e->getCode());
 		}
+	}
+	
+	public function requestCreateRecordingSlot(){
+		$optime = time();
+		$mediacode = $this->uuidv4();
+		$mediaUrl = 'exercises/'.$mediacode.'_'.$optime.'.flv';
+		$netConnectionUrl = $this->cfg->streamingserver;
+		$data = new stdClass();
+		$data->mediaUrl = $mediaUrl;
+		$data->netConnectionUrl = $netConnectionUrl;
+		
+		return $data;
 	}
 	
 	public function getMediaStatus($mediaid){

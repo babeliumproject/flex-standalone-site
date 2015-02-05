@@ -33,10 +33,13 @@
 				filesize=0;
 				updateUploadProgress();
 				uploadFilename.text='';
+				recFromWebcamBox.resetComponent();
 				methodSelection.includeInLayout=true;
 				methodSelection.visible=true;
 				uploadWidget.includeInLayout=false;
 				uploadWidget.visible=false;
+				recFromWebcamBox.visible=false;
+				recFromWebcamBox.includeInLayout=false;
 				errorMessageContainer.visible=false;
 				errorMessageContainer.includeInLayout=false;
 			}

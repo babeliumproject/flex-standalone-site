@@ -17,8 +17,6 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import spark.layouts.TileLayout;
-			
 			import control.URLManager;
 			
 			import flash.sampler.getInvocationCount;
@@ -38,6 +36,7 @@
 			
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
+			import spark.layouts.TileLayout;
 			
 			import vo.ExerciseVO;
 
@@ -200,8 +199,8 @@
 					{
 						sitfilterPnl.includeInLayout=true;
 						sitfilterPnl.visible=true;
-						comptfilterPnl.includeInLayout=true;
-						comptfilterPnl.visible=true;
+						//comptfilterPnl.includeInLayout=true;
+						//comptfilterPnl.visible=true;
 						
 						if(sitFilter){
 							var isit:Object = findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
@@ -233,7 +232,11 @@
 
 			public function createPagination():void
 			{
-				VideoPaginator.createPaginationMenu(_dataProvider.length, DataModel.getInstance().pageSize, _currentPage, DataModel.getInstance().numberOfPagesNav, paginationBox, navigateToPage);
+				var itemcount:int = _dataProvider ? _dataProvider.length : 0;
+				var itemsPerPage:int = DataModel.getInstance().pageSize;
+				var numNavButtons:int = DataModel.getInstance().numberOfPagesNav;
+				
+				VideoPaginator.createPaginationMenu(itemcount, itemsPerPage, _currentPage, numNavButtons, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
 
@@ -246,8 +249,16 @@
 			public function refreshDataProvider():void
 			{
 				var current:int=_currentPage - 1;
-				var pageSize:int=DataModel.getInstance().pageSize;
-				var dataTemp:ArrayCollection=new ArrayCollection(_dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
+				var itemsPerPage:int=DataModel.getInstance().pageSize;
+				
+				var offset:int = current * itemsPerPage;
+				var numitems:int = offset + itemsPerPage;
+				
+				var dataTemp:ArrayCollection=null;
+				
+				if(_dataProvider){
+					dataTemp=new ArrayCollection(_dataProvider.source.slice(offset,numitems));
+				}
 				exerciseListDataGroup.dataProvider=dataTemp;
 				
 				refreshLayout();

@@ -276,7 +276,11 @@ package components.videoPlayer
 
 		public function setCaptions(captions:Object, cinstance:Object=null):void
 		{
-			if(_captionmgr) _captionmgr.removeAllMarkers();
+			if(_captionmgr) {
+				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer);
+				_captionmgr.removeAllMarkers();
+				_captionmgr.reset();
+			}
 			if(!captions) return;
 			
 			if(!_captionmgr) 
@@ -284,8 +288,11 @@ package components.videoPlayer
 			
 			_captionsLoaded = _captionmgr.parseCaptions(captions, this, cinstance);
 			
-			if(_captionsLoaded) 
+			if(_captionsLoaded){
 				_subtitleButton.enabled=true;
+			} else {
+				logger.debug("Captions could not be parsed");
+			}
 			
 			if(_displayCaptions){
 				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
