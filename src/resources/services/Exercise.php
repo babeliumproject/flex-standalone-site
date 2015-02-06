@@ -58,6 +58,9 @@ class Exercise {
 	private $conn;
 	private $cfg;
 	private $mediaHelper;
+	
+	const EXERCISE_READY=1;
+	const EXERCISE_DRAFT=0;
 
 	/**
 	 * Constructor function
@@ -270,7 +273,7 @@ class Exercise {
 	public function watchExercise($exercisecode){
 		if(!$exercisecode) return;
 		
-		$exdata = $this->getExerciseByCode($exercisecode);
+		$exdata = $this->getExerciseByCode($exercisecode,self::EXERCISE_READY);
 		if($exdata){
 			$status = 2;
 			$level = array(1,2);
@@ -340,18 +343,25 @@ class Exercise {
 		return $this->conn->recast('ExerciseVO',$result);
 	}
 	
-	public function getExerciseByCode($exercisecode){
+	public function getExerciseByCode($exercisecode,$status=0){
 		if(!$exercisecode)
 			return;
 			
 		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated,
 					   u.username as userName, e.difficulty, e.status, e.likes, e.dislikes, e.type,
-					   e.competence, e.situation, e.lingaspects
+					   e.competence, e.situation, e.lingaspects, e.licence, e.attribution, e.visible 
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
-				WHERE (e.exercisecode = '%s')
-				GROUP BY e.id LIMIT 1";
+				WHERE e.exercisecode = '%s'";
 		
-		$result = $this->conn->_singleSelect($sql,$exercisecode);
+		if($status){
+			$cstatus = $status ? 1 : 0;
+			$sql .= " AND e.status=%d LIMIT 1";
+			$result = $this->conn->_singleSelect($sql,$exercisecode,$cstatus);
+		} else {
+			$sql .= " LIMIT 1";
+			$result = $this->conn->_singleSelect($sql,$exercisecode);
+		}
+		
 		if($result){
 			$result->tags = $this->getExerciseTags($result->id);
 			$result->descriptors = $this->getExerciseDescriptors($result->id);

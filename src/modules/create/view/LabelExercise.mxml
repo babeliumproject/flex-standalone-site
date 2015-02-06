@@ -372,7 +372,7 @@
 						}
 						exerciseData.descriptors=descriptors;
 					}
-					new CreateEvent(CreateEvent.SAVE_EXERCISE, exerciseData).dispatch();
+					new CreateEvent(CreateEvent.SET_EXERCISE_DATA, exerciseData).dispatch();
 				}
 				else
 					CustomAlert.error(resourceManager.getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));

@@ -301,7 +301,7 @@ class Subtitle {
         
         $insert = "INSERT INTO subtitle (fk_media_id, fk_user_id, language, complete, serialized_subtitles, subtitle_count, timecreated) VALUES (%d, %d, '%s', %d, '%s', %d, %d)";
         $subtitleId = $this->conn->_insert($insert,$mediaId,$_SESSION['uid'],$exerciseData->language,$subtitles->complete, $cb64_subtitles, $subtitle_count, $optime);
-
+        
         //Update the user's credit count
         $creditUpdate = $this->_addCreditsForSubtitling();
         if(!$creditUpdate){

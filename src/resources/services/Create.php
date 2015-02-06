@@ -25,6 +25,7 @@ require_once 'utils/Config.php';
 require_once 'utils/SessionValidation.php';
 
 require_once 'Exercise.php';
+require_once 'Subtitle.php';
 require_once 'vo/ExerciseVO.php';
 
 require_once 'Zend/Json.php';
@@ -46,6 +47,9 @@ class Create {
 	const LEVEL_UNDEF=0;
 	const LEVEL_PRIMARY=1;
 	const LEVEL_MODEL=2;
+	
+	const EXERCISE_READY=1;
+	const EXERCISE_DRAFT=0;
 	
 	const TYPE_VIDEO='video';
 	const TYPE_AUDIO='audio';
@@ -100,7 +104,6 @@ class Create {
 					//$searchResult->isSubtitled = $searchResult->isSubtitled ? true : false;
 					//$searchResult->avgRating = $exercise->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
 					//$searchResult->descriptors = $exercise->getExerciseDescriptors($searchResult->id);
-					require_once 'Exercise.php';
 					$ex = new Exercise();
 					$url = $ex->getExerciseDefaultThumbnail($searchResult->id);
 					$searchResult->thumbnail = $url;
@@ -149,7 +152,6 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 			
-			require_once 'Exercise.php';
 			$exercise = new Exercise();
 			$exercisedata = $exercise->getExerciseByCode($exercisecode);
 			
@@ -173,7 +175,6 @@ class Create {
 		try{
 			$verifySession = new SessionValidation(true);
 			
-			require_once 'Exercise.php';
 			$exercise = new Exercise();
 			$exercisedata = $exercise->getExerciseByCode($exercisecode);
 			if(!$exercisedata)
@@ -267,7 +268,6 @@ class Create {
 			if(!$result || !isset($result->instanceid)){
 				throw new Exception("No exercise matches the given mediacode");
 			}else{
-				require_once 'Exercise.php';
 				$exercise = new Exercise();
 				$exercisedata = $exercise->getExerciseById($result->instanceid);
 				return $this->getExerciseMedia($exercisedata->exercisecode);
@@ -290,7 +290,6 @@ class Create {
 			$media = $this->conn->_singleSelect($sql,$mediaid);
 			if($media){
 				$exerciseid = $media->instanceid;
-				require_once 'Exercise.php';
 				$e = new Exercise();
 				$exercise = $e->getExerciseById($exerciseid);
 				if(!$exercise)
@@ -320,7 +319,6 @@ class Create {
 			
 			//Retrieve the ID for the given exercise code
 			if(!isset($data->exerciseid)){
-				require_once 'Exercise.php';
 				$e = new Exercise();
 				$exercise = $e->getExerciseByCode($data->exercisecode);
 				if(!$exercise)
@@ -383,6 +381,9 @@ class Create {
 			
 			$mediarendition = $this->conn->_insert($insertr, $mediaid, $filename, $contenthash, $status, $optime, $filesize, $metadata, $dimension);
 			
+			//Set exercise's status to draft
+			$this->changeExerciseStatus($instanceid,self::EXERCISE_DRAFT);
+			
 			//TODO add raw media to asynchronous task processing queue
 			//videoworker->add_task($mediaid);
 			
@@ -410,6 +411,39 @@ class Create {
 		$sql = "SELECT max(`status`) as `status` FROM media_rendition WHERE fk_media_id=%d";
 		$result = $this->conn->_singleSelect($sql, $mediaid);
 		return $result ? $result->status : -1;
+	}
+	
+	public function getExercisePreview($exercisecode){
+		try{
+			if(!$exercisecode)
+				throw new Exception("Invalid parameter",1000);
+			
+			$verifySession = new SessionValidation(true);
+				
+			$exercise = new Exercise();
+			$exercisedata = $exercise->getExerciseByCode($exercisecode);
+			if(!$exercisedata)
+				throw new Exception("Exercise code doesn't exist",1003);
+			
+			if($exercisedata){
+				$status = 2;
+				$level = array(1,2);
+				$media = $exercise->getExerciseMedia($exercisedata->id, $status, $level);
+				if($media){
+					$sub = new Subtitle();
+					foreach($media as $m){
+						$arg = new stdClass();
+						$arg->mediaid = $m->id;
+						$m->subtitles = $sub->getSubtitleLines($arg);
+					}
+					$exercisedata->media = $media;
+				}
+			}
+			return $exercisedata;
+			
+		} catch (Exception $e){
+			throw new Exception($e->getMessage(), $e->getCode());
+		}
 	}
 	
 	/**
@@ -482,10 +516,12 @@ class Create {
 				
 				$exercisecode = $this->str_makerand(11,true,true);
 				
-				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, timecreated, type, situation, competence, lingaspects, fk_user_id) 
-						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, '%s', %d)";
+				$status = self::EXERCISE_DRAFT;
+				
+				$sql = "INSERT INTO exercise (exercisecode, title, description, language, difficulty, timecreated, type, situation, competence, lingaspects, fk_user_id, status) 
+						VALUES ('%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, '%s', %d, %d)";
 				$exerciseid = $this->conn->_insert($sql, $exercisecode, $data->title, $data->description, $data->language, $data->difficulty, 
-													     $optime, $data->type, $data->situation, $data->competence, $data->lingaspects, $_SESSION['uid']);
+													     $optime, $data->type, $data->situation, $data->competence, $data->lingaspects, $_SESSION['uid'], $status);
 				
 				//Insert new exercise descriptors (if any)
 				$exercise->insertDescriptors($parsedDescriptors,$exerciseid);
@@ -499,6 +535,49 @@ class Create {
 			//$this->conn->_failedTransaction();
 			throw new Exception ($e->getMessage());
 		}
+	}
+	
+	/**
+	 * Checks if all the medias that belong to the exercise have at least one 'transcoded/ready' rendition
+	 * and whether each of those medias have 'complete' subtitles
+	 * 
+	 * @param int $exerciseid
+	 */
+	public function checkExerciseItemsStatus($exerciseid){
+		if(!$exerciseid)
+			throw new Exception("Invalid parameter",1000);
+		
+		$updatedstatus = self::EXERCISE_DRAFT;
+		
+		$sql = "SELECT id FROM media WHERE component='exercise' AND instanceid=%d";
+		
+		$exmedia = $this->conn->_multipleSelect($sql,$exerciseid);
+		if($exmedia){
+			$updatedstatus = self::EXERCISE_READY;
+			foreach($exmedia as $em){
+				$substatus = 1;
+				$subsql = "SELECT id FROM subtitle WHERE complete=%d AND fk_media_id=%d LIMIT 1";
+				$subtitled = $this->conn->_singleSelect($subsql,$substatus,$em->id);
+				
+				$encstatus = self::STATUS_READY;
+				$rensql = "SELECT id FROM media_rendition WHERE status=%d AND fk_media_id=%d LIMIT 1";
+				$encoded = $this->conn->_singleSelect($rensql,$encstatus,$em->id);
+				
+				if(!$subtitled || !$encoded)
+					$updatedstatus=self::EXERCISE_DRAFT;
+			}
+		}
+		return $updatedstatus;
+	}
+	
+	private function changeExerciseStatus($exerciseid,$status){
+		if(!$exerciseid)
+			throw new Exception("Invalid parameter",1000);
+		
+		$cstatus = $status ? self::EXERCISE_READY : self::EXERCISE_DRAFT;
+		
+		$update = "UPDATE exercise SET status=%d WHERE id=%d";
+		$this->conn->_update($update,$cstatus,$exerciseid);
 	}
 	
 	/**

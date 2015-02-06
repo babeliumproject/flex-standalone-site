@@ -143,6 +143,7 @@
 					switch(step){
 						case 3:
 							createEdit.viewIndex=CreateEditView.STEP3;
+							new CreateEvent(CreateEvent.GET_EXERCISE_PREVIEW, exercise).dispatch();
 							break;
 						case 2:
 							createEdit.viewIndex=CreateEditView.STEP2;

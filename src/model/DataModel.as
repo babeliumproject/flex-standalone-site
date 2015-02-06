@@ -433,7 +433,7 @@ package model
 		
 		[Bindable]
 		public var exercisePreviewRetrieved:Boolean;
-		public var exercisePreview:ArrayCollection;
+		public var exercisePreview:Object;
 		
 		[Bindable]
 		public var latestCreationsRetrieved:Boolean;

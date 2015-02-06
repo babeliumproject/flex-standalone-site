@@ -12,12 +12,14 @@ package modules.create.event
 		public static const LIST_LATEST_CREATIONS:String = "getLatestCreations";
 		public static const LIST_CREATIONS:String = "listUserCreations";
 		public static const DELETE_SELECTED_CREATIONS:String = "deleteSelectedVideos";
-		public static const SAVE_EXERCISE:String = "modifyVideoData";
+		public static const SET_EXERCISE_DATA:String = "setExerciseData";
 		public static const SAVE_EXERCISE_MEDIA:String = "saveExerciseMedia";
 		public static const LIST_EXERCISE_MEDIA:String = "listExerciseMedia";
 		public static const GET_EXERCISE_MEDIA:String = "getExerciseMedia";
 		public static const SET_DEFAULT_THUMBNAIL:String = "setDefaultThumbnail";
 		public static const DELETE_MEDIA:String = "deleteMedia";
+		public static const GET_EXERCISE_PREVIEW:String = "getExercisePreview";
+		public static const PUBLISH_EXERCISE:String = "publishExercise";
 		
 		public var params:Object;
 		

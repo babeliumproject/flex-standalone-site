@@ -34,6 +34,8 @@ package modules.create.command
 			} else {
 				DataModel.getInstance().exerciseMedia = null;
 			}
+			DataModel.getInstance().enabledCreateSteps = new Array(1,2);
+			DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
 			DataModel.getInstance().exerciseMediaRetrieved = !DataModel.getInstance().exerciseMediaRetrieved;
 		}
 		

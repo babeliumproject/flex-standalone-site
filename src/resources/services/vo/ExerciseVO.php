@@ -32,6 +32,10 @@ class ExerciseVO {
 	public $competence;
 	public $lingaspects;
 	
+	public $licence;
+	public $attribution;
+	public $visible;
+	
 	//score an idIndex are used in SearchModule, see ExerciseVO.as for more information
 	public $score;
 	public $idIndex;

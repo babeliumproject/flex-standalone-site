@@ -90,9 +90,13 @@
 			
 			private var pstatus:Boolean;
 			private var mstatus:Boolean;
+			
 			private var pinfo:Boolean;
 			private var minfo:Boolean;
 
+			private var gstatus:Boolean; //Global status
+			private var canContinue:Boolean;
+			
 			public function resetComponent():void
 			{
 
@@ -106,6 +110,8 @@
 					
 					modelupload.includeInLayout=false;
 					modelupload.visible=false;
+					
+					canContinue = gstatus;
 				}
 				else if (event.currentTarget.selectedValue == "yes")
 				{
@@ -115,7 +121,11 @@
 					
 					modelupload.includeInLayout=true;
 					modelupload.visible=true;
+					
+					canContinue = false;
 				}
+				savebutton.enabled=canContinue;
+				updateStepTabs();
 			}
 			
 			private function saveClickHandler(event:MouseEvent):void{
@@ -130,7 +140,7 @@
 				
 				exercisecode=URLManager.getInstance().parsedParams['id'];
 				
-				pinfo=minfo=pstatus=mstatus=false;
+				pinfo=minfo=pstatus=mstatus=gstatus=canContinue=false;
 				
 				if (media)
 				{
@@ -186,7 +196,9 @@
 					modelmediainfo.includeInLayout=true;
 					modelmediainfo.visible=true;
 					
-					savebutton.enabled = pstatus && mstatus;
+					
+					gstatus = pstatus && mstatus;
+					canContinue = gstatus;
 				}
 				if (pinfo && !minfo)
 				{
@@ -207,7 +219,8 @@
 					chooseModelGroup.includeInLayout=true;
 					chooseModelGroup.visible=true;
 					
-					savebutton.enabled = pstatus && (includeModel.selectedValue == 'no');
+					gstatus = pstatus;
+					canContinue = gstatus && (includeModel.selectedValue == 'no');
 				}
 				if(!pinfo && !minfo){
 					primaryupload.resetComponent();
@@ -235,7 +248,20 @@
 					modelmediainfo.includeInLayout=false;
 					modelmediainfo.visible=false;
 					
-					savebutton.enabled = pstatus;
+					gstatus = pstatus;
+					canContinue = gstatus;
+				}
+				savebutton.enabled=canContinue;
+				updateStepTabs();
+			}
+			
+			private function updateStepTabs():void{
+				if(canContinue){
+					DataModel.getInstance().enabledCreateSteps = new Array(1,2,3);
+					DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
+				} else {
+					DataModel.getInstance().enabledCreateSteps = new Array(1,2);
+					DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
 				}
 			}
 			

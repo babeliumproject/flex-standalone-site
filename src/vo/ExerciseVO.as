@@ -13,7 +13,7 @@ package vo
 		public var difficulty:*;
 		public var timecreated:uint;
 		public var timemodified:uint;
-		public var status:String;
+		public var status:int;
 		public var likes:uint;
 		public var dislikes:uint;
 		
@@ -34,6 +34,10 @@ package vo
 		public var situation:int;
 		public var competence:int;
 		public var lingaspects:int;
+		
+		public var licence:String;
+		public var attribution:String;
+		public var visible:int;
 		
 		public var score:Number; //is used to sort the searches
 		public var idIndex:int; //is used to delete exercises
