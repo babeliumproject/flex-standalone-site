@@ -580,6 +580,29 @@ class Create {
 		$this->conn->_update($update,$cstatus,$exerciseid);
 	}
 	
+	public function publishExercise($data){
+		if(!$data || !isset($data->id) || !isset($data->visible) || !isset($data->licence) || !isset($data->attribution))
+			throw new Exception('Invalid arguments',1000);
+		$exerciseid = $data->id;
+		if(!$exerciseid)
+			throw new Exception('Invalid exercise id',1012);
+		
+		$status = self::EXERCISE_READY;
+		$visible = $data->visible ? 1 : 0;
+		$licence = $data->licence;
+		$attribution = $data->attribution;
+		
+		$sql = "UPDATE exercise SET status=%d, visible=%d, licence='%s', attribution='%s'
+				WHERE id=%d";
+		
+		$rowc = $this->conn->_update($sql,$status,$visible,$licence,$attribution,$exerciseid);
+		
+		if(!$rowc)
+			throw new Exception('Invalid exercise id',1012);
+		
+		return $rowc;
+	}
+	
 	/**
 	 * Retrieves the names of the directories in which different kinds of videos are stored
 	 */

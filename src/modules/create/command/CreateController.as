@@ -20,6 +20,7 @@ package modules.create.command
 			addCommand(CreateEvent.SET_DEFAULT_THUMBNAIL, SetDefaultThumbnail);
 			addCommand(CreateEvent.DELETE_MEDIA, DeleteExerciseMedia);
 			addCommand(CreateEvent.GET_EXERCISE_PREVIEW, GetExercisePreview);
+			addCommand(CreateEvent.PUBLISH_EXERCISE, PublishExercise);
 		}
 	}
 }

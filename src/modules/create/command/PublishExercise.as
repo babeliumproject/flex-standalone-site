@@ -3,6 +3,8 @@ package modules.create.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.URLManager;
+	
 	import model.DataModel;
 	
 	import modules.create.event.CreateEvent;
@@ -25,6 +27,7 @@ package modules.create.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
+			URLManager.getInstance().redirect('/create');
 		}
 		
 		public function fault(info:Object):void

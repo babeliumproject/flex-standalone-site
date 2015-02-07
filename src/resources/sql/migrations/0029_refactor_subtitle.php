@@ -43,6 +43,16 @@ function forwards(){
 			$affected_rows = $DB->_update($sql, $cb64_subtitles, $subtitle_count, $subtitle_id);
 		}
 		
+		$alter1 = "ALTER TABLE `user_videohistory` DROP FOREIGN KEY `FK_user_videohistory_6`;";
+		$DB->_update($alter1);
+		$alter2 = "ALTER TABLE `user_videohistory` 
+				   ADD COLUMN `response_role` VARCHAR(45) NULL DEFAULT NULL AFTER `fk_exercise_role_id`;";
+		$DB->_update($alter2);
+		
+		$sql2 = "UPDATE user_videohistory uv SET uv.response_role=(SELECT er.character_name FROM exercise_role er WHERE er.id=uv.fk_exercise_role_id)
+				 WHERE uv.fk_exercise_role_id IS NOT NULL;";
+		$DB->_update($sql2);
+		
 		$drop1 = "DROP TABLE subtitle_line";
 		$DB->_update($drop1);
 		$drop2 = "DROP TABLE exercise_role";

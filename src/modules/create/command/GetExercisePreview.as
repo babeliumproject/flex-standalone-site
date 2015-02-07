@@ -28,9 +28,9 @@ package modules.create.command
 			var result:Object=data.result;
 
 			_model.exercisePreview=result ? result : null;
-			_model.exercisePreviewRetrieved=!_model.exercisePreviewRetrieved;
-
 			_model.enabledCreateSteps=new Array(1, 2, 3);
+			
+			_model.exercisePreviewRetrieved=!_model.exercisePreviewRetrieved;
 			_model.enabledCreateStepsChanged=!_model.enabledCreateStepsChanged;
 		}
 

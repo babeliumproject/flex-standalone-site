@@ -39,18 +39,20 @@
 			protected var _model:DataModel=DataModel.getInstance();
 
 			public function setEnabledCreateSteps(value:Boolean):void{
-				var enabled:Array = DataModel.getInstance().enabledCreateSteps;
-				enableTabs(createSteps,enabled);
+				var te:Array = DataModel.getInstance().enabledCreateSteps;
+				enableTabs(createSteps,te);
 			}
 			
-			private function enableTabs(tabBar:TabBar, enabled:Array):void{
+			private function enableTabs(tabBar:TabBar, toEnable:Array):void{
 				var dg:DataGroup = tabBar ? tabBar.dataGroup : null;
 				if(dg){
 					var numElements:int = dg.numElements;
+					var t:String = toEnable ? toEnable.join(',') : 'none';
+					trace("TabBar has "+numElements+" tabs. To be enabled: "+t); 
 					var i:int=0;
 					for (i; i<numElements; i++){
 						var element:UIComponent = dg.getElementAt(i) as UIComponent;
-						if(enabled && enabled.indexOf(i+1) !=-1){
+						if(toEnable && (toEnable.indexOf(i+1) !=-1)){
 							element.enabled=true;
 						} else {
 							element.enabled=false;
