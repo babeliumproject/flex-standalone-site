@@ -73,18 +73,7 @@
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
 
-				<s:Graphic height="32"
-						   width="32">
-					<s:Path data="M 41.64446,36.192409 C 34.76647,34.603259 28.36416,33.211689 31.46483,27.355979 40.9029,9.531989 33.96654,-1.049066e-6 24.00012,-1.049066e-6 13.83727,-1.049066e-6 7.0715895,9.897849 16.53541,27.355979 c 3.19363,5.89142 -3.44948,7.28148 -10.1796305,8.83643 -6.87519,1.58822 -6.34638,5.21933 -6.34638,11.80759 H 47.9906 c 0,-6.58837 0.52882,-10.21937 -6.34614,-11.80759 z">
-						<s:stroke>
-							<s:SolidColorStroke weight="2"
-												color="0xcccccc"/>
-						</s:stroke>
-						<s:fill>
-							<s:SolidColor color="0xffffff"/>
-						</s:fill>
-					</s:Path>
-				</s:Graphic>
+				<s:BitmapImage source="resources/images/iconmonstr-user-6-icon-48.png" width="24" height="24"/>
 				<s:HGroup gap="0"
 						  verticalAlign="middle"
 						  height="100%">

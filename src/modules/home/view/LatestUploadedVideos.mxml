@@ -9,10 +9,11 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import modules.home.event.HomepageEvent;
-			//import events.ViewChangeEvent;
+			import flash.utils.getQualifiedClassName;
 			
 			import model.DataModel;
+			
+			import modules.home.event.HomepageEvent;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -46,15 +47,14 @@
 				_dataProvider=siluvDataprovider;
 			}
 
-			protected function latestUploadedVideosDataGroup_changeHandler(event:IndexChangeEvent):void
+			protected function latestUploadedVideosDataGroup_changeHandler(event:Event):void
 			{
-				var obj:ExerciseVO=List(event.target).selectedItem as ExerciseVO;
-				List(event.target).selectedItem = null;
-				URLManager.getInstance().redirect('/exercises/view/'+obj.exercisecode);
+				var item:Object=List(event.target).selectedItem;
+				URLManager.getInstance().redirect('/exercises/view/' + item.exercisecode);
 			}
 			
 			public function resetComponent():void{
-				_dataProvider=null;
+				//_dataProvider=null;
 			}
 		]]>
 	</fx:Script>

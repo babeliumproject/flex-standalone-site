@@ -28,6 +28,7 @@
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
 			
+			import flash.globalization.DateTimeStyle;
 			import flash.utils.getQualifiedClassName;
 			
 			import model.DataModel;
@@ -53,6 +54,8 @@
 			import spark.collections.Sort;
 			import spark.collections.SortField;
 			import spark.globalization.SortingCollator;
+			
+			import utils.ExerciseRenderUtils;
 			
 			import view.common.*;
 			
@@ -225,6 +228,12 @@
 				{
 					_currentExercise=_model.watchExerciseData;
 					_exerciseTitle=_currentExercise.title;
+					
+					//Write the exercise data
+					usernameLbl.text=_currentExercise.userName;
+					difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(_currentExercise.difficulty);
+					timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
+					langBitmap.source=ExerciseRenderUtils.getFlagSource(_currentExercise);
 					
 					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
 					
@@ -502,7 +511,7 @@
 					//Check if this exercise has model media
 					if(_modelMediaData && (_modelMediaData != _currentMediaData)){
 						//Prompt the user if he wants to view the model media
-						CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), 
+						CustomAlert.info(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), 
 											Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, 
 											watchModelPromptCloseHandler, Alert.YES);
 					} else {
@@ -650,13 +659,31 @@
 									   width="640"
 									   height="360"
 									   controlsEnabled="{_exerciseSelected}"/>
+			<s:BorderContainer id="basicinfo"
+							   styleName="lightBorderContainer"
+							   width="{VP.width}">
+				<s:layout>
+					<s:HorizontalLayout verticalAlign="middle" paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8"/>
+				</s:layout>
+				<s:BitmapImage source="/resources/images/iconmonstr-user-6-icon-48.png"
+							   width="48" height="48"/>
+				<s:VGroup width="100%">
+					<s:Label id="usernameLbl" fontWeight="bold"/>
+					<s:Label id="timecreatedLbl" styleName="boldYellowLabel"/>
+				</s:VGroup>
+				<s:BitmapImage id="langBitmap" height="32" width="32"/>
+				<s:Label id="difficultyLbl"
+						 styleName="boldYellowLabel"
+						 fontSize="24"/>
+				
+			</s:BorderContainer>
 
 			<s:VGroup id="guestEditWarningBox"
 					  width="{VP.width}"
 					  paddingTop="5"
 					  paddingBottom="20">
 
-				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')}"
 						 styleName="h5"/>
 
 				<s:HGroup width="100%"
@@ -685,14 +712,14 @@
 									  verticalAlign="middle"/>
 				</s:layout>
 
-				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')? resourceManager.getString('myResources', 'RECORDING_SETTINGS') : 'Recording settings'}"
+				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')}"
 						 styleName="h5"/>
 
 				<s:Line width="100%">
 					<s:stroke>
-						<s:SolidColorStroke weight="{UIComponent(parent).getStyle('borderWeight')}"
-											alpha="{UIComponent(parent).getStyle('borderAlpha')}"
-											color="{UIComponent(parent).getStyle('borderColor')}"/>
+						<s:SolidColorStroke weight="{panelSelectedExercise.getStyle('borderWeight')}"
+											alpha="{panelSelectedExercise.getStyle('borderAlpha')}"
+											color="{panelSelectedExercise.getStyle('borderColor')}"/>
 					</s:stroke>
 				</s:Line>
 

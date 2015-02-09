@@ -19,6 +19,8 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
+			import vo.LicenseVO;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -28,7 +30,15 @@
 			import modules.exercise.event.SearchEvent;
 			
 			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
+			
+			import utils.ExerciseRenderUtils;
+			
+			import view.common.LicenseResource;
 			
 			import vo.ExerciseVO;
 
@@ -45,11 +55,17 @@
 
 			[Bindable]
 			private var _lessAdtInfoStatus:Boolean=false;
+			
+			[Bindable]
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
 
 			public function completeHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
 				exerciseData=_exercise;
+				trace("borderweight: "+ lineStyle.getStyle('borderWeight'));
+				trace("borderalpha: "+ lineStyle.getStyle('borderAlpha'));
+				trace("bordercolor: "+ lineStyle.getStyle('borderColor'));
 			}
 
 			public function set exerciseData(exercise:ExerciseVO):void
@@ -80,6 +96,35 @@
 			{
 	
 				exDescription.htmlText=_exercise.description;
+				
+				var exerciseType:String = ExerciseRenderUtils.getTypeLabel(_exercise.type);
+				
+				exerciseTypeLbl.text=ResourceManager.getInstance().getString('myResources',exerciseType);
+				if(_exercise.type != 0 && _exercise.type!=5){
+					var commSituation:String = ExerciseRenderUtils.getCommunicationSituationLabel(_exercise.situation);
+					var commCompetence:String = ExerciseRenderUtils.getCommunicativeCompetenceLabel(_exercise.competence);
+					var lingAspect:String = ExerciseRenderUtils.getLinguisticAspectLabel(_exercise.lingaspects);
+					if(commSituation){
+						commSituationLbl.text=ResourceManager.getInstance().getString('myResources',commSituation);
+						commSituationRow.includeInLayout=true;
+						commSituationRow.visible=true;
+					}
+					if(commCompetence){
+						commCompetenceLbl.text=ResourceManager.getInstance().getString('myResources',commCompetence);
+						commCompetenceRow.includeInLayout=true;
+						commCompetenceRow.visible=true;
+					}
+					if(lingAspect){
+						lingAspectsLbl.text=ResourceManager.getInstance().getString('myResources',lingAspect);
+						lingAspectsRow.includeInLayout=true;
+						lingAspectsRow.visible=true;
+					}
+				}
+				
+				var lbmp:LicenseVO=LicenseResource.getLicenseData(_exercise.licence);
+				licenceBitmap.source=lbmp.imageResource;
+				
+				attributionLbl.text=_exercise.attribution;
 				additionalInfoBox.visible=false;
 				additionalInfoBox.includeInLayout=false;
 				_lessAdtInfoStatus=false;
@@ -100,26 +145,28 @@
 			}
 			
 			private function addDescriptors():void{
-				removeDescriptors()
+				removeDescriptors();
 				if(_exercise.descriptors && _exercise.descriptors.length){
+					var descriptors:Array = ArrayUtil.toArray(_exercise.descriptors);
 					var sectTitle:Label=new Label();
 					sectTitle.setStyle("fontWeight","bold");
-					sectTitle.setStyle("fontSize",11);
-					sectTitle.text=resourceManager.getString('myResources','DESCRIPTORS');
+					//sectTitle.setStyle("fontSize",11);
+					sectTitle.text=resourceManager.getString('myResources','DESCRIPTORS')+':';
 					ResourceSubscriber.getInstance().subscribeElement(sectTitle, "text", "myResources", 'DESCRIPTORS');
 					
 					descriptorContainer.addElement(sectTitle);
-					for each(var d:String in _exercise.descriptors){
+					var i:int;
+					for (i=0; i<descriptors.length; i++){
 						var dlabel:Button=new Button();
-						dlabel.id=d;
+						dlabel.id=descriptors[i];
 						dlabel.percentWidth=100;
-						dlabel.styleName="commonLinkButton";
+						dlabel.styleName="btn-link";
+						dlabel.buttonMode=true;
 						dlabel.setStyle("fontSize", 11);
-						dlabel.setStyle("fontWeight", "normal");
-						dlabel.label=resourceManager.getString('myResources',d);
-						ResourceSubscriber.getInstance().subscribeElement(dlabel, "label", "myResources", d);
+						dlabel.label=ResourceManager.getInstance().getString('myResources',descriptors[i]);
 						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler);
 						descriptorContainer.addElement(dlabel);
+						ResourceSubscriber.getInstance().subscribeElement(dlabel, "label", "myResources", descriptors[i]);
 					}
 				}
 			}
@@ -136,15 +183,19 @@
 				removeTagLinkButtons();
 				
 				if(_exercise.tags){
+					keywordsRow.includeInLayout=true;
+					keywordsRow.visible=true;
 					_tags = _exercise.tags is Array ? _exercise.tags : (_exercise.tags as String).split(',');
 
-					for each (var tag:String in _tags)
+					var i:int;
+					for (i=0; i<_tags.length; i++)
 					{
 						var linkTag:Button=new Button();
-						linkTag.styleName="commonLinkButton";
+						linkTag.styleName="btn-link";
+						linkTag.buttonMode=true;
 						linkTag.setStyle("fontSize", 11);
 						linkTag.setStyle("fontWeight", "normal");
-						linkTag.label=StringUtil.trim(tag);
+						linkTag.label=StringUtil.trim(_tags[i]);
 						linkTag.addEventListener(MouseEvent.CLICK, tagClickHandler, false, 0, true);
 						exerciseTagsBox.addElement(linkTag);
 					}
@@ -158,6 +209,8 @@
 				if(exerciseTagsBox.numElements > 0)
 					exerciseTagsBox.removeAllElements();
 				_tags=null;
+				keywordsRow.includeInLayout=false;
+				keywordsRow.visible=false;
 			}
 
 			protected function tagClickHandler(event:MouseEvent):void
@@ -184,23 +237,79 @@
 			  width="100%"
 			  height="100%"
 			  horizontalAlign="left"
-			  paddingTop="10"
-			  paddingLeft="5"
-			  paddingRight="5"
-			  paddingBottom="5"
+			  paddingTop="8"
+			  paddingLeft="8"
+			  paddingRight="8"
+			  paddingBottom="8"
 			  visible="false"
 			  includeInLayout="false">
+		<s:Label text="{resourceManager.getString('myResources', 'EXERCISE_DETAILS')}"
+				 styleName="h5"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="1"
+									alpha="{lineStyle.getStyle('borderAlpha')}"
+									color="{lineStyle.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		
 		<mx:Text id="exDescription"
 				 fontSize="11"
-				 width="100%"/>
+				 width="100%"
+				 paddingTop="16"
+				 paddingBottom="16"/>
+		
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="1"
+									alpha="{lineStyle.getStyle('borderAlpha')}"
+									color="{lineStyle.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		
+		<s:HGroup width="100%" paddingTop="16">
+			<s:Label text="{resourceManager.getString('myResources','EXERCISE_TYPE')+':'}"
+					 fontWeight="bold"/>
+			<s:Label id="exerciseTypeLbl"/>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" id="commSituationRow" includeInLayout="false" visible="false">
+			<s:Label text="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')+':'}"
+					 fontWeight="bold"/>
+			<s:Label id="commSituationLbl"/>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" id="commCompetenceRow" includeInLayout="false" visible="false">
+			<s:Label text="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')+':'}"
+					 fontWeight="bold"/>
+			<s:Label id="commCompetenceLbl"/>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" id="lingAspectsRow" includeInLayout="false" visible="false">
+			<s:Label text="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')+':'}"
+					 fontWeight="bold"/>
+			<s:Label id="lingAspectsLbl"/>
+		</s:HGroup>
+				
 		<s:VGroup id="descriptorContainer" minHeight="0"/>
-		<s:Label text="{resourceManager.getString('myResources','KEYWORDS')}"
-				 fontWeight="bold"
-				 fontSize="11"/>
-		<s:TileGroup id="exerciseTagsBox"
-					 width="100%"
-					 horizontalGap="0"
-					 minHeight="0"/>
+		
+		<s:VGroup width="100%" id="keywordsRow" includeInLayout="false" visible="false">
+			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"
+					 fontWeight="bold"/>
+			<s:TileGroup id="exerciseTagsBox"
+						 width="100%"
+						 horizontalGap="0"
+						 minHeight="0"/>
+		</s:VGroup>
+		
+		<s:VGroup id="licenceRow">
+			<s:Label text="{resourceManager.getString('myResources','LICENCE')+':'}"
+					 fontWeight="bold"/>
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:BitmapImage id="licenceBitmap" width="80" height="15"/>
+				<s:Label id="attributionLbl"/>
+			</s:HGroup>
+		</s:VGroup>
 	</s:VGroup>
 
 	<s:VGroup id="saiBox"
