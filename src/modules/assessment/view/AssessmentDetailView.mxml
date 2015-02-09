@@ -55,6 +55,7 @@
 			}
 			
 			protected function submissionAssessmentsHandler(value:Boolean):void{
+				trace("Assessment details: Submission assessment handler");
 				var data:Object=dataModel.responseAssessmentData;
 				if(data){
 					_selectedRole=data.character_name;
@@ -111,6 +112,7 @@
 			}
 			
 			protected function prepareVideoPlayer():void{
+				trace("AssessmentDetail: prepareVideoPlayer");
 				var parallelMedia:Object=new Object();
 				parallelMedia.leftMedia=_leftMedia;
 				parallelMedia.rightMedia=_rightMedia;
@@ -131,7 +133,7 @@
 			
 			protected function assessdetail_creationCompleteHandler(event:FlexEvent):void
 			{
-				removeEventListener(FlexEvent.CREATION_COMPLETE, assessdetail_creationCompleteHandler);
+				//removeEventListener(FlexEvent.CREATION_COMPLETE, assessdetail_creationCompleteHandler);
 				var commitOnly:Boolean = false;
 				var useWeakReference:Boolean = true;
 				BindingUtils.bindSetter(submissionAssessmentsHandler, dataModel, "responseAssessmentDataRetrieved", commitOnly, useWeakReference);

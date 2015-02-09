@@ -5,7 +5,7 @@
 		 xmlns:skins="skins.*"
 		 xmlns:videoUpload="components.videoUpload.*"
 		 xmlns:view="modules.create.view.*"
-		 xmlns:common="view.common.*">
+		 xmlns:common="view.common.*" xmlns:webcamCapture="components.webcamCapture.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -268,7 +268,7 @@
 			</s:HGroup>
 		</s:VGroup>
 
-		<view:WebcamCapture id="recFromWebcamBox"
+		<webcamCapture:WebcamCapture id="recFromWebcamBox"
 							streamsFolder="exercises"
 							filePrefix="upld"
 							includeInLayout="false"

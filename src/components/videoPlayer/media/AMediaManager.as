@@ -87,6 +87,10 @@ package components.videoPlayer.media
 			_id=id;
 		}
 		
+		public function getStreamId():String{
+			return _id;
+		}
+		
 		public function setup(... args):void{
 			
 		}

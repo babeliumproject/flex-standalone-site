@@ -1664,12 +1664,21 @@ package components.videoPlayer
 		}
 		
 		override public function resetComponent():void{
-			super.resetComponent();
+			_autoPlayOverride=true;
 			setInternalState(PLAY_STATE);
+			super.resetComponent();
 			_autoPlayOverride=false;
 			_topLayer.removeChildren();
-			_captionmgr=null;
-			_markermgr=null;
+			if(_captionmgr){
+				_captionmgr.removeEventListener(PollingEvent.ENTER_FRAME, onTimerTick);
+				_captionmgr.removeAllMarkers();
+				_captionmgr=null;
+			}
+			if(_markermgr){
+				_markermgr.removeEventListener(PollingEvent.ENTER_FRAME, onTimerTick);
+				_markermgr.removeAllMarkers();
+				_markermgr=null;
+			}
 		}
 		
 		override protected function resetAppearance():void{

@@ -6,7 +6,7 @@
 						  title="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
 						  autoLayout="true"
 						  creationComplete="onComplete(event)"
-						  xmlns:videoUpload="components.videoUpload.*" xmlns:view="modules.create.view.*">
+						  xmlns:videoUpload="components.videoUpload.*" xmlns:view="modules.create.view.*" xmlns:webcamCapture="components.webcamCapture.*">
 
 	<fx:Metadata>
    		[Event( name="bideoaBatGehitu", type="events.AddVideoEvent") ]
@@ -49,7 +49,7 @@
 	<s:VGroup width="100%"
 			  height="100%"
 			  horizontalAlign="center">
-		<view:WebcamCapture id="videoRecorderPlayer"
+		<webcamCapture:WebcamCapture id="videoRecorderPlayer"
 										streamsFolder="{DataModel.getInstance().evaluationStreamsFolder}"
 										filePrefix="comment"/>
 		<mx:Spacer/>

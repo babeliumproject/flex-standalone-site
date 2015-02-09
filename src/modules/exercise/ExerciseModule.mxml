@@ -95,8 +95,10 @@
 						if (nc.deferredContentCreated)
 						{
 							var v:*=nc.getElementAt(0) as IGroupInterface;
-							if (v)
+							if (v){
 								v.resetGroup();
+								trace("Reset instance: "+getQualifiedClassName(v));
+							}
 						}
 					}
 				}

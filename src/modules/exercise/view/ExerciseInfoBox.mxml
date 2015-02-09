@@ -19,7 +19,7 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import vo.LicenseVO;
+			import spark.components.Button;
 			
 			import control.URLManager;
 			
@@ -41,6 +41,7 @@
 			import view.common.LicenseResource;
 			
 			import vo.ExerciseVO;
+			import vo.LicenseVO;
 
 			private var _creationComplete:Boolean=false;
 
@@ -63,9 +64,6 @@
 			{
 				_creationComplete=true;
 				exerciseData=_exercise;
-				trace("borderweight: "+ lineStyle.getStyle('borderWeight'));
-				trace("borderalpha: "+ lineStyle.getStyle('borderAlpha'));
-				trace("bordercolor: "+ lineStyle.getStyle('borderColor'));
 			}
 
 			public function set exerciseData(exercise:ExerciseVO):void
@@ -94,12 +92,18 @@
 
 			private function updateComponents():void
 			{
-	
 				exDescription.htmlText=_exercise.description;
 				
 				var exerciseType:String = ExerciseRenderUtils.getTypeLabel(_exercise.type);
-				
 				exerciseTypeLbl.text=ResourceManager.getInstance().getString('myResources',exerciseType);
+				
+				commSituationRow.includeInLayout=false;
+				commSituationRow.visible=false;
+				commCompetenceRow.includeInLayout=false;
+				commCompetenceRow.visible=false;
+				lingAspectsRow.includeInLayout=false;
+				lingAspectsRow.visible=false;
+				
 				if(_exercise.type != 0 && _exercise.type!=5){
 					var commSituation:String = ExerciseRenderUtils.getCommunicationSituationLabel(_exercise.situation);
 					var commCompetence:String = ExerciseRenderUtils.getCommunicativeCompetenceLabel(_exercise.competence);
@@ -125,9 +129,9 @@
 				licenceBitmap.source=lbmp.imageResource;
 				
 				attributionLbl.text=_exercise.attribution;
-				additionalInfoBox.visible=false;
-				additionalInfoBox.includeInLayout=false;
-				_lessAdtInfoStatus=false;
+				//additionalInfoBox.visible=false;
+				//additionalInfoBox.includeInLayout=false;
+				//_lessAdtInfoStatus=false;
 				addDescriptors();
 				addTagLinkButtons();
 			}
@@ -137,9 +141,9 @@
 				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
 				{
 					exDescription.htmlText="";
-					additionalInfoBox.visible=false;
-					additionalInfoBox.includeInLayout=false;
-					_lessAdtInfoStatus=false;
+					//additionalInfoBox.visible=false;
+					//additionalInfoBox.includeInLayout=false;
+					//_lessAdtInfoStatus=false;
 					removeTagLinkButtons();
 				}
 			}
@@ -164,7 +168,7 @@
 						dlabel.buttonMode=true;
 						dlabel.setStyle("fontSize", 11);
 						dlabel.label=ResourceManager.getInstance().getString('myResources',descriptors[i]);
-						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler);
+						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler, false, 0, true);
 						descriptorContainer.addElement(dlabel);
 						ResourceSubscriber.getInstance().subscribeElement(dlabel, "label", "myResources", descriptors[i]);
 					}
@@ -240,9 +244,7 @@
 			  paddingTop="8"
 			  paddingLeft="8"
 			  paddingRight="8"
-			  paddingBottom="8"
-			  visible="false"
-			  includeInLayout="false">
+			  paddingBottom="8">
 		<s:Label text="{resourceManager.getString('myResources', 'EXERCISE_DETAILS')}"
 				 styleName="h5"/>
 		<s:Line width="100%">
@@ -291,7 +293,7 @@
 			<s:Label id="lingAspectsLbl"/>
 		</s:HGroup>
 				
-		<s:VGroup id="descriptorContainer" minHeight="0"/>
+		<s:VGroup id="descriptorContainer" minHeight="0" horizontalAlign="left"/>
 		
 		<s:VGroup width="100%" id="keywordsRow" includeInLayout="false" visible="false">
 			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"
@@ -312,6 +314,7 @@
 		</s:VGroup>
 	</s:VGroup>
 
+	<!--
 	<s:VGroup id="saiBox"
 			  width="100%"
 			  horizontalAlign="center"
@@ -330,5 +333,5 @@
 				  skinClass="skins.LessAdtInfoButtonSkin"
 				  click="lessAdtInfoClickHandler(event)"/>
 	</s:VGroup>
-
+	-->
 </s:BorderContainer>

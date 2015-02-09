@@ -36,8 +36,10 @@
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
+			import modules.exercise.event.WatchExerciseCommand;
 			import modules.subtitle.event.SubtitleEvent;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
@@ -45,6 +47,7 @@
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
@@ -126,6 +129,20 @@
 			 **/
 			private function onComplete():void
 			{
+				removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+				
+				var commitOnly:Boolean=false;
+				var useWeakReference:Boolean=true;
+				var host:Object=_model;
+				
+				//Weak reference data bindings
+				BindingUtils.bindSetter(exerciseDataRetrieved,host,'watchExerciseDataRetrieved',commitOnly,useWeakReference);
+				BindingUtils.bindSetter(exerciseSubtitlesRetrieved,host,'availableSubtitleLinesRetrieved',commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onRolesRetrieved,host,'availableExerciseRolesRetrieved',commitOnly,useWeakReference);
+				BindingUtils.bindSetter(recordMediaSlotHandler,host,'recordMediaDataRetrieved',commitOnly,useWeakReference);
+				BindingUtils.bindSetter(responseSuccessfullySavedRetrieved,host,'savedResponseRetrieved',commitOnly,useWeakReference);
+				BindingUtils.bindSetter(onLogout,host,'isLoggedIn',commitOnly,useWeakReference);
+				
 				setupVideoPlayer();
 				setupResponseOptions();
 				if (_exerciseTitle == null)
@@ -140,6 +157,7 @@
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady, false, 0, true);
 				VP.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying, false, 0, true);
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, onRecordingAborted, false, 0, true);
 				VP.addEventListener(RecordingEvent.END, onRecordingEnd, false, 0, true);
 				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted, false, 0, true);
 				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied, false, 0, true);
@@ -160,7 +178,7 @@
 				VP.stopVideo();
 			}
 
-			private function set onRolesRetrieved(value:Boolean):void
+			private function onRolesRetrieved(value:Boolean):void
 			{
 				_roles=null;
 				_characterNames=new ArrayCollection();
@@ -221,7 +239,7 @@
 				_exerciseSelected=false;
 			}
 
-			private function set exerciseDataRetrieved(value:Boolean):void
+			private function exerciseDataRetrieved(value:Boolean):void
 			{
 				var params:Object;
 				if (_model.watchExerciseData)
@@ -289,7 +307,7 @@
 				
 			}
 
-			public function set exerciseSubtitlesRetrieved(value:Boolean):void
+			public function exerciseSubtitlesRetrieved(value:Boolean):void
 			{
 				if (DataModel.getInstance().availableSubtitleLines)
 				{
@@ -351,7 +369,7 @@
 				VP.recordVideo(media, !micOnly.selected, _currentTimeMarkers);
 			}
 
-			protected function set recordMediaSlotHandler(value:Boolean):void
+			protected function recordMediaSlotHandler(value:Boolean):void
 			{
 				_recordMediaData=null;
 				if (_model.recordMediaData)
@@ -503,7 +521,7 @@
 				}
 			}
 			
-			protected function set responseSuccessfullySavedRetrieved(value:Boolean):void{
+			protected function responseSuccessfullySavedRetrieved(value:Boolean):void{
 				if(_model.savedResponseId){
 					
 					VP.resetComponent();
@@ -545,7 +563,7 @@
 				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
 			}
 
-			private function set statisticRecSave(value:Boolean):void
+			private function statisticRecSave(value:Boolean):void
 			{
 				if (DataModel.getInstance().savedResponseId)
 				{
@@ -574,7 +592,7 @@
 
 
 
-			public function set onLogout(value:Boolean):void
+			public function onLogout(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == false)
 				{
@@ -598,6 +616,8 @@
 
 			public function resetGroup():void
 			{
+				VP.resetComponent();
+				
 				//Reset all properties
 				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
 				_exerciseSelected=_exerciseStartedPlaying=_rolesReady=_videoPlayerReady=false;
@@ -609,35 +629,18 @@
 				
 				hideSelectedExercise(); // Information of selected exercise
 				
-				
 				//Remove the current exercise's info
 				ratingShareReport.exerciseData=null;
 				
 				isModelLbl.visible=false;
-				isModelLbl.includeInLayout=false;
-				VP.resetComponent();
+				isModelLbl.includeInLayout=false;	
 			}
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().watchExerciseDataRetrieved}"
-				destination="this.exerciseDataRetrieved"/>
-	<fx:Binding source="{DataModel.getInstance().availableSubtitleLinesRetrieved}"
-				destination="this.exerciseSubtitlesRetrieved"/>
-	<fx:Binding source="{DataModel.getInstance().availableExerciseRolesRetrieved}"
-				destination="this.onRolesRetrieved"/>
-	<fx:Binding source="{_model.recordMediaDataRetrieved}"
-				destination="recordMediaSlotHandler"/>
-
-	<fx:Binding source="{DataModel.getInstance().savedResponseRetrieved}"
-				destination="responseSuccessfullySavedRetrieved"/>
-
-	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
-				destination="onLogout"/>
-
 	<s:Label id="exerciseTitle"
 			 text="{_exerciseTitle}"
-			 width="{VP.width}"
+			 width="640"
 			 styleName="h2"/>
 	<s:Label id="isModelLbl"
 			 text="{ResourceManager.getInstance().getString('myResources','MODEL')}"
@@ -661,7 +664,7 @@
 									   controlsEnabled="{_exerciseSelected}"/>
 			<s:BorderContainer id="basicinfo"
 							   styleName="lightBorderContainer"
-							   width="{VP.width}">
+							   width="640">
 				<s:layout>
 					<s:HorizontalLayout verticalAlign="middle" paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8"/>
 				</s:layout>
@@ -679,7 +682,7 @@
 			</s:BorderContainer>
 
 			<s:VGroup id="guestEditWarningBox"
-					  width="{VP.width}"
+					  width="640"
 					  paddingTop="5"
 					  paddingBottom="20">
 
@@ -703,7 +706,7 @@
 							   includeInLayout="false"
 							   visible="false"
 							   styleName="lightBorderContainer"
-							   width="{VP.width}">
+							   width="640">
 				<s:layout>
 					<s:VerticalLayout paddingTop="8"
 									  paddingLeft="8"
@@ -760,12 +763,9 @@
 			<view:RecordingEndOptions id="recordingEndOptions"
 									  includeInLayout="false"
 									  visible="false"
-									  width="{VP.width}"
+									  width="640"
 									  backgroundAlpha="0"
 									  borderVisible="false"/>
-			
-
-
 		</s:VGroup>
 		<s:VGroup width="100%">
 			<view:ExerciseInfoBox id="ratingShareReport"

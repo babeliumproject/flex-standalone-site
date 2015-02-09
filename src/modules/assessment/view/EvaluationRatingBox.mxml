@@ -10,7 +10,7 @@
 				   backgroundAlpha="0"
 				   xmlns:view="modules.create.view.*"
 				   xmlns:view1="modules.profile.view.*"
-				   xmlns:view2="modules.assessment.view.*">
+				   xmlns:view2="modules.assessment.view.*" xmlns:webcamCapture="components.webcamCapture.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -296,7 +296,7 @@
 								  width="100%"
 								  height="{videoCommentBox.width*0.75}"
 								  horizontalAlign="center">
-							<view:WebcamCapture id="videoComment"
+							<webcamCapture:WebcamCapture id="videoComment"
 												streamsFolder="evaluations"
 												filePrefix="comment"
 												minimumVideoDuration="{DataModel.getInstance().minVideoEvalDuration}"/>

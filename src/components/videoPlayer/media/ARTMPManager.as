@@ -97,11 +97,12 @@ package components.videoPlayer.media
 		{
 			logger.info("[{0}] Unpublish {1}", [_id,_streamUrl]);
 			if(_ns){
+				_ns.close();
 				_ns.attachAudio(null);
 				_ns.attachCamera(null);
+				_nc.close();
 				_camref=null;
 				_micref=null;
-				_ns.close();
 			}
 		}
 		

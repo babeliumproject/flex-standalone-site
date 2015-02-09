@@ -261,6 +261,8 @@ package components.videoPlayer
 			_topLayer.removeChildren();
 			_topLayer.addChild(_errorSprite);		
 			_busyIndicator.visible=false;
+			resetAppearance();
+			freeMediaResources();
 			invalidateDisplayList();
 			dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.ON_ERROR, false, false, 100, evt.message));
 		}
@@ -793,21 +795,24 @@ package components.videoPlayer
 		}
 		
 		protected function freeMedia(media:AMediaManager):void{
+			
 			if(media){
-				media.unpublish();
+				logger.debug("Destroy media: "+media.getStreamId());
 				media.removeEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess);
 				media.removeEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure);
 				media.removeEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange);
 				media.removeEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData);
+				media.unpublish();
 			}
 			media=null;
 		}
 		
 		protected function resetVideo(video:Video):void{
 			if(video){
+				logger.debug("Clear video object");
+				video.clear();
 				video.attachNetStream(null);
 				video.attachCamera(null);
-				video.clear();
 			}
 		}
 	}
