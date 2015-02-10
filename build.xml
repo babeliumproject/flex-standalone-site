@@ -12,12 +12,44 @@
 	
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_ANT_LIB}" classpathref="project.classpath" />
 	
+	<macrodef name="buildmodule">
+		<attribute name="moduleDir"/>
+		<attribute name="dir"/>
+		<attribute name="file"/>
+		<sequential>
+			<echo>@{file}</echo>
+		    <mxmlc file="${APP_ROOT}/@{moduleDir}/@{dir}/@{file}.mxml"
+				   output='${DEPLOY_DIR}/@{moduleDir}/@{dir}/@{file}.swf' 
+				   load-externs="${BASE}/link-report.xml">
+		    	
+		    	<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+		    				
+		    	<define name="CONFIG::restrictedEvaluation" value="${CONFIG_RESTRICTED_EVALUATION}"/>
+		    	<define name="CONFIG::noPracticeUpload" value="${CONFIG_NO_PRACTICE_UPLOAD}"/>
+		    	<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
+		    				
+		    	<compiler.library-path dir="${BASE}" append="true">
+		    			<include name="libs"/>
+		    	</compiler.library-path>
+		    				
+		    	<source-path path-element="${BASE}/src"/>
+		    	<source-path path-element="${BASE}/locale/{locale}"/>
+		    				
+		    	<includes symbol="org.as3commons.logging.setup.target.FirebugTarget"/>
+		    	<includes symbol="org.as3commons.logging.setup.target.TraceTarget"/>
+		    				
+		    	<load-config filename="${MXMLC_CUSTOM_CONFIG_FILE}" />
+			</mxmlc>
+		</sequential>
+	</macrodef>
+	
 	<target name="flex-deploy" depends="flex-compile,flex-copy-html-template,flex-generate-wrapper,flex-copy-video-player-skins"/>
 
 	<target name="flex-compile" description="Compile the main SWF file">
 		<mxmlc file="${APP_ROOT}/Main.mxml" 
 			   output="${DEPLOY_DIR}/Main.swf"
 			   services="${APP_ROOT}/service-config.xml"
+			   link-report="${BASE}/link-report.xml"
 			   locale="${LOCALE_BUNDLES}">
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
@@ -33,8 +65,22 @@
 			<source-path path-element="${BASE}/src"/>
 			<source-path path-element="${BASE}/locale/{locale}"/>
 			
-			<load-config filename="${MXMLC_CUSTOM_CONFIG_FILE}" />
+			<includes symbol="org.as3commons.logging.setup.target.FirebugTarget"/>
+			<includes symbol="org.as3commons.logging.setup.target.TraceTarget"/>
+			
+			<load-config filename="${MXMLC_CUSTOM_CONFIG_FILE}" />	
 		</mxmlc>
+		
+		<buildmodule moduleDir="modules" dir="account" file="AccountModule"/>
+		<buildmodule moduleDir="modules" dir="assessment" file="AssessmentModule"/>
+		<buildmodule moduleDir="modules" dir="create" file="CreateModule"/>
+		<buildmodule moduleDir="modules" dir="error" file="ErrorModule"/>
+		<buildmodule moduleDir="modules" dir="exercise" file="ExerciseModule"/>
+		<buildmodule moduleDir="modules" dir="home" file="HomeModule"/>
+		<buildmodule moduleDir="modules" dir="login" file="LoginModule"/>
+		<buildmodule moduleDir="modules" dir="profile" file="ProfileModule"/>
+		<buildmodule moduleDir="modules" dir="signup" file="SignupModule"/>
+		<buildmodule moduleDir="modules" dir="subtitle" file="SubtitleModule"/>
 	</target>
 
 	<!-- Should check if there's an html-template folder inside our project's root folder an if not copy it -->
@@ -240,8 +286,6 @@
 	    <!-- Delete the dumped file(*.sql) -->
 	    <delete file="${BACKUP_PATH}/${SQL_DB_NAME}_${DAY_TIME_NOW}.sql"/>
 	</target>
-	
-	
 		
 	<!-- ///////////////////////////////////// -->
 	<!-- LEGACY FUNCTIONS USE AT YOUR OWN RISK -->

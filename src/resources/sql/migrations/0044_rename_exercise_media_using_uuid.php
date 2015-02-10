@@ -59,7 +59,7 @@ function forwards(){
                             $notfound=true;
                         }
                         if($notfound){
-                        	$VP->takeFolderedRandomSnapshots($newfullpath,$newposter,$newthumb);
+                        	$VP->takeFolderedRandomSnapshots($newfullpath,$newthumb,$newposter);
                         }
                     }
                 }
