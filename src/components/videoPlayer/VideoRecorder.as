@@ -85,9 +85,9 @@ package components.videoPlayer
 		 * XXXX XXX1: split video panel into 2 views
 		 * XXXX XX1X: recording modes
 		 */
-		public static const PLAY_STATE:int=0;        // 0000 0000
-		public static const PLAY_PARALLEL_STATE:int=1;   // 0000 0001
-		public static const RECORD_MIC_STATE:int=2;  // 0000 0010
+		public static const PLAY_STATE:int=0; // 0000 0000
+		public static const PLAY_PARALLEL_STATE:int=1; // 0000 0001
+		public static const RECORD_MIC_STATE:int=2; // 0000 0010
 		public static const RECORD_MICANDCAM_STATE:int=3; // 0000 0011
 		public static const UPLOAD_MODE_STATE:int=4; // 0000 0100
 
@@ -99,7 +99,7 @@ package components.videoPlayer
 
 		protected const COUNTDOWN_TIMER_SECS:int=5;
 		protected const TIMELINE_TIMER_DELAY:int=50; // Delay in ms.
-		 
+
 		//The meaning of the gain is as follows:
 		//0 silences the input audio. 50 is normal input (1x boost). 100 is boosted input (2x boost)
 		protected const DEFAULT_MIC_GAIN:int=70;
@@ -109,7 +109,7 @@ package components.videoPlayer
 		protected var _recordMediaNetConnectionUrl:String;
 		protected var _recordMediaReady:Boolean;
 		protected var _recordUseWebcam:Boolean;
-		
+
 		protected var _parallelMedia:AMediaManager;
 		protected var _parallelMediaUrl:String;
 		protected var _parallelMediaNetConnectionUrl:String;
@@ -117,7 +117,7 @@ package components.videoPlayer
 		protected var _parallelMediaPlaying:Boolean;
 
 		private var _camVideo:Video;
-		private var _blackPixelsBetweenVideos:uint = 0;
+		private var _blackPixelsBetweenVideos:uint=0;
 		private var _lastVideoHeight:Number=0;
 
 		private var _mic:Microphone;
@@ -131,25 +131,25 @@ package components.videoPlayer
 		private var _captionText:String;
 		private var _captionColor:int;
 		private var _captionsLoaded:Boolean=false;
-		
+
 		private var _markermgr:TimelineEventDispatcher;
-		
+
 		private var _timeMarkers:Object;
 		private var _pollTimeline:Boolean=false;
-		
+
 		private var _countdown:Timer;
 		private var _countdownTxt:Text;
 
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
-		
+
 		protected var _parallelMuted:Boolean=false;
 		protected var _parallelLastVolume:Number;
 		protected var _parallelCurrentVolume:Number;
 		protected var _micSilenced:Boolean;
 		protected var _micCurrentGain:Number;
 		protected var _micLastGain:Number;
-	
+
 		private var _displayCaptions:Boolean=false;
 		private var _displayEventArrows:Boolean=false;
 
@@ -172,7 +172,7 @@ package components.videoPlayer
 			super("VideoRecorder"); // Required for setup skinable component
 
 			_captionmgr=new CaptionManager();
-			
+
 			_subtitleButton=new SubtitleButton();
 			_playerControls.addChild(_subtitleButton);
 
@@ -207,25 +207,25 @@ package components.videoPlayer
 
 			_micImage=new Image();
 
-			_micImage.source = "/resources/images/player_mic_watermark.png";
-			_micImage.height = 128;
-			_micImage.width = 128;
-			_micImage.alpha = 0.7;
-			_micImage.autoLoad = true;
-			_micImage.visible = false;
-	
+			_micImage.source="/resources/images/player_mic_watermark.png";
+			_micImage.height=128;
+			_micImage.width=128;
+			_micImage.alpha=0.7;
+			_micImage.autoLoad=true;
+			_micImage.visible=false;
+
 			_subtitleStartEnd=new SubtitleStartEndButton();
 			_subtitleStartEnd.visible=false;
-			
+
 			_playerControls.addChild(_subtitleStartEnd);
 
 			_micActivityBar=new MicActivityBar();
 			_micActivityBar.visible=false;
-			
+
 			_micCurrentGain=DEFAULT_MIC_GAIN;
 			_parallelCurrentVolume=DEFAULT_VOLUME;
 			_parallelLastVolume=DEFAULT_VOLUME;
-			
+
 			_overlayButton=new Button();
 			_overlayButton.setStyle("skinClass", OverlayPlayButtonSkin);
 			_overlayButton.width=128;
@@ -241,17 +241,17 @@ package components.videoPlayer
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.START, onSubtitlingEvent);
 			_subtitleStartEnd.addEventListener(SubtitlingEvent.END, onSubtitlingEvent);
 			//_recStopBtn.addEventListener(RecStopButtonEvent.CLICK, onRecStopEvent);
-			
+
 			/**
 			 * Adds components to player
 			 */
 			removeChild(_playerControls);
 			removeChild(_topLayer);
-			removeChild(_busyIndicator);// order
-			
+			removeChild(_busyIndicator); // order
+
 			addChild(_micActivityBar);
 			addChild(_arrowContainer);
-			
+
 			addChild(_micImage);
 			addChild(_camVideo);
 
@@ -276,65 +276,79 @@ package components.videoPlayer
 
 		public function setCaptions(captions:Object, cinstance:Object=null):void
 		{
-			if(_captionmgr) {
+			if (_captionmgr)
+			{
 				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer);
 				_captionmgr.removeAllMarkers();
 				_captionmgr.reset();
 			}
-			if(!captions) return;
-			
-			if(!_captionmgr) 
-				_captionmgr = new CaptionManager();
-			
-			_captionsLoaded = _captionmgr.parseCaptions(captions, this, cinstance);
-			
-			if(_captionsLoaded){
+			if (!captions)
+				return;
+
+			if (!_captionmgr)
+				_captionmgr=new CaptionManager();
+
+			_captionsLoaded=_captionmgr.parseCaptions(captions, this, cinstance);
+
+			if (_captionsLoaded)
+			{
 				_subtitleButton.enabled=true;
-			} else {
+			}
+			else
+			{
 				logger.debug("Captions could not be parsed");
 			}
-			
-			if(_displayCaptions){
+
+			if (_displayCaptions)
+			{
 				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
 				pollTimeline=true;
 			}
 		}
-		
-		public function setTimeMarkers(markers:Array):void{
-			if(!_markermgr)
-				_markermgr = new TimelineEventDispatcher();
+
+		public function setTimeMarkers(markers:Array):void
+		{
+			if (!_markermgr)
+				_markermgr=new TimelineEventDispatcher();
 			_markermgr.removeAllMarkers();
 			_markermgr.addMarkers(markers);
 		}
-		
-		public function showCaption(args:Object):void{
-			if(args){
+
+		public function showCaption(args:Object):void
+		{
+			if (args)
+			{
 				_captionText=String(args.text);
 				_captionColor=int(args.color);
 				_subtitleBox.setText(_captionText, _captionColor);
 			}
 		}
-		
-		public function hideCaption(args:Object=null):void{
+
+		public function hideCaption(args:Object=null):void
+		{
 			_subtitleBox.setText(null);
 		}
 
 		public function set displayCaptions(value:Boolean):void
 		{
-			if(_displayCaptions == value) return;
-			
+			if (_displayCaptions == value)
+				return;
+
 			_displayCaptions=value;
 			_subtitlePanel.visible=_displayCaptions;
 			_subtitleButton.selected=_displayCaptions;
-			
-			if(_displayCaptions){
+
+			if (_displayCaptions)
+			{
 				addEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer, false, 0, true);
 				pollTimeline=true;
-			} else {
+			}
+			else
+			{
 				removeEventListener(PollingEvent.ENTER_FRAME, _captionmgr.onIntervalTimer);
 				pollTimeline=false;
 			}
-			
+
 			invalidateDisplayList();
 		}
 
@@ -342,33 +356,42 @@ package components.videoPlayer
 		{
 			return _displayCaptions;
 		}
-		
-		public function set pollTimeline(value:Boolean):void{
-			if(_pollTimeline == value) return;
-			
-			_pollTimeline = value;
-			
-			if(_pollTimeline){
-				if(!_ttimer){
+
+		public function set pollTimeline(value:Boolean):void
+		{
+			if (_pollTimeline == value)
+				return;
+
+			_pollTimeline=value;
+
+			if (_pollTimeline)
+			{
+				if (!_ttimer)
+				{
 					_ttimer=new Timer(TIMELINE_TIMER_DELAY, 0);
 				}
 				_ttimer.addEventListener(TimerEvent.TIMER, onTimerTick, false, 0, true);
 				_ttimer.start();
-			} else {
-				if(_ttimer){
+			}
+			else
+			{
+				if (_ttimer)
+				{
 					_ttimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
 					_ttimer.reset();
 				}
 			}
 		}
-		
-		public function get pollTimeline():Boolean{
+
+		public function get pollTimeline():Boolean
+		{
 			return _pollTimeline;
 		}
-		
+
 		private function onTimerTick(e:TimerEvent):void
 		{
-			if (streamReady(_media)){
+			if (streamReady(_media))
+			{
 				this.dispatchEvent(new PollingEvent(PollingEvent.ENTER_FRAME, _media.currentTime));
 			}
 			//if (streamReady(_recNsc)){
@@ -386,8 +409,9 @@ package components.videoPlayer
 		 */
 		public function setArrows(timemetadata:Object):void
 		{
-			if(!timemetadata || !_duration) return;
-			
+			if (!timemetadata || !_duration)
+				return;
+
 			_arrowPanel.setArrows(timemetadata, _duration);
 			_sBar.setMarks(timemetadata, _duration);
 		}
@@ -406,13 +430,16 @@ package components.videoPlayer
 			{
 				_displayEventArrows=value;
 				_arrowContainer.visible=_displayEventArrows;
-			} else {
+			}
+			else
+			{
 				_arrowContainer.visible=false;
 			}
 			invalidateDisplayList();
 		}
-		
-		protected function get displayEventArrows():Boolean{
+
+		protected function get displayEventArrows():Boolean
+		{
 			return _displayEventArrows;
 		}
 
@@ -432,14 +459,14 @@ package components.videoPlayer
 		public function set subtitlingControls(flag:Boolean):void
 		{
 			_subtitleStartEnd.visible=flag;
-			this.updateDisplayList(0,0); //repaint component
+			this.updateDisplayList(0, 0); //repaint component
 		}
 
 		public function get subtitlingControls():Boolean
 		{
 			return _subtitlingControls.visible;
 		}
-		
+
 		/**
 		 * Autoplay
 		 */
@@ -448,19 +475,22 @@ package components.videoPlayer
 			super.autoPlay=tf;
 			tf ? _overlayButton.visible=false : _overlayButton.visible=true;
 		}
-		
-		protected function getInternalState():int{
+
+		protected function getInternalState():int
+		{
 			return _state;
 		}
-		
-		protected function setInternalState(state:int):void{
-			if(_state == state) return;
-			
+
+		protected function setInternalState(state:int):void
+		{
+			if (_state == state)
+				return;
+
 			_state=state;
-			
+
 			//Changes the layout of the items in the video display area
 			switchPerspective();
-			
+
 			//dispatchEvent(new VideoRecorderEvent(VideoRecorderEvent.RECORDER_STATE_CHANGED,_state));
 		}
 
@@ -492,34 +522,42 @@ package components.videoPlayer
 		override protected function onPPBtnChanged(e:Event):void
 		{
 			super.onPPBtnChanged(e);
-			if(_overlayButton.visible)
+			if (_overlayButton.visible)
 				_overlayButton.visible=false;
 		}
-		
-		public function getMicGain():void{
+
+		public function getMicGain():void
+		{
 			_micCurrentGain;
 		}
-		
-		public function setMicGain():void{
-			
+
+		public function setMicGain():void
+		{
+
 		}
-		
+
 		public function muteRecording(value:Boolean):void
 		{
 			_parallelMuted=value;
-			
-			if(_state & RECORD_MODE_MASK){
+
+			if (_state & RECORD_MODE_MASK)
+			{
 				var newGain:Number;
-				if(value){
+				if (value)
+				{
 					_micLastGain=_micCurrentGain;
 					newGain=0;
-				} else{
+				}
+				else
+				{
 					newGain=_micLastGain;
 				}
-				
-				if(_mic) _mic.gain = newGain;
-			} 
-			else if (_state == PLAY_PARALLEL_STATE){
+
+				if (_mic)
+					_mic.gain=newGain;
+			}
+			else if (_state == PLAY_PARALLEL_STATE)
+			{
 				var newVolume:Number;
 				if (value)
 				{
@@ -531,7 +569,8 @@ package components.videoPlayer
 				{
 					newVolume=_parallelLastVolume;
 				}
-				if (_parallelMedia) _parallelMedia.volume=newVolume;
+				if (_parallelMedia)
+					_parallelMedia.volume=newVolume;
 			}
 		}
 
@@ -575,7 +614,7 @@ package components.videoPlayer
 			_arrowContainer.x=_defaultMargin;
 
 			var matr:Matrix=new Matrix();
-			matr.createGradientBox(_arrowContainer.height, _arrowContainer.height, 270*Math.PI/180, 0, 0);
+			matr.createGradientBox(_arrowContainer.height, _arrowContainer.height, 270 * Math.PI / 180, 0, 0);
 
 			var colors:Array=[0xffffff, 0xd8d8d8];
 			var alphas:Array=[1, 1];
@@ -600,13 +639,13 @@ package components.videoPlayer
 
 			// Put subtitle box at top
 			_subtitlePanel.width=_playerControls.width;
-			_subtitlePanel.height=_videoHeight*0.75;
+			_subtitlePanel.height=_videoHeight * 0.75;
 			_subtitlePanel.x=_defaultMargin;
 			/*
 			 * Subtitle panel
 			 */
 			var y2:Number=_arrowContainer.visible ? _arrowContainer.height : 0;
-			var y3:Number=_micActivityBar.visible ? _micActivityBar.height: 0;
+			var y3:Number=_micActivityBar.visible ? _micActivityBar.height : 0;
 
 			_playerControls.y+=y3 + y2;
 
@@ -617,7 +656,7 @@ package components.videoPlayer
 
 
 			_subtitleBox.y=0;
-			_subtitleBox.resize(_videoWidth, _videoHeight*0.75);
+			_subtitleBox.resize(_videoWidth, _videoHeight * 0.75);
 
 			// Resize arrowPanel
 			_arrowPanel.resize(_sBar.width, _arrowContainer.height - 8);
@@ -641,14 +680,14 @@ package components.videoPlayer
 			_overlayButton.height=_videoHeight;
 
 
-			if(_subtitleStartEnd.visible)
+			if (_subtitleStartEnd.visible)
 			{
 				_ppBtn.x=0;
 				_ppBtn.refresh();
 
 				//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
 				//_recStopBtn.refresh();
-				
+
 				//_subtitleStartEnd.x = _recStopBtn.x + _recStopBtn.width;
 				_stopBtn.x=_ppBtn.x + _ppBtn.width;
 				_stopBtn.refresh();
@@ -668,7 +707,7 @@ package components.videoPlayer
 
 				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
 				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
-				
+
 				_eTime.x=_sBar.x + _sBar.width;
 				_audioSlider.x=_eTime.x + _eTime.width;
 
@@ -684,7 +723,7 @@ package components.videoPlayer
 				_sBar.x=_stopBtn.x + _stopBtn.width;
 				//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
 				//_recStopBtn.refresh();
-				
+
 				//_sBar.x=_recStopBtn.x + _recStopBtn.width;
 				_sBar.refresh();
 
@@ -697,7 +736,7 @@ package components.videoPlayer
 
 				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
 				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
-				
+
 				_eTime.x=_sBar.x + _sBar.width;
 				_audioSlider.x=_eTime.x + _eTime.width;
 
@@ -725,8 +764,8 @@ package components.videoPlayer
 			_bg.graphics.beginFill(getSkinColor(BG_COLOR));
 			_bg.graphics.drawRect(0, 0, width, height);
 			_bg.graphics.endFill();
-			
-			_errorSprite.updateDisplayList(width,height);
+
+			_errorSprite.updateDisplayList(width, height);
 		}
 
 		/**
@@ -735,18 +774,22 @@ package components.videoPlayer
 		 */
 		override public function playVideo():void
 		{
-			if(_state == PLAY_PARALLEL_STATE){
+			if (_state == PLAY_PARALLEL_STATE)
+			{
 				playVideoParallel();
-			} else {
+			}
+			else
+			{
 				super.playVideo();
 			}
 		}
-		
-		protected function playVideoParallel():void{
-			var lState:int = _media ? _media.streamState : -1;
-			var rState:int = _parallelMedia ? _parallelMedia.streamState : -1;
-			
-			switch(lState)
+
+		protected function playVideoParallel():void
+		{
+			var lState:int=_media ? _media.streamState : -1;
+			var rState:int=_parallelMedia ? _parallelMedia.streamState : -1;
+
+			switch (lState)
 			{
 				case AMediaManager.STREAM_UNINITIALIZED:
 				{
@@ -788,10 +831,12 @@ package components.videoPlayer
 				}
 			}
 		}
-		
-		override public function seekTo(seconds:Number):void{
+
+		override public function seekTo(seconds:Number):void
+		{
 			super.seekTo(seconds);
-			if(_state==PLAY_PARALLEL_STATE){
+			if (_state == PLAY_PARALLEL_STATE)
+			{
 				_parallelMedia.seek(seconds);
 			}
 		}
@@ -804,26 +849,28 @@ package components.videoPlayer
 		override public function pauseVideo():void
 		{
 			//This won't work, exit right away
-			if (_state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled)
+			{
 				return;
-				
-				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
-				//	return;
-				//if (streamReady(_recordMedia) && (_recordMedia.streamState == AMediaManager.STREAM_STARTED || _recordMedia.streamState == AMediaManager.STREAM_BUFFERING))
-				//	_recordMedia.netStream.togglePause();
+
+					//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
+					//	return;
+					//if (streamReady(_recordMedia) && (_recordMedia.streamState == AMediaManager.STREAM_STARTED || _recordMedia.streamState == AMediaManager.STREAM_BUFFERING))
+					//	_recordMedia.netStream.togglePause();
 			}
-			
-			if (_state == PLAY_PARALLEL_STATE){
+
+			if (_state == PLAY_PARALLEL_STATE)
+			{
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
 				if (streamReady(_parallelMedia) && (_parallelMedia.streamState == AMediaManager.STREAM_STARTED || _parallelMedia.streamState == AMediaManager.STREAM_BUFFERING))
 					_parallelMedia.netStream.togglePause();
 			}
-			
+
 			super.pauseVideo();
 
 			if (_roleTalkingPanel.talking)
-				_roleTalkingPanel.pauseTalk();			
+				_roleTalkingPanel.pauseTalk();
 		}
 
 		/**
@@ -834,29 +881,32 @@ package components.videoPlayer
 		override public function resumeVideo():void
 		{
 			//This won't work, exit right away
-			if (_state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled)
+			{
 				return;
-				
-				//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
-				//	return;
-				//if (streamReady(_recordMedia) && _recordMedia.streamState == AMediaManager.STREAM_PAUSED){
-				//	_recordMedia.netStream.togglePause();
-				//}
+
+					//if (_recordMedia.streamState == AMediaManager.STREAM_SEEKING_START)
+					//	return;
+					//if (streamReady(_recordMedia) && _recordMedia.streamState == AMediaManager.STREAM_PAUSED){
+					//	_recordMedia.netStream.togglePause();
+					//}
 			}
 
-			if (_state == PLAY_PARALLEL_STATE){
+			if (_state == PLAY_PARALLEL_STATE)
+			{
 				if (_parallelMedia.streamState == AMediaManager.STREAM_SEEKING_START)
 					return;
-				if (streamReady(_parallelMedia) && _parallelMedia.streamState == AMediaManager.STREAM_PAUSED){
+				if (streamReady(_parallelMedia) && _parallelMedia.streamState == AMediaManager.STREAM_PAUSED)
+				{
 					_parallelMedia.netStream.togglePause();
 				}
 			}
-			
+
 			super.resumeVideo();
-			
+
 			if (_roleTalkingPanel.talking)
 				_roleTalkingPanel.resumeTalk();
-			
+
 		}
 
 		/**
@@ -868,7 +918,8 @@ package components.videoPlayer
 		{
 			super.stopVideo();
 
-			if (_state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled)
+			{
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.stop();
@@ -884,7 +935,7 @@ package components.videoPlayer
 					_camVideo.clear();
 				}
 			}
-			
+
 			if (_roleTalkingPanel.talking)
 				_roleTalkingPanel.stopTalk();
 
@@ -895,20 +946,22 @@ package components.videoPlayer
 		{
 			super.endVideo();
 
-			if (_state & RECORD_MODE_MASK && _micCamEnabled){
+			if (_state & RECORD_MODE_MASK && _micCamEnabled)
+			{
 				if (streamReady(_recordMedia))
 				{
 					_recordMedia.netStream.close(); //Cleans the cache of the video
-					_recordMedia = null;
+					_recordMedia=null;
 					_recordMediaReady=false;
 				}
 			}
-			
+
 			if (_state == PLAY_PARALLEL_STATE)
 			{
-				if (streamReady(_parallelMedia)){
+				if (streamReady(_parallelMedia))
+				{
 					_parallelMedia.netStream.close(); //Cleans the cache of the video
-					_parallelMedia = null;
+					_parallelMedia=null;
 					_parallelMediaReady=false;
 				}
 			}
@@ -1008,7 +1061,7 @@ package components.videoPlayer
 				case UPLOAD_MODE_STATE:
 				{
 					resetVideoDisplay();
-					scaleCamVideo(_videoWidth,_videoHeight,false);
+					scaleCamVideo(_videoWidth, _videoHeight, false);
 					break;
 				}
 				case PLAY_PARALLEL_STATE:
@@ -1024,21 +1077,24 @@ package components.videoPlayer
 			}
 			invalidateDisplayList();
 		}
-		
-		protected function playLayout():void{
+
+		protected function playLayout():void
+		{
 			resetAppearance();
 			freeMedia(_recordMedia);
 			freeMedia(_parallelMedia);
 			_autoPlayOverride=false;
 			enableControls();
 		}
-		
-		protected function playParallelLayout():void{
-			
+
+		protected function playParallelLayout():void
+		{
+
 		}
-		
-		protected function recordParallelLayout():void{
-			
+
+		protected function recordParallelLayout():void
+		{
+
 		}
 
 		// Prepare countdown timer
@@ -1070,9 +1126,10 @@ package components.videoPlayer
 
 				startRecording();
 			}
-			else if (_state != PLAY_STATE){
+			else if (_state != PLAY_STATE)
+			{
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
-				logger.debug("Countdown timer visible: {0}. Countdown number: {1}, textColor: {2}", [_countdownTxt.visible,_countdownTxt.text, _countdownTxt.getStyle('color')]);
+				logger.debug("Countdown timer visible: {0}. Countdown number: {1}, textColor: {2}", [_countdownTxt.visible, _countdownTxt.text, _countdownTxt.getStyle('color')]);
 			}
 		}
 
@@ -1081,14 +1138,14 @@ package components.videoPlayer
 		{
 			_camera=null;
 			_mic=null;
-			_userdevmgr = new UserDeviceManager();
-			_userdevmgr.useMicAndCamera= _recordUseWebcam;
+			_userdevmgr=new UserDeviceManager();
+			_userdevmgr.useMicAndCamera=_recordUseWebcam;
 			_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
 			_userdevmgr.initDevices();
 		}
 
 		private function configureDevices():void
-		{	
+		{
 			_micCamEnabled=_userdevmgr.deviceAccessGranted;
 			if (_recordUseWebcam)
 			{
@@ -1099,12 +1156,12 @@ package components.videoPlayer
 			_mic.setUseEchoSuppression(true);
 			_mic.setSilenceLevel(0, 60000000);
 			_micActivityBar.mic=_mic;
-			
+
 			//_camVideo.width=_userdevmgr.defaultCameraWidth;
 			//_camVideo.height=_userdevmgr.defaultCameraHeight;
 			_camVideo.attachCamera(_camera);
 			_camVideo.smoothing=true;
-			
+
 			_video.visible=false;
 			_camVideo.visible=false;
 			_micImage.visible=false;
@@ -1114,34 +1171,44 @@ package components.videoPlayer
 			startCountdown();
 		}
 
-		private function deviceStateHandler(event:UserDeviceEvent):void{
-			var devstate:int = event.state;
-			if(!_privUnlock){
-				if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
+		private function deviceStateHandler(event:UserDeviceEvent):void
+		{
+			var devstate:int=event.state;
+			if (!_privUnlock)
+			{
+				if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED)
+				{
 					configureDevices();
-				} else {
-					var appwindow:DisplayObjectContainer = FlexGlobals.topLevelApplication.parent;
+				}
+				else
+				{
+					var appwindow:DisplayObjectContainer=FlexGlobals.topLevelApplication.parent;
 					var modal:Boolean=true;
 					_privUnlock=new PrivacyRights();
-					_privUnlock.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
+					_privUnlock.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0, true);
 					_privUnlock.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
 					_privUnlock.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
 					_privUnlock.displayState(devstate);
 					PopUpManager.addPopUp(_privUnlock, appwindow, modal);
 					PopUpManager.centerPopUp(_privUnlock);
-					if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+					if (devstate == UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED)
+					{
 						_userdevmgr.showPrivacySettings();
 					}
 				}
-			} else {
+			}
+			else
+			{
 				_privUnlock.displayState(devstate);
-				if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+				if (devstate == UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED)
+				{
 					_userdevmgr.showPrivacySettings();
 				}
 			}
 		}
-		
-		private function privacyAcceptHandler(event:Event):void{
+
+		private function privacyAcceptHandler(event:Event):void
+		{
 			PopUpManager.removePopUp(_privUnlock);
 			_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
 			_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
@@ -1150,12 +1217,14 @@ package components.videoPlayer
 			_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
 			configureDevices();
 		}
-		
-		private function privacyRetryHandler(event:Event):void{
+
+		private function privacyRetryHandler(event:Event):void
+		{
 			_userdevmgr.initDevices();
 		}
-		
-		private function privacyCancelHandler(event:Event):void{
+
+		private function privacyCancelHandler(event:Event):void
+		{
 			PopUpManager.removePopUp(_privUnlock);
 			_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
 			_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
@@ -1172,7 +1241,7 @@ package components.videoPlayer
 			seek=false;
 
 			disableControls();
-			
+
 			_micActivityBar.visible=true;
 			_micActivityBar.mic=_mic;
 		}
@@ -1211,13 +1280,13 @@ package components.videoPlayer
 				return;
 
 			var w:Number=_videoWidth / 2 - _blackPixelsBetweenVideos;
-			var h:int=Math.ceil(w * 0.75);//_video.height / _video.width);
+			var h:int=Math.ceil(w * 0.75); //_video.height / _video.width);
 
 			if (_videoHeight != h) // cause we can call twice to this method
 				_lastVideoHeight=_videoHeight; // store last value
 
 			_videoHeight=h;
-			
+
 			var scaleY:Number=h / _video.height;
 			var scaleX:Number=w / _video.width;
 			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
@@ -1231,7 +1300,7 @@ package components.videoPlayer
 			_video.height*=scaleC;
 
 			//Resize the cam display
-			scaleCamVideo(w,h);
+			scaleCamVideo(w, h);
 
 			updateDisplayList(0, 0); // repaint
 
@@ -1255,9 +1324,9 @@ package components.videoPlayer
 			_micActivityBar.visible=false;
 		}
 
-		private function scaleCamVideo(w:Number, h:Number,split:Boolean=true):void
+		private function scaleCamVideo(w:Number, h:Number, split:Boolean=true):void
 		{
-		
+
 			var scaleY:Number=h / DataModel.getInstance().cameraHeight;
 			var scaleX:Number=w / DataModel.getInstance().cameraWidth;
 			var scaleC:Number=scaleX < scaleY ? scaleX : scaleY;
@@ -1265,21 +1334,24 @@ package components.videoPlayer
 			_camVideo.width=DataModel.getInstance().cameraWidth * scaleC;
 			_camVideo.height=DataModel.getInstance().cameraHeight * scaleC;
 
-			if(split){
+			if (split)
+			{
 				_camVideo.y=Math.floor(h / 2 - _camVideo.height / 2);
 				_camVideo.x=Math.floor(w / 2 - _camVideo.width / 2);
 				_camVideo.y+=_defaultMargin;
 				_camVideo.x+=(w + _defaultMargin);
-			} else {
+			}
+			else
+			{
 				_camVideo.y=_defaultMargin + 2;
 				_camVideo.height-=4;
 				_camVideo.x=_defaultMargin + 2;
 				_camVideo.width-=4;
 			}
 
-			
-			_micImage.y=(_videoHeight - _micImage.height)/2;
-			_micImage.x=_videoWidth - _micImage.width - (_camVideo.width - _micImage.width)/2;
+
+			_micImage.y=(_videoHeight - _micImage.height) / 2;
+			_micImage.x=_videoWidth - _micImage.width - (_camVideo.width - _micImage.width) / 2;
 		}
 
 		override protected function scaleVideo():void
@@ -1308,61 +1380,41 @@ package components.videoPlayer
 				_video.height*=scaleC;
 			}
 		}
-		
-		public function unattachUserDevices():void{
-			if(_recordMedia){
-				_recordMedia.unpublish();
+
+		public function unattachUserDevices():void
+		{
+			if (_recordMedia)
+			{
 				_recordMedia.removeEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess);
 				_recordMedia.removeEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure);
 				_recordMedia.removeEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange);
 				_recordMedia.removeEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData);
+				_recordMedia.unpublish();
 			}
-			
+
 			_camVideo.attachNetStream(null);
 			_camVideo.attachCamera(null);
 			_camVideo.clear();
-			
+
 			_camera=null;
 			_mic=null;
-			_recordMedia = null;
+			_recordMedia=null;
 		}
 
 		/**
-		 * PLAY_BOTH related commands
-		 **/
-		private function playSecondStream():void
-		{
-			_camVideo.clear();
-			_camVideo.attachNetStream(_parallelMedia.netStream);
-			_camVideo.visible=true;
-			_micImage.visible=true;
-
-			_parallelMedia.volume=_currentVolume;
-			_parallelMedia.play();
-
-				// Needed for video mute
-				muteRecording(false);
-				muteRecording(true);
-
-				if (_media != null)
-				{
-					//_ns.resume();
-					_media.play();
-				}
-				_ppBtn.state=PlayButton.PAUSE_STATE;
-		}
-		
-		/**
-		 * The overriden loadVideoByUrl accepts parallel media loading 
+		 * The overriden loadVideoByUrl accepts parallel media loading
 		 * @param param
-		 */		
-		override public function loadVideoByUrl(param:Object, timemarkers:Object=null):void{
+		 */
+		override public function loadVideoByUrl(param:Object, timemarkers:Object=null):void
+		{
 			unattachUserDevices();
 			hideCaption();
-			if(!param) return;
-			if(getQualifiedClassName(param) == 'Object')
+			if (!param)
+				return;
+			if (getQualifiedClassName(param) == 'Object')
 			{
-				if(param.leftMedia){
+				if (param.leftMedia)
+				{
 					var lmedia:Object=parseMediaObject(param.leftMedia);
 					logger.debug(ObjectUtil.toString(lmedia));
 					_mediaNetConnectionUrl=lmedia.netConnectionUrl;
@@ -1370,33 +1422,43 @@ package components.videoPlayer
 					_mediaPosterUrl=lmedia.mediaPosterUrl;
 
 					var rmedia:Object;
-					if(param.rightMedia){
+					if (param.rightMedia)
+					{
 						rmedia=parseMediaObject((param.rightMedia as Object));
 					}
-					if(lmedia && rmedia){
+					if (lmedia && rmedia)
+					{
 						setInternalState(PLAY_PARALLEL_STATE);
 						_parallelMediaNetConnectionUrl=rmedia.netConnectionUrl;
 						_parallelMediaUrl=rmedia.mediaUrl;
 						loadParallelVideo();
-					} else if(lmedia){
+					}
+					else if (lmedia)
+					{
 						setInternalState(PLAY_STATE);
 						loadVideo();
 					}
-				} else if (param.recordMedia){
+				}
+				else if (param.recordMedia)
+				{
 					var recmedia:Object=parseMediaObject(param.recordMedia);
 					var playmedia:Object;
-					if(param.playbackMedia){
+					if (param.playbackMedia)
+					{
 						playmedia=parseMediaObject(param.playbackMedia);
 					}
-					if(recmedia && playmedia){
-						
+					if (recmedia && playmedia)
+					{
+
 						_recordMediaNetConnectionUrl=recmedia.netConnectionUrl;
 						_recordMediaUrl=recmedia.mediaUrl;
 						_mediaNetConnectionUrl=playmedia.netConnectionUrl;
 						_mediaUrl=playmedia.mediaUrl;
 						_mediaPosterUrl=playmedia.mediaPosterUrl;
 						setInternalState(_recordUseWebcam ? RECORD_MICANDCAM_STATE : RECORD_MIC_STATE);
-					} else if (recmedia){
+					}
+					else if (recmedia)
+					{
 						_mediaNetConnectionUrl=null;
 						_mediaUrl=null;
 						_mediaPosterUrl=null;
@@ -1404,7 +1466,9 @@ package components.videoPlayer
 						_recordMediaUrl=recmedia.mediaUrl;
 					}
 					loadRecordVideo();
-				} else {
+				}
+				else
+				{
 					var media:Object=parseMediaObject(param);
 					_mediaNetConnectionUrl=media.netConnectionUrl;
 					_mediaUrl=media.mediaUrl;
@@ -1415,47 +1479,56 @@ package components.videoPlayer
 			}
 			prepareTimeMarkers(timemarkers);
 		}
-		
-		protected function loadParallelVideo():void{
+
+		protected function loadParallelVideo():void
+		{
 			_mediaReady=false;
 			_parallelMediaReady=false;
-			logger.info("Load parallel videos: {0}, {1}",[_mediaNetConnectionUrl+'/'+_mediaUrl, _parallelMediaNetConnectionUrl+'/'+_parallelMediaUrl]); 
+			logger.info("Load parallel videos: {0}, {1}", [_mediaNetConnectionUrl + '/' + _mediaUrl, _parallelMediaNetConnectionUrl + '/' + _parallelMediaUrl]);
 			if (_mediaUrl != '')
 			{
 				_busyIndicator.visible=true;
 				resetAppearance();
-				
-				if(!autoPlay){
-					if(_mediaPosterUrl){
-						_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
+
+				if (!autoPlay)
+				{
+					if (_mediaPosterUrl)
+					{
+						_posterSprite=new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
 						_topLayer.addChild(_posterSprite);
 					}
 				}
-				
+
 				//Close the streams and free the their resources
-				if(_media) _media.dispose();
-				if(_parallelMedia) _parallelMedia.dispose();
+				freeMedia(_media);
+				freeMedia(_parallelMedia);
 				_media=null;
 				_parallelMedia=null;
-				
-				if(_mediaNetConnectionUrl){
+
+				if (_mediaNetConnectionUrl)
+				{
 					_media=new ARTMPManager("leftStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_media.setup(_mediaNetConnectionUrl, _mediaUrl);
-				} else {
+				}
+				else
+				{
 					_media=new AVideoManager("leftStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_media.setup(_mediaUrl);
 				}
-				
-				if(_parallelMediaNetConnectionUrl){
+
+				if (_parallelMediaNetConnectionUrl)
+				{
 					_parallelMedia=new ARTMPManager("rightStream");
 					_parallelMedia.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_parallelMedia.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_parallelMedia.setup(_parallelMediaNetConnectionUrl, _parallelMediaUrl);
-				} else {
+				}
+				else
+				{
 					_parallelMedia=new AVideoManager("rightStream");
 					_parallelMedia.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_parallelMedia.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
@@ -1463,136 +1536,168 @@ package components.videoPlayer
 				}
 			}
 		}
-		
-		public function loadRecordVideo():void{
+
+		public function loadRecordVideo():void
+		{
 			_mediaReady=false;
 			_recordMediaReady=false;
-			
+
 			_busyIndicator.visible=true;
 			resetAppearance();
-				
-			if(!autoPlay){
-				if(_mediaPosterUrl){
-					_posterSprite = new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
+
+			if (!autoPlay)
+			{
+				if (_mediaPosterUrl)
+				{
+					_posterSprite=new BitmapSprite(_mediaPosterUrl, _lastWidth, _lastHeight);
 					_topLayer.addChild(_posterSprite);
 				}
 			}
-				
+
 			//Close the streams and free their resources
-			if(_media) _media.dispose();
-			if(_recordMedia) _recordMedia.dispose();
-			if(_parallelMedia) _parallelMedia.dispose();
+			freeMediaResources();
 			_media=null;
 			_recordMedia=null;
 			_parallelMedia=null;
-			
-			if(_mediaUrl != ''){
-				if(_mediaNetConnectionUrl){
+
+			if (_mediaUrl != '')
+			{
+				if (_mediaNetConnectionUrl)
+				{
 					_media=new ARTMPManager("playStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_media.setup(_mediaNetConnectionUrl, _mediaUrl);
-				} else {
+				}
+				else
+				{
 					_media=new AVideoManager("playStream");
 					_media.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_media.setup(_mediaUrl);
 				}
 			}
-			if(_recordMediaUrl !=''){
-				if(_recordMediaNetConnectionUrl){
+			if (_recordMediaUrl != '')
+			{
+				if (_recordMediaNetConnectionUrl)
+				{
 					_recordMedia=new ARTMPManager("recordStream");
 					_recordMedia.addEventListener(MediaStatusEvent.STREAM_SUCCESS, onStreamSuccess, false, 0, true);
 					_recordMedia.addEventListener(MediaStatusEvent.STREAM_FAILURE, onStreamFailure, false, 0, true);
 					_recordMedia.setup(_recordMediaNetConnectionUrl, _recordMediaUrl);
-				} else {
+				}
+				else
+				{
 					//To record media a netconnectionurl is a must, if not provided
 					logger.debug("NetConnectionUrl for record media not provided. Can't record.");
-					//onStreamFailure();
+						//onStreamFailure();
 				}
 			}
 		}
-		
-		private function prepareTimeMarkers(timemarkers:Object):void{
-			if(_markermgr){
+
+		private function prepareTimeMarkers(timemarkers:Object):void
+		{
+			if (_markermgr)
+			{
 				removeEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer);
 			}
 			//Set the timeline event markers
-			if(timemarkers){
-				_timeMarkers = timemarkers;
-				var parsedTimeMarkers:Array = TimeMetadataParser.parseRoleMarkers(timemarkers, this);
-				if(parsedTimeMarkers){
+			if (timemarkers)
+			{
+				_timeMarkers=timemarkers;
+				var parsedTimeMarkers:Array=TimeMetadataParser.parseRoleMarkers(timemarkers, this);
+				if (parsedTimeMarkers)
+				{
 					//Add a listener to poll for event points
 					setTimeMarkers(parsedTimeMarkers);
 					addEventListener(PollingEvent.ENTER_FRAME, _markermgr.onIntervalTimer, false, 0, true);
 					//Enable the timeline timer
 					pollTimeline=true;
-				} else {
+				}
+				else
+				{
 					logger.debug("No valid time markers found in given data");
 				}
-			} else {
-				_timeMarkers = null;
+			}
+			else
+			{
+				_timeMarkers=null;
 				trace("Time marker data is null");
 			}
 		}
-		
-		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void{
-			_recordUseWebcam = useWebcam;
-			
+
+		public function recordVideo(media:Object, useWebcam:Boolean, timemarkers:Object):void
+		{
+			_recordUseWebcam=useWebcam;
+
 			//Override autoPlay to avoid loading until the rest is done.
 			_autoPlayOverride=true;
 			_videoPlaying=false;
-			
-			if(media){
+
+			if (media)
+			{
 				//Load the exercise to play alongside the recording, if any
 				loadVideoByUrl(media, timemarkers);
 				//Remove the exercise poster, we don't need it when about to record something
 				_topLayer.removeChildren();
 			}
 		}
-		
-		override protected function onStreamSuccess(event:Event):void{
-			var mobj:Object = event.currentTarget;
-			
+
+		override protected function onStreamSuccess(event:Event):void
+		{
+			var mobj:Object=event.currentTarget;
+
 			//Deep equality of Object checks if both objects have the same memref
-			if(mobj === _media){
+			if (mobj === _media)
+			{
 				_mediaReady=true;
 			}
-			if(mobj === _parallelMedia){
+			if (mobj === _parallelMedia)
+			{
 				_parallelMediaReady=true;
 			}
-			if(mobj === _recordMedia){
+			if (mobj === _recordMedia)
+			{
 				_recordMediaReady=true;
 			}
-			
+
 			//State belongs to the recording state group
-			if(_state & RECORD_MODE_MASK) 
+			if (_state & RECORD_MODE_MASK)
 			{
-				if(_mediaReady && _recordMediaReady){
+				if (_mediaReady && _recordMediaReady)
+				{
 					_video.attachNetStream(_media.netStream);
 					_media.volume=_currentVolume;
 					_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
-				
+
 					_recordMedia.volume=_currentVolume;
 					_recordMedia.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
-					
+
 					prepareDevices();
 				}
-			} 
+			}
 			else if (_state != PLAY_STATE)
 			{
-				if(_parallelMediaReady && _mediaReady){
+				if (_parallelMediaReady && _mediaReady)
+				{
 					_video.attachNetStream(_media.netStream);
 					_video.visible=true;
 					_media.volume=_currentVolume;
 					_media.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
 					_media.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
-					
+
 					_camVideo.attachNetStream(_parallelMedia.netStream);
 					_camVideo.visible=true;
 					_micImage.visible=true;
 					_parallelMedia.volume=_currentVolume;
+
+					if (_timeMarkers)
+					{
+						//If the parallel play has timemarkers start with a muted right stream
+						muteRecording(true);
+					}
+
 					_parallelMedia.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
 					_parallelMedia.addEventListener(MediaStatusEvent.STATE_CHANGED, onStreamStateChange, false, 0, true);
 					if (autoPlay || _forcePlay)
@@ -1601,16 +1706,23 @@ package components.videoPlayer
 						_forcePlay=false;
 					}
 				}
-			} else {
+			}
+			else
+			{
 				super.onStreamSuccess(event);
 			}
 		}
-		
-		override protected function startVideo():void{
-			if(_state == PLAY_STATE || _state & RECORD_MODE_MASK){
+
+		override protected function startVideo():void
+		{
+			if (_state == PLAY_STATE || _state & RECORD_MODE_MASK)
+			{
 				super.startVideo();
-			} else {
-				if(!(_state & RECORD_MODE_MASK)){
+			}
+			else
+			{
+				if (!(_state & RECORD_MODE_MASK))
+				{
 					if (!_parallelMediaReady)
 						return;
 					try
@@ -1621,67 +1733,88 @@ package components.videoPlayer
 					catch (e:Error)
 					{
 						_parallelMediaReady=false;
-						//logger.error("Error while loading video. [{0}] {1}", [e.errorID, e.message]);
+							//logger.error("Error while loading video. [{0}] {1}", [e.errorID, e.message]);
 					}
 				}
 			}
 		}
-		
-		override public function onMetaData(event:MediaStatusEvent):void{
+
+		override public function onMetaData(event:MediaStatusEvent):void
+		{
 			super.onMetaData(event);
-			
+
 			//The duration of the media is required to set the arrows and the scrubber marks
-			if(_timeMarkers){
+			if (_timeMarkers)
+			{
 				setArrows(_timeMarkers);
 				displayEventArrows=true;
 			}
 		}
-		
-		override protected function onStreamStateChange(event:MediaStatusEvent):void{
-			var streamId:String=event.streamid;
-			if(event.state == AMediaManager.STREAM_SEEKING_START || event.state == AMediaManager.STREAM_READY){
-				if(_captionmgr) _captionmgr.reset();
-				if(_markermgr) _markermgr.reset();
-			}
-			if(event.state == AMediaManager.STREAM_FINISHED){
-				if(_captionmgr) _captionmgr.reset();
-				if(_markermgr) _markermgr.reset();
-				_camVideo.clear();
-				hideCaption();
-				if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
+
+		override protected function onStreamStateChange(event:MediaStatusEvent):void
+		{
+			var mobj:Object=event.currentTarget;
+
+			//Deep equality of Object checks if both objects have the same memref
+			if (mobj === _media)
+			{
+				if (event.state == AMediaManager.STREAM_SEEKING_START || event.state == AMediaManager.STREAM_READY)
 				{
-					_recordMedia.unpublish();
-					_autoPlayOverride=false;
-					logger.info("Stream recording finished: {0}",[_recordMediaUrl]);
-					
-					dispatchEvent(new RecordingEvent(RecordingEvent.END, _recordMediaUrl));
-					enableControls(); 
+					if (_captionmgr)
+						_captionmgr.reset();
+					if (_markermgr)
+						_markermgr.reset();
 				}
-				else
-					dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
+				if (event.state == AMediaManager.STREAM_FINISHED)
+				{
+					if (_captionmgr){
+						_captionmgr.reset();
+					}
+					if (_markermgr){
+						_markermgr.reset();
+					}
+					_camVideo.clear();
+					hideCaption();
+					if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
+					{
+						//Stop the media, remove the listeners, close the NetConnection and set to null
+						freeMedia(_recordMedia);
+						_autoPlayOverride=false;
+						logger.info("Stream recording finished: {0}", [_recordMediaUrl]);
+
+						dispatchEvent(new RecordingEvent(RecordingEvent.END, _recordMediaUrl));
+						enableControls();
+					}
+					else
+						dispatchEvent(new RecordingEvent(RecordingEvent.REPLAY_END));
+				}
+				super.onStreamStateChange(event);
 			}
-			super.onStreamStateChange(event);
 		}
-		
-		override public function resetComponent():void{
+
+		override public function resetComponent():void
+		{
 			_autoPlayOverride=true;
 			setInternalState(PLAY_STATE);
 			super.resetComponent();
 			_autoPlayOverride=false;
 			_topLayer.removeChildren();
-			if(_captionmgr){
+			if (_captionmgr)
+			{
 				_captionmgr.removeEventListener(PollingEvent.ENTER_FRAME, onTimerTick);
 				_captionmgr.removeAllMarkers();
 				_captionmgr=null;
 			}
-			if(_markermgr){
+			if (_markermgr)
+			{
 				_markermgr.removeEventListener(PollingEvent.ENTER_FRAME, onTimerTick);
 				_markermgr.removeAllMarkers();
 				_markermgr=null;
 			}
 		}
-		
-		override protected function resetAppearance():void{
+
+		override protected function resetAppearance():void
+		{
 			super.resetAppearance();
 			resetVideo(_camVideo);
 			resetVideoDisplay();
@@ -1691,7 +1824,7 @@ package components.videoPlayer
 			removeArrows();
 			displayEventArrows=false;
 		}
-		
+
 		override protected function freeMediaResources():void
 		{
 			super.freeMediaResources();

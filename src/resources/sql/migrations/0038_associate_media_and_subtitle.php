@@ -11,7 +11,7 @@ function forwards(){
 	$DB->_update($update);
 	
 	$drop = "ALTER TABLE `subtitle` DROP FOREIGN KEY `FK_exercise_subtitle_1`;
-			 ALTER TABLE `babeliumlms`.`subtitle` DROP COLUMN `fk_exercise_id`, DROP INDEX `FK_exercise_subtitle_1` ;";
+			 ALTER TABLE `subtitle` DROP COLUMN `fk_exercise_id`, DROP INDEX `FK_exercise_subtitle_1` ;";
 	$DB->_update($drop);
 	
 	$fkconst = "ALTER TABLE `subtitle` ADD INDEX `fk_subtitle_media_idx` (`fk_media_id` ASC);

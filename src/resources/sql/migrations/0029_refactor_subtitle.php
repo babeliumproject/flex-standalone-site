@@ -7,8 +7,9 @@ function forwards(){
 	
 		//Add two columns
 		$sql =	"ALTER TABLE `subtitle`
-		ADD COLUMN `serialized_subtitles` longtext NOT NULL,
-		ADD COLUMN `subtitle_count` int(10) unsigned NOT NULL";
+		ADD COLUMN `timecreated` INT NOT NULL DEFAULT '0' AFTER `adding_date`
+		ADD COLUMN `serialized_subtitles` longtext NOT NULL AFTER `complete`,
+		ADD COLUMN `subtitle_count` int(10) unsigned NOT NULL AFTER `serialized_subtitles";
 		$DB->_update($sql);
 	
 		//Data migration

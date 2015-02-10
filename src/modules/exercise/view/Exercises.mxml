@@ -129,7 +129,7 @@
 			 **/
 			private function onComplete():void
 			{
-				removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+				//removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 				
 				var commitOnly:Boolean=false;
 				var useWeakReference:Boolean=true;
@@ -157,7 +157,7 @@
 			{
 				VP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady, false, 0, true);
 				VP.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying, false, 0, true);
-				VP.addEventListener(VideoPlayerEvent.ON_ERROR, onRecordingAborted, false, 0, true);
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, onVideoPlayerError, false, 0, true);
 				VP.addEventListener(RecordingEvent.END, onRecordingEnd, false, 0, true);
 				VP.addEventListener(RecordingEvent.ABORTED, onRecordingAborted, false, 0, true);
 				VP.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied, false, 0, true);
@@ -411,6 +411,10 @@
 			private function onRecordingAborted(e:RecordingEvent):void
 			{
 				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
+				recordingError();
+			}
+			
+			private function onVideoPlayerError(event:VideoPlayerEvent):void{
 				recordingError();
 			}
 

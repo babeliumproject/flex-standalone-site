@@ -41,7 +41,7 @@ function forwards(){
 		unset($line);
 		$er_sql = substr($er_sql,0,-1);
 		$merge = array_merge((array)$er_sql, $params);
-		print_r($merge);
+		//print_r($merge);
 		$DB->_insert($merge);
 	}
 	

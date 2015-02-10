@@ -1,7 +1,7 @@
 <?php
 		
 function forwards(){
-    global $DB,$CFG;
+    global $DB,$CFG,$VP;
 
     $wwwroot = $CFG->webRootPath;
     $mediaroot = $CFG->red5Path;
@@ -23,6 +23,7 @@ function forwards(){
                 foreach($mediarenditions as $mr){
                     $mediastatus = $mr->status;
                     if($mediastatus == 2){
+                    	$notfound=false;
                         $mediafullpath = $mediaroot .'/exercises/'.$mr->filename;
                         if (is_file($mediafullpath)){
                             //Rename media file
@@ -40,20 +41,25 @@ function forwards(){
                         }
                         //Rename thumbnail & poster folder
                         $thumbfulldir = $wwwroot.'/resources/images/thumbs/'.$mediacode;
+                        $newthumb = $wwwroot.'/resources/images/thumbs/'.$newmediacode;
                         if(is_dir($thumbfulldir)){
-                            $newthumb = $wwwroot.'/resources/images/thumbs/'.$newmediacode;
                             if(!rename($thumbfulldir,$newthumb))
                                 print("Can't rename from: $thumbfulldir to $newthumb\n");
                         } else {
                             print("[$mediaid] Media's thumbs folder not found in: $thumbfulldir\n");
+                            $notfound=true;
                         }
                         $posterfulldir =  $wwwroot.'/resources/images/posters/'.$mediacode;
+                        $newposter = $wwwroot.'/resources/images/posters/'.$newmediacode;
                         if(is_dir($posterfulldir)){
-                            $newposter = $wwwroot.'/resources/images/posters/'.$newmediacode;
                             if(!rename($posterfulldir,$newposter))
                                 print("Can't rename from: $posterfulldir to $newposter\n");
                         } else {
                             print("[$mediaid] Media's poster folder not found in: $posterfulldir\n");
+                            $notfound=true;
+                        }
+                        if($notfound){
+                        	$VP->takeFolderedRandomSnapshots($newfullpath,$newposter,$newthumb);
                         }
                     }
                 }

@@ -382,13 +382,13 @@ class Evaluation {
 		if(!$response)
 			throw new Exception("Response id does not exist",1006);
 		
-		require_once 'Exercise.php';
-		$exservice = new Exercise();
+		//require_once 'Exercise.php';
+		//$exservice = new Exercise();
+		
 		$status = 2; //Available media
-		$level = isset($response->level) ? $response->level : 1; //By default get the primary media
-		$exmedia = $exservice->getExerciseMedia($response->fk_exercise_id,$status,$level);
-		if($exmedia && count($exmedia)==1){
-			$response->leftMedia = $exmedia[0];
+		$exmedia = $this->getMediaById($response->fk_media_id,$status);
+		if($exmedia){
+			$response->leftMedia = $exmedia;
 			
 			$rightMedia = new stdClass();
 			$rightMedia->netConnectionUrl = $this->cfg->streamingserver;
@@ -398,6 +398,36 @@ class Evaluation {
 		}
 		
 		return isset($response->leftMedia) ? $response : null;
+	}
+	
+	protected function getMediaById($mediaid,$status){
+		if(!$mediaid)
+			throw new Exception("Invalid parameters",1000);
+		
+		$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
+				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+				WHERE m.id=%d";
+		 
+		if(is_array($status)){
+			if(count($status)>1){
+				$sparam = implode(",",$status);
+				$sql.=" AND mr.status IN (%s) ";
+			} else {
+				$sparam = $status[0];
+				$sql.=" AND mr.status=%d ";
+			}
+		} else {
+			$sparam=$status;
+			$sql.=" AND mr.status=%d ";
+		}
+		$sql .= " LIMIT 1";
+		 
+		$result = $this->conn->_singleSelect($sql, $mediaid, $sparam);
+		if($result){
+			$result->netConnectionUrl = $this->cfg->streamingserver;
+			$result->mediaUrl = 'exercises/'.$result->filename;
+		}
+		return $result;
 	}
 
 	/**
