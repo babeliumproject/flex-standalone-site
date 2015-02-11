@@ -39,14 +39,11 @@
 			import utils.ExerciseRenderUtils;
 			
 			import view.common.LicenseResource;
-			
-			import vo.ExerciseVO;
-			import vo.LicenseVO;
 
 			private var _creationComplete:Boolean=false;
 
 			[Bindable]
-			private var _exercise:ExerciseVO=null;
+			private var _exercise:Object=null;
 
 			[Bindable]
 			private var _tags:Array;
@@ -66,7 +63,7 @@
 				exerciseData=_exercise;
 			}
 
-			public function set exerciseData(exercise:ExerciseVO):void
+			public function set exerciseData(exercise:Object):void
 			{
 				_exercise=exercise;
 				if (_creationComplete)
@@ -85,7 +82,7 @@
 				}
 			}
 
-			public function get exerciseData():ExerciseVO
+			public function get exerciseData():Object
 			{
 				return _exercise;
 			}
@@ -125,7 +122,7 @@
 					}
 				}
 				
-				var lbmp:LicenseVO=LicenseResource.getLicenseData(_exercise.licence);
+				var lbmp:Object=Object(LicenseResource.getLicenseData(_exercise.licence));
 				licenceBitmap.source=lbmp.imageResource;
 				
 				attributionLbl.text=_exercise.attribution;

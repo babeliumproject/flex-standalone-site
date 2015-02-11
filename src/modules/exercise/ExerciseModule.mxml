@@ -28,7 +28,6 @@
 			import modules.exercise.view.Exercises;
 			
 			import mx.binding.utils.BindingUtils;
-			import mx.binding.utils.ChangeWatcher;
 			import mx.core.IVisualElement;
 			import mx.core.IVisualElementContainer;
 			import mx.events.FlexEvent;
@@ -40,9 +39,7 @@
 
 			public var modulename:String='exercises';
 
-			[Bindable]
-			private var viewstackIndex:uint;
-
+			private var viewstackIndex:uint=0;
 			public static const INDEX:uint=0;
 			public static const VIEW:uint=1;
 
@@ -50,10 +47,7 @@
 			private var _initialUrl:Event;
 			private var _moduleController:*;
 			
-			[Bindable]
 			private var _urlmanager:URLManager=URLManager.getInstance();
-			
-			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
 			
 			public function getModuleName():String
@@ -97,7 +91,6 @@
 							var v:*=nc.getElementAt(0) as IGroupInterface;
 							if (v){
 								v.resetGroup();
-								trace("Reset instance: "+getQualifiedClassName(v));
 							}
 						}
 					}
@@ -110,6 +103,7 @@
 					var ex:ExerciseVO=new ExerciseVO();
 					ex.exercisecode=parameters['id'];
 					viewstackIndex=VIEW;
+					moduleViewstack.selectedIndex=viewstackIndex;
 					new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, ex).dispatch();
 				} else {
 					_urlmanager.redirect('/exercises');
@@ -128,6 +122,7 @@
 					exerciseIndex.searchTerm=parameters.hasOwnProperty('q') ? parameters.q : null;
 				}
 				viewstackIndex=INDEX;
+				moduleViewstack.selectedIndex=viewstackIndex;
 				new ExerciseEvent(ExerciseEvent.GET_RECORDABLE_EXERCISES, parameters).dispatch();
 			}
 
@@ -182,7 +177,6 @@
 	</fx:Script>
 
 	<mx:ViewStack id="moduleViewstack"
-				  selectedIndex="{ viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
 				  height="100%">

@@ -2,9 +2,6 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
-				xmlns:hulstkamp="com.hulstkamp.*"
-				creationComplete="completeHandler()"
-				dataChange="dataChangeHandler()"
 				xmlns:skins="skins.*"
 				buttonMode="true">
 
@@ -26,7 +23,7 @@
 					  source="{data.thumbnail}"
 					  width="180"
 					  height="135"/>
-			<s:TextInput text="{_timeFormatter.format(data.duration)}"
+			<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
 						 styleName="videoDurationLabel"
 						 x="148"
 						 y="0"
@@ -49,12 +46,10 @@
 					  width="100%">
 				<s:HGroup width="100%"
 						  verticalAlign="middle">
-					<mx:Image width="16"
-							  height="16"
-							  toolTip="{exerciseLanguage.source}"
-							  source="{getFlagSource(data as ExerciseVO)}"
+					<s:BitmapImage width="16" height="16"
+							  source="{ExerciseRenderUtils.getFlagSource(data)}"
 							  id="exerciseLanguage"/>
-					<s:Label text="{getLevelCorrespondence(data.difficulty)}"
+					<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
 							 styleName="boldYellowLabel"/>
 				</s:HGroup>
 				<s:Label text="{data.userName}"
@@ -78,90 +73,12 @@
 
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.utils.StringUtil;
 			
-			import control.URLManager;
+			import flash.globalization.DateTimeStyle;
+			import utils.ExerciseRenderUtils;
 			
-			import model.DataModel;
-			
-			import modules.exercise.event.ExerciseEvent;
-			import modules.exercise.event.SearchEvent;
-			import modules.subtitle.event.SubtitleEvent;
-			
-			import mx.controls.LinkButton;
-			import mx.controls.Text;
-			import mx.formatters.NumberBaseRoundType;
-			import mx.formatters.NumberFormatter;
-			import mx.formatters.SwitchSymbolFormatter;
-			
-			import view.common.IconComboBox;
-			import view.common.LicenseResource;
-			import view.common.TimeFormatter;
-			
-			import vo.ExerciseRoleVO;
-			import vo.ExerciseVO;
-			import vo.LicenseVO;
-			import vo.SubtitleAndSubtitleLinesVO;
-
 			private const MAX_DESCRIPTION_CHARS:int=120;
 
-			[Bindable]
-			private var _data:Object;
-
-			private var _creationComplete:Boolean=false;
-
-			[Bindable]
-			private var _licenseData:LicenseVO=new LicenseVO();
-
-			[Bindable]
-			private var _timeFormatter:TimeFormatter=new TimeFormatter();
-
-			public function completeHandler():void
-			{
-				_data=data;
-				_creationComplete=true;
-			}
-
-			public function dataChangeHandler():void
-			{
-
-				//setupReferenceComponent();
-			}
-
-			public function getLevelCorrespondence(avgDifficulty:Number):String
-			{
-				var numFormat:NumberFormatter=new NumberFormatter();
-				numFormat.precision=0;
-				numFormat.rounding=NumberBaseRoundType.NEAREST;
-				var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
-				switch (roundedAvgDifficulty)
-				{
-					case 1:
-						return 'A1';
-						break;
-					case 2:
-						return 'A2';
-						break;
-					case 3:
-						return 'B1';
-						break;
-					case 4:
-						return 'B2';
-						break;
-					case 5:
-						return 'C1';
-						break;
-					default:
-						return '';
-						break;
-				}
-			}
-
-			public function getFlagSource(temp:ExerciseVO):Class
-			{
-				var dm:DataModel=DataModel.getInstance();
-				return dm.localesAndFlags.getCountryFlagClass(temp.language);
-			}
 		]]>
 	</fx:Script>
 

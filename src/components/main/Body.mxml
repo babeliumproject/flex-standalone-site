@@ -47,12 +47,14 @@
 				if(event.module == _currentModule) return;
 				_currentModule=event.module;
 				_currentModuleFile = _urlManager.getModuleFileURL(event.module);
+				var ichild:*;
 				if(modloader.child != null){
-					var ichild:* = modloader.child as IModuleInterface;
+					ichild = modloader.child as IModuleInterface;
 					trace("Reset module: "+ichild.getModuleName());
 					ichild.resetModule();
 				}
-				modloader.unloadModule();	
+				modloader.unloadModule();
+				ichild=null;
 				modloader.loadModule(_currentModuleFile);
 			}
 

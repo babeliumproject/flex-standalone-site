@@ -63,7 +63,7 @@ package components.videoPlayer
 
 		private var _bgVideo:Sprite;
 		public var _ppBtn:PlayButton;
-		public var _stopBtn:StopButton;
+		//public var _stopBtn:StopButton;
 		
 		protected var _eTime:ElapsedTime;
 		protected var _bg:Sprite;
@@ -120,13 +120,13 @@ package components.videoPlayer
 			_playerControls=new UIComponent();
 
 			_ppBtn=new PlayButton();
-			_stopBtn=new StopButton();
+			//_stopBtn=new StopButton();
 			_sBar=new ScrubberBar();
 			_eTime=new ElapsedTime();
 			_audioSlider=new AudioSlider(_currentVolume);
 			
 			_playerControls.addChild(_ppBtn);
-			_playerControls.addChild(_stopBtn);
+			//_playerControls.addChild(_stopBtn);
 			_playerControls.addChild(_sBar);
 			_playerControls.addChild(_eTime);
 			_playerControls.addChild(_audioSlider);
@@ -136,7 +136,7 @@ package components.videoPlayer
 			
 			addEventListener(FlexEvent.CREATION_COMPLETE, onComplete, false, 0, true);
 			_ppBtn.addEventListener(MouseEvent.CLICK, onPPBtnChanged, false, 0, true);
-			_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
+			//_stopBtn.addEventListener(StopEvent.STOP_CLICK, onStopBtnClick, false, 0 , true);
 			_audioSlider.addEventListener(VolumeEvent.VOLUME_CHANGED, onVolumeChange, false, 0, true);
 
 			addChild(_bg);
@@ -154,7 +154,7 @@ package components.videoPlayer
 			putSkinableComponent(_eTime.COMPONENT_NAME, _eTime);
 			putSkinableComponent(_ppBtn.COMPONENT_NAME, _ppBtn);
 			putSkinableComponent(_sBar.COMPONENT_NAME, _sBar);
-			putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
+			//putSkinableComponent(_stopBtn.COMPONENT_NAME, _stopBtn);
 		}
 		
 		public function loadVideoByUrl(param:Object, timemarkers:Object=null):void{
@@ -385,13 +385,13 @@ package components.videoPlayer
 		public function enableControls():void
 		{
 			_ppBtn.enabled=true;
-			_stopBtn.enabled=true;
+			//_stopBtn.enabled=true;
 		}
 
 		public function disableControls():void
 		{
 			_ppBtn.enabled=false;
-			_stopBtn.enabled=false;
+			//_stopBtn.enabled=false;
 		}
 
 		/**
@@ -464,18 +464,20 @@ package components.videoPlayer
 			_ppBtn.x=0;
 			_ppBtn.refresh();
 
-			_stopBtn.x=_ppBtn.x + _ppBtn.width;
-			_stopBtn.refresh();
+			//_stopBtn.x=_ppBtn.x + _ppBtn.width;
+			//_stopBtn.refresh();
 
-			_sBar.x=_stopBtn.x + _stopBtn.width;
+			//_sBar.x=_stopBtn.x + _stopBtn.width;
+			_sBar.x=_ppBtn.x + _ppBtn.width;
 			_sBar.refresh();
 
 			_eTime.refresh();
 
 			_audioSlider.refresh();
 
-			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width;
-
+			//_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width;
+			_sBar.width=_videoWidth - _ppBtn.width - _eTime.width - _audioSlider.width;
+			
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
 			

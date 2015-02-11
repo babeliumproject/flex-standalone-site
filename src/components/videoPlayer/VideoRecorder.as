@@ -627,7 +627,8 @@ package components.videoPlayer
 			_bgArrow.graphics.endFill();
 
 			_subtitleButton.resize(45, 20);
-			_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - 45;
+			_sBar.width=_videoWidth - _ppBtn.width - _eTime.width - _audioSlider.width - 45;
+			//_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - 45;
 			//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width - 45;
 			_eTime.x=_sBar.x + _sBar.width;
 			_audioSlider.x=_eTime.x + _eTime.width;
@@ -689,10 +690,11 @@ package components.videoPlayer
 				//_recStopBtn.refresh();
 
 				//_subtitleStartEnd.x = _recStopBtn.x + _recStopBtn.width;
-				_stopBtn.x=_ppBtn.x + _ppBtn.width;
-				_stopBtn.refresh();
+				//_stopBtn.x=_ppBtn.x + _ppBtn.width;
+				//_stopBtn.refresh();
 
-				_subtitleStartEnd.x=_stopBtn.x + _stopBtn.width;
+				_subtitleStartEnd.x=_ppBtn.x + _ppBtn.width;
+				//_subtitleStartEnd.x=_stopBtn.x + _stopBtn.width;
 				_subtitleStartEnd.refresh();
 
 				_sBar.x=_subtitleStartEnd.x + _subtitleStartEnd.width;
@@ -705,7 +707,8 @@ package components.videoPlayer
 				_subtitleButton.includeInLayout=false;
 				_subtitleButton.visible=false;
 
-				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
+				_sBar.width=_videoWidth - _ppBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
+				//_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
 				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _subtitleStartEnd.width - _eTime.width - _audioSlider.width;
 
 				_eTime.x=_sBar.x + _sBar.width;
@@ -717,10 +720,11 @@ package components.videoPlayer
 				_ppBtn.x=0;
 				_ppBtn.refresh();
 
-				_stopBtn.x=_ppBtn.x + _ppBtn.width;
-				_stopBtn.refresh();
+				//_stopBtn.x=_ppBtn.x + _ppBtn.width;
+				//_stopBtn.refresh();
 
-				_sBar.x=_stopBtn.x + _stopBtn.width;
+				_sBar.x=_ppBtn.x + _ppBtn.width;
+				//_sBar.x=_stopBtn.x + _stopBtn.width;
 				//_recStopBtn.x=_ppBtn.x + _ppBtn.width;
 				//_recStopBtn.refresh();
 
@@ -734,7 +738,8 @@ package components.videoPlayer
 				_subtitleButton.includeInLayout=true;
 				_subtitleButton.visible=true;
 
-				_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
+				_sBar.width=_videoWidth - _ppBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
+				//_sBar.width=_videoWidth - _ppBtn.width - _stopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
 				//_sBar.width=_videoWidth - _ppBtn.width - _recStopBtn.width - _eTime.width - _audioSlider.width - _subtitleButton.width;
 
 				_eTime.x=_sBar.x + _sBar.width;

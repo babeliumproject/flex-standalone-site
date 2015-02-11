@@ -3,6 +3,7 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:main="components.main.*"
+		  xmlns:components="components.*"
 		  xmlns:common="view.common.*"
 		  xmlns:skins="skins.*"
 		  xmlns:view="modules.create.view.*"
@@ -11,11 +12,13 @@
 		  paddingTop="16"
 		  implements="modules.IGroupInterface"
 		  width="100%"
-		  creationComplete="onComplete()" xmlns:components="components.*">
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
+			
+			import mx.binding.utils.BindingUtils;
 			
 			import control.URLManager;
 			
@@ -85,7 +88,7 @@
 			public function onComplete():void
 			{
 				getDescriptorCodesFromResourceFile();
-				getLangCodesFromResourceFile();
+				getLangCodesFromResourceFile();	
 			}
 
 			private function getDescriptorCodesFromResourceFile():void

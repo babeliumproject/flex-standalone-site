@@ -127,7 +127,6 @@
 			
 			import vo.ExerciseRoleVO;
 			import vo.ExerciseVO;
-			import vo.LicenseVO;
 			import vo.SubtitleAndSubtitleLinesVO;
 
 
