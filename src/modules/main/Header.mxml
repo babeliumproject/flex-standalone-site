@@ -38,7 +38,7 @@
 			<skins:IconButton id="helpFAQButton"
 							  styleName="helpLinkButton"
 							  label="{resourceManager.getString('myResources', 'LABEL_HELP')}"
-							  click="helpFAQ_clickHandler(event)"
+							  click="helpButton_clickHandler(event)"
 							  toolTip="{resourceManager.getString('myResources','HELP_FAQ')}"/>
 			<skins:IconButton id="blogButton"
 							  styleName="blueLinkButton"
@@ -69,7 +69,9 @@
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
 				<s:HGroup verticalAlign="middle"
-						  horizontalAlign="center">
+						  horizontalAlign="center"
+						  visible="false"
+						  includeInLayout="false">
 					<s:Label text="{resourceManager.getString('myResources','TEXT_CREDIT_COUNT')}"
 							 height="100%"
 							 verticalAlign="middle"
@@ -81,7 +83,7 @@
 					<s:BitmapImage source="@Embed('/resources/images/coins_icon.png')"/>
 				</s:HGroup>
 				<mx:VRule height="20"
-						  styleName="sectionTitleHRule"/>
+						  styleName="sectionTitleHRule" visible="false" includeInLayout="false"/>
 
 				<s:Label text="{resourceManager.getString('myResources', 'HELLO')+','}"
 						 styleName="boldDarkerGreyLabel"/>
@@ -224,6 +226,7 @@
 				signOutButton.enabled=status;
 			}
 
+	// this function is not used. Delete it.
 			public function helpFAQ_clickHandler(event:MouseEvent):void
 			{
 				new ViewChangeEvent(ViewChangeEvent.VIEW_HELP_MODULE).dispatch();
@@ -233,6 +236,10 @@
 				navigateToURL(new URLRequest('http://blog.babeliumproject.com'), '_blank');
 			}
 
+			public function helpButton_clickHandler(event:MouseEvent):void{
+				navigateToURL(new URLRequest('https://groups.google.com/forum/#!forum/babelium-piloting'), '_blank');
+			}
+			
 			private function onAccountActivation(flag:Boolean):void
 			{
 				if (flag == true)
