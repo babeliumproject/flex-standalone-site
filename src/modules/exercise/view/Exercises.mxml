@@ -143,7 +143,7 @@
 				BindingUtils.bindSetter(onLogout,host,'isLoggedIn',commitOnly,useWeakReference);
 				
 				if (_exerciseTitle == null)
-					_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
+					_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
 			}
 
 			/**
@@ -416,7 +416,7 @@
 			 **/
 			private function onRecordingAborted(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 			
@@ -429,7 +429,7 @@
 			 **/
 			private function onCamAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -438,7 +438,7 @@
 			 **/
 			private function onMicAccessDenied(e:RecordingEvent):void
 			{
-				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_WORKING'));
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
 				recordingError();
 			}
 
@@ -527,7 +527,7 @@
 				}
 				else
 				{
-					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
 				}
 			}
 			
@@ -633,7 +633,7 @@
 				videoPlayer=null;
 				
 				//Reset all properties
-				_exerciseTitle=resourceManager.getString('myResources', 'EXERCISE_TITLE');
+				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
 				_exerciseSelected=_exerciseStartedPlaying=_rolesReady=_videoPlayerReady=false;
 				_currentExercise=_roles=_currentMediaData=_primaryMediaData=_modelMediaData=_recordMediaData=_currentCaptions=_currentTimeMarkers=null;
 				_locales=null;
@@ -689,7 +689,7 @@
 					  paddingTop="5"
 					  paddingBottom="20">
 
-				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources', 'RECORDING_SETTINGS')}"
 						 styleName="h5"/>
 
 				<s:HGroup width="100%"
@@ -698,7 +698,7 @@
 							  source="resources/images/about_section_title_icon.png"
 							  height="30"
 							  width="30"/>
-					<mx:Text htmlText="{resourceManager.getString('myResources','GUEST_RECORD_WARNING')}"
+					<mx:Text htmlText="{ResourceManager.getInstance().getString('myResources','GUEST_RECORD_WARNING')}"
 							 width="100%"
 							 fontSize="14"/>
 				</s:HGroup>
@@ -718,7 +718,7 @@
 									  verticalAlign="middle"/>
 				</s:layout>
 
-				<s:Label text="{resourceManager.getString('myResources', 'RECORDING_SETTINGS')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources', 'RECORDING_SETTINGS')}"
 						 styleName="h5"/>
 
 				<s:Line width="100%">
@@ -734,7 +734,7 @@
 					<s:VGroup width="100%"
 							  verticalAlign="middle">
 						<s:HGroup verticalAlign="middle" id="chooseRoleBox">
-							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_ROLE')}"/>
+							<s:Label text="{ResourceManager.getInstance().getString('myResources', 'CHOOSE_ROLE')}"/>
 							<components:EnhancedDropDownList id="availableRoles"
 															 skinClass="skins.BootstrapDropDownList"
 															 cornerRadius="3"
@@ -744,21 +744,21 @@
 						</s:HGroup>
 
 						<s:HGroup verticalAlign="middle">
-							<s:Label text="{resourceManager.getString('myResources', 'CHOOSE_REC_METHOD')}"/>
+							<s:Label text="{ResourceManager.getInstance().getString('myResources', 'CHOOSE_REC_METHOD')}"/>
 							<s:RadioButton id="micOnly"
 										   selected="true"
 										   groupName="recMode"
-										   label="{resourceManager.getString('myResources', 'OPTION_MIC_ONLY')}"/>
+										   label="{ResourceManager.getInstance().getString('myResources', 'OPTION_MIC_ONLY')}"/>
 							<s:RadioButton id="micAndCam"
 										   groupName="recMode"
-										   label="{resourceManager.getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
+										   label="{ResourceManager.getInstance().getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 						</s:HGroup>
 					</s:VGroup>
 
 					<skins:IconButton id="startRecordingButton"
 									  styleName="recStartLinkButton"
 									  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
-									  toolTip="{DataModel.getInstance().recordingExercise ? resourceManager.getString('myResources', 'ABORT_RECORDING') : resourceManager.getString('myResources', 'START_RECORDING') }"
+									  toolTip="{DataModel.getInstance().recordingExercise ? ResourceManager.getInstance().getString('myResources', 'ABORT_RECORDING') : ResourceManager.getInstance().getString('myResources', 'START_RECORDING') }"
 									  enabled="{_rolesReady}"
 									  click="onStartRecordingClicked(event)"/>
 				</s:HGroup>

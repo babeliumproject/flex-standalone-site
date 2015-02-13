@@ -12,13 +12,14 @@
 		  paddingTop="16"
 		  implements="modules.IGroupInterface"
 		  width="100%"
-		  creationComplete="onComplete()">
+		  preinitialize="onPreinitialize(event)"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import mx.binding.utils.BindingUtils;
+			
 			
 			import control.URLManager;
 			
@@ -29,10 +30,13 @@
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
@@ -45,8 +49,9 @@
 
 			public static const LANGUAGE_PRACTICE:int=0;
 			public static const OTHER:int=5;
+			
+			private var _model:DataModel=DataModel.getInstance();
 
-			[Bindable]
 			private var _dataProvider:ArrayCollection;
 
 			public var searchTerm:String;
@@ -57,43 +62,43 @@
 			public var sortFilter:String;
 			private var comptFilters:Array;
 			
-			[Bindable]
 			private var _currentPage:int=1;
-
-			[Bindable]
+	
 			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'LEVEL_A1'}, {'code': 2, 'label': 'LEVEL_A2'}, {'code': 3, 'label': 'LEVEL_B1'}, {'code': 4, 'label': 'LEVEL_B2'}, {'code': 5, 'label': 'LEVEL_C1'}]);
-
-			[Bindable]
 			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
-
-			[Bindable]
 			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'STUDIES'}, {'code': 3, 'label': 'WORK'}]);
-
-			[Bindable]
 			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'ADVERB_ADJECTIVE'}, {'code': 2, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 3, 'label': 'NEGATION'}, {'code': 4, 'label': 'NOUN'}, {'code': 5, 'label': 'PRONOUNS'}, {'code': 6, 'label': 'PRONUNCIATION'}, {'code': 7, 'label': 'VERB'}, {'code': 8, 'label': 'VOCABULARY'}]);
-
-			[Bindable]
 			private var dpSortField:ArrayCollection=new ArrayCollection([{'code': 'title', 'label': 'NAME'}, {'code': 'timecreated', 'label': 'DATE'}, {'code': 'viewcount', 'label': 'VIEW_COUNT'}, {'code': 'likes', 'label': 'RATING'}]);
-
-			[Bindable]
 			private var dpCommCompetence:ArrayCollection;
-
-			[Bindable]
 			private var dpLangs:ArrayCollection;
 
 			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 
 			private var _descriptors:Array;
+			
+			public function onPreinitialize(event:FlexEvent):void{
+				var commitOnly:Boolean=false;
+				var useWeakReference:Boolean=true;
+				BindingUtils.bindSetter(setComponentData,_model,'availableRecordableExercisesRetrieved',commitOnly,useWeakReference);
+			}
 
-			public function onComplete():void
+			public function onComplete(event:FlexEvent):void
 			{
 				getDescriptorCodesFromResourceFile();
-				getLangCodesFromResourceFile();	
+				getLangCodesFromResourceFile();
+				
+				//Initialize components' dataProviders
+				sortByDropdown.localeAwareDataProvider=dpSortField;
+				langFilterDD.localeAwareDataProvider=dpLangs;
+				difLevelFilterDD.localeAwareDataProvider=dpDifficultyLevel;
+				exerciseTypeFilterDD.localeAwareDataProvider=dpExerciseType;
+				commSituationFilterDD.localeAwareDataProvider=dpCommSituation;
+				
 			}
 
 			private function getDescriptorCodesFromResourceFile():void
 			{
-				var resources:Object=resourceManager.getResourceBundle("en_US", "myResources").content;
+				var resources:Object=ResourceManager.getInstance().getResourceBundle("en_US", "myResources").content;
 				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
 				for (var item:Object in resources)
 				{
@@ -154,7 +159,7 @@
 				sitFilter=0;
 			}
 
-			public function set setComponentData(value:Boolean):void
+			public function setComponentData(value:Boolean):void
 			{
 				_currentPage=1;
 				_dataProvider=DataModel.getInstance().availableRecordableExercises;
@@ -401,10 +406,7 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().availableRecordableExercisesRetrieved}"
-				destination="setComponentData"/>
-
-	<s:Label text="{resourceManager.getString('myResources','EXERCISES')}"
+	<s:Label text="{ResourceManager.getInstance().getString('myResources','EXERCISES')}"
 			 styleName="h2"
 			 id="exerciseListTitleLabel"/>
 
@@ -442,7 +444,6 @@
 											   cornerRadius="3"
 											   borderColor="0xcccccc"
 											   requireSelection="true"
-											   localeAwareDataProvider="{dpSortField}"
 											   sortItems="true"
 											   change="onFilterDropdownChange(event)"/>
 				</s:HGroup>
@@ -484,7 +485,6 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   localeAwarePrompt="ALL_LANGUAGES"
-										   localeAwareDataProvider="{dpLangs}"
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
@@ -493,7 +493,6 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   localeAwarePrompt="ALL_DIFFICULTIES"
-										   localeAwareDataProvider="{dpDifficultyLevel}"
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
@@ -502,7 +501,6 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   localeAwarePrompt="ALL_TYPES"
-										   localeAwareDataProvider="{dpExerciseType}"
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
@@ -525,7 +523,6 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   localeAwarePrompt="ALL_SITUATIONS"
-										   localeAwareDataProvider="{dpCommSituation}"
 										   sortItems="true"
 										   change="onFilterDropdownChange(event)"
 										   width="100%"/>
@@ -546,7 +543,7 @@
 			</s:Panel>
 
 			<s:Button id="filterRemoveButton"
-					  label="{resourceManager.getString('myResources','FILTER_REMOVE_ALL')}"
+					  label="{ResourceManager.getInstance().getString('myResources','FILTER_REMOVE_ALL')}"
 					  styleName="btn-link"
 					  click="removeAllFilters(event)"
 					  buttonMode="true"/>

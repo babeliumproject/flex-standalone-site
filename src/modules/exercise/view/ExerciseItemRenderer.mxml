@@ -23,7 +23,7 @@
 					  source="{data.thumbnail}"
 					  width="180"
 					  height="135"/>
-			<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
+			<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.duration,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
 						 styleName="videoDurationLabel"
 						 x="148"
 						 y="0"
@@ -64,12 +64,6 @@
 					 maxDisplayedLines="3"/>
 		</s:VGroup>
 	</s:BorderContainer>
-
-	<fx:Declarations>
-		<mx:DateFormatter id="dateFormatter"
-						  formatString="{resourceManager.getString('myResources','DATE_FORMAT')}"/>
-	</fx:Declarations>
-
 
 	<fx:Script>
 		<![CDATA[

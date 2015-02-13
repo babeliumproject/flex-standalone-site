@@ -11,6 +11,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import components.EnhancedDropDownList;
+			import components.videoPlayer.VideoRecorder;
+			
 			import control.URLChangeEvent;
 			import control.URLManager;
 			
@@ -21,7 +24,25 @@
 			import mx.events.FlexEvent;
 			import mx.events.ModuleEvent;
 			import mx.utils.ObjectUtil;
-
+			
+			import utils.CollectionUtils;
+			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
+			import utils.TimeMetadataParser;
+			
+			/**
+			 * Reference site-wide classes here to avoid including them in each Module
+			 */
+			private var components_enhancedDropDownList:EnhancedDropDownList;
+			private var components_main_videoPaginator:VideoPaginator;
+			private var components_videoPlayer_videoRecorder:VideoRecorder;
+			private var utils_collectionUtils:CollectionUtils;
+			private var utils_exerciseRenderUtils:ExerciseRenderUtils;
+			private var utils_localeUtils:LocaleUtils;
+			private var utils_timeMetadataParser:TimeMetadataParser;
+			
+			
+			
 			private var _currentModuleFile:String;
 			private var _currentModule:String;
 			
