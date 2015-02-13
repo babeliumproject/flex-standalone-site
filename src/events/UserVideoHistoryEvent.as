@@ -13,17 +13,17 @@ package events
 		public static const STAT_ATTEMPT_RESPONSE:String = "statAttemptResponse";
 		public static const STAT_SAVE_RESPONSE:String = "statSaveResponse";
 		
-		public var videoHistoryData:UserVideoHistoryVO;
+		public var params:Object;
 		
-		public function UserVideoHistoryEvent(type:String, videoHistoryData:UserVideoHistoryVO)
+		public function UserVideoHistoryEvent(type:String, params:Object)
 		{
 			super(type);
-			this.videoHistoryData = videoHistoryData;
+			this.params = params;
 			
 		}
 		
 		override public function clone():Event{
-			return new UserVideoHistoryEvent(type,videoHistoryData);
+			return new UserVideoHistoryEvent(type,params);
 		}
 	}
 }

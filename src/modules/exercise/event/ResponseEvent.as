@@ -17,9 +17,9 @@ package modules.exercise.event
 		
 		public static const ADD_DUMMY_VIDEO:String="addDummyVideo";
 		
-		public var response:ResponseVO;
+		public var response:Object;
 		
-		public function ResponseEvent(type:String, response:ResponseVO)
+		public function ResponseEvent(type:String, response:Object)
 		{
 			super(type);
 			this.response = response;

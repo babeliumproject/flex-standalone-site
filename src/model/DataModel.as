@@ -363,14 +363,6 @@ package model
 		public var enableAutoevalToExerciseError:String="";
 
 
-		// Flag for stoping video after tab change
-		[Bindable]
-		public var stopVideoFlag:Boolean=false;
-		// In order to avoid tab change if recording exercise
-		[Bindable]
-		public var recordingExercise:Boolean=false;
-
-
 		//Used by configuration module
 		[Bindable]
 		public var videoRec:Boolean=false;

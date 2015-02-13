@@ -1236,7 +1236,7 @@ package components.videoPlayer
 			_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
 			_privUnlock=null;
 			_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
-			dispatchEvent(new RecordingEvent(RecordingEvent.ABORTED));
+			dispatchEvent(new RecordingEvent(RecordingEvent.USER_DEVICE_ACCESS_DENIED));
 		}
 
 

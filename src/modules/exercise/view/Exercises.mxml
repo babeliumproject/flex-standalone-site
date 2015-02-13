@@ -5,47 +5,47 @@
 		  xmlns:view="modules.exercise.view.*"
 		  xmlns:common="view.common.*"
 		  xmlns:videoPlayer="components.videoPlayer.*"
-		  xmlns:babelia="components.videoPlayer.controls.babelia.*"
-		  xmlns:components="components.*"
 		  xmlns:skins="skins.*"
+		  xmlns:components="components.*"
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
 		  width="100%"
-		  creationComplete="onComplete(event)"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IGroupInterface"
+		  preinitialize="onPreinitialize(event)"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
-			import components.videoPlayer.VideoRecorder;
 			import components.videoPlayer.events.VideoPlayerEvent;
+
+			import view.common.CustomAlert;
+
 			import components.videoPlayer.events.babelia.RecordingEvent;
-			import components.videoPlayer.events.babelia.StreamEvent;
-			
+
 			import control.URLManager;
-			
+
 			import events.RecordingEndOptionEvent;
 			import events.UserVideoHistoryEvent;
-			
+
 			import flash.globalization.DateTimeStyle;
 			import flash.utils.getQualifiedClassName;
-			
+
 			import model.DataModel;
-			
+
 			import modules.IModuleInterface;
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.ResponseEvent;
 			import modules.exercise.event.WatchExerciseCommand;
 			import modules.subtitle.event.SubtitleEvent;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.collections.ICollectionView;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
-			import mx.core.LayoutDirection;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
@@ -54,121 +54,74 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.collections.Sort;
 			import spark.collections.SortField;
 			import spark.globalization.SortingCollator;
-			
+
 			import utils.ExerciseRenderUtils;
-			
-			import view.common.*;
-			
-			import vo.CreditHistoryVO;
-			import vo.CueObject;
-			import vo.ExerciseRoleVO;
-			import vo.ExerciseVO;
-			import vo.ResponseVO;
-			import vo.UserVideoHistoryVO;
 
-			private const SELECT_EXERCISE:String="SELECT_EXERCISE";
-
-			private var _creationComplete:Boolean=false;
-
-
-
-			[Bindable]
-			private var _currentExercise:Object;
-			[Bindable]
-			private var _exerciseTitle:String;
-			[Bindable]
-			private var _exerciseSelected:Boolean;
-			[Bindable]
-			private var _locales:Array;
-			[Bindable]
-			private var _characterNames:ArrayCollection;
-			private var _roles:Object;
-			private var _mediaId:int;
-			private var _subtitleId:int;
-
-			private var _exerciseStartedPlaying:Boolean=false;
-
-			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
 
-
-			[Bindable]
-			private var _rolesReady:Boolean;
-
-			private var _selectedRole:String;
-			private var _recordedFilename:String;
-
-			/**
-			 * Options menus
-			 **/
-			private var _evaluationRequest:EvaluationRequest;
-
+			protected var _currentExercise:Object;
 			protected var _currentMediaData:Object;
 			protected var _primaryMediaData:Object;
 			protected var _modelMediaData:Object;
 			protected var _recordMediaData:Object;
 			protected var _currentCaptions:Object;
-
 			protected var _currentTimeMarkers:Object;
-			
-			public var _videoPlayerReady:Boolean=false;
 
-			[Embed('/resources/images/button_abort.png')]
-			[Bindable]
-			private var abortIcon:Class;
+			private var _exerciseTitle:String;
+			private var _exerciseSelected:Boolean;
+			private var _characterNames:ArrayCollection;
+			private var _roles:Object;
+			private var _mediaId:int;
+			private var _subtitleId:int;
 
-			[Embed('/resources/images/button_rec.png')]
-			[Bindable]
-			private var recIcon:Class;
-			
-			protected var videoPlayer:VideoRecorder;
+			private var _isRecording:Boolean;
 
-			protected function onComplete(event:FlexEvent):void{
+			private var _exerciseStartedPlaying:Boolean=false;
+			private var _rolesReady:Boolean;
+			private var _selectedRole:String;
+			private var _videoPlayerReady:Boolean=false;
+
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
+
+			private function onPreinitialize(event:FlexEvent):void
+			{
 				var commitOnly:Boolean=false;
 				var useWeakReference:Boolean=true;
-				var host:Object=_model;
-				
-				//setupVideoPlayer();
-				setupResponseOptions();
-				
-				BindingUtils.bindSetter(exerciseDataRetrieved,host,'watchExerciseDataRetrieved',commitOnly,useWeakReference);
-				BindingUtils.bindSetter(exerciseSubtitlesRetrieved,host,'availableSubtitleLinesRetrieved',commitOnly,useWeakReference);
-				BindingUtils.bindSetter(onRolesRetrieved,host,'availableExerciseRolesRetrieved',commitOnly,useWeakReference);
-				BindingUtils.bindSetter(recordMediaSlotHandler,host,'recordMediaDataRetrieved',commitOnly,useWeakReference);
-				BindingUtils.bindSetter(responseSuccessfullySavedRetrieved,host,'savedResponseRetrieved',commitOnly,useWeakReference);
-				BindingUtils.bindSetter(onLogout,host,'isLoggedIn',commitOnly,useWeakReference);
-				
-				if (_exerciseTitle == null)
-					_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
+
+				//Weak reference data bindings
+				BindingUtils.bindSetter(exerciseDataRetrieved, _model, 'watchExerciseDataRetrieved', commitOnly, useWeakReference);
+				BindingUtils.bindSetter(exerciseSubtitlesRetrieved, _model, 'availableSubtitleLinesRetrieved', commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onRolesRetrieved, _model, 'availableExerciseRolesRetrieved', commitOnly, useWeakReference);
+				BindingUtils.bindSetter(recordMediaSlotHandler, _model, 'recordMediaDataRetrieved', commitOnly, useWeakReference);
+				BindingUtils.bindSetter(responseSuccessfullySavedRetrieved, _model, 'savedResponseRetrieved', commitOnly, useWeakReference);
+				BindingUtils.bindSetter(onLogout, _model, 'isLoggedIn', commitOnly, useWeakReference);
 			}
 
-			/**
-			 * Setup for videoplayer
-			 **/
+			private function onComplete(event:FlexEvent):void
+			{
+				if (lineStyle)
+				{
+					lineStroke.alpha=lineStyle.getStyle('borderAlpha');
+					lineStroke.color=lineStyle.getStyle('borderColor');
+				}
+
+				setupVideoPlayer();
+				setupResponseOptions();
+
+				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
+				exerciseTitle.text=_exerciseTitle;
+			}
+
 			private function setupVideoPlayer():void
 			{
-				videoPlayer=new VideoRecorder();
-				videoPlayer.layoutDirection=LayoutDirection.LTR;
-				videoPlayer.autoPlay=true;
-				videoPlayer.seek=true;
-				videoPlayer.skinUrl="resources/videoPlayer/skin/white.xml";
-				videoPlayer.displayCaptions=true;
-				videoPlayer.autoScale=false;
-				videoPlayer.subtitlingControls=false;
-				videoPlayer.width=640;
-				videoPlayer.height=360;
-				
-				videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_STARTED_PLAYING, onVideoStartedPlaying, false, 0, true);
-				videoPlayer.addEventListener(VideoPlayerEvent.ON_ERROR, onVideoPlayerError, false, 0, true);
-				videoPlayer.addEventListener(RecordingEvent.END, onRecordingEnd, false, 0, true);
-				videoPlayer.addEventListener(RecordingEvent.ABORTED, onRecordingAborted, false, 0, true);
-				videoPlayer.addEventListener(RecordingEvent.CAM_DENIED, onCamAccessDenied, false, 0, true);
-				videoPlayer.addEventListener(RecordingEvent.MIC_DENIED, onMicAccessDenied, false, 0, true);
-				
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, onVideoPlayerError, false, 0, true);
+				VP.addEventListener(VideoPlayerEvent.ON_READY, onVideoPlayerReady, false, 0, true);
+				VP.addEventListener(RecordingEvent.END, onRecordingEnd, false, 0, true);
+				VP.addEventListener(RecordingEvent.USER_DEVICE_ACCESS_DENIED, onUserDeviceAccessDenied, false, 0, true);
 			}
 
 			private function setupResponseOptions():void
@@ -179,40 +132,50 @@
 				recordingEndOptions.addEventListener(RecordingEndOptionEvent.SAVE_RESPONSE, saveResponseClickHandler, false, 0, true);
 			}
 
+			private function onVideoPlayerReady(event:VideoPlayerEvent):void
+			{
+				_videoPlayerReady=true;
+			}
+
 			private function onRolesRetrieved(value:Boolean):void
 			{
-				_roles=null;
-				_characterNames=new ArrayCollection();
-				
-				chooseRoleBox.visible=false;
-				chooseRoleBox.includeInLayout=false;
-				
-				if (DataModel.getInstance().availableExerciseRoles)
+				if (initialized)
 				{
-					_roles=DataModel.getInstance().availableExerciseRoles;
-					var code:int=0;
-					for (var role:String in _roles){
-						if(role != "NPC"){
-							code++;
-							_characterNames.addItem({'code': code, 'label': role});
+					_roles=null;
+					_characterNames=new ArrayCollection();
+
+					chooseRoleBox.visible=false;
+					chooseRoleBox.includeInLayout=false;
+
+					if (DataModel.getInstance().availableExerciseRoles)
+					{
+						_roles=DataModel.getInstance().availableExerciseRoles;
+						var code:int=0;
+						for (var role:String in _roles)
+						{
+							if (role != "NPC")
+							{
+								code++;
+								_characterNames.addItem({'code': code, 'label': role});
+							}
 						}
 					}
-				}
-				var numVoices:int=_characterNames.length;
-				trace("Number of voices found in subtitles: " + numVoices);
-				if (!numVoices)
-				{	
-					availableRoles.dataProvider=null;
-					_rolesReady=false;
-				}
-				else
-				{
-					availableRoles.dataProvider=_characterNames;
-					_rolesReady=true;
-					if (numVoices > 1)
+					var numVoices:int=_characterNames.length;
+					trace("Number of voices found in subtitles: " + numVoices);
+					if (!numVoices)
 					{
-						chooseRoleBox.visible=true;
-						chooseRoleBox.includeInLayout=true;
+						availableRoles.dataProvider=null;
+						_rolesReady=false;
+					}
+					else
+					{
+						availableRoles.dataProvider=_characterNames;
+						_rolesReady=true;
+						if (numVoices > 1)
+						{
+							chooseRoleBox.visible=true;
+							chooseRoleBox.includeInLayout=true;
+						}
 					}
 				}
 			}
@@ -242,87 +205,86 @@
 
 			private function exerciseDataRetrieved(value:Boolean):void
 			{
-				var params:Object;
-				if (_model.watchExerciseData)
+				trace("Exercises: watchExerciseDataRetrieved changed");
+				if (initialized)
 				{
-					_currentExercise=_model.watchExerciseData;
-					_exerciseTitle=_currentExercise.title;
-					
-					//Write the exercise data
-					usernameLbl.text=_currentExercise.userName;
-					difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(_currentExercise.difficulty);
-					timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
-					langBitmap.source=ExerciseRenderUtils.getFlagSource(_currentExercise);
-					
-					ratingShareReport.exerciseData=_currentExercise as ExerciseVO;
-					
-					_primaryMediaData=_modelMediaData=null;
-					
-					setupVideoPlayer();
-					videoPlayerAndRecordingControls.addElementAt(videoPlayer,0);
-
-					if (_currentExercise.hasOwnProperty('media'))
+					if (_model.watchExerciseData)
 					{
-						if (getQualifiedClassName(_currentExercise.media) == 'Array')
+						_currentExercise=_model.watchExerciseData;
+						_exerciseTitle=_currentExercise.title;
+						exerciseTitle.text=_exerciseTitle;
+
+						//Write the exercise data
+						usernameLbl.text=_currentExercise.userName;
+						difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(_currentExercise.difficulty);
+						timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
+						langBitmap.source=ExerciseRenderUtils.getFlagSource(_currentExercise);
+
+						ratingShareReport.exerciseData=_currentExercise;
+
+						_primaryMediaData=_modelMediaData=null;
+
+						if (_currentExercise.hasOwnProperty('media'))
 						{
-							var media:Array=_currentExercise.media;
-							for each (var item:Object in media)
+							if (getQualifiedClassName(_currentExercise.media) == 'Array')
 							{
-								var level:int=parseInt(item.level);
-								if (level == 1 && !_primaryMediaData)
+								var media:Array=_currentExercise.media;
+								for each (var item:Object in media)
 								{
-									_primaryMediaData=item;
-									continue;
-								}
-								if (level == 2 && !_modelMediaData)
-								{
-									_modelMediaData=item;
-									continue;
+									var level:int=parseInt(item.level);
+									if (level == 1 && !_primaryMediaData)
+									{
+										_primaryMediaData=item;
+										continue;
+									}
+									if (level == 2 && !_modelMediaData)
+									{
+										_modelMediaData=item;
+										continue;
+									}
 								}
 							}
+							else if (getQualifiedClassName(_currentExercise.media) == 'Object')
+							{
+								_primaryMediaData=_currentExercise.media;
+							}
 						}
-						else if (getQualifiedClassName(_currentExercise.media) == 'Object')
-						{
-							_primaryMediaData=_currentExercise.media;
-						}
+
+						loadSelectedMedia(_primaryMediaData);
 					}
-					
-					loadSelectedMedia(_primaryMediaData);
-				}
-				else
-				{
-					//TODO
 				}
 			}
-			
-			protected function loadSelectedMedia(media:Object):void{
+
+			protected function loadSelectedMedia(media:Object):void
+			{
 				_currentMediaData=media;
-				
+
 				var param:Object=_currentMediaData;
-				videoPlayer.loadVideoByUrl(param);
-				
+				VP.loadVideoByUrl(param);
+
 				_rolesReady=false;
 				_exerciseSelected=true;
-				
+
 				//Load the subtitles that belong to this media
 				var args:Object=new Object();
 				args.mediaid=_currentMediaData.id;
 				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, args).dispatch();
-				
+
 			}
 
 			public function exerciseSubtitlesRetrieved(value:Boolean):void
 			{
-				if (DataModel.getInstance().availableSubtitleLines)
+				trace("Exercises: availableSubtitleLinesRetrieved changed");
+				if (initialized)
 				{
-					_currentCaptions=DataModel.getInstance().availableSubtitleLines;
-					var ccollection:ArrayCollection=_currentCaptions as ArrayCollection;
-					var item:Object = ccollection && ccollection.length ? ccollection.getItemAt(0) : null;
-					trace(ObjectUtil.toString(item));
-					
-					_subtitleId=item.subtitleId;
-					if(videoPlayer){
-						videoPlayer.setCaptions(_currentCaptions);
+					if (DataModel.getInstance().availableSubtitleLines)
+					{
+						_currentCaptions=DataModel.getInstance().availableSubtitleLines;
+						var ccollection:ArrayCollection=_currentCaptions as ArrayCollection;
+						var item:Object=ccollection && ccollection.length ? ccollection.getItemAt(0) : null;
+
+						_subtitleId=item.subtitleId;
+						VP.setCaptions(_currentCaptions);
 					}
 				}
 			}
@@ -339,12 +301,14 @@
 
 				checkRoleSelected();
 			}
-			
-			private function checkRoleSelected():void{
+
+			private function checkRoleSelected():void
+			{
 				if (availableRoles.selectedIndex > -1)
 				{
 					var item:Object=availableRoles.selectedItem;
 					_selectedRole=String(item.label);
+					_isRecording=true;
 					requestRecordingSlot();
 				}
 			}
@@ -368,25 +332,29 @@
 
 				var useWebcam:Boolean=!micOnly.selected;
 
-				_currentTimeMarkers = _roles[_selectedRole];
+				_currentTimeMarkers=_roles[_selectedRole];
 
-				trace("preparerecording: "+ObjectUtil.toString(media));
-				
-				videoPlayer.recordVideo(media, !micOnly.selected, _currentTimeMarkers);
+				trace("preparerecording: " + ObjectUtil.toString(media));
+
+				VP.recordVideo(media, !micOnly.selected, _currentTimeMarkers);
 			}
 
 			protected function recordMediaSlotHandler(value:Boolean):void
 			{
-				_recordMediaData=null;
-				if (_model.recordMediaData)
+				trace("Exercises: recordMediaDataRetrieved changed");
+				if (initialized)
 				{
-					var tmp:Object=_model.recordMediaData;
-					_recordMediaData=new Object();
-					_recordMediaData.netConnectionUrl=tmp.netConnectionUrl || null;
-					_recordMediaData.mediaUrl=tmp.mediaUrl || null;
-					_recordMediaData.maxDuration=tmp.maxDuration || 0;
-					trace("Rec. media slot: "+ObjectUtil.toString(_recordMediaData));
-					prepareRecording();
+					_recordMediaData=null;
+					if (_model.recordMediaData)
+					{
+						var tmp:Object=_model.recordMediaData;
+						_recordMediaData=new Object();
+						_recordMediaData.netConnectionUrl=tmp.netConnectionUrl || null;
+						_recordMediaData.mediaUrl=tmp.mediaUrl || null;
+						_recordMediaData.maxDuration=tmp.maxDuration || 0;
+						trace("Rec. media slot: " + ObjectUtil.toString(_recordMediaData));
+						prepareRecording();
+					}
 				}
 			}
 
@@ -395,60 +363,35 @@
 			 **/
 			private function onRecordingEnd(e:RecordingEvent):void
 			{
-				// Store last recorded response's filename
-				_recordedFilename=e.fileName;
-
-				DataModel.getInstance().recordingExercise=false;
-
-				// Set the videoplayer to playback both the exercise and the last response.
-
+				_isRecording=false;
 
 				var parallelmedia:Object=new Object();
-				
+
 				parallelmedia.leftMedia=_currentMediaData;
 				parallelmedia.rightMedia=_recordMediaData;
 
-				videoPlayer.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
+				VP.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
 			}
 
-			/**
-			 * On recording aborted
-			 **/
-			private function onRecordingAborted(e:RecordingEvent):void
+			private function onUserDeviceAccessDenied(event:RecordingEvent):void
 			{
-				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
-				recordingError();
-			}
-			
-			private function onVideoPlayerError(event:VideoPlayerEvent):void{
-				recordingError();
-			}
-
-			/**
-			 * On cam access denied
-			 **/
-			private function onCamAccessDenied(e:RecordingEvent):void
-			{
-				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
-				recordingError();
-			}
-
-			/**
-			 * On mic access denied
-			 **/
-			private function onMicAccessDenied(e:RecordingEvent):void
-			{
-				CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
-				recordingError();
-			}
-
-			private function recordingError():void
-			{
-				DataModel.getInstance().recordingExercise=false;
+				//CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'DEVICES_NOT_WORKING'));
+				restorePlaybackView();
 
 				//The video recorder should handle the following: unattach user devices, close rightside streams,
 				//restore appearence, enable controls, restore autoplay
-				videoPlayer.loadVideoByUrl(_currentMediaData);
+				VP.loadVideoByUrl(_currentMediaData);
+			}
+
+			private function onVideoPlayerError(event:VideoPlayerEvent):void
+			{
+				restorePlaybackView();
+			}
+
+			private function restorePlaybackView():void
+			{
+				_isRecording=false;
+				_videoPlayerReady=false;
 
 				recordingEndOptions.includeInLayout=false;
 				recordingEndOptions.visible=false;
@@ -466,25 +409,24 @@
 					panelSelectedExercise.visible=false;
 					panelSelectedExercise.includeInLayout=false;
 				}
-
 			}
 
 			// Watch both
 			private function onWatchExerciseAndResponse(e:Event):void
 			{
 				var parallelmedia:Object=new Object();
-				
+
 				parallelmedia.leftMedia=_currentMediaData;
 				parallelmedia.rightMedia=_recordMediaData;
-				
-				videoPlayer.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
+
+				VP.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
 			}
 
 			// Watch response
 			private function onWatchResponse(e:Event):void
 			{
 				var media:Object=_recordMediaData;
-				videoPlayer.loadVideoByUrl(media);
+				VP.loadVideoByUrl(media);
 			}
 
 			// Record again
@@ -495,7 +437,7 @@
 
 			private function abortRecordingClickHandler(e:Event):void
 			{
-				recordingError();
+				restorePlaybackView();
 			}
 
 			// Save response
@@ -506,16 +448,13 @@
 				var credsEvalRequest:int=DataModel.getInstance().prefDic['evaluationRequestCredits'];
 				if (userCredCount - credsEvalRequest >= 0)
 				{
-					var responseData:ResponseVO=new ResponseVO();
-
+					var responseData:Object=new Object();
 					responseData.exerciseId=_currentExercise.id;
 					responseData.mediaId=_currentMediaData.id;
 					responseData.characterName=_selectedRole;
 					responseData.subtitleId=_subtitleId;
 					responseData.isPrivate=true;
-					
-					
-					//Third, save response				
+
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 
 					recordingEndOptions.includeInLayout=false;
@@ -523,80 +462,96 @@
 					panelSelectedExercise.includeInLayout=true;
 					panelSelectedExercise.visible=true;
 
-					
+
 				}
 				else
 				{
 					CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
 				}
 			}
-			
-			protected function responseSuccessfullySavedRetrieved(value:Boolean):void{
-				if(_model.savedResponseId){
-					
-					videoPlayer.resetComponent();
-					
-					//Check if this exercise has model media
-					if(_modelMediaData && (_modelMediaData != _currentMediaData)){
-						//Prompt the user if he wants to view the model media
-						CustomAlert.info(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), 
-											Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, 
-											watchModelPromptCloseHandler, Alert.YES);
-					} else {
-						//Recording is done and the exercise either does not have a model 
-						//media or the user just saved a model media recording. Go back to the browse section
-						URLManager.getInstance().redirect('/exercises');
+
+			protected function responseSuccessfullySavedRetrieved(value:Boolean):void
+			{
+				trace("Exercises savedResponseIdRetrieved changed");
+				if (initialized)
+				{
+					if (_model.savedResponseId)
+					{
+						VP.resetComponent();
+
+						//Check if this exercise has model media
+						if (_modelMediaData && (_modelMediaData != _currentMediaData))
+						{
+							//Prompt the user if he wants to view the model media
+							CustomAlert.info(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, watchModelPromptCloseHandler, Alert.YES);
+						}
+						else
+						{
+							//Recording is done and the exercise either does not have a model 
+							//media or the user just saved a model media recording. Go back to the browse section
+							URLManager.getInstance().redirect('/exercises');
+						}
 					}
 				}
 			}
-			
-			protected function watchModelPromptCloseHandler(event:CloseEvent):void{
-				if (event.detail == Alert.YES){
+
+			protected function watchModelPromptCloseHandler(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES)
+				{
 					isModelLbl.visible=true;
 					isModelLbl.includeInLayout=true;
 					loadSelectedMedia(_modelMediaData);
-				} else {
+				}
+				else
+				{
 					//Recording is done and the user doesn't want to watch the model. Go back to the browse section
 					URLManager.getInstance().redirect('/exercises');
 				}
 			}
-			
+
 			private function statisticRecAttempt():void
 			{
-				var subtitlesAreUsed:Boolean=videoPlayer.displayCaptions;
-				var subtitleId:int=_subtitleId;
-				var exerciseId:int=_currentExercise.id;
-				var mediaId:int=_currentMediaData.id;
-				var roleName:String=_selectedRole;
-				
-				var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, true, 0, '', subtitlesAreUsed, subtitleId, roleName);
-				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, videoData).dispatch();
+				var params:Object=new Object();
+				params.responseAttempt=true;
+				params.exerciseId=_currentExercise.id;
+				params.subtitlesAreUsed=VP.displayCaptions;
+				params.subtitleId=_subtitleId;
+				params.exerciseRoleName=_selectedRole;
+
+				new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_ATTEMPT_RESPONSE, params).dispatch();
 			}
 
 			private function statisticRecSave(value:Boolean):void
 			{
 				if (DataModel.getInstance().savedResponseId)
 				{
-					var subtitlesAreUsed:Boolean=videoPlayer.displayCaptions;
-					var subtitleId:int=_subtitleId;
-					var roleName:String=_selectedRole;
-					var responseId:int=DataModel.getInstance().savedResponseId;
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, responseId, '', subtitlesAreUsed, subtitleId, roleName);
-					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
+					var params:Object=new Object();
+					params.responseAttempt=false;
+					params.responseId=_model.savedResponseId;
+					params.exerciseId=_currentExercise.id;
+					params.subtitlesAreUsed=VP.displayCaptions;
+					params.subtitleId=_subtitleId;
+					params.exerciseRoleName=_selectedRole;
+
+					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, params).dispatch();
 				}
 			}
 
 			private function onVideoStartedPlaying(e:VideoPlayerEvent):void
 			{
 				_exerciseStartedPlaying=true;
-				if (DataModel.getInstance().isLoggedIn && _rolesReady && _exerciseStartedPlaying)
+				if (_model.isLoggedIn && _rolesReady && _exerciseStartedPlaying)
 				{
 					_exerciseStartedPlaying=false;
-					var subtitlesAreUsed:Boolean=videoPlayer.displayCaptions;
-					var subtitleId:int=_subtitleId;
-					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _currentExercise.id, false, 0, '', subtitlesAreUsed, subtitleId);
-					if (_mediaId > 0 && subtitleId > 0)
-						new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, videoData).dispatch();
+
+					var params:Object=new Object();
+					params.exerciseId=_currentExercise.id;
+					params.responseAttempt=false;
+					params.subtitlesAreUsed=VP.displayCaptions;
+					params.subtitleId=_subtitleId ? _subtitleId : null;
+
+					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_EXERCISE_WATCH, params).dispatch();
 				}
 			}
 
@@ -604,56 +559,60 @@
 
 			public function onLogout(value:Boolean):void
 			{
-				if (DataModel.getInstance().isLoggedIn == false)
+				trace("Exercises isLoggedIn changed");
+				if (initialized)
 				{
-					guestEditWarningBox.includeInLayout=true;
-					guestEditWarningBox.visible=true;
-					panelSelectedExercise.includeInLayout=false;
-					panelSelectedExercise.visible=false;
-					recordingEndOptions.visible=false;
-					recordingEndOptions.includeInLayout=false;
-				}
-				else
-				{
-					guestEditWarningBox.includeInLayout=false;
-					guestEditWarningBox.visible=false;
-					panelSelectedExercise.includeInLayout=true;
-					panelSelectedExercise.visible=true;
-					recordingEndOptions.visible=false;
-					recordingEndOptions.includeInLayout=false;
+					if (DataModel.getInstance().isLoggedIn == false)
+					{
+						guestEditWarningBox.includeInLayout=true;
+						guestEditWarningBox.visible=true;
+						panelSelectedExercise.includeInLayout=false;
+						panelSelectedExercise.visible=false;
+						recordingEndOptions.visible=false;
+						recordingEndOptions.includeInLayout=false;
+					}
+					else
+					{
+						guestEditWarningBox.includeInLayout=false;
+						guestEditWarningBox.visible=false;
+						panelSelectedExercise.includeInLayout=true;
+						panelSelectedExercise.visible=true;
+						recordingEndOptions.visible=false;
+						recordingEndOptions.includeInLayout=false;
+					}
 				}
 			}
 
 			public function resetGroup():void
 			{
-				if(videoPlayer){
-					videoPlayerAndRecordingControls.removeElement(videoPlayer);
-					videoPlayer.resetComponent();
-				}
-				videoPlayer=null;
-				
+				VP.resetComponent();
+
 				//Reset all properties
 				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
-				_exerciseSelected=_exerciseStartedPlaying=_rolesReady=_videoPlayerReady=false;
+				_exerciseSelected=_exerciseStartedPlaying=_rolesReady=_videoPlayerReady=_isRecording=false;
 				_currentExercise=_roles=_currentMediaData=_primaryMediaData=_modelMediaData=_recordMediaData=_currentCaptions=_currentTimeMarkers=null;
-				_locales=null;
 				_characterNames=null;
-				_selectedRole=_recordedFilename=null;
+				_selectedRole=null;
 				_mediaId=_subtitleId=0;
-				
-				hideSelectedExercise(); // Information of selected exercise
-				
-				//Remove the current exercise's info
+
+				//Reset the ui elements
+				hideSelectedExercise();
 				ratingShareReport.exerciseData=null;
-				
 				isModelLbl.visible=false;
-				isModelLbl.includeInLayout=false;	
+				isModelLbl.includeInLayout=false;
+				exerciseTitle.text=_exerciseTitle;
+
+				//Before finishing, set the related data to null
+				_model.watchExerciseData=null;
+				_model.availableSubtitleLines=null;
+				_model.availableExerciseRoles=null;
+				_model.recordMediaData=null;
+				_model.savedResponseId=0;
 			}
 		]]>
 	</fx:Script>
 
 	<s:Label id="exerciseTitle"
-			 text="{_exerciseTitle}"
 			 width="640"
 			 styleName="h2"/>
 	<s:Label id="isModelLbl"
@@ -665,23 +624,42 @@
 
 		<s:VGroup id="videoPlayerAndRecordingControls"
 				  width="100%">
+			<videoPlayer:VideoRecorder id="VP"
+									   layoutDirection="ltr"
+									   autoPlay="true"
+									   skinUrl="resources/videoPlayer/skin/white.xml"
+									   seek="true"
+									   displayCaptions="true"
+									   autoScale="false"
+									   subtitlingControls="false"
+									   width="640"
+									   height="360"/>
 			<s:BorderContainer id="basicinfo"
 							   styleName="lightBorderContainer"
 							   width="640">
 				<s:layout>
-					<s:HorizontalLayout verticalAlign="middle" paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8"/>
+					<s:HorizontalLayout verticalAlign="middle"
+										paddingTop="8"
+										paddingBottom="8"
+										paddingLeft="8"
+										paddingRight="8"/>
 				</s:layout>
 				<s:BitmapImage source="/resources/images/iconmonstr-user-6-icon-48.png"
-							   width="48" height="48"/>
+							   width="48"
+							   height="48"/>
 				<s:VGroup width="100%">
-					<s:Label id="usernameLbl" fontWeight="bold"/>
-					<s:Label id="timecreatedLbl" styleName="boldYellowLabel"/>
+					<s:Label id="usernameLbl"
+							 fontWeight="bold"/>
+					<s:Label id="timecreatedLbl"
+							 styleName="boldYellowLabel"/>
 				</s:VGroup>
-				<s:BitmapImage id="langBitmap" height="32" width="32"/>
+				<s:BitmapImage id="langBitmap"
+							   height="32"
+							   width="32"/>
 				<s:Label id="difficultyLbl"
 						 styleName="boldYellowLabel"
 						 fontSize="24"/>
-				
+
 			</s:BorderContainer>
 
 			<s:VGroup id="guestEditWarningBox"
@@ -723,9 +701,8 @@
 
 				<s:Line width="100%">
 					<s:stroke>
-						<s:SolidColorStroke weight="{panelSelectedExercise.getStyle('borderWeight')}"
-											alpha="{panelSelectedExercise.getStyle('borderAlpha')}"
-											color="{panelSelectedExercise.getStyle('borderColor')}"/>
+						<s:SolidColorStroke id="lineStroke"
+											weight="1"/>
 					</s:stroke>
 				</s:Line>
 
@@ -733,7 +710,8 @@
 						  verticalAlign="middle">
 					<s:VGroup width="100%"
 							  verticalAlign="middle">
-						<s:HGroup verticalAlign="middle" id="chooseRoleBox">
+						<s:HGroup verticalAlign="middle"
+								  id="chooseRoleBox">
 							<s:Label text="{ResourceManager.getInstance().getString('myResources', 'CHOOSE_ROLE')}"/>
 							<components:EnhancedDropDownList id="availableRoles"
 															 skinClass="skins.BootstrapDropDownList"
@@ -755,12 +733,10 @@
 						</s:HGroup>
 					</s:VGroup>
 
-					<skins:IconButton id="startRecordingButton"
-									  styleName="recStartLinkButton"
-									  icon="{DataModel.getInstance().recordingExercise ? abortIcon : recIcon}"
-									  toolTip="{DataModel.getInstance().recordingExercise ? ResourceManager.getInstance().getString('myResources', 'ABORT_RECORDING') : ResourceManager.getInstance().getString('myResources', 'START_RECORDING') }"
-									  enabled="{_rolesReady}"
-									  click="onStartRecordingClicked(event)"/>
+					<s:Button id="startRecordingButton"
+							  styleName="btn-danger"
+							  label="Start/Stop recording"
+							  click="onStartRecordingClicked(event)"/>
 				</s:HGroup>
 			</s:BorderContainer>
 			<view:RecordingEndOptions id="recordingEndOptions"

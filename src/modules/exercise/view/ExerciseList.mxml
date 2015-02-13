@@ -19,8 +19,6 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			
-			
 			import control.URLManager;
 			
 			import flash.sampler.getInvocationCount;

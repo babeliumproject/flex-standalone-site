@@ -19,8 +19,6 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import spark.components.Button;
-			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -36,22 +34,18 @@
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
 			
+			import spark.components.Button;
+			
 			import utils.ExerciseRenderUtils;
 			
 			import view.common.LicenseResource;
 
 			private var _creationComplete:Boolean=false;
 
-			[Bindable]
+			
 			private var _exercise:Object=null;
-
-			[Bindable]
 			private var _tags:Array;
-
-			[Bindable]
 			private var _dataAvailable:Boolean=false;
-
-			[Bindable]
 			private var _lessAdtInfoStatus:Boolean=false;
 			
 			[Bindable]
@@ -152,7 +146,7 @@
 					var sectTitle:Label=new Label();
 					sectTitle.setStyle("fontWeight","bold");
 					//sectTitle.setStyle("fontSize",11);
-					sectTitle.text=resourceManager.getString('myResources','DESCRIPTORS')+':';
+					sectTitle.text=ResourceManager.getInstance().getString('myResources','DESCRIPTORS')+':';
 					ResourceSubscriber.getInstance().subscribeElement(sectTitle, "text", "myResources", 'DESCRIPTORS');
 					
 					descriptorContainer.addElement(sectTitle);
@@ -242,7 +236,7 @@
 			  paddingLeft="8"
 			  paddingRight="8"
 			  paddingBottom="8">
-		<s:Label text="{resourceManager.getString('myResources', 'EXERCISE_DETAILS')}"
+		<s:Label text="{ResourceManager.getInstance().getString('myResources', 'EXERCISE_DETAILS')}"
 				 styleName="h5"/>
 		<s:Line width="100%">
 			<s:stroke>
@@ -267,25 +261,25 @@
 		</s:Line>
 		
 		<s:HGroup width="100%" paddingTop="16">
-			<s:Label text="{resourceManager.getString('myResources','EXERCISE_TYPE')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','EXERCISE_TYPE')+':'}"
 					 fontWeight="bold"/>
 			<s:Label id="exerciseTypeLbl"/>
 		</s:HGroup>
 		
 		<s:HGroup width="100%" id="commSituationRow" includeInLayout="false" visible="false">
-			<s:Label text="{resourceManager.getString('myResources','COMMUNICATION_SITUATION')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','COMMUNICATION_SITUATION')+':'}"
 					 fontWeight="bold"/>
 			<s:Label id="commSituationLbl"/>
 		</s:HGroup>
 		
 		<s:HGroup width="100%" id="commCompetenceRow" includeInLayout="false" visible="false">
-			<s:Label text="{resourceManager.getString('myResources','COMMUNICATIVE_COMPETENCE')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','COMMUNICATIVE_COMPETENCE')+':'}"
 					 fontWeight="bold"/>
 			<s:Label id="commCompetenceLbl"/>
 		</s:HGroup>
 		
 		<s:HGroup width="100%" id="lingAspectsRow" includeInLayout="false" visible="false">
-			<s:Label text="{resourceManager.getString('myResources','LINGUISTIC_ASPECT')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','LINGUISTIC_ASPECT')+':'}"
 					 fontWeight="bold"/>
 			<s:Label id="lingAspectsLbl"/>
 		</s:HGroup>
@@ -293,7 +287,7 @@
 		<s:VGroup id="descriptorContainer" minHeight="0" horizontalAlign="left"/>
 		
 		<s:VGroup width="100%" id="keywordsRow" includeInLayout="false" visible="false">
-			<s:Label text="{resourceManager.getString('myResources','KEYWORDS')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','KEYWORDS')+':'}"
 					 fontWeight="bold"/>
 			<s:TileGroup id="exerciseTagsBox"
 						 width="100%"
@@ -302,7 +296,7 @@
 		</s:VGroup>
 		
 		<s:VGroup id="licenceRow">
-			<s:Label text="{resourceManager.getString('myResources','LICENCE')+':'}"
+			<s:Label text="{ResourceManager.getInstance().getString('myResources','LICENCE')+':'}"
 					 fontWeight="bold"/>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:BitmapImage id="licenceBitmap" width="80" height="15"/>
@@ -325,7 +319,7 @@
 		</s:Line>
 		<s:Button id="showLessAdtInfo"
 				  fontSize="10"
-				  label="{_lessAdtInfoStatus ? resourceManager.getString('myResources','LESS_INFO'): resourceManager.getString('myResources','MORE_INFO') }"
+				  label="{_lessAdtInfoStatus ? ResourceManager.getInstance().getString('myResources','LESS_INFO'): ResourceManager.getInstance().getString('myResources','MORE_INFO') }"
 				  cornerRadius="0"
 				  skinClass="skins.LessAdtInfoButtonSkin"
 				  click="lessAdtInfoClickHandler(event)"/>

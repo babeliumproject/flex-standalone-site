@@ -17,7 +17,7 @@ package modules.exercise.command
 	{
 		public function execute(event:CairngormEvent):void
 		{
-			new VideoHistoryDelegate(this).exerciseAttemptResponse((event as UserVideoHistoryEvent).videoHistoryData);
+			new VideoHistoryDelegate(this).exerciseAttemptResponse((event as UserVideoHistoryEvent).params);
 		}
 		
 		public function result(data:Object):void

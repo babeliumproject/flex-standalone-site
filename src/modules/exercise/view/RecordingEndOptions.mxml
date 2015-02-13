@@ -16,9 +16,9 @@
 		<![CDATA[
 			import events.RecordingEndOptionEvent;
 			
-			import mx.resources.ResourceManager;
-			
 			import model.DataModel;
+			
+			import mx.resources.ResourceManager;
 		]]>
 	</fx:Script>
 
@@ -33,39 +33,33 @@
 				  verticalAlign="middle"
 				  width="100%">
 
-			<skins:IconButton id="publishRespLinkButton"
+			<s:Button id="publishRespLinkButton"
 							  label="{ResourceManager.getInstance().getString('myResources','SAVE_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.SAVE_RESPONSE))"
-							  styleName="commonLinkButton"
-							  width="100%"
-							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  icon="@Embed('/resources/images/eo_save_response.png')"/>
-			<skins:IconButton id="watchRespLinkButton"
+							  styleName="btn-success"
+							  width="100%"/>
+			<s:Button id="watchRespLinkButton"
 							  label="{ResourceManager.getInstance().getString('myResources','WATCH_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.VIEW_BOTH))"
-							  styleName="commonLinkButton"
+							  styleName="btn-default"
 							  width="100%"
-							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  icon="@Embed('/resources/images/eo_watch_sim.png')"/>
+							  />
 		</s:VGroup>
 		<s:VGroup horizontalAlign="right"
 				  verticalAlign="middle"
 				  width="100%">
-			<skins:IconButton id="recordAgainLinkButton"
+			<s:Button id="recordAgainLinkButton"
 							  label="{ResourceManager.getInstance().getString('myResources', 'RECORD_AGAIN')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.RECORD_AGAIN))"
-							  styleName="commonLinkButton"
-							  width="100%"
-							  enabled="{ !DataModel.getInstance().recordingExercise }"
-							  icon="@Embed('/resources/images/button_rec.png')"/>
+							  styleName="btn-danger"
+							  width="100%"/>
 
 			<!-- styleName="watchRecordedButton" -->
-			<skins:IconButton id="discardRespLinkButton"
+			<s:Button id="discardRespLinkButton"
 							  label="{ResourceManager.getInstance().getString('myResources','DISCARD_RESPONSE')}"
 							  click="dispatchEvent(new RecordingEndOptionEvent(RecordingEndOptionEvent.DISCARD_RESPONSE))"
-							  styleName="commonLinkButton"
-							  width="100%"
-							  icon="@Embed('/resources/images/button_abort.png')"/>
+							  styleName="btn-default"
+							  width="100%"/>
 
 		</s:VGroup>
 	</s:HGroup>

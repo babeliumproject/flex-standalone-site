@@ -295,6 +295,10 @@ package components.videoPlayer
 				//
 			}
 			
+			if(event.state == AMediaManager.STREAM_READY){
+				dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.ON_READY));
+			}
+			
 			//dispatchEvent(new VideoPlayerEvent(VideoPlayerEvent.STREAM_STATE_CHANGED, event.state));
 		}
 		
