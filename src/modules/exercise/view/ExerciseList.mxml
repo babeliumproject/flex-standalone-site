@@ -10,7 +10,7 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  implements="modules.IGroupInterface"
+		  implements="modules.IPinnedGroupInterface"
 		  width="100%"
 		  preinitialize="onPreinitialize(event)"
 		  creationComplete="onComplete(event)">
@@ -18,27 +18,27 @@
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
-			
+
+			import mx.binding.utils.ChangeWatcher;
+
 			import control.URLManager;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
-
 			import mx.events.FlexEvent;
-
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
-			
+
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.TileLayout;
 
 			public static const LANGUAGE_PRACTICE:int=0;
 			public static const OTHER:int=5;
-			
+
 			private var _model:DataModel=DataModel.getInstance();
 
 			private var _dataProvider:ArrayCollection;
@@ -50,9 +50,9 @@
 			public var sitFilter:int;
 			public var sortFilter:String;
 			private var comptFilters:Array;
-			
+
 			private var _currentPage:int=1;
-	
+
 			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'LEVEL_A1'}, {'code': 2, 'label': 'LEVEL_A2'}, {'code': 3, 'label': 'LEVEL_B1'}, {'code': 4, 'label': 'LEVEL_B2'}, {'code': 5, 'label': 'LEVEL_C1'}]);
 			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
 			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 1, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 2, 'label': 'STUDIES'}, {'code': 3, 'label': 'WORK'}]);
@@ -64,25 +64,28 @@
 			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
 
 			private var _descriptors:Array;
-			
-			public function onPreinitialize(event:FlexEvent):void{
-				var commitOnly:Boolean=false;
-				var useWeakReference:Boolean=true;
-				BindingUtils.bindSetter(setComponentData,_model,'availableRecordableExercisesRetrieved',commitOnly,useWeakReference);
+
+			private var cw1:ChangeWatcher;
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+
+			public function onPreinitialize(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(setComponentData, _model, 'availableRecordableExercisesRetrieved', commitOnly, useWeakReference);
 			}
 
 			public function onComplete(event:FlexEvent):void
 			{
 				getDescriptorCodesFromResourceFile();
 				getLangCodesFromResourceFile();
-				
+
 				//Initialize components' dataProviders
 				sortByDropdown.localeAwareDataProvider=dpSortField;
 				langFilterDD.localeAwareDataProvider=dpLangs;
 				difLevelFilterDD.localeAwareDataProvider=dpDifficultyLevel;
 				exerciseTypeFilterDD.localeAwareDataProvider=dpExerciseType;
 				commSituationFilterDD.localeAwareDataProvider=dpCommSituation;
-				
+
 			}
 
 			private function getDescriptorCodesFromResourceFile():void
@@ -116,21 +119,23 @@
 					}
 				}
 			}
-			
-			private function getLangCodesFromResourceFile():void{
+
+			private function getLangCodesFromResourceFile():void
+			{
 				var resources:Object=ResourceManager.getInstance().getResourceBundle("en_US", "myResources").content;
 				var pattern:RegExp=/LANGUAGE_(\w{2})$/;
-				var tmpLangs:Array= new Array();
+				var tmpLangs:Array=new Array();
 				for (var item:Object in resources)
 				{
 					var key:String=item as String;
 					//Filter the keys that match the descriptor pattern
 					var matches:Array=key.match(pattern);
-					if(matches && matches.length){
+					if (matches && matches.length)
+					{
 						tmpLangs.push({'code': (matches[1] as String).toLowerCase(), 'label': key});
 					}
 				}
-				dpLangs=new ArrayCollection(tmpLangs);	
+				dpLangs=new ArrayCollection(tmpLangs);
 			}
 
 			public function resetGroup():void
@@ -140,7 +145,7 @@
 				exerciseTypeFilterDD.selectedIndex=-1;
 				commSituationFilterDD.selectedIndex=-1;
 				searchField.text='';
-				
+
 				searchTerm=null;
 				diffFilter=0;
 				typeFilter=-1;
@@ -148,70 +153,98 @@
 				sitFilter=0;
 			}
 
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+			}
+
 			public function setComponentData(value:Boolean):void
 			{
-				_currentPage=1;
-				_dataProvider=DataModel.getInstance().availableRecordableExercises;
-				var length:int = _dataProvider ? _dataProvider.length : 0;
-				trace("Exercises that match the criteria: "+length);
-				if(!_dataProvider){
-					noresultLbl.includeInLayout=true;
-					noresultLbl.visible=true;
-				} else {
-					noresultLbl.includeInLayout=false;
-					noresultLbl.visible=false;	
+				if (initialized)
+				{
+					_currentPage=1;
+					_dataProvider=DataModel.getInstance().availableRecordableExercises;
+					var length:int=_dataProvider ? _dataProvider.length : 0;
+					trace("Exercises that match the criteria: " + length);
+					if (!_dataProvider)
+					{
+						noresultLbl.includeInLayout=true;
+						noresultLbl.visible=true;
+					}
+					else
+					{
+						noresultLbl.includeInLayout=false;
+						noresultLbl.visible=false;
+					}
+					setActiveFilters();
+					createPagination();
 				}
-				setActiveFilters();
-				createPagination();
 			}
-			
-			private function setActiveFilters():void{
-				if(searchTerm){
-					var te:String = searchTerm.replace(/\+/g, " ");
-					var ts:String = decodeURIComponent(te);
+
+			private function setActiveFilters():void
+			{
+				if (searchTerm)
+				{
+					var te:String=searchTerm.replace(/\+/g, " ");
+					var ts:String=decodeURIComponent(te);
 					searchField.text=ts;
 				}
-				
-				if(sortFilter){
-					var iso:Object = findInCollection(ArrayCollection(sortByDropdown.dataProvider),findCode(sortFilter));
-					if(iso) sortByDropdown.selectedItem=iso;
+
+				if (sortFilter)
+				{
+					var iso:Object=findInCollection(ArrayCollection(sortByDropdown.dataProvider), findCode(sortFilter));
+					if (iso)
+						sortByDropdown.selectedItem=iso;
 				}
-				
-				if(langFilter){
-					var il:Object = findInCollection(ArrayCollection(langFilterDD.dataProvider),findCode(langFilter));
-					if(il) langFilterDD.selectedItem=il;
+
+				if (langFilter)
+				{
+					var il:Object=findInCollection(ArrayCollection(langFilterDD.dataProvider), findCode(langFilter));
+					if (il)
+						langFilterDD.selectedItem=il;
 				}
-				
-				if(diffFilter){
-					var id:Object = findInCollection(ArrayCollection(difLevelFilterDD.dataProvider), findCode(diffFilter));
-					trace("DiffFilter obj: "+ObjectUtil.toString(id));
-					if(id) difLevelFilterDD.selectedItem=id;
+
+				if (diffFilter)
+				{
+					var id:Object=findInCollection(ArrayCollection(difLevelFilterDD.dataProvider), findCode(diffFilter));
+					trace("DiffFilter obj: " + ObjectUtil.toString(id));
+					if (id)
+						difLevelFilterDD.selectedItem=id;
 				}
-				
-				if(typeFilter>-1){
-					var it:Object = findInCollection(ArrayCollection(exerciseTypeFilterDD.dataProvider),findCode(typeFilter));
-					if(it) exerciseTypeFilterDD.selectedItem=it;
-					
-					if(typeFilter!= LANGUAGE_PRACTICE && typeFilter != OTHER)
+
+				if (typeFilter > -1)
+				{
+					var it:Object=findInCollection(ArrayCollection(exerciseTypeFilterDD.dataProvider), findCode(typeFilter));
+					if (it)
+						exerciseTypeFilterDD.selectedItem=it;
+
+					if (typeFilter != LANGUAGE_PRACTICE && typeFilter != OTHER)
 					{
 						sitfilterPnl.includeInLayout=true;
 						sitfilterPnl.visible=true;
 						//comptfilterPnl.includeInLayout=true;
 						//comptfilterPnl.visible=true;
-						
-						if(sitFilter){
-							var isit:Object = findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
-							if(isit) commSituationFilterDD.selectedItem=isit;
-							//Build the competence filter panel, defer the compFilters check until displayObject is done
+
+						if (sitFilter)
+						{
+							var isit:Object=findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
+							if (isit)
+								commSituationFilterDD.selectedItem=isit;
+								//Build the competence filter panel, defer the compFilters check until displayObject is done
 						}
-						if(comptFilters){
+						if (comptFilters)
+						{
 							var icm:Object;
-							var icmlist:Array = new Array();
-							for(var i:int=0; i<comptFilters.length; i++){
-								icm = findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
-								if(icm) icmlist.push(icm);
+							var icmlist:Array=new Array();
+							for (var i:int=0; i < comptFilters.length; i++)
+							{
+								icm=findInCollection(ArrayCollection(commSituationFilterDD.dataProvider), findCode(sitFilter));
+								if (icm)
+									icmlist.push(icm);
 							}
-							//setActiveCheckboxes(container,icmlist);
+								//setActiveCheckboxes(container,icmlist);
 						}
 					}
 					else
@@ -220,7 +253,7 @@
 						sitfilterPnl.visible=false;
 						comptfilterPnl.includeInLayout=false;
 						comptfilterPnl.visible=false;
-						
+
 						sitFilter=0;
 						comptFilters=null;
 					}
@@ -229,10 +262,10 @@
 
 			public function createPagination():void
 			{
-				var itemcount:int = _dataProvider ? _dataProvider.length : 0;
-				var itemsPerPage:int = DataModel.getInstance().pageSize;
-				var numNavButtons:int = DataModel.getInstance().numberOfPagesNav;
-				
+				var itemcount:int=_dataProvider ? _dataProvider.length : 0;
+				var itemsPerPage:int=DataModel.getInstance().pageSize;
+				var numNavButtons:int=DataModel.getInstance().numberOfPagesNav;
+
 				VideoPaginator.createPaginationMenu(itemcount, itemsPerPage, _currentPage, numNavButtons, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
@@ -247,27 +280,29 @@
 			{
 				var current:int=_currentPage - 1;
 				var itemsPerPage:int=DataModel.getInstance().pageSize;
-				
-				var offset:int = current * itemsPerPage;
-				var numitems:int = offset + itemsPerPage;
-				
+
+				var offset:int=current * itemsPerPage;
+				var numitems:int=offset + itemsPerPage;
+
 				var dataTemp:ArrayCollection=null;
-				
-				if(_dataProvider){
-					dataTemp=new ArrayCollection(_dataProvider.source.slice(offset,numitems));
+
+				if (_dataProvider)
+				{
+					dataTemp=new ArrayCollection(_dataProvider.source.slice(offset, numitems));
 				}
 				exerciseListDataGroup.dataProvider=dataTemp;
-				
+
 				refreshLayout();
 			}
-			
-			private function refreshLayout():void{
+
+			private function refreshLayout():void
+			{
 				var tile:TileLayout=new TileLayout();
 				tile.columnWidth=182;
 				tile.rowHeight=255;
 				tile.horizontalGap=20;
 				tile.verticalGap=20;
-				
+
 				exerciseListDataGroup.layout=tile;
 				exerciseListDataGroup.percentWidth=100;
 			}
@@ -304,7 +339,7 @@
 				{
 					sortFilter=sortByDropdown && sortByDropdown.selectedItem != undefined ? sortByDropdown.selectedItem['code'] : null;
 				}
-				
+
 				if (dispatchingComponent.id == commSituationFilterDD.id)
 				{
 					sitFilter=commSituationFilterDD && commSituationFilterDD.selectedItem != undefined ? commSituationFilterDD.selectedItem['code'] : 0;
@@ -320,40 +355,43 @@
 				{
 					url+='/search/';
 				}
-				else if (langFilter || diffFilter || typeFilter>-1 || sortFilter)
+				else if (langFilter || diffFilter || typeFilter > -1 || sortFilter)
 				{
 					url+='/filter/';
 				}
 
 				var params:Object=new Object();
-				if(searchTerm){
+				if (searchTerm)
+				{
 					params.q=searchTerm;
 				}
-				if(langFilter)
+				if (langFilter)
 				{
 					params.lang=langFilter;
 				}
-				if(diffFilter)
+				if (diffFilter)
 				{
 					params.difficulty=diffFilter;
 				}
-				if(typeFilter>-1)
+				if (typeFilter > -1)
 				{
 					params.type=typeFilter;
 				}
-				if(sitFilter)
+				if (sitFilter)
 				{
 					params.situation=sitFilter;
 				}
-				if(sortFilter){
+				if (sortFilter)
+				{
 					params.sort=sortFilter;
 				}
-				
-				var fragment:String = URLUtil.objectToString(params,'&',false);
-				if (fragment) fragment = '?'+fragment;
+
+				var fragment:String=URLUtil.objectToString(params, '&', false);
+				if (fragment)
+					fragment='?' + fragment;
 				trace(ObjectUtil.toString(fragment));
 
-				URLManager.getInstance().redirect(url+fragment);
+				URLManager.getInstance().redirect(url + fragment);
 			}
 
 			public function findInCollection(c:ArrayCollection, find:Function):Object
@@ -429,18 +467,18 @@
 					<s:Label id="sortbylbl"
 							 text="{ResourceManager.getInstance().getString('myResources','SORT_BY')}"/>
 					<components:EnhancedDropDownList id="sortByDropdown"
-											   skinClass="skins.BootstrapDropDownList"
-											   cornerRadius="3"
-											   borderColor="0xcccccc"
-											   requireSelection="true"
-											   sortItems="true"
-											   change="onFilterDropdownChange(event)"/>
+													 skinClass="skins.BootstrapDropDownList"
+													 cornerRadius="3"
+													 borderColor="0xcccccc"
+													 requireSelection="true"
+													 sortItems="true"
+													 change="onFilterDropdownChange(event)"/>
 				</s:HGroup>
 			</s:HGroup>
-			
-			<s:Label id="noresultLbl" 
-					 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
-					 includeInLayout="false" 
+
+			<s:Label id="noresultLbl"
+					 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}"
+					 includeInLayout="false"
 					 visible="false"/>
 
 			<s:List id="exerciseListDataGroup"
@@ -470,29 +508,29 @@
 									  paddingTop="16"/>
 				</s:layout>
 				<components:EnhancedDropDownList id="langFilterDD"
-										   skinClass="skins.BootstrapDropDownList"
-										   cornerRadius="3"
-										   borderColor="0xcccccc"
-										   localeAwarePrompt="ALL_LANGUAGES"
-										   sortItems="true"
-										   change="onFilterDropdownChange(event)"
-										   width="100%"/>
+												 skinClass="skins.BootstrapDropDownList"
+												 cornerRadius="3"
+												 borderColor="0xcccccc"
+												 localeAwarePrompt="ALL_LANGUAGES"
+												 sortItems="true"
+												 change="onFilterDropdownChange(event)"
+												 width="100%"/>
 				<components:EnhancedDropDownList id="difLevelFilterDD"
-										   skinClass="skins.BootstrapDropDownList"
-										   cornerRadius="3"
-										   borderColor="0xcccccc"
-										   localeAwarePrompt="ALL_DIFFICULTIES"
-										   sortItems="true"
-										   change="onFilterDropdownChange(event)"
-										   width="100%"/>
+												 skinClass="skins.BootstrapDropDownList"
+												 cornerRadius="3"
+												 borderColor="0xcccccc"
+												 localeAwarePrompt="ALL_DIFFICULTIES"
+												 sortItems="true"
+												 change="onFilterDropdownChange(event)"
+												 width="100%"/>
 				<components:EnhancedDropDownList id="exerciseTypeFilterDD"
-										   skinClass="skins.BootstrapDropDownList"
-										   cornerRadius="3"
-										   borderColor="0xcccccc"
-										   localeAwarePrompt="ALL_TYPES"
-										   sortItems="true"
-										   change="onFilterDropdownChange(event)"
-										   width="100%"/>
+												 skinClass="skins.BootstrapDropDownList"
+												 cornerRadius="3"
+												 borderColor="0xcccccc"
+												 localeAwarePrompt="ALL_TYPES"
+												 sortItems="true"
+												 change="onFilterDropdownChange(event)"
+												 width="100%"/>
 			</s:Panel>
 
 			<s:Panel id="sitfilterPnl"
@@ -508,13 +546,13 @@
 									  paddingTop="16"/>
 				</s:layout>
 				<components:EnhancedDropDownList id="commSituationFilterDD"
-										   skinClass="skins.BootstrapDropDownList"
-										   cornerRadius="3"
-										   borderColor="0xcccccc"
-										   localeAwarePrompt="ALL_SITUATIONS"
-										   sortItems="true"
-										   change="onFilterDropdownChange(event)"
-										   width="100%"/>
+												 skinClass="skins.BootstrapDropDownList"
+												 cornerRadius="3"
+												 borderColor="0xcccccc"
+												 localeAwarePrompt="ALL_SITUATIONS"
+												 sortItems="true"
+												 change="onFilterDropdownChange(event)"
+												 width="100%"/>
 			</s:Panel>
 
 			<s:Panel id="comptfilterPnl"

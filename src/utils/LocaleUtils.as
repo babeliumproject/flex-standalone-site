@@ -2,6 +2,8 @@ package utils
 {
 	import model.DataModel;
 	
+	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
@@ -42,6 +44,18 @@ package utils
 					lchain.push(oldLocale);
 			}
 			rm.localeChain=lchain;
+		}
+		
+		public static function localizedPropertyBind(site:Object, property:String, 
+													 bundleName:String, resourceName:String, 
+													 commitOnly:Boolean=false, useWeakReference:Boolean=false):ChangeWatcher{
+			var chain:Object = new Object();
+			chain.name = "getString";
+			chain.getter = function(rm:IResourceManager):String { 
+				return rm.getString(bundleName, resourceName);
+			};
+			var cw:ChangeWatcher = BindingUtils.bindProperty(site, property, ResourceManager.getInstance(), chain, commitOnly, useWeakReference);
+			return cw;	
 		}
 	}
 }

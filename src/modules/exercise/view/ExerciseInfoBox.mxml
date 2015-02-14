@@ -22,11 +22,11 @@
 			import control.URLManager;
 			
 			import model.DataModel;
-			import model.ResourceSubscriber;
 			
 			import modules.exercise.event.ExerciseEvent;
 			import modules.exercise.event.SearchEvent;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
@@ -37,6 +37,7 @@
 			import spark.components.Button;
 			
 			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
 			
 			import view.common.LicenseResource;
 
@@ -49,11 +50,20 @@
 			private var _lessAdtInfoStatus:Boolean=false;
 			
 			[Bindable]
-			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
-
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");		
+			
 			public function completeHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
+				
+				if (lineStyle)
+				{
+					lineStroke1.alpha=lineStyle.getStyle('borderAlpha');
+					lineStroke1.color=lineStyle.getStyle('borderColor');
+					lineStroke2.alpha=lineStyle.getStyle('borderAlpha');
+					lineStroke2.color=lineStyle.getStyle('borderColor');
+				}
+				
 				exerciseData=_exercise;
 			}
 
@@ -86,7 +96,8 @@
 				exDescription.htmlText=_exercise.description;
 				
 				var exerciseType:String = ExerciseRenderUtils.getTypeLabel(_exercise.type);
-				exerciseTypeLbl.text=ResourceManager.getInstance().getString('myResources',exerciseType);
+				//exerciseTypeLbl.text=ResourceManager.getInstance().getString('myResources',exerciseType);
+				LocaleUtils.localizedPropertyBind(exerciseTypeLbl,'text','myResources',exerciseType,false,true);
 				
 				commSituationRow.includeInLayout=false;
 				commSituationRow.visible=false;
@@ -100,17 +111,20 @@
 					var commCompetence:String = ExerciseRenderUtils.getCommunicativeCompetenceLabel(_exercise.competence);
 					var lingAspect:String = ExerciseRenderUtils.getLinguisticAspectLabel(_exercise.lingaspects);
 					if(commSituation){
-						commSituationLbl.text=ResourceManager.getInstance().getString('myResources',commSituation);
+						//commSituationLbl.text=ResourceManager.getInstance().getString('myResources',commSituation);
+						LocaleUtils.localizedPropertyBind(commSituationLbl,'text','myResources',commSituation,false,true);
 						commSituationRow.includeInLayout=true;
 						commSituationRow.visible=true;
 					}
 					if(commCompetence){
-						commCompetenceLbl.text=ResourceManager.getInstance().getString('myResources',commCompetence);
+						//commCompetenceLbl.text=ResourceManager.getInstance().getString('myResources',commCompetence);
+						LocaleUtils.localizedPropertyBind(commCompetenceLbl,'text','myResources',commCompetence,false,true);
 						commCompetenceRow.includeInLayout=true;
 						commCompetenceRow.visible=true;
 					}
 					if(lingAspect){
-						lingAspectsLbl.text=ResourceManager.getInstance().getString('myResources',lingAspect);
+						//lingAspectsLbl.text=ResourceManager.getInstance().getString('myResources',lingAspect);
+						LocaleUtils.localizedPropertyBind(lingAspectsLbl,'text','myResources',lingAspect, false, true);
 						lingAspectsRow.includeInLayout=true;
 						lingAspectsRow.visible=true;
 					}
@@ -144,10 +158,8 @@
 				if(_exercise.descriptors && _exercise.descriptors.length){
 					var descriptors:Array = ArrayUtil.toArray(_exercise.descriptors);
 					var sectTitle:Label=new Label();
-					sectTitle.setStyle("fontWeight","bold");
-					//sectTitle.setStyle("fontSize",11);
-					sectTitle.text=ResourceManager.getInstance().getString('myResources','DESCRIPTORS')+':';
-					ResourceSubscriber.getInstance().subscribeElement(sectTitle, "text", "myResources", 'DESCRIPTORS');
+					sectTitle.setStyle("fontWeight","bold");				
+					LocaleUtils.localizedPropertyBind(sectTitle, 'text', 'myResources','DESCRIPTORS',false,true);
 					
 					descriptorContainer.addElement(sectTitle);
 					var i:int;
@@ -158,17 +170,15 @@
 						dlabel.styleName="btn-link";
 						dlabel.buttonMode=true;
 						dlabel.setStyle("fontSize", 11);
-						dlabel.label=ResourceManager.getInstance().getString('myResources',descriptors[i]);
 						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler, false, 0, true);
 						descriptorContainer.addElement(dlabel);
-						ResourceSubscriber.getInstance().subscribeElement(dlabel, "label", "myResources", descriptors[i]);
+						LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],false,true);
 					}
 				}
 			}
 			
 			private function removeDescriptors():void{
 				if(descriptorContainer.numElements){
-					ResourceSubscriber.getInstance().unsubscribeContainerElements(descriptorContainer);
 					descriptorContainer.removeAllElements();
 				}
 			}
@@ -240,9 +250,8 @@
 				 styleName="h5"/>
 		<s:Line width="100%">
 			<s:stroke>
-				<s:SolidColorStroke weight="1"
-									alpha="{lineStyle.getStyle('borderAlpha')}"
-									color="{lineStyle.getStyle('borderColor')}"/>
+				<s:SolidColorStroke id="lineStroke1"
+									weight="1"/>
 			</s:stroke>
 		</s:Line>
 		
@@ -254,9 +263,8 @@
 		
 		<s:Line width="100%">
 			<s:stroke>
-				<s:SolidColorStroke weight="1"
-									alpha="{lineStyle.getStyle('borderAlpha')}"
-									color="{lineStyle.getStyle('borderColor')}"/>
+				<s:SolidColorStroke id="lineStroke2"
+									weight="1"/>
 			</s:stroke>
 		</s:Line>
 		
