@@ -497,9 +497,11 @@ class Exercise {
 		try {
 			$verifySession = new SessionValidation(true);
 			$filteredResults = $this->filterByLanguage($searchResults, 'practice');
-			return $this->conn->multipleRecast('ExerciseVO',$filteredResults);
+			//return $this->conn->multipleRecast('ExerciseVO',$filteredResults);
+			return $filteredResults;
 		} catch (Exception $e) {
-			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			//return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			return $searchResults;
 		}
 	}
 	

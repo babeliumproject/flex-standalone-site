@@ -16,8 +16,6 @@ package modules.exercise.command
 	
 	import view.common.CustomAlert;
 	
-	import vo.ExerciseVO;
-
 	public class ExerciseSelectedCommand implements ICommand, IResponder
 	{
 		
@@ -49,12 +47,5 @@ package modules.exercise.command
 			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_EXERCISES'));
 			trace(ObjectUtil.toString(info));
 		}
-
-		//public function execute(event:CairngormEvent):void
-		//{
-		//	var selectedEx:ExerciseVO = (event as ExerciseEvent).exercise;
-		//	
-		//}
-		
 	}
 }

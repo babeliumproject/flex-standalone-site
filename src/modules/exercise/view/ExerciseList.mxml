@@ -21,20 +21,13 @@
 			
 			import control.URLManager;
 			
-			import flash.sampler.getInvocationCount;
-			
 			import model.DataModel;
-			
-			import modules.exercise.event.ExerciseEvent;
-			import modules.exercise.event.SearchEvent;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
-			import mx.core.Application;
-			import mx.core.FlexGlobals;
+
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
-			import mx.resources.IResourceManager;
+
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
@@ -42,8 +35,6 @@
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.TileLayout;
-			
-			import vo.ExerciseVO;
 
 			public static const LANGUAGE_PRACTICE:int=0;
 			public static const OTHER:int=5;

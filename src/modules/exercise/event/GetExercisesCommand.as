@@ -8,7 +8,6 @@ package modules.exercise.event
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
@@ -17,8 +16,6 @@ package modules.exercise.event
 	
 	import view.common.CustomAlert;
 	
-	import vo.ExerciseVO;
-
 	public class GetExercisesCommand implements ICommand, IResponder
 	{
 
@@ -36,7 +33,7 @@ package modules.exercise.event
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
 
-				if (!(resultCollection[0] is ExerciseVO))
+				if (!(resultCollection[0] is Object))
 				{
 					CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_RETRIEVING_EXERCISES'));
 				}

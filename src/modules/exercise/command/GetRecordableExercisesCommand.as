@@ -10,15 +10,12 @@ package modules.exercise.command
 	import modules.exercise.event.ExerciseEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.utils.ArrayUtil;
 	import mx.utils.ObjectUtil;
 	
 	import view.common.CustomAlert;
-	
-	import vo.ExerciseVO;
 	
 	public class GetRecordableExercisesCommand implements ICommand, IResponder
 	{

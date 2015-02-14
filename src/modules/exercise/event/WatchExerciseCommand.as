@@ -5,20 +5,16 @@ package modules.exercise.event
 	
 	import control.URLManager;
 	
-	//import events.ViewChangeEvent;
-	
 	import model.DataModel;
 	
 	import mx.collections.ArrayCollection;
-	
-	import vo.ExerciseVO;
 
 	public class WatchExerciseCommand implements ICommand
 	{
 
 		public function execute(event:CairngormEvent):void
 		{
-			var selectedEx:ExerciseVO = (event as ExerciseEvent).params as ExerciseVO;
+			var selectedEx:Object = (event as ExerciseEvent).params;
 			var recModuleCurrentExerciseRetr:Boolean = DataModel.getInstance().currentExerciseRetrieved.getItemAt(DataModel.RECORDING_MODULE);
 			DataModel.getInstance().currentExercise.setItemAt(selectedEx, 0);
 			DataModel.getInstance().currentExerciseRetrieved = new ArrayCollection(new Array(true, recModuleCurrentExerciseRetr));

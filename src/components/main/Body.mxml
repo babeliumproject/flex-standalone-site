@@ -11,6 +11,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.events.ModuleEvent;
+			
 			import components.EnhancedDropDownList;
 			import components.videoPlayer.VideoRecorder;
 			
@@ -21,14 +24,12 @@
 			
 			import modules.IModuleInterface;
 			
-			import mx.events.FlexEvent;
-			import mx.events.ModuleEvent;
-			import mx.utils.ObjectUtil;
-			
 			import utils.CollectionUtils;
 			import utils.ExerciseRenderUtils;
 			import utils.LocaleUtils;
 			import utils.TimeMetadataParser;
+			
+			import vo.LicenseVO;
 			
 			/**
 			 * Reference site-wide classes here to avoid including them in each Module
@@ -40,7 +41,7 @@
 			private var utils_exerciseRenderUtils:ExerciseRenderUtils;
 			private var utils_localeUtils:LocaleUtils;
 			private var utils_timeMetadataParser:TimeMetadataParser;
-			
+			private var vo_licenseVo:LicenseVO;
 			
 			
 			private var _currentModuleFile:String;

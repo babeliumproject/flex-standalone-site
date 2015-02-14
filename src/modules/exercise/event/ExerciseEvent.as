@@ -3,10 +3,6 @@ package modules.exercise.event
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import flash.events.Event;
-	
-	import vo.ExerciseReportVO;
-	import vo.ExerciseScoreVO;
-	import vo.ExerciseVO;
 
 	public class ExerciseEvent extends CairngormEvent
 	{
