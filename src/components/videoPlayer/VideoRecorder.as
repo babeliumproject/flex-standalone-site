@@ -592,12 +592,19 @@ package components.videoPlayer
 			return _media.currentTime;
 		}
 
-		/**
-		 * Methods
-		 *
-		 */
-
-		/** Overriden repaint */
+		override public function setVolume(value:Number):void{
+			if(_state==PLAY_PARALLEL_STATE){
+				if (!isNaN(value) && value >= 0 && value <= 100)
+				{
+					_currentVolume=value;
+					_parallelCurrentVolume=value;
+					if(_media) _media.volume = value;
+					if(_parallelMedia) _parallelMedia.volume = value;
+				}
+			} else {
+				super.setVolume(value);
+			}
+		}
 
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{

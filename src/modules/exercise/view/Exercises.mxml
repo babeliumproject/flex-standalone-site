@@ -119,7 +119,7 @@
 
 				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
 				exerciseTitle.text=_exerciseTitle;
-				setRecordingButtonVisibility();
+				setRecordingButtonGroupVisibility();
 			}
 			
 			protected function setupStartStopRecordButton(value:Boolean):void{
@@ -314,7 +314,7 @@
 					var item:Object=availableRoles.selectedItem;
 					_selectedRole=String(item.label);
 					_isRecording=true;
-					setRecordingButtonVisibility();
+					setRecordingButtonGroupVisibility();
 					requestRecordingSlot();
 				}
 			}
@@ -364,9 +364,6 @@
 				}
 			}
 
-			/**
-			 * On recording end successfully
-			 **/
 			private function onRecordingEnd(e:RecordingEvent):void
 			{
 				_isRecording=false;
@@ -375,9 +372,9 @@
 					_recordingAttempts=new Array();
 				_recordingAttempts.push(_recordMediaData);
 				
-				setRecordingButtonVisibility();
+				setRecordingButtonGroupVisibility();
+				
 				var parallelmedia:Object=new Object();
-
 				parallelmedia.leftMedia=_currentMediaData;
 				parallelmedia.rightMedia=_recordMediaData;
 
@@ -404,7 +401,7 @@
 				_isRecording=false;
 				_videoPlayerReady=false;
 				
-				setRecordingButtonVisibility();
+				setRecordingButtonGroupVisibility();
 				
 				startRecordingButton.enabled=_videoPlayerReady&&_rolesReady;
 
@@ -425,32 +422,22 @@
 			}
 
 			// Watch both
-			private function onWatchExerciseAndResponse(e:Event):void
+			private function onWatchResponse(e:Event):void
 			{
 				var parallelmedia:Object=new Object();
+				
+				//The right-side media is the last successfully recorded response
+				var _lastSuccessfulResponse:Object=_recordingAttempts[_recordingAttempts.length-1];
 
 				parallelmedia.leftMedia=_currentMediaData;
-				parallelmedia.rightMedia=_recordMediaData;
+				parallelmedia.rightMedia=_lastSuccessfulResponse;
 
 				VP.loadVideoByUrl(parallelmedia, _currentTimeMarkers);
 			}
 
-			// Watch response
-			private function onWatchResponse(e:Event):void
+			private function onWatchExercise(e:Event):void
 			{
-				var media:Object=_recordMediaData;
-				VP.loadVideoByUrl(media);
-			}
-
-			// Record again
-			private function recordAgainClickHandler(e:Event):void
-			{
-				checkRoleSelected();
-			}
-
-			private function abortRecordingClickHandler(e:Event):void
-			{
-				restorePlaybackView();
+				VP.loadVideoByUrl(_currentMediaData);
 			}
 
 			// Save response
@@ -561,7 +548,7 @@
 				}
 			}
 			
-			protected function setRecordingButtonVisibility():void{
+			protected function setRecordingButtonGroupVisibility():void{
 				if(_isRecording){
 					watchRecording.includeInLayout=false;
 					watchRecording.visible=false;
@@ -622,7 +609,7 @@
 				isModelLbl.includeInLayout=false;
 				exerciseTitle.text=_exerciseTitle;
 				startRecordingButton.enabled=_videoPlayerReady&&_rolesReady;
-				setRecordingButtonVisibility();
+				setRecordingButtonGroupVisibility();
 
 				//Before finishing, set the related data to null
 				_model.watchExerciseData=null;
@@ -783,15 +770,18 @@
 					<s:HGroup width="100%" horizontalAlign="right">
 						<s:Button id="watchRecording"
 								  styleName="btn-default"
-								  label="{ResourceManager.getInstance().getString('myResources','WATCH_RECORDING')}"
-								  click="onWatchExerciseAndResponse(event)"/>
+								  label="{ResourceManager.getInstance().getString('myResources','WATCH_RESPONSE')}"
+								  buttonMode="true"
+								  click="onWatchResponse(event)"/>
 						<s:Button id="watchExercise"
 								  styleName="btn-default"
 								  label="{ResourceManager.getInstance().getString('myResources','WATCH_EXERCISE')}"
-								  click="abortRecordingClickHandler(event)"/>
+								  buttonMode="true"
+								  click="onWatchExercise(event)"/>
 						<s:Button id="startRecordingButton"
 								  styleName="btn-danger"
 								  enabled="false"
+								  buttonMode="true"
 								  click="onStartStopRecordingClicked(event)"/>	
 					</s:HGroup>
 				</s:VGroup>
