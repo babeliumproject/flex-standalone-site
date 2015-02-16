@@ -21,6 +21,9 @@ class ExerciseVO {
 	public $license;
 	public $reference;
 	
+	public $ismodel;
+	public $model_id;
+	
 	public $type;
 	public $situation;
 	public $competence;

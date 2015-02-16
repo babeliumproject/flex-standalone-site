@@ -625,7 +625,9 @@ class Exercise {
        			   avg (suggested_level) as avgDifficulty,
 			       e.status, 
 			       e.license, 
-			       e.reference
+			       e.reference,
+			       e.ismodel,
+			       e.model_id
 			       FROM   exercise e 
 				 		INNER JOIN user u ON e.fk_user_id= u.id
 				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id

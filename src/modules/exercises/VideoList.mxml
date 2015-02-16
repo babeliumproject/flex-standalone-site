@@ -12,18 +12,18 @@
 	<fx:Script>
 		<![CDATA[
 			import events.ExerciseEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.main.VideoPaginator;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.events.ListEvent;
-
+			
 			import spark.components.Button;
-
+			
 			import vo.ExerciseVO;
 
 
@@ -52,12 +52,27 @@
 				if (DataModel.getInstance().availableExercisesRetrieved.getItemAt(DataModel.RECORDING_MODULE))
 				{
 					//exerciseListDatagrid.rowCount=DataModel.getInstance().availableRecordableExercises.length;
-					_dataProvider=DataModel.getInstance().availableRecordableExercises;
+					//_dataProvider=DataModel.getInstance().availableRecordableExercises;
+					
+					var tmp:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
+					_dataProvider=filterNonModel(tmp);
 
 					createPagination();
 
 					DataModel.getInstance().availableExercisesRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 				}
+			}
+			
+			public function filterNonModel(input:ArrayCollection):ArrayCollection{
+				if(!input) return null;
+				var filtered:ArrayCollection=new ArrayCollection();
+				for each (var item:ExerciseVO in input){
+					var model:int = parseInt(item.ismodel);
+					if(!model){
+						filtered.addItem(item);
+					}
+				}
+				return filtered;
 			}
 
 			public function set retrieveCustomizedExercises(value:Boolean):void

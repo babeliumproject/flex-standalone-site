@@ -257,13 +257,14 @@ class Home{
 		               e.status, 
 		               e.license, 
 		               e.reference, 
-		               a.complete as isSubtitled
+		               a.complete as isSubtitled,
+		               e.ismodel
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
+       			WHERE e.status = 'Available' AND e.ismodel=0
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 		
@@ -320,13 +321,14 @@ class Home{
 		               e.status, 
 		               e.license, 
 		               e.reference, 
-		               a.complete as isSubtitled
+		               a.complete as isSubtitled,
+		               e.ismodel
 				FROM exercise e 
 					 INNER JOIN user u ON e.fk_user_id= u.id
 	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
        				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
+       			WHERE e.status = 'Available' AND e.ismodel=0
 				GROUP BY e.id
 				ORDER BY e.adding_date DESC";
 		

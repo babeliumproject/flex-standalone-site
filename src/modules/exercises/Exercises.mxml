@@ -42,8 +42,10 @@
 			import mx.collections.ICollectionView;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
 			import mx.managers.BrowserManager;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			
 			import spark.collections.Sort;
@@ -89,6 +91,8 @@
 			private var _exerciseStartedPlaying:Boolean=false;
 			
 			private var sorter:SortingCollator=new SortingCollator();
+			
+			private var _modelId:int;
 
 			/**
 			 * Recording related variables
@@ -451,9 +455,9 @@
 			 **/
 			private function set onExerciseSelected(value:Boolean):void
 			{
-
 				if (value == true)
 				{
+					trace("On exercise selected");
 					//Reset the videoplayer and the panels
 					recordingError();
 
@@ -463,6 +467,13 @@
 					_exerciseTitle=tmp.title;
 					_exerciseId=tmp.id;
 					_currentExercise=tmp;
+					
+					if(_currentExercise.model_id){
+						_modelId=_currentExercise.model_id;
+					} else {
+						_modelId=0;
+					}
+					trace("Exercise ModelID: "+_modelId);
 
 					DataModel.getInstance().currentExerciseRetrieved.setItemAt(false, DataModel.RECORDING_MODULE);
 
@@ -699,11 +710,11 @@
 			// Save response
 			private function onSaveResponse(e:Event):void
 			{
-
+				/*
 				var userCredCount:int=DataModel.getInstance().loggedUser.creditCount;
 				var credsEvalRequest:int=DataModel.getInstance().prefDic['evaluationRequestCredits'];
 				if (userCredCount - credsEvalRequest >= 0)
-				{
+				{*/
 					//This must be changed by some function that takes a snapshot of the Response video
 					var responseThumbnail:String="nothumb.png";
 					var subtitleId:int=_cueManager.currentSubtitle;
@@ -719,11 +730,11 @@
 
 
 					resetComponent();
-				}
+				/*}
 				else
 				{
 					CustomAlert.error(resourceManager.getString('myResources', 'ERROR_INSUFICCIENT_CREDITS'));
-				}
+				}*/
 			}
 
 			private function set statisticRecSave(value:Boolean):void
@@ -744,6 +755,34 @@
 					}
 					var videoData:UserVideoHistoryVO=new UserVideoHistoryVO(0, 0, _exerciseId, false, responseId, '', subtitlesAreUsed, subtitleId, roleId);
 					new UserVideoHistoryEvent(UserVideoHistoryEvent.STAT_SAVE_RESPONSE, videoData).dispatch();
+					
+					if(_modelId){
+						//Prompt the user if he wants to view the model media
+						CustomAlert.info(ResourceManager.getInstance().getString('myResources', 'THIS_EXERCISE_HAS_A_MODEL_DO_YOU_WANT_TO_WATCH_IT'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, watchModelPromptCloseHandler, Alert.YES);
+					}
+				}
+			}
+			
+			private function watchModelPromptCloseHandler(event:CloseEvent):void{
+				if (event.detail == Alert.YES)
+				{
+					var dtmp:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
+					trace(ObjectUtil.toString(dtmp));
+					var modelex:ExerciseVO;
+					for each (var item:ExerciseVO in dtmp){
+						if(item.id==_modelId){
+							modelex=item;
+							break;
+						}
+					}
+					if(modelex){
+						trace(ObjectUtil.toString(modelex));
+						new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, modelex).dispatch();
+					} else {
+						trace("Model exercise not found in collection");
+					}
+				} else {
+					trace("Use doesn't want to watch model exercise");
 				}
 			}
 
@@ -795,6 +834,7 @@
 								new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 								return;
 							}
+							trace("URL Manager exercise selected");
 							new ExerciseEvent(ExerciseEvent.EXERCISE_SELECTED, tempEx).dispatch();
 							//FlexGlobals.topLevelApplication.appContainer.verticalScrollPosition=0;
 						}

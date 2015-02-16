@@ -68,6 +68,7 @@
 					  height="100%">
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
+				<!--
 				<s:HGroup verticalAlign="middle"
 						  horizontalAlign="center"
 						  visible="false"
@@ -84,7 +85,7 @@
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule" visible="false" includeInLayout="false"/>
-
+				-->
 				<s:Label text="{resourceManager.getString('myResources', 'HELLO')+','}"
 						 styleName="boldDarkerGreyLabel"/>
 				<s:HGroup gap="0"
@@ -135,7 +136,7 @@
 				var model:DataModel=DataModel.getInstance();
 
 				BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
-				BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
+				//BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
 				BindingUtils.bindSetter(exerciseRecording, model, "recordingExercise");
 				BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
 			}
@@ -182,7 +183,7 @@
 					anonymousCP.visible=false;
 					anonymousCP.includeInLayout=false;
 					userCPName.label=DataModel.getInstance().loggedUser.username;
-					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.includeInLayout=true;
 					userCP.visible=true;
 					callLater(localeComboBox.updateSelectedIndex);
@@ -190,6 +191,7 @@
 				}
 			}
 
+			/*
 			private function blinkCredits():void
 			{
 				var motion:SimpleMotionPath=new SimpleMotionPath();
@@ -217,6 +219,7 @@
 					DataModel.getInstance().creditUpdateRetrieved=false;
 				}
 			}
+			*/
 
 			private function exerciseRecording(value:Boolean):void
 			{

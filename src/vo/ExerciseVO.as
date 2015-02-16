@@ -24,6 +24,9 @@ package vo
 		public var license:String;
 		public var reference:String;
 		
+		public var ismodel:String;
+		public var model_id:int;
+		
 		public var type:int;
 		public var situation:int;
 		public var competence:int;
