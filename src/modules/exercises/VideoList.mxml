@@ -29,6 +29,8 @@
 
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
+			
+			private var _fullList:ArrayCollection;
 
 			private var _filteredResults:ArrayCollection;
 			private var _filterLang:String;
@@ -55,7 +57,9 @@
 					//_dataProvider=DataModel.getInstance().availableRecordableExercises;
 					
 					var tmp:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
-					_dataProvider=filterNonModel(tmp);
+					_fullList=filterNonModel(tmp);
+					
+					_dataProvider=_fullList;
 
 					createPagination();
 
@@ -138,10 +142,8 @@
 
 			protected function filterExerciseList(lFilter:String, dFilter:int):void
 			{
-
-				var fullList:ArrayCollection=DataModel.getInstance().availableRecordableExercises;
 				var filteredList:ArrayCollection=new ArrayCollection();
-				for each (var e:ExerciseVO in fullList)
+				for each (var e:ExerciseVO in _fullList)
 				{
 					if (lFilter && !dFilter)
 					{
@@ -176,7 +178,7 @@
 				filterDifficulty.selectedIndex=-1;
 				_filterLang=null;
 				_filterDif=0;
-				_dataProvider=DataModel.getInstance().availableRecordableExercises;
+				_dataProvider=_fullList;
 				_currentPage=1;
 				createPagination();
 			}
