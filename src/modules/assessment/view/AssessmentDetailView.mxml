@@ -63,13 +63,19 @@
 				_rolesReady=false;
 				assessmentsOfSubmission.removeAllElements();
 				assessmentCollection=null;
+				
+				//Before finishing, reset also the related data in the model
+				dataModel.responseAssessmentData=null;
+				dataModel.availableExerciseRoles=null;
+				dataModel.availableSubtitleLines=null;
 			}
 			
 			public function unpinGroup():void{
+				trace("AssessmentDetailView unpinGroup");
 				if(cw1) cw1.unwatch();
 				if(cw2) cw2.unwatch();
 				if(cw3) cw3.unwatch();
-				cw1=cw2=cw3;
+				cw1=cw2=cw3=null;
 			}
 			
 			protected function submissionAssessmentsHandler(value:Boolean):void{
@@ -155,9 +161,10 @@
 	<s:VGroup id="videoPlayerBox"
 			  width="100%"
 			  horizontalAlign="center"
-			  paddingTop="20"
+			  paddingTop="32"
 			  paddingLeft="16"
-			  paddingRight="16">
+			  paddingRight="16"
+			  paddingBottom="32">
 		<!--
 		<s:Label id="exerciseTitle"
 				 text="{_exerciseTitle}"

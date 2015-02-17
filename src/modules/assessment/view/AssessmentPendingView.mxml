@@ -7,34 +7,54 @@
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
 
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
+			import mx.binding.utils.ChangeWatcher;
+			
 			import model.DataModel;
-
+			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
-
+			
 			import vo.EvaluationVO;
-
 
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
 
 			[Bindable]
 			private var waitingForAssessmentList:ArrayCollection;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			public function onComplete(event:FlexEvent):void{
+				
+				cw1=BindingUtils.bindSetter(waitingAssessmentRetrievedHandler, dataModel, 'waitingForAssessmentDataRetrieved',commitOnly,useWeakReference);
+				
+			}
 
 			public function resetGroup():void
 			{
 				waitingForAssessmentList=null;
 			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+			}
 
-			private function set waitingAssessmentRetrievedHandler(value:Boolean):void
+			private function waitingAssessmentRetrievedHandler(value:Boolean):void
 			{
 				waitingForAssessmentList=dataModel.waitingForAssessmentData;
 				var length:int = waitingForAssessmentList ? waitingForAssessmentList.length : 0;
@@ -64,10 +84,6 @@
 			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{dataModel.waitingForAssessmentDataRetrieved}"
-				destination="waitingAssessmentRetrievedHandler"/>
-
 
 	<s:Label id="assessmentPendingListTitleLabel"
 			 styleName="h2"

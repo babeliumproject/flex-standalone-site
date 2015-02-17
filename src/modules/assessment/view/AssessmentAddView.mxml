@@ -8,7 +8,7 @@
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  implements="modules.IGroupInterface"
+		  implements="modules.IPinnedGroupInterface"
 		  creationComplete="assessadd_creationCompleteHandler(event)">
 
 	<fx:Script>
@@ -23,6 +23,7 @@
 			import modules.subtitle.event.SubtitleEvent;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
@@ -47,7 +48,23 @@
 			private var _selectedRole:String;
 			private var _leftMedia:Object;
 			private var _rightMedia:Object;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
 
+			protected function assessadd_creationCompleteHandler(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(submissionDataHandler, dataModel, "submissionDataRetrieved", commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				cw3=BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+				//cw4=BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
+				
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton, useCapture, priority, useWeakReference);
+			}
 
 			public function resetGroup():void
 			{
@@ -57,6 +74,19 @@
 				_responseAddingDate=_responseUserName=_selectedRole=null;
 				_data=_currentCaptions=_currentTimeMarkers=_leftMedia=_rightMedia=null;
 				_evaluationSelected=_rolesReady=false;
+				
+				//Reset related model data
+				dataModel.submissionData=null;
+				dataModel.availableExerciseRoles=null;
+				dataModel.availableSubtitleLines=null;
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				if(VP) VP.removeEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton);
 			}
 
 			protected function fetchSubtitlesById(subtitleid:int):void
@@ -141,19 +171,6 @@
 			
 			protected function disableSendButton(event:VideoPlayerEvent):void{
 				evaluationRatingBox.disable();
-			}
-
-			protected function assessadd_creationCompleteHandler(event:FlexEvent):void
-			{
-				removeEventListener(FlexEvent.CREATION_COMPLETE, assessadd_creationCompleteHandler);
-				var commitOnly:Boolean=false;
-				var useWeakReference:Boolean=true;
-				BindingUtils.bindSetter(submissionDataHandler, dataModel, "submissionDataRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
-				//BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
-			
-				VP.addEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton, false, 0, true);
 			}
 		]]>
 	</fx:Script>

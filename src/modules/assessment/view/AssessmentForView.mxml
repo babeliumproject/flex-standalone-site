@@ -6,17 +6,21 @@
 		 paddingBottom="16"
 		 paddingLeft="16"
 		 paddingRight="16"
-		 implements="modules.IGroupInterface">
+		 implements="modules.IPinnedGroupInterface"
+		 creationComplete="onComplete(event)">
 	
 	<fx:Script>
 		<![CDATA[
-			
 			import control.URLManager;
+			
+			import mx.binding.utils.ChangeWatcher;
 			
 			import model.DataModel;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
 			import vo.EvaluationVO;
@@ -28,12 +32,31 @@
 			[Bindable]
 			private var assessedToCurrentUserList:ArrayCollection;
 			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			public function onComplete(event:FlexEvent):void{
+				
+				cw1=BindingUtils.bindSetter(assessedToCurrentUserRetrievedHandler,dataModel,'assessedToCurrentUserDataRetrieved',commitOnly,useWeakReference);
+
+			}
+			
 			public function resetGroup():void
 			{
 				assessedToCurrentUserList=null;
+				
+				//Reset the related model data
+				dataModel.assessedToCurrentUserData=null;
 			}
 			
-			private function set assessedToCurrentUserRetrievedHandler(value:Boolean):void
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+			}
+			
+			private function assessedToCurrentUserRetrievedHandler(value:Boolean):void
 			{
 				assessedToCurrentUserList=dataModel.assessedToCurrentUserData;
 				
@@ -66,10 +89,6 @@
 		]]>
 	</fx:Script>
 	
-	<fx:Binding source="{dataModel.assessedToCurrentUserDataRetrieved}"
-				destination="assessedToCurrentUserRetrievedHandler"/>
-	
-	
 	<s:Label id="assessedToUserListTitleLabel"
 			 styleName="h2"
 			 text="{ResourceManager.getInstance().getString('myResources', 'RESPONSES_ASSESSED_TO_USER_LIST')}"/>
@@ -84,7 +103,7 @@
 			 paddingTop="32"
 			 paddingBottom="32"
 			 paddingRight="8"
-			 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_RECORDED_ANY_EXERCISE_YET')+'.'}"/>
+			 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_RECORDED_ANY_EXERCISE_YET')}"/>
 	</s:BorderContainer>
 	
 	<view:CustomItemRendererPaginatedTable id="assessedToCurrentUserListAndPagination"

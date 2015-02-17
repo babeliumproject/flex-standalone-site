@@ -28,6 +28,7 @@
 
 			private var dataModel:DataModel=DataModel.getInstance();
 			private var assessedByCurrentUserList:ArrayCollection;
+			
 			private var commitOnly:Boolean=false;
 			private var useWeakReference:Boolean=false;
 			
@@ -35,7 +36,7 @@
 			
 			public function onComplete(event:FlexEvent):void{
 				
-				BindingUtils.bindSetter(assessedByCurrentUserRetrievedHandler, dataModel, 'assessedByCurrentUserDataRetrieved', commitOnly, useWeakReference);
+				cw1=BindingUtils.bindSetter(assessedByCurrentUserRetrievedHandler, dataModel, 'assessedByCurrentUserDataRetrieved', commitOnly, useWeakReference);
 			}
 			
 			public function resetGroup():void

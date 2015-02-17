@@ -35,6 +35,10 @@
 
 			[Bindable]
 			private var _videoPlayerReady:Boolean=false;
+			
+			public function resetComponent():void{
+				VideoCommentVP.resetComponent();
+			}
 
 			public function set videoSource(source:Object):void
 			{

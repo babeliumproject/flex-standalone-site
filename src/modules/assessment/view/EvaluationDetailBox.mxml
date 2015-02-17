@@ -10,17 +10,23 @@
 	<fx:Script>
 		<![CDATA[
 			import com.hulstkamp.AhRatingComponentStarSkin;
-
+			
 			import model.DataModel;
-
+			
 			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
-
+			
 			import vo.EvaluationVO;
 
 			[Bindable]
 			private var _evaluationData:EvaluationVO;
+			
+			private var watchEvaluationVideoComment:EvaluationVideoCommentWatch;
+			
+			public function resetComponent():void{
+				watchEvaluationVideoComment.resetComponent();
+			}
 
 			public function set evaluationData(values:EvaluationVO):void
 			{
@@ -61,7 +67,7 @@
 					//Launch videoStop event
 					//todo
 
-					var watchEvaluationVideoComment:EvaluationVideoCommentWatch=EvaluationVideoCommentWatch(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, EvaluationVideoCommentWatch, true));
+					watchEvaluationVideoComment=EvaluationVideoCommentWatch(PopUpManager.createPopUp(FlexGlobals.topLevelApplication.parent, EvaluationVideoCommentWatch, true));
 					//watchEvaluationVideoComment.videoSource=DataModel.getInstance().evaluationStreamsFolder + '/' + _evaluationData.evaluationVideoFileIdentifier;
 					PopUpManager.centerPopUp(watchEvaluationVideoComment);
 				}
