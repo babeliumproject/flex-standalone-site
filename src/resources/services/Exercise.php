@@ -787,7 +787,14 @@ class Exercise {
 			$data->netConnectionUrl = $this->cfg->streamingserver;
 			$data->maxDuration = 600;
 			
-			$_SESSION['recmedia'] = $data;
+			if(isset($_SESSION['recmedia'])){
+				$recmedialist = $_SESSION['recmedia'];
+			} else {
+				$recmedialist = array();
+			}
+			$recmedialist[] = $data;
+			
+			$_SESSION['recmedia'] = $recmedialist;
 			
 			return $data;
 			

@@ -85,21 +85,40 @@ class Response {
 	 */
 	public function saveResponse($data = null){
 		
-		if(!$data)
+		if(!$data || !isset($data->recordMedia))
 			throw new Exception("Invalid parameters",1000);
 		
-		if(!isset($_SESSION['recmedia']))
-			throw new Exception("Attempting to save recording without a valid session",1009);
+		$selectedRecMedia = $data->recordMedia;
 		
-		$recmedia = $_SESSION['recmedia'];
-			
-		$mediaUrl = $recmedia->mediaUrl;
+		if(!isset($selectedRecMedia->mediaUrl) || !isset($selectedRecMedia->netConnectionUrl)){
+			throw new Exception("Invalid record media data",1000);
+		}
+		
+		if(!isset($_SESSION['recmedia']))
+			throw new Exception("Attempted to save recording without a valid session",1009);
+		
+		$recmedialist = $_SESSION['recmedia'];
+		
+		$found=false;
+		foreach($recmedialist as $rmi){
+			if($rmi->mediaUrl == $selectedRecMedia->mediaUrl && $rmi->netConnectionUrl == $selectedRecMedia->netConnectionUrl){
+				$found=true;
+				break;
+			}	
+		}
+
+		if(!$found){
+			throw new Exception("Attempted to save a recording that is not listed",1016);
+		}
+		
+		$mediaUrl = $selectedRecMedia->mediaUrl;
 		
 		$responsecode = substr($mediaUrl,strrpos($mediaUrl,'/')+1,-4);
 		
 		set_time_limit(0);
 		$this->_getResourceDirectories();
 		$thumbnail = 'nothumb.png';
+		$source= 'Red5';
 		
 		try{
 			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $responsecode . '.flv';
@@ -120,7 +139,7 @@ class Response {
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id, fk_media_id) ";
 		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d, %d ) ";
 
-		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
+		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $thumbnail, $source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
 		
 		unset($_SESSION['recmedia']);
 		

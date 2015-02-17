@@ -8,8 +8,8 @@
 		 paddingBottom="16"
 		 paddingLeft="16"
 		 paddingRight="16"
-		 implements="modules.IGroupInterface"
-		 creationComplete="assessdetail_creationCompleteHandler(event)">
+		 implements="modules.IPinnedGroupInterface"
+		 creationComplete="onComplete(event)">
 	
 	<fx:Script>
 		<![CDATA[
@@ -18,6 +18,7 @@
 			import modules.subtitle.event.SubtitleEvent;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
@@ -26,11 +27,9 @@
 			
 			import vo.EvaluationVO;
 			
-			[Bindable]
 			protected var _exerciseTitle:String;
 			
-			[Bindable]
-			private var dataModel:DataModel=DataModel.getInstance();
+			protected var dataModel:DataModel=DataModel.getInstance();
 			
 			protected var _currentCaptions:Object;
 			protected var _currentTimeMarkers:Object;
@@ -44,6 +43,18 @@
 			
 			protected var assessmentCollection:ArrayCollection;
 			
+			protected var commitOnly:Boolean = false;
+			protected var useWeakReference:Boolean = false;
+			
+			protected var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(submissionAssessmentsHandler, dataModel, "responseAssessmentDataRetrieved", commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				cw3=BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+			}
+			
 			public function resetGroup():void{
 				VP.resetComponent();
 				_currentCaptions=_currentTimeMarkers=_leftMedia=_rightMedia=null;
@@ -52,6 +63,13 @@
 				_rolesReady=false;
 				assessmentsOfSubmission.removeAllElements();
 				assessmentCollection=null;
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3;
 			}
 			
 			protected function submissionAssessmentsHandler(value:Boolean):void{
@@ -69,13 +87,13 @@
 					if(data.hasOwnProperty('assessments')){
 						assessmentCollection = data.assessments ? new ArrayCollection(ArrayUtil.toArray(data.assessments)) : null;
 						if(assessmentCollection){
-							noresultLbl.includeInLayout=false;
-							noresultLbl.visible=false;
+							noresultNotice.includeInLayout=false;
+							noresultNotice.visible=false;
 							assessmentsOfSubmission.includeInLayout=true;
 							assessmentsOfSubmission.visible=true;		
 						} else {
-							noresultLbl.includeInLayout=true;
-							noresultLbl.visible=true;
+							noresultNotice.includeInLayout=true;
+							noresultNotice.visible=true;
 							assessmentsOfSubmission.includeInLayout=false;
 							assessmentsOfSubmission.visible=false;
 						}
@@ -131,16 +149,6 @@
 				}
 			}
 			
-			protected function assessdetail_creationCompleteHandler(event:FlexEvent):void
-			{
-				//removeEventListener(FlexEvent.CREATION_COMPLETE, assessdetail_creationCompleteHandler);
-				var commitOnly:Boolean = false;
-				var useWeakReference:Boolean = true;
-				BindingUtils.bindSetter(submissionAssessmentsHandler, dataModel, "responseAssessmentDataRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
-				BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
-			}
-			
 		]]>
 	</fx:Script>
 	
@@ -170,8 +178,17 @@
 		</s:HGroup>
 	</s:VGroup>
 	
-	<s:Label id="noresultLbl" 
-			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}"/>
+	<s:BorderContainer id="noresultNotice"
+					   width="100%"
+					   styleName="lightBorderContainer">
+		<s:Label id="noresultLbl"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"
+				 text="{ResourceManager.getInstance().getString('myResources','THIS_RESPONSE_IS_YET_TO_BE_ASSESSED')+'.'}"/>
+	</s:BorderContainer>
+	
 	
 	<s:VGroup id="assessmentsOfSubmission" width="100%"/>
 	

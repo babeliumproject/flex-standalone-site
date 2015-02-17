@@ -7,44 +7,59 @@
 		 paddingBottom="16"
 		 paddingLeft="16"
 		 paddingRight="16"
-		 implements="modules.IGroupInterface" >
+		 implements="modules.IPinnedGroupInterface"
+		 creationComplete="onComplete(event)">
 	
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 			
+			import mx.binding.utils.ChangeWatcher;
+			
 			import model.DataModel;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
 			import vo.EvaluationVO;
 
-			
-			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
-			
-			[Bindable]
 			private var assessedByCurrentUserList:ArrayCollection;
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			public function onComplete(event:FlexEvent):void{
+				
+				BindingUtils.bindSetter(assessedByCurrentUserRetrievedHandler, dataModel, 'assessedByCurrentUserDataRetrieved', commitOnly, useWeakReference);
+			}
 			
 			public function resetGroup():void
 			{
 				assessedByCurrentUserList=null;
 			}
 			
-			protected function set assessedByCurrentUserRetrievedHandler(value:Boolean):void{
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+			}
+			
+			protected function assessedByCurrentUserRetrievedHandler(value:Boolean):void{
 				assessedByCurrentUserList=dataModel.assessedByCurrentUserData;
 				
 				var length:int = assessedByCurrentUserList ? assessedByCurrentUserList.length : 0;
 				if(!assessedByCurrentUserList){
-					noresultLbl.includeInLayout=true;
-					noresultLbl.visible=true;
+					noresultNotice.includeInLayout=true;
+					noresultNotice.visible=true;
 					assessedByCurrentUserListAndPagination.visible=false;
 					assessedByCurrentUserListAndPagination.includeInLayout=false;
 				} else {
-					noresultLbl.includeInLayout=false;
-					noresultLbl.visible=false;
+					noresultNotice.includeInLayout=false;
+					noresultNotice.visible=false;
 					assessedByCurrentUserListAndPagination.visible=true;
 					assessedByCurrentUserListAndPagination.includeInLayout=true;
 				}
@@ -63,18 +78,22 @@
 		]]>
 	</fx:Script>
 	
-	<fx:Binding source="{dataModel.assessedByCurrentUserDataRetrieved}"
-				destination="assessedByCurrentUserRetrievedHandler"/>
-	
-	
 	<s:Label id="assessedByUserListTitleLabel"
 			 styleName="h2"
 			 text="{ResourceManager.getInstance().getString('myResources', 'RESPONSES_ASSESSED_BY_USER_LIST')}"/>
 	
-	<s:Label id="noresultLbl" 
-			 text="{ResourceManager.getInstance().getString('myResources','NO_RESULTS_WERE_RETURNED_FOR_THAT_QUERY')+'.'}" 
-			 includeInLayout="false" 
-			 visible="false"/>
+	<s:BorderContainer id="noresultNotice"
+					   width="100%"
+					   styleName="lightBorderContainer"
+					   includeInLayout="false" 
+					   visible="false">
+		<s:Label id="noresultLbl"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"
+			 	 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_ASSESSED_ANY_RESPONSE_YET')+'.'}" />
+	</s:BorderContainer>
 	
 	<view:CustomItemRendererPaginatedTable id="assessedByCurrentUserListAndPagination"
 										   itemRenderer="{ListItemAssessedByCurrentUser}"

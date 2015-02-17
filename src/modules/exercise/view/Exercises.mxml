@@ -113,6 +113,8 @@
 				{
 					lineStroke.alpha=lineStyle.getStyle('borderAlpha');
 					lineStroke.color=lineStyle.getStyle('borderColor');
+					lineStroke2.alpha=lineStyle.getStyle('borderAlpha');
+					lineStroke2.color=lineStyle.getStyle('borderColor');
 				}
 
 				setupVideoPlayer();
@@ -453,7 +455,7 @@
 					responseData.mediaId=_currentMediaData.id;
 					responseData.characterName=_selectedRole;
 					responseData.subtitleId=_subtitleId;
-					responseData.isPrivate=true;
+					responseData.recordMedia=_recordingAttempts[_recordingAttempts.length-1];
 
 					new ResponseEvent(ResponseEvent.SAVE_RESPONSE, responseData).dispatch();
 				}
@@ -554,16 +556,16 @@
 					watchRecording.visible=false;
 					watchExercise.includeInLayout=false;
 					watchExercise.visible=false;
-					//saveRecording.includeInLayout=false;
-					//saveRecording.visible=false;
+					saveRecordingRow.includeInLayout=false;
+					saveRecordingRow.visible=false;
 				} else {
 					var ra:Boolean = _recordingAttempts ? true : false;
 					watchRecording.includeInLayout=ra;
 					watchRecording.visible=ra;
 					watchExercise.includeInLayout=ra;
 					watchExercise.visible=ra;
-					//saveRecording.includeInLayout=ra;
-					//saveRecording.visible=ra;
+					saveRecordingRow.includeInLayout=ra;
+					saveRecordingRow.visible=ra;
 				}
 			}
 
@@ -767,7 +769,7 @@
 									   label="{ResourceManager.getInstance().getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 					</s:HGroup>
 
-					<s:HGroup width="100%" horizontalAlign="right">
+					<s:HGroup width="100%" horizontalAlign="right" paddingTop="8">
 						<s:Button id="watchRecording"
 								  styleName="btn-default"
 								  label="{ResourceManager.getInstance().getString('myResources','WATCH_RESPONSE')}"
@@ -782,8 +784,21 @@
 								  styleName="btn-danger"
 								  enabled="false"
 								  buttonMode="true"
-								  click="onStartStopRecordingClicked(event)"/>	
+								  click="onStartStopRecordingClicked(event)"/>
 					</s:HGroup>
+				</s:VGroup>
+				<s:VGroup id="saveRecordingRow" width="100%" horizontalAlign="right" paddingTop="16">
+					<s:Line width="100%">
+						<s:stroke>
+							<s:SolidColorStroke id="lineStroke2"
+												weight="1"/>
+						</s:stroke>
+					</s:Line>
+					<s:Button id="saveRecording"
+							  styleName="btn-success"
+							  label="{ResourceManager.getInstance().getString('myResources','SAVE_RESPONSE')}"
+							  buttonMode="true"
+							  click="saveResponseClickHandler(event)"/>
 				</s:VGroup>
 			</s:BorderContainer>
 			

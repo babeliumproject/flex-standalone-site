@@ -188,8 +188,8 @@ class Subtitle {
     public function getSubtitleLines($subtitle=null) {
         if(!$subtitle)
             return false;
-        $subtitleId = $subtitle->id | 0;
-        $mediaId = $subtitle->mediaid | 0;
+        $subtitleId = isset($subtitle->id) ? $subtitle->id : 0;
+        $mediaId = isset($subtitle->mediaid) ? $subtitle->mediaid : 0;
 
         if(!$subtitleId){
             //Get the latest subtitle version for this exercise
