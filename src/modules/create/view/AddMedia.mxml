@@ -5,44 +5,46 @@
 		  xmlns:common="view.common.*"
 		  xmlns:videoUpload="components.videoUpload.*"
 		  xmlns:view="modules.create.view.*"
-		  xmlns:skins="skins.*">
-
-	<fx:Declarations>
-		<s:RadioButtonGroup id="includeModel"
-							itemClick="includeModelHandler(event)"
-							selectedValue="no"/>
-	</fx:Declarations>
-	
-	
-	<fx:Binding source="{DataModel.getInstance().exerciseMediaRetrieved}"
-				destination="this.mediaRetrieved"/>
+		  xmlns:skins="skins.*"
+		  creationComplete="onComplete(event)">
 
 	<s:Label id="firstMediaLbl"
 			 styleName="h3"
 			 text="{ResourceManager.getInstance().getString('myResources', 'PRIMARY_MEDIA')}"/>
 	<view:MediaOriginChooser id="primaryupload"/>
-	<view:MediaItemStatus id="primarymediainfo" includeInLayout="false" visible="false"/>
-	<s:HGroup id="chooseModelGroup" verticalAlign="middle" includeInLayout="false" visible="false">
+	<view:MediaItemStatus id="primarymediainfo"
+						  includeInLayout="false"
+						  visible="false"/>
+	<s:HGroup id="chooseModelGroup"
+			  verticalAlign="middle"
+			  includeInLayout="false"
+			  visible="false">
 		<s:Label text="{ResourceManager.getInstance().getString('myResources', 'DO_YOU_WANT_TO_ADD_A_MODEL_MEDIA')}"/>
-		<s:RadioButton label="{ResourceManager.getInstance().getString('myResources', 'NO')}"
-					   group="{includeModel}"
+		<s:RadioButton id="noradiobtn"
+					   label="{ResourceManager.getInstance().getString('myResources', 'NO')}"
 					   value="no"/>
-		<s:RadioButton label="{ResourceManager.getInstance().getString('myResources', 'YES')}"
-					   group="{includeModel}"
+		<s:RadioButton id="yesradiobtn"
+					   label="{ResourceManager.getInstance().getString('myResources', 'YES')}"
 					   value="yes"/>
 	</s:HGroup>
 	<s:Label id="secondMediaLbl"
 			 styleName="h3"
-			 text="{ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA')}" includeInLayout="false" visible="false"/>
-	<view:MediaOriginChooser id="modelupload" includeInLayout="false" visible="false"/>
-	<view:MediaItemStatus id="modelmediainfo" includeInLayout="false" visible="false"/>
+			 text="{ResourceManager.getInstance().getString('myResources', 'MODEL_MEDIA')}"
+			 includeInLayout="false"
+			 visible="false"/>
+	<view:MediaOriginChooser id="modelupload"
+							 includeInLayout="false"
+							 visible="false"/>
+	<view:MediaItemStatus id="modelmediainfo"
+						  includeInLayout="false"
+						  visible="false"/>
 	<s:Button id="savebutton"
 			  buttonMode="true"
 			  styleName="btn-success"
 			  label="{ResourceManager.getInstance().getString('myResources','SAVE_AND_CONTINUE')}"
 			  click="saveClickHandler(event)"
 			  enabled="false"/>
-	
+
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
@@ -51,11 +53,14 @@
 			
 			import modules.create.event.CreateEvent;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Button;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
@@ -85,21 +90,49 @@
 			public static const MEDIA_TYPE_AUDIO:String='audio';
 			public static const MEDIA_TYPE_VIDEO:String='video';
 
+			protected var _model:DataModel=DataModel.getInstance();
+			
+			protected var includeModelGroup:RadioButtonGroup;
+			
 			private var exerciseid:int;
 			private var exercisecode:String;
-			
+
 			private var pstatus:Boolean;
 			private var mstatus:Boolean;
-			
+
 			private var pinfo:Boolean;
 			private var minfo:Boolean;
 
 			private var gstatus:Boolean; //Global status
 			private var canContinue:Boolean;
 			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void{
+				includeModelGroup=new RadioButtonGroup();
+				includeModelGroup.addEventListener(ItemClickEvent.ITEM_CLICK,includeModelHandler);
+				noradiobtn.group=includeModelGroup;
+				yesradiobtn.group=includeModelGroup;
+				includeModelGroup.selectedValue="no";
+				
+				cw1=BindingUtils.bindSetter(mediaRetrieveHandler,_model,'exerciseMediaRetrieved',commitOnly,useWeakReference);
+			}
+
 			public function resetComponent():void
 			{
-
+				//Reset the related model data
+				_model.exerciseMedia=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+				includeModelGroup.removeEventListener(ItemClickEvent.ITEM_CLICK, includeModelHandler);
+				savebutton.removeEventListener(MouseEvent.CLICK,saveClickHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
 			}
 
 			public function includeModelHandler(event:ItemClickEvent):void
@@ -107,41 +140,48 @@
 				if (event.currentTarget.selectedValue == "no")
 				{
 					modelupload.resetComponent();
-					
+
 					modelupload.includeInLayout=false;
 					modelupload.visible=false;
-					
-					canContinue = gstatus;
+
+					canContinue=gstatus;
 				}
 				else if (event.currentTarget.selectedValue == "yes")
 				{
 					modelupload.exerciseid=exerciseid;
 					modelupload.exercisecode=exercisecode;
 					modelupload.medialevel=LEVEL_MODEL;
-					
+
 					modelupload.includeInLayout=true;
 					modelupload.visible=true;
-					
-					canContinue = false;
+
+					canContinue=false;
 				}
 				savebutton.enabled=canContinue;
 				updateStepTabs();
 			}
-			
-			private function saveClickHandler(event:MouseEvent):void{
+
+			private function saveClickHandler(event:MouseEvent):void
+			{
 				URLManager.getInstance().redirect('/create/edit/' + exercisecode + '?s=3');
 			}
 
-			protected function set mediaRetrieved(value:Boolean):void
+			protected function mediaRetrieveHandler(value:Boolean):void
 			{
-				var media:ArrayCollection=DataModel.getInstance().exerciseMedia;
+				var media:ArrayCollection=_model.exerciseMedia;
 
-				trace(ObjectUtil.toString(media));
+				trace("ExerciseMedia: "+ObjectUtil.toString(media));
+
+				var urlparams:Object=URLManager.getInstance().parsedParams;
+				if(urlparams==null || !urlparams.hasOwnProperty('id')){
+					trace("Can't add media without a valid exercisecode exit immediately.");
+					return;
+				}
 				
-				exercisecode=URLManager.getInstance().parsedParams['id'];
-				
+				exercisecode=urlparams.id;
+
 				pinfo=minfo=pstatus=mstatus=gstatus=canContinue=false;
-				
+
 				if (media)
 				{
 					var itemlevel:int;
@@ -156,115 +196,120 @@
 							{
 								pinfo=true;
 								primarymediainfo.setData(item);
-								pstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
+								pstatus=parseInt(item.status) == 2 && parseInt(item.subtitlestatus) == 2;
 							}
 							else if (itemlevel == LEVEL_MODEL)
 							{
 								minfo=true;
 								modelmediainfo.setData(item);
-								mstatus = parseInt(item.status)==2 && parseInt(item.subtitlestatus)==2;
+								mstatus=parseInt(item.status) == 2 && parseInt(item.subtitlestatus) == 2;
 							}
 						}
 					}
 				}
 				updateComponentList();
 			}
-			
-			private function updateComponentList():void{
+
+			private function updateComponentList():void
+			{
 				savebutton.enabled=false;
 				if (minfo && pinfo)
 				{
-					
+
 					primaryupload.resetComponent();
 					modelupload.resetComponent();
-					includeModel.selectedValue='no';
-					
+					includeModelGroup.selectedValue='no';
+
 					primaryupload.includeInLayout=false;
 					primaryupload.visible=false;
 					chooseModelGroup.includeInLayout=false;
 					chooseModelGroup.visible=false;
 					modelupload.includeInLayout=false;
 					modelupload.visible=false;
-					
+
 					firstMediaLbl.includeInLayout=true;
 					firstMediaLbl.visible=true;
 					primarymediainfo.includeInLayout=true;
 					primarymediainfo.visible=true;
-					
+
 					secondMediaLbl.includeInLayout=true;
 					secondMediaLbl.visible=true;
 					modelmediainfo.includeInLayout=true;
 					modelmediainfo.visible=true;
-					
-					
-					gstatus = pstatus && mstatus;
-					canContinue = gstatus;
+
+
+					gstatus=pstatus && mstatus;
+					canContinue=gstatus;
 				}
 				if (pinfo && !minfo)
 				{
 					primaryupload.resetComponent();
-					
+
 					primaryupload.includeInLayout=false;
 					primaryupload.visible=false;
 					secondMediaLbl.includeInLayout=false;
 					secondMediaLbl.visible=false;
 					modelmediainfo.includeInLayout=false;
 					modelmediainfo.visible=false;
-					
+
 					firstMediaLbl.includeInLayout=true;
 					firstMediaLbl.visible=true;
 					primarymediainfo.includeInLayout=true;
 					primarymediainfo.visible=true;
-					
+
 					chooseModelGroup.includeInLayout=true;
 					chooseModelGroup.visible=true;
-					
-					gstatus = pstatus;
-					canContinue = gstatus && (includeModel.selectedValue == 'no');
+
+					gstatus=pstatus;
+					canContinue=gstatus && (includeModelGroup.selectedValue == 'no');
 				}
-				if(!pinfo && !minfo){
+				if (!pinfo && !minfo)
+				{
 					primaryupload.resetComponent();
 					primaryupload.includeInLayout=true;
 					primaryupload.visible=true;
-					
+
 					primaryupload.exercisecode=exercisecode;
 					primaryupload.exerciseid=exerciseid;
 					primaryupload.medialevel=LEVEL_PRIMARY;
-					
-					includeModel.selectedValue='no';
+
+					includeModelGroup.selectedValue='no';
 					chooseModelGroup.includeInLayout=false;
 					chooseModelGroup.visible=false;
-					
+
 					modelupload.includeInLayout=false;
 					modelupload.visible=false;
-					
+
 					firstMediaLbl.includeInLayout=true;
 					firstMediaLbl.visible=true;
 					primarymediainfo.includeInLayout=false;
 					primarymediainfo.visible=false;
-					
+
 					secondMediaLbl.includeInLayout=false;
 					secondMediaLbl.visible=false;
 					modelmediainfo.includeInLayout=false;
 					modelmediainfo.visible=false;
-					
-					gstatus = pstatus;
-					canContinue = gstatus;
+
+					gstatus=pstatus;
+					canContinue=gstatus;
 				}
 				savebutton.enabled=canContinue;
 				updateStepTabs();
 			}
-			
-			private function updateStepTabs():void{
-				if(canContinue){
-					DataModel.getInstance().enabledCreateSteps = new Array(1,2,3);
-					DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
-				} else {
-					DataModel.getInstance().enabledCreateSteps = new Array(1,2);
-					DataModel.getInstance().enabledCreateStepsChanged= !DataModel.getInstance().enabledCreateStepsChanged;
+
+			private function updateStepTabs():void
+			{
+				if (canContinue)
+				{
+					DataModel.getInstance().enabledCreateSteps=new Array(1, 2, 3);
+					DataModel.getInstance().enabledCreateStepsChanged=!DataModel.getInstance().enabledCreateStepsChanged;
+				}
+				else
+				{
+					DataModel.getInstance().enabledCreateSteps=new Array(1, 2);
+					DataModel.getInstance().enabledCreateStepsChanged=!DataModel.getInstance().enabledCreateStepsChanged;
 				}
 			}
-			
 		]]>
 	</fx:Script>
 

@@ -65,6 +65,13 @@
 				if(cw3) cw3.unwatch();
 				cw1=cw2=cw3=null;
 				
+				if (exerciseClassification)
+					exerciseClassification.unpinComponent();
+				if (mediaUpload)
+					mediaUpload.unpinComponent();
+				if (previewpublish)
+					previewpublish.unpinComponent();
+				
 				createSteps.removeEventListener(IndexChangeEvent.CHANGING, createSteps_changingHandler);
 				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);

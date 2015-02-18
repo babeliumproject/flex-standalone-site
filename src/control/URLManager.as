@@ -175,7 +175,7 @@ package control
 					}
 				}
 			}
-			trace(ObjectUtil.toString(parsedParams));
+			trace("URL parameters: "+ObjectUtil.toString(parsedParams));
 
 			module=modtmp;
 			action=actiontmp;

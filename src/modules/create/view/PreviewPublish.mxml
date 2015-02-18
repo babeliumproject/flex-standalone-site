@@ -2,27 +2,28 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:common="view.common.*"
+		  xmlns:components="components.*"
 		  xmlns:videoPlayer="components.videoPlayer.*"
 		  xmlns:view="modules.create.view.*"
-		  xmlns:common="view.common.*"
-		  width="100%" xmlns:components="components.*">
+		  width="100%"
+		  creationComplete="onComplete(event)">
 
-	<fx:Binding source="{DataModel.getInstance().exercisePreviewRetrieved}"
-				destination="exerciseData"/>
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
 			
 			import modules.create.event.CreateEvent;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			
 			import utils.CollectionUtils;
 
-
-			[Bindable]
 			private var dpVisibility:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'PRIVATE'}, {'code': 1, 'label': 'PUBLIC'}]);
 			
 			private var _model:DataModel=DataModel.getInstance();
@@ -37,6 +38,16 @@
 			
 			private var _primaryMediaCaptions:Object;
 			private var _modelMediaCaptions:Object;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void{
+				visibilitydropdown.localeAwareDataProvider=dpVisibility;
+				cw1=BindingUtils.bindSetter(exerciseData,_model,'exercisePreviewRetrieved',commitOnly,useWeakReference);
+			}
 
 			public function resetComponent():void
 			{
@@ -48,9 +59,20 @@
 				modelmediaformitem.includeInLayout=false;
 				modelmediaformitem.visible=false;
 				saveButton.enabled=false;
+				
+				//Reset the related model data
+				_model.exercisePreview=null;
 			}
 			
-			public function set exerciseData(value:Boolean):void{
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+				
+				saveButton.removeEventListener(MouseEvent.CLICK,saveChangesClickHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			public function exerciseData(value:Boolean):void{
 				_currentData=null;
 				_primaryMediaData=_modelMediaData=null;
 				_primaryMediaCaptions=_modelMediaCaptions=null;
@@ -230,7 +252,6 @@
 										   cornerRadius="3"
 										   borderColor="0xcccccc"
 										   requireSelection="true"
-										   localeAwareDataProvider="{dpVisibility}"
 										   sortItems="true"/>
 			</s:FormItem>
 		</s:Form>

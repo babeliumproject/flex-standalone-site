@@ -42,9 +42,9 @@
 
 			private var dataModel:DataModel=DataModel.getInstance();
 
-			private var paginationIdx:uint=1;
+			private var _currentPage:uint=1;
 		
-			private var userExerciseList:ArrayCollection;
+			private var _dataProvider:ArrayCollection;
 
 			private var itemsToDelete:Array;
 			
@@ -63,7 +63,7 @@
 			
 			protected function setupExerciseCounter():void{
 				var code:String = 'VIDEO_COUNT_MANY';
-				var count:int = userExerciseList ? userExerciseList.length : 0;
+				var count:int = _dataProvider ? _dataProvider.length : 0;
 				if(count==1){
 					code = 'VIDEO_COUNT_SINGLE';
 				}
@@ -73,9 +73,9 @@
 			
 			public function resetGroup():void
 			{
-				paginationIdx=1;
+				_currentPage=1;
 				itemsToDelete=null;
-				userExerciseList=null;
+				_dataProvider=null;
 				deleteExercisesButton.enabled=false;
 				
 				//Reset related model data
@@ -98,11 +98,10 @@
 			private function userExerciseListRetrieved(value:Boolean):void
 			{
 				var dataProvider:ArrayCollection=dataModel.userVideoList;
-				userExerciseList=dataProvider;
+				_dataProvider=dataProvider;
 				setupExerciseCounter();
-				deleteExercisesButton.enabled= userExerciseList ? true : false;
-				createPagination(userExerciseGrid, userExerciseList, paginationIdx, userExercisePaginator, paginationButtonClickHandler);
-
+				deleteExercisesButton.enabled= _dataProvider ? true : false;
+				createPagination();
 			}
 			
 			private function deleteSelectedExercisesResult(value:Boolean):void
@@ -115,35 +114,48 @@
 				}
 			}
 
-			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
+			public function createPagination():void
 			{
-				VideoPaginator.createPaginationMenu(dataProvider.length, dataModel.pageSize, currentPageIndicator, dataModel.numberOfPagesNav, paginationContainer, pageClickHandler);
-				refreshDataProvider(targetDatagrid, dataProvider, currentPageIndicator);
+				var itemcount:int=_dataProvider ? _dataProvider.length : 0;
+				var itemsPerPage:int=DataModel.getInstance().pageSize;
+				var numNavButtons:int=DataModel.getInstance().numberOfPagesNav;
+				
+				VideoPaginator.createPaginationMenu(itemcount, itemsPerPage, _currentPage, numNavButtons, paginationBox, navigateToPage);
+				refreshDataProvider();
 			}
 
-			public function refreshDataProvider(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint):void
+			public function refreshDataProvider():void
 			{
-				var current:int=currentPageIndicator - 1;
-				var pageSize:int=dataModel.pageSize;
-				var dataTemp:ArrayCollection=new ArrayCollection(dataProvider.source.slice((current * pageSize), (current * pageSize) + pageSize));
-				targetDatagrid.rowCount=dataTemp.length;
-				targetDatagrid.dataProvider=dataTemp;
+				var current:int=_currentPage - 1;
+				var itemsPerPage:int=DataModel.getInstance().pageSize;
+				
+				var offset:int=current * itemsPerPage;
+				var numitems:int=offset + itemsPerPage;
+				
+				var dataTemp:ArrayCollection=null;
+				
+				if (_dataProvider)
+				{
+					dataTemp=new ArrayCollection(_dataProvider.source.slice(offset, numitems));
+					userExerciseGrid.rowCount=dataTemp.length;
+				}
+				userExerciseGrid.dataProvider=dataTemp;
 			}
 
-			private function paginationButtonClickHandler(event:MouseEvent):void
+			private function navigateToPage(event:MouseEvent):void
 			{
-				paginationIdx=int((event.target as Button).id);
-				createPagination(userExerciseGrid, userExerciseList, paginationIdx, userExercisePaginator, paginationButtonClickHandler);
+				_currentPage=int((event.target as Button).id);
+				createPagination();
 			}
 
 			protected function deleteExercisesButtonClickHandler(event:MouseEvent):void
 			{
 				itemsToDelete=new Array();
-				for (var i:int=0; i < userExerciseList.length; i++)
+				for (var i:int=0; i < _dataProvider.length; i++)
 				{
-					if (userExerciseList[i].itemSelected == true)
+					if (_dataProvider[i].itemSelected == true)
 					{
-						itemsToDelete.push(userExerciseList[i]);
+						itemsToDelete.push(_dataProvider[i]);
 					}
 				}
 				if (itemsToDelete.length > 0)
@@ -164,7 +176,7 @@
 
 			private function retrieveExercises():void
 			{
-				paginationIdx=1;
+				_currentPage=1;
 				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
 			}
 			
@@ -220,7 +232,7 @@
 				<mx:DataGridColumn itemRenderer="modules.create.view.CreationItemRenderer"/>
 			</mx:columns>
 		</mx:DataGrid>
-		<s:HGroup id="userExercisePaginator"
+		<s:HGroup id="paginationBox"
 				  width="100%"
 				  horizontalAlign="center"
 				  gap="2"/>
