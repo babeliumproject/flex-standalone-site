@@ -7,7 +7,8 @@
 		  paddingTop="16"
 		  paddingRight="16"
 		  width="100%"
-		  implements="modules.IGroupInterface">
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -15,17 +16,33 @@
 			
 			import model.DataModel;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
 
+			// TODO remove hardcoded messages and change them for items in the resourceBundle
 			private var noActionMessage:String='No action was requested.';
 			private var activatingMessage:String="Activating account. Please wait...";
 			private var successfulActivationMessage:String="Your account has been successfully activated. Redirecting to home...";
 			private var wrongActivationMessage:String="A problem occurred while activating your account. Please try again later.";
-
-			[Bindable]
-			private var message:String=noActionMessage;
+			
+			private const INVALID_ACTIVATION_URL:String='NO_ACTION_WAS_REQUESTED';
+			private const ACTIVATION_IN_PROGRESS:String='';
+			private const ACTIVATION_SUCCESS:String='';
+			private const ACTIVATION_ERROR:String='';
 
 			private var redirectTimer:Timer;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void{
+				var dm:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(greetAndRedirect,dm,'accountActivationRetrieved',commitOnly,useWeakReference);
+			}
 			
 			public function resetGroup():void{
 				if(redirectTimer){
@@ -34,21 +51,26 @@
 					redirectTimer.removeEventListener(TimerEvent.TIMER, redirectToHomePage);
 				}
 				redirectTimer=null;
-				message=noActionMessage;
+				activationLbl.text=noActionMessage;
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
 			}
 
-			public function set greetAndRedirect(value:Boolean):void
+			public function greetAndRedirect(value:Boolean):void
 			{
 				if (DataModel.getInstance().accountActivationStatus)
 				{
-					message=successfulActivationMessage;
+					activationLbl.text=successfulActivationMessage;
 					redirectTimer=new Timer(3000, 1);
-					redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage, false, 0, true);
+					redirectTimer.addEventListener(TimerEvent.TIMER, redirectToHomePage);
 					redirectTimer.start();
 				}
 				else
 				{
-					message=wrongActivationMessage;
+					activationLbl.text=wrongActivationMessage;
 				}
 			}
 
@@ -60,17 +82,13 @@
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().accountActivationRetrieved}"
-				destination="greetAndRedirect"/>
-
-	<s:Label text="{resourceManager.getString('myResources','ACCOUNT_ACTIVATION')}"
+	<s:Label text="{ResourceManager.getInstance().getString('myResources','ACCOUNT_ACTIVATION')}"
 			 styleName="h2"/>
 	<s:BorderContainer id="msgcontainer" styleName="lightBorderContainer" width="100%">
 		<s:layout>
 			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
 		</s:layout>
-		<s:Label id="activating"
-				 text="{message}"/>
+		<s:Label id="activationLbl"/>
 	</s:BorderContainer>
 	
 </s:VGroup>

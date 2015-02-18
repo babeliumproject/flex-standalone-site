@@ -2,32 +2,36 @@
 <skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 						 xmlns:s="library://ns.adobe.com/flex/spark"
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
-						 xmlns:skins="skins.*"
-						 xmlns:userManagement="components.userManagement.*"
-						 creationComplete="creationCompleteHandler(event)"
+						 xmlns:skins="skins.*" 	 
 						 styleName="loginPopup"
 						 autoLayout="true"
-						 minWidth="300" xmlns:view="modules.account.view.*" xmlns:main="components.main.*">
-	
+						 minWidth="300"
+						 xmlns:main="components.main.*"
+						 creationComplete="creationCompleteHandler(event)">
+
 	<fx:Script>
 		<![CDATA[
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
-			
+
 			protected function creationCompleteHandler(e:FlexEvent):void
 			{
-				loginRestoreForm.addEventListener(CloseEvent.CLOSE, onFormClose, false, 0, true);
+				loginRestoreForm.addEventListener(CloseEvent.CLOSE, onFormClose);
 			}
 
 			private function onFormClose(event:CloseEvent):void
 			{
 				loginRestoreForm.removeEventListener(CloseEvent.CLOSE, onFormClose);
 				loginRestoreForm.resetComponent();
+				loginRestoreForm.unpinComponent();
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				
 				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 		]]>
 	</fx:Script>
-	
+
 	<main:LoginRestorePassForm id="loginRestoreForm"
-										 width="100%"/>
+							   width="100%"/>
 </skins:CustomTitleWindow>

@@ -7,6 +7,7 @@ package utils
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
+	import mx.utils.StringUtil;
 
 	public class LocaleUtils
 	{	
@@ -56,6 +57,20 @@ package utils
 			};
 			var cw:ChangeWatcher = BindingUtils.bindProperty(site, property, ResourceManager.getInstance(), chain, commitOnly, useWeakReference);
 			return cw;	
+		}
+		
+		public static function localizedTemplatePropertyBind(site:Object, property:String,
+															 bundleName:String, resourceName:String,templateValues:*,
+															 commitOnly:Boolean=false, useWeakReference:Boolean=false):ChangeWatcher{
+			var chain:Object = new Object();
+			chain.name = "getString";
+			chain.getter = function(rm:IResourceManager):String { 
+				var template:String = rm.getString(bundleName, resourceName);
+				var result:String = StringUtil.substitute(template,templateValues);
+				return result;
+			};
+			var cw:ChangeWatcher = BindingUtils.bindProperty(site, property, ResourceManager.getInstance(), chain, commitOnly, useWeakReference);
+			return cw;
 		}
 	}
 }

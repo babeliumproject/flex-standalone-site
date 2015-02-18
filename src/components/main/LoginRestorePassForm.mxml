@@ -16,17 +16,19 @@
 	<fx:Script>
 		<![CDATA[
 			import avmplus.getQualifiedClassName;
-
+			
+			import mx.resources.ResourceManager;
+			
 			import com.adobe.crypto.SHA1;
-
+			
 			import control.URLManager;
-
+			
 			import events.LoginEvent;
-
+			
 			import model.DataModel;
-
+			
 			import modules.login.view.LoginIndex;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
@@ -37,37 +39,56 @@
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.ObjectUtil;
-
+			
 			import skins.ActionButtonSkin;
 			import skins.CustomTitleWindowSkin;
-
+			
 			import vo.LoginVO;
 			import vo.UserVO;
 
 			private var rememberSO:SharedObject;
-
-			private var _cw1:ChangeWatcher;
-			private var _cw2:ChangeWatcher;
-			private var _cw3:ChangeWatcher;
+			private var dataModel:DataModel=DataModel.getInstance();
+	
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var _cw1:ChangeWatcher,_cw2:ChangeWatcher,_cw3:ChangeWatcher;
 
 			public function completeHandler():void
 			{
-				var dataModel:DataModel=DataModel.getInstance();
-				_cw1=BindingUtils.bindSetter(wrongLogin, dataModel, "loginErrorMessage", false, true);
-				_cw2=BindingUtils.bindSetter(loggedSuccessfully, dataModel, "isSuccessfullyLogged", false, true);
-				_cw3=BindingUtils.bindSetter(onActivationEmailResent, dataModel, "activationEmailResent", false, true);
+				_cw1=BindingUtils.bindSetter(wrongLogin, dataModel, "loginErrorMessage", commitOnly, useWeakReference);
+				_cw2=BindingUtils.bindSetter(loggedSuccessfully, dataModel, "isSuccessfullyLogged", commitOnly, useWeakReference);
+				_cw3=BindingUtils.bindSetter(onActivationEmailResent, dataModel, "activationEmailResent", commitOnly, useWeakReference);
 
 				focusManager.setFocus(username);
 			}
 
 			public function resetComponent():void
 			{
-				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
-				this.removeEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);
+				showLogin(null);
+				username.text='';
+				password.text='';
+				activationUsername.text='';
+				activationEmail.text='';
+			}
+			
+			public function unpinComponent():void{
+				
 				if(_cw1) _cw1.unwatch();
 				if(_cw2) _cw2.unwatch();
 				if(_cw3) _cw3.unwatch();
 				_cw1=_cw2=_cw3=null;
+				
+				okButton.removeEventListener(MouseEvent.CLICK, processLogin);
+				restorePassword.removeEventListener(MouseEvent.CLICK,showRestorePass);
+				resendEmailLink.removeEventListener(MouseEvent.CLICK,showActivationResend);
+				activationOkButton.removeEventListener(MouseEvent.CLICK,resendActivationEmail);
+				activationCancelButton.removeEventListener(MouseEvent.CLICK,showLogin);
+				
+				focusManager.deactivate(); //Apparently focused interactive objects also get pinned in memory
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
+				this.removeEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);	
 			}
 
 			private function checkPressedKey(e:KeyboardEvent):void
@@ -172,7 +193,7 @@
 			private function showActivationResend(even:Event):void
 			{
 				errorInfo.text='';
-				title.text=resourceManager.getString('myResources', 'SEND_EMAIL_AGAIN');
+				title.text=ResourceManager.getInstance().getString('myResources', 'SEND_EMAIL_AGAIN');
 				activationUsername.text='';
 				activationEmail.text='';
 				resendEmailLink.visible=true;
@@ -216,14 +237,14 @@
 		<s:NavigatorContent id="loginFormBoxNavContent">
 			<s:VGroup id="loginFormBox"
 					  width="100%">
-				<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','USER_NAME')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="username"
 							 styleName="searchTextInput"
 							 fontSize="16"
 							 width="100%"/>
 
-				<s:Label text="{resourceManager.getString('myResources','PASSWORD')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','PASSWORD')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="password"
 							 styleName="searchTextInput"
@@ -234,14 +255,14 @@
 						  verticalAlign="middle"
 						  paddingLeft="12"
 						  paddingRight="12">
-					<s:CheckBox label="{resourceManager.getString('myResources','REMEMBER_ME')}"
+					<s:CheckBox label="{ResourceManager.getInstance().getString('myResources','REMEMBER_ME')}"
 								id="rememberUser"/>
 				</s:HGroup>
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle"
 						  paddingTop="8">
-					<s:Button label="{resourceManager.getString('myResources','OK')}"
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','OK')}"
 							  styleName="bigBlueButton"
 							  id="okButton"
 							  buttonMode="true"
@@ -251,11 +272,11 @@
 						  width="100%"
 						  horizontalAlign="right"
 						  paddingTop="10">
-					<skins:IconButton label="{resourceManager.getString('myResources','I_FORGOT_MY_PASSWORD')}"
+					<skins:IconButton label="{ResourceManager.getInstance().getString('myResources','I_FORGOT_MY_PASSWORD')}"
 									  id="restorePassword"
 									  styleName="commonLinkButton"
 									  click="showRestorePass(event)"/>
-					<skins:IconButton label="{resourceManager.getString('myResources','SEND_EMAIL_AGAIN')}"
+					<skins:IconButton label="{ResourceManager.getInstance().getString('myResources','SEND_EMAIL_AGAIN')}"
 									  id="resendEmailLink"
 									  styleName="commonLinkButton"
 									  click="showActivationResend(event)"
@@ -270,17 +291,17 @@
 					  width="100%">
 
 				<!--
-				<s:Label text="{resourceManager.getString('myResources','INPUT_USER_AND_EMAIL')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','INPUT_USER_AND_EMAIL')}"
 						 styleName="formLabel"/>
 				-->
-				<s:Label text="{resourceManager.getString('myResources','USER_NAME')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','USER_NAME')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="activationUsername"
 							 styleName="searchTextInput"
 							 fontSize="16"
 							 width="100%"/>
 
-				<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','EMAIL')}"
 						 styleName="formLabel"/>
 				<s:TextInput id="activationEmail"
 							 styleName="searchTextInput"
@@ -290,12 +311,12 @@
 				<s:HGroup width="100%"
 						  horizontalAlign="center"
 						  verticalAlign="middle">
-					<s:Button label="{resourceManager.getString('myResources','OK')}"
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','OK')}"
 							  buttonMode="true"
 							  id="activationOkButton"
 							  styleName="bigBlueButton"
 							  click="resendActivationEmail(event)"/>
-					<s:Button label="{resourceManager.getString('myResources','CANCEL')}"
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','CANCEL')}"
 							  buttonMode="true"
 							  id="activationCancelButton"
 							  styleName="bigBlueButton"

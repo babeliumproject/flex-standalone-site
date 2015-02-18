@@ -9,7 +9,8 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  creationComplete="creationCompleteHandler(event)" xmlns:skins="skins.*">
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
@@ -20,50 +21,98 @@
 			
 			import modules.create.event.CreateEvent;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 			
 			import spark.components.Button;
+			
+			import utils.LocaleUtils;
 			
 			import view.common.CustomAlert;
 			
 			import vo.ExerciseVO;
 			import vo.UserVO;
 
-			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
 
 			private var paginationIdx:uint=1;
-			
-			private var _creationComplete:Boolean = false;
-
-			[Bindable]
+		
 			private var userExerciseList:ArrayCollection;
 
-			private var itemsToDelete:Array=new Array();
+			private var itemsToDelete:Array;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
 
-			protected function creationCompleteHandler(event:FlexEvent):void
+			protected function onComplete(event:FlexEvent):void
 			{
-				//retrieveExercises();
-				_creationComplete = true;
+				cw1=BindingUtils.bindSetter(userExerciseListRetrieved,dataModel,'userVideoListRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindSetter(deleteSelectedExercisesResult,dataModel,'selectedVideosDeleted',commitOnly,useWeakReference);
+				deleteExercisesButton.enabled=false;
+				setupExerciseCounter();
 			}
-
-			private function retrieveExercises():void
+			
+			protected function setupExerciseCounter():void{
+				var code:String = 'VIDEO_COUNT_MANY';
+				var count:int = userExerciseList ? userExerciseList.length : 0;
+				if(count==1){
+					code = 'VIDEO_COUNT_SINGLE';
+				}
+				if(cw3) cw3.unwatch();
+				cw3=LocaleUtils.localizedTemplatePropertyBind(exerciseCount,'text','myResources',code,count);
+			}
+			
+			public function resetGroup():void
 			{
 				paginationIdx=1;
-				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
+				itemsToDelete=null;
+				userExerciseList=null;
+				deleteExercisesButton.enabled=false;
+				
+				//Reset related model data
+				dataModel.userVideoList=null;
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=null;
+				cw2=null;
+				cw3=null;
+				
+				deleteExercisesButton.removeEventListener(MouseEvent.CLICK, deleteExercisesButtonClickHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
-			private function set userExerciseListRetrieved(value:Boolean):void
+			private function userExerciseListRetrieved(value:Boolean):void
 			{
 				var dataProvider:ArrayCollection=dataModel.userVideoList;
 				userExerciseList=dataProvider;
+				setupExerciseCounter();
+				deleteExercisesButton.enabled= userExerciseList ? true : false;
 				createPagination(userExerciseGrid, userExerciseList, paginationIdx, userExercisePaginator, paginationButtonClickHandler);
 
+			}
+			
+			private function deleteSelectedExercisesResult(value:Boolean):void
+			{
+				if (dataModel.selectedVideosDeleted)
+				{
+					itemsToDelete=null;
+					retrieveExercises();
+					dataModel.selectedVideosDeleted=false;
+				}
 			}
 
 			public function createPagination(targetDatagrid:DataGrid, dataProvider:ArrayCollection, currentPageIndicator:uint, paginationContainer:HGroup, pageClickHandler:Function):void
@@ -98,11 +147,12 @@
 					}
 				}
 				if (itemsToDelete.length > 0)
-					CustomAlert.confirm(resourceManager.getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteSelectedExercisesChoiceHandler, Alert.NO);
+					CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteSelectedExercisesChoiceHandler, Alert.NO);
 			}
 
 			private function deleteSelectedExercisesChoiceHandler(event:CloseEvent):void
 			{
+				
 				if (event.detail == Alert.YES)
 					deleteSelectedExercises();
 			}
@@ -112,72 +162,22 @@
 				new CreateEvent(CreateEvent.DELETE_SELECTED_CREATIONS, itemsToDelete).dispatch();
 			}
 
-			private function set deleteSelectedExercisesResult(value:Boolean):void
-			{
-				if (dataModel.selectedVideosDeleted)
-				{
-					itemsToDelete=new Array();
-					retrieveExercises();
-					dataModel.selectedVideosDeleted=false;
-				}
-			}
-
-			public function resetComponent():void
+			private function retrieveExercises():void
 			{
 				paginationIdx=1;
-				itemsToDelete=new Array();
-				editCancelHandler(null);
-				if(_creationComplete){
-					//retrieveExercises();
-				}
+				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
 			}
 			
-			public function editSelectedExercise(data:ExerciseVO):void{
-				/*
-				videoEditPanel.setInformation(data);
-				videoListPanel.includeInLayout = false;
-				videoListPanel.visible = false;
-				videoEditPanel.includeInLayout = true;
-				videoEditPanel.visible = true;
-				*/
-			}
-			
-			private function editCancelHandler(event:MouseEvent):void{
-				/*
-				videoListPanel.includeInLayout = true;
-				videoListPanel.visible = true;
-				videoEditPanel.includeInLayout = false;
-				videoEditPanel.visible = false;
-				videoEditPanel.resetComponent();
-				*/
-			}
-
-			protected function searchButton_clickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{dataModel.userVideoListRetrieved}"
-				destination="userExerciseListRetrieved"/>
-
-	<fx:Binding source="{dataModel.selectedVideosDeleted}"
-				destination="deleteSelectedExercisesResult"/>
 
 	<s:VGroup id="videoListPanel"
 			  width="100%"
 			  height="100%">
 		<s:Label id="myVideosTitle"
-				 text="{resourceManager.getString('myResources','MY_VIDEOS')}"
-				 styleName="sectionTitleLabel"/>
-		<s:Line width="{myVideosTitle.width}">
-			<s:stroke>
-				<mx:SolidColorStroke weight="3"
-									 color="{myVideosTitle.getStyle('color')}"/>
-			</s:stroke>
-		</s:Line>
-		<s:Label text="{resourceManager.getString('myResources','MY_VIDEOS_DESCRIPTION')}"
+				 text="{ResourceManager.getInstance().getString('myResources','MY_VIDEOS')}"
+				 styleName="h2"/>
+		<s:Label text="{ResourceManager.getInstance().getString('myResources','MY_VIDEOS_DESCRIPTION')}"
 				 paddingTop="10"
 				 paddingBottom="10"/>
 
@@ -195,31 +195,17 @@
 									paddingTop="8"/>
 			</s:layout>
 
-			<skins:IconButton id="deleteExercisesButton"
+			<s:Button id="deleteExercisesButton"
 					  click="deleteExercisesButtonClickHandler(event)"
-					  label="{resourceManager.getString('myResources','DELETE')}"
+					  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"
 					  styleName="btn-danger"/>
 			<mx:VRule height="20"/>
 			<s:Label id="exerciseCount"
 					 paddingLeft="16"
-					 paddingRight="16"
-					 text="{userExerciseList.length > 1 ? StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_MANY'),userExerciseList.length) : StringUtil.substitute(resourceManager.getString('myResources','VIDEO_COUNT_SINGLE'),userExerciseList.length)}"/>
-			<!--
-			<mx:VRule height="20"/>
-			<s:Label text="{resourceManager.getString('myResources','SORT_BY')+':'}"/>
-			<s:DropDownList id="sortOptions"/>
-			<s:HGroup width="100%"
-					  horizontalAlign="right">
-				<s:TextInput id="searchMyVideos"/>
-				<s:Button id="searchButton"
-						  click="searchButton_clickHandler(event)"
-						  label="{resourceManager.getString('myResources','SEARCH')}"/>
-			</s:HGroup>
-			-->
+					 paddingRight="16"/>
 		</s:BorderContainer>
 
 		<mx:DataGrid id="userExerciseGrid"
-					 dataProvider="{userExerciseList}"
 					 width="100%"
 					 horizontalScrollPolicy="off"
 					 verticalScrollPolicy="off"
@@ -231,7 +217,6 @@
 					 selectable="false"
 					 variableRowHeight="true">
 			<mx:columns>
-
 				<mx:DataGridColumn itemRenderer="modules.create.view.CreationItemRenderer"/>
 			</mx:columns>
 		</mx:DataGrid>
@@ -239,13 +224,5 @@
 				  width="100%"
 				  horizontalAlign="center"
 				  gap="2"/>
-
 	</s:VGroup>
-
-	<!--
-	<view:UserVideoInfoEdit id="videoEditPanel"
-									  includeInLayout="false"
-									  visible="false"
-									  cancelClickHandler="{editCancelHandler}"/>
-	-->
 </s:VGroup>

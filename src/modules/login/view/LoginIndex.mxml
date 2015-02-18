@@ -2,18 +2,21 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:userManagement="components.userManagement.*"
+		  xmlns:main="components.main.*"
 		  horizontalAlign="center"
 		  width="100%"
 		  paddingTop="40"
-		  implements="modules.IGroupInterface" xmlns:view="modules.account.view.*" xmlns:main="components.main.*">
-	
+		  implements="modules.IPinnedGroupInterface">
+
 	<fx:Script>
 		<![CDATA[
-			import mx.events.FlexEvent;
-			
-			public function resetGroup():void{
+			public function resetGroup():void
+			{
 				loginForm.resetComponent();
+			}
+			
+			public function unpinGroup():void{
+				loginForm.unpinComponent();
 			}
 		]]>
 	</fx:Script>
@@ -22,10 +25,12 @@
 					   minWidth="300"
 					   styleName="loginBorderContainer">
 		<s:layout>
-			<s:VerticalLayout paddingBottom="12" paddingLeft="12" paddingRight="12" paddingTop="12"/>
+			<s:VerticalLayout paddingBottom="12"
+							  paddingLeft="12"
+							  paddingRight="12"
+							  paddingTop="12"/>
 		</s:layout>
-		<main:LoginRestorePassForm 
-			id="loginForm"
-			width="100%"/>
+		<main:LoginRestorePassForm id="loginForm"
+								   width="100%"/>
 	</s:BorderContainer>
 </s:VGroup>

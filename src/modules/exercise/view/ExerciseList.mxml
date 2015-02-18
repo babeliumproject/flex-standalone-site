@@ -18,20 +18,19 @@
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
-
-			import mx.binding.utils.ChangeWatcher;
-
+			
 			import control.URLManager;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.URLUtil;
-
+			
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.TileLayout;
@@ -151,6 +150,9 @@
 				typeFilter=-1;
 				langFilter=null;
 				sitFilter=0;
+				
+				//Reset the related model data before finishing
+				_model.availableRecordableExercises=null;
 			}
 
 			public function unpinGroup():void
@@ -158,6 +160,21 @@
 				if (cw1)
 					cw1.unwatch();
 				cw1=null;
+				
+				searchField.removeEventListener(FlexEvent.ENTER, onSearchTextInputChange);
+				searchbtn.removeEventListener(MouseEvent.CLICK, onSearchTextInputChange);
+				sortByDropdown.removeEventListener(IndexChangeEvent.CHANGE, onFilterDropdownChange);
+				exerciseListDataGroup.removeEventListener(IndexChangeEvent.CHANGE, changeHandler);
+				langFilterDD.removeEventListener(IndexChangeEvent.CHANGE, onFilterDropdownChange);
+				difLevelFilterDD.removeEventListener(IndexChangeEvent.CHANGE, onFilterDropdownChange);
+				exerciseTypeFilterDD.removeEventListener(IndexChangeEvent.CHANGE, onFilterDropdownChange);
+				commSituationFilterDD.removeEventListener(IndexChangeEvent.CHANGE, onFilterDropdownChange);
+				filterRemoveButton.removeEventListener(MouseEvent.CLICK, removeAllFilters);
+				
+				focusManager.deactivate();
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, onPreinitialize);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
 			public function setComponentData(value:Boolean):void

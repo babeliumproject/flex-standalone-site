@@ -647,6 +647,8 @@
 					VP.removeEventListener(RecordingEvent.END, onRecordingEnd);
 					VP.removeEventListener(RecordingEvent.USER_DEVICE_ACCESS_DENIED, onUserDeviceAccessDenied);
 				}
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 		]]>
 	</fx:Script>

@@ -15,7 +15,7 @@
 		<![CDATA[
 			import control.URLChangeEvent;
 			
-			import mx.utils.ObjectUtil;
+			import modules.IPinnedGroupInterface;
 			
 			import control.URLManager;
 			
@@ -28,6 +28,7 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
 			
 			import spark.components.NavigatorContent;
 			
@@ -39,7 +40,6 @@
 			
 			public var modulename:String = 'login';
 			
-			[Bindable]
 			private var _viewstackIndex:uint;
 			
 			private var _creationComplete:Boolean;
@@ -74,6 +74,7 @@
 				_moduleController = null;
 				_model = null;
 				resetViews();
+				unpinViews();
 			}
 			
 			public function resetViews():void{
@@ -84,9 +85,25 @@
 					{
 						if (nc.deferredContentCreated)
 						{
-							var v:*=nc.getElementAt(0) as IGroupInterface;
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
 							if (v)
 								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function unpinViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.unpinGroup();
 						}
 					}
 				}
@@ -119,10 +136,12 @@
 			
 			public function actionIndex():void{
 				_viewstackIndex = INDEX;
+				moduleViewstack.selectedIndex=_viewstackIndex;
 			}
 			
 			public function actionActivate(parameters:Object):void{
 				_viewstackIndex = ACTIVATE;
+				moduleViewstack.selectedIndex=_viewstackIndex;
 				if (parameters != null)
 				{
 					if (parameters.hash != '' && parameters.user != '')
@@ -137,6 +156,7 @@
 			
 			public function actionForgotpassword():void{
 				_viewstackIndex = FORGOTPASSWORD;
+				moduleViewstack.selectedIndex=_viewstackIndex;
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void
@@ -168,7 +188,7 @@
 			protected function checkPermissions():void{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-					URLManager.getInstance().redirect('/course');
+					URLManager.getInstance().redirect('/exercises');
 					return;
 				}
 				this.visible=true;
@@ -178,7 +198,6 @@
 	</fx:Script>
 	
 	<mx:ViewStack id="moduleViewstack"
-				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
 				  height="100%">
