@@ -19,6 +19,8 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
+			import mx.utils.OnDemandEventDispatcher;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -38,6 +40,7 @@
 			
 			import utils.ExerciseRenderUtils;
 			import utils.LocaleUtils;
+			import utils.QueryUtils;
 			
 			import view.common.LicenseResource;
 
@@ -65,6 +68,17 @@
 				}
 				
 				exerciseData=_exercise;
+			}
+			
+			public function resetComponent():void{
+				disableComponents();
+			}
+			
+			public function unpinComponent():void{
+				
+				
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
 			}
 
 			public function set exerciseData(exercise:Object):void
@@ -146,9 +160,18 @@
 				if (DataModel.getInstance().isLoggedIn == false || _dataAvailable == false)
 				{
 					exDescription.htmlText="";
+					exerciseTypeLbl.text="";
+					commSituationRow.includeInLayout=false;
+					commSituationRow.visible=false;
+					commCompetenceRow.includeInLayout=false;
+					commCompetenceRow.visible=false;
+					lingAspectsRow.includeInLayout=false;
+					lingAspectsRow.visible=false;
+					
 					//additionalInfoBox.visible=false;
 					//additionalInfoBox.includeInLayout=false;
 					//_lessAdtInfoStatus=false;
+					removeDescriptors();
 					removeTagLinkButtons();
 				}
 			}
@@ -220,13 +243,19 @@
 
 			protected function tagClickHandler(event:MouseEvent):void
 			{
-				var term:String =(event.target as Button).label;
-				URLManager.getInstance().redirect('/exercises/search/?q='+term);
+				var rterm:String =(event.target as Button).label;
+				var fterm:String=QueryUtils.formatSearchQuery(rterm);
+				if(fterm){
+					URLManager.getInstance().redirect('/exercises/search/?q='+fterm);
+				}
 			}
 			
 			protected function descriptorClickHandler(event:MouseEvent):void{
-				var term:String="\""+(event.target as Button).label+"\"";
-				URLManager.getInstance().redirect('/exercises/search/?q='+term);
+				var rterm:String="\""+(event.target as Button).label+"\"";
+				var fterm:String=QueryUtils.formatSearchQuery(rterm);
+				if(fterm){
+					URLManager.getInstance().redirect('/exercises/search/?q='+fterm);
+				}
 			}
 
 			protected function lessAdtInfoClickHandler(event:MouseEvent):void

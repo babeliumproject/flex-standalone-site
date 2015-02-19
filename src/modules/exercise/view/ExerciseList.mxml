@@ -19,6 +19,8 @@
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
+			import utils.QueryUtils;
+			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -433,17 +435,10 @@
 
 			public function onSearchTextInputChange(event:Event):void
 			{
-				var terms:String=searchField.text;
-				if (!terms.length)
-					return;
-				var tb:String=terms.replace(/[\r\n]+/g, "");
-				var ts:String=tb.replace(/[\s]+/g, "");
-				if (!ts.length)
-					return;
-				var te:String=encodeURIComponent(tb);
-				var tp:String=te.replace(/%20/g, "+");
-
-				searchTerm=tp;
+				var fq:String = QueryUtils.formatSearchQuery(searchField.text);
+				if(!fq) return;
+				
+				searchTerm=fq;
 
 				buildSearchQuery();
 			}

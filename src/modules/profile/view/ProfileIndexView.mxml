@@ -7,27 +7,53 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  gap="16"
-		  implements="modules.IGroupInterface"
 		  width="100%"
-		  horizontalAlign="center">
+		  horizontalAlign="center"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
+			import mx.core.FlexGlobals;
+
 			import model.DataModel;
-			
+
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
-			
+
 			import spark.events.IndexChangeEvent;
 
-
-			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
 			private var _useractivity:Object;
+
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+
+			private var cw1:ChangeWatcher;
+
+			[Bindable]
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
+
+			protected function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(userActivityRetrieved, _model, 'userActivityDataRetrieved', commitOnly, useWeakReference);
+				if (lineStyle)
+				{
+					uactassesslinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactassesslinestroke.color=lineStyle.getStyle('borderColor');
+					uactresplinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactresplinestroke.color=lineStyle.getStyle('borderColor');
+					uactpendinglinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactpendinglinestroke.color=lineStyle.getStyle('borderColor');
+				}
+			}
 
 			public function resetGroup():void
 			{
@@ -39,9 +65,26 @@
 				uactresplist.removeEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler);
 				uactassesslist.removeEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler);
 				uactpendinglist.removeEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged);
+				_useractivity=null;
+
+				//Reset the related model data
+				_model.userActivityData=null;
 			}
 
-			protected function set userActivityRetrieved(value:Boolean):void
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+
+				uactassessbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+				uactpendingbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+				uactrespbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			}
+
+			protected function userActivityRetrieved(value:Boolean):void
 			{
 				if (_model.userActivityData)
 				{
@@ -77,8 +120,9 @@
 			protected function displayLatestResponses(responses:Object):void
 			{
 				uactresplist.removeEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler);
-				if(responses is Array && (responses as Array).length){
-					var dp:ArrayCollection = new ArrayCollection(ArrayUtil.toArray(responses));
+				if (responses is Array && (responses as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(responses));
 					uactrespnone.visible=false;
 					uactrespnone.includeInLayout=false;
 					uactresplist.addEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler, false, 0, true);
@@ -90,12 +134,15 @@
 					uactresplist.percentWidth=100;
 					uactrespviewall.visible=true;
 					uactrespviewall.includeInLayout=true;
-				} else {
+				}
+				else
+				{
 					resetLatestResponses();
 				}
 			}
-			
-			protected function resetLatestResponses():void{
+
+			protected function resetLatestResponses():void
+			{
 				uactrespnone.visible=true;
 				uactrespnone.includeInLayout=true;
 				uactresplist.visible=false;
@@ -108,8 +155,9 @@
 			protected function displayLatestAssessments(assessments:Object):void
 			{
 				uactassesslist.removeEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler);
-				if(assessments is Array && (assessments as Array).length){
-					var dp:ArrayCollection = new ArrayCollection(ArrayUtil.toArray(assessments));
+				if (assessments is Array && (assessments as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(assessments));
 					uactassessnone.visible=false;
 					uactassessnone.includeInLayout=false;
 					uactassesslist.addEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler, false, 0, true);
@@ -121,12 +169,15 @@
 					uactassesslist.percentWidth=100;
 					uactassessviewall.visible=true;
 					uactassessviewall.includeInLayout=true;
-				} else {
+				}
+				else
+				{
 					resetLatestAssessments();
 				}
 			}
-			
-			protected function resetLatestAssessments():void{
+
+			protected function resetLatestAssessments():void
+			{
 				uactassessnone.visible=true;
 				uactassessnone.includeInLayout=true;
 				uactassesslist.visible=false;
@@ -139,8 +190,9 @@
 			protected function displayLatestPendingAssessments(pending:Object):void
 			{
 				uactpendinglist.removeEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged);
-				if(pending is Array && (pending as Array).length){
-					var dp:ArrayCollection = new ArrayCollection(ArrayUtil.toArray(pending));
+				if (pending is Array && (pending as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(pending));
 					uactpendingnone.visible=false;
 					uactpendingnone.includeInLayout=false;
 					uactpendinglist.addEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged, false, 0, true);
@@ -152,12 +204,15 @@
 					uactpendinglist.percentWidth=100;
 					uactpendingviewall.visible=true;
 					uactpendingviewall.includeInLayout=true;
-				} else {
+				}
+				else
+				{
 					resetLatestPending();
 				}
 			}
-			
-			protected function resetLatestPending():void{
+
+			protected function resetLatestPending():void
+			{
 				uactpendingnone.visible=true;
 				uactpendingnone.includeInLayout=true;
 				uactpendinglist.visible=false;
@@ -166,36 +221,44 @@
 				uactpendingviewall.visible=false;
 				uactpendingviewall.includeInLayout=false;
 			}
-			
-			protected function latestResponseSelectionChangeHandler(event:IndexChangeEvent):void{
+
+			protected function latestResponseSelectionChangeHandler(event:IndexChangeEvent):void
+			{
 				var item:*=uactresplist.dataProvider.getItemAt(event.newIndex);
-				if(item){
-					var modulename:String = 'assessments';
-					URLManager.getInstance().redirect("/"+modulename+"/view/"+item.responseId);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/view/" + item.responseId);
 				}
 			}
-			
-			protected function latestAssessmentSelectionChangeHandler(event:IndexChangeEvent):void{
+
+			protected function latestAssessmentSelectionChangeHandler(event:IndexChangeEvent):void
+			{
 				var item:*=uactassesslist.dataProvider.getItemAt(event.newIndex);
-				if(item){
-					var modulename:String = 'assessments';
-					URLManager.getInstance().redirect("/"+modulename+"/view/"+item.responseId);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/view/" + item.responseId);
 				}
 			}
-			
-			protected function latestPendingSelectionChanged(event:IndexChangeEvent):void{
+
+			protected function latestPendingSelectionChanged(event:IndexChangeEvent):void
+			{
 				var item:*=uactpendinglist.dataProvider.getItemAt(event.newIndex);
-				if(item){
-					var modulename:String = 'assessments';
-					URLManager.getInstance().redirect("/"+modulename+"/add/"+item.responseId);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/add/" + item.responseId);
 				}
 			}
-			
+
+			protected function redirectToAssessment(event:MouseEvent, action:String):void
+			{
+				var modulename:String='assessments';
+				URLManager.getInstance().redirect("/" + modulename + "/" + action);
+			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{_model.userActivityDataRetrieved}"
-				destination="userActivityRetrieved"/>
 
 	<s:HGroup width="100%">
 		<s:Label id="profiletitlelbl"
@@ -250,15 +313,14 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Label id="uactresptitle"
-				 text="{resourceManager.getString('myResources','RESPONSES')}"
+				 text="{ResourceManager.getInstance().getString('myResources','RESPONSES')}"
 				 styleName="exerciseTitleLabel"
 				 paddingTop="8"
 				 paddingLeft="8"/>
 		<s:Line width="100%">
 			<s:stroke>
-				<s:SolidColorStroke weight="{uactresp.getStyle('borderWeight')}"
-									alpha="{uactresp.getStyle('borderAlpha')}"
-									color="{uactresp.getStyle('borderColor')}"/>
+				<s:SolidColorStroke id="uactresplinestroke"
+									weight="1"/>
 			</s:stroke>
 		</s:Line>
 		<s:Label id="uactrespnone"
@@ -269,7 +331,8 @@
 				 paddingRight="8"/>
 		<s:List id="uactresplist"
 				itemRenderer="modules.profile.view.ResponseItemRenderer"
-				width="100%" borderVisible="false"
+				width="100%"
+				borderVisible="false"
 				includeInLayout="false"
 				visible="false"/>
 		<s:HGroup width="100%"
@@ -281,7 +344,7 @@
 			<s:Button id="uactrespbtn"
 					  styleName="btn-link"
 					  buttonMode="true"
-					  click="{URLManager.getInstance().redirect('/assessments/for')}"
+					  click="{redirectToAssessment(event,'for')}"
 					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
 		</s:HGroup>
 
@@ -295,15 +358,14 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Label id="uactassesstitle"
-				 text="{resourceManager.getString('myResources','ASSESSMENTS')}"
+				 text="{ResourceManager.getInstance().getString('myResources','ASSESSMENTS')}"
 				 styleName="exerciseTitleLabel"
 				 paddingTop="8"
 				 paddingLeft="8"/>
 		<s:Line width="100%">
 			<s:stroke>
-				<s:SolidColorStroke weight="{uactassess.getStyle('borderWeight')}"
-									alpha="{uactassess.getStyle('borderAlpha')}"
-									color="{uactassess.getStyle('borderColor')}"/>
+				<s:SolidColorStroke id="uactassesslinestroke"
+									weight="1"/>
 			</s:stroke>
 		</s:Line>
 		<s:Label id="uactassessnone"
@@ -314,7 +376,8 @@
 				 paddingRight="8"/>
 		<s:List id="uactassesslist"
 				itemRenderer="modules.profile.view.ResponseItemRenderer"
-				width="100%" borderVisible="false"
+				width="100%"
+				borderVisible="false"
 				includeInLayout="false"
 				visible="false"/>
 		<s:HGroup width="100%"
@@ -326,7 +389,7 @@
 			<s:Button id="uactassessbtn"
 					  styleName="btn-link"
 					  buttonMode="true"
-					  click="{URLManager.getInstance().redirect('/assessments/by')}"
+					  click="{redirectToAssessment(event,'by')}"
 					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
 		</s:HGroup>
 	</s:BorderContainer>
@@ -338,15 +401,14 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Label id="uactpendingtitle"
-				 text="{resourceManager.getString('myResources','WAITING_FOR_ASSESSMENT')}"
+				 text="{ResourceManager.getInstance().getString('myResources','WAITING_FOR_ASSESSMENT')}"
 				 styleName="exerciseTitleLabel"
 				 paddingTop="8"
 				 paddingLeft="8"/>
 		<s:Line width="100%">
 			<s:stroke>
-				<s:SolidColorStroke weight="{uactpending.getStyle('borderWeight')}"
-									alpha="{uactpending.getStyle('borderAlpha')}"
-									color="{uactpending.getStyle('borderColor')}"/>
+				<s:SolidColorStroke id="uactpendinglinestroke"
+									weight="1"/>
 			</s:stroke>
 		</s:Line>
 		<s:Label id="uactpendingnone"
@@ -357,7 +419,8 @@
 				 paddingRight="8"/>
 		<s:List id="uactpendinglist"
 				itemRenderer="modules.profile.view.ResponseItemRenderer"
-				width="100%" borderVisible="false"
+				width="100%"
+				borderVisible="false"
 				includeInLayout="false"
 				visible="false"/>
 		<s:HGroup width="100%"
@@ -369,7 +432,7 @@
 			<s:Button id="uactpendingbtn"
 					  styleName="btn-link"
 					  buttonMode="true"
-					  click="{URLManager.getInstance().redirect('/assessments/pending')}"
+					  click="{redirectToAssessment(event,'pending')}"
 					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
 		</s:HGroup>
 	</s:BorderContainer>

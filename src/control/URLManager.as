@@ -132,11 +132,8 @@ package control
 			parsedParams=null;
 			
 			_lastURL=event ? Object(event).lastURL : null;	
-			
-			//Fixes a bug caused by email clients that escape url sequences
-			var uescparams:String=unescape(_browserManager.fragment);
 
-			var fragments:Array=uescparams.split(DELIMITER);
+			var fragments:Array=_browserManager.fragment.split(DELIMITER);
 			var numfragments:Number=fragments.length;
 
 			if (isNaN(numfragments) || numfragments <= 1)

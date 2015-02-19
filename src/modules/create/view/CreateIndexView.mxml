@@ -16,8 +16,6 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import spark.layouts.TileLayout;
-			
 			import model.DataModel;
 			
 			import mx.binding.utils.BindingUtils;
@@ -28,6 +26,7 @@
 			import mx.resources.ResourceManager;
 			
 			import spark.events.IndexChangeEvent;
+			import spark.layouts.TileLayout;
 
 			protected var latestCreationsData:ArrayCollection;
 			
@@ -56,7 +55,7 @@
 				cw1=null;
 				
 				addnewexercise.removeEventListener(MouseEvent.CLICK, addNewExerciseHandler);
-				latestCreationsList.removeEventListener(IndexChangeEvent.CHANGE, changeHandler);
+				latestCreationsList.removeEventListener(IndexChangeEvent.CHANGING, changeHandler);
 				seeAllCreations.removeEventListener(MouseEvent.CLICK, manageExercisesHandler);
 				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
@@ -95,10 +94,13 @@
 				URLManager.getInstance().redirect('/create/add')
 			}
 
-			private function changeHandler(event:Event):void
+			private function changeHandler(event:IndexChangeEvent):void
 			{
-				var obj:Object=List(event.target).selectedItem;
-				URLManager.getInstance().redirect('/create/edit/' + obj.exercisecode + '?s=1');
+				var item:*=List(event.currentTarget).dataProvider.getItemAt(event.newIndex);
+				if (item)
+				{
+					URLManager.getInstance().redirect('/create/edit/' + item.exercisecode + '?s=1');
+				}
 			}
 			
 			private function manageExercisesHandler(event:MouseEvent):void{
@@ -135,7 +137,7 @@
 					minHeight="0"
 					borderVisible="false"
 					itemRenderer="modules.create.view.LatestCreationItemRenderer"
-					change="changeHandler(event)"
+					changing="changeHandler(event)"
 					contentBackgroundAlpha="0">
 			</s:List>
 			<skins:IconButton id="seeAllCreations"

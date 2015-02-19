@@ -5,15 +5,15 @@
 		 xmlns:skins="skins.*"
 		 xmlns:videoUpload="components.videoUpload.*"
 		 xmlns:view="modules.create.view.*"
-		 xmlns:common="view.common.*" xmlns:webcamCapture="components.webcamCapture.*">
+		 xmlns:common="view.common.*"
+		 xmlns:webcamCapture="components.webcamCapture.*">
 
 	<fx:Script>
 		<![CDATA[
-			import modules.create.event.FileUploadEvent;
-
 			import model.DataModel;
 
 			import modules.create.event.CreateEvent;
+			import modules.create.event.FileUploadEvent;
 
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
@@ -42,6 +42,26 @@
 				recFromWebcamBox.includeInLayout=false;
 				errorMessageContainer.visible=false;
 				errorMessageContainer.includeInLayout=false;
+			}
+
+			public function unpinComponent():void
+			{
+
+				if (fileUpload)
+				{
+					fileUpload.removeEventListener(FileUploadEvent.FILE_SELECTED, onUploadStart);
+					fileUpload.removeEventListener(FileUploadEvent.IO_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.SECURITY_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.HTTP_STATUS_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_PROGRESS, onUploadProgress);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_COMPLETE_DATA, onUploadComplete);
+				}
+
+				uploadFile.removeEventListener(MouseEvent.CLICK, uploadFileClickHandler);
+				recordFile.removeEventListener(MouseEvent.CLICK, webcamCaptureClickHandler);
+				cancelUpload.removeEventListener(MouseEvent.CLICK, cancelUploadFileClickHandler);
+				cancelUploadErrorBtn.removeEventListener(MouseEvent.CLICK, cancelUploadFileClickHandler);
 			}
 
 			protected function uploadFileClickHandler(event:MouseEvent):void
@@ -217,20 +237,21 @@
 				  horizontalAlign="center"
 				  verticalAlign="middle">
 			<s:Label id="chooseMethod"
-					 text="{resourceManager.getString('myResources','CHOOSE_MEDIA_ORIGIN')}"
+					 text="{ResourceManager.getInstance().getString('myResources','CHOOSE_MEDIA_ORIGIN')}"
 					 fontSize="18"/>
 			<s:HGroup visible="true"
 					  includeInLayout="true"
 					  paddingTop="80">
-				<skins:IconButton id="uploadFile"
-								  styleName="btn-primary"
-								  click="uploadFileClickHandler(event)"
-								  label="{resourceManager.getString('myResources','FILE')}"/>
-				<skins:IconButton id="recordFile"
-								  styleName="btn-primary"
-								  click="webcamCaptureClickHandler(event)"
-								  label="{resourceManager.getString('myResources','WEBCAM_CAPTURE')}"
-								  buttonMode="true"/>
+				<s:Button id="uploadFile"
+						  styleName="btn-primary"
+						  click="uploadFileClickHandler(event)"
+						  buttonMode="true"
+						  label="{ResourceManager.getInstance().getString('myResources','FILE')}"/>
+				<s:Button id="recordFile"
+						  styleName="btn-primary"
+						  click="webcamCaptureClickHandler(event)"
+						  buttonMode="true"
+						  label="{ResourceManager.getInstance().getString('myResources','WEBCAM_CAPTURE')}"/>
 			</s:HGroup>
 		</s:VGroup>
 
@@ -262,21 +283,21 @@
 					  horizontalAlign="left">
 				<s:Button id="cancelUpload"
 						  click="cancelUploadFileClickHandler(event)"
-						  label="{resourceManager.getString('myResources','CANCEL')}"
+						  label="{ResourceManager.getInstance().getString('myResources','CANCEL')}"
 						  styleName="btn-default"
 						  buttonMode="true"/>
 			</s:HGroup>
 		</s:VGroup>
 
 		<webcamCapture:WebcamCapture id="recFromWebcamBox"
-							streamsFolder="exercises"
-							filePrefix="upld"
-							includeInLayout="false"
-							visible="false"
-							width="100%"
-							height="100%"
-							cancelClickHandler="{cancelCaptureClickHandler}"
-							uploadClickHandler="{uploadCaptureClickHandler}"/>
+									 streamsFolder="exercises"
+									 filePrefix="upld"
+									 includeInLayout="false"
+									 visible="false"
+									 width="100%"
+									 height="100%"
+									 cancelClickHandler="{cancelCaptureClickHandler}"
+									 uploadClickHandler="{uploadCaptureClickHandler}"/>
 
 		<s:VGroup id="errorMessageContainer"
 				  visible="false"
@@ -300,8 +321,9 @@
 						 fontSize="18"/>
 				<s:Label id="errorMessage"
 						 width="100%"/>
-				<s:Button click="cancelUploadFileClickHandler(event)"
-						  label="{resourceManager.getString('myResources','OK')}"
+				<s:Button id="cancelUploadErrorBtn"
+						  click="cancelUploadFileClickHandler(event)"
+						  label="{ResourceManager.getInstance().getString('myResources','OK')}"
 						  styleName="btn-danger"
 						  buttonMode="true"/>
 			</s:BorderContainer>

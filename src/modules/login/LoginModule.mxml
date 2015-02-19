@@ -14,9 +14,6 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLChangeEvent;
-			
-			import modules.IPinnedGroupInterface;
-			
 			import control.URLManager;
 			
 			import events.RegisterUserEvent;
@@ -24,11 +21,13 @@
 			import model.DataModel;
 			
 			import modules.IGroupInterface;
+			import modules.IPinnedGroupInterface;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.events.FlexEvent;
 			import mx.utils.ObjectUtil;
+			import mx.utils.URLUtil;
 			
 			import spark.components.NavigatorContent;
 			
@@ -144,11 +143,23 @@
 				moduleViewstack.selectedIndex=_viewstackIndex;
 				if (parameters != null)
 				{
-					if (parameters.hash != '' && parameters.user != '')
+					var user:String,hash:String;
+					//Links coming from email clients might be escaped. Unescape to make sure
+					if(!parameters.hasOwnProperty('hash') || !parameters.hasOwnProperty('user')){
+						var unhexparams:String=unescape(parameters.id);
+						var uparams:Object=URLUtil.stringToObject(unhexparams,'&',true);
+						user=uparams.user || null;
+						hash=uparams.hash || null;
+					} else {
+						user=parameters.user;
+						hash=parameters.hash;
+					}
+					
+					if (hash != '' && user != '')
 					{
 						var data:Object = new Object();
-						data.username=parameters.user;
-						data.activation_hash=parameters.hash;
+						data.username=user;
+						data.activation_hash=hash;
 						new RegisterUserEvent(RegisterUserEvent.ACTIVATE_USER, data).dispatch();
 					}
 				}
