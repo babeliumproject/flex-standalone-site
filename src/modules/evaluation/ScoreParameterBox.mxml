@@ -5,9 +5,19 @@
 		  xmlns:hulstkamp="com.hulstkamp.*"
 		  width="100%"
 		  verticalAlign="middle">
+	<s:HGroup id="helpGroup"
+			  width="16"
+			  height="16"
+			  visible="false"
+			  buttonMode="true"
+			  rollOver="onRollOver(event)"
+			  rollOut="onRollOut(event)">
+		<s:BitmapImage source="/resources/images/iconmonstr-help-3-icon-16.png"/>
+	</s:HGroup>
 	<s:Label id="parameterText"
 			 text="{resourceManager.getString('myResources',text)}"
-			 width="270"/>
+			 width="270"
+			 verticalAlign="middle"/>
 	<hulstkamp:AhFxRatingComponent id="ratingComponent"
 								   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
 								   scaleX="1.5"
@@ -16,12 +26,74 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.controls.ToolTip;
+			import mx.utils.ObjectUtil;
+			import mx.core.IUIComponent;
+			import mx.managers.ToolTipManager;
+
+
 			[Bindable]
 			private var text:String='';
+
+			[Bindable]
+			private var infoAvailable:Boolean;
+
+			[Bindable]
+			private var help:String;
+
+			private var infoTip:ToolTip;
+
+			public function onRollOver(event:MouseEvent):void
+			{
+				if (infoAvailable)
+				{
+					if (infoTip)
+					{
+						ToolTipManager.destroyToolTip(infoTip);
+						infoTip=null;
+					}
+
+					var helpmsg:String=resourceManager.getString('myResources',help);
+					
+					var pt:Point=new Point(event.currentTarget.x, event.currentTarget.y);
+					pt=event.currentTarget.contentToGlobal(pt);
+					
+					infoTip=ToolTipManager.createToolTip(helpmsg, pt.x, pt.y+ event.currentTarget.height + 5, null, IUIComponent(event.currentTarget)) as ToolTip;
+					//infoTip.setStyle("borderStyle","errorTipBelow");
+					infoTip.setStyle("backgroundColor", 0x000000);
+					infoTip.setStyle("color",0xFFFFFF);
+					//infoTip.setStyle("fontSize",12);
+				}
+			}
+
+			public function onRollOut(event:MouseEvent):void
+			{
+				if (infoAvailable)
+				{
+					if (infoTip)
+					{
+						ToolTipManager.destroyToolTip(infoTip);
+						infoTip=null;
+					}
+				}
+			}
 
 			public function set parameter(text:String):void
 			{
 				this.text=text;
+			}
+
+			public function set parameterHelp(helpcode:String):void
+			{
+				if(helpcode){
+					infoAvailable=true;
+					helpGroup.visible=true;
+					this.help=helpcode;
+				} else {
+					infoAvailable=false;
+					helpGroup.visible=false;
+					this.help=null;
+				}
 			}
 		]]>
 	</fx:Script>

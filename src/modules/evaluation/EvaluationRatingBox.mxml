@@ -70,7 +70,7 @@
 					var compulsoryDataFilled:Boolean=false;
 					if (!CONFIG::restrictedEvaluation)
 					{
-						if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
+						if (userOverallScore.ratingComponent.rating > 0)
 							compulsoryDataFilled=true;
 					}
 					if (compulsoryDataFilled)
@@ -220,9 +220,9 @@
 				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"
 						 styleName="boldLabel"/>
 				<evaluation:ScoreParameterBox id="userAccuracyScore"
-											  parameter="ACCURACY"/>
+											  parameter="ACCURACY" parameterHelp="ACCURACY_HELP"/>
 				<evaluation:ScoreParameterBox id="userAdequacyScore"
-											  parameter="ADEQUACY"/>
+											  parameter="ADEQUACY" parameterHelp="ADEQUACY_HELP"/>
 				<evaluation:ScoreParameterBox id="userComprehensibilityScore"
 											  parameter="COMPREHENSIBILITY"/>
 				<evaluation:ScoreParameterBox id="userFluencyScore"
@@ -232,7 +232,7 @@
 				<evaluation:ScoreParameterBox id="userPronunciationScore"
 											  parameter="PRONUNCIATION"/>
 				<evaluation:ScoreParameterBox id="userRangeScore"
-											  parameter="RANGE"/>
+											  parameter="RANGE" parameterHelp="RANGE_HELP"/>
 				<evaluation:ScoreParameterBox id="userRhythmScore"
 											  parameter="RHYTHM"/>
 				<evaluation:ScoreParameterBox id="userSpontaneityScore"

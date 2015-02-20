@@ -9,6 +9,11 @@ class EvaluationVO{
 	public $fluencyScore;
 	public $rhythmScore;
 	public $spontaneityScore;
+	public $comprehensibilityScore;
+	public $pronunciationScore;
+	public $accuracyScore;
+	public $adequacyScore;
+	public $rangeScore;
 	public $comment;
 	public $addingDate;
 	
@@ -18,6 +23,11 @@ class EvaluationVO{
 	public $fluencyScoreAverage;
 	public $rhythmScoreAverage;
 	public $spontaneityScoreAverage; 
+	public $comprehensibilityScoreAverage;
+	public $pronunciationScoreAverage;
+	public $accuracyScoreAverage;
+	public $adequacyScoreAverage;
+	public $rangeScoreAverage;
 	
 	//When the video has video comments this fields are filled up with that video's data
 	public $evaluationVideoId;

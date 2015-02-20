@@ -154,6 +154,11 @@ class Evaluation {
 		               AVG(score_fluency) AS fluencyScoreAverage, 
 		               AVG(score_rhythm) AS rhythmScoreAverage, 
 		               AVG(score_spontaneity) AS spontaneityScoreAverage,
+		               AVG(score_accuracy) AS accuracyScoreAverage,
+		               AVG(score_adequacy) AS adequacyScoreAverage,
+		               AVG(score_comprehensibility) AS comprehensibilityScoreAverage,
+		               AVG(score_pronunciation) AS pronunciationScoreAverage,
+		               AVG(score_range) AS rangeScoreAverage,
 		               AVG(suggested_level) as exerciseAvgDifficulty, 
 		               MAX(C.adding_date) AS addingDate
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
@@ -196,6 +201,11 @@ class Evaluation {
 		               			C.score_fluency as fluencyScore, 
 		               			C.score_rhythm as rhythmScore,
 		               			C.score_spontaneity as spontaneityScore, 
+		               			C.score_comprehensibility as comprehensibilityScore,
+		               			C.score_pronunciation as pronunciationScore,
+		               			C.score_accuracy as accuracyScore,
+		               			C.score_adequacy as adequacyScore,
+		               			C.score_range as rangeScore,
 		               			C.comment, 
 		               			C.adding_date as addingDate,
 		               			B.id as exerciseId, 
@@ -261,6 +271,11 @@ class Evaluation {
 					   A.score_fluency as fluencyScore, 
 					   A.score_rhythm as rhythmScore, 
 					   A.score_spontaneity as spontaneityScore,
+					   A.score_comprehensibility as comprehensibilityScore,
+					   A.score_pronunciation as pronunciationScore,
+					   A.score_accuracy as accuracyScore,
+					   A.score_adequacy as adequacyScore,
+					   A.score_range as rangeScore,
 					   A.adding_date as addingDate, 
 					   A.comment as comment, 
 					   B.video_identifier as evaluationVideoFileIdentifier, 
@@ -348,7 +363,9 @@ class Evaluation {
 
 		$this->conn->_startTransaction();
 
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
+										score_comprehensibility, score_pronunciation, score_accuracy, score_adequacy, score_range,
+									    comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -356,11 +373,18 @@ class Evaluation {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		
 		$sql = $sql . "'%s', NOW() )";
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
+		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore, $evalData->spontaneityScore,
+		$evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->accuracyScore, $evalData->adequacyScore, $evalData->rangeScore,
+		$evalData->comment );
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
@@ -426,7 +450,9 @@ class Evaluation {
 		$this->conn->_startTransaction();
 
 		//Insert the evaluation data
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
+										score_comprehensibility, score_pronunciation, score_accuracy, score_adequacy, score_range,
+									    comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -434,11 +460,16 @@ class Evaluation {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%s', NOW() )";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
+		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore, $evalData->spontaneityScore,
+		$evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->accuracyScore, $evalData->adequacyScore, $evalData->rangeScore,
+		$evalData->comment );
 
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
