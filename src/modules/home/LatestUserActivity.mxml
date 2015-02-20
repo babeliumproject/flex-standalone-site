@@ -172,7 +172,7 @@
 								   dataField="responseCharacterName"/>
 				<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 								   dataField="responseRatingAmount"/>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','INTONATION')}"
 								   dataField="intonationScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -188,7 +188,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','FLUENCY')}"
 								   dataField="fluencyScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -204,7 +204,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','RHYTHM')}"
 								   dataField="rhythmScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -220,7 +220,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','SPONTANEITY')}"
 								   dataField="spontaneityScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -236,7 +236,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','OVERALL_SCORE')}"
 								   dataField="overallScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -344,7 +344,7 @@
 				<mx:DataGridColumn headerText="{resourceManager.getString('myResources', 'BALORAZIOKOP')}"
 								   dataField="responseRatingAmount"/>
 				-->
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','INTONATION')}"
 								   dataField="intonationScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -360,7 +360,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','FLUENCY')}"
 								   dataField="fluencyScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -376,7 +376,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','RHYTHM')}"
 								   dataField="rhythmScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -392,7 +392,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','SPONTANEITY')}"
 								   dataField="spontaneityScore">
 					<mx:itemRenderer>
 						<fx:Component>
@@ -408,7 +408,7 @@
 						</fx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
-				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
+				<mx:DataGridColumn headerText="{resourceManager.getString('myResources','OVERALL_SCORE')}"
 								   dataField="overallScore">
 					<mx:itemRenderer>
 						<fx:Component>

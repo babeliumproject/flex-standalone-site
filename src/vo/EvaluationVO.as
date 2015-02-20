@@ -6,16 +6,29 @@ package vo
    {
 	   public var id:int;
 	   public var responseId:int; //The resource that has been assessed
-	   public var overallScore:uint;
-	   public var intonationScore:uint;
-	   public var fluencyScore:uint;
-	   public var rhythmScore:uint;
-	   public var spontaneityScore:uint;
+	   
+	   public var comprehensibilityScore:int;
+	   public var pronunciationScore:int;
+	   public var adequacyScore:int;
+	   public var rangeScore:int;
+	   public var accuracyScore:int;
+	   public var overallScore:int;
+	   public var intonationScore:int;
+	   public var fluencyScore:int;
+	   public var rhythmScore:int;
+	   public var spontaneityScore:int;
 	   public var comment:String;
 	   public var addingDate:String;
 	   
 	   //When the same responseId has more than one entry this returns the average scores
 	   public var overallScoreAverage:Number;
+	   
+	   public var comprehensibilityScoreAverage:Number;
+	   public var pronunciationScoreAverage:Number;
+	   public var adequacyScoreAverage:Number;
+	   public var rangeScoreAverage:Number;
+	   public var accuracyScoreAverage:Number;
+	   
 	   public var intonationScoreAverage:Number;
 	   public var fluencyScoreAverage:Number;
 	   public var rhythmScoreAverage:Number;

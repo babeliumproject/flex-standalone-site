@@ -36,6 +36,14 @@
 				rhythmScore.rating=_evaluationData.rhythmScore;
 				spontaneityScore.rating=_evaluationData.spontaneityScore;
 				overallScore.rating=_evaluationData.overallScore;
+				
+				//New criteria suggested by surveyed teachers
+				comprehensibilityScore.rating=_evaluationData.comprehensibilityScore;
+				pronunciationScore.rating=_evaluationData.pronunciationScore;
+				adequacyScore.rating=_evaluationData.adequacyScore;
+				rangeScore.rating=_evaluationData.rangeScore;
+				accuracyScore.rating=_evaluationData.accuracyScore;
+				
 				if(_evaluationData.comment && _evaluationData.comment != '')
 					textComment.text=_evaluationData.comment;
 				videoCommentThumbnail.source=getImageSource(_evaluationData);
@@ -103,12 +111,34 @@
 			  paddingTop="10">
 		<s:VGroup id="scoresGroup"
 				  width="50%">
-			<s:HGroup id="intonationGroup"
+			<s:HGroup id="accuracyGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_INTONATION_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','ACCURACY')}"
 						 width="270"
 						 styleName="boldLabel"/>
-				<hulstkamp:AhFxRatingComponent id="intonationScore"
+				<hulstkamp:AhFxRatingComponent id="accuracyScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="adequacyGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','ADEQUACY')}"
+						 width="270"
+						 styleName="boldLabel"/>
+				<hulstkamp:AhFxRatingComponent id="adequacyScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="comprehensibilityGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','COMPREHENSIBILITY')}"
+						 width="270"
+						 styleName="boldLabel"/>
+				<hulstkamp:AhFxRatingComponent id="comprehensibilityScore"
 											   enabled="false"
 											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
 											   scaleX="1.5"
@@ -116,7 +146,7 @@
 			</s:HGroup>
 			<s:HGroup id="fluencyGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_FLUENCY_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','FLUENCY')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="fluencyScore"
@@ -125,9 +155,42 @@
 											   scaleX="1.5"
 											   scaleY="1.5"/>
 			</s:HGroup>
+			<s:HGroup id="intonationGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','INTONATION')}"
+						 width="270"
+						 styleName="boldLabel"/>
+				<hulstkamp:AhFxRatingComponent id="intonationScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="pronunciationGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','PRONUNCIATION')}"
+						 width="270"
+						 styleName="boldLabel"/>
+				<hulstkamp:AhFxRatingComponent id="pronunciationScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
+			<s:HGroup id="rangeGroup"
+					  verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','RANGE')}"
+						 width="270"
+						 styleName="boldLabel"/>
+				<hulstkamp:AhFxRatingComponent id="rangeScore"
+											   enabled="false"
+											   skinClass="com.hulstkamp.AhRatingComponentStarSkin"
+											   scaleX="1.5"
+											   scaleY="1.5"/>
+			</s:HGroup>
 			<s:HGroup id="rhythmGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_RHYTHM_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','RHYTHM')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="rhythmScore"
@@ -138,7 +201,7 @@
 			</s:HGroup>
 			<s:HGroup id="spontaneityGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_SPONTANEITY_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','SPONTANEITY')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="spontaneityScore"
@@ -147,9 +210,10 @@
 											   scaleX="1.5"
 											   scaleY="1.5"/>
 			</s:HGroup>
+			
 			<s:HGroup id="overallGroup"
 					  verticalAlign="middle">
-				<s:Label text="{resourceManager.getString('myResources','LABEL_OVERALL_SCORE')}"
+				<s:Label text="{resourceManager.getString('myResources','OVERALL_SCORE')}"
 						 width="270"
 						 styleName="boldLabel"/>
 				<hulstkamp:AhFxRatingComponent id="overallScore"

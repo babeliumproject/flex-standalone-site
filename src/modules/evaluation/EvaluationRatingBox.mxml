@@ -86,13 +86,18 @@
 							return;
 						}
 						var evaluation:EvaluationVO=new EvaluationVO();
-
-						evaluation.intonationScore=userIntonationScore.ratingComponent.rating;
+	
+						evaluation.accuracyScore=userAccuracyScore.ratingComponent.rating;
+						evaluation.adequacyScore=userAdequacyScore.ratingComponent.rating;
+						evaluation.comprehensibilityScore=userComprehensibilityScore.ratingComponent.rating;
 						evaluation.fluencyScore=userFluencyScore.ratingComponent.rating;
+						evaluation.intonationScore=userIntonationScore.ratingComponent.rating;
+						evaluation.pronunciationScore=userPronunciationScore.ratingComponent.rating;
+						evaluation.rangeScore=userRangeScore.ratingComponent.rating;
 						evaluation.rhythmScore=userRhythmScore.ratingComponent.rating;
 						evaluation.spontaneityScore=userSpontaneityScore.ratingComponent.rating;
-
 						evaluation.overallScore=userOverallScore.ratingComponent.rating;
+						
 						evaluation.comment=textComment.text;
 
 						evaluation.responseId=_responseId;
@@ -126,12 +131,18 @@
 			}
 
 			public function resetEvaluationButtonClickHandler(event:MouseEvent):void
-			{
-				userIntonationScore.ratingComponent.rating=0;
+			{	
+				userAccuracyScore.ratingComponent.rating=0;
+				userAdequacyScore.ratingComponent.rating=0;
+				userComprehensibilityScore.ratingComponent.rating=0;
 				userFluencyScore.ratingComponent.rating=0;
+				userIntonationScore.ratingComponent.rating=0;
+				userPronunciationScore.ratingComponent.rating=0;
+				userRangeScore.ratingComponent.rating=0;
 				userRhythmScore.ratingComponent.rating=0;
 				userSpontaneityScore.ratingComponent.rating=0;
 				userOverallScore.ratingComponent.rating=0;
+				
 
 				textComment.text='';
 				if (videoComment)
@@ -208,16 +219,27 @@
 			<s:VGroup width="50%">
 				<s:Label text="{resourceManager.getString('myResources','MESSAGE_COMPULSORY_EVALUATION_DATA') + ':'}"
 						 styleName="boldLabel"/>
-				<evaluation:ScoreParameterBox id="userIntonationScore"
-											  parameter="MESSAGE_RATE_USER_INTONATION"/>
+				<evaluation:ScoreParameterBox id="userAccuracyScore"
+											  parameter="ACCURACY"/>
+				<evaluation:ScoreParameterBox id="userAdequacyScore"
+											  parameter="ADEQUACY"/>
+				<evaluation:ScoreParameterBox id="userComprehensibilityScore"
+											  parameter="COMPREHENSIBILITY"/>
 				<evaluation:ScoreParameterBox id="userFluencyScore"
-											  parameter="MESSAGE_RATE_USER_FLUENCY"/>
+											  parameter="FLUENCY"/>
+				<evaluation:ScoreParameterBox id="userIntonationScore"
+											  parameter="INTONATION"/>
+				<evaluation:ScoreParameterBox id="userPronunciationScore"
+											  parameter="PRONUNCIATION"/>
+				<evaluation:ScoreParameterBox id="userRangeScore"
+											  parameter="RANGE"/>
 				<evaluation:ScoreParameterBox id="userRhythmScore"
-											  parameter="MESSAGE_RATE_USER_RHYTHM"/>
+											  parameter="RHYTHM"/>
 				<evaluation:ScoreParameterBox id="userSpontaneityScore"
-											  parameter="MESSAGE_RATE_USER_SPONTANEITY"/>
+											  parameter="SPONTANEITY"/>
+				<s:HGroup height="16"/> <!-- Used as a separator -->
 				<evaluation:ScoreParameterBox id="userOverallScore"
-											  parameter="MESSAGE_RATE_USER_OVERALL_SCORE"/>
+											  parameter="OVERALL_SCORE"/>
 			</s:VGroup>
 
 			<!-- Comment section -->
