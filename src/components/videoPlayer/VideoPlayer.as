@@ -406,31 +406,30 @@ package components.videoPlayer
 			return _duration;
 		}
 		
-		public function get mute():Boolean
-		{
-			return _muted;
-		}
-		
-		public function set mute(value:Boolean):void
-		{
-			_muted=value;
-			var newVolume:Number;
-			if (value)
-			{
+		public function mute():void{
+			if(!isMuted()){
+				_muted=true;
 				//Store the volume that we had before muting to restore to that volume when unmuting
 				_lastVolume=_currentVolume;
-				newVolume=0;
+				var newVolume:Number=0;
+				
+				//Make sure we have a working NetStream object before setting its sound transform
+				if (_media) _media.volume=newVolume;
 			}
-			else
-			{
-				newVolume=_lastVolume;
-			}
-			//Make sure we have a working NetStream object before setting its sound transform
-			if (_media) _media.volume=newVolume;
 		}
 		
-		public function setMute(value:Boolean):void{
-			mute=value;
+		public function unMute():void{
+			if(isMuted()){
+				_muted=false;
+				var newVolume:Number=_lastVolume;
+	
+				//Make sure we have a working NetStream object before setting its sound transform
+				if (_media) _media.volume=newVolume;
+			}
+		}
+		
+		public function isMuted():Boolean{
+			return _muted;
 		}
 		
 		public function getVolume():Number
