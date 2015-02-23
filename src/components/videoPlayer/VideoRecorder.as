@@ -1668,7 +1668,7 @@ package components.videoPlayer
 			else
 			{
 				_timeMarkers=null;
-				trace("Time marker data is null");
+				logger.debug("Time marker data is null");
 			}
 		}
 
@@ -1727,6 +1727,9 @@ package components.videoPlayer
 			{
 				if (_parallelMediaReady && _mediaReady)
 				{
+					//Start with the same volume for both streams
+					_parallelCurrentVolume=_currentVolume;
+					
 					_video.attachNetStream(_media.netStream);
 					_video.visible=true;
 					_media.volume=_currentVolume;
@@ -1736,7 +1739,7 @@ package components.videoPlayer
 					_camVideo.attachNetStream(_parallelMedia.netStream);
 					_camVideo.visible=true;
 					_micImage.visible=true;
-					_parallelMedia.volume=_currentVolume;
+					_parallelMedia.volume=_parallelCurrentVolume;
 
 					if (_timeMarkers)
 					{
@@ -1787,8 +1790,16 @@ package components.videoPlayer
 
 		override public function onMetaData(event:MediaStatusEvent):void
 		{
+			var mobj:Object=event.currentTarget;
+			
 			super.onMetaData(event);
 
+			if(mobj === _parallelMedia){
+				var pv:Boolean=_parallelMedia.hasVideo;
+				_camVideo.visible=false;
+				_micImage.visible=true;
+			}
+			
 			//The duration of the media is required to set the arrows and the scrubber marks
 			if (_timeMarkers)
 			{

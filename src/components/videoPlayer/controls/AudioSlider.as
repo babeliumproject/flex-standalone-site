@@ -191,8 +191,6 @@ package components.videoPlayer.controls
 			
 			createBG(_bg,width,height);
 			
-			
-			
 			// mute button
 			_mutOverBg.graphics.clear();
 			_mutOverBg.graphics.beginFill( getSkinColor(MUTEOVERBG_COLOR) );
@@ -218,21 +216,24 @@ package components.videoPlayer.controls
 			
 			createBox(_sliderArea, getSkinColor(BARBG_COLOR), _barWidth, _barHeight, false, 0, 0, 0.85);
 			_sliderArea.x = _mutOverBg.width+_barMarginX;
-			_sliderArea.y = _barMarginY;
-			
-			
-			createBox( _amount, getSkinColor(BAR_COLOR), 1, _barHeight, false, 0, 0, 0.85 );
-			_amount.x = _sliderArea.x;
-			_amount.y = _sliderArea.y;
-						
+			_sliderArea.y = _barMarginY;			
 			
 			createBox( _scrubber, getSkinColor(SCRUBBER_COLOR), _barHeight+1, 
 				_barHeight+1, true, getSkinColor(SCRUBBERBORDER_COLOR));
-			_defaultX = _scrubber.x = _sliderArea.x;
-			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;			
 			
-			_scrubber.x = _sliderArea.width*_currentVolume + _sliderArea.x - _scrubber.width; 
-			_amount.width = _sliderArea.width*_currentVolume -_scrubber.width;
+			var _volAmountWidth:Number=_currentVolume*(_barWidth -_scrubber.width);
+			var _volAmountHeight:Number=_barHeight;
+			
+			_defaultX = _sliderArea.x;
+			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;
+			_scrubber.x = _sliderArea.x + _volAmountWidth; 
+			
+			trace("Bar-width: "+_barWidth+" scrubberwidht: "+_scrubber.width+" calculus: "+(_currentVolume*_barWidth)
+				+" Vol-width: "+_volAmountWidth+" currentVol: "+_currentVolume);
+			
+			createBox( _amount, getSkinColor(BAR_COLOR), _volAmountWidth, _volAmountHeight, false, 0, 0, 0.85 );
+			_amount.x = _sliderArea.x;
+			_amount.y = _sliderArea.y;
 			
 		}
 		

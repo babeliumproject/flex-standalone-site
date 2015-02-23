@@ -51,7 +51,8 @@ package components.videoPlayer.controls
 		
 		public function refresh() : void
 		{
-			updateDisplayList(0,0);
+			//updateDisplayList(0,0);
+			invalidateDisplayList();
 		}
 		
 	}

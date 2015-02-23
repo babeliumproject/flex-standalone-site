@@ -9,11 +9,16 @@ package components.videoPlayer.timedevent
 	
 	import mx.utils.ObjectUtil;
 	
+	import org.as3commons.logging.api.ILogger;
+	import org.as3commons.logging.api.getLogger;
+	
 	import spark.collections.Sort;
 	import spark.collections.SortField;
 
 	public class TimelineEventDispatcher extends EventDispatcher
 	{
+		protected static const logger:ILogger=getLogger(TimelineEventDispatcher);
+		
 		protected var temporalKeyCollection:Vector.<Number>;
 		protected var temporalValueCollection:Vector.<EventTrigger>;
 		
@@ -231,9 +236,10 @@ package components.videoPlayer.timedevent
 				return false;
 			}
 			var result:Boolean=false;
-			if ((temporalValueCollection[index].time >= (now - TOLERANCE)) && (temporalValueCollection[index].time <= (now + TOLERANCE)) && (index != lastFiredTemporalMetadataIndex))
+			var tvalue:EventTrigger = temporalValueCollection[index];
+			if ((tvalue.time >= (now - TOLERANCE)) && (tvalue.time <= (now + TOLERANCE)) && (index != lastFiredTemporalMetadataIndex))
 			{
-				trace("TemporalMetadata fired. metadatatime: "+temporalValueCollection[index].time+" currenttime: "+now);
+				logger.debug("Fire time metadata. Marker time: {0} Current time: {1}",[tvalue.time,now]);
 				lastFiredTemporalMetadataIndex=index;
 				dispatchTemporalEvents(index);
 				result=true;
