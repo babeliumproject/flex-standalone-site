@@ -67,12 +67,10 @@ package utils
 				//Marker start
 				var showTime:Number = timeToSeconds(rolemarker.showTime);
 				var scpar:Array = new Array();
-				var sclosure1:Function = playerInstance['setMute'];
-				var params1:Boolean = true;
-				var sclosure2:Function = playerInstance['muteRecording'];
-				var params2:Boolean = false;
-				scpar.push({func: sclosure1, params: params1});
-				scpar.push({func: sclosure2, params: params2});
+				var sclosure1:Function = playerInstance['forcedMute'];
+				var sclosure2:Function = playerInstance['forcedUnMuteParallel'];
+				scpar.push({func: sclosure1, params: null});
+				scpar.push({func: sclosure2, params: null});
 				
 				var sevent:EventTrigger=new EventTrigger(scpar, showTime);
 				parsedRoleCaptions.push(sevent);
@@ -80,12 +78,10 @@ package utils
 				//Marker end
 				var hideTime:Number = timeToSeconds(rolemarker.hideTime);
 				var hcpar:Array = new Array();
-				var hclosure1:Function = playerInstance['setMute'];
-				var hparams1:Boolean = false;
-				var hclosure2:Function = playerInstance['muteRecording'];
-				var hparams2:Boolean = true;
-				hcpar.push({func: hclosure1, params: hparams1});
-				hcpar.push({func: hclosure2, params: hparams2});
+				var hclosure1:Function = playerInstance['forcedUnMute'];
+				var hclosure2:Function = playerInstance['forcedMuteParallel'];
+				hcpar.push({func: hclosure1, params: null});
+				hcpar.push({func: hclosure2, params: null});
 				
 				var hevent:EventTrigger=new EventTrigger(hcpar, hideTime);
 				parsedRoleCaptions.push(hevent);

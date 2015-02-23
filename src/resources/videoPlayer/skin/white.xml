@@ -66,12 +66,14 @@
 		<Property name="bgGradientStartAlpha">100</Property>
 		<Property name="bgGradientStartColor">0xffffff</Property>
 		<Property name="bgGradientStartRatio">120</Property>
+		<Property name="barBgColor">0x333333</Property>
+		<Property name="barColor">0x277991</Property>
 		<Property name="borderColor">0xa7a7a7</Property>
 		<Property name="borderWeight">1</Property>
 		<Property name="muteColor">0x000000</Property>
 		<Property name="muteOverBgColor">0xCECECE</Property>
 	    <Property name="scrubberColor">0xABABAB</Property>
-    	<Property name="scrubberBorderColor">0x000088</Property>
+    	<Property name="scrubberBorderColor">0x888888</Property>
 	</Component>
 	<Component name="ElapsedTime">
 		<Property name="bgColor">0xFFFFFF</Property>
@@ -99,7 +101,7 @@
 		<Property name="barColor">0x000000</Property>
 		<Property name="borderColor">0xa7a7a7</Property>
 		<Property name="borderWeight">1</Property>
-		<Property name="loadedColor">0xFF0000</Property>
+		<Property name="loadedColor">0x277991</Property>
         <Property name="scrubberBorderColor">0x888888</Property>
         <Property name="scrubberColor">0xABABAB</Property>
         <Property name="markerColorUp">0xa12829</Property>

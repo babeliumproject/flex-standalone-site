@@ -17,7 +17,10 @@ package components.videoPlayer.timedevent
 		
 		public function executeActions():void{
 			for each(var av:Object in actionValues){
-				av.func(av.params);
+				if(av.params==null)
+					av.func();
+				else
+					av.func(av.params);
 			}
 		}
 	}

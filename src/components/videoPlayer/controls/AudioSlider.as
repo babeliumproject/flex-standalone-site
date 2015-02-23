@@ -35,13 +35,12 @@ package components.videoPlayer.controls
 		public static const BORDER_COLOR:String = "borderColor";
 		public static const BORDER_WEIGHT:String = "borderWeight";
 		
-		/**
-		 * Variables
-		 * 
-		 */
 		
 		private var _defaultWidth:Number = 80;
 		private var _defaultHeight:Number = 20;
+		
+		private var _barMarginX:uint=5;
+		private var _barMarginY:uint=5;
 		
 		private var _bg:Sprite;
 		private var _sliderArea:Sprite;
@@ -183,34 +182,16 @@ package components.videoPlayer.controls
 			muteClicked(null); // Click event
 		}
 		
-		
-		/** 
-		 * Methods
-		 * 
-		 */
-		
-		
-		/** Overriden */
-		
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			if( width == 0 ) width = _defaultWidth;
 			if( height == 0 ) height = _defaultHeight;
+		
+			this.graphics.clear();
 			
-			// Create Background
-			var matr:Matrix = new Matrix();
-			matr.createGradientBox(height, height, getSkinColor(BG_GRADIENT_ANGLE)*Math.PI/180, 0, 0);
+			createBG(_bg,width,height);
 			
-			var colors:Array = [getSkinColor(BG_GRADIENT_START_COLOR), getSkinColor(BG_GRADIENT_END_COLOR)];
-			var alphas:Array = [getSkinColor(BG_GRADIENT_START_ALPHA), getSkinColor(BG_GRADIENT_END_ALPHA)];
-			var ratios:Array = [getSkinColor(BG_GRADIENT_START_RATIO), getSkinColor(BG_GRADIENT_END_RATIO)];
 			
-			_bg.graphics.clear();
-			_bg.graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr);
-			if(getSkinColor(BORDER_WEIGHT) > 0)
-				_bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT),getSkinColor(BORDER_COLOR));
-			_bg.graphics.drawRect( 0, 0, width, height );
-			_bg.graphics.endFill();
 			
 			// mute button
 			_mutOverBg.graphics.clear();
@@ -232,37 +213,54 @@ package components.videoPlayer.controls
 			_muteBtn.x = _mutOverBg.width/2 - _muteBtn.width/2;
 			_muteBtn.y = _mutOverBg.height/2 - _muteBtn.height/2;
 			
+			var _barWidth:int = width-_mutOverBg.width-(_barMarginX*2);
+			var _barHeight:int = height-(_barMarginY*2);
+			
+			createBox(_sliderArea, getSkinColor(BARBG_COLOR), _barWidth, _barHeight, false, 0, 0, 0.85);
+			_sliderArea.x = _mutOverBg.width+_barMarginX;
+			_sliderArea.y = _barMarginY;
 			
 			
-			// Slider Drag Area
-			_sliderArea.graphics.clear();
-			_sliderArea.graphics.beginFill( getSkinColor(BARBG_COLOR) );
-			_sliderArea.graphics.drawRect( 0, 0, width-30, 10 );
-			_sliderArea.graphics.endFill();
-			
-			_sliderArea.x = width - _sliderArea.width - 5;
-			_sliderArea.y = height/2 - _sliderArea.height/2;
-			
-			_amount.graphics.clear();
-			_amount.graphics.beginFill( getSkinColor(BAR_COLOR) );
-			_amount.graphics.drawRect( 0, 0, 1, 10 );
-			_amount.graphics.endFill();
-			
+			createBox( _amount, getSkinColor(BAR_COLOR), 1, _barHeight, false, 0, 0, 0.85 );
 			_amount.x = _sliderArea.x;
 			_amount.y = _sliderArea.y;
+						
 			
-			_scrubber.graphics.clear();
-			_scrubber.graphics.beginFill( getSkinColor(SCRUBBER_COLOR) );
-			_scrubber.graphics.lineStyle( 1, getSkinColor(SCRUBBERBORDER_COLOR) );
-			_scrubber.graphics.drawRect( 0, 0, 10, 10 );
-			_scrubber.graphics.endFill();
+			createBox( _scrubber, getSkinColor(SCRUBBER_COLOR), _barHeight+1, 
+				_barHeight+1, true, getSkinColor(SCRUBBERBORDER_COLOR));
+			_defaultX = _scrubber.x = _sliderArea.x;
+			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;			
 			
-			_defaultX = _sliderArea.x;
-			_defaultY = _scrubber.y = height/2 - _scrubber.height/2;
+			_scrubber.x = _sliderArea.width*_currentVolume + _sliderArea.x - _scrubber.width; 
+			_amount.width = _sliderArea.width*_currentVolume -_scrubber.width;
 			
-			_scrubber.x = _sliderArea.width/2 + _sliderArea.x - _scrubber.width/2;
-			_amount.width = _sliderArea.width/2 - _scrubber.width/2;
+		}
+		
+		private function createBG( bg:Sprite, bgWidth:Number, bgHeight:Number ):void
+		{
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox(bgHeight, bgHeight, getSkinColor(BG_GRADIENT_ANGLE)*Math.PI/180, 0, 0);
 			
+			var colors:Array = [getSkinColor(BG_GRADIENT_START_COLOR), getSkinColor(BG_GRADIENT_END_COLOR)];
+			var alphas:Array = [getSkinColor(BG_GRADIENT_START_ALPHA), getSkinColor(BG_GRADIENT_END_ALPHA)];
+			var ratios:Array = [getSkinColor(BG_GRADIENT_START_RATIO), getSkinColor(BG_GRADIENT_END_RATIO)];
+			
+			bg.graphics.clear();
+			bg.graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr);
+			if(getSkinColor(BORDER_WEIGHT) > 0)
+				bg.graphics.lineStyle(getSkinColor(BORDER_WEIGHT),getSkinColor(BORDER_COLOR));
+			bg.graphics.drawRect( 0, 0, bgWidth, bgHeight );
+			bg.graphics.endFill();
+		}
+		
+		private function createBox( b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean = false, borderColor:uint = 0, borderSize:Number = 1, alpha:Number = 1 ):void
+		{
+			b.graphics.clear();
+			b.graphics.beginFill( color as uint, alpha );
+			if( border ) 
+				b.graphics.lineStyle( borderSize, borderColor );
+			b.graphics.drawRect( 0, 0, bWidth, bHeight );
+			b.graphics.endFill();
 		}
 		
 		

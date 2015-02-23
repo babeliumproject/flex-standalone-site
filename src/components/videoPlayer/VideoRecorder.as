@@ -143,6 +143,8 @@ package components.videoPlayer
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
 
+		protected var _parallelMuteOverride:Boolean=false;
+		
 		protected var _parallelMuted:Boolean=false;
 		protected var _parallelLastVolume:Number;
 		protected var _parallelCurrentVolume:Number;
@@ -535,42 +537,70 @@ package components.videoPlayer
 		{
 
 		}
-
-		public function muteRecording(value:Boolean):void
-		{
-			_parallelMuted=value;
-
-			if (_state & RECORD_MODE_MASK)
-			{
-				var newGain:Number;
-				if (value)
+		
+		public function forcedMuteParallel():void{
+			muteParallel();
+			_parallelMuteOverride=true;
+		}
+		
+		public function forcedUnMuteParallel():void{
+			_parallelMuteOverride=false;
+			unMuteParallel();
+		}
+		
+		public function isParallelMuted():Boolean{
+			return _parallelMuted;
+		}
+		
+		public function muteParallel():void{
+			if(!isParallelMuted()){
+				_parallelMuted=true;
+				if (_state & RECORD_MODE_MASK)
 				{
+					var newGain:Number=0;
 					_micLastGain=_micCurrentGain;
-					newGain=0;
+					
+					if(!_parallelMuteOverride){
+						if (_mic)
+							_mic.gain=newGain;
+					}
 				}
-				else
+				else if (_state == PLAY_PARALLEL_STATE)
 				{
-					newGain=_micLastGain;
-				}
-
-				if (_mic)
-					_mic.gain=newGain;
-			}
-			else if (_state == PLAY_PARALLEL_STATE)
-			{
-				var newVolume:Number;
-				if (value)
-				{
+					var newVolume:Number=0;
+					
 					//Store the volume that we had before muting to restore to that volume when unmuting
 					_parallelLastVolume=_parallelCurrentVolume;
-					newVolume=0;
+					
+					if(!_parallelMuteOverride){
+						if (_parallelMedia)
+							_parallelMedia.volume=newVolume;
+					}
 				}
-				else
+			}
+		}
+		
+		public function unMuteParallel():void{
+			if(isParallelMuted()){
+				_parallelMuted=false;
+				if (_state & RECORD_MODE_MASK)
 				{
-					newVolume=_parallelLastVolume;
+					var newGain:Number=_micLastGain;
+					
+					if(!_parallelMuteOverride){
+						if (_mic)
+							_mic.gain=newGain;
+					}
 				}
-				if (_parallelMedia)
-					_parallelMedia.volume=newVolume;
+				else if (_state == PLAY_PARALLEL_STATE)
+				{
+					var newVolume:Number=_parallelLastVolume;
+					
+					if(!_parallelMuteOverride){
+						if (_parallelMedia)
+							_parallelMedia.volume=newVolume;
+					}
+				}
 			}
 		}
 
@@ -598,8 +628,12 @@ package components.videoPlayer
 				{
 					_currentVolume=value;
 					_parallelCurrentVolume=value;
-					if(_media) _media.volume = value;
-					if(_parallelMedia) _parallelMedia.volume = value;
+					if(!_muteOverride){
+						if(_media) _media.volume = value;
+					}
+					if(!_parallelMuteOverride){
+						if(_parallelMedia) _parallelMedia.volume = value;
+					}
 				}
 			} else {
 				super.setVolume(value);
@@ -1273,7 +1307,7 @@ package components.videoPlayer
 
 			if (_state & RECORD_MODE_MASK)
 			{
-				muteRecording(true); // mic starts muted
+				muteParallel(); // mic starts muted
 			}
 
 			_ppBtn.state=PlayButton.PAUSE_STATE;
@@ -1707,7 +1741,7 @@ package components.videoPlayer
 					if (_timeMarkers)
 					{
 						//If the parallel play has timemarkers start with a muted right stream
-						muteRecording(true);
+						muteParallel();
 					}
 
 					_parallelMedia.addEventListener(MediaStatusEvent.METADATA_RETRIEVED, onMetaData, false, 0, true);
@@ -1787,6 +1821,11 @@ package components.videoPlayer
 					}
 					_camVideo.clear();
 					hideCaption();
+					
+					//Unlock mute overrides just in case
+					_muteOverride=false;
+					_parallelMuteOverride=false;
+					
 					if (_state & RECORD_MODE_MASK || _state == UPLOAD_MODE_STATE)
 					{
 						//Stop the media, remove the listeners, close the NetConnection and set to null

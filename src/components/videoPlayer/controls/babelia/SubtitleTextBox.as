@@ -49,14 +49,14 @@ package components.videoPlayer.controls.babelia
 			_textFormat.align = "center";
 			//_textFormat.font = "Arial";
 			_textFormat.bold = true;
-			_textFormat.size = 14;
+			_textFormat.size = 16;
 			
 			_textBox=new FTETextField();
 			_textBox.multiline = true;
 			_textBox.wordWrap = true;
 			_textBox.selectable = false;
 			_textBox.filters = [_dropShadowFilter];
-			_textBox.setTextFormat(_textFormat);
+			_textBox.defaultTextFormat=_textFormat;
 			
 
 			addChild(_textBox);
