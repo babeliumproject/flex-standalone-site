@@ -97,8 +97,8 @@ class Search {
 		//Opens the index
 		$this->initialize();
 
-		//To recognize numerics
-		//Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
+		//The same token analyzer should be used both when searching and/or creating the document index
+		Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
 		//Remove the limitations of fuzzy and wildcard searches
 		Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
@@ -127,27 +127,6 @@ class Search {
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());
 		}
-	}
-	
-	private function parseHitDescriptors($descriptors){
-		$dlist = array();
-		if($descriptors)
-			$dlist = explode("\n",$descriptors);
-		
-		if(count($dlist)){
-			$dlistformatted = array();
-			$pattern = "/(D\d_\d_\d{2}_\d)/";
-			foreach($dlist as $d){
-				if(preg_match($pattern,$d,$matches)){
-					$dlistformatted[] = $matches[1];
-				}
-			}
-			unset($d);
-			if(count($dlistformatted))
-				$dlist = $dlistformatted;
-		}
-		
-		return $dlist;
 	}
 
 	/**
@@ -246,7 +225,7 @@ class Search {
 
 			foreach ( $result as $line ) {
 				$tags = $this->getExerciseTags($line->exerciseid);
-				$descriptors = $this->getExerciseDescriptors($line->exerciseid,$line->language);
+				$descriptors = $this->getExerciseDescriptors($line->exerciseid);//,$line->language);
 				
 				$line->tags = $tags ? implode("\n",$tags): '';
 				$line->descriptors = $descriptors ? implode("\n",$descriptors) : '';
@@ -259,56 +238,77 @@ class Search {
 	}
 	
 	/**
-	 *	Adds a new document entry (exercise data set) to the already existing search index file
-	 *
-	 *	@param int $idDB
-	 *		An exercise identifier to query the database for exercise data.
+	 *	Add (or update existing) search document entry for an exercise
+	 *	@param int $exercise
+	 *		An exercise identifier of an exercise that is available
 	 */
-	public function addDocumentIndex($idDB){
-
-		//Query for the index
-		$sql = "SELECT e.id as exerciseId, e.exercisecode, e.title, e.description, e.language
-				FROM exercise e WHERE e.status=1 AND e.visible=1 AND e.id=%d";
-		$result = $this->conn->_singleSelect ( $sql, $idDB );
-
-		//We expect only one record to match this query
-		if($result){
-			//Loads the lucene indexation file
-			$this->initialize();
+	public function addDocumentIndex($exerciseid){
+		try {
+			$verifySession = new SessionValidation(true);
 			
-			$tags = $this->getExerciseTags($result->exerciseId);
-			$descriptors = $this->getExerciseDescriptors($result->exerciseId,$line->language);
+			$userid=$_SESSION['uid'];
 			
-			$result->tags = $tags ? implode("\n",$tags): '';
-			$result->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+			$sql = "SELECT e.id as exerciseId, e.exercisecode, e.title, e.description, e.language, e.status, e.visible
+					FROM exercise e WHERE e.id=%d AND e.fk_user_id=%d";
+			$exercisedata = $this->conn->_singleSelect ($sql, $exerciseid,$userid);
 			
+			if($exercisedata){
+				//Lucene doesn't support Document update, it must be deleted and added afterwards
+				$this->delDoc($exerciseid);
+				
+				if($exercisedata->status==1 && $exercisedata->visible==1){
+					$this->initialize();
+							
+					$tags = $this->getExerciseTags($result->exerciseId);
+					$descriptors = $this->getExerciseDescriptors($result->exerciseId,$line->language);
+						
+					$result->tags = $tags ? implode("\n",$tags): '';
+					$result->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+				
+					$this->addDoc($result,$this->unindexedFields);
+					$this->index->commit();
+					$this->index->optimize();
+				}
+			}
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
+		}
+	}
+	
+	public function deleteDocumentIndex($exerciseid){
+		try {
+			$verifySession = new SessionValidation(true);	
+			$userid=$_SESSION['uid'];
 			
-			$this->addDoc($result,$this->unindexedFields);
+			$sql = "SELECT e.id as exerciseId FROM exercise e WHERE e.id=%d AND e.fk_user_id=%d";
+			$exercisedata = $this->conn->_singleSelect ($sql,$exerciseid,$userid);
+			if($exercisedata){
+				//Lucene doesn't support Document update, it must be deleted and added afterwards
+				$this->delDoc($exerciseid);
+			}
 			$this->index->commit();
 			$this->index->optimize();
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
 		}
-
 	}
 
 	/**
 	 * Delete a document entry (exercise data set) from an already existing search index file
 	 * 
-	 * @param int $idDB
+	 * @param int $exerciseid
 	 * 		The search index identifier (and also exercise identifier) that's going to be removed from the index file
 	 */
-	public function deleteDocumentIndex($idDB){
-		//Opens the index
+	private function delDoc($exerciseid){
+		//Load the lucene index file
 		$this->initialize();
-		//Retrieving and deleting document
-		$term = new Zend_Search_Lucene_Index_Term($idDB, 'idEx');
-		$docIds  = $this->index->termDocs($term);
-		foreach ($docIds as $id) {
-			//$doc = $this->index->getDocument($id);
-			//$this->index->delete($doc->id);
-			$this->index->delete($id);
+		$term = new Zend_Search_Lucene_Index_Term($exerciseid, 'exerciseid');
+		$documentids = $this->index->termDocs($term);
+		if($documentids){
+			foreach ($documentids as $id) {
+				$this->index->delete($id);
+			}
 		}
-		$this->index->commit();
-		$this->index->optimize();
 	}
 
 	/**
@@ -340,7 +340,7 @@ class Search {
 	 * @return mixed $dcodes
 	 * 		An array of descriptor data. False when the exercise has no descriptors at all.
 	 */
-	private function getExerciseDescriptors($exerciseId,$exerciseLanguage){
+	private function getExerciseDescriptors($exerciseId,$exerciseLanguage=null){
 		if(!$exerciseId)
 			return false;
 		$dcodes = false;
@@ -348,8 +348,15 @@ class Search {
 				FROM rel_exercise_descriptor red 
 				INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
 				INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
-				WHERE (red.fk_exercise_id=%d AND ed18n.locale='%s')";
-		$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
+				WHERE red.fk_exercise_id=%d";
+		
+		if($exerciseLanguage){
+			$sql .= " AND ed18n.locale='%s'";
+			$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
+		} else {
+			$results = $this->conn->_multipleSelect($sql,$exerciseId);
+		}
+		
 		if($results){
 			$dcodes = array();
 			foreach($results as $result){

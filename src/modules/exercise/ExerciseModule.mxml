@@ -124,14 +124,22 @@
 
 			private function actionIndex(parameters:Object=null):void
 			{
-				trace("ActionIndex parameters: "+ObjectUtil.toString(parameters));
 				if(parameters){
 					exerciseIndex.sortFilter=parameters.hasOwnProperty('sort') ? parameters.sort : null;
 					exerciseIndex.langFilter=parameters.hasOwnProperty('lang') ? parameters.lang : null;
 					exerciseIndex.diffFilter=parameters.hasOwnProperty('difficulty') ? parameters.difficulty : 0;
 					exerciseIndex.typeFilter=parameters.hasOwnProperty('type') ? parameters.type : -1;
 					exerciseIndex.sitFilter=parameters.hasOwnProperty('situation') ? parameters.situation : 0;
-					exerciseIndex.searchTerm=parameters.hasOwnProperty('q') ? parameters.q : null;
+					
+					if(parameters.hasOwnProperty('q')){
+						var query:String = parameters.q;
+						var qe:String=query.replace(/\+/g, " ");
+						var qs:String=decodeURIComponent(qe);	
+						parameters.q=qs; //Pass the URL decoded string to the service
+						exerciseIndex.searchTerm=qs;
+					} else {
+						exerciseIndex.searchTerm=null;
+					}
 				}
 				viewstackIndex=INDEX;
 				moduleViewstack.selectedIndex=viewstackIndex;

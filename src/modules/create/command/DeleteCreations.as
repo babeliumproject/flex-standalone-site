@@ -5,9 +5,10 @@ package modules.create.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.UserEvent;
-	
 	import model.DataModel;
+	
+	import modules.create.event.CreateEvent;
+	import modules.create.service.CreateDelegate;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -21,7 +22,8 @@ package modules.create.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new UserDelegate(this).deleteSelectedVideos((event as UserEvent).dataList);
+			var params:Object=(event as CreateEvent).params;
+			new CreateDelegate(this).deleteSelectedCreations(params);
 		}
 		
 		public function result(data:Object):void

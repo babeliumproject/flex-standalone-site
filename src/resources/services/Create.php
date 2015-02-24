@@ -116,34 +116,31 @@ class Create {
 		}
 	}
 	
-	public function deleteSelectedVideos($selectedVideos = null){
+	public function deleteSelectedCreations($params){
 		try {
 			$verifySession = new SessionValidation(true);
 	
-			if(!$selectedVideos)
-				return false;
+			if(!$params)
+				throw new Exception("Invalid parameters",1000);
 	
-			$whereClause = '';
-			$names = array();
+			$userid=$_SESSION['uid'];
 	
-			if(count($selectedVideos) > 0){
-				foreach($selectedVideos as $selectedVideo){
-					$whereClause .= " exercisecode = '%s' OR";
-					array_push($names, $selectedVideo->exercisecode);
+			if(count($params) > 0){
+				foreach ($params as $exercise){
+					$exerciseid=$exercise->id;
+					$sql = "DELETE FROM exercise WHERE fk_user_id=%d AND id=%d";
+					$affrows = $this->conn->_delete($sql,$userid,$exerciseid);
+					if($affrows) { //The exercise belonged to user and was deleted
+						//Delete the media associated with this exercise
+						$msql = "DELETE FROM media WHERE component='exercise' AND instanceid=%d";
+						$maffrows = $this->conn->_delete($msql,$exerciseid);	
+					}
 				}
-				unset($selectedVideo);
-				$whereClause = substr($whereClause,0,-2);
-	
-				$sql = "DELETE FROM exercise WHERE (fk_user_id=%d AND " . $whereClause ." )";
-	
-				$merge = array_merge((array)$sql, (array)$_SESSION['uid'], $names);
-				$updateData = $this->conn->_update($merge);
-	
-				return $updateData ? true : false;
 			}
-	
+			return TRUE;
+			
 		} catch (Exception $e) {
-			throw new Exception($e->getMessage());
+			throw new Exception($e->getMessage(),$e->getCode());
 		}
 	}
 	

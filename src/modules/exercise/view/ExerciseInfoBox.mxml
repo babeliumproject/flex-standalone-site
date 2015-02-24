@@ -19,8 +19,6 @@
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
 			
-			import mx.utils.OnDemandEventDispatcher;
-			
 			import control.URLManager;
 			
 			import model.DataModel;
@@ -29,12 +27,15 @@
 			import modules.exercise.event.SearchEvent;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
+			import mx.core.IVisualElement;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
+			import mx.utils.OnDemandEventDispatcher;
 			
 			import spark.components.Button;
 			
@@ -53,7 +54,10 @@
 			private var _lessAdtInfoStatus:Boolean=false;
 			
 			[Bindable]
-			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");		
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
+			
+			private var cwlblvec:Vector.<ChangeWatcher>;
+			private var cwdescvec:Vector.<ChangeWatcher>;
 			
 			public function completeHandler(event:FlexEvent):void
 			{
@@ -75,8 +79,15 @@
 			}
 			
 			public function unpinComponent():void{
-				
-				
+				if(cwlblvec){
+					var i:int,length:int;
+					length=cwlblvec.length;
+					for (i=0;i<length;i++){
+						cwlblvec[i].unwatch();
+						cwlblvec[i]=null;
+					}
+					cwlblvec=null;
+				}
 				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
 			}
@@ -110,8 +121,13 @@
 				exDescription.htmlText=_exercise.description;
 				
 				var exerciseType:String = ExerciseRenderUtils.getTypeLabel(_exercise.type);
+				
+				if(!cwlblvec) cwlblvec = new Vector.<ChangeWatcher>();
+				var cw:ChangeWatcher;
+				
 				//exerciseTypeLbl.text=ResourceManager.getInstance().getString('myResources',exerciseType);
-				LocaleUtils.localizedPropertyBind(exerciseTypeLbl,'text','myResources',exerciseType,false,true);
+				cw=LocaleUtils.localizedPropertyBind(exerciseTypeLbl,'text','myResources',exerciseType,false,true);
+				cwlblvec.push(cw);
 				
 				commSituationRow.includeInLayout=false;
 				commSituationRow.visible=false;
@@ -126,19 +142,22 @@
 					var lingAspect:String = ExerciseRenderUtils.getLinguisticAspectLabel(_exercise.lingaspects);
 					if(commSituation){
 						//commSituationLbl.text=ResourceManager.getInstance().getString('myResources',commSituation);
-						LocaleUtils.localizedPropertyBind(commSituationLbl,'text','myResources',commSituation,false,true);
+						cw=LocaleUtils.localizedPropertyBind(commSituationLbl,'text','myResources',commSituation,false,true);
+						cwlblvec.push(cw);
 						commSituationRow.includeInLayout=true;
 						commSituationRow.visible=true;
 					}
 					if(commCompetence){
 						//commCompetenceLbl.text=ResourceManager.getInstance().getString('myResources',commCompetence);
-						LocaleUtils.localizedPropertyBind(commCompetenceLbl,'text','myResources',commCompetence,false,true);
+						cw=LocaleUtils.localizedPropertyBind(commCompetenceLbl,'text','myResources',commCompetence,false,true);
+						cwlblvec.push(cw);
 						commCompetenceRow.includeInLayout=true;
 						commCompetenceRow.visible=true;
 					}
 					if(lingAspect){
 						//lingAspectsLbl.text=ResourceManager.getInstance().getString('myResources',lingAspect);
-						LocaleUtils.localizedPropertyBind(lingAspectsLbl,'text','myResources',lingAspect, false, true);
+						cw=LocaleUtils.localizedPropertyBind(lingAspectsLbl,'text','myResources',lingAspect, false, true);
+						cwlblvec.push(cw);
 						lingAspectsRow.includeInLayout=true;
 						lingAspectsRow.visible=true;
 					}
@@ -182,9 +201,15 @@
 					var descriptors:Array = ArrayUtil.toArray(_exercise.descriptors);
 					var sectTitle:Label=new Label();
 					sectTitle.setStyle("fontWeight","bold");				
-					LocaleUtils.localizedPropertyBind(sectTitle, 'text', 'myResources','DESCRIPTORS',false,true);
+					
+					var cw:ChangeWatcher;
+					cw=LocaleUtils.localizedPropertyBind(sectTitle, 'text', 'myResources','DESCRIPTORS',false,true);
+					cwlblvec.push(cw);
 					
 					descriptorContainer.addElement(sectTitle);
+					
+					if(!cwdescvec) cwdescvec=new Vector.<ChangeWatcher>();
+					
 					var i:int;
 					for (i=0; i<descriptors.length; i++){
 						var dlabel:Button=new Button();
@@ -195,12 +220,22 @@
 						dlabel.setStyle("fontSize", 11);
 						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler, false, 0, true);
 						descriptorContainer.addElement(dlabel);
-						LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],false,true);
+						var cwd:ChangeWatcher=LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],false,true);
+						cwdescvec.push(cwd);
 					}
 				}
 			}
 			
 			private function removeDescriptors():void{
+				if(cwdescvec){
+					var i:int,length:int;
+					length=cwdescvec.length;
+					for (i=0;i<length;i++){
+						cwdescvec[i].unwatch();
+						cwdescvec[i]=null;
+					}
+					cwdescvec=null;
+				}
 				if(descriptorContainer.numElements){
 					descriptorContainer.removeAllElements();
 				}
@@ -234,8 +269,12 @@
 			{
 				//tagBoxSeparator.height=0;
 				//exerciseTagsBox.removeAllChildren();
-				if(exerciseTagsBox.numElements > 0)
+				for each (var item:IVisualElement in exerciseTagsBox){
+					item.removeEventListener(MouseEvent.CLICK, tagClickHandler);
+				}
+				if(exerciseTagsBox.numElements > 0){
 					exerciseTagsBox.removeAllElements();
+				}
 				_tags=null;
 				keywordsRow.includeInLayout=false;
 				keywordsRow.visible=false;

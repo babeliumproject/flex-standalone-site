@@ -54,6 +54,11 @@ package modules.create.service
 			pendingCall.addResponder(responder);
 		}
 		
+		public function deleteSelectedCreations(params:Object):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("createRO");
+			var pendingCall:AsyncToken=service.deleteSelectedCreations(params);
+		}
+		
 		public function setDefaultThumbnail(query:Object = null):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject( "createRO" );
 			var pendingCall:AsyncToken = service.setDefaultThumbnail(query);

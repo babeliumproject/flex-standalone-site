@@ -164,7 +164,8 @@ package control
 				var matches:Array = paramtmp.match(pattern);
 				if(matches){
 					if(matches[3]){
-						parsedParams = URLUtil.stringToObject(matches[3],'&',true);
+						var decodeURLEncoded:Boolean=false;
+						parsedParams = URLUtil.stringToObject(matches[3],'&',decodeURLEncoded);
 					}
 					if(matches[1]){
 						if(!parsedParams) parsedParams = new Object();

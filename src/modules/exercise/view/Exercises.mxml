@@ -594,6 +594,7 @@
 			public function resetGroup():void
 			{
 				VP.resetComponent();
+				ratingShareReport.resetComponent();
 
 				//Reset all properties
 				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
@@ -606,7 +607,6 @@
 
 				//Reset the ui elements
 				hideSelectedExercise();
-				ratingShareReport.exerciseData=null;
 				isModelLbl.visible=false;
 				isModelLbl.includeInLayout=false;
 				exerciseTitle.text=_exerciseTitle;
@@ -647,6 +647,8 @@
 					VP.removeEventListener(RecordingEvent.END, onRecordingEnd);
 					VP.removeEventListener(RecordingEvent.USER_DEVICE_ACCESS_DENIED, onUserDeviceAccessDenied);
 				}
+				
+				ratingShareReport.unpinComponent();
 				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}

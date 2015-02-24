@@ -13,6 +13,7 @@ package modules.create.command
 			addCommand(CreateEvent.ADD_EXERCISE, AddCreation);
 			addCommand(CreateEvent.EDIT_EXERCISE, EditCreation);
 			addCommand(CreateEvent.LIST_LATEST_CREATIONS, GetLatestCreations);
+			addCommand(CreateEvent.DELETE_SELECTED_CREATIONS, DeleteCreations);
 			addCommand(CreateEvent.SET_EXERCISE_DATA, SaveCreation);
 			addCommand(CreateEvent.SAVE_EXERCISE_MEDIA, SaveExerciseMedia);
 			addCommand(CreateEvent.LIST_CREATIONS, GetCreations);

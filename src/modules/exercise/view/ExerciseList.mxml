@@ -206,9 +206,7 @@
 			{
 				if (searchTerm)
 				{
-					var te:String=searchTerm.replace(/\+/g, " ");
-					var ts:String=decodeURIComponent(te);
-					searchField.text=ts;
+					searchField.text=searchTerm; //It should be urldecoded beforehand in parent component
 				}
 
 				if (sortFilter)
