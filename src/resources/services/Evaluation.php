@@ -312,7 +312,7 @@ class Evaluation {
 		$ethumburl = $ex->getExerciseDefaultThumbnail($exerciseid);
 		$rthumburl = $this->cfg->wwwroot . '/resources/images/thumbs/';
 		if ($r->responseThumbnailUri == 'default.jpg') {
-			$rthumburl .= $r->responseFileIdentifier . '/default.jpg';
+			$rthumburl .= $r->responseFileIdentifier . '/01.jpg';
 		} else {
 			$rthumburl .= 'nothumb.png';
 		}
