@@ -92,7 +92,7 @@ class Search {
 	public function launchSearch($search) {
 		//Return empty array if empty query
 		if($search == '')
-			return;
+			return;     
 
 		//Opens the index
 		$this->initialize();
@@ -103,11 +103,14 @@ class Search {
 		//Remove the limitations of fuzzy and wildcard searches
 		Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 		Zend_Search_Lucene_Search_Query_Fuzzy::setDefaultPrefixLength(0);
-
-		$finalSearch=$this->fuzzySearch($search);
-		$query = Zend_Search_Lucene_Search_QueryParser::parse($finalSearch);
-
-		try {
+    
+        //The locale must be explicitly set so that iconv('UTF-8','ASCII//TRANSLIT, $str) does not
+        //fail to translit characters to their ASCII counterparts.
+	    setLocale(LC_CTYPE,'en_US.utf8');	
+		
+        $query = Zend_Search_Lucene_Search_QueryParser::parse($search,"UTF-8");
+		
+        try {
 			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit
 			//which has far more properties than those the client needs to know
 			$hits = $this->index->find($query);
@@ -226,7 +229,8 @@ class Search {
 			foreach ( $result as $line ) {
 				$tags = $this->getExerciseTags($line->exerciseid);
 				$descriptors = $this->getExerciseDescriptors($line->exerciseid);//,$line->language);
-				
+			    
+                $line->description = html_entity_decode(strip_tags($line->description), ENT_QUOTES | ENT_HTML5); //Remove html markup	
 				$line->tags = $tags ? implode("\n",$tags): '';
 				$line->descriptors = $descriptors ? implode("\n",$descriptors) : '';
 				
@@ -320,15 +324,17 @@ class Search {
 	 * 		The fields thath won't be used to build the searchable item index
 	 */
 	private function addDoc($documentData, $unindexedFields){
-		
 		$doc = new Zend_Search_Lucene_Document();
 		foreach($documentData as $key => $value){
 			if(in_array($key,$unindexedFields)){
-				$doc->addField(Zend_Search_Lucene_Field::UnIndexed($key, $value, 'utf-8'));
-			} else {
-				$doc->addField(Zend_Search_Lucene_Field::Text($key, $value, 'utf-8'));
+                //$doc->addField(Zend_Search_Lucene_Field::UnIndexed($key, $value, "UTF-8"));
+			} elseif($key == "exerciseid"){
+                $doc->addField(Zend_Search_Lucene_Field::Keyword($key, $value, "UTF-8")); 
+            } else {
+				$doc->addField(Zend_Search_Lucene_Field::UnStored($key, $value, "UTF-8"));
 			}
 		}
+        
 		$this->index->addDocument($doc);
 	}
 	
