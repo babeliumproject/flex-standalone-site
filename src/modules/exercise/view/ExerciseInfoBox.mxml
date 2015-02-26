@@ -220,6 +220,7 @@
 						dlabel.setStyle("fontSize", 11);
 						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler, false, 0, true);
 						descriptorContainer.addElement(dlabel);
+						
 						var cwd:ChangeWatcher=LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],false,true);
 						cwdescvec.push(cwd);
 					}

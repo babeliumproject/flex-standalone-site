@@ -594,8 +594,9 @@ class Create {
 		
 		$rowc = $this->conn->_update($sql,$status,$visible,$licence,$attribution,$exerciseid);
 		
-		if(!$rowc)
-			throw new Exception('Invalid exercise id',1012);
+		//Rows affected returns 0 when the update does not change the row
+		//if(!$rowc)
+		//	throw new Exception('Invalid exercise id',1012);
 		
 		return $rowc;
 	}

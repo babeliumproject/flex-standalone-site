@@ -1796,8 +1796,8 @@ package components.videoPlayer
 
 			if(mobj === _parallelMedia){
 				var pv:Boolean=_parallelMedia.hasVideo;
-				_camVideo.visible=false;
-				_micImage.visible=true;
+				_camVideo.visible=pv;
+				_micImage.visible=!pv;
 			}
 			
 			//The duration of the media is required to set the arrows and the scrubber marks

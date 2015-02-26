@@ -245,15 +245,14 @@
 	</s:Graphic>
 	-->
 	<s:Label id="labelDisplay"
-			 textAlign="center"
-			 maxDisplayedLines="1"
+			 textAlign="justify"
 			 verticalAlign="middle"
-			 verticalCenter="1.42857"
+			 horizontalCenter="0"
+			 verticalCenter="1"
 			 left="12"
 			 right="12"
 			 top="6"
 			 bottom="6"
-			 lineHeight="1.42857"
 			 color="{textColor}"
 			 color.over="{textColor_hover}"
 			 color.down="{textColor_active}"
