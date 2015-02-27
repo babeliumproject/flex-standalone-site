@@ -22,6 +22,7 @@ package modules.subtitle.view
 	import modules.subtitle.event.SubtitleEvent;
 	
 	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.controls.DataGrid;
@@ -66,30 +67,17 @@ package modules.subtitle.view
 	{
 		private var _dataModel:DataModel=DataModel.getInstance();
 
-		/**
-		 * Variables
-		 */
-		[Bindable]
-		private var videoPlayerReady:Boolean=false;
 
-		//[Bindable]
-		//public var videoPlaybackStartedState:int=AMediaManager.STREAM_STARTED;
-		
 		public var mediaid:int;
 		public var subtitleid:int;
 		
 		private var _mediaStatus:int;
 
-		[Bindable]
 		private var subtitleStartTime:Number=0;
-		[Bindable]
 		private var subtitleEndTime:Number=0;
 
 		private var startEntry:SubtitleLineVO;
 		private var endEntry:SubtitleLineVO;
-
-		//[Bindable]
-		//public var subtitleStarted:Boolean=false;
 
 		private var creationComplete:Boolean=false;
 
@@ -103,6 +91,13 @@ package modules.subtitle.view
 		public var comboData:ArrayCollection=new ArrayCollection();
 
 		public var availableSubtitleVersions:ArrayCollection;
+		
+		protected var commitOnly:Boolean=false;
+		protected var useWeakReference:Boolean=false;
+		protected var useCapture:Boolean=false;
+		protected var priority:int=0;
+		
+		protected var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher,cw4:ChangeWatcher;
 
 		/**
 		 *  Visual components declaration
@@ -127,18 +122,54 @@ package modules.subtitle.view
 
 		private function onCreationComplete(event:FlexEvent):void
 		{
-			removeEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
-			
 			setupVideoPlayer();
 
-			BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved", false, true);
-			BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved", false, true);
-			BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved", false, true);
-			BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved", false, true);
+			cw1=BindingUtils.bindSetter(onSubtitleLinesRetrieved, _dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+			cw2=BindingUtils.bindSetter(onSubtitleSaved, _dataModel, "subtitleSaved", commitOnly, useWeakReference);
+			cw3=BindingUtils.bindSetter(onRolesRetrieved, _dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+			cw4=BindingUtils.bindSetter(onSubtitlesRetrieved, _dataModel, "availableSubtitlesRetrieved", commitOnly, useWeakReference);
 			
-			subtitleVersionSelector.addEventListener(IndexChangeEvent.CHANGE, onSubtitleVersionChange, false, 0, true);
+			subtitleVersionSelector.addEventListener(IndexChangeEvent.CHANGE, onSubtitleVersionChange, useCapture, priority, useWeakReference);
 			
 			creationComplete=true;
+		}
+		
+		public function resetGroup():void
+		{
+			VPSubtitle.resetComponent();
+			
+			subtitleVersionBox.includeInLayout=false;
+			subtitleVersionBox.visible=false;
+			availableSubtitleVersions=null;
+			subCollection=null;
+			comboData=null;
+			
+			mediaid=subtitleid=subtitleStartTime=subtitleEndTime=0;			
+			
+			creationComplete=false;
+			subtitlesToBeSaved=null;
+			
+			startEntry=endEntry=null;
+			
+			//Reset the model related data
+			_dataModel.availableSubtitleLines=null;
+			_dataModel.availableExerciseRoles=null;
+			_dataModel.availableSubtitles=null;
+		}
+		
+		public function unpinGroup():void{
+			if(cw1) cw1.unwatch();
+			if(cw2) cw2.unwatch();
+			if(cw3) cw3.unwatch();
+			if(cw4) cw4.unwatch();
+			
+			cw1=cw2=cw3=cw4=null;
+			
+			VPSubtitle.removeEventListener(SubtitlingEvent.START, subtitleStartHandler);
+			VPSubtitle.removeEventListener(SubtitlingEvent.END, subtitleEndHandler);
+			subtitleVersionSelector.removeEventListener(IndexChangeEvent.CHANGE, onSubtitleVersionChange);
+			
+			removeEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
 		}
 		
 		
@@ -167,8 +198,8 @@ package modules.subtitle.view
 
 		public function setupVideoPlayer():void
 		{
-			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler, false, 0, true);
-			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler, false, 0, true);
+			VPSubtitle.addEventListener(SubtitlingEvent.START, subtitleStartHandler, useCapture, priority, useWeakReference);
+			VPSubtitle.addEventListener(SubtitlingEvent.END, subtitleEndHandler, useCapture, priority, useWeakReference);
 		}
 
 		public function resolveIdToRole(item:Object, column:DataGridColumn):String
@@ -589,24 +620,6 @@ package modules.subtitle.view
 				//Refresh the available subtitle versions, etc.
 				new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, params).dispatch();
 			}
-		}
-
-		public function resetGroup():void
-		{
-			VPSubtitle.resetComponent();
-
-			subtitleVersionBox.includeInLayout=false;
-			subtitleVersionBox.visible=false;
-			availableSubtitleVersions=null;
-			subCollection=null;
-			comboData=null;
-			
-			mediaid=subtitleid=subtitleStartTime=subtitleEndTime=0;			
-			
-			videoPlayerReady=creationComplete=false;
-			subtitlesToBeSaved=null;
-			
-			startEntry=endEntry=null;
 		}
 	}
 }

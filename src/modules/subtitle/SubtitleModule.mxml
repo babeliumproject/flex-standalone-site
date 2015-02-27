@@ -9,7 +9,6 @@
 		  creationComplete="creationCompleteHandler(event)">
 	
 	<mx:ViewStack id="moduleViewstack"
-				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
 				  height="100%"
@@ -43,13 +42,9 @@
 			
 			public var modulename:String = 'subtitle';
 			
-			[Bindable]
 			private var _urlmanager:URLManager=URLManager.getInstance();
-			
-			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
 			
-			[Bindable]
 			private var _viewstackIndex:uint;
 			
 			private var _moduleController:SubtitleController;
@@ -137,7 +132,7 @@
 					var mediaid:int = parseInt(parameters['id']);
 					var subtitleid:int = parseInt(parameters['v']);
 					_viewstackIndex=EDIT;
-					
+					moduleViewstack.selectedIndex=_viewstackIndex;
 					subtitleEdit.mediaid=mediaid;
 					//Only set if editing a subtitle version other than the last
 					subtitleEdit.subtitleid=subtitleid;
@@ -158,6 +153,7 @@
 					var p:Object = new Object();
 					p.id = id;
 					_viewstackIndex=MANAGE;
+					moduleViewstack.selectedIndex=_viewstackIndex;
 					new SubtitleEvent(SubtitleEvent.GET_MEDIA_SUBTITLES, p).dispatch();	
 				}
 			}

@@ -282,26 +282,21 @@ package model
 		public var submissionDataRetrieved:Boolean;
 		public var submissionData:Object;
 
-		[Bindable]
-		public var waitingForAssessmentCount:uint;
-		[Bindable]
-		public var waitingForAssessmentData:ArrayCollection;
+		
 		[Bindable]
 		public var waitingForAssessmentDataRetrieved:Boolean=false;
+		public var waitingForAssessmentCount:uint;
+		public var waitingForAssessmentData:ArrayCollection;
 
-		[Bindable]
-		public var assessedToCurrentUserCount:uint;
-		[Bindable]
-		public var assessedToCurrentUserData:ArrayCollection;
 		[Bindable]
 		public var assessedToCurrentUserDataRetrieved:Boolean=false;
-
-		[Bindable]
-		public var assessedByCurrentUserCount:uint;
-		[Bindable]
-		public var assessedByCurrentUserData:ArrayCollection;
+		public var assessedToCurrentUserCount:uint;
+		public var assessedToCurrentUserData:ArrayCollection;
+		
 		[Bindable]
 		public var assessedByCurrentUserDataRetrieved:Boolean=false;
+		public var assessedByCurrentUserCount:uint;
+		public var assessedByCurrentUserData:ArrayCollection;
 
 		[Bindable]
 		public var userActivityDataRetrieved:Boolean;

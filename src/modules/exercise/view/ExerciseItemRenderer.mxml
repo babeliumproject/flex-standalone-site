@@ -2,12 +2,37 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
-				xmlns:skins="skins.*"
 				buttonMode="true">
-
 	<s:layout>
 		<s:VerticalLayout verticalAlign="middle"/>
 	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeStyle;
+
+			import utils.ExerciseRenderUtils;
+
+			private const MAX_DESCRIPTION_CHARS:int=120;
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+
+				if (value == null)
+					return;
+
+				thumbnail.source=value.thumbnail;
+				videoDuration.text=ExerciseRenderUtils.formatDateTime(value.duration, DateTimeStyle.CUSTOM, DateTimeStyle.CUSTOM);
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
+				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
+				usernameLbl.text=value.userName;
+				usernameLbl.toolTip=value.userName;
+				titleLbl.text=value.title;
+				titleLbl.toolTip=value.title;
+			}
+		]]>
+	</fx:Script>
 
 	<s:BorderContainer id="container"
 					   styleName="lightBorderContainer"
@@ -20,10 +45,9 @@
 		<s:Group width="180"
 				 height="135">
 			<s:BitmapImage id="thumbnail"
-					  source="{data.thumbnail}"
-					  width="180"
-					  height="135"/>
-			<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.duration,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
+						   width="180"
+						   height="135"/>
+			<s:TextInput id="videoDuration"
 						 styleName="videoDurationLabel"
 						 x="148"
 						 y="0"
@@ -46,34 +70,19 @@
 					  width="100%">
 				<s:HGroup width="100%"
 						  verticalAlign="middle">
-					<s:BitmapImage width="16" height="16"
-							  source="{ExerciseRenderUtils.getFlagSource(data)}"
-							  id="exerciseLanguage"/>
-					<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
+					<s:BitmapImage width="16"
+								   height="16"
+								   id="exerciseLanguage"/>
+					<s:Label id="diflevelLbl"
 							 styleName="boldYellowLabel"/>
 				</s:HGroup>
-				<s:Label text="{data.userName}"
-						 toolTip="{data.userName}"
-						 maxWidth="120"
-						 maxDisplayedLines="1"/>
+				<s:Label maxWidth="120"
+						 maxDisplayedLines="1"
+						 id="usernameLbl"/>
 			</s:HGroup>
-			<s:Label id="title"
-					 text="{data.title}"
-					 toolTip="{data.title}"
+			<s:Label id="titleLbl"
 					 width="100%"
 					 maxDisplayedLines="3"/>
 		</s:VGroup>
 	</s:BorderContainer>
-
-	<fx:Script>
-		<![CDATA[
-			
-			import flash.globalization.DateTimeStyle;
-			import utils.ExerciseRenderUtils;
-			
-			private const MAX_DESCRIPTION_CHARS:int=120;
-
-		]]>
-	</fx:Script>
-
 </s:ItemRenderer>

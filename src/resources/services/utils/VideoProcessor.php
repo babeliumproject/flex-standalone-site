@@ -645,15 +645,15 @@ class VideoProcessor{
      * @throws Exception
      * 		One of the provided paths was unreachable for the script (read/write-wise)
      */
-    public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $width = 320, $height = 240){
+    public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $dimension=240){
         $cleanInputVideoPath1 = escapeshellcmd($inputVideoPath1);
         $cleanInputVideoPath2 = escapeshellcmd($inputVideoPath2);
         $cleanOutputVideoPath = escapeshellcmd($outputVideoPath);
 
         //TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
 
-        if($width<8 || $height<8)
-            throw new Exception("Specified size is too small\n");
+        if($dimension<Config::LEVEL_240P)
+            throw new Exception("Specified dimension is too small\n");
 
         if( !is_readable($cleanInputVideoPath1) || !is_readable($cleanInputVideoPath2) )
             throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanInputVideoPath1 .", ".$cleanInputVideoPath2."\n");
@@ -665,17 +665,49 @@ class VideoProcessor{
             if(!is_readable($cleanAudioPath))
                 throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanAudioPath."\n");
         }
+
+        //Total dimensions
+        $twidth = floor($dimension*(16/9);
+        $theight = $dimension;
         
-        $preset_merge_videos = "-y -v fatal -i '%s' -i '%s' -i '%s' -filter_complex \"[0:v] setpts=PTS-STARTPTS, pad=in_w+%d:in_h:0:0 [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left][right] overlay=W-w:0\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 2:0 -f flv '%s'";
+        //Dimensions of left-side video
+        $lmedia = $this->retrieveMediaInfo($cleanInputVideoPath1);
+        $lwidth = $twidth/2;
+        $lheight = $lmedia->suggestedTranscodingAspectRatio==169 ? $lwidth/(16*9) : $lwidth/(4*3);
+        $lpaddingy = ($theight/2)-($lheight/2);
         
-        $rwidth = $this->frameHeight * (4/3);
-        $rheight = $this->frameHeight;
+        //Dimensions of right-side video
+        $rmedia = $this->retrieveMediaInfo($cleanInputVideoPath2);
+        $rwidth = $twidth/2;
+        $rheight = $rmedia->suggestedTranscodingAspectRatio==169 ? $rwidth/(16*9) : $rwidth/(4*3);
+        $rpaddingy = ($theight/2)-($rheight/2);
+        
+        $t_cmd_options = "%s %s %s %s %s";
+        $t_input_files="-i '%s' -i '%s' -i '%s'";
+        $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:0 [padded]; [padded][right] overlay=%d:0\"";
+        $t_filters_ffmpeg="-filter_complex \"nullsrc=size=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1 [background+left]; [background+left][right] overlay=shortest=1:x=%d [left+right]\""; 
+        $t_output_files="'%s'";
+        
+        $cmd_overwrite_verbose="-y -v fatal";
+        $cmd_input_files = sprintf($t_input_files, $cleanInputVideoPath1, $cleanInputVideoPath2, $cleanAudioPath);
+        
+        if($this->mediaToolSuite == Config::FFMPEG){
+        	$cmd_filters = sprintf($t_filters_ffmpeg, $twidth, $theight, $lwidth, $lheight, $rwidth, $rheight, $lwidth);
+        } else { //avconv
+        	$cmd_filters = sprintf($t_filters_avconv, $lwidth, $lheight, $rwidth, $rheight, $twidth, $theight, $lwidth);
+        }
+
+        $cmd_output_encoding="-strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -bufsize 500k -r 24 -g 24 -keyint_min 24 -codec:a aac -b:a 96k -ac 2 -ar 22050";
+        $cmd_output_mapping="-map 2:0";
+        
+        $cmd_output_files = sprintf($t_output_files, $cleanOutputVideoPath);
+
         
         $cmd_template = "%s %s";
         $cmd_name = $this->mediaToolHome;
         $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
-        $cmd_options_t = $preset_merge_videos;
-        $cmd_options = sprintf($cmd_options_t, $cleanInputVideoPath1, $cleanInputVideoPath2, $inputAudioPath, $rwidth, $rwidth, $rheight, $cleanOutputVideoPath);
+      
+        $cmd_options = sprintf($t_cmd_options, $cmd_overwrite_verbose, $cmd_input_files, $cmd_filters, $cmd_output_encoding, $cmd_output_mapping, $cmd_output_files);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
 
