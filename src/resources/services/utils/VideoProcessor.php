@@ -667,34 +667,34 @@ class VideoProcessor{
         }
 
         //Total dimensions
-        $twidth = floor($dimension*(16/9);
+        $twidth = floor($dimension*(16/9));
         $theight = $dimension;
         
         //Dimensions of left-side video
         $lmedia = $this->retrieveMediaInfo($cleanInputVideoPath1);
-        $lwidth = $twidth/2;
-        $lheight = $lmedia->suggestedTranscodingAspectRatio==169 ? $lwidth/(16*9) : $lwidth/(4*3);
-        $lpaddingy = ($theight/2)-($lheight/2);
+        $lwidth = floor($twidth/2);
+        $lheight = $lmedia->suggestedTranscodingAspectRatio==169 ? round(($lwidth/16)*9) : round(($lwidth/4)*3);
+        $lpaddingy = floor(($theight/2)-($lheight/2));
         
         //Dimensions of right-side video
         $rmedia = $this->retrieveMediaInfo($cleanInputVideoPath2);
-        $rwidth = $twidth/2;
-        $rheight = $rmedia->suggestedTranscodingAspectRatio==169 ? $rwidth/(16*9) : $rwidth/(4*3);
-        $rpaddingy = ($theight/2)-($rheight/2);
+        $rwidth = floor($twidth/2);
+        $rheight = $rmedia->suggestedTranscodingAspectRatio==169 ? round(($rwidth/16)*9) : round(($rwidth/4)*3);
+        $rpaddingy = floor(($theight/2)-($rheight/2));
         
-        $t_cmd_options = "%s %s %s %s %s";
+        $t_cmd_options = "%s %s %s %s %s %s";
         $t_input_files="-i '%s' -i '%s' -i '%s'";
-        $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:0 [padded]; [padded][right] overlay=%d:0\"";
-        $t_filters_ffmpeg="-filter_complex \"nullsrc=size=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1 [background+left]; [background+left][right] overlay=shortest=1:x=%d [left+right]\""; 
+        $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:%d [padded]; [padded][right] overlay=%d:%d\"";
+        $t_filters_ffmpeg="-filter_complex \"nullsrc=size=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d [left+right]\""; 
         $t_output_files="'%s'";
         
         $cmd_overwrite_verbose="-y -v fatal";
         $cmd_input_files = sprintf($t_input_files, $cleanInputVideoPath1, $cleanInputVideoPath2, $cleanAudioPath);
         
         if($this->mediaToolSuite == Config::FFMPEG){
-        	$cmd_filters = sprintf($t_filters_ffmpeg, $twidth, $theight, $lwidth, $lheight, $rwidth, $rheight, $lwidth);
+        	$cmd_filters = sprintf($t_filters_ffmpeg, $twidth, $theight, $lwidth, $lheight, $rwidth, $rheight, $lpaddingy, $lwidth, $rpaddingy);
         } else { //avconv
-        	$cmd_filters = sprintf($t_filters_avconv, $lwidth, $lheight, $rwidth, $rheight, $twidth, $theight, $lwidth);
+        	$cmd_filters = sprintf($t_filters_avconv, $lwidth, $lheight, $rwidth, $rheight, $twidth, $theight, $lpaddingy, $lwidth, $rpaddingy);
         }
 
         $cmd_output_encoding="-strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -bufsize 500k -r 24 -g 24 -keyint_min 24 -codec:a aac -b:a 96k -ac 2 -ar 22050";
