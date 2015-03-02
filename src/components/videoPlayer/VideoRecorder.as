@@ -68,7 +68,7 @@ package components.videoPlayer
 		private var _subtitleBox:SubtitleTextBox;
 		private var _arrowContainer:UIComponent;
 		private var _arrowPanel:ArrowPanel;
-		private var _roleTalkingPanel:RoleTalkingPanel;
+		//private var _roleTalkingPanel:RoleTalkingPanel;
 		private var _micActivityBar:MicActivityBar;
 		private var _subtitlingControls:UIComponent;
 		private var _subtitlingText:Text;
@@ -191,11 +191,11 @@ package components.videoPlayer
 
 			_arrowContainer.addChild(_bgArrow);
 			_arrowPanel=new ArrowPanel();
-			_roleTalkingPanel=new RoleTalkingPanel();
+			//_roleTalkingPanel=new RoleTalkingPanel();
 
 			_arrowContainer.visible=false;
 			_arrowContainer.addChild(_arrowPanel);
-			_arrowContainer.addChild(_roleTalkingPanel);
+			//_arrowContainer.addChild(_roleTalkingPanel);
 
 			_countdownTxt=new Text();
 			_countdownTxt.text="5";
@@ -271,7 +271,7 @@ package components.videoPlayer
 			putSkinableComponent(_subtitleButton.COMPONENT_NAME, _subtitleButton);
 			putSkinableComponent(_subtitleBox.COMPONENT_NAME, _subtitleBox);
 			putSkinableComponent(_arrowPanel.COMPONENT_NAME, _arrowPanel);
-			putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
+			//putSkinableComponent(_roleTalkingPanel.COMPONENT_NAME, _roleTalkingPanel);
 			putSkinableComponent(_subtitleStartEnd.COMPONENT_NAME, _subtitleStartEnd);
 			putSkinableComponent(_micActivityBar.COMPONENT_NAME, _micActivityBar);
 		}
@@ -445,15 +445,12 @@ package components.videoPlayer
 			return _displayEventArrows;
 		}
 
-		/**
-		 * Set role to talk in role talking panel
-		 * @param duration in seconds
-		 **/
+		/*
 		public function startTalking(role:String, duration:Number):void
 		{
 			if (!_roleTalkingPanel.talking)
 				_roleTalkingPanel.setTalking(role, duration);
-		}
+		}*/
 
 		/**
 		 * Enable/disable subtitling controls
@@ -610,7 +607,7 @@ package components.videoPlayer
 		public function set highlight(flag:Boolean):void
 		{
 			_arrowPanel.highlight=flag;
-			_roleTalkingPanel.highlight=flag;
+			//_roleTalkingPanel.highlight=flag;
 		}
 
 
@@ -706,9 +703,9 @@ package components.videoPlayer
 			_arrowPanel.y=4;
 
 			// Resize RolePanel
-			_roleTalkingPanel.resize(_videoWidth - _defaultMargin * 6 - _arrowPanel.width - _arrowPanel.x, _arrowPanel.height);
-			_roleTalkingPanel.x=_arrowPanel.x + _arrowPanel.width + _defaultMargin * 3;
-			_roleTalkingPanel.y=4;
+			//_roleTalkingPanel.resize(_videoWidth - _defaultMargin * 6 - _arrowPanel.width - _arrowPanel.x, _arrowPanel.height);
+			//_roleTalkingPanel.x=_arrowPanel.x + _arrowPanel.width + _defaultMargin * 3;
+			//_roleTalkingPanel.y=4;
 
 			// Countdown
 			_countdownTxt.x=_videoWidth / 2 - 10;
@@ -915,8 +912,8 @@ package components.videoPlayer
 
 			super.pauseVideo();
 
-			if (_roleTalkingPanel.talking)
-				_roleTalkingPanel.pauseTalk();
+			//if (_roleTalkingPanel.talking)
+			//	_roleTalkingPanel.pauseTalk();
 		}
 
 		/**
@@ -950,8 +947,8 @@ package components.videoPlayer
 
 			super.resumeVideo();
 
-			if (_roleTalkingPanel.talking)
-				_roleTalkingPanel.resumeTalk();
+			//if (_roleTalkingPanel.talking)
+			//	_roleTalkingPanel.resumeTalk();
 
 		}
 
@@ -982,8 +979,8 @@ package components.videoPlayer
 				}
 			}
 
-			if (_roleTalkingPanel.talking)
-				_roleTalkingPanel.stopTalk();
+			//if (_roleTalkingPanel.talking)
+			//	_roleTalkingPanel.stopTalk();
 
 			hideCaption();
 		}
