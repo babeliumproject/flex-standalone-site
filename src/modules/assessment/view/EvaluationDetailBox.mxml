@@ -242,13 +242,13 @@
 			<s:Label id="textComment"
 					 paddingLeft="20"
 					 width="400"
-					 text="{resourceManager.getString('myResources','NO_COMMENT_AVAILABLE')}"/>
+					 text="{resourceManager.getString('myResources','NO_COMMENT_WAS_ADDED')}"/>
 			<s:Label text="{resourceManager.getString('myResources', 'VIDEOCOMMENT')}"
 					 styleName="boldLabel"/>
 			<s:Label id="noVideoComment"
 					 paddingLeft="20"
 					 width="400"
-					 text="{resourceManager.getString('myResources','NO_COMMENT_AVAILABLE')}"
+					 text="{resourceManager.getString('myResources','NO_COMMENT_WAS_ADDED')}"
 					 enabled="false"/>
 			<mx:Image id="videoCommentThumbnail"
 					  width="120"

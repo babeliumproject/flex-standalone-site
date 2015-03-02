@@ -75,7 +75,7 @@ class VideoProcessor{
 
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
-        $this->encodingPresets[] = "-y -v error -i '%s' -strict experimental -codec:v libx264 -profile:v main -preset slow -b:v 250k -maxrate 250k -bufsize 500k -r 24 -g 24 -vf scale=%d:%d -codec:a aac -b:a 96k -ac 2 -ar 22050 '%s'";
+        $this->encodingPresets[] = "-y -v error -i '%s' -strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -maxrate 250k -bufsize 500k -r 24 -g 24 -vf scale=%d:%d -codec:a aac -b:a 96k -ac 2 -ar 22050 '%s'";
     }
 
     /**
@@ -685,7 +685,7 @@ class VideoProcessor{
         $t_cmd_options = "%s %s %s %s %s %s";
         $t_input_files="-i '%s' -i '%s' -i '%s'";
         $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:%d [padded]; [padded][right] overlay=%d:%d\"";
-        $t_filters_ffmpeg="-filter_complex \"nullsrc=size=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d [left+right]\""; 
+        $t_filters_ffmpeg="-filter_complex \"color=c=black@1.0:s=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d\""; 
         $t_output_files="'%s'";
         
         $cmd_overwrite_verbose="-y -v fatal";
