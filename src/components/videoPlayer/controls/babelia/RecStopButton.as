@@ -1,14 +1,11 @@
 package components.videoPlayer.controls.babelia
 {
-	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
-	import components.videoPlayer.controls.SkinableButton;
+	import components.videoPlayer.controls.DictionarySkinnableButton;
 	import components.videoPlayer.events.babelia.RecStopButtonEvent;
-	
-	import mx.controls.Alert;
 
-	public class RecStopButton extends SkinableButton
+	public class RecStopButton extends DictionarySkinnableButton
 	{
 		public static const REC_STATE:uint=0;
 		public static const STOP_STATE:uint=1;
@@ -19,6 +16,12 @@ package components.videoPlayer.controls.babelia
 		public function RecStopButton()
 		{
 			super("RecStopButton");
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
 		}
 		
 		override public function availableProperties(obj:Array = null) : void

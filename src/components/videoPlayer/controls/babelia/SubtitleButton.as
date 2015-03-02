@@ -1,8 +1,5 @@
 package components.videoPlayer.controls.babelia
 {
-	import components.videoPlayer.controls.SkinableComponent;
-	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
-	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
@@ -10,7 +7,10 @@ package components.videoPlayer.controls.babelia
 	
 	import spark.components.ToggleButton;
 	
-	public class SubtitleButton extends SkinableComponent
+	import components.videoPlayer.controls.DictionarySkinnableComponent;
+	import components.videoPlayer.events.babelia.SubtitleButtonEvent;
+	
+	public class SubtitleButton extends DictionarySkinnableComponent
 	{
 		/**
 		 * SKIN CONSTANTS
@@ -61,6 +61,16 @@ package components.videoPlayer.controls.babelia
 			_button.addEventListener(MouseEvent.CLICK, showHideSubtitles);
 
 			resize(_boxWidth, _boxHeight);
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			if(_button){
+				_button.removeEventListener(MouseEvent.CLICK,showHideSubtitles);
+				removeChildSuppressed(_button);
+				_button=null;
+			}
 		}
 		
 		override public function availableProperties(obj:Array = null) : void

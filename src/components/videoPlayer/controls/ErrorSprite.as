@@ -1,18 +1,11 @@
 package components.videoPlayer.controls
 {
-	import flash.display.Bitmap;
 	import flash.display.GradientType;
-	import flash.display.Loader;
 	import flash.display.Shape;
 	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.filters.DropShadowFilter;
 	import flash.geom.Matrix;
-	import flash.net.URLRequest;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
 	import mx.resources.ResourceManager;

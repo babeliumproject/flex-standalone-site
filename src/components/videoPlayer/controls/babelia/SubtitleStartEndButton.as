@@ -3,10 +3,10 @@ package components.videoPlayer.controls.babelia
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
-	import components.videoPlayer.controls.SkinableButton;
+	import components.videoPlayer.controls.DictionarySkinnableButton;
 	import components.videoPlayer.events.babelia.SubtitlingEvent;
 	
-	public class SubtitleStartEndButton extends SkinableButton
+	public class SubtitleStartEndButton extends DictionarySkinnableButton
 	{
 		/**
 		 * Constants
@@ -26,16 +26,16 @@ package components.videoPlayer.controls.babelia
 			super("SubtitleStartEndButton");
 		}
 		
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
+		}
+		
 		override public function availableProperties(obj:Array = null) : void
 		{
 			super.availableProperties([BG_COLOR,OVERBG_COLOR,ICON_COLOR]);
 		}
-		
-		
-		/**
-		 * Setters and Getters
-		 * 
-		 */
 		
 		public function set State( state:String ):void
 		{
@@ -49,13 +49,7 @@ package components.videoPlayer.controls.babelia
 			return _state;
 		}
 		
-		/**
-		 * Methods
-		 * 
-		 */
-		
-		
-		/** OVERRIDEN */
+
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );

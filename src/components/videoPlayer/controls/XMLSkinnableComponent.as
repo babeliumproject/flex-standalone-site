@@ -4,39 +4,48 @@ package components.videoPlayer.controls
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
-	import flash.utils.Dictionary;
+	
+	import components.videoPlayer.events.XMLSkinnableComponentEvent;
 
-	public class XMLSkinableComponent extends SkinableComponent
+	public class XMLSkinnableComponent extends DictionarySkinnableComponent
 	{
-		
 		public static const XML_COMPONENT:String='Component';
 		public static const XML_PROPERTY:String='Property';
 		public static const XML_NAME:String='name';
 		
-		protected var _skinableComponents:Dictionary;
+		//Don't use Dictionary unless the keys are objects
+		protected var _skinableComponents:Object;
 		protected var _skinUrl:String;
 		protected var _skinLoader:URLLoader;
 		protected var _loadingSkin:Boolean;
 		
 		private var skinUrlChanged:Boolean;
 		
-		[Bindable("skinUrlChanged")]
-		
-		public function XMLSkinableComponent(name:String="SkinableComponent")
+		public function XMLSkinnableComponent(name:String="DictionarySkinnableComponent")
 		{
 			super(name);
-			_skinableComponents = new Dictionary();
+			_skinableComponents = new Object();
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			if(_skinLoader){
+				_skinLoader.removeEventListener(Event.COMPLETE, onSkinFileRead);
+				_skinLoader.removeEventListener(IOErrorEvent.IO_ERROR, onSkinFileReadingError);
+			}
+			_skinLoader=null;
+			_skinableComponents=null;
 		}
 		
 		/**
 		 * Skin HashMap related commands
 		 */
-		protected function putSkinableComponent(name:String, cmp:SkinableComponent):void
+		protected function putSkinableComponent(name:String, cmp:DictionarySkinnableComponent):void
 		{
 			_skinableComponents[name]=cmp;
 		}
 		
-		protected function getSkinableComponent(name:String):SkinableComponent
+		protected function getSkinableComponent(name:String):DictionarySkinnableComponent
 		{
 			return _skinableComponents[name];
 		}
@@ -48,8 +57,7 @@ package components.videoPlayer.controls
 			_skinUrl=value;
 			skinUrlChanged=true;
 			
-			dispatchEvent(new Event("skinUrlChanged"));
-			
+			dispatchEvent(new XMLSkinnableComponentEvent(XMLSkinnableComponentEvent.SKIN_FILE_URL_CHANGED));
 			loadSkinFile(_skinUrl);
 		}
 		
@@ -74,7 +82,7 @@ package components.videoPlayer.controls
 			for each (var xChild:XML in xml.child(XML_COMPONENT))
 			{
 				var componentName:String=xChild.attribute(XML_NAME).toString();
-				var cmp:SkinableComponent=getSkinableComponent(componentName);
+				var cmp:DictionarySkinnableComponent=getSkinableComponent(componentName);
 				
 				if (cmp == null)
 					continue;
@@ -86,12 +94,15 @@ package components.videoPlayer.controls
 				}
 			}
 			_loadingSkin=false;
+			
+			dispatchEvent(new XMLSkinnableComponentEvent(XMLSkinnableComponentEvent.SKIN_FILE_LOADED));
 			invalidateDisplayList();
 		}
 		
 		protected function onSkinFileReadingError(e:IOErrorEvent):void
 		{
 			_loadingSkin=false;
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR,false,false,e.text,e.errorID));
 			trace("Error ["+e.errorID+"] "+e.text);
 		}
 	}

@@ -1,7 +1,6 @@
 package components.videoPlayer.controls
 {	
 	import flash.display.GradientType;
-	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.filters.BitmapFilter;
@@ -9,7 +8,7 @@ package components.videoPlayer.controls
 	import flash.filters.DropShadowFilter;
 	import flash.geom.Matrix;
 
-	public class SkinableButton extends SkinableComponent
+	public class DictionarySkinnableButton extends DictionarySkinnableComponent
 	{
 		/**
 		 * Skin related constants
@@ -37,9 +36,7 @@ package components.videoPlayer.controls
 		private var bgClick:Sprite;
 		protected var btn:Sprite;
 		
-		
-		
-		public function SkinableButton(name:String = "SkinableButton")
+		public function DictionarySkinnableButton(name:String = "DictionarySkinnableButton")
 		{
 			super(name); // Required for setup skinable component
 			
@@ -65,7 +62,12 @@ package components.videoPlayer.controls
 			this.addEventListener( MouseEvent.CLICK, onClick );
 		}
 		
-		
+		override public function dispose():void{
+			super.dispose();
+			this.removeEventListener(MouseEvent.ROLL_OVER, onMouseOver);
+			this.removeEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			this.removeEventListener(MouseEvent.CLICK, onClick);
+		}
 		
 		override public function availableProperties(obj:Array = null) : void
 		{

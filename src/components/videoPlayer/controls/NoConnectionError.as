@@ -4,7 +4,6 @@ package components.videoPlayer.controls
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
-	import flash.text.StaticText;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	

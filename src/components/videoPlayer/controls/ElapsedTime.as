@@ -6,7 +6,7 @@ package components.videoPlayer.controls
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 
-	public class ElapsedTime extends SkinableComponent
+	public class ElapsedTime extends DictionarySkinnableComponent
 	{
 		/**
 		 * Skin constants
@@ -63,6 +63,12 @@ package components.videoPlayer.controls
 			_timeBox.setTextFormat(tf);
 
 			addChild(_timeBox);
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
 		}
 
 		override public function availableProperties(obj:Array=null):void

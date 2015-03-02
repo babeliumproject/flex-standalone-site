@@ -7,20 +7,32 @@ package components.videoPlayer.controls
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
+	
+	import components.videoPlayer.IDisposableObject;
 
-	public class BitmapSprite extends Sprite
+	public class BitmapSprite extends Sprite implements IDisposableObject
 	{
 		private var img:Bitmap;
 		private var img_width:uint;
 		private var img_height:uint;
 		private var container_width:uint = 320;
 		private var container_height:uint = 240;
+		
+		private var loader:Loader;
+		private var request:URLRequest;
 
 		public function BitmapSprite(url:String, unscaledWidth:uint, unscaledHeight:uint)
 		{
 			super();
 			updateDisplayList(unscaledWidth,unscaledHeight);
 			loadAsset(url);
+		}
+		
+		public function dispose():void{
+			if(loader){
+				loader.removeEventListener(Event.COMPLETE, completeHandler);
+				loader.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			}
 		}
 
 		public function updateDisplayList(unscaledWidth:uint, unscaledHeight:uint):void
@@ -72,12 +84,12 @@ package components.videoPlayer.controls
 		{
 			if (BitmapSprite.parseUrl(url))
 			{
-				var loader:Loader=new Loader();
+				loader=new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler);
 				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 				
 
-				var request:URLRequest=new URLRequest(url);
+				request=new URLRequest(url);
 				loader.load(request);
 			}
 		}

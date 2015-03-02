@@ -1,7 +1,7 @@
 package components.videoPlayer.controls
 {
-	import components.videoPlayer.events.VolumeEvent;
-	
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -9,10 +9,13 @@ package components.videoPlayer.controls
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
+	import mx.charts.CategoryAxis;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
+	
+	import components.videoPlayer.events.VolumeEvent;
 
-	public class AudioSlider extends SkinableComponent
+	public class AudioSlider extends DictionarySkinnableComponent
 	{
 		/**
 		 * Skin constants
@@ -100,9 +103,7 @@ package components.videoPlayer.controls
 			addChild( _amount );
 			addChild( _scrubber );
 			
-			
 			//EventListeners
-			
 			_scrubber.addEventListener( MouseEvent.MOUSE_DOWN, onScrubberMouseDown );
 			_sliderArea.addEventListener( MouseEvent.CLICK, onAreaClick );
 			_amount.addEventListener( MouseEvent.CLICK, onAreaClick );
@@ -114,12 +115,59 @@ package components.videoPlayer.controls
 			_mutOverBg.addEventListener( MouseEvent.CLICK, muteClicked );
 		}
 		
+		override public function dispose():void{
+			super.dispose();
+			if(_scrubber){
+				_scrubber.removeEventListener(MouseEvent.MIDDLE_MOUSE_DOWN,onScrubberMouseDown);
+				removeChildSuppressed(_scrubber);
+				_scrubber=null;
+			}
+			if(_sliderArea){
+				_sliderArea.removeEventListener(MouseEvent.CLICK,onAreaClick);
+				removeChildSuppressed(_sliderArea);
+				_sliderArea=null;
+			}
+			if(_amount){
+				_amount.removeEventListener(MouseEvent.CLICK,onAreaClick);
+				removeChildSuppressed(_amount);
+				_amount=null;
+			}
+			if(_muteBtn){
+				_muteBtn.removeEventListener(MouseEvent.MOUSE_OVER,muteOver);
+				_muteBtn.removeEventListener(MouseEvent.MOUSE_OUT,muteOut);
+				_muteBtn.removeEventListener(MouseEvent.CLICK,muteClicked);
+				removeChildSuppressed(_muteBtn);
+				_muteBtn=null;
+			}
+			if(_mutOverBg){
+				_mutOverBg.removeEventListener(MouseEvent.MOUSE_OVER,muteOver);
+				_mutOverBg.removeEventListener(MouseEvent.MOUSE_OUT,muteOut);
+				_mutOverBg.removeEventListener(MouseEvent.CLICK,muteClicked);
+				removeChildSuppressed(_mutOverBg);
+				_mutOverBg=null;
+			}
+			if(a1){
+				a1.removeEventListener(EffectEvent.EFFECT_END, volumeChanged);
+				a1.removeEventListener(EffectEvent.EFFECT_END, muteClickVolumeChange);
+				a1.stop();
+				a1=null;
+			}
+			if(a2){
+				a2.stop();
+				a2=null;
+			}
+			
+			//These two should have been removed when the dragging ended, but just in case
+			this.parentApplication.removeEventListener(MouseEvent.MOUSE_UP, onScrubberDrop);
+			this.removeEventListener(Event.ENTER_FRAME,updateAmount);
+			
+		}
+		
 		override public function availableProperties(obj:Array = null) : void
 		{
 			super.availableProperties([BG_COLOR,BARBG_COLOR,BAR_COLOR,SCRUBBER_COLOR,
 							SCRUBBERBORDER_COLOR,MUTE_COLOR,MUTEOVERBG_COLOR]);
 		}
-		
 		
 		/**
 		 * Getters and Setters
@@ -328,6 +376,19 @@ package components.videoPlayer.controls
 			dispatchEvent( new VolumeEvent( VolumeEvent.VOLUME_CHANGED, _currentVolume ) );
 		}
 		
+		private function muteClickVolumeChange(event:EffectEvent):void{
+			if( _muted )
+			{
+				dispatchEvent( new VolumeEvent( VolumeEvent.VOLUME_CHANGED, _currentVolume ) );
+				_muted = false;
+				
+			} else {
+				dispatchEvent( new VolumeEvent( VolumeEvent.VOLUME_CHANGED, 0 ) );
+				_muted = true;
+			}
+			_doingMute = false;
+		}
+		
 		
 		private function muteOver( e:MouseEvent ):void
 		{
@@ -364,21 +425,9 @@ package components.videoPlayer.controls
 			a1.toValue = _x;
 			a1.duration = 250;
 			a1.play();
-			a1.addEventListener( EffectEvent.EFFECT_END, function( e:EffectEvent ):void
-			{
-				if( _muted )
-				{
-					dispatchEvent( new VolumeEvent( VolumeEvent.VOLUME_CHANGED, _currentVolume ) );
-					_muted = false;
-					
-				} else
-				{
-					dispatchEvent( new VolumeEvent( VolumeEvent.VOLUME_CHANGED, 0 ) );
-					_muted = true;
-				}
-				
-				_doingMute = false;
-			} );
+			
+			//Don't use anonymous functions as event listeners, they should be identifiable
+			a1.addEventListener(EffectEvent.EFFECT_END, muteClickVolumeChange);
 			
 			a2 = new AnimateProperty();
 			a2.target = _amount;

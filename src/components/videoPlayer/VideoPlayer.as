@@ -1,44 +1,38 @@
 package components.videoPlayer
 {
 
-	import avmplus.getQualifiedClassName;
-
-	import components.videoPlayer.controls.*;
-	import components.videoPlayer.events.*;
-	import components.videoPlayer.media.*;
-
-	import events.FullStreamingEvent;
-
 	import flash.display.Sprite;
-	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
-	import flash.events.NetStatusEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.events.TimerEvent;
-	import flash.media.SoundTransform;
 	import flash.media.Video;
-	import flash.net.NetConnection;
-	import flash.net.NetStream;
-	import flash.net.URLLoader;
-	import flash.net.URLRequest;
-	import flash.utils.Dictionary;
-	import flash.utils.Timer;
-
-	import model.DataModel;
-
-	import mx.binding.utils.BindingUtils;
-	import mx.controls.Alert;
+	
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
-
+	
+	import avmplus.getQualifiedClassName;
+	
+	import components.videoPlayer.controls.AudioSlider;
+	import components.videoPlayer.controls.BitmapSprite;
+	import components.videoPlayer.controls.ElapsedTime;
+	import components.videoPlayer.controls.ErrorSprite;
+	import components.videoPlayer.controls.PlayButton;
+	import components.videoPlayer.controls.ScrubberBar;
+	import components.videoPlayer.controls.XMLSkinnableComponent;
+	import components.videoPlayer.events.MediaStatusEvent;
+	import components.videoPlayer.events.ScrubberBarEvent;
+	import components.videoPlayer.events.StopEvent;
+	import components.videoPlayer.events.VideoPlayerEvent;
+	import components.videoPlayer.events.VolumeEvent;
+	import components.videoPlayer.media.AMediaManager;
+	import components.videoPlayer.media.ARTMPManager;
+	import components.videoPlayer.media.AVideoManager;
+	
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
-
+	
 	import view.BusyIndicator;
 
-	public class VideoPlayer extends XMLSkinableComponent
+	public class VideoPlayer extends XMLSkinnableComponent
 	{
 		protected static const logger:ILogger=getLogger(VideoPlayer);
 
@@ -883,6 +877,19 @@ package components.videoPlayer
 				video.clear();
 				video.attachNetStream(null);
 				video.attachCamera(null);
+			}
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			var i:int=0,l:int=this.numChildren;
+			if(l){
+				for(i=0; i<l; i++){
+					var child:* = this.getChildAt(i) as IDisposableObject;
+					if(child){
+						child.dispose();
+					}
+				}
 			}
 		}
 	}

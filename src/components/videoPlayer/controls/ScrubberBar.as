@@ -1,7 +1,5 @@
 package components.videoPlayer.controls
 {
-	import components.videoPlayer.events.ScrubberBarEvent;
-	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -9,12 +7,12 @@ package components.videoPlayer.controls
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import mx.collections.ArrayCollection;
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
-	import mx.utils.ObjectUtil;
+	
+	import components.videoPlayer.events.ScrubberBarEvent;
 
-	public class ScrubberBar extends SkinableComponent
+	public class ScrubberBar extends DictionarySkinnableComponent
 	{
 		/**
 		 * Skin constants
@@ -62,6 +60,9 @@ package components.videoPlayer.controls
 		private var _minX:Number;
 		private var _dragging:Boolean = false;
 		
+		private var a1:AnimateProperty;
+		private var a2:AnimateProperty;
+		
 		private var _dataProvider:Object;
 		private var _duration:Number;
 		
@@ -83,6 +84,38 @@ package components.videoPlayer.controls
 			addChild( _loadedBar );
 			addChild( _progBar );
 			addChild( _scrubber );
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			if(_scrubber){
+				_scrubber.removeEventListener(MouseEvent.MOUSE_DOWN, onScrubberDrag);
+				removeChildSuppressed(_scrubber);
+				_scrubber=null;
+			}
+			if(_bar){
+				_bar.removeEventListener(MouseEvent.CLICK,onBarClick);
+				removeChildSuppressed(_bar);
+				_bar=null;
+			}
+			if(_progBar){
+				_progBar.removeEventListener(MouseEvent.CLICK,onBarClick);
+				removeChildSuppressed(_progBar);
+				_progBar=null;
+			}
+			if(a1){
+				a1.removeEventListener(EffectEvent.EFFECT_END, scrubberChanged);
+				a1.stop();
+				a1=null;
+			}
+			if(a2){
+				a2.stop();
+				a2=null;
+			}
+			
+			this.parentApplication.removeEventListener(MouseEvent.MOUSE_UP,onScrubberStopDrag);
+			this.removeEventListener(Event.ENTER_FRAME,updateProgWidth);
 		}
 		
 		override public function availableProperties(obj:Array = null) : void
@@ -115,15 +148,6 @@ package components.videoPlayer.controls
 				_progBar.removeEventListener( MouseEvent.CLICK, onBarClick );
 			}
 		}
-		
-		
-		/**
-		 * Methods
-		 * 
-		 */
-		
-		
-		/** Overriden */
 		
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
@@ -174,7 +198,7 @@ package components.videoPlayer.controls
 			if( _x > ( _bar.x + _bar.width - _scrubber.width ) ) 
 				_x = _bar.x + _bar.width - _scrubber.width;
 			
-			var a1:AnimateProperty = new AnimateProperty();
+			a1 = new AnimateProperty();
 			a1.target = _scrubber;
 			a1.property = "x";
 			a1.toValue = _x;
@@ -182,7 +206,7 @@ package components.videoPlayer.controls
 			a1.play();
 			a1.addEventListener( EffectEvent.EFFECT_END, scrubberChanged );
 			
-			var a2:AnimateProperty = new AnimateProperty();
+			a2 = new AnimateProperty();
 			a2.target = _progBar;
 			a2.property = "width";
 			a2.toValue = _x - _scrubber.width/2;

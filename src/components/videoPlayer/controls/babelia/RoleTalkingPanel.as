@@ -3,14 +3,17 @@ package components.videoPlayer.controls.babelia
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
-	import flash.geom.Matrix;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.Timer;
 	
-	import components.videoPlayer.controls.SkinableComponent;
+	import mx.binding.utils.ChangeWatcher;
 	
-	public class RoleTalkingPanel extends SkinableComponent
+	import components.videoPlayer.controls.DictionarySkinnableComponent;
+	
+	import utils.LocaleUtils;
+	
+	public class RoleTalkingPanel extends DictionarySkinnableComponent
 	{
 		/**
 		 * SKIN CONSTANTS
@@ -47,6 +50,8 @@ package components.videoPlayer.controls.babelia
 		private var _pBarMin:uint;
 		private var _pBarMax:uint;
 		
+		private var _cw:ChangeWatcher;
+		
 		public function RoleTalkingPanel()
 		{
 			super("RoleTalkingPanel"); // Required for setup skinable component
@@ -54,16 +59,13 @@ package components.videoPlayer.controls.babelia
 			_bg = new Sprite();
 			addChildAt(_bg, 0);
 			
-			
-			
-			
 			_textFormat = new TextFormat();
 			_textFormat.font = getSkinProperty(FONT_FAMILY);
 			_textFormat.bold = true;
 			
 			_textBox=new TextField();
 			_textBox.selectable = false;
-			_textBox.text = resourceManager.getString('myResources','ROLE_CURRENTLY_TALKING')+": ";
+			_cw=LocaleUtils.localizedPropertyBind(_textBox,'text','myResources','ROLE_CURRENTLY_TALKING');
 			_textBox.setTextFormat(_textFormat);
 			
 			addChild(_textBox);
@@ -95,6 +97,17 @@ package components.videoPlayer.controls.babelia
 			_pBarBg.graphics.endFill();
 
 			resize(_boxWidth, _boxHeight);
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			if(_timer){
+				_timer.stop();
+				_timer.removeEventListener(TimerEvent.TIMER, onTick);
+			}
+			if(_cw) _cw.unwatch();
+			_cw=null;
 		}
 		
 		override public function availableProperties(obj:Array = null) : void

@@ -1,25 +1,24 @@
 package components.videoPlayer.controls.babelia
 {
 	import components.videoPlayer.events.babelia.SubtitlingEvent;
-	import components.videoPlayer.controls.SkinableButton;
+	import components.videoPlayer.controls.DictionarySkinnableButton;
 	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 
-	public class SubtitleStartButton extends SkinableButton
+	public class SubtitleStartButton extends DictionarySkinnableButton
 	{		
 		public function SubtitleStartButton()
 		{
 			super("SubtitleStartButton"); // Required for setup skinable component
 		}
 		
-		/**
-		 * Methods
-		 * 
-		 */
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
+		}
 		
-		
-		/** OVERRIDEN */
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );

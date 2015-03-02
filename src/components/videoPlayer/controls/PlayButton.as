@@ -1,11 +1,8 @@
 package components.videoPlayer.controls
 {
-	import components.videoPlayer.events.PlayPauseEvent;
-	
 	import flash.display.Sprite;
-	import flash.events.MouseEvent;
 	
-	public class PlayButton extends SkinableButton
+	public class PlayButton extends DictionarySkinnableButton
 	{
 		
 		/**
@@ -24,6 +21,12 @@ package components.videoPlayer.controls
 		public function PlayButton()
 		{
 			super("PlayButton"); // Required for setup skinable component
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
 		}
 		
 		

@@ -17,8 +17,6 @@ package components.videoPlayer.media
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	import flash.net.ObjectEncoding;
-	
-	import mx.utils.ObjectUtil;
 
 	public class ARTMPManager extends AMediaManager
 	{

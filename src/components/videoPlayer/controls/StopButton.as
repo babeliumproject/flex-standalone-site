@@ -5,20 +5,19 @@ package components.videoPlayer.controls
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 
-	public class StopButton extends SkinableButton
+	public class StopButton extends DictionarySkinnableButton
 	{		
 		public function StopButton()
 		{
-			super("StopButton"); // Required for setup skinable component
+			super("StopButton");
 		}
 		
-		/**
-		 * Methods
-		 * 
-		 */
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no objects that need to be manually disposed
+		}
 		
-		
-		/** OVERRIDEN */
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
@@ -29,7 +28,6 @@ package components.videoPlayer.controls
 			addChild(btn);
 		}
 		
-		
 		private function createStopBtn() : void
 		{
 			var g:Sprite = btn;
@@ -38,8 +36,7 @@ package components.videoPlayer.controls
 			g.graphics.drawRect( 0, 0, 10, 10 );
 			g.graphics.endFill();
 		}
-				
-		
+
 		override protected function onClick( e:MouseEvent ) : void
 		{
 			dispatchEvent( new StopEvent( StopEvent.STOP_CLICK ) );

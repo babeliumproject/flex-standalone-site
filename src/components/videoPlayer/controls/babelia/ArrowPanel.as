@@ -1,19 +1,13 @@
 package components.videoPlayer.controls.babelia
 {
 	import flash.display.Bitmap;
-	import flash.display.Loader;
 	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.net.URLRequest;
 	
-	import model.DataModel;
-	
-	import components.videoPlayer.controls.SkinableComponent;
+	import components.videoPlayer.controls.DictionarySkinnableComponent;
 	
 	import mx.collections.ArrayCollection;
 
-	public class ArrowPanel extends SkinableComponent
+	public class ArrowPanel extends DictionarySkinnableComponent
 	{
 		/**
 		 * Skin constants
@@ -44,6 +38,12 @@ package components.videoPlayer.controls.babelia
 			_arrows=new ArrayCollection();
 
 			resize(_boxWidth, _boxHeight);
+		}
+		
+		override public function dispose():void{
+			super.dispose();
+			
+			//There are no ojbects that should be manually disposed
 		}
 
 		override public function availableProperties(obj:Array=null):void

@@ -1,17 +1,14 @@
 package components.videoPlayer.controls.babelia
 {
-	import components.videoPlayer.controls.SkinableComponent;
+	import components.videoPlayer.controls.DictionarySkinnableComponent;
 	
-	import flash.display.BlendMode;
-	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
-	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
 	import mx.core.FTETextField;
 	
 	
-	public class SubtitleTextBox extends SkinableComponent
+	public class SubtitleTextBox extends DictionarySkinnableComponent
 	{
 		/**
 		 * SKIN CONSTANTS
