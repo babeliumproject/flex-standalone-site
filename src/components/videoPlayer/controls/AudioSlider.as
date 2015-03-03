@@ -118,7 +118,7 @@ package components.videoPlayer.controls
 		override public function dispose():void{
 			super.dispose();
 			if(_scrubber){
-				_scrubber.removeEventListener(MouseEvent.MIDDLE_MOUSE_DOWN,onScrubberMouseDown);
+				_scrubber.removeEventListener(MouseEvent.MOUSE_DOWN,onScrubberMouseDown);
 				removeChildSuppressed(_scrubber);
 				_scrubber=null;
 			}

@@ -649,6 +649,7 @@
 					VP.removeEventListener(VideoPlayerEvent.ON_READY, onVideoPlayerReady);
 					VP.removeEventListener(RecordingEvent.END, onRecordingEnd);
 					VP.removeEventListener(RecordingEvent.USER_DEVICE_ACCESS_DENIED, onUserDeviceAccessDenied);
+					VP.dispose();
 				}
 				
 				ratingShareReport.unpinComponent();

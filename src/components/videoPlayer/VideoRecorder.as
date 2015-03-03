@@ -87,8 +87,8 @@ package components.videoPlayer
 		 */
 		public static const PLAY_STATE:int=0; // 0000 0000
 		public static const PLAY_PARALLEL_STATE:int=1; // 0000 0001
-		public static const RECORD_MIC_STATE:int=2; // 0000 0010
-		public static const RECORD_MICANDCAM_STATE:int=3; // 0000 0011
+		public static const RECORD_PARALLEL_MIC_STATE:int=2; // 0000 0010
+		public static const RECORD_PARALLEL_WEBCAM_STATE:int=3; // 0000 0011
 		public static const UPLOAD_MODE_STATE:int=4; // 0000 0100
 
 		private const SPLIT_FLAG:int=1; // XXXX XXX1
@@ -1091,12 +1091,12 @@ package components.videoPlayer
 		{
 			switch (_state)
 			{
-				case RECORD_MICANDCAM_STATE:
+				case RECORD_PARALLEL_WEBCAM_STATE:
 				{
 					splitVideoPanel();
 					break;
 				}
-				case RECORD_MIC_STATE:
+				case RECORD_PARALLEL_MIC_STATE:
 				{
 					resetVideoDisplay();
 					break;
@@ -1156,7 +1156,7 @@ package components.videoPlayer
 				_countdownTxt.visible=false;
 				_video.visible=true;
 
-				if (_state == RECORD_MICANDCAM_STATE || _state == UPLOAD_MODE_STATE)
+				if (_state == RECORD_PARALLEL_WEBCAM_STATE || _state == UPLOAD_MODE_STATE)
 				{
 					_camVideo.visible=true;
 					_micImage.visible=true;
@@ -1172,7 +1172,6 @@ package components.videoPlayer
 			else if (_state != PLAY_STATE)
 			{
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
-				logger.debug("Countdown timer visible: {0}. Countdown number: {1}, textColor: {2}", [_countdownTxt.visible, _countdownTxt.text, _countdownTxt.getStyle('color')]);
 			}
 		}
 
@@ -1498,7 +1497,7 @@ package components.videoPlayer
 						_mediaNetConnectionUrl=playmedia.netConnectionUrl;
 						_mediaUrl=playmedia.mediaUrl;
 						_mediaPosterUrl=playmedia.mediaPosterUrl;
-						setInternalState(_recordUseWebcam ? RECORD_MICANDCAM_STATE : RECORD_MIC_STATE);
+						setInternalState(_recordUseWebcam ? RECORD_PARALLEL_WEBCAM_STATE : RECORD_PARALLEL_MIC_STATE);
 					}
 					else if (recmedia)
 					{

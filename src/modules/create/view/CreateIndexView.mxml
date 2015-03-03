@@ -10,7 +10,7 @@
 		  paddingBottom="16"
 		  horizontalAlign="center"
 		  implements="modules.IPinnedGroupInterface"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)" xmlns:utils="utils.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -68,7 +68,7 @@
 					latestCreationsData=DataModel.getInstance().latestCreations;
 					latestCreationsList.dataProvider=latestCreationsData;
 					
-					refreshLayout();
+					//refreshLayout();
 					
 					nocreations.includeInLayout=false;
 					nocreations.visible=false;
@@ -138,7 +138,11 @@
 					borderVisible="false"
 					itemRenderer="modules.create.view.LatestCreationItemRenderer"
 					changing="changeHandler(event)"
-					contentBackgroundAlpha="0">
+					contentBackgroundAlpha="0"
+					height="{latestCreationsList.dataGroup.contentHeight}">
+				<s:layout>
+					<utils:ProperTileLayout/>
+				</s:layout>
 			</s:List>
 			<skins:IconButton id="seeAllCreations"
 							  label="{ResourceManager.getInstance().getString('myResources','SEE_ALL_MY_CREATIONS')}"

@@ -13,35 +13,39 @@
 	<fx:Script>
 		<![CDATA[
 			import flash.globalization.DateTimeFormatter;
+			
+			import mx.binding.utils.ChangeWatcher;
+			
 			import flash.globalization.DateTimeNameStyle;
 			import flash.globalization.DateTimeStyle;
 			
-			import model.DataModel;
-			
-			import mx.formatters.NumberBaseRoundType;
 			import mx.resources.ResourceManager;
 			
-			import spark.formatters.NumberFormatter;
-			
-			import utils.CollectionUtils;
 			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
 			
-			import view.common.TimeFormatter;
-
-			[Bindable]
-			private var _data:Object;
-
-			private var _creationComplete:Boolean=false;
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var cw:ChangeWatcher;
 			
-			private var _model:DataModel=DataModel.getInstance();
-			
-			private var dateTimeFormatter:DateTimeFormatter;
-
-			public function completeHandler():void
+			override public function set data(value:Object):void
 			{
-				_data=data;
-				_creationComplete=true;
+				super.data=value;
+				
+				if (value == null)
+					return;
+				
+				thumbnail.source=value.thumbnail;
+				title.text=value.title;
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
+				difLevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
+				creationDateLbl.text=ExerciseRenderUtils.formatDateTime(value.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE);
+				
+				var ready:int=parseInt(value.status);
+				var propname:String = ready ? 'READY' : 'DRAFT';
+				cw=LocaleUtils.localizedPropertyBind(statusValue,'text','myResources',propname,commitOnly,useWeakReference);
 			}
+
 		]]>
 	</fx:Script>
 
@@ -53,7 +57,6 @@
 			</s:stroke>
 		</s:Rect>
 		<s:BitmapImage id="thumbnail"
-					   source="{data.thumbnail}"
 					   width="120"
 					   height="90"/>
 		<!--
@@ -72,7 +75,6 @@
 			  horizontalAlign="left"
 			  gap="2">
 		<s:Label id="title"
-				 text="{data.title}"
 				 width="180"
 				 styleName="boldLabel"/>
 		<s:Line width="180"
@@ -88,19 +90,18 @@
 					  verticalAlign="middle">
 				<s:BitmapImage width="16"
 							   height="16"
-							   source="{ExerciseRenderUtils.getFlagSource(data)}"
 							   id="exerciseLanguage"/>
-				<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
+				<s:Label id="difLevelLbl"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
-			<s:Label text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE)}"
-					 styleName="boldYellowLabel"/>
+			<s:Label
+					 styleName="boldYellowLabel"
+					 id="creationDateLbl"/>
 		</s:HGroup>
 		<s:HGroup>
 			<s:Label id="status"
 					 text="{ResourceManager.getInstance().getString('myResources','STATUS')+':'}"/>
-			<s:Label id="statusValue"
-					 text="{parseInt(data.status) ? ResourceManager.getInstance().getString('myResources','READY') : ResourceManager.getInstance().getString('myResources','DRAFT')}"/>
+			<s:Label id="statusValue"/>
 		</s:HGroup>
 	</s:VGroup>
 

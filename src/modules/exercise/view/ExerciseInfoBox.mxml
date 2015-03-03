@@ -59,6 +59,9 @@
 			private var cwlblvec:Vector.<ChangeWatcher>;
 			private var cwdescvec:Vector.<ChangeWatcher>;
 			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
 			public function completeHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
@@ -203,7 +206,7 @@
 					sectTitle.setStyle("fontWeight","bold");				
 					
 					var cw:ChangeWatcher;
-					cw=LocaleUtils.localizedPropertyBind(sectTitle, 'text', 'myResources','DESCRIPTORS',false,true);
+					cw=LocaleUtils.localizedPropertyBind(sectTitle, 'text', 'myResources','DESCRIPTORS',commitOnly,true);
 					cwlblvec.push(cw);
 					
 					descriptorContainer.addElement(sectTitle);
@@ -214,14 +217,16 @@
 					for (i=0; i<descriptors.length; i++){
 						var dlabel:Button=new Button();
 						dlabel.id=descriptors[i];
-						dlabel.percentWidth=100;
+						//Make the labels aware of the size changes in their parent container
+						var cww:ChangeWatcher=BindingUtils.bindProperty(dlabel,'width',descriptorContainer,'width',commitOnly, useWeakReference);
+						cwdescvec.push(cww);
 						dlabel.styleName="btn-link";
 						dlabel.buttonMode=true;
 						dlabel.setStyle("fontSize", 11);
 						dlabel.addEventListener(MouseEvent.CLICK, descriptorClickHandler, false, 0, true);
 						descriptorContainer.addElement(dlabel);
 						
-						var cwd:ChangeWatcher=LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],false,true);
+						var cwd:ChangeWatcher=LocaleUtils.localizedPropertyBind(dlabel,'label','myResources',descriptors[i],commitOnly,useWeakReference);
 						cwdescvec.push(cwd);
 					}
 				}
@@ -238,6 +243,9 @@
 					cwdescvec=null;
 				}
 				if(descriptorContainer.numElements){
+					for each (var item:IVisualElement in descriptorContainer){
+						item.removeEventListener(MouseEvent.CLICK, descriptorClickHandler);
+					}
 					descriptorContainer.removeAllElements();
 				}
 			}
@@ -361,7 +369,7 @@
 			<s:Label id="lingAspectsLbl"/>
 		</s:HGroup>
 				
-		<s:VGroup id="descriptorContainer" minHeight="0" horizontalAlign="left"/>
+		<s:VGroup id="descriptorContainer" minHeight="0" horizontalAlign="left" width="100%"/>
 		
 		<s:VGroup width="100%" id="keywordsRow" includeInLayout="false" visible="false">
 			<s:Label text="{ResourceManager.getInstance().getString('myResources','KEYWORDS')+':'}"
