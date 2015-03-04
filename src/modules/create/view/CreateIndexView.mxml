@@ -138,8 +138,8 @@
 					borderVisible="false"
 					itemRenderer="modules.create.view.LatestCreationItemRenderer"
 					changing="changeHandler(event)"
-					contentBackgroundAlpha="0"
-					height="{latestCreationsList.dataGroup.contentHeight}">
+					contentBackgroundAlpha="0">
+				<!-- height="{latestCreationsList.dataGroup.contentHeight}" -->
 				<s:layout>
 					<utils:ProperTileLayout/>
 				</s:layout>

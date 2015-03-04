@@ -1008,7 +1008,6 @@ package utils
 					_columnCount = Math.max(1, Math.floor((width + explicitHorizontalGap) / (_columnWidth + explicitHorizontalGap)));
 				else
 					_columnCount = 1;
-				trace("Orientation=rows, width: "+width+" height: "+height+" columnCount: "+_columnCount+" rowCount: "+_rowCount);
 			}
 			else if (!isNaN(height) && (orientation == TileOrientation.COLUMNS || isNaN(width)))
 			{
@@ -1016,7 +1015,6 @@ package utils
 					_rowCount = Math.max(1, Math.floor((height + explicitVerticalGap) / (_rowHeight + explicitVerticalGap)));
 				else
 					_rowCount = 1;
-				trace("Orientation=columns, width: "+width+"  height: "+height+" columnCount: "+_columnCount+" rowCount: "+_rowCount);
 			}
 			else // Figure out the number of columns and rows so that pixels area occupied is as square as possible
 			{
@@ -1040,7 +1038,6 @@ package utils
 				
 				// We are guaranteed that we have only one positive root, since d >= b:
 				var rowCount:Number = (a != 0) ? (b + d) / (2 * a) : elementCount;
-				trace("elementcount: "+elementCount+" rowcount: "+rowCount+" roHeight: "+rowHeight+" columnWidth: "+columnWidth+" vGap: "+vGap+" hGap: "+hGap);
 				
 				// To get integer count for the columns/rows we round up and down so
 				// we get four possible solutions. Then we pick the best one.
@@ -1082,7 +1079,6 @@ package utils
 					_columnCount = col2;
 					_rowCount = row2;
 				}
-				trace("No dimensions given: "+width+"  height: "+height+" columnCount: "+_columnCount+" rowCount: "+_rowCount);
 			}
 			
 			// In case we determined only columns or rows (from explicit overrides or explicit width/height)
@@ -1091,6 +1087,7 @@ package utils
 				_rowCount = Math.max(1, Math.ceil(elementCount / _columnCount));
 			if (-1 == _columnCount)
 				_columnCount = Math.max(1, Math.ceil(elementCount / _rowCount));
+			trace("[calculateColumnAndRowCount] width: "+width+" height: "+height+" columnCount: "+_columnCount+" rowCount: "+_rowCount+" rowHeight: "+rowHeight+" columnWidth: "+columnWidth+" elementCount: "+elementCount);
 		}
 		
 		/**
@@ -1611,6 +1608,7 @@ package utils
 			_verticalGap = savedVerticalGap;
 			_columnWidth = savedColumnWidth;
 			_rowHeight = savedRowHeight; 
+			trace("[measure] measuredWidth: "+measuredWidth+" measuredMinWidth: "+measuredMinWidth+" measuredHeight: "+measuredHeight+" measuredMinHeight: "+measuredMinHeight+" columnCount: "+savedColumnCount+" rowCount: "+savedRowCount);
 		}
 		
 		/**
@@ -1945,6 +1943,9 @@ package utils
 			// the content size includes the whole pixel.
 			layoutTarget.setContentSize(Math.ceil(_columnCount * (_columnWidth + _horizontalGap) - _horizontalGap) + hPadding,
 				Math.ceil(_rowCount * (_rowHeight + _verticalGap) - _verticalGap) + vPadding);
+			
+			trace("updateDisplayList: "+unscaledWidth+"x"+unscaledHeight);
+			trace("updateDisplayList: layoutTarget.setContentSize("+(Math.ceil(_columnCount*(_columnWidth+_horizontalGap)-_horizontalGap)+hPadding)+","+(Math.ceil(_rowCount*(_rowHeight+_verticalGap)-_verticalGap)+vPadding)+")");
 			
 			// Reset the cache
 			if (!useVirtualLayout)
