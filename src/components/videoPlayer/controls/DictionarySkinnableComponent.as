@@ -6,7 +6,7 @@ package components.videoPlayer.controls
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
 
-	import components.videoPlayer.IDisposableObject;
+	import components.IDisposableObject;
 
 	/**
    *  The DictionarySkinnableComponent class is the base class for all dictionary-based

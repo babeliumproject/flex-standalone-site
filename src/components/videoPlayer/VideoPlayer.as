@@ -31,6 +31,7 @@ package components.videoPlayer
 	import org.as3commons.logging.api.getLogger;
 	
 	import view.BusyIndicator;
+	import components.IDisposableObject;
 
 	public class VideoPlayer extends XMLSkinnableComponent
 	{

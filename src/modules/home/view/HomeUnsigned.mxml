@@ -2,21 +2,26 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%"
-		  creationComplete="onComplete()"
+		  xmlns:home="components.home.*" 
 		  xmlns:skins="skins.*"
-		  xmlns:videoPlayer="components.videoPlayer.*" xmlns:home="components.home.*" xmlns:view="modules.home.view.*">
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  creationComplete="onComplete(event)">
 
 	<fx:Script>
 		<![CDATA[
-			import modules.home.event.MessageOfTheDayEvent;
-			
 			import model.DataModel;
 			
+			import modules.home.event.MessageOfTheDayEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Text;
+			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
@@ -30,26 +35,73 @@
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
 
 			[Bindable]
-			private var selectedIndex:int=0;
+			public var selectedIndex:int=0;
 
-			[Bindable]
 			private var messageArray:ArrayCollection=new ArrayCollection();
 
 			//private var slideTimer:Timer;
 
 			private var staticMotd:StaticUnsignedMotd;
 
-
 			private var creationComplete:Boolean=false;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher, cw3:ChangeWatcher;
 
-			protected function onComplete():void
+			protected function onComplete(event:FlexEvent):void
 			{
+				var model:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(onUnsignedMessagesOfTheDayRetrieved,model,'messagesOfTheDayRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindProperty(appDescriptionViewStack,'selectedIndex',this,'selectedIndex',commitOnly,useWeakReference);
+				cw3=BindingUtils.bindProperty(appStepTabBar,'dataProvider',this, 'appDescriptionViewStack', commitOnly, useWeakReference);
+				
 				//slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
 				//slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
-				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, false, 0, true);
+				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, useCapture, priority, useWeakReference);
 				getUnsignedMessagesOfTheDay();
 				creationComplete=true;
 			}
+			
+			public function resetComponent():void{
+				if(creationComplete){
+					if(staticMotd && staticMotd.staticUnsignedMotdVp){
+						staticMotd.staticUnsignedMotdVp.resetComponent();
+						staticMotd.staticUnsignedMotdVp.autoPlay=false;
+					}
+					appDescriptionViewStack.removeAllElements();
+					latestExercises.resetComponent();
+					bestRatedExercises.resetComponent();
+				}
+				
+				//Clear associated data from the model
+				DataModel.getInstance().messagesOfTheDayData=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				if(staticMotd.staticUnsignedMotdVp){
+					staticMotd.staticUnsignedMotdVp.dispose();
+				}
+				
+				if(appDescriptionViewStack)
+					appDescriptionViewStack.removeEventListener(IndexChangedEvent.CHANGE,appDescriptionViewStack_changeHandler);
+				if(appStepTabBar)
+					appStepTabBar.removeEventListener(MouseEvent.CLICK, steptabbar_clickHandler);
+				
+				
+				ResourceManager.getInstance().removeEventListener(Event.CHANGE, localeChangeHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
 
 			/* We don't require timed slides at this moment
 			protected function onTimerTick(event:TimerEvent):void
@@ -71,10 +123,10 @@
 				new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
-			protected function set onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
+			protected function onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
 			{
 				messageArray=DataModel.getInstance().messagesOfTheDayData;
-				if (messageArray.length > 0)
+				if (messageArray && messageArray.length > 0)
 				{
 					//slideTimer.stop();
 					appDescriptionViewStack.removeAllChildren();
@@ -181,17 +233,7 @@
 			}
 			*/
 			
-			public function resetComponent():void{
-				if(creationComplete){
-					if(staticMotd && staticMotd.staticUnsignedMotdVp){
-						staticMotd.staticUnsignedMotdVp.resetComponent();
-						staticMotd.staticUnsignedMotdVp.autoPlay=false;
-					}
-					appDescriptionViewStack.removeAllElements();
-					latestExercises.resetComponent();
-					bestRatedExercises.resetComponent();
-				}
-			}
+			
 
 			protected function appDescriptionViewStack_changeHandler(event:IndexChangedEvent):void
 			{
@@ -201,9 +243,6 @@
 
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
-				destination="onUnsignedMessagesOfTheDayRetrieved"/>
 
 	<s:BorderContainer id="unsignedMotdBox"
 					   styleName="sectionInfoBox"
@@ -216,8 +255,8 @@
 
 		<s:HGroup width="100%"
 				  horizontalAlign="center">
-			<skins:StepTabBar styleName="paginationWhiteBlueButton"
-							  dataProvider="{appDescriptionViewStack}"
+			<skins:StepTabBar id="appStepTabBar"
+							  styleName="paginationWhiteBlueButton"
 							  click="steptabbar_clickHandler(event)"/>
 		</s:HGroup>
 
@@ -225,7 +264,6 @@
 				  paddingLeft="16"
 				  paddingRight="16"/>
 		<mx:ViewStack id="appDescriptionViewStack"
-					  selectedIndex="{selectedIndex}"
 					  change="appDescriptionViewStack_changeHandler(event)"
 					  width="100%"
 					  minWidth="1000"

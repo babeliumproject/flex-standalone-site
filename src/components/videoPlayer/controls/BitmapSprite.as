@@ -8,7 +8,7 @@ package components.videoPlayer.controls
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	
-	import components.videoPlayer.IDisposableObject;
+	import components.IDisposableObject;
 
 	public class BitmapSprite extends Sprite implements IDisposableObject
 	{

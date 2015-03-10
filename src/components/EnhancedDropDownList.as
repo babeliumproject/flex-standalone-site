@@ -25,7 +25,8 @@ package components
 		private var _sortItems:Boolean;
 		private var sortItemsChanged:Boolean;
 		
-		private var dataProviderSortingChanged:Boolean;
+		private var dataProviderLocaleChanged:Boolean;
+		private var dataProviderOrderChanged:Boolean;
 
 		private var _localeAwareDataProvider:IList;
 		private var _localeAwarePrompt:String;
@@ -59,15 +60,37 @@ package components
 				updateLocalizedPrompt();
 			}
 		}
+		
+		protected function findOldItemIndex(collection:ArrayCollection):int{
+			var itemIndex:int=-1;
+			if (previousSelectedItem && previousSelectedItem.hasOwnProperty(indexField))
+			{
+				var internalSortingValue:*=previousSelectedItem[indexField];
+				var item:Object=findItemByField(collection, indexField, internalSortingValue);
+				previousSelectedItem=null;
+				if (item)
+				{
+					itemIndex=collection.getItemIndex(item);
+				}
+			}
+			return itemIndex;
+		}
 
 		override public function set dataProvider(value:IList):void
 		{
 			if (_sortItems)
 			{
 				previousSelectedItem=selectedItem;
-				//trace("["+id+"] Previous selected item: "+ObjectUtil.toString(previousSelectedItem));
 				var sortedDataProvider:ArrayCollection=sortList(value);
+				var oldItemIndex:int=findOldItemIndex(sortedDataProvider);
+				if(oldItemIndex > -1){
+					selectedIndex=oldItemIndex;
+				}
+				
+				//set dataProvider calls invalidateProperties() in a parent class
+				//so our commitProperties flags should be set after this step is done
 				super.dataProvider=sortedDataProvider;
+				//dataProviderOrderChanged=true;
 			}
 			else
 			{
@@ -78,34 +101,17 @@ package components
 
 		override protected function commitProperties():void
 		{
-			//trace("[" + id + "] Commit properties");
 			super.commitProperties();
 			if (sortItemsChanged)
 			{
 				sortItemsChanged=false;
 				updateDataProvider(dataProvider);
 			}
-			if(dataProviderSortingChanged)
-			{
-				dataProviderSortingChanged=false;
-				if (previousSelectedItem && previousSelectedItem.hasOwnProperty(indexField))
-				{
-					var internalSortingValue:*=previousSelectedItem[indexField];
-					var item:Object=findItemByField(dataProvider, indexField, internalSortingValue);
-					//trace("[" + id + "] Previous selected item: " + ObjectUtil.toString(previousSelectedItem) + ".\n In the new collection is: " + ObjectUtil.toString(item));
-					previousSelectedItem=null;
-					if (item)
-					{
-						selectedItem=item;
-					}
-				}
-			}
-
+			
 			var widestItem:Object=getWidestItem();
 			if (widestItem)
 			{
-				this.typicalItem=widestItem;
-				invalidateDisplayList();
+				typicalItem=widestItem;
 			}
 		}
 
@@ -151,7 +157,7 @@ package components
 					iterator.moveNext();
 				}
 			}
-			dataProviderSortingChanged=true;
+			dataProviderLocaleChanged=true;
 			return localizedCollection;
 		}
 
@@ -166,13 +172,14 @@ package components
 				output=new Array();
 				
 				for each(i in input){
-					copy = ObjectUtil.clone(i);
+					copy = ObjectUtil.copy(i);
 					output.push(copy);
 				}
 				output.sort(this.localizedSorting);
 				sortedCollection=new ArrayCollection(output);
 			}
-			return sortedCollection;
+			//Make sure set dataProvider's deep equal doesn't compare the same reference
+			return ObjectUtil.copy(sortedCollection) as ArrayCollection;
 		}
 		
 		/*

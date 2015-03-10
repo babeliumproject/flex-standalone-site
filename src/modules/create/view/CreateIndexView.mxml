@@ -138,10 +138,12 @@
 					borderVisible="false"
 					itemRenderer="modules.create.view.LatestCreationItemRenderer"
 					changing="changeHandler(event)"
-					contentBackgroundAlpha="0">
+					contentBackgroundAlpha="0"
+					horizontalScrollPolicy="off"
+					verticalScrollPolicy="off">
 				<!-- height="{latestCreationsList.dataGroup.contentHeight}" -->
 				<s:layout>
-					<utils:ProperTileLayout/>
+					<utils:ProperTileLayout />
 				</s:layout>
 			</s:List>
 			<skins:IconButton id="seeAllCreations"

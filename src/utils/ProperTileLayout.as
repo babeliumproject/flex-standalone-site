@@ -294,6 +294,7 @@ package utils
 			
 			_requestedRowCount = value;
 			_rowCount = value;
+			trace("requestedRowCount: "+value);
 			invalidateTargetSizeAndDisplayList();
 		}    
 		
@@ -884,6 +885,7 @@ package utils
 					dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "horizontalGap", oldHorizontalGap, _horizontalGap));
 				if (oldVerticalGap != _verticalGap)
 					dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "verticalGap", oldVerticalGap, _verticalGap));
+				trace("dispatchEventsForActualValueChanges: oldRowCount: "+oldRowCount+" rowCount: "+_rowCount);
 			}
 			
 			oldColumnWidth   = _columnWidth;
@@ -1555,6 +1557,7 @@ package utils
 		 */
 		override public function measure():void
 		{
+			trace("measure");
 			// Save and restore these values so they're not modified 
 			// as a sideeffect of measure().
 			var savedColumnCount:int = _columnCount;
@@ -1590,7 +1593,8 @@ package utils
 			{
 				measuredHeight = Math.ceil(rowCount * (_rowHeight + _verticalGap) - _verticalGap);
 				// measured min size is guaranteed to have enough rows to fit all elements
-				measuredMinHeight = Math.ceil(_rowCount * (_rowHeight + _verticalGap) - _verticalGap);
+				//measuredMinHeight = Math.ceil(_rowCount * (_rowHeight + _verticalGap) - _verticalGap);
+				measuredMinHeight = _rowHeight;
 			}
 			_numElementsCached = -1;
 			
@@ -1852,7 +1856,7 @@ package utils
 			var layoutTarget:GroupBase = target;
 			if (!layoutTarget)
 				return;
-			
+			trace("updateDisplayList, calculateDisplayParameters");
 			calculateDisplayParameters(unscaledWidth, unscaledHeight);
 			if (useVirtualLayout)
 				updateVirtualLayout(unscaledWidth, unscaledHeight);  // re-calculateDisplayParameters()

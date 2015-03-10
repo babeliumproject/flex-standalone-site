@@ -14,11 +14,13 @@
 		<![CDATA[
 			import control.URLChangeEvent;
 			
-			import modules.IGroupInterface;
+			import modules.IPinnedGroupInterface;
 			
 			import control.URLManager;
 			
 			import model.DataModel;
+			
+			import modules.IGroupInterface;
 			
 			import mx.events.FlexEvent;
 			
@@ -26,13 +28,9 @@
 		
 			public var modulename:String = 'home';
 			
-			[Bindable]
+
 			private var _urlmanager:URLManager=URLManager.getInstance();
-			
-			[Bindable]
 			private var _model:DataModel=DataModel.getInstance();
-			
-			[Bindable]
 			private var _viewstackIndex:uint;
 			
 			private var _moduleController:Object;
@@ -66,6 +64,7 @@
 				_moduleController = null;
 				_model = null;
 				resetViews();
+				unpinViews();
 			}
 			
 			public function resetViews():void{
@@ -76,9 +75,25 @@
 					{
 						if (nc.deferredContentCreated)
 						{
-							var v:*=nc.getElementAt(0) as IGroupInterface;
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
 							if (v)
 								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function unpinViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.unpinGroup();
 						}
 					}
 				}
@@ -103,7 +118,8 @@
 			}
 			
 			protected function actionIndex():void{
-				
+				_viewstackIndex=INDEX;
+				moduleViewstack.selectedIndex=_viewstackIndex;
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void
@@ -136,7 +152,6 @@
 	</fx:Script>
 	
 	<mx:ViewStack id="moduleViewstack"
-				  selectedIndex="{ _viewstackIndex }"
 				  resizeToContent="true"
 				  width="100%"
 				  height="100%">

@@ -1,4 +1,4 @@
-package components.videoPlayer
+package components
 {
 	public interface IDisposableObject
 	{

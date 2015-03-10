@@ -313,8 +313,7 @@ package model
 		//Homepage module data
 		[Bindable]
 		public var messagesOfTheDayRetrieved:Boolean;
-		[Bindable]
-		public var messagesOfTheDayData:ArrayCollection=new ArrayCollection();
+		public var messagesOfTheDayData:ArrayCollection;
 
 		[Bindable]
 		public var userLatestReceivedAssessmentsRetrieved:Boolean;
