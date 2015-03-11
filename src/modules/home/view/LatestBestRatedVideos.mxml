@@ -3,16 +3,18 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)"
+		  implements="components.IDisposableObject">
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 			
-			import modules.home.event.HomepageEvent;
-			//import events.ViewChangeEvent;
-			
 			import model.DataModel;
 			
+			import modules.home.event.HomepageEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
@@ -20,14 +22,41 @@
 			
 			import vo.ExerciseVO;
 
-			[Bindable]
 			private var _dataProvider:ArrayCollection;
 			
 			private var creationComplete:Boolean;
 			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+			
 			protected function onComplete(event:FlexEvent):void{
 				creationComplete=true;
+				
+				var model:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(handleSignedInBestRatedVideos,model,'signedInBestRatedVideosRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindSetter(retrieveBestRatedVideos,model,'isLoggedIn',commitOnly,useWeakReference);
+				cw3=BindingUtils.bindProperty(titleUnderline,'width',latestBestRatedVideosTitle,'width',commitOnly,useWeakReference);
+				
 				new HomepageEvent(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN).dispatch();
+			}
+			
+			public function resetComponent():void{
+				
+				DataModel.getInstance().signedInBestRatedVideos=null;
+			}
+			
+			public function dispose():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				if(latestBestRatedDataGroup)
+					latestBestRatedDataGroup.removeEventListener(IndexChangeEvent.CHANGE, latestBestRatedDataGroup_changeHandler);
+				
+				removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);	
 			}
 
 			protected function latestBestRatedDataGroup_changeHandler(event:IndexChangeEvent):void
@@ -36,28 +65,20 @@
 				URLManager.getInstance().redirect('/exercises/view/' + item.exercisecode);
 			}
 
-			protected function set handleSignedInBestRatedVideos(value:Boolean):void
+			protected function handleSignedInBestRatedVideos(value:Boolean):void
 			{
-				var sibrvDataprovider:ArrayCollection=DataModel.getInstance().signedInBestRatedVideos;
-				_dataProvider=sibrvDataprovider;
+				_dataProvider=DataModel.getInstance().signedInBestRatedVideos;
+				latestBestRatedDataGroup.dataProvider=_dataProvider;
 			}
-
-			protected function set retrieveBestRatedVideos(value:Boolean):void
+			
+			protected function retrieveBestRatedVideos(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn == true)
 					new HomepageEvent(HomepageEvent.BEST_RATED_VIDEOS_SIGNED_IN).dispatch();
 			}
 			
-			public function resetComponent():void{
-				//_dataProvider=null;
-			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{DataModel.getInstance().signedInBestRatedVideosRetrieved}"
-				destination="handleSignedInBestRatedVideos"/>
-	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
-				destination="retrieveBestRatedVideos"/>
 
 	<s:VGroup width="100%"
 			  paddingTop="16"
@@ -67,7 +88,7 @@
 		<s:Label id="latestBestRatedVideosTitle"
 				 text="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}"
 				 styleName="sectionTitleLabel"/>
-		<s:Line width="{latestBestRatedVideosTitle.width}">
+		<s:Line id="titleUnderline">
 			<s:stroke>
 				<mx:SolidColorStroke weight="3"
 									 color="#268caa"/>
@@ -80,8 +101,7 @@
 				change="latestBestRatedDataGroup_changeHandler(event)"
 				borderVisible="false"
 				skinClass="skins.TransparentBgListSkin"
-				itemRenderer="modules.exercise.view.ExerciseItemRenderer"
-				dataProvider="{_dataProvider}">
+				itemRenderer="modules.exercise.view.ExerciseItemRenderer">
 			<s:layout>
 				<s:TileLayout columnWidth="182"
 							  rowHeight="225"

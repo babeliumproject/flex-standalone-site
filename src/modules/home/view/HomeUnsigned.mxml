@@ -11,6 +11,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import components.IDisposableObject;
+			
 			import model.DataModel;
 			
 			import modules.home.event.MessageOfTheDayEvent;
@@ -21,6 +23,7 @@
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Text;
+			import mx.core.Container;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.resources.ResourceManager;
@@ -31,13 +34,14 @@
 			
 			import spark.components.Label;
 			import spark.components.NavigatorContent;
+			import spark.primitives.BitmapImage;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
 
 			[Bindable]
 			public var selectedIndex:int=0;
 
-			private var messageArray:ArrayCollection=new ArrayCollection();
+			private var messageArray:ArrayCollection;
 
 			//private var slideTimer:Timer;
 
@@ -68,11 +72,8 @@
 			
 			public function resetComponent():void{
 				if(creationComplete){
-					if(staticMotd && staticMotd.staticUnsignedMotdVp){
-						staticMotd.staticUnsignedMotdVp.resetComponent();
-						staticMotd.staticUnsignedMotdVp.autoPlay=false;
-					}
-					appDescriptionViewStack.removeAllElements();
+					staticMotd.resetComponent();
+					disposeAndEmptyContainer(appDescriptionViewStack);
 					latestExercises.resetComponent();
 					bestRatedExercises.resetComponent();
 				}
@@ -87,9 +88,10 @@
 				if(cw3) cw3.unwatch();
 				cw1=cw2=cw3=null;
 				
-				if(staticMotd.staticUnsignedMotdVp){
-					staticMotd.staticUnsignedMotdVp.dispose();
-				}
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				
+				latestExercises.dispose();
+				bestRatedExercises.dispose();
 				
 				if(appDescriptionViewStack)
 					appDescriptionViewStack.removeEventListener(IndexChangedEvent.CHANGE,appDescriptionViewStack_changeHandler);
@@ -102,6 +104,22 @@
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
 			}
 			
+			protected function disposeAndEmptyContainer(value:Container):void{
+				if(value){
+					//First run a dispose process in the children that support it
+					var children:Array=value.getChildren();
+					for each (var nc:NavigatorContent in children)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IDisposableObject;
+							if (v) v.dispose();
+						}
+					}
+					//Remove all the elements (with previous step they "should" be selectable for GC)
+					value.removeAllElements();
+				}
+			}
 
 			/* We don't require timed slides at this moment
 			protected function onTimerTick(event:TimerEvent):void
@@ -129,7 +147,7 @@
 				if (messageArray && messageArray.length > 0)
 				{
 					//slideTimer.stop();
-					appDescriptionViewStack.removeAllChildren();
+					disposeAndEmptyContainer(appDescriptionViewStack);
 					callLater(addMessagesToContainer);
 				}
 				else
@@ -162,11 +180,10 @@
 
 			protected function generateMessageBox(messageData:Object):HGroup
 			{
-				var messageImage:Image=new Image();
+				var messageImage:BitmapImage=new BitmapImage();
 				messageImage.source=messageData.resourceUrl;
 				messageImage.width=240;
 				messageImage.height=180;
-				messageImage.scaleContent=true;
 
 				var titleLabel:Label=new Label();
 				titleLabel.text=messageData.title;
@@ -237,8 +254,7 @@
 
 			protected function appDescriptionViewStack_changeHandler(event:IndexChangedEvent):void
 			{
-				staticMotd.staticUnsignedMotdVp.resetComponent();
-				staticMotd.staticUnsignedMotdVp.autoPlay=false;
+				staticMotd.resetComponent();
 			}
 
 		]]>

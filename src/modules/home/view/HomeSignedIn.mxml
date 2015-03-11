@@ -2,43 +2,119 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="100%"
-		  creationComplete="onComplete()"
 		  xmlns:home="components.home.*"
-		  xmlns:skins="skins.*" xmlns:view="modules.home.view.*">
+		  xmlns:skins="skins.*"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  creationComplete="onComplete()">
 
 	<fx:Script>
 		<![CDATA[
-			import modules.home.event.MessageOfTheDayEvent;
+			import components.IDisposableObject;
 			
 			import model.DataModel;
 			
+			import modules.home.event.MessageOfTheDayEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
 			import mx.controls.Text;
+			import mx.core.Container;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
 			import spark.components.Button;
 			import spark.components.NavigatorContent;
+			import spark.primitives.BitmapImage;
 
 			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
 
 			[Bindable]
-			private var selectedIndex:int=0;
+			public var selectedIndex:int=0;
 
 			private var slideTimer:Timer;
+			private var messageArray:ArrayCollection;
+			
+			private var staticSignedMOTD:StaticSignedInMotd;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
 
-			[Bindable]
-			private var messageArray:ArrayCollection=new ArrayCollection();
-
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher, cw3:ChangeWatcher;
+			
 			protected function onComplete():void
 			{
-				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, false, 0, true);
+				var model:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(onSignedInMessagesOfTheDayRetrieved,model,'messagedOfTheDayRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindProperty(homeTabBar,'dataProvider',this, 'myHomeViewStack', commitOnly, useWeakReference);
+				cw3=BindingUtils.bindProperty(appDescriptionViewStack,'selectedIndex',this,'selectedIndex',commitOnly,useWeakReference);
+					
+				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, useCapture, priority, useWeakReference);
 				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
-				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick, false, 0, true);
+				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick, useCapture, priority, useWeakReference);
 				getSignedInMessagesOfTheDay();
+			}
+			
+			public function resetComponent():void{
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				
+				if (myHomeViewStack)
+				{
+					var views:Array=myHomeViewStack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as Object;
+							if (v) v.resetComponent();
+						}
+					}
+				}
+				
+				//Reset the related data in the model
+				DataModel.getInstance().messagesOfTheDayData=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				disposeAndEmptyContainer(myHomeViewStack);
+				
+				
+				if(slideTimer){
+					slideTimer.stop();
+					slideTimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
+				}
+				
+				ResourceManager.getInstance().removeEventListener(Event.CHANGE,localeChangeHandler);
+				removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			protected function disposeAndEmptyContainer(value:Container):void{
+				if(value){
+					//First run a dispose process in the children that support it
+					var children:Array=value.getChildren();
+					for each (var nc:NavigatorContent in children)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IDisposableObject;
+							if (v) v.dispose();
+						}
+					}
+					//Remove all the elements (with previous step they "should" be selectable for GC)
+					value.removeAllElements();
+				}
 			}
 
 			protected function onTimerTick(event:TimerEvent):void
@@ -60,22 +136,23 @@
 					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
 			}
 
-			protected function set onSignedInMessagesOfTheDayRetrieved(value:Boolean):void
+			protected function onSignedInMessagesOfTheDayRetrieved(value:Boolean):void
 			{
 				if (DataModel.getInstance().isLoggedIn)
 				{
-
 					messageArray=DataModel.getInstance().messagesOfTheDayData;
-					if (messageArray.length > 0)
+					if (messageArray && messageArray.length > 0)
 					{
-						slideTimer.stop();
+						if(slideTimer && slideTimer.running)
+							slideTimer.stop();
 						appDescriptionViewStack.removeAllChildren();
 						callLater(addMessagesToContainer);
 					}
 					else
 					{
 						var navc:NavigatorContent=new NavigatorContent();
-						navc.addElement(new StaticSignedInMotd());
+						staticSignedMOTD=new StaticSignedInMotd();
+						navc.addElement(staticSignedMOTD);
 						appDescriptionViewStack.addChild(navc);
 					}
 				}
@@ -84,7 +161,8 @@
 			protected function addMessagesToContainer():void
 			{
 				var navcs:NavigatorContent=new NavigatorContent();
-				navcs.addElement(new StaticSignedInMotd());
+				staticSignedMOTD=new StaticSignedInMotd();
+				navcs.addElement(staticSignedMOTD);
 				appDescriptionViewStack.addChild(navcs);
 				for each (var messageData:Object in messageArray)
 				{
@@ -98,12 +176,10 @@
 
 			protected function generateMessageBox(messageData:Object):HGroup
 			{
-
-				var messageImage:Image=new Image();
+				var messageImage:BitmapImage=new BitmapImage();
 				messageImage.source=messageData.resourceUrl;
 				messageImage.width=240;
 				messageImage.height=180;
-				messageImage.scaleContent=true;
 
 				var titleLabel:Label=new Label();
 				titleLabel.text=messageData.title;
@@ -142,28 +218,9 @@
 				getSignedInMessagesOfTheDay();
 			}
 			
-			public function resetComponent():void{
-				appDescriptionViewStack.removeAllElements();
-				
-				if (myHomeViewStack)
-				{
-					var views:Array=myHomeViewStack.getChildren();
-					for each (var nc:NavigatorContent in views)
-					{
-						if (nc.deferredContentCreated)
-						{
-							var v:*=nc.getElementAt(0) as Object;
-							if (v) v.resetComponent();
-						}
-					}
-				}
-			}
-			
 		]]>
 	</fx:Script>
 
-	<fx:Binding source="{DataModel.getInstance().messagesOfTheDayRetrieved}"
-				destination="onSignedInMessagesOfTheDayRetrieved"/>
 
 	<s:BorderContainer id="signedMotdBox"
 					   styleName="sectionInfoBox"
@@ -176,7 +233,6 @@
 				  paddingLeft="16"
 				  paddingRight="16"/>
 		<mx:ViewStack id="appDescriptionViewStack"
-					  selectedIndex="{selectedIndex}"
 					  width="100%"
 					  resizeToContent="true"
 					  paddingLeft="16"
@@ -188,7 +244,7 @@
 				  verticalAlign="bottom"
 				  gap="0">
 			<skins:HorizontalSeparatorLine width="100%"/>
-			<s:TabBar dataProvider="{myHomeViewStack}"
+			<s:TabBar id="homeTabBar"
 					  skinClass="skins.AccountTabBarSkin"
 					  cornerRadius="8"/>
 			<skins:HorizontalSeparatorLine width="16"/>

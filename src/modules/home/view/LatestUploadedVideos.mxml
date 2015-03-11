@@ -3,7 +3,8 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  width="100%"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)"
+		  implements="components.IDisposableObject">
 
 	<fx:Script>
 		<![CDATA[
@@ -16,6 +17,7 @@
 			import modules.home.event.HomepageEvent;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
@@ -23,14 +25,42 @@
 			
 			import vo.ExerciseVO;
 
-			[Bindable]
 			private var _dataProvider:ArrayCollection;
 			
 			private var creationComplete:Boolean;
 			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+			
 			protected function onComplete(event:FlexEvent):void{
+				
+				var model:DataModel=DataModel.getInstance();
+				//cw1=BindingUtils.bindSetter(retrieveLatestUploadedVideos,model,'isLoggedIn',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindSetter(handleSignedInLatestUploadedVideos,model,'signedInLatestUploadedVideosRetrieved',commitOnly,useWeakReference);
+				cw3=BindingUtils.bindProperty(titleUnderline,'width',latestUploadedVideosTitle,'width',commitOnly,useWeakReference);
+				
 				creationComplete=true;
 				new HomepageEvent(HomepageEvent.LATEST_UPLOADED_VIDEOS).dispatch();
+			}
+			
+			public function resetComponent():void{
+				
+				
+				DataModel.getInstance().signedInLatestUploadedVideos=null;
+			}
+			
+			public function dispose():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				if(latestUploadedVideosDataGroup)
+					latestUploadedVideosDataGroup.removeEventListener(IndexChangeEvent.CHANGE,latestUploadedVideosDataGroup_changeHandler);
+				
+				removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
 			}
 
 			protected function retrieveLatestUploadedVideos(value:Boolean):void
@@ -41,10 +71,10 @@
 				}
 			}
 
-			protected function set handleSignedInLatestUploadedVideos(value:Boolean):void
+			protected function handleSignedInLatestUploadedVideos(value:Boolean):void
 			{
-				var siluvDataprovider:ArrayCollection=DataModel.getInstance().signedInLatestUploadedVideos;
-				_dataProvider=siluvDataprovider;
+				_dataProvider=DataModel.getInstance().signedInLatestUploadedVideos;
+				latestUploadedVideosDataGroup.dataProvider=_dataProvider;
 			}
 
 			protected function latestUploadedVideosDataGroup_changeHandler(event:Event):void
@@ -53,17 +83,9 @@
 				URLManager.getInstance().redirect('/exercises/view/' + item.exercisecode);
 			}
 			
-			public function resetComponent():void{
-				//_dataProvider=null;
-			}
+			
 		]]>
 	</fx:Script>
-
-	<!--
-	<fx:Binding source="{DataModel.getInstance().isLoggedIn}"
-				destination="retrieveLatestUploadedVideos"/>-->
-	<fx:Binding source="{DataModel.getInstance().signedInLatestUploadedVideosRetrieved}"
-				destination="handleSignedInLatestUploadedVideos"/>
 
 	<s:VGroup width="100%"
 			  paddingTop="16"
@@ -73,7 +95,7 @@
 		<s:Label id="latestUploadedVideosTitle"
 				 text="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}"
 				 styleName="sectionTitleLabel"/>
-		<s:Line width="{latestUploadedVideosTitle.width}">
+		<s:Line id="titleUnderline">
 			<s:stroke>
 				<mx:SolidColorStroke weight="3"
 									 color="#268caa"/>
@@ -85,8 +107,7 @@
 				change="latestUploadedVideosDataGroup_changeHandler(event)"
 				borderVisible="false"
 				skinClass="skins.TransparentBgListSkin"
-				itemRenderer="modules.exercise.view.ExerciseItemRenderer"
-				dataProvider="{_dataProvider}">
+				itemRenderer="modules.exercise.view.ExerciseItemRenderer">
 			<s:layout>
 				<s:TileLayout columnWidth="182"
 							  rowHeight="225"

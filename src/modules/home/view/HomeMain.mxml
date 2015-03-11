@@ -51,6 +51,11 @@
 				if(cw1) cw1.unwatch();
 				cw1=null;
 				
+				if(homeVisitor)
+					homeVisitor.unpinComponent();
+				if(homeUser)
+					homeUser.unpinComponent();
+				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
 			}
 

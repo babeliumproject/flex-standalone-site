@@ -10,12 +10,22 @@
 		<![CDATA[
 			import control.URLManager;
 
-			//import events.ViewChangeEvent;
-
 			protected function homeButtons_clickHandler(event:MouseEvent, fragment:String):void
 			{
-				//new ViewChangeEvent(destination).dispatch();
 				URLManager.getInstance().redirect(fragment);
+			}
+			
+			public function resetComponent():void{
+				
+			}
+			
+			public function dispose():void{
+				if(homeUploadButton)
+					homeUploadButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
+				if(homeSubtitleButton)
+					homeSubtitleButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
+				if(homePracticeButton)
+					homePracticeButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
 			}
 		]]>
 	</fx:Script>

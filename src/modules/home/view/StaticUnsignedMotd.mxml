@@ -5,7 +5,8 @@
 		  xmlns:videoPlayer="components.videoPlayer.*"
 		  horizontalAlign="center"
 		  width="100%"
-		  creationComplete="hgroup1_creationCompleteHandler(event)">
+		  creationComplete="hgroup1_creationCompleteHandler(event)"
+		  implements="components.IDisposableObject">
 
 	<fx:Script>
 		<![CDATA[
@@ -16,6 +17,25 @@
 			import mx.events.FlexEvent;
 
 			private const INTRO_VIDEO_URL:String='intro.flv';
+			
+			protected function hgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var param:Object=new Object();
+				param.netConnectionUrl=DataModel.getInstance().defaultNetConnectionUrl;
+				param.mediaUrl=INTRO_VIDEO_URL;
+				staticUnsignedMotdVp.loadVideoByUrl(param);
+			}
+			
+			public function resetComponent():void{
+				staticUnsignedMotdVp.resetComponent();
+				staticUnsignedMotdVp.autoPlay=false;
+			}
+			
+			public function dispose():void{
+				staticUnsignedMotdVp.dispose();
+				registerButton.removeEventListener(MouseEvent.CLICK,registerButton_clickHandler);
+				removeEventListener(FlexEvent.CREATION_COMPLETE,hgroup1_creationCompleteHandler);
+			}
 
 			protected function registerButton_clickHandler(event:MouseEvent):void
 			{
@@ -23,14 +43,7 @@
 				URLManager.getInstance().redirect('/signup');
 			}
 
-			protected function hgroup1_creationCompleteHandler(event:FlexEvent):void
-			{
-				removeEventListener(FlexEvent.CREATION_COMPLETE, hgroup1_creationCompleteHandler);
-				var param:Object=new Object();
-				param.netConnectionUrl=DataModel.getInstance().defaultNetConnectionUrl;
-				param.mediaUrl=INTRO_VIDEO_URL;
-				staticUnsignedMotdVp.loadVideoByUrl(param);
-			}
+			
 		]]>
 	</fx:Script>
 
