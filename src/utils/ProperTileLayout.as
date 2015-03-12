@@ -294,7 +294,6 @@ package utils
 			
 			_requestedRowCount = value;
 			_rowCount = value;
-			trace("requestedRowCount: "+value);
 			invalidateTargetSizeAndDisplayList();
 		}    
 		
@@ -885,7 +884,6 @@ package utils
 					dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "horizontalGap", oldHorizontalGap, _horizontalGap));
 				if (oldVerticalGap != _verticalGap)
 					dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "verticalGap", oldVerticalGap, _verticalGap));
-				trace("dispatchEventsForActualValueChanges: oldRowCount: "+oldRowCount+" rowCount: "+_rowCount);
 			}
 			
 			oldColumnWidth   = _columnWidth;
@@ -916,10 +914,10 @@ package utils
 		{
 			var widthMinusPadding:Number = width - paddingLeft - paddingRight;
 			var heightMinusPadding:Number = height - paddingTop - paddingBottom;
-			trace("Update actual values: "+width+"x"+height);
 			
 			// First, figure the tile size
 			calculateTileSize();
+			
 			
 			// Second, figure out number of rows/columns
 			var elementCount:int = calculateElementCount();
@@ -1089,7 +1087,6 @@ package utils
 				_rowCount = Math.max(1, Math.ceil(elementCount / _columnCount));
 			if (-1 == _columnCount)
 				_columnCount = Math.max(1, Math.ceil(elementCount / _rowCount));
-			trace("[calculateColumnAndRowCount] width: "+width+" height: "+height+" columnCount: "+_columnCount+" rowCount: "+_rowCount+" rowHeight: "+rowHeight+" columnWidth: "+columnWidth+" elementCount: "+elementCount);
 		}
 		
 		/**
@@ -1557,7 +1554,6 @@ package utils
 		 */
 		override public function measure():void
 		{
-			trace("measure");
 			// Save and restore these values so they're not modified 
 			// as a sideeffect of measure().
 			var savedColumnCount:int = _columnCount;
@@ -1612,7 +1608,6 @@ package utils
 			_verticalGap = savedVerticalGap;
 			_columnWidth = savedColumnWidth;
 			_rowHeight = savedRowHeight; 
-			trace("[measure] measuredWidth: "+measuredWidth+" measuredMinWidth: "+measuredMinWidth+" measuredHeight: "+measuredHeight+" measuredMinHeight: "+measuredMinHeight+" columnCount: "+savedColumnCount+" rowCount: "+savedRowCount);
 		}
 		
 		/**
@@ -1856,7 +1851,10 @@ package utils
 			var layoutTarget:GroupBase = target;
 			if (!layoutTarget)
 				return;
-			trace("updateDisplayList, calculateDisplayParameters");
+			
+			var savedRowCount:int=_rowCount;
+			var savedColumnCount:int=_columnCount;
+			
 			calculateDisplayParameters(unscaledWidth, unscaledHeight);
 			if (useVirtualLayout)
 				updateVirtualLayout(unscaledWidth, unscaledHeight);  // re-calculateDisplayParameters()
@@ -1948,9 +1946,6 @@ package utils
 			layoutTarget.setContentSize(Math.ceil(_columnCount * (_columnWidth + _horizontalGap) - _horizontalGap) + hPadding,
 				Math.ceil(_rowCount * (_rowHeight + _verticalGap) - _verticalGap) + vPadding);
 			
-			trace("updateDisplayList: "+unscaledWidth+"x"+unscaledHeight);
-			trace("updateDisplayList: layoutTarget.setContentSize("+(Math.ceil(_columnCount*(_columnWidth+_horizontalGap)-_horizontalGap)+hPadding)+","+(Math.ceil(_rowCount*(_rowHeight+_verticalGap)-_verticalGap)+vPadding)+")");
-			
 			// Reset the cache
 			if (!useVirtualLayout)
 				_tileWidthCached = _tileHeightCached = NaN;
@@ -1959,6 +1954,14 @@ package utils
 			// No getVirtualElementAt() during measure, see calculateVirtualTileSize()
 			if (useVirtualLayout)
 				visibleStartIndex = visibleEndIndex = -1;        
+			
+			// BUG-FIX for incorrectly measured height in containers whose dimensions are not explicitly set
+			if(savedRowCount != _rowCount || savedColumnCount != _columnCount){
+				var actualHeight:int=Math.ceil(_rowCount * (_rowHeight + _verticalGap) - _verticalGap) + vPadding;
+				var actualWidth:int=Math.ceil(_columnCount * (_columnWidth + _horizontalGap) - _horizontalGap) + hPadding;
+				layoutTarget.explicitHeight=actualHeight;
+				//layoutTarget.explicitWidth=actualWidth;
+			}
 			
 			// If actual values have chnaged, notify listeners
 			dispatchEventsForActualValueChanges();

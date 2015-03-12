@@ -10,55 +10,60 @@
 		  paddingBottom="16"
 		  horizontalAlign="center"
 		  implements="modules.IPinnedGroupInterface"
-		  creationComplete="onComplete(event)" xmlns:utils="utils.*">
+		  creationComplete="onComplete(event)"
+		  xmlns:utils="utils.*">
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
-			
+
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.TileLayout;
 
 			protected var latestCreationsData:ArrayCollection;
-			
+
 			private var _model:DataModel=DataModel.getInstance();
-			
+
 			private var commitOnly:Boolean=false;
 			private var useWeakReference:Boolean=false;
-			
+
 			private var cw1:ChangeWatcher;
-			
-			public function onComplete(event:FlexEvent):void{
-				
-				cw1=BindingUtils.bindSetter(latestCreationsRetrieved,_model,'latestCreationsRetrieved',commitOnly,useWeakReference);
+
+			public function onComplete(event:FlexEvent):void
+			{
+
+				cw1=BindingUtils.bindSetter(latestCreationsRetrieved, _model, 'latestCreationsRetrieved', commitOnly, useWeakReference);
 			}
-			
-			public function resetGroup():void{
+
+			public function resetGroup():void
+			{
 				latestCreationsList.dataProvider=null;
 				latestCreationsData=null;
-				
+
 				//Reset the related model data
 				_model.latestCreations=null;
 			}
-			
-			public function unpinGroup():void{
-				if(cw1) cw1.unwatch();
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
 				cw1=null;
-				
+
 				addnewexercise.removeEventListener(MouseEvent.CLICK, addNewExerciseHandler);
 				latestCreationsList.removeEventListener(IndexChangeEvent.CHANGING, changeHandler);
 				seeAllCreations.removeEventListener(MouseEvent.CLICK, manageExercisesHandler);
-				
-				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
 			public function latestCreationsRetrieved(value:Boolean):void
@@ -67,30 +72,23 @@
 				{
 					latestCreationsData=DataModel.getInstance().latestCreations;
 					latestCreationsList.dataProvider=latestCreationsData;
-					
-					//refreshLayout();
-					
+
 					nocreations.includeInLayout=false;
 					nocreations.visible=false;
 					latestCreationListGroup.includeInLayout=true;
 					latestCreationListGroup.visible=true;
-				} else {
+				}
+				else
+				{
 					nocreations.includeInLayout=true;
 					nocreations.visible=true;
 					latestCreationListGroup.includeInLayout=false;
 					latestCreationListGroup.visible=false;
 				}
 			}
-			
-			private function refreshLayout():void
+
+			private function addNewExerciseHandler(event:MouseEvent):void
 			{
-				var tile:TileLayout=new TileLayout();
-				
-				latestCreationsList.layout=tile;
-				latestCreationsList.percentWidth=100;
-			}
-			
-			private function addNewExerciseHandler(event:MouseEvent):void{
 				URLManager.getInstance().redirect('/create/add')
 			}
 
@@ -102,14 +100,16 @@
 					URLManager.getInstance().redirect('/create/edit/' + item.exercisecode + '?s=1');
 				}
 			}
-			
-			private function manageExercisesHandler(event:MouseEvent):void{
+
+			private function manageExercisesHandler(event:MouseEvent):void
+			{
 				URLManager.getInstance().redirect('/create/manage')
 			}
 		]]>
 	</fx:Script>
 
-	<s:VGroup paddingTop="16" paddingBottom="16">
+	<s:VGroup paddingTop="16"
+			  paddingBottom="16">
 		<s:Button id="addnewexercise"
 				  label="{ResourceManager.getInstance().getString('myResources','CREATE_NEW_EXERCISE')}"
 				  click="{addNewExerciseHandler(event)}"
@@ -125,7 +125,10 @@
 			 width="100%"
 			 minHeight="0">
 		<s:layout>
-			<s:VerticalLayout paddingBottom="16" paddingLeft="16" paddingRight="16" paddingTop="16"/>
+			<s:VerticalLayout paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"
+							  paddingTop="16"/>
 		</s:layout>
 		<s:Label id="nocreations"
 				 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_CREATED_ANY_EXERCISE_YET')}"/>
@@ -138,18 +141,16 @@
 					borderVisible="false"
 					itemRenderer="modules.create.view.LatestCreationItemRenderer"
 					changing="changeHandler(event)"
-					contentBackgroundAlpha="0"
-					horizontalScrollPolicy="off"
-					verticalScrollPolicy="off">
-				<!-- height="{latestCreationsList.dataGroup.contentHeight}" -->
+					contentBackgroundAlpha="0">
 				<s:layout>
-					<utils:ProperTileLayout />
+					<utils:ProperTileLayout/>
 				</s:layout>
 			</s:List>
-			<skins:IconButton id="seeAllCreations"
-							  label="{ResourceManager.getInstance().getString('myResources','SEE_ALL_MY_CREATIONS')}"
-							  click="{manageExercisesHandler(event)}"
-							  styleName="btn-default"/>
+			<s:Button id="seeAllCreations"
+					  label="{ResourceManager.getInstance().getString('myResources','SEE_ALL_MY_CREATIONS')}"
+					  click="{manageExercisesHandler(event)}"
+					  styleName="btn-default"
+					  buttonMode="true"/>
 		</s:VGroup>
 
 	</s:Panel>

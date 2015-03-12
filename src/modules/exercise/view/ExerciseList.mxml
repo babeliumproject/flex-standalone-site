@@ -13,13 +13,13 @@
 		  implements="modules.IPinnedGroupInterface"
 		  width="100%"
 		  preinitialize="onPreinitialize(event)"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)" xmlns:utils="utils.*">
 
 	<fx:Script>
 		<![CDATA[
 			import components.main.VideoPaginator;
 			
-			import utils.QueryUtils;
+			import utils.ProperTileLayout;
 			
 			import control.URLManager;
 			
@@ -36,6 +36,8 @@
 			import spark.components.Button;
 			import spark.events.IndexChangeEvent;
 			import spark.layouts.TileLayout;
+			
+			import utils.QueryUtils;
 
 			public static const LANGUAGE_PRACTICE:int=0;
 			public static const OTHER:int=5;
@@ -309,12 +311,12 @@
 				}
 				exerciseListDataGroup.dataProvider=dataTemp;
 
-				refreshLayout();
+				//refreshLayout();
 			}
 
 			private function refreshLayout():void
 			{
-				var tile:TileLayout=new TileLayout();
+				var tile:ProperTileLayout=new ProperTileLayout();
 				tile.columnWidth=182;
 				tile.rowHeight=255;
 				tile.horizontalGap=20;
@@ -498,6 +500,9 @@
 					borderVisible="false"
 					skinClass="skins.TransparentBgListSkin"
 					itemRenderer="modules.exercise.view.ExerciseItemRenderer">
+				<s:layout>
+					<utils:ProperTileLayout columnWidth="182" rowHeight="255" horizontalGap="20" verticalGap="20"/>
+				</s:layout>
 			</s:List>
 
 			<s:HGroup id="paginationBox"
