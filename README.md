@@ -266,7 +266,7 @@ mysql> SOURCE {LOCAL_REPOSITORY_DIR}/src/resources/sql/full-minimum_data.sql;
 
 You can also add some example data, for which you can grab multimedia resources at: [Babelium Sample files][]
 
-[Babelium Sample files]: http://code.google.com/p/babeliumproject/downloads/detail?name=babelium_sample_resources.tar.gz&can=2&q=#makechanges
+[Babelium Sample files]: http://blog.babeliumproject.com/?attachment_id=466
 
 ```sh
 mysql -u {BABELIUM_DB_USER} -p
