@@ -129,7 +129,6 @@
 
 				BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
 				BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
-				BindingUtils.bindSetter(exerciseRecording, model, "recordingExercise");
 				BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
 			}
 
@@ -223,14 +222,6 @@
 					blinkCredits();
 					DataModel.getInstance().creditUpdateRetrieved=false;
 				}
-			}
-
-			private function exerciseRecording(value:Boolean):void
-			{
-				var status:Boolean=!DataModel.getInstance().recordingExercise;
-				signInButton.enabled=status;
-				signUpButton.enabled=status;
-				signOutButton.enabled=status;
 			}
 
 			private function onAccountActivation(flag:Boolean):void
