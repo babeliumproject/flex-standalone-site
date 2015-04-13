@@ -29,11 +29,19 @@
 						  buttonMode="true"
 						  click="{URLManager.getInstance().redirect('/home')}"/>
 			</s:HGroup>
-			<s:ToggleButton label="{resourceManager.getString('myResources', 'MY_PROFILE')}"
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'MY_ACTIVITY')}"
 							includeInLayout="{DataModel.getInstance().isLoggedIn}"
 							visible="{DataModel.getInstance().isLoggedIn}"
-							selected="{_urlManager.moduleName == 'profile'}"
-							click="changeView('/profile',event)"
+							selected="{_urlManager.moduleName == 'activity'}"
+							click="changeView('/activity',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'COURSES')}"
+							includeInLayout="{DataModel.getInstance().isLoggedIn}"
+							visible="{DataModel.getInstance().isLoggedIn}"
+							selected="{_urlManager.moduleName == 'course'}"
+							click="changeView('/course',event)"
 							height="100%"
 							skinClass="skins.NavigationToggleButton"
 							buttonMode="true"/>

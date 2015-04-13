@@ -33,13 +33,14 @@ package control
 
 		private var _moduleUrls:Object = {
 			account: 'modules/account/AccountModule.swf',
+			activity: 'modules/activity/ActivityModule.swf',
 			assessments: 'modules/assessment/AssessmentModule.swf',
+			course: 'modules/course/CourseModule.swf',
 			create: 'modules/create/CreateModule.swf',
 			error: 'modules/error/ErrorModule.swf',
 			exercises: 'modules/exercise/ExerciseModule.swf',
 			home: 'modules/home/HomeModule.swf',
 			login: 'modules/login/LoginModule.swf',
-			profile: 'modules/profile/ProfileModule.swf',
 			signup: 'modules/signup/SignupModule.swf',
 			subtitle: 'modules/subtitle/SubtitleModule.swf'
 		};

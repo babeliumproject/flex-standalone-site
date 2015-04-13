@@ -17,8 +17,8 @@ package control {
 	import modules.exercise.event.*;
 	import modules.home.command.*;
 	import modules.home.event.*;
-	import modules.profile.command.GetUserActivity;
-	import modules.profile.event.ProfileEvent;
+	import modules.activity.command.GetUserActivity;
+	import modules.activity.event.UserActivityEvent;
 	import modules.subtitle.command.*;
 	import modules.subtitle.event.*;
 
@@ -64,7 +64,7 @@ package control {
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
-			addCommand(ProfileEvent.GET_USER_ACTIVITY, GetUserActivity);
+			addCommand(UserActivityEvent.GET_USER_ACTIVITY, GetUserActivity);
 
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);

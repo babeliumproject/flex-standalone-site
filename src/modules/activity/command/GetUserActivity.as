@@ -1,12 +1,12 @@
-package modules.profile.command
+package modules.activity.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
 	import model.DataModel;
 	
-	import modules.profile.event.ProfileEvent;
-	import modules.profile.service.ProfileDelegate;
+	import modules.activity.event.UserActivityEvent;
+	import modules.activity.service.UserActivityDelegate;
 	
 	import mx.messaging.messages.RemotingMessage;
 	import mx.rpc.IResponder;
@@ -18,8 +18,8 @@ package modules.profile.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var params:Object = (event as ProfileEvent).params;
-			new ProfileDelegate(this).getUserActivity(params);
+			var params:Object = (event as UserActivityEvent).params;
+			new UserActivityDelegate(this).getUserActivity(params);
 		}
 		
 		public function result(data:Object):void

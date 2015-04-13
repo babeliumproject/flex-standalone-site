@@ -262,7 +262,7 @@
 			<view:LatestBestRatedVideos id="bestRatedExercises"/>
 		</s:NavigatorContent>
 		<!--
-		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_ACTIVITY')}">
+		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_RECENT_ACTIVITY')}">
 			<view:LatestUserActivity id="latestActivity"/>
 		</s:NavigatorContent>
 		-->

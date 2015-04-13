@@ -1,4 +1,4 @@
-package modules.profile.service
+package modules.activity.service
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
@@ -6,12 +6,12 @@ package modules.profile.service
 	import mx.rpc.IResponder;
 	import mx.rpc.remoting.RemoteObject;
 
-	public class ProfileDelegate
+	public class UserActivityDelegate
 	{
 		private var responder:IResponder;
 		private static const SERVICE_REMOTE_OBJECT:String = "userRO";
 		
-		public function ProfileDelegate(responder:IResponder)
+		public function UserActivityDelegate(responder:IResponder)
 		{
 			this.responder=responder;
 		}

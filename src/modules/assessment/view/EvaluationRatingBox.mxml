@@ -9,7 +9,7 @@
 				   cornerRadius="8"
 				   backgroundAlpha="0"
 				   xmlns:view="modules.create.view.*"
-				   xmlns:view1="modules.profile.view.*"
+				   xmlns:view3="modules.activity.view.*"
 				   xmlns:view2="modules.assessment.view.*" xmlns:webcamCapture="components.webcamCapture.*">
 
 	<fx:Script>
