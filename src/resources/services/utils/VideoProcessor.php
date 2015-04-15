@@ -156,6 +156,10 @@ class VideoProcessor{
 
                 //Retrieve media file duration (in seconds)
                 $this->mediaContainer->duration = $json_output->format->duration;
+                
+                //Initialize these two to false until evaluating the values
+                $this->mediaContainer->hasAudio = false;
+                $this->mediaContainer->hasVideo = false;
 
                 foreach ($json_output->streams as $stream){
                     if($stream->codec_type == 'audio'){

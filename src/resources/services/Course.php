@@ -62,13 +62,7 @@ class Course{
 	 * 		The list of courses the user is enrolled into
 	 */
 	public function getCourses($scope='learn'){
-		
-		$courses = new stdClass();
-		
-		$courses->mycourses = $this->getMyCourses();
-		$courses->myexercises = $this->getMyExercises();
-		
-		return $courses;	
+		return $this->getMyCourses($scope);
 	}
 	
 	private function getMyCourses($scope='learn'){

@@ -23,6 +23,7 @@
     <module application="src/Main.mxml" destPath="modules/account/AccountModule.swf" optimize="true" sourcePath="src/modules/account/AccountModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/exercise/ExerciseModule.swf" optimize="true" sourcePath="src/modules/exercise/ExerciseModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/subtitle/SubtitleModule.swf" optimize="true" sourcePath="src/modules/subtitle/SubtitleModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/assignment/AssignmentModule.swf" optimize="true" sourcePath="src/modules/assignment/AssignmentModule.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
