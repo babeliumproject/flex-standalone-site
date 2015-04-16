@@ -6,7 +6,6 @@ package modules.course.command
 	import model.DataModel;
 	
 	import modules.course.event.CourseEvent;
-	import modules.course.model.CourseModel;
 	import modules.course.service.CourseDelegate;
 	
 	import mx.messaging.messages.RemotingMessage;
@@ -25,9 +24,8 @@ package modules.course.command
 		public function result(data:Object):void
 		{
 			var result:Object=data.result;
-			var courseModel:CourseModel = _model.moduleMap['course'];
-			courseModel.viewCourseData = result;
-			courseModel.viewCourseDataChanged = !courseModel.viewCourseDataChanged;
+			_model.courseOverviewData = result;
+			_model.courseOverviewDataRetrieved = !_model.courseOverviewDataRetrieved;
 		}
 		
 		public function fault(info:Object):void

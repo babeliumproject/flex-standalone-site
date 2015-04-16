@@ -403,7 +403,7 @@ package model
 		[Bindable]
 		public var userReportedExerciseFlag:Boolean=false;
 		
-		
+		//Create module properties
 		[Bindable]
 		public var enabledCreateStepsChanged:Boolean;
 		public var enabledCreateSteps:Array;
@@ -427,9 +427,10 @@ package model
 		[Bindable]
 		public var defaultThumbnailModified:Boolean;
 		
-		public var moduleMap:Object = {};
+		//Course module properties
 		[Bindable]
-		public var moduleMapProxy:ObjectProxy = new ObjectProxy(moduleMap);
+		public var courseListRetrieved:Boolean;
+		public var courseList:ArrayCollection;
 
 		public function DataModel()
 		{

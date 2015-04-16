@@ -6,7 +6,6 @@ package modules.course.command
 	import model.DataModel;
 	
 	import modules.course.event.CourseEvent;
-	import modules.course.model.CourseModel;
 	import modules.course.service.CourseDelegate;
 	
 	import mx.collections.ArrayCollection;
@@ -24,37 +23,28 @@ package modules.course.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new CourseDelegate(this).getCourses((event as CourseEvent).query);
+			var params:Object = (event as CourseEvent).query;
+			new CourseDelegate(this).getCourses(params);
 		}
 		
 		public function result(data:Object):void
 		{
-			
 			var result:Object=data.result;
-			var courseModel:CourseModel = _model.moduleMap['course'];
+			var courseCollection:ArrayCollection;
 			
 			if (result)
-			{
-				if(result.hasOwnProperty('mycourses')){
-					var courseCollection:ArrayCollection;
-					courseCollection = new ArrayCollection(ArrayUtil.toArray(result.mycourses));
-					courseModel.myCoursesData = courseCollection;
+			{	
+				courseCollection = new ArrayCollection(ArrayUtil.toArray(result));
+				if(courseCollection){
+					_model.courseList=courseCollection;
 				} else {
-					courseModel.myCoursesData = new ArrayCollection();
-				}
-				if(result.hasOwnProperty('myexercises')){
-					var exerciseCollection:ArrayCollection;
-					exerciseCollection = new ArrayCollection(ArrayUtil.toArray(result.myexercises));
-					courseModel.myExercisesData = exerciseCollection;
-				} else {
-					courseModel.myExercisesData = new ArrayCollection();
+					_model.courseList=null;
 				}
 			} else {
-				courseModel.myCoursesData = new ArrayCollection();
-				courseModel.myExercisesData = new ArrayCollection();
+				_model.courseList=null;
 			}
-			
-			courseModel.getCoursesDataChanged = !courseModel.getCoursesDataChanged;
+		
+			_model.courseListRetrieved=!_model.courseListRetrieved;
 		}
 		
 		public function fault(info:Object):void

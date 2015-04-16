@@ -17,7 +17,6 @@
 			import mx.resources.ResourceManager;
 			
 			import modules.course.event.CourseEvent;
-			import modules.course.model.CourseModel;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -35,7 +34,7 @@
 			
 			protected function onComplete(event:FlexEvent):void
 			{
-				cw1=BindingUtils.bindSetter(userCoursesRetrieved, _model, 'getCoursesDataChanged', commitOnly, useWeakReference);
+				cw1=BindingUtils.bindSetter(userCoursesRetrieved, _model, 'courseListRetrieved', commitOnly, useWeakReference);
 			}
 			
 			public function resetGroup():void
@@ -44,7 +43,7 @@
 				userCourseData=null;
 				
 				//Reset the related model data
-				_model.getCoursesDataChanged=null;
+				_model.courseList=null;
 			}
 			
 			public function unpinGroup():void
@@ -56,7 +55,7 @@
 			}
 			
 			public function userCoursesRetrieved(value:Boolean):void{
-				userCourseData = (DataModel.getInstance().moduleMap.course as CourseModel).myCoursesData;
+				userCourseData = _model.courseList;
 				if(userCourseData){
 					myCoursesTable.dataProvider=userCourseData;
 					trace(ObjectUtil.toString(userCourseData));

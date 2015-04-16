@@ -13,16 +13,31 @@
 	</s:layout>
 	
 	
-	<s:Label text="{data.fullname}" styleName="sectionTitleLabel"/>
-	<s:Label text="{data.summary}"/>
+	<s:Label id="courseTitleLbl" styleName="sectionTitleLabel"/>
+	<s:Label id="courseSummaryLbl"/>
 	
 	<s:Button id="viewCourse"
-			  label="Go to course"
-			  click="viewCourse_clickHandler(event)"/>
+			  label="{ResourceManager.getInstance().getString('myResources','GO_TO_COURSE')}"
+			  click="viewCourse_clickHandler(event)"
+			  buttonMode="true"
+			  styleName="btn-primary"/>
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
+			
+			import mx.resources.ResourceManager;
+			
+			override public function set data(value:Object):void{
+				super.data = value;
+				
+				if (value == null)
+					return;
+					
+				courseTitleLbl.text=value.fullname;
+				courseSummaryLbl.text=value.summary;
+			}
+
 			protected function viewCourse_clickHandler(event:MouseEvent):void
 			{
 				URLManager.getInstance().redirect('/course/view/'+data.id);

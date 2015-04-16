@@ -27,7 +27,6 @@
 			import modules.course.command.GetCourses;
 			import modules.course.command.ViewCourse;
 			import modules.course.event.CourseEvent;
-			import modules.course.model.CourseModel;
 			import modules.activity.event.UserActivityEvent;
 			
 			import mx.binding.utils.BindingUtils;
@@ -148,10 +147,7 @@
 			}
 			
 			protected function preinitializeHandler(event:FlexEvent):void
-			{
-				if(!_model.moduleMap.hasOwnProperty(modulename))
-					_model.moduleMap[modulename] = new CourseModel();
-				
+			{				
 				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
 				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
 			}
