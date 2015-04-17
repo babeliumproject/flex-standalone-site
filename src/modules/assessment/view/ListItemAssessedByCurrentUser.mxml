@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:hulstkamp="com.hulstkamp.*"
-						  width="100%"
-						  creationComplete="completeHandler()">
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="100%">
 
 	<s:layout>
 		<s:VerticalLayout paddingTop="4"
@@ -19,17 +17,15 @@
 			  verticalAlign="middle"
 			  gap="2"
 			  width="100%">
-		<mx:Image id="exerciseLanguage"
-				  width="16"
-				  height="16"
-				  source="{getFlagSource(data as EvaluationVO)}"/>
+		<s:BitmapImage id="exerciseLanguage"
+					   width="16"
+					   height="16"/>
 		<s:HGroup id="avgDifficultyIndicator"
 				  styleName="roundedBorderWhiteBox">
-			<s:Label text="{getLevelCorrespondence(data.exerciseAvgDifficulty)}"
+			<s:Label id="difficultyLbl"
 					 styleName="boldYellowLabel"/>
 		</s:HGroup>
 		<s:Label id="exerciseTitle"
-				 text="{data.exerciseTitle}"
 				 width="100%"
 				 textAlign="left"
 				 styleName="boldLabel"/>
@@ -38,7 +34,7 @@
 	<s:Line width="100%"
 			alpha="0.5">
 		<s:stroke>
-			<mx:SolidColorStroke weight="2"
+			<mx:SolidColorStroke weight="1"
 								 color="#aaaaaa"/>
 		</s:stroke>
 	</s:Line>
@@ -47,11 +43,9 @@
 			  verticalAlign="middle">
 
 		<s:BitmapImage id="exerciseThumbnail"
-					   source="{data.exerciseThumbnailUri}"
 					   width="120"
 					   height="90"/>
 		<s:BitmapImage id="responseThumbnail"
-					   source="{data.responseThumbnailUri}"
 					   width="120"
 					   height="90"/>
 
@@ -61,30 +55,30 @@
 			<s:HGroup>
 				<s:Label text="{resourceManager.getString('myResources','RECORDED_BY')+':'}"
 						 styleName="boldLabel"/>
-				<s:Label text="{data.responseUserName}"
+				<s:Label id="submittedByLbl"
 						 styleName="boldBlueLabel"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label text="{resourceManager.getString('myResources','EVALUATION_DATE')+':'}"
 						 styleName="boldLabel"/>
-				<s:Label text="{data.addingDate}"
+				<s:Label id="evaluationDateLbl"
 						 styleName="boldYellowLabel"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label text="{resourceManager.getString('myResources','RECORD_DATE')+':'}"
 						 styleName="boldLabel"/>
-				<s:Label text="{data.responseAddingDate}"/>
+				<s:Label id="submissionDateLbl"/>
 			</s:HGroup>
 			<s:HGroup verticalAlign="middle">
 				<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_COUNT')+':'}"
 						 styleName="boldLabel"/>
-				<s:Label text="{data.responseRatingAmount}"/>
+				<s:Label id="evaluationCountLbl"/>
 			</s:HGroup>
 
 			<s:HGroup verticalAlign="middle">
 				<s:BitmapImage id="roleIcon"
 							   source="/resources/images/roles.png"/>
-				<s:Label text="{data.responseCharacterName}"/>
+				<s:Label id="submissionRoleLbl"/>
 			</s:HGroup>
 		</s:VGroup>
 
@@ -93,67 +87,30 @@
 
 	<fx:Script>
 		<![CDATA[
-			import com.hulstkamp.AhRatingComponentStarSkin;
-			
-			import model.DataModel;
-			
-			import mx.formatters.NumberBaseRoundType;
-			import mx.formatters.NumberFormatter;
-			import mx.utils.StringUtil;
-			
-			import vo.EvaluationVO;
+			import utils.ExerciseRenderUtils;
 
-			private var _data:Object;
-			private var _creationComplete:Boolean=false;
 
-			public function completeHandler():void
+			override public function set data(value:Object):void
 			{
-				_data=data;
-				_creationComplete=true;
+				super.data=value;
 
-			}
+				if (value == null)
+					return;
 
-			public function getLevelCorrespondence(avgDifficulty:Number):String
-			{
-				var numFormat:NumberFormatter=new NumberFormatter();
-				numFormat.precision=0;
-				numFormat.rounding=NumberBaseRoundType.NEAREST;
-				var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
-				switch (roundedAvgDifficulty)
-				{
-					case 1:
-						return 'A1';
-						break;
-					case 2:
-						return 'A2';
-						break;
-					case 3:
-						return 'B1.1';
-						break;
-					case 4:
-						return 'B1.2';
-						break;
-					case 5:
-						return 'B2.1';
-						break;
-					case 6:
-						return 'B2.2';
-						break;
-					case 7:
-						return 'C1';
-						break;
-					default:
-						return '';
-						break;
-				}
-			}
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value, 'exerciseLanguage');
+				difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(value.exerciseAvgDifficulty);
+				exerciseTitle.text=value.exerciseTitle;
 
-			public function getFlagSource(temp:EvaluationVO):Class
-			{
-				var dm:DataModel=DataModel.getInstance();
-				return dm.localesAndFlags.getCountryFlagClass(temp.exerciseLanguage);
+				exerciseThumbnail.source=value.exerciseThumbnailUri;
+				responseThumbnail.source=value.responseThumbnailUri;
+
+				submittedByLbl.text=value.responseUserName;
+				evaluationDateLbl.text=value.addingDate;
+				evaluationCountLbl.text=value.responseRatingAmount;
+				submissionDateLbl.text=value.responseAddingDate;
+				submissionRoleLbl.text=value.responseCharacterName;
 			}
 		]]>
 	</fx:Script>
 
-</s:MXDataGridItemRenderer>
+</s:ItemRenderer>

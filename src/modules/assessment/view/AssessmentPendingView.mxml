@@ -15,22 +15,19 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import mx.binding.utils.ChangeWatcher;
-			
 			import model.DataModel;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.controls.DataGrid;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
-			import vo.EvaluationVO;
+			import spark.components.List;
+			import spark.events.IndexChangeEvent;
+			
 
-			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
-
-			[Bindable]
 			private var waitingForAssessmentList:ArrayCollection;
 			
 			private var commitOnly:Boolean=false;
@@ -72,10 +69,11 @@
 				waitingAssessmentListAndPagination.dataProvider=waitingForAssessmentList;
 			}
 
-			private function waitingAssessmentChangeHandler(event:Event):void
+			private function waitingAssessmentChangeHandler(event:IndexChangeEvent):void
 			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				assessSubmission(selectedItem.responseId);
+				var selectedItem:Object=(event.target as List).selectedItem;
+				if(selectedItem)
+					assessSubmission(selectedItem.responseId);
 			}
 
 			private function assessSubmission(responseid:int):void
@@ -103,7 +101,7 @@
 	</s:BorderContainer>
 	
 	<view:CustomItemRendererPaginatedTable id="waitingAssessmentListAndPagination"
-										   itemRenderer="{ListItemWaitingForAssessment}"
+										   itemRenderer="modules.assessment.view.ListItemWaitingForAssessment"
 										   width="100%"
 										   changeListener="{waitingAssessmentChangeHandler}"/>
 

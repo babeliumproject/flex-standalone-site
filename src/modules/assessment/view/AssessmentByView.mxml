@@ -14,18 +14,19 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import mx.binding.utils.ChangeWatcher;
+			import spark.components.List;
 			
 			import model.DataModel;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.controls.DataGrid;
+
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
-			import vo.EvaluationVO;
-
+			import spark.events.IndexChangeEvent;
+			
 			private var dataModel:DataModel=DataModel.getInstance();
 			private var assessedByCurrentUserList:ArrayCollection;
 			
@@ -42,6 +43,9 @@
 			public function resetGroup():void
 			{
 				assessedByCurrentUserList=null;
+				
+				//Reset the related model data
+				dataModel.assessedByCurrentUserData=null;
 			}
 			
 			public function unpinGroup():void{
@@ -67,9 +71,10 @@
 				assessedByCurrentUserListAndPagination.dataProvider=assessedByCurrentUserList;
 			}
 			
-			protected function assessedByCurrentUserChangeHandler(event:Event):void{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				reviewAssessment(selectedItem.responseId);
+			protected function assessedByCurrentUserChangeHandler(event:IndexChangeEvent):void{
+				var selectedItem:Object=(event.target as List).selectedItem;
+				if(selectedItem)
+					reviewAssessment(selectedItem.responseId);
 			}
 			
 			protected function reviewAssessment(responseid:int):void{
@@ -97,7 +102,7 @@
 	</s:BorderContainer>
 	
 	<view:CustomItemRendererPaginatedTable id="assessedByCurrentUserListAndPagination"
-										   itemRenderer="{ListItemAssessedByCurrentUser}"
+										   itemRenderer="modules.assessment.view.ListItemAssessedByCurrentUser"
 										   width="100%"
 										   changeListener="{assessedByCurrentUserChangeHandler}"/>
 	

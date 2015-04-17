@@ -1,43 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx">
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="100%"
+		 paddingTop="16"
+		 paddingBottom="16"
+		 paddingLeft="16"
+		 paddingRight="16"
+		 implements="modules.IPinnedGroupInterface"
+		 creationComplete="onComplete(event)">
 	
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 			
-			import mx.collections.ArrayCollection;
+			import mx.binding.utils.BindingUtils;
 			
 			import model.DataModel;
-
 			
-			[Bindable] private var _courseInfo:Object;
-			[Bindable] private var _assignmentData:ArrayCollection;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			private var _model:DataModel=DataModel.getInstance();
+
+			private var _courseInfo:Object;
+			private var _assignmentData:ArrayCollection;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void{
+				cw1=BindingUtils.bindSetter(courseAssignmentsRetrievedHandler,_model,'',commitOnly,useWeakReference);
+			}
+			
+			public function resetGroup():void
+			{
+				//Reset any data that is set in the model
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				
+				cw1=null;
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			protected function courseAssignmentsRetrievedHandler(value:Boolean):void{
+				//courseAssignmentList.dataProvider=_model.courseAssignmentList;
+			}
 
 			protected function addAssignment(event:MouseEvent):void
 			{
-				if(DataModel.getInstance().moduleMap.hasOwnProperty('course')){
-					_courseInfo = DataModel.getInstance().moduleMap['course'];
-					URLManager.getInstance().redirect('/assignment/add/'+_courseInfo.id);
-				}
+				//Check if the user has edit permissions in this course
+				//var userperms:Object =_model.loggedUser.permissions;
+				
+				URLManager.getInstance().redirect('/assignment/add/'+_courseInfo.id);
 			}
 		]]>
 	</fx:Script>
 	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	
-	
-	<s:List width="100%" 
+	<s:List id="courseAssignmentList"
+			width="100%" 
 			borderVisible="false" 
-			itemRenderer="modules.course.view.AssignmentItemRenderer"
-			dataProvider="{_assignmentData}">
+			itemRenderer="modules.course.view.AssignmentItemRenderer">
 		<s:layout>
 			<s:VerticalLayout/>
 		</s:layout>
 	</s:List>
 	
-	<s:Button id="addAssignmentButton" label="Add new assignment" click="addAssignment(event)"/>
+	<s:Button id="addAssignmentButton" label="{resourceManager.getString('myResources','ADD_ASSIGNMENT')}" 
+			  click="addAssignment(event)"/>
 </s:VGroup>

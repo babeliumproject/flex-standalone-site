@@ -13,23 +13,21 @@
 		<![CDATA[
 			import control.URLManager;
 			
-			import mx.binding.utils.ChangeWatcher;
-			
 			import model.DataModel;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.controls.DataGrid;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
-			import vo.EvaluationVO;
+			import spark.components.List;
+			import spark.events.IndexChangeEvent;
 			
 			
 			[Bindable]
 			private var dataModel:DataModel=DataModel.getInstance();
 			
-			[Bindable]
 			private var assessedToCurrentUserList:ArrayCollection;
 			
 			private var commitOnly:Boolean=false;
@@ -75,10 +73,11 @@
 				assessedToCurrentUserListAndPagination.dataProvider=assessedToCurrentUserList;
 			}
 			
-			private function assessedToCurrentUserChangeHandler(event:Event):void
+			private function assessedToCurrentUserChangeHandler(event:IndexChangeEvent):void
 			{
-				var selectedItem:EvaluationVO=(DataGrid(event.target).selectedItem) as EvaluationVO;
-				reviewAssessment(selectedItem.responseId);
+				var selectedItem:Object=(event.target as List).selectedItem;
+				if(selectedItem)
+					reviewAssessment(selectedItem.responseId);
 			}
 			
 			private function reviewAssessment(responseid:int):void
@@ -107,7 +106,7 @@
 	</s:BorderContainer>
 	
 	<view:CustomItemRendererPaginatedTable id="assessedToCurrentUserListAndPagination"
-										   itemRenderer="{ListItemAssessedToCurrentUser}"
+										   itemRenderer="modules.assessment.view.ListItemAssessedToCurrentUser"
 										   width="100%"
 										   changeListener="{assessedToCurrentUserChangeHandler}"/>
 	
