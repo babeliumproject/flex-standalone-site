@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:skins="skins.*"
+		  width="100%"
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
@@ -13,89 +14,100 @@
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
 			import mx.resources.ResourceManager;
-			
+
 			import modules.course.event.CourseEvent;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.utils.ObjectUtil;
-			
+
 			private var _model:DataModel=DataModel.getInstance();
-			
+
 			private var userCourseData:ArrayCollection;
 			private var commitOnly:Boolean=false;
 			private var useWeakReference:Boolean=false;
-			
+
 			private var cw1:ChangeWatcher;
-			
+
 			protected function onComplete(event:FlexEvent):void
 			{
 				cw1=BindingUtils.bindSetter(userCoursesRetrieved, _model, 'courseListRetrieved', commitOnly, useWeakReference);
 			}
-			
+
 			public function resetGroup():void
 			{
 				myCoursesTable.dataProvider=null;
 				userCourseData=null;
-				
+
 				//Reset the related model data
 				_model.courseList=null;
 			}
-			
+
 			public function unpinGroup():void
 			{
-				if (cw1) cw1.unwatch();
+				if (cw1)
+					cw1.unwatch();
 				cw1=null;
-				
+
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
-			
-			public function userCoursesRetrieved(value:Boolean):void{
-				userCourseData = _model.courseList;
-				if(userCourseData){
+
+			public function userCoursesRetrieved(value:Boolean):void
+			{
+				userCourseData=_model.courseList;
+				if (userCourseData)
+				{
 					myCoursesTable.dataProvider=userCourseData;
 					trace(ObjectUtil.toString(userCourseData));
-					noCourse.visible=false;
-					noCourse.includeInLayout=false;
+					noCourseBox.visible=false;
+					noCourseBox.includeInLayout=false;
 					myCoursesTable.visible=true;
 					myCoursesTable.includeInLayout=true;
-				} else {
-					noCourse.visible=true;
-					noCourse.includeInLayout=true;
+				}
+				else
+				{
+					noCourseBox.visible=true;
+					noCourseBox.includeInLayout=true;
 					myCoursesTable.visible=false;
 					myCoursesTable.includeInLayout=false;
 				}
 			}
 		]]>
 	</fx:Script>
-	
-	
+
+
 	<s:HGroup width="100%">
 		<s:Label id="viewTitleLbl"
 				 text="{ResourceManager.getInstance().getString('myResources','COURSES')}"
 				 styleName="h1"/>
 	</s:HGroup>
-	
-	
-	<s:Label id="noCourse"
-			 text="{ResourceManager.getInstance().getString('myResources','YOU_ARE_NOT_CURRENTLY_ENROLLED_IN_ANY_COURSE')}"/>
+
+
+	<s:BorderContainer id="noCourseBox" styleName="lightBorderContainer">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label id="noCourse"
+				 text="{ResourceManager.getInstance().getString('myResources','YOU_ARE_NOT_CURRENTLY_ENROLLED_IN_ANY_COURSE')}"/>
+	</s:BorderContainer>
 	
 	<s:List id="myCoursesTable"
-				 width="100%"
-				 horizontalScrollPolicy="off"
-				 verticalScrollPolicy="off"
-				 borderVisible="false"
-				 contentBackgroundAlpha="0.0"
-				 alternatingItemColors="[0xffffff,0xf9f9f9]"
-				 rollOverColor="0xf5f5f5"
-				 selectionColor="0xfafafa"
-				 itemRenderer="modules.course.view.CourseItemRenderer">
+			width="100%"
+			horizontalScrollPolicy="off"
+			verticalScrollPolicy="off"
+			borderVisible="false"
+			contentBackgroundAlpha="0.0"
+			alternatingItemColors="[0xffffff,0xf9f9f9]"
+			rollOverColor="0xf5f5f5"
+			selectionColor="0xfafafa"
+			itemRenderer="modules.course.view.CourseItemRenderer">
 		<s:layout>
-			<s:VerticalLayout requestedMinRowCount="1" gap="8"/>
+			<s:VerticalLayout requestedMinRowCount="1"
+							  gap="8"/>
 		</s:layout>
 	</s:List>
 

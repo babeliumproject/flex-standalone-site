@@ -1,8 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.assignment.view.*"
+		  width="100%"
+		  implements="modules.IModuleInterface"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" >
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLChangeEvent;
+			
+			import modules.IPinnedGroupInterface;
+			
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import modules.assignment.event.AssignmentEvent;
+			
+			import mx.events.FlexEvent;
+			
+			public var modulename:String = 'assignment';
+			
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			private var _model:DataModel=DataModel.getInstance();
+			
+			private var _viewstackIndex:uint;
+			
+			public static const EDIT:uint=0;
+			
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{	
+				//_moduleController = new CourseController();	
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				//_moduleController = null;
+				_model = null;
+				resetViews();
+				unpinViews();
+			}
+			
+			public function resetViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function unpinViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.unpinGroup();
+						}
+					}
+				}
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+				
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					URLManager.getInstance().redirect('/login');
+					return;
+				}
+				this.visible=true;
+			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
+				resetViews();
+				
+				switch (evt.action)
+				{
+					case 'add':
+					case 'edit':
+						actionAddEdit(evt.parameters);
+						break;
+					default:
+						_urlmanager.redirect('/error');
+						break;
+				}
+			}
+			
+			public function actionAdd(parameters:Object = null):void{
+				
+			}
+			
+			public function actionAddEdit(parameters:Object = null):void{
+				if(!parameters){
+					//Adding new assignment
+					new AssignmentEvent(AssignmentEvent.ADD_ASSIGNMENT).dispatch();
+				} else {
+					var id:int = parseInt(parameters['id']);
+					
+					var params:Object = new Object();
+					
+					new AssignmentEvent(AssignmentEvent.EDIT_ASSIGNMENT, params).dispatch();
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="moduleViewstack"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="editNC">
+			<view:AssignmentEditView id="assignmentEdit" width="100%"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
 </s:Module>

@@ -1,85 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx">
-	
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.exercise.view.*"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
+		  width="100%"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
 			
-			import spark.events.IndexChangeEvent;
+			import model.DataModel;
 			
-			private _peerEvaluation:Boolean;
-			private _customRubric:Boolean;
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+
+			[Bindable]
+			private var _peerEvaluation:Boolean;
+			[Bindable]
+			private var _customRubric:Boolean;
+
+			private var _model:DataModel=DataModel.getInstance();
+
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
+			private var cw1:ChangeWatcher;
+
+			protected function onComplete(event:FlexEvent):void
+			{
+				initTimeDropdowns();
+				cw1=BindingUtils.bindSetter(assignmentDataRetrieved, _model, 'assignmentDataRetrieved', commitOnly, useWeakReference);
+			}
+			
+			public function resetGroup():void
+			{
+				//Remove any data stored in the model
+			}
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			}
+			
+			protected function initTimeDropdowns():void{
+				var hours:ArrayCollection=new ArrayCollection();
+				var minutes:ArrayCollection=new ArrayCollection();
+				var i:uint;
+				
+				for(i=0; i<24; i++){
+					if(i<10){
+						hours.addItem("0"+i);
+					} else {
+						hours.addItem(i.toString());
+					}
+				}
+				for(i=0; i<60; i+5){
+					if(i<10){
+						hours.addItem("0"+i);
+					} else {
+						hours.addItem(i.toString());
+					}
+				}
+				allowSubmissionsfromHourList.dataProvider=hours;
+				allowSubmissionsfromMinuteList.dataProvider=minutes;
+				submissionDuedateHourList.dataProvider=hours;
+				submissionDuedateMinuteList.dataProvider=minutes;
+				
+			}
+
+			protected function assignmentDataRetrieved(value:Boolean):void
+			{
+
+			}
 
 			protected function pickExerciseHandler(event:MouseEvent):void
 			{
 				//Save current form data as a draft and keep in session to come back to it when picking an exercise
-				URLManager.getInstance().redirect('exercises');
+				URLManager.getInstance().redirect('/exercises');
 			}
-			
+
 			protected function peerassessmentchoose_changeHandler(event:IndexChangeEvent):void
 			{
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			protected function defaultRubric_changeHandler(event:Event):void
 			{
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
+			protected function saveAssignmentClickHandler(event:MouseEvent):void
+			{
+
+			}
+
+			protected function cancelAssignmentClickHandler(event:MouseEvent):void
+			{
+				var lasturl:String=URLManager.getInstance().getLastURL();
+				trace("LastURL is: " + URLManager.getInstance().getLastURL());
+				if (lasturl)
+					URLManager.getInstance().redirect(lasturl);
+				else
+					URLManager.getInstance().redirect('/home');
+			}
 		]]>
 	</fx:Script>
-	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	
-	
-	<s:Form>
-		<s:FormHeading label="Exercise"/>
-		<s:Button label="Pick an exercise" click="pickExerciseHandler(event)"/>
-		<s:FormHeading label="Availability"/>
-		<s:FormItem label="Allow submissions from">
-			<mx:DateField id="allowSubmissionsfrom"/>
-		</s:FormItem>
-		<s:FormItem label="Submission due date">
-			<mx:DateField id="submissionDuedate"/>
-		</s:FormItem>
-		<s:FormHeading label="Evaluation"/>
-		<s:FormItem label="Peer evaluation">
-			<s:DropDownList id="peerassessmentchoose" selectedIndex="0" change="peerassessmentchoose_changeHandler(event)">
-				<s:ArrayCollection>
-					<fx:String id="Yes"/>
-					<fx:String id="No"/>
-				</s:ArrayCollection>
-			</s:DropDownList>
-		</s:FormItem>
-		<s:FormItem label="Self-evaluation">
-			<s:DropDownList id="selfassessmentchoose" selectedIndex="0" change="peerassessmentchoose_changeHandler(event)">
-				<s:ArrayCollection>
-					<fx:String id="Yes"/>
-					<fx:String id="No"/>
-				</s:ArrayCollection>
-			</s:DropDownList>
-		</s:FormItem>
-		<s:FormItem label="Allow evaluations from" visible="{_peerEvaluation}">
+
+	<s:Label text="{resourceManager.getString('myResources','ADD_ASSIGNMENT')}"
+			 styleName="h2"/>
+
+	<s:BorderContainer id="container"
+					   styleName="lightBorderContainer"
+					   width="100%">
+
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16"
+							  paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
+
+		<s:Form>
+
+			<s:FormHeading label="Availability"/>
+			<s:FormItem label="Allow submissions from">
+				<mx:DateField id="allowSubmissionsfrom"/>
+				<s:DropDownList id="allowSubmissionsfromHourList"
+								skinClass="skins.BootstrapDropDownList"
+								cornerRadius="3"
+								borderColor="0xcccccc"
+								requireSelection="true"/>
+				<s:DropDownList id="allowSubmissionsfromMinuteList"
+								skinClass="skins.BootstrapDropDownList"
+								cornerRadius="3"
+								borderColor="0xcccccc"
+								requireSelection="true"/>
+			</s:FormItem>
+			<s:FormItem label="Submission due date">
+				<mx:DateField id="submissionDuedate"/>
+				<s:DropDownList id="submissionDuedateHourList"
+								skinClass="skins.BootstrapDropDownList"
+								cornerRadius="3"
+								borderColor="0xcccccc"
+								requireSelection="true"/>
+				<s:DropDownList id="submissionDuedateMinuteList"
+								skinClass="skins.BootstrapDropDownList"
+								cornerRadius="3"
+								borderColor="0xcccccc"
+								requireSelection="true"/>
+			</s:FormItem>
+
+			<s:FormHeading label="Exercise"/>
+			<s:BorderContainer id="exercisePickArea"
+							   borderColor="#E0E0E0"
+							   borderAlpha=".85"
+							   backgroundAlpha="0">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center"
+									  verticalAlign="middle"
+									  paddingBottom="8"
+									  paddingLeft="8"
+									  paddingRight="8"
+									  paddingTop="8"/>
+				</s:layout>
+				<s:Button id="pickExerciseBtn"
+						  label="Pick an exercise"
+						  styleName="btn-primary"
+						  buttonMode="true"
+						  click="pickExerciseHandler(event)"/>
+				<view:ExerciseItemRenderer/>
+			</s:BorderContainer>
+			<s:FormHeading label="Evaluation"/>
+			<s:FormItem label="Peer evaluation">
+				<s:DropDownList id="peerassessmentchoose"
+								selectedIndex="0"
+								change="peerassessmentchoose_changeHandler(event)">
+					<s:ArrayCollection>
+						<fx:String id="Yes"/>
+						<fx:String id="No"/>
+					</s:ArrayCollection>
+				</s:DropDownList>
+			</s:FormItem>
+			<s:FormItem label="Self-evaluation">
+				<s:DropDownList id="selfassessmentchoose"
+								selectedIndex="0"
+								change="peerassessmentchoose_changeHandler(event)">
+					<s:ArrayCollection>
+						<fx:String id="Yes1"/>
+						<fx:String id="No2"/>
+					</s:ArrayCollection>
+				</s:DropDownList>
+			</s:FormItem>
+			<s:FormItem label="Allow evaluations from"
+						visible="{_peerEvaluation}">
 				<mx:DateField id="allowEvaluationsFrom"/>
-		</s:FormItem>
-		<s:FormItem label="Evaluation due date" visible="{_peerEvaluation}">
+			</s:FormItem>
+			<s:FormItem label="Evaluation due date"
+						visible="{_peerEvaluation}">
 				<mx:DateField id="evaluationDueDate"/>
-		</s:FormItem>
-		<s:FormHeading label="Grade"/>
-		<s:FormItem label="Use default rubric">
-			<s:CheckBox id="defaultRubric" selected="true" change="defaultRubric_changeHandler(event)"/>
-		</s:FormItem>
-		<s:FormItem label="Custom rubric">
-			<s:VGroup id="groupRubric" visible="{_customRubric}">
-				<!-- The criteria should be added at runtime, take a look at language preference code -->
-			</s:VGroup>
-		</s:FormItem>
-		<s:FormItem
-	</s:Form>
+			</s:FormItem>
+			<s:FormHeading label="Grade"/>
+			<s:FormItem label="Use default rubric">
+				<s:CheckBox id="defaultRubric"
+							selected="true"
+							change="defaultRubric_changeHandler(event)"/>
+			</s:FormItem>
+			<s:FormItem label="Custom rubric">
+				<s:VGroup id="groupRubric"
+						  visible="{_customRubric}">
+					<!-- The criteria should be added at runtime, take a look at language preference code -->
+				</s:VGroup>
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  label="{resourceManager.getString('myResources','SAVE_AND_RETURN')}"
+				  click="saveAssignmentClickHandler(event)"
+				  buttonMode="true"
+				  styleName="btn-success"/>
+
+		<s:Button id="cancelButton"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  click="cancelAssignmentClickHandler(event)"
+				  buttonMode="true"
+				  styleName="btn-default"/>
+
+	</s:HGroup>
 </s:VGroup>

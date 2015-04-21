@@ -13,8 +13,9 @@
 	</s:layout>
 	
 	
-	<s:Label id="courseTitleLbl" styleName="sectionTitleLabel"/>
+	<s:Label id="courseTitleLbl" styleName="h4"/>
 	<s:Label id="courseSummaryLbl"/>
+	
 	
 	<s:Button id="viewCourse"
 			  label="{ResourceManager.getInstance().getString('myResources','GO_TO_COURSE')}"

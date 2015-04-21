@@ -35,6 +35,7 @@ package control
 			account: 'modules/account/AccountModule.swf',
 			activity: 'modules/activity/ActivityModule.swf',
 			assessments: 'modules/assessment/AssessmentModule.swf',
+			assignment: 'modules/assignment/AssignmentModule.swf',
 			course: 'modules/course/CourseModule.swf',
 			create: 'modules/create/CreateModule.swf',
 			error: 'modules/error/ErrorModule.swf',
