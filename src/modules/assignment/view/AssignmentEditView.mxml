@@ -9,19 +9,24 @@
 		  paddingTop="16"
 		  width="100%"
 		  implements="modules.IPinnedGroupInterface"
-		  creationComplete="onComplete(event)">
+		  creationComplete="onComplete(event)"
+		  xmlns:components="components.*">
 
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import model.DataModel;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.CalendarLayoutChangeEvent;
 			import mx.events.FlexEvent;
-			
+			import mx.utils.ObjectUtil;
+
 			import spark.events.IndexChangeEvent;
+
 
 			[Bindable]
 			private var _peerEvaluation:Boolean;
@@ -39,7 +44,7 @@
 				initTimeDropdowns();
 				cw1=BindingUtils.bindSetter(assignmentDataRetrieved, _model, 'assignmentDataRetrieved', commitOnly, useWeakReference);
 			}
-			
+
 			public function resetGroup():void
 			{
 				//Remove any data stored in the model
@@ -53,31 +58,42 @@
 
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
-			
-			protected function initTimeDropdowns():void{
+
+			protected function initTimeDropdowns():void
+			{
 				var hours:ArrayCollection=new ArrayCollection();
 				var minutes:ArrayCollection=new ArrayCollection();
-				var i:uint;
-				
-				for(i=0; i<24; i++){
-					if(i<10){
-						hours.addItem("0"+i);
-					} else {
-						hours.addItem(i.toString());
-					}
+				var i:int;
+
+				for (i=0; i < 24; i++)
+				{
+					hours.addItem(zeroPad(i, 2));
 				}
-				for(i=0; i<60; i+5){
-					if(i<10){
-						hours.addItem("0"+i);
-					} else {
-						hours.addItem(i.toString());
-					}
+				for (i=0; i < 60; i+=5)
+				{
+					minutes.addItem(zeroPad(i, 2));
 				}
-				allowSubmissionsfromHourList.dataProvider=hours;
-				allowSubmissionsfromMinuteList.dataProvider=minutes;
-				submissionDuedateHourList.dataProvider=hours;
-				submissionDuedateMinuteList.dataProvider=minutes;
-				
+
+				openSubmissionHour.dataProvider=hours;
+				openSubmissionMinute.dataProvider=minutes;
+				submissionDeadlineHour.dataProvider=hours;
+				submissionDeadLineMinute.dataProvider=minutes;
+
+				openAssessmentHour.dataProvider=hours;
+				openAssessmentMinute.dataProvider=minutes;
+				assessmentDeadlineHour.dataProvider=hours;
+				assessmentDeadlineMinute.dataProvider=minutes;
+
+				//testEDL.setLo
+
+			}
+
+			public function zeroPad(number:int, width:int):String
+			{
+				var ret:String="" + number;
+				while (ret.length < width)
+					ret="0" + ret;
+				return ret;
 			}
 
 			protected function assignmentDataRetrieved(value:Boolean):void
@@ -91,7 +107,7 @@
 				URLManager.getInstance().redirect('/exercises');
 			}
 
-			protected function peerassessmentchoose_changeHandler(event:IndexChangeEvent):void
+			protected function peerassessmentchoose_changeHandler(event:Event):void
 			{
 				// TODO Auto-generated method stub
 
@@ -117,6 +133,12 @@
 				else
 					URLManager.getInstance().redirect('/home');
 			}
+
+			protected function dateChangeHandler(event:CalendarLayoutChangeEvent):void
+			{
+				var newDate:Date=DatePicker(event.target).selectedDate;
+				trace(newDate.toString());
+			}
 		]]>
 	</fx:Script>
 
@@ -137,31 +159,68 @@
 		<s:Form>
 
 			<s:FormHeading label="Availability"/>
-			<s:FormItem label="Allow submissions from">
-				<mx:DateField id="allowSubmissionsfrom"/>
-				<s:DropDownList id="allowSubmissionsfromHourList"
-								skinClass="skins.BootstrapDropDownList"
-								cornerRadius="3"
-								borderColor="0xcccccc"
-								requireSelection="true"/>
-				<s:DropDownList id="allowSubmissionsfromMinuteList"
-								skinClass="skins.BootstrapDropDownList"
-								cornerRadius="3"
-								borderColor="0xcccccc"
-								requireSelection="true"/>
+			<s:FormItem label="Open for submissions from">
+				<s:HGroup width="100%"
+						  verticalAlign="middle">
+					<components:DatePicker id="openSubmissionDate"
+										   change="dateChangeHandler(event)"/>
+					<s:DropDownList id="openSubmissionHour"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+					<s:DropDownList id="openSubmissionMinute"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+				</s:HGroup>
 			</s:FormItem>
-			<s:FormItem label="Submission due date">
-				<mx:DateField id="submissionDuedate"/>
-				<s:DropDownList id="submissionDuedateHourList"
-								skinClass="skins.BootstrapDropDownList"
-								cornerRadius="3"
-								borderColor="0xcccccc"
-								requireSelection="true"/>
-				<s:DropDownList id="submissionDuedateMinuteList"
-								skinClass="skins.BootstrapDropDownList"
-								cornerRadius="3"
-								borderColor="0xcccccc"
-								requireSelection="true"/>
+			<s:FormItem label="Submission deadline">
+				<s:HGroup width="100%">
+					<mx:DateField id="submissionDeadlineDate"/>
+					<s:DropDownList id="submissionDeadlineHour"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+					<s:DropDownList id="submissionDeadLineMinute"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+				</s:HGroup>
+			</s:FormItem>
+
+			<s:FormItem label="Open for assessment from">
+				<s:HGroup width="100%">
+					<mx:DateField id="openAssessmentDate"/>
+					<s:DropDownList id="openAssessmentHour"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+					<s:DropDownList id="openAssessmentMinute"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Deadline for assessment">
+				<s:HGroup>
+					<mx:DateField id="assessmentDeadlineDate"/>
+					<s:DropDownList id="assessmentDeadlineHour"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+					<s:DropDownList id="assessmentDeadlineMinute"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+				</s:HGroup>
 			</s:FormItem>
 
 			<s:FormHeading label="Exercise"/>
@@ -184,46 +243,37 @@
 						  click="pickExerciseHandler(event)"/>
 				<view:ExerciseItemRenderer/>
 			</s:BorderContainer>
-			<s:FormHeading label="Evaluation"/>
-			<s:FormItem label="Peer evaluation">
-				<s:DropDownList id="peerassessmentchoose"
+			<s:FormHeading label="Assessment settings"/>
+			<s:FormItem label="Assessment type">
+				<s:DropDownList id="assessmentType"
 								selectedIndex="0"
 								change="peerassessmentchoose_changeHandler(event)">
-					<s:ArrayCollection>
-						<fx:String id="Yes"/>
-						<fx:String id="No"/>
-					</s:ArrayCollection>
+					<s:ArrayList>
+						<fx:Object code="ia"
+								   label="Instructor assessment"/>
+						<fx:Object code="pa"
+								   label="Peer assessment"/>
+					</s:ArrayList>
 				</s:DropDownList>
 			</s:FormItem>
-			<s:FormItem label="Self-evaluation">
-				<s:DropDownList id="selfassessmentchoose"
-								selectedIndex="0"
-								change="peerassessmentchoose_changeHandler(event)">
-					<s:ArrayCollection>
-						<fx:String id="Yes1"/>
-						<fx:String id="No2"/>
-					</s:ArrayCollection>
+			<s:FormItem label="Self-assessment">
+				<s:CheckBox id="selfassessmentchoose"
+							change="peerassessmentchoose_changeHandler(event)">
+				</s:CheckBox>
+			</s:FormItem>
+			<s:FormHeading label="Grading settings"/>
+			<s:FormItem label="Grade type">
+				<s:DropDownList id="gradeType"
+								selectedIndex="0">
+					<s:ArrayList>
+						<fx:Object code="dg"
+								   label="Direct grade"/>
+						<fx:Object code="ag"
+								   label="Accumulative grading"/>
+						<fx:Object code="rg"
+								   label="Rubric"/>
+					</s:ArrayList>
 				</s:DropDownList>
-			</s:FormItem>
-			<s:FormItem label="Allow evaluations from"
-						visible="{_peerEvaluation}">
-				<mx:DateField id="allowEvaluationsFrom"/>
-			</s:FormItem>
-			<s:FormItem label="Evaluation due date"
-						visible="{_peerEvaluation}">
-				<mx:DateField id="evaluationDueDate"/>
-			</s:FormItem>
-			<s:FormHeading label="Grade"/>
-			<s:FormItem label="Use default rubric">
-				<s:CheckBox id="defaultRubric"
-							selected="true"
-							change="defaultRubric_changeHandler(event)"/>
-			</s:FormItem>
-			<s:FormItem label="Custom rubric">
-				<s:VGroup id="groupRubric"
-						  visible="{_customRubric}">
-					<!-- The criteria should be added at runtime, take a look at language preference code -->
-				</s:VGroup>
 			</s:FormItem>
 		</s:Form>
 	</s:BorderContainer>
