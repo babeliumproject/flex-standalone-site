@@ -29,7 +29,7 @@
 			import mx.utils.ObjectUtil;
 			
 			import spark.events.IndexChangeEvent;
-			
+
 			public static const YEAR_RANGE:int=35;
 
 
@@ -66,24 +66,25 @@
 
 			protected function initDateTimeDropdowns():void
 			{
-				var currentDate:Date = new Date();
+				var currentDate:Date=new Date();
 				var days:ArrayCollection=new ArrayCollection();
 				var hours:ArrayCollection=new ArrayCollection();
 				var minutes:ArrayCollection=new ArrayCollection();
 				var years:ArrayCollection=new ArrayCollection();
-				
-				var months:ArrayCollection=new ArrayCollection(ResourceManager.getInstance().getStringArray('SharedResources','monthNames'));
-				
-				var s:Number=currentDate.fullYear-YEAR_RANGE;
-				var f:Number=currentDate.fullYear+YEAR_RANGE;
-				
-				for(s; s<=f; s++){
+
+				var months:ArrayCollection=new ArrayCollection(ResourceManager.getInstance().getStringArray('SharedResources', 'monthNames'));
+
+				var s:Number=currentDate.fullYear - YEAR_RANGE;
+				var f:Number=currentDate.fullYear + YEAR_RANGE;
+
+				for (s; s <= f; s++)
+				{
 					years.addItem(s);
 				}
 
 				var i:int;
-				
-				for (i=1; i <=31; i++)
+
+				for (i=1; i <= 31; i++)
 				{
 					days.addItem(zeroPad(i, 2));
 				}
@@ -102,54 +103,71 @@
 				openSubmissionHour.dataProvider=hours;
 				openSubmissionMinute.dataProvider=minutes;
 				submissionDeadlineDay.dataProvider=days;
+				submissionDeadlineMonth.dataProvider=months;
 				submissionDeadlineYear.dataProvider=years;
 				submissionDeadlineHour.dataProvider=hours;
 				submissionDeadlineMinute.dataProvider=minutes;
 
 				openAssessmentDay.dataProvider=days;
+				openAssessmentMonth.dataProvider=months;
 				openAssessmentYear.dataProvider=years;
 				openAssessmentHour.dataProvider=hours;
 				openAssessmentMinute.dataProvider=minutes;
 				assessmentDeadlineDay.dataProvider=days;
+				assessmentDeadlineMonth.dataProvider=months;
 				assessmentDeadlineYear.dataProvider=years;
 				assessmentDeadlineHour.dataProvider=hours;
 				assessmentDeadlineMinute.dataProvider=minutes;
-				
-				//Set the dropdown's initial values to reflect the current date time.
 
+				//Set the dropdown's initial values to reflect the current date time.
+				setDropdownBlockDateTime(openSubmissionDay,openSubmissionMonth,openSubmissionYear,openSubmissionHour,openSubmissionMinute,
+										 currentDate.date,currentDate.month,currentDate.fullYear,currentDate.hours,currentDate.minutes);
+				setDropdownBlockDateTime(submissionDeadlineDay,submissionDeadlineMonth,submissionDeadlineYear,submissionDeadlineHour,submissionDeadlineMinute,
+										 currentDate.date,currentDate.month,currentDate.fullYear,currentDate.hours,currentDate.minutes);
+				
+				setDropdownBlockDateTime(openAssessmentDay,openAssessmentMonth,openAssessmentYear,openAssessmentHour,openAssessmentMinute,
+										 currentDate.date,currentDate.month,currentDate.fullYear,currentDate.hours,currentDate.minutes);
+				setDropdownBlockDateTime(assessmentDeadlineDay,assessmentDeadlineMonth,assessmentDeadlineYear,assessmentDeadlineHour,assessmentDeadlineMinute,
+										 currentDate.date,currentDate.month,currentDate.fullYear,currentDate.hours,currentDate.minutes);
+				
 			}
 			
-			public function validateDates():Boolean{
+			protected function setDropdownBlockDateTime(dateComponent:Object,monthComponent:Object,yearComponent:Object,hourComponent:Object,minuteComponent:Object,date:int,month:int,year:int,hour:int,minute:int):void{
+				dateComponent.selectedIndex=date-1; //Dates are given in the range [1-31]
+				monthComponent.selectedIndex=month;
+				yearComponent.selectedItem=year;
+				hourComponent.selectedIndex=hour;
+				minuteComponent.selectedIndex=Math.floor(minute/5);
+			}
+
+			public function validateDates():Boolean
+			{
 				var valid:Boolean=false;
-				
+
 				//First check that all the dates have valid day of the month (e.g. <=30 when month is April)
-				
-				var currentDateTime:Date = new Date();
-				var openSubmissionDateTime:Date = new Date(parseInt(openSubmissionYear.selectedItem), openSubmissionMonth.selectedIndex, openSubmissionDay.selectedIndex+1, 
-														   openSubmissionHour.selectedIndex, openSubmissionMinute.selectedIndex);
-				
-				var submissionDeadlineDateTime:Date = new Date(parseInt(submissionDeadlineYear.selectedItem), submissionDeadlineMonth.selectedIndex, submissionDeadlineDay.selectedIndex+1, 
-															   submissionDeadlineHour.selectedIndex, submissionDeadlineMinute.selectedIndex);
-				
-				var openAssessmentDateTime:Date = new Date(parseInt(openAssessmentYear.selectedItem), openAssessmentMonth.selectedIndex, openAssessmentDay.selectedIndex+1, 
-														   openAssessmentHour.selectedIndex, openAssessmentMinute.selectedIndex);
-				
-				var assessmentDeadlineDateTime:Date = new Date(parseInt(assessmentDeadlineYear.selectedItem), assessmentDeadlineMonth.selectedIndex, assessmentDeadlineDay.selectedIndex+1, 
-															   assessmentDeadlineHour.selectedIndex, assessmentDeadlineMinute.selectedIndex);
-				
+
+				var currentDateTime:Date=new Date();
+				var openSubmissionDateTime:Date=new Date(parseInt(openSubmissionYear.selectedItem), openSubmissionMonth.selectedIndex, openSubmissionDay.selectedIndex + 1, openSubmissionHour.selectedIndex, openSubmissionMinute.selectedIndex);
+
+				var submissionDeadlineDateTime:Date=new Date(parseInt(submissionDeadlineYear.selectedItem), submissionDeadlineMonth.selectedIndex, submissionDeadlineDay.selectedIndex + 1, submissionDeadlineHour.selectedIndex, submissionDeadlineMinute.selectedIndex);
+
+				var openAssessmentDateTime:Date=new Date(parseInt(openAssessmentYear.selectedItem), openAssessmentMonth.selectedIndex, openAssessmentDay.selectedIndex + 1, openAssessmentHour.selectedIndex, openAssessmentMinute.selectedIndex);
+
+				var assessmentDeadlineDateTime:Date=new Date(parseInt(assessmentDeadlineYear.selectedItem), assessmentDeadlineMonth.selectedIndex, assessmentDeadlineDay.selectedIndex + 1, assessmentDeadlineHour.selectedIndex, assessmentDeadlineMinute.selectedIndex);
+
 				//Submission deadline must be greater than current date
-				DateUtil.compareDates(currentDateTime,submissionDeadlineDateTime);
-				
+				DateUtil.compareDates(currentDateTime, submissionDeadlineDateTime);
+
 				//Submission deadline must be greater than submission open
-				DateUtil.compareDates(openSubmissionDateTime,submissionDeadlineDateTime);
-				
+				DateUtil.compareDates(openSubmissionDateTime, submissionDeadlineDateTime);
+
 				//Assessment open must be greater than submission deadline
-				DateUtil.compareDates(submissionDeadlineDateTime,openAssessmentDateTime);
-				
+				DateUtil.compareDates(submissionDeadlineDateTime, openAssessmentDateTime);
+
 				//Assessment deadline must be greater than assessment open
-				DateUtil.compareDates(openAssessmentDateTime,assessmentDeadlineDateTime);
-				
-				
+				DateUtil.compareDates(openAssessmentDateTime, assessmentDeadlineDateTime);
+
+
 				return valid;
 			}
 
@@ -207,7 +225,7 @@
 		]]>
 	</fx:Script>
 
-	<s:Label text="{resourceManager.getString('myResources','ADD_ASSIGNMENT')}"
+	<s:Label text="{resourceManager.getString('myResources','ADDING_A_NEW_ASSIGNMENT')}"
 			 styleName="h2"/>
 
 	<s:BorderContainer id="container"
@@ -222,8 +240,65 @@
 		</s:layout>
 
 		<s:Form>
+			
+			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','GENERAL')}"
+						   styleName="h4"/>
+			<s:BorderContainer id="exercisePickArea"
+							   borderColor="#E0E0E0"
+							   borderAlpha=".85"
+							   backgroundAlpha="0">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center"
+									  verticalAlign="middle"
+									  paddingBottom="8"
+									  paddingLeft="8"
+									  paddingRight="8"
+									  paddingTop="8"/>
+				</s:layout>
+				<s:Button id="pickExerciseBtn"
+						  label="{ResourceManager.getInstance().getString('myResources','PICK_AN_EXERCISE')}"
+						  styleName="btn-primary"
+						  buttonMode="true"
+						  click="pickExerciseHandler(event)"/>
+				<view:ExerciseItemRenderer/>
+			</s:BorderContainer>
+			
+			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','ASSESSMENT_SETTINGS')}"
+						   styleName="h4"/>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','ASSESSMENT_TYPE')}">
+				<s:DropDownList id="assessmentType"
+								selectedIndex="0"
+								change="peerassessmentchoose_changeHandler(event)">
+					<s:ArrayList>
+						<fx:Object code="ia"
+								   label="Instructor assessment"/>
+						<fx:Object code="pa"
+								   label="Peer assessment"/>
+					</s:ArrayList>
+				</s:DropDownList>
+			</s:FormItem>
+			<s:FormItem label="Self-assessment">
+				<s:CheckBox id="selfassessmentchoose"
+							change="peerassessmentchoose_changeHandler(event)">
+				</s:CheckBox>
+			</s:FormItem>
+			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','GRADING_SETTINGS')}" styleName="h4"/>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','GRADE_TYPE')}">
+				<s:DropDownList id="gradeType"
+								selectedIndex="0">
+					<s:ArrayList>
+						<fx:Object code="dg"
+								   label="Direct grade"/>
+						<fx:Object code="ag"
+								   label="Accumulative grading"/>
+						<fx:Object code="rg"
+								   label="Rubric"/>
+					</s:ArrayList>
+				</s:DropDownList>
+			</s:FormItem>
 
-			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','AVAILABILITY')}" styleName="h4"/>
+			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','AVAILABILITY')}"
+						   styleName="h4"/>
 			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','OPEN_FOR_SUBMISSIONS_FROM')}">
 				<s:HGroup width="100%"
 						  verticalAlign="middle">
@@ -232,11 +307,11 @@
 									cornerRadius="3"
 									borderColor="0xcccccc"
 									requireSelection="true"/>
-					<s:DropDownList id="openSubmissionMonth"
-									skinClass="skins.BootstrapDropDownList"
-									cornerRadius="3"
-									borderColor="0xcccccc"
-									requireSelection="true"/>
+					<components:EnhancedDropDownList id="openSubmissionMonth"
+													 skinClass="skins.BootstrapDropDownList"
+													 cornerRadius="3"
+													 borderColor="0xcccccc"
+													 requireSelection="true"/>
 					<s:DropDownList id="openSubmissionYear"
 									skinClass="skins.BootstrapDropDownList"
 									cornerRadius="3"
@@ -264,11 +339,11 @@
 									cornerRadius="3"
 									borderColor="0xcccccc"
 									requireSelection="true"/>
-					<s:DropDownList id="submissionDeadlineMonth"
-									skinClass="skins.BootstrapDropDownList"
-									cornerRadius="3"
-									borderColor="0xcccccc"
-									requireSelection="true"/>
+					<components:EnhancedDropDownList id="submissionDeadlineMonth"
+													 skinClass="skins.BootstrapDropDownList"
+													 cornerRadius="3"
+													 borderColor="0xcccccc"
+													 requireSelection="true"/>
 					<s:DropDownList id="submissionDeadlineYear"
 									skinClass="skins.BootstrapDropDownList"
 									cornerRadius="3"
@@ -297,11 +372,11 @@
 									cornerRadius="3"
 									borderColor="0xcccccc"
 									requireSelection="true"/>
-					<s:DropDownList id="openAssessmentMonth"
-									skinClass="skins.BootstrapDropDownList"
-									cornerRadius="3"
-									borderColor="0xcccccc"
-									requireSelection="true"/>
+					<components:EnhancedDropDownList id="openAssessmentMonth"
+													 skinClass="skins.BootstrapDropDownList"
+													 cornerRadius="3"
+													 borderColor="0xcccccc"
+													 requireSelection="true"/>
 					<s:DropDownList id="openAssessmentYear"
 									skinClass="skins.BootstrapDropDownList"
 									cornerRadius="3"
@@ -329,11 +404,11 @@
 									cornerRadius="3"
 									borderColor="0xcccccc"
 									requireSelection="true"/>
-					<s:DropDownList id="assessmentDeadlineMonth"
-									skinClass="skins.BootstrapDropDownList"
-									cornerRadius="3"
-									borderColor="0xcccccc"
-									requireSelection="true"/>
+					<components:EnhancedDropDownList id="assessmentDeadlineMonth"
+													 skinClass="skins.BootstrapDropDownList"
+													 cornerRadius="3"
+													 borderColor="0xcccccc"
+													 requireSelection="true"/>
 					<s:DropDownList id="assessmentDeadlineYear"
 									skinClass="skins.BootstrapDropDownList"
 									cornerRadius="3"
@@ -355,58 +430,6 @@
 				</s:HGroup>
 			</s:FormItem>
 
-			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','EXERCISE')}" styleName="h4"/>
-			<s:BorderContainer id="exercisePickArea"
-							   borderColor="#E0E0E0"
-							   borderAlpha=".85"
-							   backgroundAlpha="0">
-				<s:layout>
-					<s:VerticalLayout horizontalAlign="center"
-									  verticalAlign="middle"
-									  paddingBottom="8"
-									  paddingLeft="8"
-									  paddingRight="8"
-									  paddingTop="8"/>
-				</s:layout>
-				<s:Button id="pickExerciseBtn"
-						  label="{ResourceManager.getInstance().getString('myResources','PICK_AN_EXERCISE')}"
-						  styleName="btn-primary"
-						  buttonMode="true"
-						  click="pickExerciseHandler(event)"/>
-				<view:ExerciseItemRenderer/>
-			</s:BorderContainer>
-			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','ASSESSMENT_SETTINGS')}" styleName="h4"/>
-			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','ASSESSMENT_TYPE')}">
-				<s:DropDownList id="assessmentType"
-								selectedIndex="0"
-								change="peerassessmentchoose_changeHandler(event)">
-					<s:ArrayList>
-						<fx:Object code="ia"
-								   label="Instructor assessment"/>
-						<fx:Object code="pa"
-								   label="Peer assessment"/>
-					</s:ArrayList>
-				</s:DropDownList>
-			</s:FormItem>
-			<s:FormItem label="Self-assessment">
-				<s:CheckBox id="selfassessmentchoose"
-							change="peerassessmentchoose_changeHandler(event)">
-				</s:CheckBox>
-			</s:FormItem>
-			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','GRADING_SETTINGS')}"/>
-			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','GRADE_TYPE')}">
-				<s:DropDownList id="gradeType"
-								selectedIndex="0">
-					<s:ArrayList>
-						<fx:Object code="dg"
-								   label="Direct grade"/>
-						<fx:Object code="ag"
-								   label="Accumulative grading"/>
-						<fx:Object code="rg"
-								   label="Rubric"/>
-					</s:ArrayList>
-				</s:DropDownList>
-			</s:FormItem>
 		</s:Form>
 	</s:BorderContainer>
 	<s:HGroup width="100%"
