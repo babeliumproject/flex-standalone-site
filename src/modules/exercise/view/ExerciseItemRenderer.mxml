@@ -2,15 +2,17 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
-				buttonMode="true">
+				autoDrawBackground="false">
 	<s:layout>
 		<s:VerticalLayout verticalAlign="middle"/>
 	</s:layout>
 
 	<fx:Script>
 		<![CDATA[
+			import control.URLManager;
+			
 			import flash.globalization.DateTimeStyle;
-
+			
 			import utils.ExerciseRenderUtils;
 
 			private const MAX_DESCRIPTION_CHARS:int=120;
@@ -28,9 +30,23 @@
 				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
 				usernameLbl.text=value.userName;
 				usernameLbl.toolTip=value.userName;
-				titleLbl.text=value.title;
+				titleLbl.label=value.title;
 				titleLbl.toolTip=value.title;
 			}
+			
+			override protected function get hovered():Boolean { return false; }
+			override protected function get down():Boolean { return false; }
+			override public function get selected():Boolean { return false; }
+			override public function get showsCaret():Boolean { return false; }
+			
+			protected function thumbClickHandler(event:MouseEvent):void{
+				URLManager.getInstance().redirect('/exercises/view/' + data.exercisecode);
+			}
+			
+			protected function addToAssignmentClickHandler(event:MouseEvent):void{
+				URLManager.getInstance().redirect('assignment/add/?' + 'c='+2+'&exercise='+data.exercisecode);
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -44,9 +60,12 @@
 
 		<s:Group width="180"
 				 height="135">
-			<s:BitmapImage id="thumbnail"
-						   width="180"
-						   height="135"/>
+			<s:Graphic id="imgWrapper" click="thumbClickHandler(event)" buttonMode="true">
+				<s:BitmapImage id="thumbnail"
+							   width="180"
+							   height="135"/>
+			</s:Graphic>
+			
 			<s:TextInput id="videoDuration"
 						 styleName="videoDurationLabel"
 						 x="148"
@@ -55,6 +74,7 @@
 						 height="16"
 						 editable="false"
 						 selectable="false"/>
+			<s:Button id="addToAssignmentBtn" click="addToAssignmentClickHandler(event)" label="+" y="100" x="4"/>
 		</s:Group>
 
 		<s:VGroup horizontalAlign="right"
@@ -80,9 +100,10 @@
 						 maxDisplayedLines="1"
 						 id="usernameLbl"/>
 			</s:HGroup>
-			<s:Label id="titleLbl"
+			<s:Button id="titleLbl"
 					 width="100%"
-					 maxDisplayedLines="3"/>
+					 styleName="btn-link"/> 
+			<!--maxDisplayedLines="3"-->
 		</s:VGroup>
 	</s:BorderContainer>
 </s:ItemRenderer>

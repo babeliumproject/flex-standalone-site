@@ -496,7 +496,7 @@
 			<s:List id="exerciseListDataGroup"
 					width="100%"
 					minHeight="0"
-					change="changeHandler(event)"
+					
 					borderVisible="false"
 					skinClass="skins.TransparentBgListSkin"
 					itemRenderer="modules.exercise.view.ExerciseItemRenderer">
