@@ -162,9 +162,7 @@
 				} else {
 					var id:int = parseInt(parameters['id']);
 					
-					var params:Object = new Object();
-					
-					new AssignmentEvent(AssignmentEvent.EDIT_ASSIGNMENT, params).dispatch();
+					new AssignmentEvent(AssignmentEvent.EDIT_ASSIGNMENT, id).dispatch();
 				}
 			}
 			

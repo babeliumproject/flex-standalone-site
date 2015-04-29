@@ -30,7 +30,7 @@
 				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
 				usernameLbl.text=value.userName;
 				usernameLbl.toolTip=value.userName;
-				titleLbl.label=value.title;
+				titleLbl.text=value.title;
 				titleLbl.toolTip=value.title;
 			}
 			
@@ -39,7 +39,7 @@
 			override public function get selected():Boolean { return false; }
 			override public function get showsCaret():Boolean { return false; }
 			
-			protected function thumbClickHandler(event:MouseEvent):void{
+			protected function viewExerciseClickHandler(event:MouseEvent):void{
 				URLManager.getInstance().redirect('/exercises/view/' + data.exercisecode);
 			}
 			
@@ -60,7 +60,7 @@
 
 		<s:Group width="180"
 				 height="135">
-			<s:Graphic id="imgWrapper" click="thumbClickHandler(event)" buttonMode="true">
+			<s:Graphic id="imgWrapper" click="viewExerciseClickHandler(event)" buttonMode="true">
 				<s:BitmapImage id="thumbnail"
 							   width="180"
 							   height="135"/>
@@ -74,7 +74,7 @@
 						 height="16"
 						 editable="false"
 						 selectable="false"/>
-			<s:Button id="addToAssignmentBtn" click="addToAssignmentClickHandler(event)" label="+" y="100" x="4"/>
+			<s:Button id="addToAssignmentBtn" click="addToAssignmentClickHandler(event)" label="+" y="100" x="4" width="22" height="22" cornerRadius="0"/>
 		</s:Group>
 
 		<s:VGroup horizontalAlign="right"
@@ -100,10 +100,11 @@
 						 maxDisplayedLines="1"
 						 id="usernameLbl"/>
 			</s:HGroup>
-			<s:Button id="titleLbl"
+			<s:Label id="titleLbl"
 					 width="100%"
-					 styleName="btn-link"/> 
-			<!--maxDisplayedLines="3"-->
+					 maxDisplayedLines="3"
+					 buttonMode="true"
+					 click="viewExerciseClickHandler(event)"/>
 		</s:VGroup>
 	</s:BorderContainer>
 </s:ItemRenderer>
