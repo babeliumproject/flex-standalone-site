@@ -13,9 +13,16 @@
 			
 			import flash.globalization.DateTimeStyle;
 			
+			import model.DataModel;
+			
 			import utils.ExerciseRenderUtils;
 
 			private const MAX_DESCRIPTION_CHARS:int=120;
+			
+			private var _model:DataModel=DataModel.getInstance();
+		
+			private var courseId:int;
+			private var assignmentId:int;
 
 			override public function set data(value:Object):void
 			{
@@ -39,11 +46,30 @@
 			override public function get selected():Boolean { return false; }
 			override public function get showsCaret():Boolean { return false; }
 			
+			protected function displayAddToAssignmentButton():Boolean{
+				var visible:Boolean=false;
+				if(_model.loggedUser){
+					/*
+					var perms:Object=_model.loggedUser.hasOwnProperty('permissions') ? _model.loggedUser.permissions : null;
+					if(perms && perms.instructor){
+						var courses:Array = perms.instructor; //an array of courseids in which the user is an instructor
+						if(_model.tempAssignmentData && courses.indexOf(_model.tempAssignmentData.courseid) != -1){
+							
+							visible=true;
+						}
+					}
+					*/
+				}
+				return visible;
+			}
+			
 			protected function viewExerciseClickHandler(event:MouseEvent):void{
+				if(data==null) return;
 				URLManager.getInstance().redirect('/exercises/view/' + data.exercisecode);
 			}
 			
 			protected function addToAssignmentClickHandler(event:MouseEvent):void{
+				if(data==null) return;
 				URLManager.getInstance().redirect('assignment/add/?' + 'c='+2+'&exercise='+data.exercisecode);
 			}
 			

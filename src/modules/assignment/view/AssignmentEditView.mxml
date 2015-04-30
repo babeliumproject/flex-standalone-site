@@ -59,6 +59,30 @@
 				if (cw1)
 					cw1.unwatch();
 				cw1=null;
+				
+				openSubmissionDate.removeEventListener(CalendarLayoutChangeEvent.CHANGE, onDatePickerChange);
+				openSubmissionDay.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				openSubmissionMonth.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				openSubmissionYear.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				
+				submissionDeadLineDate.removeEventListener(CalendarLayoutChangeEvent.CHANGE, onDatePickerChange);
+				submissionDeadlineDay.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				submissionDeadlineMonth.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				submissionDeadlineYear.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				
+				openAssessmentDate.removeEventListener(CalendarLayoutChangeEvent.CHANGE, onDatePickerChange);
+				openAssessmentDay.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				openAssessmentMonth.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				openAssessmentYear.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				
+				assessmentDeadlineDate.removeEventListener(CalendarLayoutChangeEvent.CHANGE, onDatePickerChange);
+				assessmentDeadlineDay.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				assessmentDeadlineMonth.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				assessmentDeadlineYear.removeEventListener(IndexChangeEvent.CHANGE, onDateDropdownChange);
+				
+				pickExerciseBtn.removeEventListener(MouseEvent.CLICK, pickExerciseHandler);
+				saveButton.removeEventListener(MouseEvent.CLICK, saveAssignmentClickHandler);
+				cancelButton.removeEventListener(MouseEvent.CLICK, cancelAssignmentClickHandler);
 
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
@@ -187,7 +211,18 @@
 
 			protected function assignmentDataRetrieved(value:Boolean):void
 			{
-
+				var data:Object = _model.assignmentData;
+				if(data){
+					
+					var opensub:Date=new Date(data.opensubmissiondate * 1000); //as3 timestamps require ms. precision
+					var subdeadline:Date=new Date(data.submissionduedate * 1000);
+					if(data.peerassessment){
+						var openassess:Date=new Date(data.openassessmentdate * 1000);
+						var assessdeadline:Date=new Date(data.assessmentduedate * 1000);
+						var assesscount:int=data.assessmentcount;
+						var selfassess:Boolean=data.selfassessment ? true : false;
+					}
+				}
 			}
 
 			protected function pickExerciseHandler(event:MouseEvent):void
@@ -210,7 +245,7 @@
 
 			protected function saveAssignmentClickHandler(event:MouseEvent):void
 			{
-
+				
 			}
 
 			protected function cancelAssignmentClickHandler(event:MouseEvent):void
