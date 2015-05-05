@@ -2,7 +2,8 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				xmlns:s="library://ns.adobe.com/flex/spark" 
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
-				autoDrawBackground="true">
+				autoDrawBackground="true"
+				width="100%">
 	
 	<s:layout>
 		<s:VerticalLayout paddingTop="4"
@@ -16,12 +17,13 @@
 	<s:Label id="courseTitleLbl" styleName="h4"/>
 	<s:Label id="courseSummaryLbl"/>
 	
-	
-	<s:Button id="viewCourse"
-			  label="{ResourceManager.getInstance().getString('myResources','GO_TO_COURSE')}"
-			  click="viewCourse_clickHandler(event)"
-			  buttonMode="true"
-			  styleName="btn-primary"/>
+	<s:HGroup width="100%" horizontalAlign="right">
+		<s:Button id="viewCourse"
+				  label="{ResourceManager.getInstance().getString('myResources','GO_TO_COURSE')}"
+				  click="onViewCourseClick(event)"
+				  buttonMode="true"
+				  styleName="btn-primary"/>
+	</s:HGroup>
 
 	<fx:Script>
 		<![CDATA[
@@ -39,7 +41,7 @@
 				courseSummaryLbl.text=value.summary;
 			}
 
-			protected function viewCourse_clickHandler(event:MouseEvent):void
+			protected function onViewCourseClick(event:MouseEvent):void
 			{
 				URLManager.getInstance().redirect('/course/view/'+data.id);
 			}

@@ -28,6 +28,7 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			
+			import spark.components.supportClasses.ListBase;
 			import spark.events.IndexChangeEvent;
 
 			public static const YEAR_RANGE:int=35;
@@ -38,20 +39,27 @@
 
 			private var _model:DataModel=DataModel.getInstance();
 
-			private var commitOnly:Boolean;
-			private var useWeakReference:Boolean;
+			private var commitOnly:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+			private var useWeakReference:Boolean=false;
 			private var cw1:ChangeWatcher;
 
 			protected function onComplete(event:FlexEvent):void
 			{
 				initDateTimeDropdowns();
 				initSettingsDropdowns();
+				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, useCapture, priority, useWeakReference);
 				cw1=BindingUtils.bindSetter(assignmentDataRetrieved, _model, 'assignmentDataRetrieved', commitOnly, useWeakReference);
 			}
 
 			public function resetGroup():void
 			{
+				//Reset the dropdown lists to the initial value
+				initDateTimeDropdowns();
+				
 				//Remove any data stored in the model
+				_model.assignmentData=null;
 			}
 
 			public function unpinGroup():void
@@ -83,8 +91,28 @@
 				pickExerciseBtn.removeEventListener(MouseEvent.CLICK, pickExerciseHandler);
 				saveButton.removeEventListener(MouseEvent.CLICK, saveAssignmentClickHandler);
 				cancelButton.removeEventListener(MouseEvent.CLICK, cancelAssignmentClickHandler);
+				
+				ResourceManager.getInstance().removeEventListener(Event.CHANGE, localeChangeHandler);
 
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			}
+			
+			protected function localeChangeHandler(event:Event):void{
+				var localeMonths:ArrayCollection=new ArrayCollection(ResourceManager.getInstance().getStringArray('SharedResources', 'monthNames'));
+				
+				var prevOpenSubM:int = openSubmissionMonth.selectedIndex;
+				openSubmissionMonth.dataProvider=localeMonths;
+				openSubmissionMonth.selectedIndex=prevOpenSubM;
+				var prevSubDlineM:int = submissionDeadlineMonth.selectedIndex;
+				submissionDeadlineMonth.dataProvider=localeMonths;
+				submissionDeadlineMonth.selectedIndex=prevSubDlineM;
+				var prevOpenAssessM:int = openAssessmentMonth.selectedIndex;
+				openAssessmentMonth.dataProvider=localeMonths;
+				openAssessmentMonth.selectedIndex=prevOpenAssessM;
+				var prevAssessDlineM:int = assessmentDeadlineMonth.selectedIndex;
+				assessmentDeadlineMonth.dataProvider=localeMonths;
+				assessmentDeadlineMonth.selectedIndex=prevAssessDlineM;
+				
 			}
 
 			protected function initSettingsDropdowns():void{
@@ -231,10 +259,21 @@
 				URLManager.getInstance().redirect('/exercises');
 			}
 
-			protected function peerassessmentchoose_changeHandler(event:Event):void
+			protected function onAssessmentTypeChange(event:Event):void
 			{
 				// TODO Auto-generated method stub
-
+				var item:Object=ListBase(event.target).selectedItem;
+				if(item.code==0){
+					peerAssessmentDates.visible=false;
+					peerAssessmentDates.includeInLayout=false;
+					peerAssessmentOptions.visible=false;
+					peerAssessmentOptions.includeInLayout=false;
+				} else {
+					peerAssessmentDates.visible=true;
+					peerAssessmentDates.includeInLayout=true;
+					peerAssessmentOptions.visible=true;
+					peerAssessmentOptions.includeInLayout=true;
+				}
 			}
 
 			protected function defaultRubric_changeHandler(event:Event):void
@@ -364,13 +403,22 @@
 												 borderColor="0xcccccc"
 												 requireSelection="true"
 												 sortItems="false"
-												 change="peerassessmentchoose_changeHandler(event)"/>
+												 change="onAssessmentTypeChange(event)"/>
 			</s:FormItem>
-			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','SELF_ASSESSMENT')}">
-				<s:CheckBox id="selfassessmentchoose"
-							change="peerassessmentchoose_changeHandler(event)"
-							skinClass="skins.BootstrapCheckBox"/>
-			</s:FormItem>
+			<s:VGroup id="peerAssessmentOptions" width="100%" includeInLayout="false" visible="false">
+				<s:FormItem label="{ResourceManager.getInstance().getString('myResources','SELF_ASSESSMENT')}">
+					<s:CheckBox id="selfassessmentchoose"
+								change="onAssessmentTypeChange(event)"
+								skinClass="skins.BootstrapCheckBox"/>
+				</s:FormItem>
+				<s:FormItem label="{ResourceManager.getInstance().getString('myResources','NUMBER_OF_REVIEWS')}">
+					<s:DropDownList id="numPeerReviews"
+									skinClass="skins.BootstrapDropDownList"
+									cornerRadius="3"
+									borderColor="0xcccccc"
+									requireSelection="true"/>
+				</s:FormItem>
+			</s:VGroup>
 			
 			<!--
 			<s:FormHeading label="{ResourceManager.getInstance().getString('myResources','GRADING_SETTINGS')}"
