@@ -560,14 +560,16 @@ CREATE  TABLE `rel_exercise_tag` (
 DROP TABLE IF EXISTS `exercise_descriptor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE  TABLE `exercise_descriptor` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `level` ENUM('A1','A2','B1','B2','C1','C2') NOT NULL ,
-  `type` ENUM('L','R','SI','SP','S','LQ','W') NOT NULL ,
-  `number` INT UNSIGNED NOT NULL ,
+CREATE TABLE `exercise_descriptor` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `situation` tinyint(2) unsigned NOT NULL DEFAULT '1',
+  `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `competence` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `number` int(10) unsigned NOT NULL DEFAULT '1',
+  `alte` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY(`level`,`type`,`number`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE KEY `code` (`situation`,`level`,`competence`,`number`)
+) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
