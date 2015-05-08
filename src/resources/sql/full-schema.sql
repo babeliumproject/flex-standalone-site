@@ -95,6 +95,7 @@ CREATE TABLE `exercise` (
   `fk_transcription_id` int(10) unsigned default NULL,
   `license` varchar(60) NOT NULL default 'cc-by' COMMENT 'The kind of license this exercise is attached to',
   `reference` text NOT NULL COMMENT 'The url or name of the entity that provided this resource (if any)',
+  `ismodel` TINYINT(1) NULL DEFAULT '0',
   PRIMARY KEY  (`id`),
   KEY `FK_exercises_1` (`fk_user_id`),
   KEY `fk_exercise_transcriptions1` (`fk_transcription_id`),
