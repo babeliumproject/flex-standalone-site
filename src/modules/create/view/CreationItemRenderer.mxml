@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
-						  xmlns:s="library://ns.adobe.com/flex/spark"
-						  xmlns:mx="library://ns.adobe.com/flex/mx"
-						  xmlns:hulstkamp="com.hulstkamp.*"
-						  autoDrawBackground="true"
-						  creationComplete="completeHandler()"
-						  dataChange="dataChangeHandler()"
-						  xmlns:skins="skins.*">
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="100%">
 
 	<s:layout>
 		<s:HorizontalLayout verticalAlign="top"
@@ -16,143 +12,95 @@
 							paddingRight="8"/>
 	</s:layout>
 
-	<s:CheckBox id="itemSelected"
-				change="itemSelected_changeHandler(event)"
-				selected="{data.itemSelected}"/>
-
-	<s:BitmapImage id="thumbnail"
-				   source="{data.thumbnail}"
-				   width="120"
-				   height="90"/>
-
-
-	<s:VGroup width="100%"
-			  horizontalAlign="left"
-			  gap="2">
-		<s:Label id="title"
-				 text="{data.title}"
-				 styleName="boldLabel"/>
-		<s:Line width="100%"
-				alpha="0.5">
-			<s:stroke>
-				<mx:SolidColorStroke weight="2"
-									 color="#aaaaaa"/>
-			</s:stroke>
-		</s:Line>
-		<s:HGroup gap="20"
-				  verticalAlign="middle">
-			<s:HGroup gap="2"
-					  verticalAlign="middle">
-				<s:BitmapImage width="16"
-						  height="16"
-						  source="{ExerciseRenderUtils.getFlagSource(data)}"
-						  id="exerciseLanguage"/>
-				<s:Label text="{ExerciseRenderUtils.getLevelLabel(data.difficulty)}"
-						 styleName="boldYellowLabel"/>
-			</s:HGroup>
-			<s:Label text="{ExerciseRenderUtils.formatDateTime(data.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE)}"
-					 styleName="boldYellowLabel"/>
-		</s:HGroup>
-
-		<s:HGroup width="850" paddingTop="4" paddingBottom="4" verticalAlign="middle">
-			<s:Label text="{resourceManager.getString('myResources','VISIBILITY')+':'}"/>
-			<s:Label text="{parseInt(data.visible) ? ResourceManager.getInstance().getString('myResources','PUBLIC') : ResourceManager.getInstance().getString('myResources','PRIVATE')}"/>
-		</s:HGroup>
-		<!--
-		<s:HGroup verticalAlign="middle"
-				  width="100%">
-			<mx:Image id="license"
-					  scaleContent="true"
-					  source="{getLicenseSource(data as ExerciseVO)}"
-					  autoLoad="true"
-					  click="licenseClickHandler(event)"
-					  toolTip="{_licenseData.tooltip}"
-					  width="80"
-					  height="15"
-					  useHandCursor="true"
-					  buttonMode="true"/>
-			<skins:IconButton id="referenceUrl"
-							  width="240"
-							  label="{data.reference}"
-							  click="referenceClickHandler(event)"
-							  styleName="commonLinkButton"
-							  enabled="{checkExternalUrl(data.reference)}"/>
-		</s:HGroup>
-		-->
-		<s:HGroup width="100%"
-				  verticalAlign="middle"
-				  paddingBottom="16">
-			<s:Label id="status"
-					 text="{ResourceManager.getInstance().getString('myResources','STATUS')+':'}"/>
-			<s:Label id="statusValue"
-					 text="{parseInt(data.status) ? ResourceManager.getInstance().getString('myResources','READY') : ResourceManager.getInstance().getString('myResources','DRAFT')}"/>
-		</s:HGroup>
-		<skins:IconButton id="editVideoData"
-				  label="{resourceManager.getString('myResources','EDIT')}"
-				  click="editExercise(event)"
-				  styleName="btn-default"/>
-
-	</s:VGroup>
-
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.utils.StringUtil;
-			
-			import utils.ExerciseRenderUtils;
-			
 			import control.URLManager;
-			
-			import flash.globalization.DateTimeFormatter;
+
 			import flash.globalization.DateTimeStyle;
-			
-			import model.DataModel;
-			import model.LocalesAndFlags;
-			
-			import modules.exercise.event.ExerciseEvent;
-			import modules.exercise.event.SearchEvent;
-			import modules.subtitle.event.SubtitleEvent;
-			
-			import mx.controls.Text;
-			import mx.formatters.NumberBaseRoundType;
-			import mx.formatters.NumberFormatter;
-			import mx.formatters.SwitchSymbolFormatter;
+
+			import mx.binding.utils.ChangeWatcher;
 			import mx.resources.ResourceManager;
-			
-			import skins.IconButton;
-			
-			import utils.CollectionUtils;
-			
-			import view.common.LicenseResource;
-			import view.common.TimeFormatter;
-			
-			import vo.ExerciseRoleVO;
-			import vo.ExerciseVO;
-			import vo.SubtitleAndSubtitleLinesVO;
 
+			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
 
-			private var _data:Object;
+			private var cwlblvec:Vector.<ChangeWatcher>;
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
 
-			private var _creationComplete:Boolean=false;
-
-			private var _model:DataModel=DataModel.getInstance();
-			
-			private var dateTimeFormatter:DateTimeFormatter;		
-			
-			public function completeHandler():void
+			public function unpinComponent():void
 			{
-				_data=data;
-				_creationComplete=true;
+				if (cwlblvec)
+				{
+					var i:int, length:int;
+					length=cwlblvec.length;
+					for (i=0; i < length; i++)
+					{
+						cwlblvec[i].unwatch();
+						cwlblvec[i]=null;
+					}
+					cwlblvec=null;
+				}
+
+				//Remove listeners
+				selectionCheckbox.removeEventListener(Event.CHANGE, itemSelected_changeHandler);
+				editVideoData.removeEventListener(MouseEvent.CLICK, editExercise);
+			}
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+
+				if (value == null)
+					return;
+
+				selectionCheckbox.selected=value.itemSelected;
+				thumbnail.source=value.thumbnail;
+				title.text=value.title;
+
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
+				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
+				exerciseDate.text=ExerciseRenderUtils.formatDateTime(data.timecreated, DateTimeStyle.SHORT, DateTimeStyle.NONE);
+
+				if (!cwlblvec)
+					cwlblvec=new Vector.<ChangeWatcher>();
+
+				var cw1:ChangeWatcher;
+				var prop1:String=parseInt(value.visible) ? 'PUBLIC' : 'PRIVATE';
+				cw1=LocaleUtils.localizedPropertyBind(visibilityLbl, 'text', 'myResources', prop1, commitOnly, useWeakReference);
+				cwlblvec.push(cw1);
+
+				var cw2:ChangeWatcher;
+				var prop2:String=parseInt(value.status) ? 'READY' : 'DRAFT';
+				cw2=LocaleUtils.localizedPropertyBind(statusLbl, 'text', 'myResources', prop2, commitOnly, useWeakReference);
+				cwlblvec.push(cw2);
 
 			}
-			
-			public function dataChangeHandler():void{
+
+			override protected function get hovered():Boolean
+			{
+				return false;
 			}
+
+			override protected function get down():Boolean
+			{
+				return false;
+			}
+
+			override public function get selected():Boolean
+			{
+				return false;
+			}
+
+			override public function get showsCaret():Boolean
+			{
+				return false;
+			}
+
 
 			protected function editExercise(event:MouseEvent):void
 			{
-				//parentDocument.videoEditRequested(data);
-				trace("Exercise renderer event dispatch data: "+data.exercisecode);
-				URLManager.getInstance().redirect('/create/edit/'+data.exercisecode+'?s=1');
+				URLManager.getInstance().redirect('/create/edit/' + data.exercisecode + '?s=1');
 			}
 
 			protected function itemSelected_changeHandler(event:Event):void
@@ -162,4 +110,57 @@
 		]]>
 	</fx:Script>
 
-</s:MXDataGridItemRenderer>
+	<s:CheckBox id="selectionCheckbox"
+				change="itemSelected_changeHandler(event)"/>
+
+	<s:BitmapImage id="thumbnail"
+				   width="120"
+				   height="90"/>
+
+
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  gap="2">
+		<s:Label id="title"
+				 styleName="boldLabel"/>
+		<s:Line width="100%"
+				alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="1"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+		<s:HGroup gap="20"
+				  verticalAlign="middle">
+			<s:HGroup gap="2"
+					  verticalAlign="middle">
+				<s:BitmapImage id="exerciseLanguage"
+							   width="16"
+							   height="16"/>
+				<s:Label id="diflevelLbl"
+						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:Label id="exerciseDate"
+					 styleName="boldYellowLabel"/>
+		</s:HGroup>
+
+		<s:HGroup width="850"
+				  paddingTop="4"
+				  paddingBottom="4"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources','VISIBILITY')+':'}"/>
+			<s:Label id="visibilityLbl"/>
+		</s:HGroup>
+		<s:HGroup width="100%"
+				  verticalAlign="middle"
+				  paddingBottom="16">
+			<s:Label text="{resourceManager.getString('myResources','STATUS')+':'}"/>
+			<s:Label id="statusLbl"/>
+		</s:HGroup>
+		<s:Button id="editVideoData"
+				  label="{resourceManager.getString('myResources','EDIT')}"
+				  click="editExercise(event)"
+				  styleName="btn-default"
+				  buttonMode="true"/>
+	</s:VGroup>
+</s:ItemRenderer>
