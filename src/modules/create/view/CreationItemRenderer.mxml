@@ -15,12 +15,12 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
 			import flash.globalization.DateTimeStyle;
-
+			
 			import mx.binding.utils.ChangeWatcher;
 			import mx.resources.ResourceManager;
-
+			
 			import utils.ExerciseRenderUtils;
 			import utils.LocaleUtils;
 
@@ -43,8 +43,9 @@
 				}
 
 				//Remove listeners
-				selectionCheckbox.removeEventListener(Event.CHANGE, itemSelected_changeHandler);
-				editVideoData.removeEventListener(MouseEvent.CLICK, editExercise);
+				selectionCheckbox.removeEventListener(Event.CHANGE, itemSelectChangeHandler);
+				imgWrapper.removeEventListener(MouseEvent.CLICK, editCreationClickHandler);
+				editBtn.removeEventListener(MouseEvent.CLICK, editCreationClickHandler);
 			}
 
 			override public function set data(value:Object):void
@@ -98,12 +99,12 @@
 			}
 
 
-			protected function editExercise(event:MouseEvent):void
+			protected function editCreationClickHandler(event:MouseEvent):void
 			{
 				URLManager.getInstance().redirect('/create/edit/' + data.exercisecode + '?s=1');
 			}
 
-			protected function itemSelected_changeHandler(event:Event):void
+			protected function itemSelectChangeHandler(event:Event):void
 			{
 				data.itemSelected=(event.currentTarget as CheckBox).selected;
 			}
@@ -111,11 +112,15 @@
 	</fx:Script>
 
 	<s:CheckBox id="selectionCheckbox"
-				change="itemSelected_changeHandler(event)"/>
+				change="itemSelectChangeHandler(event)"/>
 
-	<s:BitmapImage id="thumbnail"
-				   width="120"
-				   height="90"/>
+	<s:Group>
+		<s:Graphic id="imgWrapper" click="editCreationClickHandler(event)" buttonMode="true">
+			<s:BitmapImage id="thumbnail"
+						   width="120"
+						   height="90"/>
+		</s:Graphic>
+	</s:Group>
 
 
 	<s:VGroup width="100%"
@@ -157,9 +162,9 @@
 			<s:Label text="{resourceManager.getString('myResources','STATUS')+':'}"/>
 			<s:Label id="statusLbl"/>
 		</s:HGroup>
-		<s:Button id="editVideoData"
+		<s:Button id="editBtn"
 				  label="{resourceManager.getString('myResources','EDIT')}"
-				  click="editExercise(event)"
+				  click="editCreationClickHandler(event)"
 				  styleName="btn-default"
 				  buttonMode="true"/>
 	</s:VGroup>

@@ -57,6 +57,7 @@ package modules.create.service
 		public function deleteSelectedCreations(params:Object):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("createRO");
 			var pendingCall:AsyncToken=service.deleteSelectedCreations(params);
+			pendingCall.addResponder(responder);
 		}
 		
 		public function setDefaultThumbnail(query:Object = null):void{

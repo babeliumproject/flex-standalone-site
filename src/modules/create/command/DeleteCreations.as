@@ -30,12 +30,7 @@ package modules.create.command
 		{
 			var result:Object=data.result;
 			
-			if (result == true){
-				DataModel.getInstance().selectedVideosDeleted = true;
-			} else {
-				DataModel.getInstance().selectedVideosDeleted = false;
-				CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_DELETING_VIDEOS'));
-			}
+			DataModel.getInstance().selectedVideosDeleted=!DataModel.getInstance().selectedVideosDeleted;
 		}
 		
 		public function fault(info:Object):void

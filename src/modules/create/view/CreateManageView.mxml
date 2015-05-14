@@ -26,6 +26,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
@@ -43,83 +44,87 @@
 			private var dataModel:DataModel=DataModel.getInstance();
 
 			private var _currentPage:uint=1;
-		
-			private var _dataProvider:ArrayCollection;
+
+			private var _fullDataList:ArrayCollection;
 
 			private var itemsToDelete:Array;
-			
+
 			private var commitOnly:Boolean=false;
 			private var useWeakReference:Boolean=false;
-			
-			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher, cw3:ChangeWatcher;
 
 			protected function onComplete(event:FlexEvent):void
 			{
-				cw1=BindingUtils.bindSetter(userExerciseListRetrieved,dataModel,'userVideoListRetrieved',commitOnly,useWeakReference);
-				cw2=BindingUtils.bindSetter(deleteSelectedExercisesResult,dataModel,'selectedVideosDeleted',commitOnly,useWeakReference);
+				cw1=BindingUtils.bindSetter(userExerciseListRetrieved, dataModel, 'userVideoListRetrieved', commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(deleteSelectedExercisesResult, dataModel, 'selectedVideosDeleted', commitOnly, useWeakReference);
 				deleteExercisesButton.enabled=false;
 				setupExerciseCounter();
 			}
-			
-			protected function setupExerciseCounter():void{
-				var code:String = 'VIDEO_COUNT_MANY';
-				var count:int = _dataProvider ? _dataProvider.length : 0;
-				if(count==1){
-					code = 'VIDEO_COUNT_SINGLE';
+
+			protected function setupExerciseCounter():void
+			{
+				var code:String='VIDEO_COUNT_MANY';
+				var count:int=_fullDataList ? _fullDataList.length : 0;
+				if (count == 1)
+				{
+					code='VIDEO_COUNT_SINGLE';
 				}
-				if(cw3) cw3.unwatch();
-				cw3=LocaleUtils.localizedTemplatePropertyBind(exerciseCount,'text','myResources',code,count);
+				if (cw3)
+					cw3.unwatch();
+				cw3=LocaleUtils.localizedTemplatePropertyBind(exerciseCount, 'text', 'myResources', code, count);
 			}
-			
+
 			public function resetGroup():void
 			{
 				_currentPage=1;
 				itemsToDelete=null;
-				_dataProvider=null;
+				_fullDataList=null;
 				deleteExercisesButton.enabled=false;
-				
+
 				//Reset related model data
 				dataModel.userVideoList=null;
 			}
-			
-			public function unpinGroup():void{
-				if(cw1) cw1.unwatch();
-				if(cw2) cw2.unwatch();
-				if(cw3) cw3.unwatch();
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				if (cw2)
+					cw2.unwatch();
+				if (cw3)
+					cw3.unwatch();
 				cw1=null;
 				cw2=null;
 				cw3=null;
-				
+
 				deleteExercisesButton.removeEventListener(MouseEvent.CLICK, deleteExercisesButtonClickHandler);
-				
+
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
 			private function userExerciseListRetrieved(value:Boolean):void
 			{
-				var dataProvider:ArrayCollection=dataModel.userVideoList;
-				_dataProvider=dataProvider;
+				_fullDataList=dataModel.userVideoList;
 				setupExerciseCounter();
-				deleteExercisesButton.enabled= _dataProvider ? true : false;
+				deleteExercisesButton.enabled=_fullDataList ? true : false;
 				createPagination();
 			}
-			
+
 			private function deleteSelectedExercisesResult(value:Boolean):void
 			{
-				if (dataModel.selectedVideosDeleted)
-				{
+				if(itemsToDelete){
 					itemsToDelete=null;
 					retrieveExercises();
-					dataModel.selectedVideosDeleted=false;
 				}
 			}
 
 			public function createPagination():void
 			{
-				var itemcount:int=_dataProvider ? _dataProvider.length : 0;
+				var itemcount:int=_fullDataList ? _fullDataList.length : 0;
 				var itemsPerPage:int=DataModel.getInstance().pageSize;
 				var numNavButtons:int=DataModel.getInstance().numberOfPagesNav;
-				
+
 				VideoPaginator.createPaginationMenu(itemcount, itemsPerPage, _currentPage, numNavButtons, paginationBox, navigateToPage);
 				refreshDataProvider();
 			}
@@ -128,18 +133,23 @@
 			{
 				var current:int=_currentPage - 1;
 				var itemsPerPage:int=DataModel.getInstance().pageSize;
-				
+
 				var offset:int=current * itemsPerPage;
 				var numitems:int=offset + itemsPerPage;
-				
+
 				var dataTemp:ArrayCollection=null;
-				
-				if (_dataProvider)
+
+				if (_fullDataList)
 				{
-					dataTemp=new ArrayCollection(_dataProvider.source.slice(offset, numitems));
-					//userExerciseGrid.rowCount=dataTemp.length;
+					dataTemp=new ArrayCollection(_fullDataList.source.slice(offset, numitems));
 				}
 				userExerciseGrid.dataProvider=dataTemp;
+			}
+			
+			private function unpinItemRenderer(dataContainer:UIComponent):void{
+				if(dataContainer){
+					//Cycle through the itemRenderers of the dataContainer and attempt to call their unpin function
+				}
 			}
 
 			private function navigateToPage(event:MouseEvent):void
@@ -152,21 +162,26 @@
 			{
 				itemsToDelete=new Array();
 				var dp:ArrayCollection=userExerciseGrid.dataProvider as ArrayCollection;
-				
-				for each (var item:Object in dp){
-					if(item.itemSelected == true){
+
+				for each (var item:Object in dp)
+				{
+					if (item.itemSelected == true)
+					{
 						itemsToDelete.push(item);
 					}
 				}
-				
+
 				if (itemsToDelete.length > 0)
 					CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteSelectedExercisesChoiceHandler, Alert.NO);
 			}
 
 			private function deleteSelectedExercisesChoiceHandler(event:CloseEvent):void
-			{	
-				if (event.detail == Alert.YES)
+			{
+				if (event.detail == Alert.YES){
 					deleteSelectedExercises();
+				} else {
+					itemsToDelete=null;
+				}
 			}
 
 			private function deleteSelectedExercises():void
@@ -179,7 +194,6 @@
 				_currentPage=1;
 				new CreateEvent(CreateEvent.LIST_CREATIONS).dispatch();
 			}
-			
 		]]>
 	</fx:Script>
 
@@ -217,7 +231,7 @@
 					 paddingLeft="16"
 					 paddingRight="16"/>
 		</s:BorderContainer>
-		
+
 		<s:List id="userExerciseGrid"
 				horizontalScrollPolicy="off"
 				verticalScrollPolicy="off"
@@ -227,7 +241,8 @@
 				width="100%"
 				itemRenderer="modules.create.view.CreationItemRenderer">
 			<s:layout>
-				<s:VerticalLayout variableRowHeight="false" gap="0"/>
+				<s:VerticalLayout variableRowHeight="false"
+								  gap="0"/>
 			</s:layout>
 		</s:List>
 

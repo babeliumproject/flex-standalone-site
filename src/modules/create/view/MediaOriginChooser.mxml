@@ -271,7 +271,9 @@
 					  verticalAlign="middle"
 					  horizontalAlign="center">
 				<s:Label id="uploadFilename"
-						 fontSize="18"/>
+						 fontSize="18"
+						 width="580"
+						 maxDisplayedLines="3"/>
 				<mx:ProgressBar id="uploadProgressBar"
 								mode="manual"
 								labelPlacement="center"

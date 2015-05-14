@@ -35,15 +35,10 @@ package modules.create.command
 			if (result is Array && (result as Array).length > 0)
 			{
 				resultCollection=new ArrayCollection(ArrayUtil.toArray(result));
-				//Set the data in the application's model
-				dataModel.userVideoList=resultCollection;
 			}
-			else
-			{
-				dataModel.userVideoList=new ArrayCollection();
-			}
+			
+			dataModel.userVideoList=resultCollection;
 			dataModel.userVideoListRetrieved=!dataModel.userVideoListRetrieved;
-
 		}
 
 		public function fault(info:Object):void

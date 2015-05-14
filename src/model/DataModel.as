@@ -99,10 +99,11 @@ package model
 		public var userPreferredLanguagesModified:Boolean=false;
 		[Bindable]
 		public var userPersonalDataModified:Boolean=false;
+		
 		[Bindable]
 		public var userVideoListRetrieved:Boolean=false;
-		[Bindable]
-		public var userVideoList:ArrayCollection=new ArrayCollection();
+		public var userVideoList:ArrayCollection;
+		
 		[Bindable]
 		public var selectedVideosDeleted:Boolean=false;
 		[Bindable]
