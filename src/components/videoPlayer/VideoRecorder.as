@@ -1280,7 +1280,7 @@ package components.videoPlayer
 		private function prepareRecording():void
 		{
 			// Disable seek
-			seek=false;
+			seekUsingScrubber=false;
 
 			disableControls();
 
@@ -1451,6 +1451,7 @@ package components.videoPlayer
 		{
 			unattachUserDevices();
 			hideCaption();
+			seekUsingScrubber=true;
 			if (!param)
 				return;
 			if (getQualifiedClassName(param) == 'Object')

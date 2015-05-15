@@ -365,9 +365,9 @@ package components.videoPlayer
 		/**
 		 * Seek
 		 */
-		public function set seek(flag:Boolean):void
+		public function set seekUsingScrubber(value:Boolean):void
 		{
-			if (flag)
+			if (value)
 			{
 				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DROPPED, onScrubberDropped, false, 0, true);
 				_sBar.addEventListener(ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging, false, 0, true);
@@ -378,7 +378,7 @@ package components.videoPlayer
 				_sBar.removeEventListener(ScrubberBarEvent.SCRUBBER_DRAGGING, onScrubberDragging);
 			}
 
-			_sBar.enableSeek(flag);
+			_sBar.enableSeek(value);
 		}
 
 		public function seekTo(seconds:Number):void

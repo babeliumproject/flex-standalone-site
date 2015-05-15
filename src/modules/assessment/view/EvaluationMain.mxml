@@ -1084,7 +1084,7 @@
 			<videoPlayer:VideoRecorder id="VP"
 											autoPlay="true"
 											skin="white"
-											seek="false"
+											seekUsingScrubber="false"
 											displayCaptions="true"
 											autoScale="false"
 											displayEventArrows="false"

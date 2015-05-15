@@ -76,7 +76,7 @@
 		<videoPlayer:VideoRecorder id="VideoCommentVP"
 										autoPlay="true"
 										skinUrl="/resources/videoPlayer/skin/white.xml"
-										seek="true"
+										seekUsingScrubber="true"
 										displayCaptions="false"
 										autoScale="false"
 										subtitlingControls="false"

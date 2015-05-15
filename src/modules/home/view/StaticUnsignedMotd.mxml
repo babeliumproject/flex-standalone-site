@@ -57,7 +57,7 @@
 		<videoPlayer:VideoRecorder id="staticUnsignedMotdVp"
 								   skinUrl="/resources/videoPlayer/skin/white.xml"
 								   autoPlay="false"
-								   seek="true"
+								   seekUsingScrubber="true"
 								   displayCaptions="false"
 								   autoScale="false"
 								   width="400"

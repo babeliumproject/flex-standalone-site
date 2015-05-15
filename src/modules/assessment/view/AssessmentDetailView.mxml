@@ -176,7 +176,7 @@
 			<videoPlayer:VideoRecorder id="VP"
 									   autoPlay="true"
 									   skinUrl="/resources/videoPlayer/skin/white.xml"
-									   seek="false"
+									   seekUsingScrubber="false"
 									   displayCaptions="true"
 									   autoScale="false"
 									   subtitlingControls="false"

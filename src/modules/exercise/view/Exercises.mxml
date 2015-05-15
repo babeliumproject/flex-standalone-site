@@ -226,7 +226,7 @@
 						timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
 						langBitmap.source=ExerciseRenderUtils.getFlagSource(_currentExercise);
 
-						ratingShareReport.exerciseData=_currentExercise;
+						exerciseDetailedData.exerciseData=_currentExercise;
 
 						_primaryMediaData=_modelMediaData=null;
 
@@ -263,6 +263,10 @@
 
 			protected function loadSelectedMedia(media:Object):void
 			{
+				//Wipe the attempts, media has changed
+				_recordingAttempts=null;
+				setRecordingButtonGroupVisibility();
+				
 				_currentMediaData=media;
 
 				var param:Object=_currentMediaData;
@@ -597,7 +601,7 @@
 			public function resetGroup():void
 			{
 				VP.resetComponent();
-				ratingShareReport.resetComponent();
+				exerciseDetailedData.resetComponent();
 
 				//Reset all properties
 				_exerciseTitle=ResourceManager.getInstance().getString('myResources', 'EXERCISE_TITLE');
@@ -652,7 +656,7 @@
 					VP.dispose();
 				}
 				
-				ratingShareReport.unpinComponent();
+				exerciseDetailedData.unpinComponent();
 				
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
@@ -675,7 +679,7 @@
 									   layoutDirection="ltr"
 									   autoPlay="true"
 									   skinUrl="resources/videoPlayer/skin/white.xml"
-									   seek="true"
+									   seekUsingScrubber="true"
 									   displayCaptions="true"
 									   autoScale="false"
 									   subtitlingControls="false"
@@ -766,7 +770,7 @@
 														 requireSelection="true"/>
 					</s:HGroup>
 
-					<s:HGroup verticalAlign="middle">
+					<s:HGroup id="inputMediaDeviceGroup" verticalAlign="middle">
 						<s:Label text="{ResourceManager.getInstance().getString('myResources', 'CHOOSE_REC_METHOD')}"/>
 						<s:RadioButton id="micOnly"
 									   selected="true"
@@ -777,7 +781,7 @@
 									   label="{ResourceManager.getInstance().getString('myResources', 'OPTION_WEBCAM_AND_MIC')}"/>
 					</s:HGroup>
 
-					<s:HGroup width="100%" horizontalAlign="right" paddingTop="8">
+					<s:HGroup id="inRecordingOptionGroup" width="100%" horizontalAlign="right" paddingTop="8">
 						<s:Button id="watchRecording"
 								  styleName="btn-default"
 								  label="{ResourceManager.getInstance().getString('myResources','WATCH_RESPONSE')}"
@@ -812,7 +816,7 @@
 			
 		</s:VGroup>
 		<s:VGroup width="100%">
-			<view:ExerciseInfoBox id="ratingShareReport"
+			<view:ExerciseInfoBox id="exerciseDetailedData"
 								  styleName="lightBorderContainer"
 								  width="100%"
 								  minHeight="200"/>

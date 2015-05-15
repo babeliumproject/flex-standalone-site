@@ -24,7 +24,7 @@
 				<videoPlayer:VideoRecorder id="VPSubtitle"
 										   autoPlay="true"
 										   skinUrl="resources/videoPlayer/skin/white.xml"
-										   seek="true"
+										   seekUsingScrubber="true"
 										   displayCaptions="true"
 										   autoScale="false"
 										   width="400"
