@@ -150,6 +150,15 @@ class Auth{
 			}
 		}
 	}
+	
+	private function getUserPermissions(){
+		$sql = "SELECT p.fk_course_id, p.fk_role_id, r.shortname
+				FROM rel_course_role_user p INNER JOIN role r ON p.fk_role_id=r.id
+			    WHERE fk_user_id=%d";
+		
+		$permissions = $this->conn->_multipleSelect($sql,$_SESSION['uid']);
+		return $permissions;
+	}
 
 	/**
 	 * Checks if the session data is set for this user

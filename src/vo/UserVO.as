@@ -14,6 +14,8 @@ package vo
 		public var joiningDate:String;
 		public var isAdmin:Boolean;
 		
-		public var userLanguages:Array; //An array of UserLanguageVO objects
+		//An array of UserLanguageVO objects
+		public var userLanguages:Array;
+		public var permissions:Object;
 	}
 }

@@ -10,17 +10,17 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-			
+
 			import flash.globalization.DateTimeStyle;
-			
+
 			import model.DataModel;
-			
+
 			import utils.ExerciseRenderUtils;
 
 			private const MAX_DESCRIPTION_CHARS:int=120;
-			
+
 			private var _model:DataModel=DataModel.getInstance();
-		
+
 			private var courseId:int;
 			private var assignmentId:int;
 
@@ -39,40 +39,63 @@
 				usernameLbl.toolTip=value.userName;
 				titleLbl.text=value.title;
 				titleLbl.toolTip=value.title;
+				
+				//Determine if the 'Add to assignment' button should be displayed
+				var addToAssign:Boolean=canBeAddedToAssignment();
+				addToAssignmentBtn.visible=addToAssign;
+				addToAssignmentBtn.includeInLayout=addToAssign;
 			}
-			
-			override protected function get hovered():Boolean { return false; }
-			override protected function get down():Boolean { return false; }
-			override public function get selected():Boolean { return false; }
-			override public function get showsCaret():Boolean { return false; }
-			
-			protected function displayAddToAssignmentButton():Boolean{
+
+			override protected function get hovered():Boolean
+			{
+				return false;
+			}
+
+			override protected function get down():Boolean
+			{
+				return false;
+			}
+
+			override public function get selected():Boolean
+			{
+				return false;
+			}
+
+			override public function get showsCaret():Boolean
+			{
+				return false;
+			}
+
+			protected function canBeAddedToAssignment():Boolean
+			{
 				var visible:Boolean=false;
-				if(_model.loggedUser){
-					/*
+				if (_model.loggedUser)
+				{
 					var perms:Object=_model.loggedUser.hasOwnProperty('permissions') ? _model.loggedUser.permissions : null;
 					if(perms && perms.instructor){
 						var courses:Array = perms.instructor; //an array of courseids in which the user is an instructor
 						if(_model.tempAssignmentData && courses.indexOf(_model.tempAssignmentData.courseid) != -1){
-							
+
 							visible=true;
 						}
 					}
-					*/
 				}
 				return visible;
 			}
-			
-			protected function viewExerciseClickHandler(event:MouseEvent):void{
-				if(data==null) return;
+
+			protected function viewExerciseClickHandler(event:MouseEvent):void
+			{
+				if (data == null)
+					return;
 				URLManager.getInstance().redirect('/exercises/view/' + data.exercisecode);
 			}
-			
-			protected function addToAssignmentClickHandler(event:MouseEvent):void{
-				if(data==null) return;
-				URLManager.getInstance().redirect('assignment/add/?' + 'c='+2+'&exercise='+data.exercisecode);
+
+			protected function addToAssignmentClickHandler(event:MouseEvent):void
+			{
+				if (data == null)
+					return;
+				URLManager.getInstance().redirect('/assignment/add/?' + 'c=' + 2 + '&exercise=' + data.exercisecode);
 			}
-			
 		]]>
 	</fx:Script>
 
@@ -86,12 +109,14 @@
 
 		<s:Group width="180"
 				 height="135">
-			<s:Graphic id="imgWrapper" click="viewExerciseClickHandler(event)" buttonMode="true">
+			<s:Graphic id="imgWrapper"
+					   click="viewExerciseClickHandler(event)"
+					   buttonMode="true">
 				<s:BitmapImage id="thumbnail"
 							   width="180"
 							   height="135"/>
 			</s:Graphic>
-			
+
 			<s:TextInput id="videoDuration"
 						 styleName="videoDurationLabel"
 						 x="148"
@@ -100,7 +125,14 @@
 						 height="16"
 						 editable="false"
 						 selectable="false"/>
-			<s:Button id="addToAssignmentBtn" click="addToAssignmentClickHandler(event)" label="+" y="100" x="4" width="22" height="22" cornerRadius="0"/>
+			<s:Button id="addToAssignmentBtn"
+					  click="addToAssignmentClickHandler(event)"
+					  label="+"
+					  y="100"
+					  x="4"
+					  width="22"
+					  height="22"
+					  cornerRadius="0"/>
 		</s:Group>
 
 		<s:VGroup horizontalAlign="right"

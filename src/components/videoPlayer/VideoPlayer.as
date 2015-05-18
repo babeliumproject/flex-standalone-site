@@ -318,6 +318,7 @@ package components.videoPlayer
 
 		protected function startVideo():void
 		{
+			trace("Start video");
 			if (!_mediaReady)
 				return;
 			try
