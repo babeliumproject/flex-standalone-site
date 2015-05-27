@@ -480,6 +480,7 @@
 					if (_model.savedResponseId)
 					{
 						VP.resetComponent();
+						VP.autoPlay=true;
 
 						//Check if this exercise has model media
 						if (_modelMediaData && (_modelMediaData != _currentMediaData))
@@ -601,6 +602,7 @@
 			public function resetGroup():void
 			{
 				VP.resetComponent();
+				VP.autoPlay=true;
 				exerciseDetailedData.resetComponent();
 
 				//Reset all properties

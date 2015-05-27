@@ -25,6 +25,7 @@ require_once 'utils/Config.php';
 require_once 'utils/SessionValidation.php';
 
 require_once 'Exercise.php';
+require_once 'Search.php';
 require_once 'Subtitle.php';
 require_once 'vo/ExerciseVO.php';
 
@@ -502,6 +503,9 @@ class Create {
 				$arows1 = $this->conn->_update($sql, $data->title, $data->description, $data->language, $data->difficulty, $optime, $data->type, 
 													 $data->situation, $data->competence, $data->lingaspects, $data->exercisecode, $_SESSION['uid']);
 				
+				$search = new Search();
+				$search->addDocumentIndex($data->id);
+				
 				//Turn on the autocommit, there was no errors modifying the database
 				//$this->conn->_endTransaction();
 				
@@ -525,6 +529,9 @@ class Create {
 				
 				//Insert new exercise tags
 				$exercise->insertTags($parsedTags,$exerciseid);
+				
+				$search = new Search();
+				$search->addDocumentIndex($exerciseid);
 				
 				return $exercisecode;
 			}

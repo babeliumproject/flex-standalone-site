@@ -93,15 +93,17 @@ class Exercise {
 	 * 		An array of clean tags, if any
 	 */
 	public function parseExerciseTags($tags){
-		$ptags = array();
+				//Set the locale for character conversion explicitly to UTF-8. The escapeshellcmd() command
+		//depends on the locale and if not set it might strip non-ASCII characters from the input text.
+		setlocale(LC_CTYPE, "UTF8", "en_US.UTF-8");
 		
+		$ptags = array();
+		//Remove a set of symbols from the tag string
+		$ctags = str_replace(array(":",";","{","}","[","]","\\","/"),'',escapeshellcmd($tags));
 		//Change new-line characters with commas, lower-case, remove html tags, and unnecessary whitespaces
-		$ttags = strtolower(strip_tags(trim(escapeshellcmd($tags))));
-		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',$ttags));
+		$ptags = explode(',', str_replace(array("\r","\n","\t"),',',strip_tags(trim($ctags))));
 		
 		$cleanTags = array();
-		
-		$symbolstoremove = array(":",";","{","}","[","]","\\","/","\"","'",".");
 		
 		foreach($ptags as $tag){
 			
@@ -109,7 +111,7 @@ class Exercise {
 			//Remove links to avoid spam
 			if(strlen($cleanTag) > 1 && !preg_match("/^http[s]?\:\\/\\/([^\\/]+)/",$cleanTag,$matches)){
 				//TODO cut tags longer than 20 chars
-				$cleanTags[] = str_replace($symbolstoremove,'',$cleanTag);
+				$cleanTags[] = $cleanTag;
 			}
 		}
 		unset($tag);

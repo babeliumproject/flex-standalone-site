@@ -252,9 +252,9 @@ class Search {
 			
 			$userid=$_SESSION['uid'];
 			
-			$sql = "SELECT e.id as exerciseId, e.exercisecode, e.title, e.description, e.language, e.status, e.visible
-					FROM exercise e WHERE e.id=%d AND e.fk_user_id=%d";
-			$exercisedata = $this->conn->_singleSelect ($sql, $exerciseid,$userid);
+			$sql = "SELECT id as exerciseid, exercisecode, title, description, language, status, visible
+					FROM exercise WHERE id=%d AND fk_user_id=%d";
+			$exercisedata = $this->conn->_singleSelect ($sql,$exerciseid,$userid);
 			
 			if($exercisedata){
 				//Lucene doesn't support Document update, it must be deleted and added afterwards
@@ -263,13 +263,14 @@ class Search {
 				if($exercisedata->status==1 && $exercisedata->visible==1){
 					$this->initialize();
 							
-					$tags = $this->getExerciseTags($result->exerciseId);
-					$descriptors = $this->getExerciseDescriptors($result->exerciseId,$line->language);
+					$tags = $this->getExerciseTags($exercisedata->exerciseid);
+					$descriptors = $this->getExerciseDescriptors($exercisedata->exerciseid);
 						
-					$result->tags = $tags ? implode("\n",$tags): '';
-					$result->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+					$exercisedata->description = html_entity_decode(strip_tags($exercisedata->description), ENT_QUOTES | ENT_HTML5); //Remove html markup	
+					$exercisedata->tags = $tags ? implode("\n",$tags): '';
+					$exercisedata->descriptors = $descriptors ? implode("\n",$descriptors) : '';
 				
-					$this->addDoc($result,$this->unindexedFields);
+					$this->addDoc($exercisedata,$this->unindexedFields);
 					$this->index->commit();
 					$this->index->optimize();
 				}

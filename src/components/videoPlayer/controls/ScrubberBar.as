@@ -1,16 +1,16 @@
 package components.videoPlayer.controls
 {
+	import components.videoPlayer.events.ScrubberBarEvent;
+	
 	import flash.display.GradientType;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-
+	
 	import mx.effects.AnimateProperty;
 	import mx.events.EffectEvent;
-
-	import components.videoPlayer.events.ScrubberBarEvent;
 
 	public class ScrubberBar extends DictionarySkinnableComponent
 	{
@@ -69,7 +69,8 @@ package components.videoPlayer.controls
 
 		public function ScrubberBar()
 		{
-			super("ScrubberBar"); // Required for setup skinable component
+			//Pass the name of the component to look for its skin properties in the skin dictionary
+			super("ScrubberBar");
 
 			_bar=new Sprite();
 			_progBar=new Sprite();
@@ -192,7 +193,7 @@ package components.videoPlayer.controls
 			_marks.graphics.clear();
 			for each (var obj:Object in _dataProvider)
 			{
-				doShowMark(obj.showTime, obj.hideTime, _duration);
+				doShowMark(_marks, obj.showTime, obj.hideTime, _duration);
 			}
 		}
 
@@ -322,12 +323,12 @@ package components.videoPlayer.controls
 			refresh();
 		}
 
-		private function doShowMark(startTime:Number, endTime:Number, duration:Number):void
+		private function doShowMark(element:Sprite, startTime:Number, endTime:Number, duration:Number):void
 		{
-			_marks.graphics.beginFill(getSkinColor(MARKER_COLOR_UP), getSkinColor(MARKER_COLOR_UP_ALPHA));
+			element.graphics.beginFill(getSkinColor(MARKER_COLOR_UP), getSkinColor(MARKER_COLOR_UP_ALPHA));
 			//_marks.graphics.drawRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, 2, _defaultHeight-4 );
-			_marks.graphics.drawRoundRect(startTime * (_bar.width - _scrubber.width) / duration + _bar.x + _scrubber.width - 2, 2, (endTime - startTime) * (_bar.width) / duration, _defaultHeight - 4, 2);
-			_marks.graphics.endFill();
+			element.graphics.drawRoundRect(startTime * (_bar.width - _scrubber.width) / duration + _bar.x + _scrubber.width - 2, 2, (endTime - startTime) * (_bar.width) / duration, _defaultHeight - 4, 2);
+			element.graphics.endFill();
 		}
 
 		public function removeMarks():void
@@ -335,5 +336,17 @@ package components.videoPlayer.controls
 			_dataProvider=null;
 			refresh();
 		}
+		
+		public function drawBarUp(seconds:Number, duration:Number):void{
+			if(_dataProvider){ //We have some marks to display
+				for each (var obj:Object in _dataProvider)
+				{
+					doShowMark(_marks, obj.showTime, obj.hideTime, _duration);
+				}
+			} else {
+				//Draw a simple bar
+			}
+		}
+		
 	}
 }
