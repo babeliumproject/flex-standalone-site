@@ -142,7 +142,7 @@
 				  width="100%"
 				  height="100%">
 		<s:NavigatorContent id="indexnc">
-			<view:AccountIndexView id="indexAccount"/>
+			<view:UserProfile id="indexAccount"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:Module>

@@ -9,33 +9,69 @@
 		  paddingLeft="16"
 		  paddingRight="16"
 		  paddingTop="16"
-		  creationComplete="completeHandler(event)">
+		  creationComplete="onComplete(event)"
+		  implements="modules.IPinnedGroupInterface">
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-			
+
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.events.FlexEvent;
-			
+
 			import skins.IconLinkSkin;
-			
+
 			import vo.UserLanguageVO;
 
-			[Bindable]
-			private var dataModel:DataModel=DataModel.getInstance();
+			private var _model:DataModel=DataModel.getInstance();
 
-			public function completeHandler(event:FlexEvent):void
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher, cw3:ChangeWatcher;
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
+
+			public function onComplete(event:FlexEvent):void
 			{
 				displayMyLanguages();
 				displayMyPersonalData();
+			}
+
+
+			public function resetGroup():void
+			{
+				modifyPersonalData.resetComponent();
+				modifyPassword.resetComponent();
+				modifyLanguages.resetComponent();
+			}
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				if (cw2)
+					cw2.unwatch();
+				if (cw3)
+					cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				modifyPersonalData.unpinComponent();
+				modifyPassword.unpinComponent();
+				modifyLanguages.unpinComponent();
+
+				//removeEventListener(MouseEvent.CLICK, editCancelHandler);
+				editLanguagesBtn.removeEventListener(MouseEvent.CLICK, modifyLanguagesClickHandler);
+				editPasswordBtn.removeEventListener(MouseEvent.CLICK, modifyPasswordClickHandler);
+				editPersonalDataBtn.removeEventListener(MouseEvent.CLICK, modifyPersonalDataClickHandler);
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
 			public function displayMyLanguages():void
 			{
 				practiceLanguages.removeAllElements();
 				evaluateLanguages.removeAllElements();
-				for each (var lang:UserLanguageVO in dataModel.loggedUser.userLanguages)
+				for each (var lang:UserLanguageVO in _model.loggedUser.userLanguages)
 				{
 					if (lang.purpose == 'practice')
 					{
@@ -44,19 +80,22 @@
 					else if (lang.purpose == 'evaluate')
 					{
 						evaluateLanguages.addElement(generateLanguageInfo(lang));
+					} else {
+						//Nothing should fall in this category
 					}
 				}
 			}
-			
-			public function displayMyPersonalData():void{
-				userName.text = dataModel.loggedUser.firstname;
-				userSurname.text = dataModel.loggedUser.lastname;
-				userEmail.text = dataModel.loggedUser.email;
+
+			public function displayMyPersonalData():void
+			{
+				cw1=BindingUtils.bindProperty(userName, 'text', _model.loggedUser, 'firstname', commitOnly, useWeakReference);
+				cw2=BindingUtils.bindProperty(userSurname, 'text', _model.loggedUser, 'lastname', commitOnly, useWeakReference);
+				cw3=BindingUtils.bindProperty(userEmail, 'text', _model.loggedUser, 'email', commitOnly, useWeakReference);
 			}
 
 			private function generateLanguageInfo(lang:UserLanguageVO):HGroup
 			{
-				var data:Object=dataModel.localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+				var data:Object=_model.localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
 
 				var flag:Image=new Image();
 				flag.source=data.icon;
@@ -65,7 +104,7 @@
 				langName.text=resourceManager.getString('myResources', 'LOCALE_' + String(data.code).toUpperCase());
 
 				var langLevel:Label=new Label();
-				langLevel.text=dataModel.localesAndFlags.getLevelCorrespondence(lang.level);
+				langLevel.text=_model.localesAndFlags.getLevelCorrespondence(lang.level);
 				langLevel.styleName='boldYellowLabel';
 
 				var lHGroup:HGroup=new HGroup();
@@ -75,39 +114,41 @@
 
 				return lHGroup;
 			}
-			
-			private function editCancelHandler(event:MouseEvent):void{
+
+			private function editCancelHandler(event:MouseEvent):void
+			{
 				profileOverview.visible=true;
 				profileOverview.includeInLayout=true;
-				modifyPassword.visible = false;
-				modifyPassword.includeInLayout = false;
-				modifyPassword.resetToolTips();
+				modifyPassword.visible=false;
+				modifyPassword.includeInLayout=false;
+				modifyPassword.resetComponent();
 				modifyLanguages.visible=false;
 				modifyLanguages.includeInLayout=false;
-				modifyLanguages.resetToInitialStatus();
+				modifyLanguages.resetComponent();
 				modifyPersonalData.visible=false;
 				modifyPersonalData.includeInLayout=false;
-				modifyPersonalData.resetToInitialStatus();
-				
+				modifyPersonalData.resetComponent();
+
 				displayMyLanguages();
 				displayMyPersonalData();
 			}
-			
-			protected function modifyLanguagesClickHandler(event:MouseEvent):void{
+
+			protected function modifyLanguagesClickHandler(event:MouseEvent):void
+			{
 				modifyLanguages.visible=true;
 				modifyLanguages.includeInLayout=true;
 				profileOverview.visible=false;
 				profileOverview.includeInLayout=false;
-				modifyPassword.visible = false;
-				modifyPassword.includeInLayout = false;
+				modifyPassword.visible=false;
+				modifyPassword.includeInLayout=false;
 				modifyPersonalData.visible=false;
 				modifyPersonalData.includeInLayout=false;
 			}
 
 			protected function modifyPasswordClickHandler(event:MouseEvent):void
 			{
-				modifyPassword.visible = true;
-				modifyPassword.includeInLayout = true;
+				modifyPassword.visible=true;
+				modifyPassword.includeInLayout=true;
 				profileOverview.visible=false;
 				profileOverview.includeInLayout=false;
 				modifyLanguages.visible=false;
@@ -115,33 +156,29 @@
 				modifyPersonalData.visible=false;
 				modifyPersonalData.includeInLayout=false;
 			}
-			
-			protected function modifyPersonalDataClickHandler(event:MouseEvent):void{
+
+			protected function modifyPersonalDataClickHandler(event:MouseEvent):void
+			{
 				modifyPersonalData.visible=true;
 				modifyPersonalData.includeInLayout=true;
 				profileOverview.visible=false;
 				profileOverview.includeInLayout=false;
-				modifyPassword.visible = false;
-				modifyPassword.includeInLayout = false;
+				modifyPassword.visible=false;
+				modifyPassword.includeInLayout=false;
 				modifyLanguages.visible=false;
 				modifyLanguages.includeInLayout=false;
 			}
-			
-			public function resetComponent():void{
+
+			public function resetComponent():void
+			{
 				editCancelHandler(null);
 			}
 		]]>
 	</fx:Script>
 
 	<s:Label text="{resourceManager.getString('myResources','MY_PROFILE')}"
-			 styleName="sectionTitleLabel"
+			 styleName="h1"
 			 id="userProfileTitleLabel"/>
-	<s:Line width="{userProfileTitleLabel.width}">
-		<s:stroke>
-			<mx:SolidColorStroke weight="3"
-								 color="{userProfileTitleLabel.getStyle('color')}"/>
-		</s:stroke>
-	</s:Line>
 	<s:Label text="{resourceManager.getString('myResources','MODIFY_USER_INFO_DESCRIPTION')}"/>
 
 	<s:HGroup width="100%">
@@ -153,34 +190,33 @@
 			<s:HGroup paddingTop="10">
 				<s:Label text="{resourceManager.getString('myResources','PERSONAL_INFO')}"
 						 styleName="exerciseTitleLabel"/>
-				<skins:IconButton styleName="yellowLinkButton"
+				<skins:IconButton id="editPersonalDataBtn"
+								  styleName="yellowLinkButton"
 								  label="{resourceManager.getString('myResources','EDIT').toLowerCase()+' '+resourceManager.getString('myResources','PERSONAL_INFO').toLowerCase()}"
 								  click="modifyPersonalDataClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','REAL_NAME')}"
+				<s:Label text="{resourceManager.getString('myResources','FIRST_NAME')}"
 						 styleName="boldLabel"/>
-				<s:Label id="userName"
-						 text="{dataModel.loggedUser.firstname}"/>
+				<s:Label id="userName"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','REAL_SURNAME')}"
+				<s:Label text="{resourceManager.getString('myResources','SURNAME')}"
 						 styleName="boldLabel"/>
-				<s:Label id="userSurname"
-						 text="{dataModel.loggedUser.lastname}"/>
+				<s:Label id="userSurname"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="{resourceManager.getString('myResources','EMAIL')}"
+				<s:Label text="{resourceManager.getString('myResources','EMAIL_ADDRESS')}"
 						 styleName="boldLabel"/>
-				<s:Label id="userEmail"
-						 text="{dataModel.loggedUser.email}"/>
+				<s:Label id="userEmail"/>
 			</s:HGroup>
 
 			<s:HGroup paddingTop="16">
 				<s:Label text="{resourceManager.getString('myResources','SECURITY')}"
 						 styleName="exerciseTitleLabel"/>
-				<skins:IconButton styleName="yellowLinkButton"
+				<skins:IconButton id="editPasswordBtn"
+								  styleName="yellowLinkButton"
 								  label="{resourceManager.getString('myResources','MODIFY_PASSWORD').toLowerCase()}"
 								  click="modifyPasswordClickHandler(event)"/>
 			</s:HGroup>
@@ -189,42 +225,43 @@
 			<s:HGroup paddingTop="16">
 				<s:Label text="{resourceManager.getString('myResources','LANGUAGES')}"
 						 styleName="exerciseTitleLabel"/>
-				<skins:IconButton styleName="yellowLinkButton"
+				<skins:IconButton id="editLanguagesBtn"
+								  styleName="yellowLinkButton"
 								  label="{resourceManager.getString('myResources','EDIT').toLowerCase() +' '+resourceManager.getString('myResources','LANGUAGES').toLowerCase()}"
 								  click="modifyLanguagesClickHandler(event)"/>
 			</s:HGroup>
 			<skins:HorizontalSeparatorLine/>
-			<s:Label text="{resourceManager.getString('myResources','EVALUATE_LANGUAGE')}"
+			<s:Label text="{resourceManager.getString('myResources','I_SPEAK')+':'}"
 					 styleName="boldLabel"/>
 			<s:VGroup id="evaluateLanguages"
 					  paddingLeft="16"/>
-			<s:Label text="{resourceManager.getString('myResources','LANGUAGES_IM_PRACTICING')}"
+			<s:Label text="{resourceManager.getString('myResources','I_WOULD_LIKE_TO_LEARN')+':'}"
 					 styleName="boldLabel"/>
 			<s:VGroup id="practiceLanguages"
 					  paddingLeft="16"/>
 		</s:VGroup>
 
-		
+
 
 		<!-- Modify password -->
 		<view:ModifyPassword id="modifyPassword"
-									   includeInLayout="false"
-									   visible="false"
-									   paddingTop="16"
-									   cancelClickHandler="{editCancelHandler}"/>
+							 includeInLayout="false"
+							 visible="false"
+							 paddingTop="16"
+							 cancelClickHandler="{editCancelHandler}"/>
 
 		<!-- Modify languages -->
 		<view:ModifyLanguages id="modifyLanguages"
-										includeInLayout="false"
-										visible="false"
-										cancelClickHandler="{editCancelHandler}"/>
-		
+							  includeInLayout="false"
+							  visible="false"
+							  cancelClickHandler="{editCancelHandler}"/>
+
 		<!-- Edit personal information -->
 		<view:ModifyPersonalData id="modifyPersonalData"
-										   includeInLayout="false"
-										   visible="false"
-										   paddingTop="16"
-										   cancelClickHandler="{editCancelHandler}"/>
+								 includeInLayout="false"
+								 visible="false"
+								 paddingTop="16"
+								 cancelClickHandler="{editCancelHandler}"/>
 
 	</s:HGroup>
 

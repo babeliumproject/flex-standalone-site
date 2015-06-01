@@ -35,8 +35,6 @@ package control
 			account: 'modules/account/AccountModule.swf',
 			activity: 'modules/activity/ActivityModule.swf',
 			assessments: 'modules/assessment/AssessmentModule.swf',
-			assignment: 'modules/assignment/AssignmentModule.swf',
-			course: 'modules/course/CourseModule.swf',
 			create: 'modules/create/CreateModule.swf',
 			error: 'modules/error/ErrorModule.swf',
 			exercises: 'modules/exercise/ExerciseModule.swf',
@@ -58,6 +56,11 @@ package control
 		 **/
 		public function URLManager()
 		{
+			if(CONFIG::experimental){
+				_moduleUrls.assignment = 'modules/assessment/AssessmentModule.swf';
+				_moduleUrls.course = 'modules/course/CourseModule.swf';
+			}
+			
 			if (instance)
 				throw new Error("BabeliaBrowserManager is already running");
 		}

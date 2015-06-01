@@ -10,8 +10,11 @@
 	<fx:Script>
 		<![CDATA[
 			
-			public function set deleteButtonClickHandler(clickHandler:Function):void{
-				deleteButton.addEventListener(MouseEvent.CLICK, clickHandler);
+			public var deleteFunction:Function;
+			
+			public function set deleteButtonClickHandler(closure:Function):void{
+				deleteFunction=closure;
+				deleteButton.addEventListener(MouseEvent.CLICK, deleteFunction);
 				deleteButton.visible = true;
 				deleteButton.includeInLayout = true;
 			}

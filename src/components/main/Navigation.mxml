@@ -38,8 +38,8 @@
 							skinClass="skins.NavigationToggleButton"
 							buttonMode="true"/>
 			<s:ToggleButton label="{resourceManager.getString('myResources', 'COURSES')}"
-							includeInLayout="{DataModel.getInstance().isLoggedIn}"
-							visible="{DataModel.getInstance().isLoggedIn}"
+							includeInLayout="{DataModel.getInstance().isLoggedIn &amp;&amp; CONFIG::experimental}"
+							visible="{DataModel.getInstance().isLoggedIn &amp;&amp; CONFIG::experimental}"
 							selected="{_urlManager.moduleName == 'course'}"
 							click="changeView('/course',event)"
 							height="100%"

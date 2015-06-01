@@ -60,7 +60,7 @@
 				<!--
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-				-->
+				
 				<s:HGroup verticalAlign="middle"
 						  horizontalAlign="center">
 					<s:BitmapImage source="@Embed('/resources/images/coins_icon.png')"/>
@@ -72,7 +72,7 @@
 				</s:HGroup>
 				<mx:VRule height="20"
 						  styleName="sectionTitleHRule"/>
-
+				-->
 				<s:BitmapImage source="resources/images/iconmonstr-user-6-icon-48.png" width="24" height="24"/>
 				<s:HGroup gap="0"
 						  verticalAlign="middle"
@@ -188,7 +188,7 @@
 					anonymousCP.visible=false;
 					anonymousCP.includeInLayout=false;
 					userCPName.label=DataModel.getInstance().loggedUser.username;
-					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.includeInLayout=true;
 					userCP.visible=true;
 					callLater(localeComboBox.updateSelectedIndex);
@@ -196,6 +196,7 @@
 				}
 			}
 
+			/*
 			private function blinkCredits():void
 			{
 				var motion:SimpleMotionPath=new SimpleMotionPath();
@@ -212,14 +213,14 @@
 				anim.target=uCrds;
 				anim.motionPaths=motionVector;
 				anim.play();
-			}
+			}*/
 
 			private function creditsUpdated(retr:Boolean):void
 			{
 				if (DataModel.getInstance().loggedUser && DataModel.getInstance().creditUpdateRetrieved)
 				{
-					uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
-					blinkCredits();
+					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					//blinkCredits();
 					DataModel.getInstance().creditUpdateRetrieved=false;
 				}
 			}
