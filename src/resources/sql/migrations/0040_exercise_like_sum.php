@@ -14,12 +14,12 @@ function forwards(){
 	if($results){
 		$exercises = array();
 		foreach($results as $r){
-			if(!in_array($r->fk_exercise_id, $exercises)){
+			if(!array_key_exists($r->fk_exercise_id, $exercises)){
 				$exercises[$r->fk_exercise_id] = new stdClass();
 				$exercises[$r->fk_exercise_id]->likes = 0;
 				$exercises[$r->fk_exercise_id]->dislikes = 0;
 			}
-			if($r->like == 0){
+			if(intval($r->like) == 0){
 				$exercises[$r->fk_exercise_id]->dislikes++;
 			} else {
 				$exercises[$r->fk_exercise_id]->likes++;

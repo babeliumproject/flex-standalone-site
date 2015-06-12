@@ -41,9 +41,12 @@ function forwards(){
 			$serialized_subtitles = custom_json_encode($subtitle_data);
 			$cb64_subtitles = packblob($serialized_subtitles);
 	
-			$sql = "UPDATE subtitle SET serialized_subtitles='%s', subtitle_count=%d WHERE id=%d";
+			$sql = "UPDATE subtitle SET serialized_subtitles='%s', subtitle_count=%d, timecreated=unix_timestamp(adding_date) WHERE id=%d";
 			$affected_rows = $DB->_update($sql, $cb64_subtitles, $subtitle_count, $subtitle_id);
 		}
+		
+		$delete1 = "DELETE FROM subtitle WHERE subtitle_count=0";
+		$DB->_delete($delete1);
 		
 		$alter1 = "ALTER TABLE `user_videohistory` DROP FOREIGN KEY `FK_user_videohistory_6`;";
 		$DB->_update($alter1);
@@ -59,6 +62,9 @@ function forwards(){
 		$DB->_update($drop1);
 		$drop2 = "DROP TABLE exercise_role";
 		$DB->_update($drop2);
+		
+		$drop3 = "DROP TABLE IF EXISTS subtitle_score";
+		$DB->_update($drop3);
 		
 		$DB->_endTransaction();
 	
