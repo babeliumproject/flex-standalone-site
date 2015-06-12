@@ -25,8 +25,7 @@
 		    	<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 		    				
 		    	<define name="CONFIG::restrictedEvaluation" value="${CONFIG_RESTRICTED_EVALUATION}"/>
-		    	<define name="CONFIG::noPracticeUpload" value="${CONFIG_NO_PRACTICE_UPLOAD}"/>
-		    	<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
+		    	<define name="CONFIG::experimental" value="${CONFIG_EXPERIMENTAL}"/>
 		    				
 		    	<compiler.library-path dir="${BASE}" append="true">
 		    			<include name="libs"/>
@@ -55,8 +54,7 @@
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
 			<define name="CONFIG::restrictedEvaluation" value="${CONFIG_RESTRICTED_EVALUATION}"/>
-			<define name="CONFIG::noPracticeUpload" value="${CONFIG_NO_PRACTICE_UPLOAD}"/>
-			<define name="CONFIG::unstable" value="${CONFIG_UNSTABLE}"/>
+			<define name="CONFIG::experimental" value="${CONFIG_EXPERIMENTAL}"/>
 			
 			<compiler.library-path dir="${BASE}" append="true">
 				<include name="libs"/>
@@ -72,15 +70,21 @@
 		</mxmlc>
 		
 		<buildmodule moduleDir="modules" dir="account" file="AccountModule"/>
+		<buildmodule moduleDir="modules" dir="activity" file="ActivityModule"/>
 		<buildmodule moduleDir="modules" dir="assessment" file="AssessmentModule"/>
+		<buildmodule moduleDir="modules" dir="assignment" file="AssignmentModule"/>
+		<buildmodule moduleDir="modules" dir="course" file="CourseModule"/>
 		<buildmodule moduleDir="modules" dir="create" file="CreateModule"/>
 		<buildmodule moduleDir="modules" dir="error" file="ErrorModule"/>
 		<buildmodule moduleDir="modules" dir="exercise" file="ExerciseModule"/>
 		<buildmodule moduleDir="modules" dir="home" file="HomeModule"/>
 		<buildmodule moduleDir="modules" dir="login" file="LoginModule"/>
-		<buildmodule moduleDir="modules" dir="profile" file="ProfileModule"/>
 		<buildmodule moduleDir="modules" dir="signup" file="SignupModule"/>
 		<buildmodule moduleDir="modules" dir="subtitle" file="SubtitleModule"/>
+		
+		<move file="${APP_ROOT}/service-config.xml.tmp" tofile="${APP_ROOT}/service-config.xml" overwrite="true"/>
+		<move file="${APP_ROOT}/model/DataModel.as.tmp" tofile="${APP_ROOT}/model/DataModel.as" overwrite="true"/>
+		<delete file="${BASE}/link-report.xml"/>
 	</target>
 
 	<!-- Should check if there's an html-template folder inside our project's root folder an if not copy it -->
@@ -92,7 +96,7 @@
 
 	<target name="flex-generate-wrapper" description="Generate the HTML wrapper for the main SWF file">
 		<html-wrapper title="Babelium Project" 
-					  file="Main.html" 
+					  file="index.html" 
 					  bgcolor="#ffffff" 
 		 			  height="100%" 
 					  width="100%" 
@@ -148,13 +152,17 @@
 		<copy todir="${DEPLOY_DIR}/services">
 			<fileset dir="${APP_ROOT}/resources/services" includes="**/*"/>
 		</copy>
+		<delete file="${APP_ROOT}/resources/services/utils/Config.php"/>
 		<replaceregexp file="${DEPLOY_DIR}/server.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
 		<replaceregexp file="${DEPLOY_DIR}/upload.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
 		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('SERVICE_PATH',.+\)" replace="\('SERVICE_PATH', '/services/'\)" flags="g"/>
 		<replaceregexp file="${DEPLOY_DIR}/services/utils/VideoProcessor.php" match="\('WEBROOT_PATH',.+\)" replace="\('WEBROOT_PATH', '${WEB_ROOT}'\)" flags="g"/>
 	</target>
 	
-	<target name="app-fix-domains">		
+	<target name="app-fix-domains">
+		<copy file="${APP_ROOT}/service-config.xml" tofile="${APP_ROOT}/service-config.xml.tmp" overwrite="true"/>
+		<copy file="${APP_ROOT}/model/DataModel.as" tofile="${APP_ROOT}/model/DataModel.as.tmp" overwrite="true"/>
+		
 		<replaceregexp file="${APP_ROOT}/service-config.xml" match="endpoint uri=&quot;[^&quot;]+&quot;" replace="endpoint uri=&quot;http://${WEB_DOMAIN}/server.php&quot;"/>
 		<replaceregexp file="${APP_ROOT}/model/DataModel.as" match="server:String.+;" replace="server:String='${WEB_DOMAIN}';"/>
 		<replaceregexp file="${APP_ROOT}/model/DataModel.as" match="streamingApp:String.+;" replace="streamingApp:String='${RED5_APPNAME}';"/>
@@ -176,7 +184,8 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_server_port.+;" replace="smtp_server_port = '${SMTP_SERVER_PORT}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromMail.+;" replace="smtp_mail_setFromMail = '${SMTP_SERVER_FROM_MAIL}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="smtp_mail_setFromName.+;" replace="smtp_mail_setFromName = '${SMTP_SERVER_FROM_NAME}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="ffmpegCmdPath.+;" replace="ffmpegCmdPath = '${CMD_FFMPEG_PATH}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="mediaToolSuite.+;" replace="mediaToolSuite = '${MEDIA_TOOL_SUITE}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="mediaToolHome.+;" replace="mediaToolHome = '${MEDIA_TOOL_HOME}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="fileCmdPath.+;" replace="fileCmdPath = '${CMD_FILE_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="soxCmdPath.+;" replace="soxCmdPath = '${CMD_SOX_PATH}';"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="frameHeight.+;" replace="frameHeight = ${VIDEO_FRAME_HEIGHT};"/>
@@ -185,7 +194,9 @@
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxDuration.+;" replace="maxDuration = ${VIDEO_MAX_DURATION};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="maxSize.+;" replace="maxSize = ${VIDEO_MAX_SIZE};"/>
 		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="logPath.+;" replace="logPath = '${LOG_PATH}';"/>
-		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>	
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="webRootPath.+;" replace="webRootPath = '${WEB_ROOT}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="wwwroot.+;" replace="wwwroot = 'http://${WEB_DOMAIN}';"/>
+		<replaceregexp file="${APP_ROOT}/resources/services/utils/Config.php" match="streamingserver.+;" replace="streamingserver = '${RED5_URL}';"/>
 	</target>
 	
 	<target name="app-fill-db-preferences">	

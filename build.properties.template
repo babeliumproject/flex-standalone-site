@@ -29,8 +29,7 @@ FLEX_LIB=${FLEX_HOME}/lib
 #Compilation options
 #These flags decide how the app is compiled. Depending on what you choose some parts of the app will be left out or will work in another way. To see what each option is about see the code.
 CONFIG_RESTRICTED_EVALUATION=false
-CONFIG_NO_PRACTICE_UPLOAD=false
-CONFIG_UNSTABLE=false
+CONFIG_EXPERIMENTAL=false
 
 LOCALE_BUNDLES=en_US,es_ES,eu_ES,fr_FR,de_DE
 
@@ -56,7 +55,8 @@ VIDEO_FRAME_WIDTH_4_3=320
 VIDEO_MAX_DURATION=max_video_duration_in_seconds
 VIDEO_MAX_SIZE=max_video_size_in_MB
 
-CMD_FFMPEG_PATH=ffmpeg
+MEDIA_TOOL_SUITE=avconv
+MEDIA_TOOL_HOME=
 CMD_FILE_PATH=file
 CMD_SOX_PATH=sox
 
@@ -103,6 +103,7 @@ WEB_ROOT=your_web_root_path
 SERVICE_PATH=${WEB_DOMAIN}/services
 RED5_PATH=/path/to/red5/instance
 RED5_APPNAME=app_name_for_streaming_service
+RED5_URL=rtmp://${WEB_DOMAIN}/${RED5_APPNAME}
 
 ########################################
 #LEGACY PROPERTIES USE AT YOUR OWN RISK#
