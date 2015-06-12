@@ -84,6 +84,7 @@
 		
 		<move file="${APP_ROOT}/service-config.xml.tmp" tofile="${APP_ROOT}/service-config.xml" overwrite="true"/>
 		<move file="${APP_ROOT}/model/DataModel.as.tmp" tofile="${APP_ROOT}/model/DataModel.as" overwrite="true"/>
+		<move file="${APP_ROOT}/resources/crossdomain.xml.tmp" tofile="${APP_ROOT}/resources/crossdomain.xml" overwrite="true"/>
 		<delete file="${BASE}/link-report.xml"/>
 	</target>
 
@@ -162,6 +163,7 @@
 	<target name="app-fix-domains">
 		<copy file="${APP_ROOT}/service-config.xml" tofile="${APP_ROOT}/service-config.xml.tmp" overwrite="true"/>
 		<copy file="${APP_ROOT}/model/DataModel.as" tofile="${APP_ROOT}/model/DataModel.as.tmp" overwrite="true"/>
+		<copy file="${APP_ROOT}/resources/crossdomain.xml" tofile="${APP_ROOT}/resources/crossdomain.xml.tmp" overwrite="true"/>
 		
 		<replaceregexp file="${APP_ROOT}/service-config.xml" match="endpoint uri=&quot;[^&quot;]+&quot;" replace="endpoint uri=&quot;http://${WEB_DOMAIN}/server.php&quot;"/>
 		<replaceregexp file="${APP_ROOT}/model/DataModel.as" match="server:String.+;" replace="server:String='${WEB_DOMAIN}';"/>
