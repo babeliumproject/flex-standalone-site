@@ -234,7 +234,7 @@ class User {
 		if ($result)
 		{
 			$id = $result->id;
-			$user = $result->name;
+			$user = $result->username;
 			$email = $result->email;
 			$firstname = $result->firstname;
 		}
