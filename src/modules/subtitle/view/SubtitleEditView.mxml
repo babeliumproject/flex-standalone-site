@@ -49,7 +49,7 @@
 					</s:layout>
 					<s:BitmapImage source="/resources/images/iconmonstr-info-icon-48.png"/>
 					<s:Label width="300"
-							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBEDITION')}"/>
+							 text="{resourceManager.getString('myResources','SIMULTANEOUS_SUBTITLE_EDITION')}"/>
 				</s:BorderContainer>
 			</s:VGroup>
 
@@ -69,7 +69,7 @@
 									  horizontalAlign="center"/>
 				</s:layout>
 
-				<s:Label text="{resourceManager.getString('myResources','SUBEDITOR')}"/>
+				<s:Label text="{resourceManager.getString('myResources','SUBTITLE_EDITOR')}"/>
 
 				<s:VGroup id="subtitleVersionBox"
 						  includeInLayout="false"
@@ -79,7 +79,7 @@
 						  paddingTop="10">
 					<s:HGroup verticalAlign="middle"
 							  width="100%">
-						<s:Label text="{resourceManager.getString('myResources','CURRENTLY_SELECTED_SUBVERSION')}"/>
+						<s:Label text="{resourceManager.getString('myResources','CURRENTLY_SELECTED_SUBTITLE_VERSION')}"/>
 						<s:DropDownList id="subtitleVersionSelector"
 										labelFunction="{subtitleVersionComboLabelFunction}"
 										skinClass="skins.BootstrapDropDownList"
@@ -157,18 +157,18 @@
 						  width="100%"
 						  horizontalAlign="center">
 					<!-- enabled="{VPSubtitle.playbackState == videoPlaybackStartedState}" -->
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBLINE')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_ADD_SUBTITLE_LINE')}"
 									  click="{subtitleInsertHandler(event)}"
 									  id="addSubtitleLine"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/add.png')"/>
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBLINE')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_REMOVE_SUBTITLE_LINE')}"
 									  enabled="{subCollection.length > 0}"
 									  click="subtitleRemoveHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/delete.png')"/>
 
-					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBLINES')}"
+					<skins:IconButton label="{resourceManager.getString('myResources','OPTION_CLEAR_SUBTITLE_LINES')}"
 									  enabled="{subCollection.length > 0}"
 									  click="subtitleClearHandler()"
 									  skinClass="skins.IconButtonSkin"
@@ -176,7 +176,7 @@
 					<mx:VRule id="saveSubtitleSeparator"
 							  height="30"/>
 					<skins:IconButton id="saveSubtitleButton"
-									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBLINES')}"
+									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
 									  click="saveSubtitlesHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/disk.png')"/>

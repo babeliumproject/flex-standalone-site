@@ -45,7 +45,7 @@
 						break;
 					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
 						preparePlayer('subtitle.flv');
-						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBA_VIDEO');
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
 						break;
 					default:
 						break;

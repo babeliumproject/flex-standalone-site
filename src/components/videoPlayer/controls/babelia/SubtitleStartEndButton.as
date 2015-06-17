@@ -59,14 +59,14 @@ package components.videoPlayer.controls.babelia
 				CreateStartButton();
 				btn.x = this.width/2 - btn.width/2;
 				btn.y = this.height/2 - btn.height/2;
-				this.toolTip = resourceManager.getString('myResources','SUBITLE_START_TIME_TOOLTIP');
+				this.toolTip = resourceManager.getString('myResources','SUBTITLE_START_TIME_TOOLTIP');
 			}
 			else
 			{
 				CreateEndButton();
 				btn.x = this.width/2 - btn.width/2;
 				btn.y = this.height/2 - btn.height/2;
-				this.toolTip = resourceManager.getString('myResources','SUBSTOP_TIME_TOOLTIP');
+				this.toolTip = resourceManager.getString('myResources','SUBTITLE_STOP_TIME_TOOLTIP');
 			}
 			addChild(btn);
 		}

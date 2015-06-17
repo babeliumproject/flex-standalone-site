@@ -316,7 +316,7 @@ package modules.subtitle.view
 
 		public function subtitleClearHandler():void
 		{
-			CustomAlert.confirm(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBLINES'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, Alert.NO);
+			CustomAlert.confirm(resourceManager.getString('myResources', 'WARNING_CLEAR_SUBTITLE_LINES'), Alert.YES | Alert.NO, null, subtitleClearConfirmation, Alert.NO);
 		}
 
 		private function subtitleClearConfirmation(event:CloseEvent):void
@@ -471,12 +471,12 @@ package modules.subtitle.view
 				if (i > 0)
 				{
 					if ((subCollection.getItemAt((i - 1)).hideTime + 0.2) >= subCollection.getItemAt(i).showTime)
-						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBOVERLAPS') + "\n", i);
+						errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_OVERLAPS') + "\n", i);
 				}
 				var hideTime:Number=subCollection.getItemAt(i).hideTime;
 				var showTime:Number=subCollection.getItemAt(i).showTime;
 				if ((hideTime > VPSubtitle.duration - 0.5) || hideTime < 0.5 || showTime < 0.5 || showTime > VPSubtitle.duration - 0.5)
-					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTIME_OUT_OF_BOUNDS') + "\n", i + 1);
+					errorMessage+=StringUtil.substitute(resourceManager.getString('myResources', 'SUBTITLE_TIME_OUT_OF_BOUNDS') + "\n", i + 1);
 			}
 			return errorMessage;
 		}

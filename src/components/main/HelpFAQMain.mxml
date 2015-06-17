@@ -65,7 +65,7 @@
 		<s:Label text="{resourceManager.getString('myResources','VIDEO_TUTORIALS_DESCRIPTION')}"/>
 		<s:HGroup>
 			<mx:Spacer/>
-			<skins:IconButton label="{resourceManager.getString('myResources','HOW_TO_SUBA_VIDEO')}"
+			<skins:IconButton label="{resourceManager.getString('myResources','HOW_TO_SUBTITLE_A_VIDEO')}"
 						   textDecoration="underline"
 						   click="externalLinkClickHandler('http://www.youtube.com/watch?v=zYKkoFJU7i8')"
 						   styleName="commonLinkButton"/>
