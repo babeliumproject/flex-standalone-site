@@ -224,7 +224,7 @@ class User {
 		$user = "";
 		$firstname = "";
 
-		$aux = "name";
+		$aux = "username";
 		if ( Mailer::checkEmail($username) )
 			$aux = "email";
 
