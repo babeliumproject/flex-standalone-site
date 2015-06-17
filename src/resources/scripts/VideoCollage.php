@@ -54,7 +54,7 @@ class VideoCollage{
 		//Only retrieve the responses made by the users that use the Moodle Babelium plugin
 		$sql = "SELECT DISTINCT(r.file_identifier) as responseName 
 				FROM response r INNER JOIN user u ON r.fk_user_id=u.ID 
-                INNER JOIN moodle_api um ON u.id=um.fk_user_id";
+                INNER JOIN serviceconsumer um ON u.id=um.fk_user_id";
 		
 		$result = $this->conn->_multipleSelect($sql);
 		if($result){

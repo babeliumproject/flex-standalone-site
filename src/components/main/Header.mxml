@@ -2,10 +2,12 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
 		 xmlns:main="components.main.*"
 		 xmlns:skins="skins.*"
 		 width="100%"
-		 creationComplete="completeHandler(event)">
+		 preinitialize="preinitHandler(event)"
+		 creationComplete="completeHandler(event)" >
 
 	<s:VGroup width="100%"
 			  minWidth="1000"
@@ -27,7 +29,17 @@
 			</s:layout>
 
 			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
+			<components:EnhancedDropDownList id="localeComboBox2"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 sortItems="true"
+											 visible="false"
+											 includeInLayout="false"/>
+			<!--
 			<main:LocalizationComboBox id="localeComboBox"/>
+			-->
 
 			<s:HGroup horizontalAlign="right"
 					  verticalAlign="middle"
@@ -99,38 +111,99 @@
 	<fx:Script>
 		<![CDATA[
 			import control.URLManager;
-
+			
 			import events.LoginEvent;
-
+			
 			import flash.net.navigateToURL;
-
+			
 			import model.DataModel;
-
+			
 			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ResourceEvent;
 			import mx.managers.PopUpManager;
-
+			import mx.resources.IResourceBundle;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
 			import spark.effects.Animate;
 			import spark.effects.animation.MotionPath;
 			import spark.effects.animation.RepeatBehavior;
 			import spark.effects.animation.SimpleMotionPath;
+			import spark.events.IndexChangeEvent;
+			
+			import utils.CollectionUtils;
+			import utils.LocaleUtils;
 
 			[Bindable]
 			protected var _urlManager:URLManager=URLManager.getInstance();
+			
+			private var tmp:LocalizationComboBox;
+			
+			private var siteLanguages:ArrayCollection;
+			private var rm:IResourceManager;
 
 			private var popup:LoginPopup;
+			
+			protected function preinitHandler(event:FlexEvent):void{
+				rm=ResourceManager.getInstance();
+				var loadedLocales:Array=rm.getLocales();
+				if(loadedLocales.length>1){
+					siteLanguages=new ArrayCollection();
+				}
+				for each (var locale:String in loadedLocales){
+					var langcode:String = locale.substring(0,locale.indexOf('_'));
+					var bundle:IResourceBundle=rm.getResourceBundle(locale,'myResources');
+					if(bundle.content.hasOwnProperty('LANGUAGE_'+langcode.toUpperCase())){
+						var name:String = bundle.content['LANGUAGE_'+langcode.toUpperCase()];
+						siteLanguages.addItem({'code': locale, 'label': name});
+					}
+				}
+			}
 
-			public function completeHandler(event:FlexEvent):void
+			protected function completeHandler(event:FlexEvent):void
 			{
 				var model:DataModel=DataModel.getInstance();
+				
+				if(siteLanguages){
+					localeComboBox2.visible=true;
+					localeComboBox2.includeInLayout=true;
+					localeComboBox2.dataProvider=siteLanguages;
+					var initialLocale:String = rm.localeChain[0];
+					var initialItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',initialLocale) as Function);
+					localeComboBox2.selectedItem=initialItem;
+					localeComboBox2.addEventListener(IndexChangeEvent.CHANGE, onLocaleChange);
+				}
 
 				BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
 				BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
 				BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
 			}
+			
+			private function onLocaleChange(event:IndexChangeEvent):void{
+				var newItem:Object=event.target.dataProvider.getItemAt(event.newIndex);
+				if (rm.getLocales().indexOf(newItem.code) != -1)
+				{
+					LocaleUtils.arrangeLocaleChain(newItem.code);
+				}
+				else
+				{
+					//var resourceModuleURL:String="Resources_" + newItem.code + ".swf";
+					//var loader:IEventDispatcher=rm.loadResourceModule(resourceModuleURL);
+					//loader.addEventListener(ResourceEvent.COMPLETE, resourceModuleCompleteHandler);
+				}
+			}
+			
+			private function resourceModuleCompleteHandler(event:ResourceEvent):void
+			{
+				//LocaleUtils.arrangeLocaleChain(newItem.code);
+			}
+			
 
 			public function signInClickHandler():void
 			{
@@ -191,8 +264,12 @@
 					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
 					userCP.includeInLayout=true;
 					userCP.visible=true;
-					callLater(localeComboBox.updateSelectedIndex);
-
+					//callLater(localeComboBox.updateSelectedIndex);
+					if(this.initialized && siteLanguages){
+						var preferredLocale:String = rm.localeChain[0];
+						var preferredItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',preferredLocale) as Function);
+						localeComboBox2.selectedItem=preferredItem;
+					}
 				}
 			}
 
@@ -227,8 +304,14 @@
 
 			private function onAccountActivation(flag:Boolean):void
 			{
-				if (flag == true)
-					localeComboBox.updateSelectedIndex();
+				if (flag == true){
+					//localeComboBox.updateSelectedIndex();
+					if(this.initialized && siteLanguages){
+						var preferredLocale:String = rm.localeChain[0];
+						var preferredItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',preferredLocale) as Function);
+						localeComboBox2.selectedItem=preferredItem;
+					}
+				}
 			}
 		]]>
 	</fx:Script>
