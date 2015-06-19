@@ -329,35 +329,21 @@
 	<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
 			 styleName="h2"/>
 
-	<s:VGroup id="errorMessageBox"
-			  width="100%"
-			  paddingBottom="16"
-			  paddingLeft="16"
-			  paddingRight="16"
-			  paddingTop="16"
-			  includeInLayout="{DataModel.getInstance().registrationErrorMessage ? true: false}"
-			  visible="{DataModel.getInstance().registrationErrorMessage ? true : false}">
-		<s:BorderContainer minHeight="0"
-						   cornerRadius="8"
-						   borderWeight="2"
-						   backgroundAlpha="0.5"
-						   backgroundColor="#FFBABA"
-						   borderColor="#D8000C"
-						   width="100%">
-			<s:layout>
-				<s:HorizontalLayout verticalAlign="middle"
-									paddingBottom="16"
-									paddingLeft="16"
-									paddingRight="16"
-									paddingTop="16"/>
-			</s:layout>
-			<s:Label id="errorInfo"
-					 width="900"
-					 fontSize="14"
-					 color="#D8000C"
-					 text="Unknown error"/>
-		</s:BorderContainer>
-	</s:VGroup>
+
+	<s:BorderContainer styleName="alert-danger"
+					   width="100%"
+					   includeInLayout="{DataModel.getInstance().registrationErrorMessage ? true: false}"
+					   visible="{DataModel.getInstance().registrationErrorMessage ? true : false}">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle"
+								paddingBottom="16"
+								paddingLeft="16"
+								paddingRight="16"
+								paddingTop="16"/>
+		</s:layout>
+		<s:Label id="errorInfo"
+				 text="Unknown error"/>
+	</s:BorderContainer>
 
 	<s:BorderContainer id="signupContainer"
 					   styleName="lightBorderContainer"
@@ -458,7 +444,8 @@
 		</s:Line>
 		<s:Form width="100%">
 			<s:Label text="{resourceManager.getString('myResources','I_SPEAK')+':'}"
-					 styleName="boldLabel" fontSize="16"/>
+					 styleName="boldLabel"
+					 fontSize="16"/>
 			<s:Label text="{resourceManager.getString('myResources','PLASE_CHOOSE_ONLY_LANGUAGES_IN_WHICH_YOU_ARE_EITHER_NATIVE_OR_ADVANCED')}"/>
 			<s:FormItem>
 				<s:VGroup>
@@ -471,7 +458,8 @@
 			</s:FormItem>
 
 			<s:Label text="{resourceManager.getString('myResources','I_WOULD_LIKE_TO_LEARN')+':'}"
-					 styleName="boldLabel" fontSize="16"/>
+					 styleName="boldLabel"
+					 fontSize="16"/>
 			<s:Label text="{resourceManager.getString('myResources','PLEASE_CHOOSE_AT_LEAST_ONE_LANGUAGE')}"/>
 			<s:FormItem>
 				<s:VGroup>

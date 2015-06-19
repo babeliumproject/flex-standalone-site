@@ -12,7 +12,7 @@ s|Application{
 	horizontalAlign: center;
 	paddingTop: 0;
 	paddingBottom: 5;
-	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
+	fontFamily: HelveticaNeue, Helvetica, LiberationSans, Arial;
 	fontSize: 14;
 	fontWeight: normal;
 	color: #333333;
@@ -608,6 +608,16 @@ s|TextInput{
 	borderAlpha: 0.85;
 	borderColor: #E0E0E0;
 	cornerRadius: 1;
+}
+
+.alert-danger{
+	backgroundAlpha: 1.0;
+	backgroundColor: #f2dede;
+	borderAlpha: 1.0;
+	borderColor: #ebccd1;
+	borderWeight: 1;
+	cornerRadius: 3;
+	color: #a94442;
 }
 
 .btn-default{
