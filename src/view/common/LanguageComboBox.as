@@ -7,7 +7,6 @@ package view.common
 	
 	import model.DataModel;
 	import model.LocalesAndFlags;
-	import model.ResourceSubscriber;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.events.FlexEvent;

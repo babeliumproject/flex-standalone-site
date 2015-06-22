@@ -109,35 +109,5 @@ package model
 			}
 			availableLanguages=tmpLocales;	
 		}
-		
-		public function getLevelCorrespondence(avgDifficulty:Number):String
-		{
-			var numFormat:NumberFormatter=new NumberFormatter();
-			numFormat.precision=0;
-			numFormat.rounding=NumberBaseRoundType.NEAREST;
-			var roundedAvgDifficulty:int=int(numFormat.format(avgDifficulty));
-			switch (roundedAvgDifficulty)
-			{
-				case 1:
-					return 'A1';
-					break;
-				case 2:
-					return 'A2';
-					break;
-				case 3:
-					return 'B1';
-					break;
-				case 4:
-					return 'B2';
-					break;
-				case 5:
-					return 'C1';
-					break;
-				default:
-					return '';
-					break;
-			}
-		}
-
 	}
 }

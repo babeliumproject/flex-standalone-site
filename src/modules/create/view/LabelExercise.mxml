@@ -158,7 +158,6 @@
 			
 			import model.DataModel;
 			import model.LocalesAndFlags;
-			import model.ResourceSubscriber;
 			
 			import modules.create.event.CreateEvent;
 			

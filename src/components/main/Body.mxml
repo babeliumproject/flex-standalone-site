@@ -12,7 +12,8 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			import mx.events.ModuleEvent;
+			
+			import view.common.LanguageComboBox;
 			
 			import components.EnhancedDropDownList;
 			import components.videoPlayer.VideoRecorder;
@@ -23,6 +24,9 @@
 			import model.DataModel;
 			
 			import modules.IModuleInterface;
+			
+			import mx.events.ModuleEvent;
+			import mx.resources.Locale;
 			
 			import utils.CollectionUtils;
 			import utils.ExerciseRenderUtils;
@@ -41,6 +45,7 @@
 			private var utils_exerciseRenderUtils:ExerciseRenderUtils;
 			private var utils_localeUtils:LocaleUtils;
 			private var utils_timeMetadataParser:TimeMetadataParser;
+			private var view_common_languageComboBox:LanguageComboBox;
 			private var vo_licenseVo:LicenseVO;
 			
 			

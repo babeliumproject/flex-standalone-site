@@ -14,15 +14,17 @@
 	<fx:Script>
 		<![CDATA[
 			import model.DataModel;
-
+			
+			import utils.ExerciseRenderUtils;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.events.FlexEvent;
-
+			
 			import skins.IconLinkSkin;
-
+			
 			import vo.UserLanguageVO;
 
 			private var _model:DataModel=DataModel.getInstance();
@@ -104,7 +106,7 @@
 				langName.text=resourceManager.getString('myResources', 'LOCALE_' + String(data.code).toUpperCase());
 
 				var langLevel:Label=new Label();
-				langLevel.text=_model.localesAndFlags.getLevelCorrespondence(lang.level);
+				langLevel.text=ExerciseRenderUtils.getLevelLabel(lang.level);
 				langLevel.styleName='boldYellowLabel';
 
 				var lHGroup:HGroup=new HGroup();

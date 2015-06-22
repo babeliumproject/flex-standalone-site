@@ -131,10 +131,6 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.ObjectUtil;
 			
-			import spark.effects.Animate;
-			import spark.effects.animation.MotionPath;
-			import spark.effects.animation.RepeatBehavior;
-			import spark.effects.animation.SimpleMotionPath;
 			import spark.events.IndexChangeEvent;
 			
 			import utils.CollectionUtils;
@@ -142,8 +138,6 @@
 
 			[Bindable]
 			protected var _urlManager:URLManager=URLManager.getInstance();
-			
-			private var tmp:LocalizationComboBox;
 			
 			private var siteLanguages:ArrayCollection;
 			private var rm:IResourceManager;
