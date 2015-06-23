@@ -61,7 +61,7 @@
 
 				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
 				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
-				exerciseDate.text=ExerciseRenderUtils.formatDateTime(data.timecreated, DateTimeStyle.SHORT, DateTimeStyle.NONE);
+				exerciseDate.text=ExerciseRenderUtils.formatTimestamp(data.timecreated, DateTimeStyle.SHORT, DateTimeStyle.NONE);
 
 				if (!cwlblvec)
 					cwlblvec=new Vector.<ChangeWatcher>();

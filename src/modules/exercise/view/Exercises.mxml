@@ -223,7 +223,7 @@
 						//Write the exercise data
 						usernameLbl.text=_currentExercise.userName;
 						difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(_currentExercise.difficulty);
-						timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
+						timecreatedLbl.text=ExerciseRenderUtils.formatTimestamp(_currentExercise.timecreated, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);
 						langBitmap.source=ExerciseRenderUtils.getFlagSource(_currentExercise);
 
 						exerciseDetailedData.exerciseData=_currentExercise;

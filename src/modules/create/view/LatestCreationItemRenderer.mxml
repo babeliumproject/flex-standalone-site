@@ -39,7 +39,7 @@
 				title.text=value.title;
 				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
 				difLevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
-				creationDateLbl.text=ExerciseRenderUtils.formatDateTime(value.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE);
+				creationDateLbl.text=ExerciseRenderUtils.formatTimestamp(value.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE);
 				
 				var ready:int=parseInt(value.status);
 				var propname:String = ready ? 'READY' : 'DRAFT';

@@ -32,7 +32,7 @@
 					return;
 
 				thumbnail.source=value.thumbnail;
-				videoDuration.text=ExerciseRenderUtils.formatDateTime(value.duration, DateTimeStyle.CUSTOM, DateTimeStyle.CUSTOM);
+				videoDuration.text=ExerciseRenderUtils.formatTimestamp(value.duration, DateTimeStyle.CUSTOM, DateTimeStyle.CUSTOM);
 				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
 				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
 				usernameLbl.text=value.userName;
