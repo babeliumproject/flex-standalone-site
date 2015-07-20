@@ -154,7 +154,6 @@
 		<![CDATA[
 			import components.EnhancedDropDownList;
 			
-			import events.UserEvent;
 			
 			import model.DataModel;
 			import model.LocalesAndFlags;
@@ -165,12 +164,9 @@
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.core.IVisualElement;
-			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.resources.ResourceManager;
-			import mx.utils.ObjectUtil;
 			import mx.validators.Validator;
 			
 			import skins.BootstrapCheckBox;
@@ -181,7 +177,6 @@
 			import utils.LocaleUtils;
 			
 			import view.common.CustomAlert;
-			import view.common.DifficultyLevelComboBox;
 			
 			import vo.ExerciseVO;
 
@@ -507,7 +502,7 @@
 
 			protected function displayCommExerciseFields(item:Object):void
 			{
-				if (item.hasOwnProperty('code') && (item['code'] == 0 || item['code'] == 5))
+				if (item && item.hasOwnProperty('code') && (item['code'] == 0 || item['code'] == 5))
 				{ //Language practice
 					commSituation.includeInLayout=false;
 					commSituation.visible=false;

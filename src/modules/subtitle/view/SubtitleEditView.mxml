@@ -173,8 +173,11 @@
 									  click="subtitleClearHandler()"
 									  skinClass="skins.IconButtonSkin"
 									  icon="@Embed('/resources/images/cancel.png')"/>
-					<mx:VRule id="saveSubtitleSeparator"
-							  height="30"/>
+					<s:Line height="30">
+						<s:stroke>
+							<s:SolidColorStroke id="saveSubtitleSeparator" weight="1"/>
+						</s:stroke>
+					</s:Line>
 					<skins:IconButton id="saveSubtitleButton"
 									  label="{resourceManager.getString('myResources','OPTION_SAVE_SUBTITLE_LINES')}"
 									  click="saveSubtitlesHandler()"

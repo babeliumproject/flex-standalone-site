@@ -226,7 +226,11 @@
 					  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"
 					  styleName="btn-danger"
 					  buttonMode="true"/>
-			<mx:VRule height="20"/>
+			<s:Line height="20">
+				<s:stroke>
+					<s:SolidColorStroke id="itemSeparator" weight="1"/>
+				</s:stroke>
+			</s:Line>
 			<s:Label id="exerciseCount"
 					 paddingLeft="16"
 					 paddingRight="16"/>

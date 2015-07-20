@@ -1,63 +1,49 @@
 package modules.subtitle.view
 {	
-	import components.videoPlayer.VideoPlayer;
-	import components.videoPlayer.VideoRecorder;
-	import components.videoPlayer.events.MediaStatusEvent;
-	import components.videoPlayer.events.VideoPlayerEvent;
-	import components.videoPlayer.events.babelia.StreamEvent;
-	import components.videoPlayer.events.babelia.SubtitlingEvent;
-	import components.videoPlayer.media.AMediaManager;
-	
-	import control.URLManager;
-	
-	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.globalization.DateTimeFormatter;
 	import flash.globalization.DateTimeStyle;
-	
-	import model.DataModel;
-	
-	import modules.IGroupInterface;
-	import modules.exercise.event.ExerciseEvent;
-	import modules.subtitle.event.SubtitleEvent;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.controls.DataGrid;
-	import mx.controls.VRule;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.CloseEvent;
 	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
-	import mx.events.ListEvent;
+	import mx.graphics.SolidColorStroke;
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectUtil;
 	import mx.utils.StringUtil;
 	
-	import skins.CustomTitleWindow;
-	import skins.IconButton;
-	
-	import spark.collections.Sort;
-	import spark.collections.SortField;
-	import spark.components.Button;
-	import spark.components.ComboBox;
 	import spark.components.DropDownList;
 	import spark.components.HGroup;
 	import spark.components.Label;
 	import spark.components.VGroup;
 	import spark.events.IndexChangeEvent;
 	
+
+	import components.videoPlayer.VideoRecorder;
+	import components.videoPlayer.events.MediaStatusEvent;
+	import components.videoPlayer.events.babelia.SubtitlingEvent;
+	import components.videoPlayer.media.AMediaManager;
+	
+	
+	import model.DataModel;
+	
+	import modules.IGroupInterface;
+
+	import modules.subtitle.event.SubtitleEvent;
+	
+
+	import skins.IconButton;
+	
 	import utils.CollectionUtils;
 	
 	import view.common.CustomAlert;
-	import view.common.IconComboBox;
-	
-	import vo.CreditHistoryVO;
-	import vo.CueObject;
-	import vo.ExerciseRoleVO;
-	import vo.ExerciseVO;
+
 	import vo.RoleComboDataVO;
 	import vo.SubtitleAndSubtitleLinesVO;
 	import vo.SubtitleLineVO;
@@ -113,7 +99,7 @@ package modules.subtitle.view
 		public var subtitleVersionSelector:DropDownList;
 
 		public var saveSubtitleButton:IconButton;
-		public var saveSubtitleSeparator:VRule;
+		public var saveSubtitleSeparator:SolidColorStroke;
 
 		public function SubtitleEditClass()
 		{
