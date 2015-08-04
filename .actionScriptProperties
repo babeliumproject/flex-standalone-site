@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties analytics="false" mainApplicationPath="Main.mxml" projectUUID="4c7f88c1-9868-4221-bd29-4108d31b09e2" version="10">
-  <compiler additionalCompilerArguments="-services service-config.xml -locale=en_US,es_ES,eu_ES,fr_FR,de_DE -source-path=../locale/{locale} -define=CONFIG::restrictedEvaluation,&quot;false&quot; -define=CONFIG::noPracticeUpload,&quot;false&quot; -define=CONFIG::unstable,&quot;false&quot; -includes org.as3commons.logging.setup.target.FirebugTarget org.as3commons.logging.setup.target.TraceTarget" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderLocation="/var/www/babeliumlms/debug" outputFolderPath="bin-debug" removeUnusedRSL="true" rootURL="http://babeliumlms/debug" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-services service-config.xml -locale=en_US,es_ES,eu_ES,fr_FR,de_DE -source-path=../locale/{locale} -define=CONFIG::restrictedEvaluation,&quot;false&quot; -define=CONFIG::experimental,&quot;false&quot; -includes org.as3commons.logging.setup.target.FirebugTarget org.as3commons.logging.setup.target.TraceTarget" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
       <libraryPathEntry kind="4" path=""/>
@@ -12,18 +12,18 @@
     <application path="Main.mxml"/>
   </applications>
   <modules>
-    <module application="src/Main.mxml" destPath="modules/create/CreateModule.swf" optimize="true" sourcePath="src/modules/create/CreateModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/error/ErrorModule.swf" optimize="true" sourcePath="src/modules/error/ErrorModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/home/HomeModule.swf" optimize="true" sourcePath="src/modules/home/HomeModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/course/CourseModule.swf" optimize="true" sourcePath="src/modules/course/CourseModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/exercise/ExerciseModule.swf" optimize="true" sourcePath="src/modules/exercise/ExerciseModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/assessment/AssessmentModule.swf" optimize="true" sourcePath="src/modules/assessment/AssessmentModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/login/LoginModule.swf" optimize="true" sourcePath="src/modules/login/LoginModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/signup/SignupModule.swf" optimize="true" sourcePath="src/modules/signup/SignupModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/activity/ActivityModule.swf" optimize="true" sourcePath="src/modules/activity/ActivityModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/account/AccountModule.swf" optimize="true" sourcePath="src/modules/account/AccountModule.mxml"/>
-    <module application="src/Main.mxml" destPath="modules/exercise/ExerciseModule.swf" optimize="true" sourcePath="src/modules/exercise/ExerciseModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/error/ErrorModule.swf" optimize="true" sourcePath="src/modules/error/ErrorModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/create/CreateModule.swf" optimize="true" sourcePath="src/modules/create/CreateModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/subtitle/SubtitleModule.swf" optimize="true" sourcePath="src/modules/subtitle/SubtitleModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/home/HomeModule.swf" optimize="true" sourcePath="src/modules/home/HomeModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/signup/SignupModule.swf" optimize="true" sourcePath="src/modules/signup/SignupModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/account/AccountModule.swf" optimize="true" sourcePath="src/modules/account/AccountModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/activity/ActivityModule.swf" optimize="true" sourcePath="src/modules/activity/ActivityModule.mxml"/>
     <module application="src/Main.mxml" destPath="modules/assignment/AssignmentModule.swf" optimize="true" sourcePath="src/modules/assignment/AssignmentModule.mxml"/>
+    <module application="src/Main.mxml" destPath="modules/course/CourseModule.swf" optimize="true" sourcePath="src/modules/course/CourseModule.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
