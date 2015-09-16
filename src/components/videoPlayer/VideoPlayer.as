@@ -246,6 +246,10 @@ package components.videoPlayer
 		protected function onStreamSuccess(event:Event):void
 		{
 			var evt:Object=Object(event);
+			
+			if(_topLayer.contains(_errorSprite)){
+				_topLayer.removeChild(_errorSprite);
+			}
 
 			_video.attachNetStream(_media.netStream);
 			_video.visible=true;

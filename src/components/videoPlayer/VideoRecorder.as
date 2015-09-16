@@ -1724,6 +1724,9 @@ package components.videoPlayer
 			{
 				if (_parallelMediaReady && _mediaReady)
 				{
+					if(_topLayer.contains(_errorSprite)){
+						_topLayer.removeChild(_errorSprite);
+					}
 					//Start with the same volume for both streams
 					_parallelCurrentVolume=_currentVolume;
 					
