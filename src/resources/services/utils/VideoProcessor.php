@@ -25,7 +25,7 @@ if(!defined('SERVICE_PATH'))
 define('SERVICE_PATH', '/services/');
 
 if(!defined('WEBROOT_PATH'))
-define('WEBROOT_PATH', '/var/www/babeliumlms');
+define('WEBROOT_PATH', '/var/www/babelium');
 
 require_once WEBROOT_PATH . SERVICE_PATH . 'utils/Config.php';
 

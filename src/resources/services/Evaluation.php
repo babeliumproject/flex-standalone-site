@@ -775,8 +775,10 @@ class Evaluation {
 		//If the user has not languages defined, fallback to en_US by default
 		$locale = $row ? $row->language : 'en_US';
 		
-		$sql = "SELECT r.adding_date, e.title 
-				FROM response r INNER JOIN exercise e ON r.fk_exercise_id=e.id WHERE r.id=%d LIMIT 1";
+		$sql = "SELECT r.adding_date, e.title, u.username  
+				FROM response r INNER JOIN exercise e ON r.fk_exercise_id=e.id 
+				INNER JOIN user u ON r.fk_user_id=u.id 
+				WHERE r.id=%d LIMIT 1";
 		$data = $this->conn->_singleSelect($sql, $evaluation->responseId);
 		if(!$data){
 			throw new Exception("Cannot find response data. User notification aborted.");
@@ -787,7 +789,7 @@ class Evaluation {
 		$assessedBy = $_SESSION['user-data']->username;
 		
 
-		$mail = new Mailer($assessedBy);
+		$mail = new Mailer($data->username);
 
 		$subject = 'Babelium Project: You have been assessed';
 
