@@ -4,47 +4,56 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  xmlns:main="components.main.*"
 		  xmlns:userManagement="components.userManagement.*"
-		  width="100%"
 		  xmlns:skins="skins.*"
-		  creationComplete="onComplete(event)"
+		  width="100%"
 		  paddingBottom="16"
 		  paddingLeft="16"
 		  paddingRight="16"
-		  paddingTop="16">
+		  paddingTop="16"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+	
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.crypto.SHA1;
-
+			
+			import spark.events.TextOperationEvent;
+			
 			import components.userManagement.FieldValidator;
-			import modules.account.view.LanguageKnowledgeBox;
-			import modules.account.view.MotherLanguageBox;
-
+			
 			import control.URLManager;
-
+			
 			import events.RegisterUserEvent;
-
+			
 			import model.DataModel;
 			import model.LocalesAndFlags;
-
+			
+			import modules.account.view.LanguageKnowledgeBox;
+			import modules.account.view.MotherLanguageBox;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
+			import mx.core.IButton;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.ToolTipManager;
-
+			
 			import skins.IconButtonSkin;
-
+			
 			import spark.components.Group;
-
+			
 			import view.common.CustomAlert;
 			import view.common.IconComboBox;
 			import view.common.LanguageComboBox;
-
+			
 			import vo.NewUserVO;
 			import vo.UserLanguageVO;
 
 			public static const AVAILABLE_LANGUAGES:int=4;
 
+			private var _model:DataModel=DataModel.getInstance();
 			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
 
 			//These variables are used to store the several combobox's info the user might add
@@ -60,10 +69,57 @@
 
 			[Bindable]
 			private var errorMessageToolTips:Array=new Array;
+			
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher;
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
 
 			public function onComplete(event:FlexEvent):void
 			{
+				cw1=BindingUtils.bindSetter(displayErrorMessage, _model, 'registrationErrorMessage', commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRegisterResponse, _model, 'registrationResponse', commitOnly, useWeakReference);	
+				
+				addInitialComboboxes();
+			}
+			
+			public function resetGroup():void
+			{
+				//Restore all components to their initial values and remove the error tips
 				resetToInitialStatus();
+			}
+			
+			public function unpinGroup():void{
+				if (cw1)
+					cw1.unwatch();
+				if (cw2)
+					cw2.unwatch();
+				cw1=cw2=null;
+				
+				
+				username.removeEventListener(TextOperationEvent.CHANGE, username_change);
+				username.removeEventListener(FocusEvent.FOCUS_OUT, username_change);
+				email.removeEventListener(TextOperationEvent.CHANGE, email_change);
+				email.removeEventListener(FocusEvent.FOCUS_OUT, email_change);
+				confirmemail.removeEventListener(TextOperationEvent.CHANGE, confirmemail_change);
+				confirmemail.removeEventListener(FocusEvent.FOCUS_OUT, confirmemail_change);	
+				password.removeEventListener(TextOperationEvent.CHANGE, password_change);
+				password.removeEventListener(FocusEvent.FOCUS_OUT, password_change);
+				repassword.removeEventListener(TextOperationEvent.CHANGE, repassword_change);
+				repassword.removeEventListener(FocusEvent.FOCUS_OUT, repassword_change);
+				firstname.removeEventListener(TextOperationEvent.CHANGE, firstname_change);
+				firstname.removeEventListener(FocusEvent.FOCUS_OUT, firstname_change);
+				lastname.removeEventListener(TextOperationEvent.CHANGE, lastname_change);
+				lastname.removeEventListener(FocusEvent.FOCUS_OUT, lastname_change);
+				
+				freeContainerElements(motherLanguagesBox, deleteMotherLanguageBox);
+				freeContainerElements(interestLanguagesBox, deleteLanguageKnowledgeComboBox);
+				
+				addAnotherMotherLang.removeEventListener(MouseEvent.CLICK, addAnotherMotherLang_clickHandler);
+				addAnotherInterestLang.removeEventListener(MouseEvent.CLICK, addAnotherInterestLang_clickHandler);
+				saveButton.removeEventListener(MouseEvent.CLICK, processNewUser);
+				cancelButton.removeEventListener(MouseEvent.CLICK, cancelButton_clickHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 
 			public function addInitialComboboxes():void
@@ -81,6 +137,7 @@
 
 			private function motherLanguageBoxCreated(event:FlexEvent):void
 			{
+				(event.currentTarget as MotherLanguageBox).removeEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
 				(event.currentTarget as MotherLanguageBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
 				(event.currentTarget as MotherLanguageBox).languageCombo.name="motherLangs";
 
@@ -94,8 +151,8 @@
 
 			private function languageKnowledgeBoxCreatedInterest(event:FlexEvent):void
 			{
+				(event.currentTarget as LanguageKnowledgeBox).removeEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
-
 				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="interestLangs";
 
 				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
@@ -175,10 +232,17 @@
 
 			private function deleteLanguageKnowledgeComboBox(event:MouseEvent):void
 			{
+				var target:IButton=event.currentTarget as IButton;
+				var component:LanguageKnowledgeBox=(event.currentTarget).parent;
 				var container:Group=((event.currentTarget).parent).parent;
-				container.removeElement(((event.currentTarget).parent as LanguageKnowledgeBox));
+				
+				//Clean up after ourselves
+				target.removeEventListener(MouseEvent.CLICK, deleteLanguageKnowledgeComboBox);
+				component.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				
+				container.removeElement(component);
 				var index:uint=0;
-				if ((index=interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				if ((index=interestLanguagesArray.getItemIndex(component)) != -1)
 				{
 					interestLanguagesArray.removeItemAt(index);
 				}
@@ -186,10 +250,17 @@
 
 			private function deleteMotherLanguageBox(event:MouseEvent):void
 			{
+				var target:IButton=event.currentTarget as IButton;
+				var component:MotherLanguageBox=(event.currentTarget).parent;
 				var container:Group=((event.currentTarget).parent).parent;
-				container.removeElement(((event.currentTarget).parent as MotherLanguageBox));
+				
+				//Clean up after ourselves
+				target.removeEventListener(MouseEvent.CLICK, deleteMotherLanguageBox);
+				component.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);		
+				
+				container.removeElement(component);
 				var index:uint=0;
-				if ((index=motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1)
+				if ((index=motherLanguagesArray.getItemIndex(component)) != -1)
 				{
 					motherLanguagesArray.removeItemAt(index);
 				}
@@ -201,59 +272,90 @@
 				DataModel.getInstance().registrationErrorMessage=null;
 				username.text='';
 				email.text='';
+				confirmemail.text='';
 				password.text='';
 				repassword.text='';
 				firstname.text='';
 				lastname.text='';
 
-				if (errorMessageToolTips.hasOwnProperty(username.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[username.name] as ToolTip);
-				if (errorMessageToolTips.hasOwnProperty(email.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[email.name] as ToolTip);
-				if (errorMessageToolTips.hasOwnProperty(password.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[password.name] as ToolTip);
-				if (errorMessageToolTips.hasOwnProperty(repassword.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[repassword.name] as ToolTip);
-				if (errorMessageToolTips.hasOwnProperty(firstname.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[firstname.name] as ToolTip);
-				if (errorMessageToolTips.hasOwnProperty(lastname.name))
-					ToolTipManager.destroyToolTip(errorMessageToolTips[lastname.name] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(username.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[username.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(email.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[email.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(confirmemail.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[confirmemail.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(password.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[password.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(repassword.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[repassword.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(firstname.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[firstname.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(lastname.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[lastname.id] as ToolTip);
 				errorMessageToolTips=null;
 				errorMessageToolTips=new Array();
 
-				removeAllChildrenFromComponent(motherLanguagesBox);
-				//removeAllChildrenFromComponent(knownLanguagesBox);
-				removeAllChildrenFromComponent(interestLanguagesBox);
+				freeContainerElements(motherLanguagesBox, deleteMotherLanguageBox);
+				freeContainerElements(interestLanguagesBox, deleteLanguageKnowledgeComboBox);
 				motherLanguagesArray.removeAll();
-				//knownLanguagesArray.removeAll();
 				interestLanguagesArray.removeAll();
 
 				addInitialComboboxes();
 			}
 
-			protected function removeAllChildrenFromComponent(component:Group):void
+			protected function freeContainerElements(container:Group, deleteListener:Function):void
 			{
-				for (var i:uint=0; i < component.numElements; i++)
-					component.removeElementAt(i);
+				for (var i:uint=0; i < container.numElements; i++){
+					
+					var item:Object = container.getElementAt(i) as Object;
+					item.deleteButton.removeEventListener(MouseEvent.CLICK, deleteListener);
+					item.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+
+					container.removeElementAt(i);
+				}
 			}
 
-			protected function set onTabChange(value:Boolean):void
+			protected function displayErrorMessage(value:String):void
 			{
-				resetToInitialStatus();
-			}
-
-			protected function set displayErrorMessage(value:String):void
-			{
-				if (value.length)
+				if (value && value.length)
 					errorInfo.text=resourceManager.getString('myResources', value.toUpperCase());
 				else
 					errorInfo.text="";
 			}
 
-			protected function set onRegisterResponse(value:Boolean):void
+			protected function onRegisterResponse(value:Boolean):void
 			{
 				registerOngoing=false;
 			}
+			
+			/* Form item event listeners */
+			public function username_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20);
+			}
+			public function email_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL_ADDRESS',FieldValidator.MAIL_PATTERN_LAX, false, false);
+			}
+			
+			public function confirmemail_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, confirmemail, 'CONFIRM_EMAIL_ADDRESS',FieldValidator.MAIL_PATTERN_LAX, false, false, true, true, 0, 0, email.text);
+			}
+			
+			public function password_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40);
+			}
+			
+			public function repassword_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text);
+			}
+			
+			public function firstname_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRST_NAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40);
+			}
+			
+			public function lastname_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'SURNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40);
+			}
+			
 
 			private function processNewUser():void
 			{
@@ -309,22 +411,11 @@
 
 			protected function cancelButton_clickHandler(event:MouseEvent):void
 			{
-				resetToInitialStatus();
-				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
 				URLManager.getInstance().redirect('home');
 			}
 
-			public function resetGroup():void
-			{
-				resetToInitialStatus();
-			}
 		]]>
 	</fx:Script>
-
-	<fx:Binding source="{DataModel.getInstance().registrationErrorMessage}"
-				destination="displayErrorMessage"/>
-	<fx:Binding source="{DataModel.getInstance().registrationResponse}"
-				destination="onRegisterResponse"/>
 
 	<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
 			 styleName="h2"/>
@@ -369,14 +460,12 @@
 		<s:Form width="100%">
 			<s:FormItem label="{resourceManager.getString('myResources','USERNAME')}"
 						required="true">
-
 				<s:TextInput id="username"
 							 styleName="frm-input"
 							 width="300"
 							 maxChars="20"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20)"/>
-
+							 change="username_change(event)"
+							 focusOut="username_change(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','EMAIL_ADDRESS')}"
 						required="true">
@@ -384,9 +473,17 @@
 							 styleName="frm-input"
 							 width="300"
 							 maxChars="80"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, email,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
-
+							 change="email_change(event)"
+							 focusOut="email_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','CONFIRM_EMAIL_ADDRESS')}"
+						required="true">
+				<s:TextInput id="confirmemail"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="confirmemail_change(event)"
+							 focusOut="confirmemail_change(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','PASSWORD')}"
 						required="true">
@@ -396,21 +493,18 @@
 							 displayAsPassword="true"
 							 width="300"
 							 maxChars="40"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40)"/>
-
+							 change="password_change(event)"
+							 focusOut="password_change(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','CONFIRM_PASSWORD')}"
 						required="true">
-
 				<s:TextInput id="repassword"
 							 styleName="frm-input"
 							 displayAsPassword="true"
 							 width="300"
 							 maxChars="40"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text)"/>
-
+							 change="repassword_change(event)"
+							 focusOut="repassword_change(event)"/>
 			</s:FormItem>
 			<mx:Spacer/>
 			<s:FormItem label="{resourceManager.getString('myResources','FIRST_NAME')}"
@@ -419,8 +513,8 @@
 							 width="300"
 							 styleName="frm-input"
 							 maxChars="40"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"/>
+							 change="firstname_change(event)"
+							 focusOut="firstname_change(event)"/>
 			</s:FormItem>
 			<s:FormItem label="{resourceManager.getString('myResources','SURNAME')}"
 						required="true">
@@ -428,8 +522,8 @@
 							 styleName="frm-input"
 							 width="300"
 							 maxChars="40"
-							 change="FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"
-							 focusOut="FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40)"/>
+							 change="lastname_change(event)"
+							 focusOut="lastname_change(event)"/>
 			</s:FormItem>
 		</s:Form>
 		<s:Label id="languagesLbl"

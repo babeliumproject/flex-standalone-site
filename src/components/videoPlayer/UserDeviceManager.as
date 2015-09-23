@@ -32,6 +32,9 @@ package components.videoPlayer
 		public var defaultCameraWidth:int=320;
 		public var defaultCameraHeight:int=240;
 		
+		public var defaultMicRate:int=22;
+		public var defaultMicEchoSuppression:Boolean=false;
+		
 		
 		public function UserDeviceManager()
 		{

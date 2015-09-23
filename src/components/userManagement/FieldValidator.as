@@ -6,10 +6,9 @@ package components.userManagement
 	import mx.managers.ToolTipManager;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
+	import mx.utils.StringUtil;
 	
 	import spark.components.TextInput;
-
-	[ResourceBundle("myResources")]
 	
 	public class FieldValidator
 	{
@@ -20,6 +19,8 @@ package components.userManagement
 		public static var MAIL_PATTERN_LAX_NO_SPACE:RegExp=/^[^@ ]+@[^@ ]+$/;
 		public static var FIELD_PATTERN:RegExp=/^[a-zA-Z_]\w*$/;
 		public static var ANY_PATTERN:RegExp=/^\w*$/s;
+		
+		public static const RESOURCE_BUNDLE:String='myResources';
 		
 		// Empty Constructor
 		public function FieldValidator()
@@ -37,26 +38,39 @@ package components.userManagement
 			var resourceManager:IResourceManager = ResourceManager.getInstance();
 			// Has the error message ToolTip already been created?
 			// (A reference to created ToolTip instances is saved in a hash called errorMessageToolTips.)
-			var toolTipExists:Boolean=errorMessageToolTips.hasOwnProperty(target.name);
+			var toolTipExists:Boolean=errorMessageToolTips.hasOwnProperty(target.id);
 			var errorMessage:String='';
+			
+			var canonizedField:String=fieldName.toUpperCase();
+			var locField:String=resourceManager.getString(RESOURCE_BUNDLE, canonizedField);
+			var template:String='';
 			
 			if (toolTipExists)
 			{
-				ToolTipManager.destroyToolTip(errorMessageToolTips[target.name] as ToolTip);
-				delete errorMessageToolTips[target.name];
+				ToolTipManager.destroyToolTip(errorMessageToolTips[target.id] as ToolTip);
+				delete errorMessageToolTips[target.id];
 			}
 			
 			if (checkEmpty && target.text == "")
 			{
-				errorMessage=resourceManager.getString("myResources", "EMPTY_"+fieldName.toUpperCase());
+				template=resourceManager.getString(RESOURCE_BUNDLE, "EMPTY_FIELD_TEMPLATE");
+				errorMessage=StringUtil.substitute(template, locField);
+				
+				//errorMessage=resourceManager.getString("myResources", "EMPTY_"+fieldName.toUpperCase());
 			}
 			else if (checkLength && (target.text.length < minLength))
 			{
-				errorMessage=resourceManager.getString("myResources", "SHORT_"+fieldName.toUpperCase());
+				template=resourceManager.getString(RESOURCE_BUNDLE, "SHORT_FIELD_TEMPLATE");
+				errorMessage=StringUtil.substitute(template, locField, minLength);
+				
+				//errorMessage=resourceManager.getString("myResources", "SHORT_"+fieldName.toUpperCase());
 			}
 			else if (checkLength && (target.text.length > maxLength))
 			{
-				errorMessage=resourceManager.getString("myResources", "LONG_"+fieldName.toUpperCase());
+				template=resourceManager.getString(RESOURCE_BUNDLE, "LONG_FIELD_TEMPLATE");
+				errorMessage=StringUtil.substitute(template, locField, maxLength);
+				
+				//errorMessage=resourceManager.getString("myResources", "LONG_"+fieldName.toUpperCase());
 			}
 			else if (checkPattern && (!matchPattern.test(target.text)))
 			{
@@ -75,8 +89,8 @@ package components.userManagement
 				errorTip.setStyle("styleName", "errorTip");
 				
 				// Save a reference to the error message ToolTip in a hash for later use.
-				errorMessageToolTips[target.name]=errorTip;
-				(errorMessageToolTips[target.name] as ToolTip).visible=true;
+				errorMessageToolTips[target.id]=errorTip;
+				(errorMessageToolTips[target.id] as ToolTip).visible=true;
 				
 				return false; //The filed has errors, so we return false
 			} 

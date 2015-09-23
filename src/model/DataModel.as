@@ -188,7 +188,7 @@ package model
 
 		//Exercise uploading related data
 		[Bindable]
-		public var server:String='babeliumlms';
+		public var server:String='babelium';
 		
 
 		public var defaultNetConnectionUrl:String;

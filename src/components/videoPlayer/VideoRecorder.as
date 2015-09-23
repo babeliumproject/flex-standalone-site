@@ -21,6 +21,8 @@ package components.videoPlayer
 	import flash.geom.Matrix;
 	import flash.media.*;
 	import flash.net.*;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.utils.*;
 	
 	import model.DataModel;
@@ -29,8 +31,6 @@ package components.videoPlayer
 	import modules.exercise.event.ResponseEvent;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Image;
-	import mx.controls.Text;
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.effects.AnimateProperty;
@@ -43,6 +43,7 @@ package components.videoPlayer
 	import skins.OverlayPlayButtonSkin;
 	
 	import spark.components.Button;
+	import spark.components.Image;
 	import spark.primitives.BitmapImage;
 	
 	import utils.TimeMetadataParser;
@@ -71,7 +72,6 @@ package components.videoPlayer
 		//private var _roleTalkingPanel:RoleTalkingPanel;
 		private var _micActivityBar:MicActivityBar;
 		private var _subtitlingControls:UIComponent;
-		private var _subtitlingText:Text;
 		private var _subtitleStartEnd:SubtitleStartEndButton;
 		private var _bgArrow:Sprite;
 
@@ -138,7 +138,8 @@ package components.videoPlayer
 		private var _pollTimeline:Boolean=false;
 
 		private var _countdown:Timer;
-		private var _countdownTxt:Text;
+		private var _countdownTxt:TextField;
+		private var _countdownTxtFormat:TextFormat;
 
 		private var _fileName:String;
 		private var _recordingMuted:Boolean=false;
@@ -197,12 +198,15 @@ package components.videoPlayer
 			_arrowContainer.addChild(_arrowPanel);
 			//_arrowContainer.addChild(_roleTalkingPanel);
 
-			_countdownTxt=new Text();
+			_countdownTxtFormat=new TextFormat();
+			_countdownTxtFormat.bold=true;
+			_countdownTxtFormat.size=30;
+			
+			_countdownTxt=new TextField();
 			_countdownTxt.text="5";
-			_countdownTxt.setStyle("fontWeight", "bold");
-			_countdownTxt.setStyle("fontSize", 30);
 			_countdownTxt.selectable=false;
 			_countdownTxt.visible=false;
+			_countdownTxt.defaultTextFormat=_countdownTxtFormat;
 
 			_camVideo=new Video();
 			_camVideo.visible=false;
@@ -213,7 +217,6 @@ package components.videoPlayer
 			_micImage.height=128;
 			_micImage.width=128;
 			_micImage.alpha=0.7;
-			_micImage.autoLoad=true;
 			_micImage.visible=false;
 
 			_subtitleStartEnd=new SubtitleStartEndButton();
@@ -712,7 +715,9 @@ package components.videoPlayer
 			_countdownTxt.y=_videoHeight / 2 - 10;
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
-			_countdownTxt.setStyle("color", getSkinColor(COUNTDOWN_COLOR));
+			
+			_countdownTxtFormat.color=getSkinColor(COUNTDOWN_COLOR);
+			_countdownTxt.setTextFormat(_countdownTxtFormat);
 
 			//Play overlay
 			_overlayButton.width=_videoWidth;
@@ -1195,7 +1200,8 @@ package components.videoPlayer
 				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
 			}
 			_mic=_userdevmgr.microphone;
-			_mic.setUseEchoSuppression(true);
+			_mic.rate=_userdevmgr.defaultMicRate;
+			_mic.setUseEchoSuppression(_userdevmgr.defaultMicEchoSuppression);
 			_mic.setSilenceLevel(0, 60000000);
 			_micActivityBar.mic=_mic;
 

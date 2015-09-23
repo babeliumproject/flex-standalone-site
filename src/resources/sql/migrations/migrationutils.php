@@ -1,7 +1,7 @@
 <?php
 
 if(!defined('CLI_SERVICE_PATH'))
-	define('CLI_SERVICE_PATH', '/var/www/babeliumlms/services');
+	define('CLI_SERVICE_PATH', '/var/www/babelium/services');
 
 require_once CLI_SERVICE_PATH . '/utils/Config.php';
 require_once CLI_SERVICE_PATH . '/utils/Datasource.php';

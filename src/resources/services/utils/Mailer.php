@@ -45,7 +45,8 @@ class Mailer
 	// Template related vars
 	private $_tplDir;
 	private $_template;
-	private $_tplFile;
+	private $_tplFilePlain;
+	private $_tplFileHtml;
 	private $_keys;
 	private $_values;
 
@@ -139,9 +140,14 @@ class Mailer
 	
 	public function makeTemplate($templateFile, $templateArgs, $language)
 	{
-		$this->_tplFile = $this->_tplDir . $language . "/" . $templateFile;
-		if( !file_exists($this->_tplFile) || !is_file($this->_tplFile) || !is_readable($this->_tplFile) ){
-			$this->_tplFile = $this->_tplDir . "en_US/" . $templateFile;
+		$this->_tplFilePlain = $this->_tplDir . $language . "/" . $templateFile . ".txt";
+		if(!is_readable($this->_tplFilePlain)){
+			$this->_tplFilePlain = $this->_tplDir . "en_US/" . $templateFile . ".txt";
+		}
+		
+		$this->_tplFileHtml = $this->_tplDir . $language . "/" . $templateFile . ".html";
+		if(!is_readable($this->_tplFileHtml)){
+			$this->_tplFileHtml = $this->_tplDir . "en_US/" . $templateFile . ".html";
 		}
 
 		$this->_keys = array();
@@ -153,19 +159,18 @@ class Mailer
 			array_push($this->_values, $tmp2);
 		}
 
-		$txtFile = $this->_tplFile.".txt";
-		$htmlFile = $this->_tplFile.".html";
-
 		// txt content
-		if ( !$fd = fopen($txtFile, "r") ) return false;
-		$this->_template = fread($fd, filesize($txtFile));
+		if (!$fd = fopen($this->_tplFilePlain, "r")) 
+			return false;
+		$this->_template = fread($fd, filesize($this->_tplFilePlain));
 		fclose($fd);
 		$this->txtContent = preg_replace($this->_keys, $this->_values, $this->_template);
 		
 
 		// html content
-		if ( !$fd = fopen($htmlFile, "r") ) return false;
-		$this->_template = fread($fd, filesize($htmlFile));
+		if (!$fd = fopen($this->_tplFileHtml, "r"))
+			return false;
+		$this->_template = fread($fd, filesize($this->_tplFileHtml));
 		fclose($fd);
 		$this->htmlContent = preg_replace($this->_keys, $this->_values, $this->_template);
 

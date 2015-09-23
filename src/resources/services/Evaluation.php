@@ -555,8 +555,7 @@ class Evaluation {
 			throw  new Exception("Pending assessment priority update failed");
 		}
 
-		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert 
-				&& isset($pendingAssessmentsPriority)){
+		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert && isset($pendingAssessmentsPriority)){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
@@ -762,7 +761,7 @@ class Evaluation {
 	 * Attempts to send an email to notify the user whose response's being assessed of this fact
 	 *
 	 * @param stdClass $evaluation
-	 * 		An object with the following properties: (responseId, responseUserName, responseAddingDate, exerciseTitle, userName, responseFileIdentifier)
+	 * 		An object with the grades and the response id for this assessment
 	 * @return boolean $sent
 	 * 		Returns true if the smtp server procedures were successful or false otherways.
 	 */
@@ -775,15 +774,27 @@ class Evaluation {
 		
 		//If the user has not languages defined, fallback to en_US by default
 		$locale = $row ? $row->language : 'en_US';
+		
+		$sql = "SELECT r.adding_date, e.title 
+				FROM response r INNER JOIN exercise e ON r.fk_exercise_id=e.id WHERE r.id=%d LIMIT 1";
+		$data = $this->conn->_singleSelect($sql, $evaluation->responseId);
+		if(!$data){
+			throw new Exception("Cannot find response data. User notification aborted.");
+		}
+		
+		$exerciseTitle = $data->title;
+		$submissionDate = $data->adding_date;
+		$assessedBy = $_SESSION['user-data']->username;
+		
 
-		$mail = new Mailer($evaluation->responseUserName);
+		$mail = new Mailer($assessedBy);
 
 		$subject = 'Babelium Project: You have been assessed';
 
 		$args = array(
-						'DATE' => $evaluation->responseAddingDate,
-						'EXERCISE_TITLE' => $evaluation->exerciseTitle,
-						'EVALUATOR_NAME' => $evaluation->userName,
+						'DATE' => $submissionDate,
+						'EXERCISE_TITLE' => $exerciseTitle,
+						'EVALUATOR_NAME' => $assessedBy,
 						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/#/assessments/view/'.$evaluation->responseId,
 						'SIGNATURE' => 'The Babelium Project Team');
 

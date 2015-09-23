@@ -14,27 +14,22 @@
 	
 	<view:SignUpForm id="signUpIndex" width="100%"/>
 	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	
 	<fx:Script>
 		<![CDATA[
-			import control.URLManager;
-			
-			import mx.binding.utils.ChangeWatcher;
+			import control.URLChangeEvent;
 			
 			import model.DataModel;
 			
-			import mx.binding.utils.BindingUtils;
+			import control.URLManager;
+			
+			import modules.IPinnedGroupInterface;
+			
 			import mx.events.FlexEvent;
 
 			public var modulename:String = 'signup';
 			
 			private var _creationComplete:Boolean;
-			private var _changewatcher:ChangeWatcher;
-			
-			[Bindable]
+			private var _initialUrl:Event;
 			private var _urlmanager:URLManager=URLManager.getInstance();
 			
 			/**
@@ -44,37 +39,65 @@
 				return modulename;	
 			}
 			
+			public function setDataBindings(data:* = null):void{
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
 			public function resetModule():void{
-				_changewatcher.unwatch();
+				
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
 				resetViews();
 			}
 			
-			public function setDataBindings(data:* = null):void{
-				_changewatcher=BindingUtils.bindSetter(onURLChange, _urlmanager, "action");
+			public function resetViews():void{
+				var v:*=signUpIndex as IPinnedGroupInterface;
+				if (v){
+					v.resetGroup();
+				}
 			}
 			
-			protected function resetViews():void{
-				signUpIndex.resetGroup();
+			public function unpinViews():void
+			{
+				var v:*=signUpIndex as IPinnedGroupInterface;
+				if (v)
+					v.unpinGroup();
 			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+			}
+				
 			
 			protected function preinitializeHandler(event:FlexEvent):void
 			{
 				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
-				this.addEventListener(FlexEvent.REMOVE, componentRemovedHandler);
 				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange);
+				onURLChange(_initialUrl);
 			}
 			
 			protected function componentAddedHandler(event:FlexEvent):void{
 				this.visible=false;
-			}
-			
-			protected function componentRemovedHandler(event:FlexEvent):void{
-				
 			}
 			
 			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
@@ -89,12 +112,7 @@
 					return;
 				}
 				this.visible=true;
-			}
-			
-			public function onURLChange(value:String):void{
-				if (_urlmanager.moduleName != modulename)
-					return;
-			}
+			}	
 			
 		]]>
 	</fx:Script>
