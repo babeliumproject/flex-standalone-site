@@ -780,7 +780,7 @@ package components.videoPlayer
 			_media.seek(_sBar.seekPosition(_duration));
 		}
 
-		private function onScrubberDragging(e:Event):void
+		protected function onScrubberDragging(e:Event):void
 		{
 			if (!_media)
 				return;

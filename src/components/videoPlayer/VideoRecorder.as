@@ -201,6 +201,7 @@ package components.videoPlayer
 			_countdownTxtFormat=new TextFormat();
 			_countdownTxtFormat.bold=true;
 			_countdownTxtFormat.size=30;
+			_countdownTxtFormat.font="Arial";
 			
 			_countdownTxt=new TextField();
 			_countdownTxt.text="5";
@@ -711,13 +712,13 @@ package components.videoPlayer
 			//_roleTalkingPanel.y=4;
 
 			// Countdown
+			_countdownTxtFormat.color=getSkinColor(COUNTDOWN_COLOR);
+			_countdownTxt.setTextFormat(_countdownTxtFormat);
+			
 			_countdownTxt.x=_videoWidth / 2 - 10;
 			_countdownTxt.y=_videoHeight / 2 - 10;
 			_countdownTxt.width=_videoWidth;
 			_countdownTxt.height=_videoHeight;
-			
-			_countdownTxtFormat.color=getSkinColor(COUNTDOWN_COLOR);
-			_countdownTxt.setTextFormat(_countdownTxtFormat);
 
 			//Play overlay
 			_overlayButton.width=_videoWidth;
@@ -1021,8 +1022,18 @@ package components.videoPlayer
 		 **/
 		override protected function onScrubberDropped(e:Event):void
 		{
-			super.onScrubberDropped(e);
-
+			if (!_media)
+				return;
+			
+			var seconds:Number=_sBar.seekPosition(_duration);
+			
+			_media.seek(seconds);
+			if (_state == PLAY_PARALLEL_STATE && _parallelMedia)
+			{
+				_parallelMedia.seek(seconds);
+			}
+			
+			//super.onScrubberDropped(e);
 			hideCaption();
 		}
 
@@ -1169,6 +1180,7 @@ package components.videoPlayer
 
 				// Reset countdown timer
 				_countdownTxt.text="5";
+				_countdownTxt.setTextFormat(_countdownTxtFormat);
 				_countdown.stop();
 				_countdown.reset();
 
@@ -1177,6 +1189,7 @@ package components.videoPlayer
 			else if (_state != PLAY_STATE)
 			{
 				_countdownTxt.text=new String(5 - _countdown.currentCount);
+				_countdownTxt.setTextFormat(_countdownTxtFormat);
 			}
 		}
 
