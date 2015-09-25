@@ -49,6 +49,8 @@ package components.videoPlayer.controls
 		private var _scrubber:Sprite;
 		private var _bg:Sprite;
 		private var _marks:Sprite;
+		private var _marksProg:Sprite;
+		private var _marksLoaded:Sprite;
 
 		private var _barWidth:Number=100;
 		private var _barHeight:Number=10;
@@ -66,6 +68,8 @@ package components.videoPlayer.controls
 		private var _dataProvider:Object;
 		private var _duration:Number;
 
+		private var _lastScrubberX:Number=0;
+		private var _lastProgBarWidth:Number=0;
 
 		public function ScrubberBar()
 		{
@@ -77,14 +81,29 @@ package components.videoPlayer.controls
 			_loadedBar=new Sprite();
 			_scrubber=new Sprite();
 			_bg=new Sprite();
+
 			_marks=new Sprite();
+			_marksProg=new Sprite();
+			_marksLoaded=new Sprite();
 
 			addChild(_bg);
 			addChild(_bar);
-			addChild(_marks); // z-index
-			addChild(_loadedBar);
-			addChild(_progBar);
+
+			_bar.addChild(_marks);
+			_bar.addChild(_loadedBar);
+			_bar.addChild(_marksLoaded);
+			_bar.addChild(_progBar);
+			_bar.addChild(_marksProg);
+
 			addChild(_scrubber);
+		/*
+		addChild(_loadedBar);
+		addChild(_progBar);
+
+		_bar.addChild(_marks);
+		_loadedBar.addChild(_marksLoaded);
+		_progBar.addChild(_marksProg);
+		*/
 		}
 
 		override public function dispose():void
@@ -127,7 +146,7 @@ package components.videoPlayer.controls
 
 		override public function availableProperties(obj:Array=null):void
 		{
-			super.availableProperties([BG_COLOR, BARBG_COLOR, BAR_COLOR, SCRUBBER_COLOR, SCRUBBERBORDER_COLOR, LOADEDBAR_COLOR]);
+			super.availableProperties([BG_COLOR, BARBG_COLOR, BAR_COLOR, SCRUBBER_COLOR, SCRUBBERBORDER_COLOR, LOADEDBAR_COLOR, BG_GRADIENT_ANGLE, BG_GRADIENT_START_COLOR, BG_GRADIENT_END_COLOR, BG_GRADIENT_START_ALPHA, BG_GRADIENT_END_ALPHA, BG_GRADIENT_START_RATIO, BG_GRADIENT_END_RATIO, BORDER_COLOR, BORDER_WEIGHT, MARKER_COLOR_UP, MARKER_COLOR_HOVER, MARKER_COLOR_ACTIVE, MARKER_COLOR_UP_ALPHA, MARKER_COLOR_HOVER_ALPHA, MARKER_COLOR_ACTIVE_ALPHA, MARKER_BORDER_COLOR, MARKER_BORDER_WEIGHT]);
 		}
 
 		public function enableSeek(flag:Boolean):void
@@ -158,7 +177,6 @@ package components.videoPlayer.controls
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-
 			if (height == 0)
 				height=_defaultHeight;
 			if (width == 0)
@@ -170,17 +188,17 @@ package components.videoPlayer.controls
 
 			this.graphics.clear();
 
-			createBox(_bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight, false, 0, 0, 0.85);
+			createBox(_bar, getSkinColor(BARBG_COLOR), _barWidth, _barHeight, false);
 			_bar.y=height / 2 - _bar.height / 2;
 			_bar.x=width / 2 - _bar.width / 2;
 
-			createBox(_loadedBar, getSkinColor(LOADEDBAR_COLOR), 1, _barHeight);
-			_loadedBar.x=_bar.x;
-			_loadedBar.y=_bar.y;
+			createBox(_loadedBar, getSkinColor(LOADEDBAR_COLOR), 1, _barHeight, false);
+			//_loadedBar.x=_bar.x;
+			//_loadedBar.y=_bar.y;
 
-			createBox(_progBar, getSkinColor(BAR_COLOR), 1, _barHeight, false, 0, 0, 0.65);
-			_progBar.x=_bar.x;
-			_progBar.y=_bar.y;
+			createBox(_progBar, getSkinColor(BAR_COLOR), 1, _barHeight, false);
+			//_progBar.x=_bar.x;
+			//_progBar.y=_bar.y;
 
 			createBox(_scrubber, getSkinColor(SCRUBBER_COLOR), _barHeight + 1, _barHeight + 1, true, getSkinColor(SCRUBBERBORDER_COLOR));
 			_defaultX=_scrubber.x=_bar.x;
@@ -189,12 +207,10 @@ package components.videoPlayer.controls
 			_minX=_scrubber.x;
 			_maxX=_bar.x + _bar.width - _scrubber.width;
 
-			// set marks
-			_marks.graphics.clear();
-			for each (var obj:Object in _dataProvider)
-			{
-				doShowMark(_marks, obj.showTime, obj.hideTime, _duration);
-			}
+
+			drawMarkers(_dataProvider, _marks, _bar.width, _bar.width, _bar.height, _duration, getSkinColor(MARKER_COLOR_UP), getSkinColor(MARKER_COLOR_UP_ALPHA));
+			drawMarkers(_dataProvider, _marksLoaded, _loadedBar.width, _bar.width, _bar.height, _duration, getSkinColor(MARKER_COLOR_HOVER), getSkinColor(MARKER_COLOR_HOVER_ALPHA));
+			drawMarkers(_dataProvider, _marksProg, _progBar.width, _bar.width, _bar.height, _duration, getSkinColor(MARKER_COLOR_ACTIVE), getSkinColor(MARKER_COLOR_ACTIVE_ALPHA));
 		}
 
 		private function onBarClick(e:MouseEvent):void
@@ -257,7 +273,8 @@ package components.videoPlayer.controls
 
 		private function updateProgWidth(e:Event=null):void
 		{
-			_progBar.width=_scrubber.x - _defaultX;
+			_lastProgBarWidth=_scrubber.x - _defaultX;
+			_progBar.width=_lastProgBarWidth;
 		}
 
 		private function createBox(b:Sprite, color:Object, bWidth:Number, bHeight:Number, border:Boolean=false, borderColor:uint=0, borderSize:Number=1, alpha:Number=1):void
@@ -296,15 +313,41 @@ package components.videoPlayer.controls
 		public function updateProgress(seconds:Number, duration:Number):void
 		{
 			if (!_dragging)
-				_scrubber.x=(seconds / duration) * (_bar.width - _scrubber.width) + _defaultX;
-			if (!_dragging)
-				_progBar.width=(seconds / duration) * _bar.width;
+			{
+				//Avoid getting out of bounds
+				var s:Number = seconds > duration ? duration : seconds;
+				
+				var _currentScrubberX:Number=(s / duration) * (_bar.width - _scrubber.width) + _defaultX;
+				var _currentProgBarWidth:Number=(s / duration) * _bar.width;
+				_currentScrubberX=Number(_currentScrubberX.toFixed(0));
+				_currentProgBarWidth=Number(_currentProgBarWidth.toFixed(0));
+
+				if (_lastScrubberX != _currentScrubberX)
+				{
+					_lastScrubberX=_currentScrubberX;
+					_scrubber.x=_currentScrubberX;
+				}
+				if (_lastProgBarWidth != _currentProgBarWidth)
+				{
+					_lastProgBarWidth=_currentProgBarWidth;
+					_progBar.width=_currentProgBarWidth;
+
+					if (_dataProvider)
+					{
+						drawMarkers(_dataProvider, _marksProg, _currentProgBarWidth, _bar.width, _bar.height, _duration, getSkinColor(MARKER_COLOR_ACTIVE), getSkinColor(MARKER_COLOR_ACTIVE_ALPHA));
+					}
+				}
+			}
 		}
 
 
 		public function updateLoaded(totalLoaded:Number):void
 		{
 			_loadedBar.width=totalLoaded * _bar.width;
+			if (_dataProvider)
+			{
+				drawMarkers(_dataProvider, _marksLoaded, _loadedBar.width, _bar.width, _bar.height, _duration, getSkinColor(MARKER_COLOR_HOVER), getSkinColor(MARKER_COLOR_HOVER_ALPHA));
+			}
 		}
 
 
@@ -320,33 +363,61 @@ package components.videoPlayer.controls
 		{
 			_dataProvider=data;
 			_duration=duration;
-			refresh();
-		}
 
-		private function doShowMark(element:Sprite, startTime:Number, endTime:Number, duration:Number):void
-		{
-			element.graphics.beginFill(getSkinColor(MARKER_COLOR_UP), getSkinColor(MARKER_COLOR_UP_ALPHA));
-			//_marks.graphics.drawRect( startTime*(_bar.width-_scrubber.width)/duration+_bar.x+_scrubber.width-2, 2, 2, _defaultHeight-4 );
-			element.graphics.drawRoundRect(startTime * (_bar.width - _scrubber.width) / duration + _bar.x + _scrubber.width - 2, 2, (endTime - startTime) * (_bar.width) / duration, _defaultHeight - 4, 2);
-			element.graphics.endFill();
+			//Force to update the display list in the next frame
+			invalidateDisplayList();
 		}
 
 		public function removeMarks():void
 		{
 			_dataProvider=null;
-			refresh();
+
+			//Force to update the display list in the next frame
+			invalidateDisplayList();
 		}
-		
-		public function drawBarUp(seconds:Number, duration:Number):void{
-			if(_dataProvider){ //We have some marks to display
-				for each (var obj:Object in _dataProvider)
+
+		private function drawMarkers(markers:Object, element:Sprite, currenWidth:Number, maxWidth:Number, maxHeight:Number, duration:Number, color:uint, alpha:Number):void
+		{
+			element.graphics.clear();
+			if (!markers)
+				return;
+
+			var mOffsetX:Number=_scrubber.width;
+			var mOffsetY:Number=0;
+			var mHeight:Number=maxHeight;
+			var mY:Number=mOffsetY;
+			var mEllipseWidth:Number=2;
+			var mEllipseHeight:Number=2;
+
+			for each (var obj:Object in markers)
+			{
+				var startTime:Number=obj.showTime;
+				var endTime:Number=obj.hideTime;
+
+				var mX:Number=startTime * (maxWidth - _scrubber.width) / duration + mOffsetX;
+				var mWidth:Number=(endTime - startTime) * maxWidth / duration;
+				mX=Number(mX.toFixed(0));
+				mWidth=Number(mWidth.toFixed(0));
+
+				if (mX < currenWidth)
 				{
-					doShowMark(_marks, obj.showTime, obj.hideTime, _duration);
+					if (mX + mWidth > currenWidth)
+					{
+						mWidth=currenWidth - mX;
+					}
+					if (!isNaN(mWidth) && mWidth > 0)
+					{
+						element.graphics.beginFill(color, alpha);
+						//element.graphics.drawRoundRect(mX, mY, mWidth, mHeight, mEllipseWidth, mEllipseHeight);
+						element.graphics.drawRect(mX, mY, mWidth, mHeight);
+						element.graphics.endFill();
+					}
 				}
-			} else {
-				//Draw a simple bar
+				else
+				{
+					break;
+				}
 			}
 		}
-		
 	}
 }
