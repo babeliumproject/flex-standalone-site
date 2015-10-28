@@ -47,6 +47,7 @@ class VideoProcessor{
 
     private $fileCmdPath;
     private $soxCmdPath;
+    private $qtFaststartCmdPath;
 
     private $mediaToolSuite;
     private $mediaToolHome;
@@ -72,6 +73,7 @@ class VideoProcessor{
 
         $this->fileCmdPath = $settings->fileCmdPath ? $settings->fileCmdPath : 'file';
         $this->soxCmdPath = $settings->soxCmdPath ? $settings->soxCmdPath : 'sox';
+        $this->qtFaststartCmdPath = $settings->qtFaststartCmdPath ? $settings->qtFaststartCmdPath : 'qt-faststart';
 
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
@@ -122,7 +124,7 @@ class VideoProcessor{
             return $rpath ? rtrim($rpath,'/').'/' : NULL;
         }
         return NULL;
-    }   
+    }
 
     /**
      * Determines if the given parameter is a media container and if so retrieves information about it's
@@ -156,7 +158,7 @@ class VideoProcessor{
 
                 //Retrieve media file duration (in seconds)
                 $this->mediaContainer->duration = $json_output->format->duration;
-                
+
                 //Initialize these two to false until evaluating the values
                 $this->mediaContainer->hasAudio = false;
                 $this->mediaContainer->hasVideo = false;
@@ -399,7 +401,7 @@ class VideoProcessor{
             $pone = $sanitizedPosterdir.'/01.jpg';
             //if (is_link($tdef)) unlink($tdef);
             //if (is_link($pdef)) unlink($pdef);
-            
+
             //if(!symlink($tone, $tdef)){
             //    throw new Exception ("Cannot make a link $tdef for $tone\n");
             //}
@@ -478,7 +480,7 @@ class VideoProcessor{
     public function demuxEncodeAudio($inputFilePath, $outputFilePath, $audioChannels = 2, $audioSamplerate = 44100){
 
         //TODO check ffmpeg is able to encode in the format denoted in the output file ffmpeg -formats E
-        //TODO check the specified audio channel and samplerate are supported by the codec 
+        //TODO check the specified audio channel and samplerate are supported by the codec
         $preset_demux_encode_audio = " -y -v error -i '%s' -ac %d -ar %d '%s'";
 
         $cleanInputPath = escapeshellcmd($inputFilePath);
@@ -589,10 +591,10 @@ class VideoProcessor{
         }
 
     }
-    
+
     /**
      * Extracts an audio sample from the two given inputs and mixes the two samples in one
-     * 
+     *
      * @param String $input1
      * @param String $input2
      * @param String $output
@@ -601,30 +603,30 @@ class VideoProcessor{
      * @param String $cutoff
      */
     public function audioSubsampleMix($input1, $input2, $output, $starttime = 0, $endtime = 0, $cutoff='first'){
-    	
-    	$cutoff_values = array('longest','shortest','first');  	 
-    	
+
+    	$cutoff_values = array('longest','shortest','first');
+
     	//Make two temp outputs for the subsamples
     	$otmp1 = rtrim($output,'.wav').'_a.wav';
     	$otmp2 = rtrim($output,'.wav').'_b.wav';
-    	
+
     	$internalcutoff = in_array($cutoff, $cutoff_values) ? $cutoff : 'first';
-    	
+
     	$this->audioSubsample($input1, $otmp1,$starttime,$endtime);
     	$this->audioSubsample($input2, $otmp2,$starttime,$endtime);
-    	
+
     	$preset = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=0 '%s'";
-    	
+
     	$cmd_template = "%s %s";
     	$cmd_name = $this->mediaToolHome;
         $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
         $cmd_options_t = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=3 '%s'";
         $cmd_options = sprintf($cmd_options_t, $otmp1, $otmp2, $internalcutoff, $output);
-        
+
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
-        
+
         $rc = $this->execWrapper($cmd);
-        
+
         //If exec was successful remove the temp files
         @unlink($otmp1);
         @unlink($otmp2);
@@ -632,8 +634,8 @@ class VideoProcessor{
 
     /**
      * Merges two videos in one. The first input is padded to double its width, then the second video is overlayed in the black space left by the padding.
-     * The original audio is substituted with the provided audio 
-     * 
+     * The original audio is substituted with the provided audio
+     *
      * @param String $inputVideoPath1
      * 		Absolute path of the video that's going to be padded to double its width
      * @param String $inputVideoPath2
@@ -673,28 +675,28 @@ class VideoProcessor{
         //Total dimensions
         $twidth = floor($dimension*(16/9));
         $theight = $dimension;
-        
+
         //Dimensions of left-side video
         $lmedia = $this->retrieveMediaInfo($cleanInputVideoPath1);
         $lwidth = floor($twidth/2);
         $lheight = $lmedia->suggestedTranscodingAspectRatio==169 ? round(($lwidth/16)*9) : round(($lwidth/4)*3);
         $lpaddingy = floor(($theight/2)-($lheight/2));
-        
+
         //Dimensions of right-side video
         $rmedia = $this->retrieveMediaInfo($cleanInputVideoPath2);
         $rwidth = floor($twidth/2);
         $rheight = $rmedia->suggestedTranscodingAspectRatio==169 ? round(($rwidth/16)*9) : round(($rwidth/4)*3);
         $rpaddingy = floor(($theight/2)-($rheight/2));
-        
+
         $t_cmd_options = "%s %s %s %s %s %s";
         $t_input_files="-i '%s' -i '%s' -i '%s'";
         $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:%d [padded]; [padded][right] overlay=%d:%d\"";
-        $t_filters_ffmpeg="-filter_complex \"color=c=black@1.0:s=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d\""; 
+        $t_filters_ffmpeg="-filter_complex \"color=c=black@1.0:s=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d\"";
         $t_output_files="'%s'";
-        
+
         $cmd_overwrite_verbose="-y -v fatal";
         $cmd_input_files = sprintf($t_input_files, $cleanInputVideoPath1, $cleanInputVideoPath2, $cleanAudioPath);
-        
+
         if($this->mediaToolSuite == Config::FFMPEG){
         	$cmd_filters = sprintf($t_filters_ffmpeg, $twidth, $theight, $lwidth, $lheight, $rwidth, $rheight, $lpaddingy, $lwidth, $rpaddingy);
         } else { //avconv
@@ -703,14 +705,14 @@ class VideoProcessor{
 
         $cmd_output_encoding="-strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -bufsize 500k -r 24 -g 24 -keyint_min 24 -codec:a aac -b:a 96k -ac 2 -ar 22050";
         $cmd_output_mapping="-map 2:0";
-        
+
         $cmd_output_files = sprintf($t_output_files, $cleanOutputVideoPath);
 
-        
+
         $cmd_template = "%s %s";
         $cmd_name = $this->mediaToolHome;
         $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
-      
+
         $cmd_options = sprintf($t_cmd_options, $cmd_overwrite_verbose, $cmd_input_files, $cmd_filters, $cmd_output_encoding, $cmd_output_mapping, $cmd_output_files);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
@@ -722,8 +724,8 @@ class VideoProcessor{
 
     /**
      * Concatenates the wav files of the provided path that begin with the provided prefix and puts the concatenated wav file
-     * in the provided path. Uses 'sox' to concatenate the files. 
-     * 
+     * in the provided path. Uses 'sox' to concatenate the files.
+     *
      * @param String $inputPath
      * 		Absolute path of the audio files
      * @param String $filePrefix
@@ -754,9 +756,73 @@ class VideoProcessor{
     }
 
     /**
+     * Changes the container of the media file without changing any of its streams.
+     *
+     * @param String $input
+     *    Absolute path of media file
+     * @param String $output
+     *    Absolute path of media file. The extension determines the output's container format.
+     * @throws Exception
+     *  The paths cannot be accessed, mediasuite cannot be found or changing from input container to output container
+     *  is not allowed.
+     */
+    public function changeMediaContainer($input, $output){
+      $sinput = escapeshellcmd($input);
+      $soutput = escapeshellcmd($output);
+      if(!is_readable($sinput))
+        throw new Exception("Cannot read input: $sinput");
+      if(!is_writable(dirname($soutput)))
+        throw new Exception("Cannot write output: $soutput");
+
+      $cmd_template = "%s %s";
+      $cmd_name = $this->mediaToolHome;
+      $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
+
+      $cmd_options_t="-y -v error -i '%s' -codec:v copy -codec:a copy '%s'";
+      $cmd_options = sprintf($cmd_options_t, $sinput, $soutput);
+
+      $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
+      $output = $this->execWrapper($cmd);
+    }
+
+    public function applyFastStart($input,$output){
+      $sinput = escapeshellcmd($input);
+      $soutput = escapeshellcmd($output);
+      if(!is_readable($sinput))
+        throw new Exception("Cannot read input: $sinput");
+      if(!is_writable(dirname($soutput)))
+        throw new Exception("Cannot write output: $soutput");
+
+      $path_parts = pathinfo($sinput);
+      if($path_parts['extension'] != 'mp4')
+        throw new Exception("Input file's container is not MP4");
+
+      //Check if input file is a valid mp4[h264+aac] file.
+      if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($sinput)){
+          try {
+              //Get media metadata
+              $this->retrieveMediaInfo($sinput);
+          } catch (Exception $e) {
+              throw new Exception($e->getMessage());
+          }
+      }
+      if(!$this->mediaContainer->hasVideo || $this->mediaContainer->videoCodec != 'h264')
+        throw new Exception("Input file has no video stream or stream is not encoded with h264");
+
+      $cmd_template = "%s %s";
+      $cmd_name = $this->qtFaststartCmdPath;
+
+      $cmd_options_t = "'%s' '%s'";
+      $cmd_options = sprintf($cmd_options_t,$sinput,$soutput);
+
+      $cmd = sprintf($cmd_template, $cmd_name, $cmd_options);
+      $output = $this->execWrapper($cmd);
+    }
+
+    /**
      * Fixes the Flash Player 11.2.x bug that makes audio-only FLV files non-playable by adding a 8x8px black image for the video stream.
      * Thus the FLV is no longer audio-only and Flash has no problem with it.
-     * 
+     *
      * @param String $dummyImagePath
      * 		Absolute path of the 8x8px black image file to make the fake video stream
      * @param String $inputPath
@@ -793,7 +859,7 @@ class VideoProcessor{
 
         //Consider returning TRUE to caller
     }
-    
+
     /**
      * Encode the given array using Json
      *

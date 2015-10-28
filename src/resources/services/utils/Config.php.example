@@ -1,22 +1,22 @@
 <?php
-	
+
 	//This file stores the info needed to connect to the application's database
 	class Config{
-	
+
 		const FFMPEG = 'ffmpeg';
-        const LIBAV = 'libav';
-        const LEVEL_240P = 240;
-        const LEVEL_360P = 360;
-        const LEVEL_480P = 480;
-        const LEVEL_720P = 720;
-	
+    const LIBAV = 'libav';
+    const LEVEL_240P = 240;
+    const LEVEL_360P = 360;
+    const LEVEL_480P = 480;
+    const LEVEL_720P = 720;
+
 		public $host = '';
 		public $db_username = '';
 		public $db_password = '';
 		public $db_name = 'babelium';
-		
+
 		public $red5Path = '/opt/red5/webapps/vod/streams';
-		
+
 		//SMTP server settings
 		public $smtp_server_host = 'smtp.googlemail.com';
 		public $smtp_server_auth = 'login';
@@ -26,31 +26,32 @@
 		public $smtp_server_port = 465;
 		public $smtp_mail_setFromMail = 'register@babeliumproject.com';
 		public $smtp_mail_setFromName = 'Babelium Project Admin';
-		
+
 		//Video encoding constants
 		public $frameHeight = 240;
 		public $frameWidth16_9 = 426;
 		public $frameWidth4_3 = 320;
-		
+
 		public $mediaToolSuite = self::LIBAV;
 		public $mediaToolHome = '';
-	
+
 		public $fileCmdPath = 'file';
 		public $soxCmdPath = 'sox';
-		
+		public $qtFaststartCmdPath = 'qt-faststart';
+
 		//Absolute path to log folder (should be writeable by www-data)
 		public $logPath = '';
 
-		
+
 		/*
-		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and 
+		 * PHP CLI gets no value from $_SERVER ['DOCUMENT_ROOT'] so we must use getcwd() and
 		 * cut off the subfolders or use a variable and remember to change it.
-		 */ 
+		 */
 		public $webRootPath = "/var/www/babelium";
-		
-		public $wwwroot = "http://babeliumlms";
-		public $streamingserver = "rtmp://babeliumlms/vod";
-		
+
+		public $wwwroot = "http://babelium";
+		public $streamingserver = "rtmp://babelium/vod";
+
 		public function __construct(){
 			if(!empty($_SERVER ['DOCUMENT_ROOT'])){
 				$this->filePath = $_SERVER ['DOCUMENT_ROOT'] . "/resources/uploads";
@@ -64,8 +65,8 @@
 				$this->posterPath = $this->webRootPath . "/resources/images/posters";
 				$this->templatePath = $this->webRootPath . "/resources/templates";
 				$this->indexPath = $this->webRootPath . "/resources/searchIndexes";
-			}	
+			}
 		}
 	}
-	
+
 ?>
