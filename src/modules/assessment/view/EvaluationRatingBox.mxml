@@ -77,7 +77,7 @@
 					var compulsoryDataFilled:Boolean=false;
 					if (!CONFIG::restrictedEvaluation)
 					{
-						if (userIntonationScore.ratingComponent.rating > 0 && userFluencyScore.ratingComponent.rating > 0 && userRhythmScore.ratingComponent.rating > 0 && userSpontaneityScore.ratingComponent.rating > 0 && userOverallScore.ratingComponent.rating > 0)
+						if (userOverallScore.ratingComponent.rating > 0)
 							compulsoryDataFilled=true;
 					}
 					if (compulsoryDataFilled)
@@ -230,7 +230,7 @@
 
 			<!-- Score section -->
 			<s:VGroup width="50%">
-				<s:Label text="{resourceManager.getString('myResources','COMPULSORY_EVALUATION_DATA') + ':'}"
+				<s:Label text="{resourceManager.getString('myResources','ALL_CRITERIA_ARE_OPTIONAL_EXCEPT_OVERALL_SCORE') + ':'}"
 						 styleName="boldLabel"/>
 				<view2:ScoreParameterBox id="userIntonationScore"
 										 parameter="INTONATION"/>
@@ -245,13 +245,17 @@
 				<view2:ScoreParameterBox id="userPronunciationScore"
 										 parameter="PRONUNCIATION"/>
 				<view2:ScoreParameterBox id="userAdequacyScore"
-										 parameter="ADEQUACY"/>
+										 parameter="ADEQUACY"
+										 parameterHelp="ADEQUACY_HELP"/>
 				<view2:ScoreParameterBox id="userRangeScore"
-										 parameter="RANGE"/>
+										 parameter="RANGE"
+										 parameterHelp="RANGE_HELP"/>
 				<view2:ScoreParameterBox id="userAccuracyScore"
-										 parameter="ACCURACY"/>
+										 parameter="ACCURACY"
+										 parameterHelp="ACCURACY_HELP"/>
 				<view2:ScoreParameterBox id="userOverallScore"
-										 parameter="OVERALL_SCORE"/>
+										 parameter="OVERALL_SCORE"
+										 paddingTop="10"/>
 			</s:VGroup>
 
 			<!-- Comment section -->

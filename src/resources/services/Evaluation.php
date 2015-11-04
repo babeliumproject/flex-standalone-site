@@ -587,7 +587,13 @@ class Evaluation {
 		$this->conn->_startTransaction();
 
 		//Insert the evaluation data
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
+		                                score_comprehensibility, score_pronunciation, score_adequacy, score_range, score_accuracy, comment, adding_date) VALUES (";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -599,8 +605,7 @@ class Evaluation {
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
 		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
-		$evalData->spontaneityScore, $evalData->comment );
-
+		$evalData->spontaneityScore, $evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->adequacyScore, $evalData->rangeScore, $evalData->accuracyScore, $evalData->comment );
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
