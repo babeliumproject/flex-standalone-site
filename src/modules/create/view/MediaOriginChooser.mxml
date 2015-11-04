@@ -66,7 +66,7 @@
 
 			protected function uploadFileClickHandler(event:MouseEvent):void
 			{
-				fileUpload=new FileUpload(DataModel.getInstance().maxFileSize, DataModel.getInstance().uploadURL);
+				fileUpload=new FileUpload(DataModel.getInstance().maxFileSize);
 				fileUpload.addEventListener(FileUploadEvent.FILE_SELECTED, onUploadStart, false, 0, true);
 				fileUpload.addEventListener(FileUploadEvent.IO_ERROR, onUploadError, false, 0, true);
 				fileUpload.addEventListener(FileUploadEvent.SECURITY_ERROR, onUploadError, false, 0, true);
