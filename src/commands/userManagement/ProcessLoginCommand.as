@@ -5,16 +5,20 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.URLManager;
+	
 	import events.*;
 	
 	import model.DataModel;
 	
-	import modules.userManagement.SignUpForm;
+	import modules.signup.view.SignUpForm;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.utils.ObjectUtil;
+	
+	import utils.LocaleUtils;
 	
 	import view.common.CustomAlert;
 	
@@ -44,7 +48,7 @@ package commands.userManagement
 						break;
 					}
 				}
-				switchLocale(ifaceLanguageCode);
+				LocaleUtils.arrangeLocaleChain(ifaceLanguageCode);
 
 				DataModel.getInstance().loggedUser=user;
 				DataModel.getInstance().isSuccessfullyLogged=true;
@@ -52,12 +56,6 @@ package commands.userManagement
 				
 				//Initialize the timer that keeps this session alive
 				DataModel.getInstance().eventSchedulerInstance.startKeepAlive();
-
-				// If user is in register module, redirect to home
-				if (DataModel.getInstance().currentContentViewStackIndex == ViewChangeEvent.VIEWSTACK_REGISTER_MODULE_INDEX)
-				{
-					new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
-				}
 			}
 			else
 			{
@@ -67,6 +65,7 @@ package commands.userManagement
 				DataModel.getInstance().isSuccessfullyLogged=false;
 				DataModel.getInstance().isLoggedIn=false;
 			}
+			trace("Processlogin: "+DataModel.getInstance().isSuccessfullyLogged);
 		}
 
 		public function fault(info:Object):void
@@ -74,15 +73,6 @@ package commands.userManagement
 			var faultEvent:FaultEvent=FaultEvent(info);
 			CustomAlert.error(ResourceManager.getInstance().getString('myResources','ERROR_WHILE_LOGGING_IN'));
 			trace(ObjectUtil.toString(info));
-		}
-
-		private function switchLocale(localeCode:String):void
-		{
-			if (ResourceManager.getInstance().getLocales().indexOf(localeCode) != -1)
-			{
-				ResourceManager.getInstance().localeChain=[localeCode];
-				DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
-			}
 		}
 
 	}

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:skins="skins.*"
+		 keyDown="checkPressedKey(event)"
+		 creationComplete="completeHandler()">
+
+	<s:layout>
+		<s:VerticalLayout paddingLeft="10"
+						  paddingRight="10"
+						  paddingTop="0"
+						  paddingBottom="10"/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import avmplus.getQualifiedClassName;
+			
+			import mx.resources.ResourceManager;
+			
+			import com.adobe.crypto.SHA1;
+			
+			import control.URLManager;
+			
+			import events.LoginEvent;
+			
+			import model.DataModel;
+			
+			import modules.login.view.LoginIndex;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			import vo.LoginVO;
+			import vo.UserVO;
+
+			private var rememberSO:SharedObject;
+			private var dataModel:DataModel=DataModel.getInstance();
+	
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var _cw1:ChangeWatcher,_cw2:ChangeWatcher,_cw3:ChangeWatcher;
+
+			public function completeHandler():void
+			{
+				_cw1=BindingUtils.bindSetter(wrongLogin, dataModel, "loginErrorMessage", commitOnly, useWeakReference);
+				_cw2=BindingUtils.bindSetter(loggedSuccessfully, dataModel, "isSuccessfullyLogged", commitOnly, useWeakReference);
+				_cw3=BindingUtils.bindSetter(onActivationEmailResent, dataModel, "activationEmailResent", commitOnly, useWeakReference);
+
+				focusManager.setFocus(username);
+			}
+
+			public function resetComponent():void
+			{
+				showLogin(null);
+				username.text='';
+				password.text='';
+				activationUsername.text='';
+				activationEmail.text='';
+			}
+			
+			public function unpinComponent():void{
+				
+				if(_cw1) _cw1.unwatch();
+				if(_cw2) _cw2.unwatch();
+				if(_cw3) _cw3.unwatch();
+				_cw1=_cw2=_cw3=null;
+				
+				okButton.removeEventListener(MouseEvent.CLICK, processLogin);
+				restorePassword.removeEventListener(MouseEvent.CLICK,showRestorePass);
+				resendEmailLink.removeEventListener(MouseEvent.CLICK,showActivationResend);
+				activationOkButton.removeEventListener(MouseEvent.CLICK,resendActivationEmail);
+				activationCancelButton.removeEventListener(MouseEvent.CLICK,showLogin);
+				
+				focusManager.deactivate(); //Apparently focused interactive objects also get pinned in memory
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
+				this.removeEventListener(KeyboardEvent.KEY_DOWN, checkPressedKey);	
+			}
+
+			private function checkPressedKey(e:KeyboardEvent):void
+			{
+				if (e.keyCode == Keyboard.ENTER)
+				{
+					if (loginViewStack.selectedChild == loginFormBoxNavContent)
+						processLogin(null);
+					else if (loginViewStack.selectedChild == resendActivationEmailBoxNavContent)
+						resendActivationEmail(null);
+				}
+			}
+
+			private function processLogin(event:Event):void
+			{
+				//Encrypt password for security
+				var passHash:String=SHA1.hash(password.text);
+				var user:LoginVO=new LoginVO(username.text, passHash);
+				new LoginEvent(LoginEvent.PROCESS_LOGIN, user).dispatch();
+			}
+
+			public function cancelButtonClickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+
+			private function wrongLogin(upd:Boolean):void
+			{
+				if (DataModel.getInstance().loginErrorMessage != '')
+				{
+					if (DataModel.getInstance().loginErrorMessage == "inactive_user")
+					{
+						restorePassword.includeInLayout=false;
+						restorePassword.visible=false;
+						resendEmailLink.includeInLayout=true;
+						resendEmailLink.visible=true;
+					}
+					else
+					{
+						restorePassword.includeInLayout=true;
+						restorePassword.visible=true;
+						resendEmailLink.includeInLayout=false;
+						resendEmailLink.visible=false;
+					}
+					errorInfo.text=resourceManager.getString('myResources', '' + DataModel.getInstance().loginErrorMessage.toLocaleUpperCase());
+					DataModel.getInstance().loginErrorMessage="";
+				}
+			}
+
+			private function loggedSuccessfully(upd:Boolean):void
+			{
+				if (DataModel.getInstance().isSuccessfullyLogged)
+				{
+					rememberSO=SharedObject.getLocal("babeliaData");
+					if (rememberSO.data.username == undefined || rememberSO.data.hash == undefined)
+					{
+						//The user wants the application to remember him/her
+						if (rememberUser.selected)
+						{
+							var cacheHash:String=SHA1.hash(password.text);
+							rememberSO.data.username=username.text;
+							rememberSO.data.hash=cacheHash;
+							rememberSO.flush();
+						}
+						username.text="";
+						password.text="";
+					}
+					var parent:Object=this.parentDocument;
+					trace("Login.parentDocument: " + getQualifiedClassName(parent));
+					if (parent is LoginIndex)
+					{
+						var lasturl:String=URLManager.getInstance().getLastURL();
+						trace("LastURL is: " + URLManager.getInstance().getLastURL());
+						if (lasturl)
+							URLManager.getInstance().redirect(lasturl);
+						else
+							URLManager.getInstance().redirect('/home');
+					}
+					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				}
+			}
+
+			private function showLogin(event:Event):void
+			{
+				errorInfo.text='';
+				title.text=resourceManager.getString('myResources', 'LOGIN_FORM');
+				focusManager.setFocus(username);
+				restorePassword.visible=true;
+				restorePassword.includeInLayout=true;
+				resendEmailLink.visible=false;
+				resendEmailLink.includeInLayout=false;
+				loginViewStack.selectedChild=loginFormBoxNavContent;
+			}
+
+			private function showRestorePass(event:Event):void
+			{
+				//If the container's parent is an instance of Popup, close it
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				URLManager.getInstance().redirect('/login/forgotpassword');
+			}
+
+			private function showActivationResend(even:Event):void
+			{
+				errorInfo.text='';
+				title.text=ResourceManager.getInstance().getString('myResources', 'SEND_EMAIL_AGAIN');
+				activationUsername.text='';
+				activationEmail.text='';
+				resendEmailLink.visible=true;
+				resendEmailLink.includeInLayout=true;
+				restorePassword.visible=false;
+				restorePassword.includeInLayout=false;
+				focusManager.setFocus(activationUsername);
+				loginViewStack.selectedChild=resendActivationEmailBoxNavContent;
+			}
+
+			private function resendActivationEmail(event:Event):void
+			{
+				var data:UserVO=new UserVO();
+				data.username=activationUsername.text;
+				data.email=activationEmail.text;
+				new LoginEvent(LoginEvent.RESEND_ACTIVATION_EMAIL, null, data).dispatch();
+			}
+
+			private function onActivationEmailResent(value:Boolean):void
+			{
+				if (DataModel.getInstance().activationEmailResentErrorMessage != '')
+					errorInfo.text=DataModel.getInstance().activationEmailResentErrorMessage;
+				else
+					dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				DataModel.getInstance().activationEmailResent=false;
+			}
+		]]>
+	</fx:Script>
+
+	<s:Label id="errorInfo"
+			 styleName="errorLabel"
+			 textAlign="center"
+			 width="100%"/>
+	<s:Label id="title"
+			 width="100%"
+			 textAlign="center"/>
+	<mx:ViewStack id="loginViewStack"
+				  creationPolicy="all"
+				  width="100%">
+
+		<s:NavigatorContent id="loginFormBoxNavContent">
+			<s:VGroup id="loginFormBox"
+					  width="100%">
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','USER_NAME')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="username"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','PASSWORD')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="password"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 displayAsPassword="true"
+							 width="100%"/>
+				<s:HGroup width="100%"
+						  verticalAlign="middle"
+						  paddingLeft="12"
+						  paddingRight="12">
+					<s:CheckBox label="{ResourceManager.getInstance().getString('myResources','REMEMBER_ME')}"
+								id="rememberUser"/>
+				</s:HGroup>
+				<s:HGroup width="100%"
+						  horizontalAlign="center"
+						  verticalAlign="middle"
+						  paddingTop="8">
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','OK')}"
+							  styleName="bigBlueButton"
+							  id="okButton"
+							  buttonMode="true"
+							  click="processLogin(event)"/>
+				</s:HGroup>
+				<s:VGroup id="loginProblemTroubleshootingBox"
+						  width="100%"
+						  horizontalAlign="right"
+						  paddingTop="10">
+					<skins:IconButton label="{ResourceManager.getInstance().getString('myResources','I_FORGOT_MY_PASSWORD')}"
+									  id="restorePassword"
+									  styleName="commonLinkButton"
+									  click="showRestorePass(event)"/>
+					<skins:IconButton label="{ResourceManager.getInstance().getString('myResources','SEND_EMAIL_AGAIN')}"
+									  id="resendEmailLink"
+									  styleName="commonLinkButton"
+									  click="showActivationResend(event)"
+									  visible="false"
+									  includeInLayout="false"/>
+				</s:VGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+
+		<s:NavigatorContent id="resendActivationEmailBoxNavContent">
+			<s:VGroup id="resendActivationEmailBox"
+					  width="100%">
+
+				<!--
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','INPUT_USER_AND_EMAIL')}"
+						 styleName="formLabel"/>
+				-->
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','USER_NAME')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="activationUsername"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','EMAIL')}"
+						 styleName="formLabel"/>
+				<s:TextInput id="activationEmail"
+							 styleName="searchTextInput"
+							 fontSize="16"
+							 width="100%"/>
+
+				<s:HGroup width="100%"
+						  horizontalAlign="center"
+						  verticalAlign="middle">
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','OK')}"
+							  buttonMode="true"
+							  id="activationOkButton"
+							  styleName="bigBlueButton"
+							  click="resendActivationEmail(event)"/>
+					<s:Button label="{ResourceManager.getInstance().getString('myResources','CANCEL')}"
+							  buttonMode="true"
+							  id="activationCancelButton"
+							  styleName="bigBlueButton"
+							  click="showLogin(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+
+	</mx:ViewStack>
+</s:Group>

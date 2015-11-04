@@ -12,16 +12,16 @@ s|Application{
 	horizontalAlign: center;
 	paddingTop: 0;
 	paddingBottom: 5;
-	fontFamily: Arial;
-	fontSize: 12;
+	fontFamily: HelveticaNeue, Helvetica, LiberationSans, Arial;
+	fontSize: 14;
 	fontWeight: normal;
-	color: #000000;
+	color: #333333;
 	skinClass: ClassReference('skins.ApplicationCustomSkin');
 }	
 
-mx|LinkButton{
+/*mx|LinkButton{
 	fontWeight: normal;
-}
+}*/
 
 /*
 mx|Alert{
@@ -35,20 +35,68 @@ s|Label{
 
 s|Panel{
 	backgroundColor: #FFFFFF;
+	backgroundAlpha: 1;
 	borderWeight: 1;
 	borderStyle: solid;
-	borderColor: #AAAAAA;
-	dropShadowEnabled: false;
-	cornerRadius: 6;
-	color: #2B333C;
-	fontSize: 12;
-	paddingBottom: 2;
-	paddingLeft: 2;
-	paddingRight: 2;
-	headerHeight: 19;
-	headerColors: #919191, #FFFFFF;
-	footerColors: #9DB6D9, #FFFFFF;
+	borderColor: #E0E0E0;
+	borderAlpha: 0.85;
+	dropShadowVisible: false;
+	cornerRadius: 3;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+	paddingRight: 12;
+	headerHeight: 32;
+	headerColors: #E6E6E6, #E6E6E6;
+	footerColors: #E6E6E6, #E6E6E6;
 	roundedBottomCorners: true;
+}
+
+mx|ComboBox{
+	color: #333333;
+	textRollOverColor: #333333;
+	textSelectedColor: #333333;
+	skin:ClassReference("skins.BootstrapMXComboBox");
+	textInputStyleName: "mxComboTextInput";
+}
+
+/*
+.mxComboTextInput{
+	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
+	fontSize: 14;
+	fontWeight: normal;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+}
+*/
+
+.progress-bar{
+	barSkin: ClassReference("skins.BootstrapProgressBarSkin");
+	trackSkin: ClassReference("skins.BootstrapProgressBarTrackSkin");
+	trackHeight: 20;
+}
+
+/*
+mx|TextInput{
+	fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif";
+	fontSize: 14;
+	fontWeight: normal;
+	color: #333333;
+	paddingTop: 6;
+	paddingBottom: 6;
+	paddingLeft: 12;
+}
+*/
+
+mx|ToolTip{
+	backgroundColor: #000000;
+	color: #FFFFFF;
+	dropShadowVisible: false;
+	fontSize: 12;
+	cornerRadius: 3;
 }
 
 /*
@@ -265,6 +313,15 @@ s|TextInput{
 	borderColor: #FFFFFF;
 }
 
+.loginBorderContainer{
+	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
+	backgroundAlpha: 1.0;
+	backgroundColor: #FFFFFF;
+	borderColor: #000000;
+	borderAlpha: 0.85;
+	cornerRadius: 8;
+}
+
 .privacyRightsPopup{
 	skinClass: ClassReference('skins.CustomTitleWindowSkin');
 	backgroundImage: Embed('/resources/images/popup_bgr_unlock.png');
@@ -285,71 +342,7 @@ s|TextInput{
 	borderColor: #FFFFFF;
 }
 
-.homeLinkButton{
-	rollOverColor: #258daa;
-	selectionColor: #20778f;
-	color: #258daa;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_home.png');
-}
 
-.practiceLinkButton{
-	rollOverColor: #38bcbe;
-	selectionColor: #2d9a9b;
-	color: #38bcbe;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_pract.png');
-}
-
-.evaluateLinkButton{
-	rollOverColor: #7b980a;
-	selectionColor: #607707;
-	color: #7b980a;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_eval.png');
-}
-
-.subtitleLinkButton{
-	rollOverColor: #962b07;
-	selectionColor: #752105;
-	color: #962b07;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_subt.png');
-}
-
-.configureLinkButton{
-	rollOverColor: #de5c04;
-	selectionColor: #bf4f04;
-	color: #de5c04;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_config.png');
-}
-
-.aboutLinkButton{
-	rollOverColor: #e6ce56;
-	selectionColor: #c0ac47;
-	color: #e6ce56;
-	textRollOverColor: #ffffff;
-	textSelectedColor: #ffffff;
-	fontSize: 18;
-	fontWeight: bold;
-	backgroundImage: Embed('/resources/images/button_nav_highlight_about.png');
-}
 
 .searchButton{
 	fontWeight: bold;
@@ -525,6 +518,7 @@ s|TextInput{
 	tabGap: 4;
 }
 
+
 .sectionInfoBox{
 	backgroundImage: Embed('/resources/images/pattern.jpg');
 	backgroundImageFillMode: repeat;
@@ -600,3 +594,186 @@ s|TextInput{
 	cornerRadius: 8;
 }
 
+.stepsBorderContainer{
+	backgroundAlpha: 0.25;
+	backgroundColor: #DBDBDB;
+	borderColor: #333333;
+	borderAlpha: 0.25;
+	cornerRadius: 8;
+}
+
+.lightBorderContainer{
+	backgroundAlpha: 1.0;
+	backgroundColor: #FFFFFF;
+	borderAlpha: 0.85;
+	borderColor: #E0E0E0;
+	cornerRadius: 1;
+}
+
+.alert-danger{
+	backgroundAlpha: 1.0;
+	backgroundColor: #f2dede;
+	borderAlpha: 1.0;
+	borderColor: #ebccd1;
+	borderWeight: 1;
+	cornerRadius: 3;
+	color: #a94442;
+}
+
+.btn-default{
+	bgrColor: #FFFFFF;
+	bgrColorOver: #E6E6E6;
+	bgrColorDown: #E6E6E6;
+	bColor: #CCCCCC;
+	bColorOver: #ADADAD;
+	bColorDown: #ADADAD;
+	tColor: #333333;
+	tColorOver: #333333;
+	tColorDown: #333333;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-primary{
+	bgrColor: #428bca;
+	bgrColorOver: #3071a9;
+	bgrColorDown: #3071a9;
+	bColor: #357ebd;
+	bColorOver: #285e8e;
+	bColorDown: #285e8e;
+	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-success{
+	bgrColor: #5cb85c;
+	bgrColorOver: #449d44;
+	bgrColorDown: #449d44;
+	bColor: #4cae4c;
+	bColorOver: #398439;
+	bColorDown: #398439;
+	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-info{
+	bgrColor: #5bc0de;
+	bgrColorOver: #31b0d5;
+	bgrColorDown: #31b0d5;
+	bColor: #46b8da;
+	bColorOver: #269abc;
+	bColorDown: #269abc;
+	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-warning{
+	bgrColor: #f0ad4e;
+	bgrColorOver: #ec971f;
+	bgrColorDown: #ec971f;
+	bColor: #eea236;
+	bColorOver: #d58512;
+	bColorDown: #d58512;
+	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-danger{
+	bgrColor: #d9534f;
+	bgrColorOver: #c9302c;
+	bgrColorDown: #c9302c;
+	bColor: #d43f3a;
+	bColorOver: #ac2925;
+	bColorDown: #ac2925;
+	tColor: #ffffff;
+	tColorOver: #ffffff;
+	tColorDown: #ffffff;
+	cornerRadius: 3;
+	skinClass: ClassReference('skins.BootstrapButton');
+}
+
+.btn-link{
+	bgrAlpha: 0.0;
+	bAlpha: 0.0;
+	tColor: #428bca;
+	tColorOver: #2a6496;
+	tColorDown: #428bca;
+	tDecorationOver: "underline";
+	tDecorationDown: "none";
+	cornerRadius: 3;
+	skinClass: ClassReference("skins.BootstrapButton");
+}
+
+.h1{
+	fontSize: 36;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h2{
+	fontSize: 30;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h3{
+	fontSize: 24;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h4{
+	fontSize: 18;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.h5{
+	fontSize: 16;
+	fontWeight: bold;
+	color: #268caa;
+}
+
+.frm-input{
+	paddingLeft: 12;
+	paddingRight: 12;
+	paddingTop: 6;
+	paddingBottom: 6;
+	borderColor: #CCCCCC;
+	borderAlpha: 1;
+	skinClass: ClassReference("skins.BootstrapTextInput");
+}
+
+.frm-textarea{
+	paddingLeft: 12;
+	paddingRight: 12;
+	paddingTop: 6;
+	paddingBottom: 6;
+	borderColor: #CCCCCC;
+	borderAlpha: 1;
+	skinClass: ClassReference("skins.BootstrapTextArea");
+}
+
+.frm-label{
+	fontWeight: bold;
+	color: #515151;
+}
+
+.alert-danger{
+	backgroundColor: #F2DEDE;
+	cornerRadius: 4;
+	color: #A94442;
+	borderColor: #DCA7A7;	
+}

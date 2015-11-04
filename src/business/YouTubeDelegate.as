@@ -29,7 +29,7 @@ package business
 		
 		public function checkUploadedVideoStatus(data:ExerciseVO):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("youtubeRO");
-			var pendingCall:AsyncToken = service.checkUploadedVideoStatus(data.name);
+			var pendingCall:AsyncToken = service.checkUploadedVideoStatus(data.exercisecode);
 			pendingCall.addResponder(responder);
 		}
 		

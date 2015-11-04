@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:main="components.main.*"
+		  xmlns:userManagement="components.userManagement.*"
+		  xmlns:skins="skins.*"
+		  width="100%"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  paddingTop="16"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.crypto.SHA1;
+			
+			import spark.events.TextOperationEvent;
+			
+			import components.userManagement.FieldValidator;
+			
+			import control.URLManager;
+			
+			import events.RegisterUserEvent;
+			
+			import model.DataModel;
+			import model.LocalesAndFlags;
+			
+			import modules.account.view.LanguageKnowledgeBox;
+			import modules.account.view.MotherLanguageBox;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.ToolTip;
+			import mx.core.IButton;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.ToolTipManager;
+			
+			import skins.IconButtonSkin;
+			
+			import spark.components.Group;
+			
+			import view.common.CustomAlert;
+			import view.common.IconComboBox;
+			import view.common.LanguageComboBox;
+			
+			import vo.NewUserVO;
+			import vo.UserLanguageVO;
+
+			public static const AVAILABLE_LANGUAGES:int=4;
+
+			private var _model:DataModel=DataModel.getInstance();
+			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
+
+			//These variables are used to store the several combobox's info the user might add
+			private var motherLanguagesArray:ArrayCollection=new ArrayCollection();
+			private var interestLanguagesArray:ArrayCollection=new ArrayCollection();
+
+			private var motherTongue:MotherLanguageBox;
+			private var interestLanguage:LanguageKnowledgeBox;
+
+			private var registerOngoing:Boolean=false;
+
+			private var selectedLanguages:ArrayCollection=new ArrayCollection();
+
+			[Bindable]
+			private var errorMessageToolTips:Array=new Array;
+			
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher;
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+
+			public function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(displayErrorMessage, _model, 'registrationErrorMessage', commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRegisterResponse, _model, 'registrationResponse', commitOnly, useWeakReference);	
+				
+				addInitialComboboxes();
+			}
+			
+			public function resetGroup():void
+			{
+				//Restore all components to their initial values and remove the error tips
+				resetToInitialStatus();
+			}
+			
+			public function unpinGroup():void{
+				if (cw1)
+					cw1.unwatch();
+				if (cw2)
+					cw2.unwatch();
+				cw1=cw2=null;
+				
+				
+				username.removeEventListener(TextOperationEvent.CHANGE, username_change);
+				username.removeEventListener(FocusEvent.FOCUS_OUT, username_change);
+				email.removeEventListener(TextOperationEvent.CHANGE, email_change);
+				email.removeEventListener(FocusEvent.FOCUS_OUT, email_change);
+				confirmemail.removeEventListener(TextOperationEvent.CHANGE, confirmemail_change);
+				confirmemail.removeEventListener(FocusEvent.FOCUS_OUT, confirmemail_change);	
+				password.removeEventListener(TextOperationEvent.CHANGE, password_change);
+				password.removeEventListener(FocusEvent.FOCUS_OUT, password_change);
+				repassword.removeEventListener(TextOperationEvent.CHANGE, repassword_change);
+				repassword.removeEventListener(FocusEvent.FOCUS_OUT, repassword_change);
+				firstname.removeEventListener(TextOperationEvent.CHANGE, firstname_change);
+				firstname.removeEventListener(FocusEvent.FOCUS_OUT, firstname_change);
+				lastname.removeEventListener(TextOperationEvent.CHANGE, lastname_change);
+				lastname.removeEventListener(FocusEvent.FOCUS_OUT, lastname_change);
+				
+				freeContainerElements(motherLanguagesBox, deleteMotherLanguageBox);
+				freeContainerElements(interestLanguagesBox, deleteLanguageKnowledgeComboBox);
+				
+				addAnotherMotherLang.removeEventListener(MouseEvent.CLICK, addAnotherMotherLang_clickHandler);
+				addAnotherInterestLang.removeEventListener(MouseEvent.CLICK, addAnotherInterestLang_clickHandler);
+				saveButton.removeEventListener(MouseEvent.CLICK, processNewUser);
+				cancelButton.removeEventListener(MouseEvent.CLICK, cancelButton_clickHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			}
+
+			public function addInitialComboboxes():void
+			{
+				motherTongue=new MotherLanguageBox();
+				motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+				motherLanguagesBox.addElement(motherTongue);
+				motherLanguagesArray.addItem(motherTongue);
+
+				interestLanguage=new LanguageKnowledgeBox();
+				interestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+				interestLanguagesBox.addElement(interestLanguage);
+				interestLanguagesArray.addItem(interestLanguage);
+			}
+
+			private function motherLanguageBoxCreated(event:FlexEvent):void
+			{
+				(event.currentTarget as MotherLanguageBox).removeEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+				(event.currentTarget as MotherLanguageBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+				(event.currentTarget as MotherLanguageBox).languageCombo.name="motherLangs";
+
+				if ((event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue)
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedItem=(event.currentTarget as MotherLanguageBox).languageCombo.prefixedValue;
+				else
+					(event.currentTarget as MotherLanguageBox).languageCombo.selectedIndex=-1;
+
+				(event.currentTarget as MotherLanguageBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+			}
+
+			private function languageKnowledgeBoxCreatedInterest(event:FlexEvent):void
+			{
+				(event.currentTarget as LanguageKnowledgeBox).removeEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.name="interestLangs";
+
+				if ((event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue)
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedItem=(event.currentTarget as LanguageKnowledgeBox).languageCombo.prefixedValue;
+					(event.currentTarget as LanguageKnowledgeBox).levelCombo.selectedIndex=(event.currentTarget as LanguageKnowledgeBox).levelCombo.prefixedLevel;
+				}
+				else
+				{
+					(event.currentTarget as LanguageKnowledgeBox).languageCombo.selectedIndex=-1;
+				}
+
+				(event.currentTarget as LanguageKnowledgeBox).languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+			}
+
+			public function languageComboBoxChangeHandler(event:ListEvent):void
+			{
+				var dispatchingItem:IconComboBox=IconComboBox(event.target);
+
+				if (dispatchingItem.selectedIndex != -1)
+				{
+					switch (dispatchingItem.name)
+					{
+						case "interestLangs":
+							for each (var ilcb:LanguageKnowledgeBox in interestLanguagesArray)
+							{
+								if (ilcb.languageCombo.selectedIndex != -1 && ilcb.languageCombo != dispatchingItem && ilcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+								{
+									ilcb.languageCombo.selectedIndex=-1;
+								}
+							}
+							break;
+
+						case "motherLangs":
+							for each (var ilcbm:LanguageKnowledgeBox in interestLanguagesArray)
+							{
+								if (ilcbm.languageCombo.selectedIndex != -1 && ilcbm.languageCombo != dispatchingItem && ilcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+								{
+									ilcbm.languageCombo.selectedIndex=-1;
+								}
+							}
+							break;
+					}
+					for each (var mlcb:MotherLanguageBox in motherLanguagesArray)
+					{
+						if (mlcb.languageCombo.selectedIndex != -1 && mlcb.languageCombo != dispatchingItem && mlcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+						{
+							mlcb.languageCombo.selectedIndex=-1;
+						}
+					}
+				}
+			}
+
+			protected function addAnotherInterestLang_clickHandler(event:MouseEvent):void
+			{
+				if (interestLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
+				{
+					var otherInterestLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherInterestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
+					otherInterestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+					interestLanguagesBox.addElement(otherInterestLanguage);
+					interestLanguagesArray.addItem(otherInterestLanguage);
+				}
+			}
+
+			protected function addAnotherMotherLang_clickHandler(event:MouseEvent):void
+			{
+				if (motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
+				{
+					var otherMotherLanguage:MotherLanguageBox=new MotherLanguageBox();
+					otherMotherLanguage.deleteButtonClickHandler=deleteMotherLanguageBox;
+					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+					motherLanguagesBox.addElement(otherMotherLanguage);
+					motherLanguagesArray.addItem(otherMotherLanguage);
+				}
+			}
+
+			private function deleteLanguageKnowledgeComboBox(event:MouseEvent):void
+			{
+				var target:IButton=event.currentTarget as IButton;
+				var component:LanguageKnowledgeBox=(event.currentTarget).parent;
+				var container:Group=((event.currentTarget).parent).parent;
+				
+				//Clean up after ourselves
+				target.removeEventListener(MouseEvent.CLICK, deleteLanguageKnowledgeComboBox);
+				component.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+				
+				container.removeElement(component);
+				var index:uint=0;
+				if ((index=interestLanguagesArray.getItemIndex(component)) != -1)
+				{
+					interestLanguagesArray.removeItemAt(index);
+				}
+			}
+
+			private function deleteMotherLanguageBox(event:MouseEvent):void
+			{
+				var target:IButton=event.currentTarget as IButton;
+				var component:MotherLanguageBox=(event.currentTarget).parent;
+				var container:Group=((event.currentTarget).parent).parent;
+				
+				//Clean up after ourselves
+				target.removeEventListener(MouseEvent.CLICK, deleteMotherLanguageBox);
+				component.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);		
+				
+				container.removeElement(component);
+				var index:uint=0;
+				if ((index=motherLanguagesArray.getItemIndex(component)) != -1)
+				{
+					motherLanguagesArray.removeItemAt(index);
+				}
+			}
+
+			protected function resetToInitialStatus():void
+			{
+				registerOngoing=false;
+				DataModel.getInstance().registrationErrorMessage=null;
+				username.text='';
+				email.text='';
+				confirmemail.text='';
+				password.text='';
+				repassword.text='';
+				firstname.text='';
+				lastname.text='';
+
+				if (errorMessageToolTips.hasOwnProperty(username.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[username.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(email.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[email.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(confirmemail.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[confirmemail.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(password.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[password.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(repassword.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[repassword.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(firstname.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[firstname.id] as ToolTip);
+				if (errorMessageToolTips.hasOwnProperty(lastname.id))
+					ToolTipManager.destroyToolTip(errorMessageToolTips[lastname.id] as ToolTip);
+				errorMessageToolTips=null;
+				errorMessageToolTips=new Array();
+
+				freeContainerElements(motherLanguagesBox, deleteMotherLanguageBox);
+				freeContainerElements(interestLanguagesBox, deleteLanguageKnowledgeComboBox);
+				motherLanguagesArray.removeAll();
+				interestLanguagesArray.removeAll();
+
+				addInitialComboboxes();
+			}
+
+			protected function freeContainerElements(container:Group, deleteListener:Function):void
+			{
+				for (var i:uint=0; i < container.numElements; i++){
+					
+					var item:Object = container.getElementAt(i) as Object;
+					item.deleteButton.removeEventListener(MouseEvent.CLICK, deleteListener);
+					item.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+
+					container.removeElementAt(i);
+				}
+			}
+
+			protected function displayErrorMessage(value:String):void
+			{
+				if (value && value.length)
+					errorInfo.text=resourceManager.getString('myResources', value.toUpperCase());
+				else
+					errorInfo.text="";
+			}
+
+			protected function onRegisterResponse(value:Boolean):void
+			{
+				registerOngoing=false;
+			}
+			
+			/* Form item event listeners */
+			public function username_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20);
+			}
+			public function email_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL_ADDRESS',FieldValidator.MAIL_PATTERN_LAX, false, false);
+			}
+			
+			public function confirmemail_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, confirmemail, 'CONFIRM_EMAIL_ADDRESS',FieldValidator.MAIL_PATTERN_LAX, false, false, true, true, 0, 0, email.text);
+			}
+			
+			public function password_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40);
+			}
+			
+			public function repassword_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text);
+			}
+			
+			public function firstname_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRST_NAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40);
+			}
+			
+			public function lastname_change(event:Event):void{
+				FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'SURNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40);
+			}
+			
+
+			private function processNewUser():void
+			{
+				if (!registerOngoing)
+				{
+					registerOngoing=true;
+					var mLangCollection:ArrayCollection=new ArrayCollection();
+					var kLangCollection:ArrayCollection=new ArrayCollection();
+					var iLangCollection:ArrayCollection=new ArrayCollection();
+
+					for each (var mLang:MotherLanguageBox in motherLanguagesArray)
+					{
+						if (mLang.languageCombo.selectedIndex != -1)
+							mLangCollection.addItem(new UserLanguageVO(0, mLang.languageCombo.selectedItem.code, 7, DataModel.PURPOSE_EVALUATE, 0));
+					}
+					for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
+					{
+						if (iLang.languageCombo.selectedIndex != -1)
+							iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
+					}
+
+
+					var mLangArray:Array=mLangCollection.toArray();
+					var kLangArray:Array=kLangCollection.toArray();
+					var iLangArray:Array=iLangCollection.toArray();
+					if (mLangArray.length > 0 && iLangArray.length > 0)
+					{
+						var languages:Array=mLangArray.concat(kLangArray, iLangArray);
+
+						if (FieldValidator.validateTextInput(errorMessageToolTips, username, 'USERNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 4, 20) && FieldValidator.validateTextInput(errorMessageToolTips, email, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageToolTips, password, 'PASSWORD', FieldValidator.ANY_PATTERN, true, true, true, false, 6, 40) && FieldValidator.validateTextInput(errorMessageToolTips, repassword, 'REPASSWORD', FieldValidator.ANY_PATTERN, false, false, false, true, 1, 200, password.text) && FieldValidator.validateTextInput(errorMessageToolTips, firstname, 'FIRSTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40) && FieldValidator.validateTextInput(errorMessageToolTips, lastname, 'LASTNAME', FieldValidator.FIELD_PATTERN, true, true, true, false, 2, 40))
+						{
+							var user:NewUserVO=new NewUserVO(username.text, SHA1.hash(password.text), firstname.text, lastname.text, email.text, '', languages);
+							new RegisterUserEvent(RegisterUserEvent.REGISTER_USER, user).dispatch();
+						}
+						else
+						{
+							registerOngoing=false;
+							CustomAlert.error(resourceManager.getString('myResources', 'WRONG_FIELDS_IN_FORM'));
+						}
+					}
+					else
+					{
+						registerOngoing=false;
+						CustomAlert.error(resourceManager.getString('myResources', 'MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
+					}
+				}
+				else
+				{
+					trace("Register process is still ongoing");
+				}
+			}
+
+
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				URLManager.getInstance().redirect('home');
+			}
+
+		]]>
+	</fx:Script>
+
+	<s:Label text="{resourceManager.getString('myResources','SIGN_UP')}"
+			 styleName="h2"/>
+
+
+	<s:BorderContainer styleName="alert-danger"
+					   width="100%"
+					   includeInLayout="{DataModel.getInstance().registrationErrorMessage ? true: false}"
+					   visible="{DataModel.getInstance().registrationErrorMessage ? true : false}">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle"
+								paddingBottom="16"
+								paddingLeft="16"
+								paddingRight="16"
+								paddingTop="16"/>
+		</s:layout>
+		<s:Label id="errorInfo"
+				 text="Unknown error"/>
+	</s:BorderContainer>
+
+	<s:BorderContainer id="signupContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16"
+							  paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
+
+		<s:Label text="{resourceManager.getString('myResources','GENERAL')}"
+				 styleName="h3"/>
+
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{signupContainer.getStyle('borderWeight')}"
+									alpha="{signupContainer.getStyle('borderAlpha')}"
+									color="{signupContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+
+		<s:Form width="100%">
+			<s:FormItem label="{resourceManager.getString('myResources','USERNAME')}"
+						required="true">
+				<s:TextInput id="username"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="20"
+							 change="username_change(event)"
+							 focusOut="username_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','EMAIL_ADDRESS')}"
+						required="true">
+				<s:TextInput id="email"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="email_change(event)"
+							 focusOut="email_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','CONFIRM_EMAIL_ADDRESS')}"
+						required="true">
+				<s:TextInput id="confirmemail"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="confirmemail_change(event)"
+							 focusOut="confirmemail_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','PASSWORD')}"
+						required="true">
+
+				<s:TextInput id="password"
+							 styleName="frm-input"
+							 displayAsPassword="true"
+							 width="300"
+							 maxChars="40"
+							 change="password_change(event)"
+							 focusOut="password_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','CONFIRM_PASSWORD')}"
+						required="true">
+				<s:TextInput id="repassword"
+							 styleName="frm-input"
+							 displayAsPassword="true"
+							 width="300"
+							 maxChars="40"
+							 change="repassword_change(event)"
+							 focusOut="repassword_change(event)"/>
+			</s:FormItem>
+			<mx:Spacer/>
+			<s:FormItem label="{resourceManager.getString('myResources','FIRST_NAME')}"
+						required="true">
+				<s:TextInput id="firstname"
+							 width="300"
+							 styleName="frm-input"
+							 maxChars="40"
+							 change="firstname_change(event)"
+							 focusOut="firstname_change(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','SURNAME')}"
+						required="true">
+				<s:TextInput id="lastname"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="40"
+							 change="lastname_change(event)"
+							 focusOut="lastname_change(event)"/>
+			</s:FormItem>
+		</s:Form>
+		<s:Label id="languagesLbl"
+				 text="{resourceManager.getString('myResources','LANGUAGES')}"
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{signupContainer.getStyle('borderWeight')}"
+									alpha="{signupContainer.getStyle('borderAlpha')}"
+									color="{signupContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		<s:Form width="100%">
+			<s:Label text="{resourceManager.getString('myResources','I_SPEAK')+':'}"
+					 styleName="boldLabel"
+					 fontSize="16"/>
+			<s:Label text="{resourceManager.getString('myResources','PLASE_CHOOSE_ONLY_LANGUAGES_IN_WHICH_YOU_ARE_EITHER_NATIVE_OR_ADVANCED')}"/>
+			<s:FormItem>
+				<s:VGroup>
+					<s:VGroup id="motherLanguagesBox"/>
+					<s:Button id="addAnotherMotherLang"
+							  click="addAnotherMotherLang_clickHandler(event)"
+							  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+							  styleName="btn-link"/>
+				</s:VGroup>
+			</s:FormItem>
+
+			<s:Label text="{resourceManager.getString('myResources','I_WOULD_LIKE_TO_LEARN')+':'}"
+					 styleName="boldLabel"
+					 fontSize="16"/>
+			<s:Label text="{resourceManager.getString('myResources','PLEASE_CHOOSE_AT_LEAST_ONE_LANGUAGE')}"/>
+			<s:FormItem>
+				<s:VGroup>
+					<s:VGroup id="interestLanguagesBox"/>
+					<s:Button id="addAnotherInterestLang"
+							  click="addAnotherInterestLang_clickHandler(event)"
+							  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+							  styleName="btn-link"/>
+				</s:VGroup>
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  label="{resourceManager.getString('myResources','REGISTER')}"
+				  click="processNewUser()"
+				  buttonMode="true"
+				  styleName="btn-success"/>
+
+		<s:Button id="cancelButton"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  click="cancelButton_clickHandler(event)"
+				  buttonMode="true"
+				  styleName="btn-default"/>
+
+	</s:HGroup>
+
+</s:VGroup>

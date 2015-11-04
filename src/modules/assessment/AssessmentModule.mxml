@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  implements="modules.IModuleInterface" 
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" xmlns:view="modules.assessment.view.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLChangeEvent;
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import modules.IGroupInterface;
+			import modules.IPinnedGroupInterface;
+			import modules.assessment.event.EvaluationEvent;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.components.NavigatorContent;
+			
+			public var modulename:String = 'assessments';
+			
+			[Bindable]
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			
+			[Bindable]
+			private var _model:DataModel=DataModel.getInstance();
+			
+			[Bindable]
+			private var _viewstackIndex:uint;
+			
+			private var _moduleController:*;
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			
+			public static const PENDING:uint=0;
+			public static const FOR:uint=1;
+			public static const BY:uint=2;
+			public static const VIEW:uint=3;
+			public static const ADD:uint=4;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{	
+				_moduleController = new Object();	
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				_moduleController = null;
+				_model = null;
+				resetViews();
+				unpinViews();
+			}
+			
+			public function resetViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function unpinViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.unpinGroup();
+						}
+					}
+				}
+			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
+				resetViews();
+				
+				switch (evt.action)
+				{
+					case 'pending':
+						actionPending(evt.parameters);
+						break;
+					case 'by':
+						actionBy(evt.parameters);
+						break;
+					case 'for':
+						actionFor(evt.parameters);
+						break;
+					case 'view':
+						actionReview(evt.parameters);
+						break;
+					case 'add':
+						actionAssess(evt.parameters);
+						break;
+					case 'index':
+						//This module has no 'index' action redirect to error
+					default:
+						_urlmanager.redirect('/error');
+						break;
+				}
+			}
+			
+			
+			public function actionIndex(fragment:Object = null):void{
+				//TODO
+			}
+			
+			public function actionBy(params:Object):void{
+				_viewstackIndex=BY;
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_BY_CURRENT_USER).dispatch();
+			}
+			
+			public function actionFor(params:Object):void{
+				_viewstackIndex=FOR;
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_ASSESSED_TO_CURRENT_USER).dispatch();
+			}
+			
+			public function actionPending(params:Object):void{
+				_viewstackIndex=PENDING;
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT).dispatch();
+			}
+			
+			public function actionReview(params:Object):void{
+				_viewstackIndex=VIEW;
+				var _responseId:int = params.id;
+				new EvaluationEvent(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, null, _responseId).dispatch();
+			}
+			
+			public function actionAssess(params:Object):void{
+				_viewstackIndex=ADD;
+				var _responseId:int = params.id;
+				new EvaluationEvent(EvaluationEvent.GET_RESPONSE_DATA, null, _responseId).dispatch();
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					URLManager.getInstance().redirect('/login');
+					return;
+				}
+				this.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="moduleViewstack"
+				  selectedIndex="{ _viewstackIndex }"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%"
+				  creationPolicy="all">
+		<s:NavigatorContent id="pending">
+			<view:AssessmentPendingView id="assessmentPending" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="foruser">
+			<view:AssessmentForView id="assessmentFor" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="byuser">
+			<view:AssessmentByView id="assessmentBy" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="detail">
+			<view:AssessmentDetailView id="assessmentReview" width="100%"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="assess">
+			<view:AssessmentAddView id="assessmentAssess" width="100%"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+</s:Module>

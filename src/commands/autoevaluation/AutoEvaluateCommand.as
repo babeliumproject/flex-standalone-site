@@ -4,13 +4,13 @@ package commands.autoevaluation {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	import events.EvaluationEvent;
+	import modules.assessment.event.EvaluationEvent;
 	
 	import model.DataModel;
 	
-	import modules.autoevaluation.Autoevaluator;
-	import modules.autoevaluation.AutoevaluatorManager;
-	import modules.autoevaluation.Evaluation;
+	import components.autoevaluation.Autoevaluator;
+	import components.autoevaluation.AutoevaluatorManager;
+	import components.autoevaluation.Evaluation;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;

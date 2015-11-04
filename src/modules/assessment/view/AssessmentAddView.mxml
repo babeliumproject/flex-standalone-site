@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.assessment.view.*"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  gap="8"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="assessadd_creationCompleteHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import components.videoPlayer.events.VideoPlayerEvent;
+			
+			import mx.resources.IResourceManager;
+			
+			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+			
+			import control.URLManager;
+			
+			import flash.globalization.DateTimeStyle;
+			
+			import model.DataModel;
+			
+			import modules.subtitle.event.SubtitleEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import utils.ExerciseRenderUtils;
+			
+			import vo.EvaluationVO;
+
+			protected var _responseId:int;
+			protected var _responseSubtitleId:int;
+			protected var _responseAddingDate:String;
+			protected var _responseUserName:String;
+			protected var _mergeStatus:int;
+			[Bindable]
+			protected var _evaluationSelected:Boolean;
+
+			protected var _data:Object;
+
+			[Bindable]
+			private var dataModel:DataModel=DataModel.getInstance();
+
+			private var _currentCaptions:Object;
+			private var _currentTimeMarkers:Object;
+			private var _rolesReady:Boolean;
+			private var _selectedRole:String;
+			private var _leftMedia:Object;
+			private var _rightMedia:Object;
+
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher, cw3:ChangeWatcher;
+
+			protected function assessadd_creationCompleteHandler(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(submissionDataHandler, dataModel, "submissionDataRetrieved", commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				cw3=BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+				//cw4=BindingUtils.bindSetter(assessmentSavedHandler, dataModel, "addAssessmentRetrieved", commitOnly, useWeakReference);
+
+				VP.addEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton, useCapture, priority, useWeakReference);
+			}
+
+			public function resetGroup():void
+			{
+				VP.resetComponent();
+				evaluationRatingBox.resetComponent();
+				_responseId=_responseSubtitleId=_mergeStatus=0;
+				_responseAddingDate=_responseUserName=_selectedRole=null;
+				_data=_currentCaptions=_currentTimeMarkers=_leftMedia=_rightMedia=null;
+				_evaluationSelected=_rolesReady=false;
+
+				//Reset related model data
+				dataModel.submissionData=null;
+				dataModel.availableExerciseRoles=null;
+				dataModel.availableSubtitleLines=null;
+			}
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				if (cw2)
+					cw2.unwatch();
+				if (cw3)
+					cw3.unwatch();
+				cw1=cw2=cw3=null;
+				if (VP)
+					VP.removeEventListener(VideoPlayerEvent.ON_ERROR, disableSendButton);
+			}
+
+			protected function fetchSubtitlesById(subtitleid:int):void
+			{
+				var params:Object=new Object();
+				params.id=subtitleid;
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, params).dispatch();
+			}
+
+			protected function onSubtitlesRetrieved(value:Boolean):void
+			{
+				_currentCaptions=dataModel.availableSubtitleLines;
+				VP.setCaptions(_currentCaptions);
+			}
+
+			protected function onRolesRetrieved(value:Boolean):void
+			{
+				var _roles:Object=dataModel.availableExerciseRoles;
+				if (_roles && _roles.hasOwnProperty(_selectedRole))
+				{
+					_currentTimeMarkers=_roles[_selectedRole];
+					_rolesReady=true;
+					prepareVideoPlayer();
+				}
+				else
+				{
+					_currentTimeMarkers=null;
+					_rolesReady=false;
+				}
+			}
+
+			protected function prepareVideoPlayer():void
+			{
+				var parallelMedia:Object=new Object();
+				parallelMedia.leftMedia=_leftMedia;
+				parallelMedia.rightMedia=_rightMedia;
+				VP.loadVideoByUrl(parallelMedia, _currentTimeMarkers);
+			}
+
+			private function submissionDataHandler(value:Boolean):void
+			{
+				_data=dataModel.submissionData;
+
+				if (_data)
+				{
+					_responseId=_data.id;
+					_responseSubtitleId=_data.fk_subtitle_id;
+					_responseAddingDate=_data.adding_date;
+					_responseUserName=_data.username;
+					_mergeStatus=_data.mergeStatus;
+
+					usernameLbl.text=_responseUserName;
+					timecreatedLbl.text=ExerciseRenderUtils.formatDateTime(_responseAddingDate, DateTimeStyle.MEDIUM, DateTimeStyle.NONE);		
+					
+					_selectedRole=_data.character_name;
+
+					if (_data.hasOwnProperty('leftMedia'))
+					{
+						_leftMedia=_data.leftMedia;
+					}
+					if (_data.hasOwnProperty('rightMedia'))
+					{
+						_rightMedia=_data.rightMedia;
+					}
+
+					//Retrieve the associated subtitles and prepare the videoplayer
+					fetchSubtitlesById(_responseSubtitleId);
+
+					_evaluationSelected=true;
+
+					//Display the videoplayer
+					userSubmissionContainer.includeInLayout=true;
+					userSubmissionContainer.visible=true;
+
+					//Prepare the component in which the user leaves the assessment
+					evaluationRatingBox.resetEvaluationButtonClickHandler(null);
+					evaluationRatingBox.responseData(_responseId, _responseUserName, _selectedRole, _responseUserName);
+					evaluationRatingBox.includeInLayout=true;
+					evaluationRatingBox.visible=true;
+				}
+			}
+
+			private function assessmentSavedHandler(value:Boolean):void
+			{
+				URLManager.getInstance().redirect('/assessments/pending');
+			}
+
+			protected function disableSendButton(event:VideoPlayerEvent):void
+			{
+				evaluationRatingBox.disable();
+			}
+		]]>
+	</fx:Script>
+
+	<s:Label text="{resourceManager.getString('myResources','RATE_THE_USERS_RESPONSE')}"
+			 styleName="h2"/>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center">
+		<s:VGroup horizontalAlign="center">
+			<s:BitmapImage source="/resources/images/iconmonstr-user-6-icon-48.png"
+						   width="48"
+						   height="48"/>
+			<s:Label id="usernameLbl"
+					 fontWeight="bold"/>
+			<s:Label id="timecreatedLbl"
+					 styleName="boldYellowLabel"/>
+		</s:VGroup>
+		<s:BorderContainer id="userSubmissionContainer"
+						   styleName="lightBorderContainer">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"
+									paddingTop="16"
+									paddingLeft="16"
+									paddingRight="16"
+									paddingBottom="16"/>
+			</s:layout>
+			
+			<videoPlayer:VideoRecorder id="VP"
+									   autoPlay="true"
+									   skinUrl="/resources/videoPlayer/skin/white.xml"
+									   seekUsingScrubber="false"
+									   displayCaptions="true"
+									   autoScale="false"
+									   subtitlingControls="false"
+									   width="640"
+									   height="360"
+									   controlsEnabled="{_evaluationSelected}"/>
+		</s:BorderContainer>
+	</s:HGroup>
+
+	<view:EvaluationRatingBox id="evaluationRatingBox"
+							  width="100%"/>
+</s:VGroup>

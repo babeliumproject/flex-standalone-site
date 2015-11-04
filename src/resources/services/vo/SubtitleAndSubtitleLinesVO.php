@@ -3,7 +3,7 @@
 class SubtitleAndSubtitleLinesVO {
 
 	public $id;
-	public $exerciseId;
+	public $mediaId;
 	public $userId;
 	public $userName;
 	public $language;

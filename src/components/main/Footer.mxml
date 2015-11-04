@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:skins="skins.*"
+		 width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import flash.net.navigateToURL;
+
+			private const TERMS_URL:String="http://blog.babeliumproject.com/legal/terms-of-use";
+			private const PRIVACY_POLICY_URL:String="http://blog.babeliumproject.com/legal/privacy-policy";
+			private const CODE_REPOSITORY_URL:String="http://github.com/babeliumproject";
+			private const LICENCE_URL:String="http://www.gnu.org/licenses/gpl.html";
+			private const SUPPORT_URL:String="http://blog.babeliumproject.com/documentation";
+			private const BLOG_URL:String="http://blog.babeliumproject.com";
+			
+			private var currentYear:Number = new Date().fullYear;
+			[Bindable]
+			private var licence:String = "(ɔ) "+currentYear+" Elurnet & GHyM";
+
+			protected function footerAboutUs_clickHandler(event:MouseEvent):void
+			{
+				URLManager.getInstance().redirect('/about');
+			}
+
+			protected function footerDevelopers_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(CODE_REPOSITORY_URL), '_blank');
+			}
+
+			protected function footerTermsOfUse_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(TERMS_URL), '_blank');
+			}
+
+			protected function footerCopyleft_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(LICENCE_URL), '_blank');
+			}
+
+			protected function helpFAQ_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(SUPPORT_URL), '_blank');
+			}
+
+			protected function blogButton_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(BLOG_URL), '_blank');
+			}
+		]]>
+	</fx:Script>
+
+	<s:Group width="100%"
+			 minWidth="1000"
+			 height="100%">
+
+		<s:BorderContainer styleName="sectionInfoBox"
+						   width="100%"
+						   minHeight="30"
+						   height="100%"
+						   minWidth="1000"
+						   y="15">
+			<skins:HorizontalSeparatorLine width="100%"/>
+		</s:BorderContainer>
+
+		<s:HGroup width="100%"
+				  minWidth="1000"
+				  horizontalAlign="center">
+			<s:BorderContainer cornerRadius="4"
+							   width="95%"
+							   y="15"
+							   borderColor="#E0E0E0"
+							   borderAlpha="0.80"
+							   borderVisible="true">
+				<s:layout>
+					<s:VerticalLayout paddingTop="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingBottom="16"/>
+				</s:layout>
+
+				<s:HGroup verticalAlign="middle"
+						  horizontalAlign="center"
+						  width="100%">
+					<skins:IconButton id="footerAboutUs"
+									  label="{resourceManager.getString('myResources','ABOUT_US')}"
+									  click="footerAboutUs_clickHandler(event)"
+									  styleName="footerLinkButton"
+									  enabled="false"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="helpFAQButton"
+									  styleName="footerLinkButton"
+									  label="{resourceManager.getString('myResources', 'HELP')}"
+									  click="helpFAQ_clickHandler(event)"/>	
+					<s:Label text="|"/>
+					<skins:IconButton id="blogButton"
+									  styleName="footerLinkButton"
+									  label="{resourceManager.getString('myResources','BLOG')}"
+									  click="blogButton_clickHandler(event)"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="footerDevelopers"
+									  label="{resourceManager.getString('myResources','DEVELOPERS')}"
+									  click="footerDevelopers_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
+					<skins:IconButton id="footerTermsOfUse"
+									  label="{resourceManager.getString('myResources','TERMS_OF_USE')}"
+									  click="footerTermsOfUse_clickHandler(event)"
+									  styleName="footerLinkButton"/>
+					<s:Label text="|"/>
+					<s:Label id="footerCopyleft"
+							 text="{licence}"/>
+				</s:HGroup>
+				
+				<s:HGroup id="llpDisclaimer"
+						  width="100%"
+						  horizontalAlign="center"
+						  verticalAlign="middle">
+					<s:BitmapImage source="resources/images/llplogo.png"
+								   height="64"
+								   width="162"/>
+					<s:Label id="llpDisclaimerText"
+							 width="250"
+							 color="#999999"
+							 fontSize="9"
+							 text="This project has been funded with support from the European Commission. This website reflects the views only of the author, and the Commission cannot be held responsible for any use which may be made of the information contained therein. Project number 543194-LLP-1-2013-1-ES-KA2-KA2MP"/>
+				</s:HGroup>
+			</s:BorderContainer>
+		</s:HGroup>
+
+	</s:Group>
+
+</s:Group>

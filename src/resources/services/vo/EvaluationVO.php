@@ -11,9 +11,9 @@ class EvaluationVO{
 	public $spontaneityScore;
 	public $comprehensibilityScore;
 	public $pronunciationScore;
-	public $accuracyScore;
 	public $adequacyScore;
 	public $rangeScore;
+	public $accuracyScore;
 	public $comment;
 	public $addingDate;
 	

@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:videoSlice="components.videoSlice.*"
+		  xmlns:common="view.common.*"
+	      backgroundAlpha="0.0"
+		  borderStyle="none" 
+		  width="100%" 
+		  height="700"
+		  headerHeight="0"
+		  creationComplete="init()">
+		  
+<mx:Script>
+	<![CDATA[
+		import events.VideoSliceEvent;
+		import model.DataModel;
+		import mx.controls.Alert;
+		import view.common.CustomAlert;
+		import mx.resources.ResourceManager;
+		import mx.events.*;
+		import mx.validators.Validator;
+		
+		[Bindable]
+		public var formIsValid:Boolean=false;
+		
+		// Holds a reference to the currently focussed 
+		// control on the form.
+		private var focussedFormControl:DisplayObject;
+		
+		[Bindable]
+		public var _sliceRequestText:String = "{resourceManager.getString('myResources','SLICEREQUEST_TEXT')}";
+		
+		
+		public function init():void {
+			
+			videoTitle.addEventListener(Event.CHANGE, validateForm);
+			videoDescription.addEventListener(Event.CHANGE, validateForm);
+			videoTags.addEventListener(Event.CHANGE, validateForm);
+		}
+		
+		private function identifySearchType():void {
+			
+			var searchInput:String = sliceSearch.text;
+
+			if(searchInput!= ""){
+				//TextField is not empty
+				var urlType:String = new String("http://www.youtube.com/watc");
+				var urlType2:String = new String("http://www.youtube.com/user");
+				var temp:String = searchInput.substr(0,27);
+				
+				if(urlType==temp){
+					//Search Input is normal video URL
+					urlSearch(searchInput);
+					
+				}else if(urlType2==temp){
+					//Search Input is user channel video URL
+					userSearch(searchInput);
+								
+				}else{
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+				}
+				
+			}else{
+				CustomAlert.error(ResourceManager.getInstance().getString('myResources','VALID_URL_ALERT'));
+			}
+			
+		}
+		
+		private function urlSearch(searchInput:String):void {
+			
+			DataModel.getInstance().urlSearch = searchInput;
+			DataModel.getInstance().tempVideoSlice.watchUrl = searchInput;
+			new VideoSliceEvent(VideoSliceEvent.SEARCH_URL).dispatch();
+			
+		}
+		
+		private function userSearch(searchInput:String):void {
+			
+			DataModel.getInstance().userSearch = searchInput;
+			new VideoSliceEvent(VideoSliceEvent.SEARCH_USER).dispatch();
+		}
+		
+		private function parseTags(tags:String):String {
+				
+			return tags;
+		}
+		
+		public function set onRetrieveVideoComplete(value:Boolean):void {
+			
+			if(DataModel.getInstance().retrieveVideoComplete) {
+								
+				VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
+				VP.visible = true;
+				
+				DataModel.getInstance().retrieveVideoComplete = false;
+			
+			}
+		}
+		
+		public function set onRetrieveUserVideoComplete(value:Boolean):void {
+			
+			if(DataModel.getInstance().retrieveUserVideoComplete) {
+								
+				VP.setYoutubeVideoId(DataModel.getInstance().tempVideoSlice.name);
+				VP.visible = true;
+				
+				DataModel.getInstance().retrieveUserVideoComplete = false;
+			
+			}
+		}
+		
+		public function set onSlicePreviewComplete(value:Boolean):void {
+			
+			if(DataModel.getInstance().slicePreview) {
+							
+				videoData.visible = true;
+				requestInfo.visible = true;	
+			}else{
+				videoData.visible = false;
+				requestInfo.visible = false;
+			}
+		}
+		
+		public function set onSliceCreationComplete (value:Boolean):void {
+			
+			if(DataModel.getInstance().sliceComplete) {
+				
+				infoMessage.visible = false;
+			}
+		}
+		
+		private function validateForm(event:Event):void {
+			
+			focussedFormControl=event.target as DisplayObject;
+
+			// Mark the form as valid to start with                
+			formIsValid=true;
+
+			validate(titleValidator);
+			validate(descriptionValidator);
+			validate(tagValidator);
+		}
+		
+		private function validate(validator:Validator):Boolean {
+			// Get a reference to the component that is the
+			// source of the validator.
+			var validatorSource:DisplayObject=validator.source as DisplayObject;
+
+			// Suppress events if the current control being validated is not
+			// the currently focussed control on the form. This stops the user
+			// from receiving visual validation cues on other form controls.
+			var suppressEvents:Boolean=(validatorSource != focussedFormControl);
+
+			// Carry out validation. Returns a ValidationResultEvent.
+			// Passing null for the first parameter makes the validator 
+			// use the property defined in the property tag of the
+			// <mx:Validator> tag.
+			var event:ValidationResultEvent=validator.validate(null, suppressEvents);
+
+			// Check if validation passed and return a boolean value accordingly.
+			var currentControlIsValid:Boolean=(event.type == ValidationResultEvent.VALID);
+
+			// Update the formIsValid flag
+			formIsValid=formIsValid && currentControlIsValid;
+
+			return currentControlIsValid;
+		}
+		
+		private function cancelSlice():void {
+			
+			DataModel.getInstance().slicePreview = false;
+			videoData.visible = false;
+			requestInfo.visible = false;
+			
+			languageSelector.languageComboBox.selectedIndex=0;
+			difficultySelector.difficultyLevelComboBox.selectedIndex=0;
+			
+			videoTitle.removeEventListener(Event.CHANGE, validateForm);
+			videoDescription.removeEventListener(Event.CHANGE, validateForm);
+			videoTags.removeEventListener(Event.CHANGE, validateForm);
+				
+			titleValidator.enabled = false;
+			descriptionValidator.enabled = false;
+			tagValidator.enabled = false;
+				
+			videoTitle.text="";
+			videoDescription.text="";
+			videoTags.text="";
+			videoTitle.addEventListener(Event.CHANGE, validateForm);
+			videoDescription.addEventListener(Event.CHANGE, validateForm);
+			videoTags.addEventListener(Event.CHANGE, validateForm);
+				
+			titleValidator.enabled = true;
+			descriptionValidator.enabled = true;
+			tagValidator.enabled = true;
+			
+		}
+		
+		private function saveSlice():void {
+			
+			DataModel.getInstance().tempExercise.name = DataModel.getInstance().tempVideoSlice.name;
+			DataModel.getInstance().tempExercise.title = videoTitle.text;
+			DataModel.getInstance().tempExercise.description = videoDescription.text;
+			DataModel.getInstance().tempExercise.tags = parseTags(videoTags.text);
+			DataModel.getInstance().tempExercise.avgDifficulty = difficultySelector.difficultyLevelComboBox.selectedIndex;
+			DataModel.getInstance().tempExercise.language = languageSelector.languageComboBox.selectedLabel;
+			DataModel.getInstance().tempExercise.source = "Youtube";
+			DataModel.getInstance().tempExercise.userId = DataModel.getInstance().loggedUser.id;
+			//DataModel.getInstance().tempExercise.userId = 1;
+			DataModel.getInstance().tempExercise.license = "cc-by";
+			DataModel.getInstance().tempExercise.reference = "http://www.youtube.com";
+			DataModel.getInstance().tempExercise.status = "Unsliced";
+			
+			new VideoSliceEvent(VideoSliceEvent.CREATE_SLICE).dispatch();
+			infoMessage.visible = true;
+		}
+		
+		
+		
+	]]>
+</mx:Script>
+
+<mx:Binding source="{DataModel.getInstance().retrieveVideoComplete}"
+			destination="this.onRetrieveVideoComplete"/>
+<mx:Binding source="{DataModel.getInstance().retrieveUserVideoComplete}"
+			destination="this.onRetrieveUserVideoComplete"/>
+<mx:Binding source="{DataModel.getInstance().slicePreview}"
+			destination="this.onSlicePreviewComplete"/>
+<mx:Binding source="{DataModel.getInstance().sliceComplete}"
+			destination="this.onSliceCreationComplete"/>
+
+	<mx:Label text="{resourceManager.getString('myResources','URLSEARCH')}"
+			  fontSize="12"
+			  fontWeight="bold"/>	
+	<mx:HBox>
+		<mx:TextInput width="200" id="sliceSearch"/>
+		<mx:Button label="{resourceManager.getString('myResources','SEARCH')}" click="identifySearchType()"/>									
+	</mx:HBox>
+	<mx:HBox>	
+		<mx:HBox width="70%">
+			<videoSlice:AS3Player id="VP" visible="false"/>
+		</mx:HBox>
+		<mx:Spacer width="25"/>		
+		<mx:HBox width="30%">
+			<mx:VBox>
+			<mx:Text id="requestInfo"
+					  visible="false"
+					  text="{resourceManager.getString('myResources','SLICEREQUEST_TEXT')}"
+					  fontSize="11"
+					  width="100%"/>					  
+			<mx:Form id="videoData"
+				 	 width="100%"
+				 	 borderStyle="solid"
+				 	 borderThickness="2"
+				 	 visible="false">
+				<mx:FormItem label="{resourceManager.getString('myResources','TITLE')}"
+							 width="100%"
+							 fontWeight="bold"
+							 required="true">
+					<mx:TextInput width="100%"
+								  id="videoTitle"
+								  fontWeight="normal"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','DESCRIPTION')}"
+							 width="100%"
+							 fontWeight="bold"
+							 required="true">
+					<mx:TextArea width="100%"
+								 id="videoDescription"
+								 fontWeight="normal"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','TAGS')}"
+							 width="100%"
+							 fontWeight="bold"
+							 toolTip="Comma separated words"
+							 required="true">
+					<mx:TextArea width="100%"
+								 id="videoTags"
+								 fontWeight="normal"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','DIFFICULTY_LEVEL')}"
+							 fontWeight="bold"
+							 required="true">
+					<common:DifficultyLevelComboBox id="difficultySelector"/>
+				</mx:FormItem>
+				<mx:FormItem label="{resourceManager.getString('myResources','LANGUAGE')}"
+							 fontWeight="bold"
+							 required="true">
+					<common:LanguageComboBox id="languageSelector"/>
+				</mx:FormItem>
+				<mx:Spacer height="20"/>
+				<mx:ControlBar horizontalAlign="center"
+								   verticalAlign="middle"
+								   width="100%">
+				<mx:Button id="btnCancel"
+								   toolTip="{resourceManager.getString('myResources','CANCEL_UPLOAD')}"
+								   icon="@Embed(source='../../resources/images/cancel.png')"
+								   width="26"
+								   click="cancelSlice()"/>
+				<mx:Button label="{resourceManager.getString('myResources','UPLOAD')}"
+								   toolTip="{resourceManager.getString('myResources','UPLOAD_FILES')}"
+								   id="btnUpload"
+								   click="saveSlice()"
+								   enabled="{formIsValid}"
+								   icon="@Embed(source='../../resources/images/bullet_go.png')"/>
+				</mx:ControlBar>
+				<mx:Label   id="infoMessage"
+							text="{resourceManager.getString('myResources','SLICEPROGRESS_TEXT')}"
+			  				fontWeight="bold"
+			  			  	visible="false"/>				   			
+			</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:StringValidator id="titleValidator"
+						source="{videoTitle}"
+						property="text"
+						minLength="3"
+						maxLength="80"/>
+	<mx:StringValidator id="descriptionValidator"
+						source="{videoDescription}"
+						property="text"
+						minLength="3"
+						maxLength="512"/>
+	<mx:StringValidator id="tagValidator"
+						source="{videoTags}"
+						property="text"
+						minLength="3"
+						maxLength="255"/>
+</mx:Panel> 
+	

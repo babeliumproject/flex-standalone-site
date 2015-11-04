@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="100%"
+		  implements="modules.IModuleInterface" 
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)">
+	
+	<s:VGroup width="100%" horizontalAlign="center" paddingTop="32">
+		<s:Label text="404" fontSize="140" fontWeight="bold"/>
+		<s:Label styleName="h3"
+				 text="Sorry, the page you tried cannot be found."/>
+	</s:VGroup>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLChangeEvent;
+			import control.URLManager;
+			
+			import model.DataModel;
+
+			import mx.events.FlexEvent;
+			
+			public var modulename:String = 'error';
+			
+			//private var _urlmanager:URLManager=URLManager.getInstance();
+			
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{	
+				//_moduleController = new SubtitleController();	
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				//if(_urlmanager) _urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				//_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				resetViews();
+			}
+			
+			public function resetViews():void{
+				
+			}
+			
+			/*
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				actionIndex();
+			}
+			
+			public function actionIndex():void{
+				//Do nothing
+			}
+			*/
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				//_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				//onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				this.visible=true;
+			}
+		]]>
+	</fx:Script>
+	
+	
+</s:Module>

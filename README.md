@@ -4,7 +4,7 @@ This repository is the code for [Babelium's][] main site.
 
 Here you will find the latest version of the Babelium site.
 
-The site is currently available in 5 languages: English, Spanish, Basque, German and French.
+The site is currently available in 4 languages: English, Spanish, Basque and French.
 
 Cloning the repository
 ----------------------
@@ -24,8 +24,8 @@ Deploying on linux-based machine
 * PHP 5.2+
 * ant
 * file
-* Sox 14.3.2+
-* Adobe Flash Player 11.1+
+* sox
+* Adobe Flash Player 11.0+
 * Zend Framework 1.12 (with Zend AMF)
 * Adobe Flex SDK 4.6+
 * ffmpeg 0.8+

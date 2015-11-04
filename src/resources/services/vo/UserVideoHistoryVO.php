@@ -11,7 +11,7 @@ class UserVideoHistoryVO{
 	public $incidenceDate;
 	public $subtitlesAreUsed;
 	public $subtitleId;
-	public $exerciseRoleId;
+	public $exerciseRoleName;
 	
 	public $_explicitType="UserVideoHistoryVO";
 }

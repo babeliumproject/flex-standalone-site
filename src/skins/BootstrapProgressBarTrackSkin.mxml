@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+			 xmlns:s="library://ns.adobe.com/flex/spark"
+			 minHeight="9">
+
+	<fx:Script>
+		/**
+		 * @private
+		 */
+		override protected function initializationComplete():void
+		{
+			useChromeColor=true;
+			super.initializationComplete();
+		}
+	</fx:Script>
+
+	<!-- layer 3: fill -->
+	<s:Rect left="1"
+			right="1"
+			top="1"
+			bottom="1"
+			radiusX="4">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0xebebeb"
+								 alpha="1"/>
+				<s:GradientEntry color="0xf5f5f5"
+								 alpha="1"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+
+	<s:RectangularDropShadow id="hldownstroke"
+							 left="1"
+							 right="1"
+							 top="1"
+							 blurX="5"
+							 blurY="5"
+							 alpha="0.0980392"
+							 distance="2"
+							 angle="90"
+							 color="0x000000"
+							 tlRadius="4"
+							 trRadius="4"/>	
+
+</s:SparkSkin>

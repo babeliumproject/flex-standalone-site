@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+	 ADOBE SYSTEMS INCORPORATED
+	 Copyright 2008 Adobe Systems Incorporated
+	 All Rights Reserved.
+
+	 NOTICE: Adobe permits you to use, modify, and distribute this file
+	 in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for the Spark Button component.
+
+	 @see spark.components.Button
+
+	 @langversion 3.0
+	 @playerversion Flash 10
+	 @playerversion AIR 1.5
+	 @productversion Flex 4
+-->
+<skins:StylableSparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+							   xmlns:s="library://ns.adobe.com/flex/spark"
+							   xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+							   xmlns:skins="skins.*"
+							   minWidth="21"
+							   minHeight="32"
+							   alpha.disabled="0.5">
+	<fx:Metadata>[HostComponent("skins.StylableButton")]</fx:Metadata>
+
+	<!-- host component -->
+	<fx:Script fb:purpose="styling">
+		<![CDATA[
+			/* Define the skin elements that should not be colorized.
+			 For button, the graphics are colorized but the label is not. */
+			static private const exclusions:Array=["labelDisplay"];
+
+			[Bindable]
+			private var backgroundColor:uint=0xffffff;
+			[Bindable]
+			private var backgroundColor_hover:uint=0xe6e6e6;
+			[Bindable]
+			private var backgroundColor_active:uint=borderColor_hover;
+
+			[Bindable]
+			private var borderColor:uint=0xcccccc;
+			[Bindable]
+			private var borderColor_hover:uint=0xadadad;
+			[Bindable]
+			private var borderColor_active:uint=borderColor_hover;
+
+			[Bindable]
+			private var textColor:uint=0x333333;
+			[Bindable]
+			private var textColor_hover:uint=textColor;
+			[Bindable]
+			private var textColor_active:uint=textColor;
+
+			[Bindable]
+			private var backgroundAlpha:Number=1.0;
+
+			[Bindable]
+			private var borderAlpha:Number=1.0;
+
+			[Bindable]
+			private var textDecoration:String='none';
+			[Bindable]
+			private var textDecoration_hover:String='none';
+			[Bindable]
+			private var textDecoration_active:String='none';
+
+			private var cornerRadius:Number=4;
+
+			/**
+			 * @private
+			 */
+			override public function get colorizeExclusions():Array
+			{
+				return exclusions;
+			}
+
+			/**
+			 * @private
+			 */
+			override protected function initializationComplete():void
+			{
+				useChromeColor=true;
+				super.initializationComplete();
+			}
+
+			/**
+			 *  @private
+			 */
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				var ts1:uint=getStyle('bgrColor');
+				if (ts1)
+					backgroundColor=ts1;
+				var ts2:uint=getStyle('bgrColorOver');
+				if (ts2)
+					backgroundColor_hover=ts2;
+				var ts3:uint=getStyle('bgrColorDown');
+				if (ts3)
+					backgroundColor_active=ts3;
+
+				var ts4:uint=getStyle('bColor');
+				if (ts4)
+					borderColor=ts4;
+				var ts5:uint=getStyle('bColorOver');
+				if (ts5)
+					borderColor_hover=ts5;
+				var ts6:uint=getStyle('bColorDown');
+				if (ts6)
+					borderColor_active=ts6;
+
+				var ts7:uint=getStyle('tColor');
+				if (ts7)
+					textColor=ts7;
+				var ts8:uint=getStyle('tColorOver');
+				if (ts8)
+					textColor_hover=ts8;
+				var ts9:uint=getStyle('tColorDown');
+				if (ts9)
+					textColor_active=ts9;
+				var ts10:Number=getStyle('bgrAlpha');
+				if (!isNaN(ts10))
+					backgroundAlpha=ts10;
+				var ts11:Number=getStyle('bAlpha');
+				if (!isNaN(ts11))
+					borderAlpha=ts11;
+				var ts12:String=getStyle('tDecoration');
+				if (ts12)
+					textDecoration=ts12;
+				var ts13:String=getStyle('tDecorationOver');
+				if (ts13)
+					textDecoration_hover=ts13;
+				var ts14:String=getStyle('tDecorationDown');
+				if (ts14)
+					textDecoration_active=ts14;
+
+				var cr:Number=getStyle("cornerRadius");
+
+				if (cr && (cornerRadius != cr))
+				{
+					cornerRadius=cr;
+					fill.radiusX=cornerRadius;
+					border.radiusX=cornerRadius;
+					if (hldownstroke)
+					{
+						hldownstroke.tlRadius=cornerRadius;
+						hldownstroke.trRadius=cornerRadius;
+					}
+				}
+
+				if (backgroundAlpha == 0 && hldownstroke)
+				{
+					hldownstroke.alpha=0;
+				}
+
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+		]]>
+	</fx:Script>
+
+	<!-- states -->
+	<skins:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</skins:states>
+
+	<!--
+	<s:Rect id="outline"
+			left="-1"
+			right="-1"
+			top="-1"
+			bottom="-1"
+			radiusX="4"
+			includeIn="down">
+		<s:fill>
+			<s:SolidColor color="0xadadad"/>
+		</s:fill>
+	</s:Rect>
+	-->
+
+	<!-- layer 2: fill -->
+	<!--- @private -->
+	<s:Rect id="fill"
+			left="1"
+			right="1"
+			top="1"
+			bottom="1"
+			radiusX="4"
+			alpha="{backgroundAlpha}">
+		<s:fill>
+			<s:SolidColor color="{backgroundColor}"
+						  color.over="{backgroundColor_hover}"
+						  color.down="{backgroundColor_active}"
+						  alpha="{backgroundAlpha}"/>
+		</s:fill>
+	</s:Rect>
+
+	<!-- layer 7: border - put on top of the fill so it doesn't disappear when scale is less than 1 -->
+	<!--- @private -->
+	<s:Rect id="border"
+			left="0"
+			right="0"
+			top="0"
+			bottom="0"
+			radiusX="4"
+			alpha="{borderAlpha}">
+		<s:stroke>
+			<s:SolidColorStroke weight="1"
+								color="{borderColor}"
+								color.over="{borderColor_hover}"
+								color.down="{borderColor_active}"
+								alpha="{borderAlpha}"/>
+		</s:stroke>
+	</s:Rect>
+
+	<s:RectangularDropShadow id="hldownstroke"
+							 left="0"
+							 right="0"
+							 top="0"
+							 includeIn="down"
+							 blurX="5"
+							 blurY="5"
+							 alpha="0.125"
+							 distance="4"
+							 angle="90"
+							 color="0x000000"
+							 tlRadius="4"
+							 trRadius="4"/>
+	<!--
+	<s:Graphic id="iconGraphic" left="12" top="8" bottom="8" width="16" height="16" includeInLayout="false">
+		<s:Path id="iconData" data="{getStyle('icon')}" verticalCenter="1">
+			<s:fill>
+				<s:SolidColor color="{textColor}"
+							  color.over="{textColor_hover}"
+							  color.down="{textColor_active}"/>
+			</s:fill>
+		</s:Path>
+	</s:Graphic>
+	-->
+	<s:Label id="labelDisplay"
+			 textAlign="justify"
+			 verticalAlign="middle"
+			 horizontalCenter="0"
+			 verticalCenter="1"
+			 left="12"
+			 right="12"
+			 top="6"
+			 bottom="6"
+			 color="{textColor}"
+			 color.over="{textColor_hover}"
+			 color.down="{textColor_active}"
+			 textDecoration.up="{textDecoration}"
+			 textDecoration.over="{textDecoration_hover}"
+			 textDecoration.down="{textDecoration_active}">
+	</s:Label>
+</skins:StylableSparkButtonSkin>

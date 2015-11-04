@@ -44,7 +44,7 @@ class Search {
 	/**
 	 * These fields won't be included in the search queries
 	 */
-	private $unindexedFields = array('source', 'name','thumbnailUri', 'addingDate', 'duration');
+	private $unindexedFields = array('difficulty','fk_user_id','status','visible','fk_scope_id','timecreated','timemodified','likes','dislikes','type','situation','competence','lingaspects');
 
 	/**
 	 * Constructor function
@@ -92,69 +92,44 @@ class Search {
 	public function launchSearch($search) {
 		//Return empty array if empty query
 		if($search == '')
-			return;
+			return;     
 
 		//Opens the index
 		$this->initialize();
 
-		//To recognize numerics
-		//Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
+		//The same token analyzer should be used both when searching and/or creating the document index
+		Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
 		//Remove the limitations of fuzzy and wildcard searches
 		Zend_Search_Lucene_Search_Query_Wildcard::setMinPrefixLength(0);
 		Zend_Search_Lucene_Search_Query_Fuzzy::setDefaultPrefixLength(0);
-
-			
-		$finalSearch=$this->fuzzySearch($search);
-		$query = Zend_Search_Lucene_Search_QueryParser::parse($finalSearch);
-			
-		//We do the search and send it
-		try {
+    
+        //The locale must be explicitly set so that iconv('UTF-8','ASCII//TRANSLIT, $str) does not
+        //fail to translit characters to their ASCII counterparts.
+	    setLocale(LC_CTYPE,'en_US.utf8');	
+		
+        $query = Zend_Search_Lucene_Search_QueryParser::parse($search,"UTF-8");
+		
+        try {
 			//$hits can't be returned directly as is, because it's an array of Zend_Search_Lucene_Search_QueryHit
 			//which has far more properties than those the client needs to know
 			$hits = $this->index->find($query);
-			//Ensure the fields are stored with the exact names you want them to be returned otherways this won't work
+			//Ensure the fields are stored with the exact names you want them to be returned otherwise this won't work
 			$fields = $this->index->getFieldNames();
 			$searchResults = array();
 			foreach($hits as $hit){
-				$searchResult = new stdClass();
 				foreach($fields as $field){
-					if($field == "exerciseId"){
-						$searchResult->id = $hit->$field;
-					} else {
-						$searchResult->$field = $hit->$field;
+					if($field == "exerciseid"){
+						array_push($searchResults, $hit->$field);
+						break;
 					}
-					if($field == "descriptors")
-						$searchResult->descriptors = $this->parseHitDescriptors($hit->$field);
 				}
-				array_push($searchResults,$searchResult);
 			}
-			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			return $searchResults;
 		}
 		catch (Zend_Search_Lucene_Exception $ex) {
 			throw new Exception($ex->getMessage());
 		}
-	}
-	
-	private function parseHitDescriptors($descriptors){
-		$dlist = array();
-		if($descriptors)
-			$dlist = explode("\n",$descriptors);
-		
-		if(count($dlist)){
-			$dlistformatted = array();
-			$pattern = "/D\d_\d_\d{2}_\d/"; //D1_3_01_1
-			foreach($dlist as $d){
-				if(preg_match($pattern,$d,$matches)){
-					$dlistformatted[] = $matches[1];
-				}
-			}
-			unset($d);
-			if(count($dlistformatted))
-				$dlist = $dlistformatted;
-		}
-		
-		return $dlist;
 	}
 
 	/**
@@ -241,29 +216,8 @@ class Search {
 	 */
 	public function createIndex() {
 		//Query for the index
-		$sql = "SELECT e.id as exerciseId, 
-					   e.title, 
-					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri, 
-					   e.adding_date as addingDate,
-		               e.duration, 
-		               u.username as userName, 
-		               avg (suggested_level) as avgDifficulty, 
-		               e.status, 
-		               license, 
-		               reference, 
-		               a.complete as isSubtitled
-				FROM exercise e 
-					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available'
-				GROUP BY e.id";
+		$sql = "SELECT id as exerciseid, exercisecode, title, description, language
+				FROM exercise WHERE status=1 AND visible=1";
 		$result = $this->conn->_multipleSelect ( $sql );
 		if($result){
 			//Create the index
@@ -273,14 +227,13 @@ class Search {
 			Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 
 			foreach ( $result as $line ) {
+				$tags = $this->getExerciseTags($line->exerciseid);
+				$descriptors = $this->getExerciseDescriptors($line->exerciseid);//,$line->language);
+			    
+                $line->description = html_entity_decode(strip_tags($line->description), ENT_QUOTES | ENT_HTML5); //Remove html markup	
+				$line->tags = $tags ? implode("\n",$tags): '';
+				$line->descriptors = $descriptors ? implode("\n",$descriptors) : '';
 				
-				$lineAvgScore = $this->getExerciseAvgBayesianScore($line->exerciseId);
-				$line->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
-				$descriptors = $this->getExerciseDescriptors($line->exerciseId,$line->language);
-				if($descriptors)
-					$line->descriptors = implode("\n",$descriptors);
-				else
-					$line->descriptors = '';
 				$this->addDoc($line,$this->unindexedFields);
 			}
 			$this->index->commit();
@@ -289,78 +242,78 @@ class Search {
 	}
 	
 	/**
-	 *	Adds a new document entry (exercise data set) to the already existing search index file
-	 *
-	 *	@param int $idDB
-	 *		An exercise identifier to query the database for exercise data.
+	 *	Add (or update existing) search document entry for an exercise
+	 *	@param int $exercise
+	 *		An exercise identifier of an exercise that is available
 	 */
-	public function addDocumentIndex($idDB){
-
-		//Query for the index
-		$sql = "SELECT e.id as exerciseId, 
-					   e.title, 
-					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri, 
-					   e.adding_date as addingDate,
-		               e.duration, 
-		               u.username as userName, 
-		               avg (suggested_level) as avgDifficulty, 
-		               e.status, 
-		               license, 
-		               reference, 
-		               a.complete as isSubtitled
-				FROM exercise e 
-					 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       				 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			WHERE e.status = 'Available' AND e.id=%d);
-				GROUP BY e.id";
-		$result = $this->conn->_singleSelect ( $sql, $idDB );
-
-		//We expect only one record to match this query
-		if($result){
-			//Loads the lucene indexation file
-			$this->initialize();
+	public function addDocumentIndex($exerciseid){
+		try {
+			$verifySession = new SessionValidation(true);
 			
-			$lineAvgScore = $this->getExerciseAvgBayesianScore($result->id);
-			$result->avgRating = $lineAvgScore ? $lineAvgScore->avgScore : 0;
-			$descriptors = $this->getExerciseDescriptors($result->exerciseId,$result->language);
-			if($descriptors)
-				$result->descriptors = implode(', ',$descriptors);
-			else
-				$result->descriptors = '';
+			$userid=$_SESSION['uid'];
 			
-			$this->addDoc($result,$this->unindexedFields);
+			$sql = "SELECT id as exerciseid, exercisecode, title, description, language, status, visible
+					FROM exercise WHERE id=%d AND fk_user_id=%d";
+			$exercisedata = $this->conn->_singleSelect ($sql,$exerciseid,$userid);
+			
+			if($exercisedata){
+				//Lucene doesn't support Document update, it must be deleted and added afterwards
+				$this->delDoc($exerciseid);
+				
+				if($exercisedata->status==1 && $exercisedata->visible==1){
+					$this->initialize();
+							
+					$tags = $this->getExerciseTags($exercisedata->exerciseid);
+					$descriptors = $this->getExerciseDescriptors($exercisedata->exerciseid);
+						
+					$exercisedata->description = html_entity_decode(strip_tags($exercisedata->description), ENT_QUOTES | ENT_HTML5); //Remove html markup	
+					$exercisedata->tags = $tags ? implode("\n",$tags): '';
+					$exercisedata->descriptors = $descriptors ? implode("\n",$descriptors) : '';
+				
+					$this->addDoc($exercisedata,$this->unindexedFields);
+					$this->index->commit();
+					$this->index->optimize();
+				}
+			}
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
+		}
+	}
+	
+	public function deleteDocumentIndex($exerciseid){
+		try {
+			$verifySession = new SessionValidation(true);	
+			$userid=$_SESSION['uid'];
+			
+			$sql = "SELECT e.id as exerciseId FROM exercise e WHERE e.id=%d AND e.fk_user_id=%d";
+			$exercisedata = $this->conn->_singleSelect ($sql,$exerciseid,$userid);
+			if($exercisedata){
+				//Lucene doesn't support Document update, it must be deleted and added afterwards
+				$this->delDoc($exerciseid);
+			}
 			$this->index->commit();
 			$this->index->optimize();
+		} catch (Exception $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
 		}
-
 	}
 
 	/**
 	 * Delete a document entry (exercise data set) from an already existing search index file
 	 * 
-	 * @param int $idDB
+	 * @param int $exerciseid
 	 * 		The search index identifier (and also exercise identifier) that's going to be removed from the index file
 	 */
-	public function deleteDocumentIndex($idDB){
-		//Opens the index
+	private function delDoc($exerciseid){
+		//Load the lucene index file
 		$this->initialize();
-		//Retrieving and deleting document
-		$term = new Zend_Search_Lucene_Index_Term($idDB, 'idEx');
-		$docIds  = $this->index->termDocs($term);
-		foreach ($docIds as $id) {
-			//$doc = $this->index->getDocument($id);
-			//$this->index->delete($doc->id);
-			$this->index->delete($id);
+		$term = new Zend_Search_Lucene_Index_Term($exerciseid, 'exerciseid');
+		$documentids = $this->index->termDocs($term);
+		if($documentids){
+			foreach ($documentids as $id) {
+				$this->index->delete($id);
+			}
 		}
-		$this->index->commit();
-		$this->index->optimize();
 	}
 
 	/**
@@ -372,38 +325,49 @@ class Search {
 	 * 		The fields thath won't be used to build the searchable item index
 	 */
 	private function addDoc($documentData, $unindexedFields){
-		
 		$doc = new Zend_Search_Lucene_Document();
 		foreach($documentData as $key => $value){
 			if(in_array($key,$unindexedFields)){
-				$doc->addField(Zend_Search_Lucene_Field::UnIndexed($key, $value, 'utf-8'));
-			} else {
-				$doc->addField(Zend_Search_Lucene_Field::Text($key, $value, 'utf-8'));
+                //$doc->addField(Zend_Search_Lucene_Field::UnIndexed($key, $value, "UTF-8"));
+			} elseif($key == "exerciseid"){
+                $doc->addField(Zend_Search_Lucene_Field::Keyword($key, $value, "UTF-8")); 
+            } else {
+				$doc->addField(Zend_Search_Lucene_Field::UnStored($key, $value, "UTF-8"));
 			}
 		}
+        
 		$this->index->addDocument($doc);
 	}
 	
 	
 	/**
-	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
+	 * Returns the descriptors of the provided exercise (if any)
 	 * @param int $exerciseId
 	 * 		The exercise id to check for descriptors
 	 * @return mixed $dcodes
 	 * 		An array of descriptor data. False when the exercise has no descriptors at all.
 	 */
-	private function getExerciseDescriptors($exerciseId,$exerciseLanguage){
+	private function getExerciseDescriptors($exerciseId,$exerciseLanguage=null){
 		if(!$exerciseId)
 			return false;
 		$dcodes = false;
 		$sql = "SELECT ed.*, ed18n.name
-				FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
-     			     INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
-				WHERE (red.fk_exercise_id=%d AND ed18n.locale='%s')";
-		$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
+				FROM rel_exercise_descriptor red 
+				INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id
+				INNER JOIN exercise_descriptor_i18n ed18n ON ed.id=ed18n.fk_exercise_descriptor_id
+				WHERE red.fk_exercise_id=%d";
+		
+		if($exerciseLanguage){
+			$sql .= " AND ed18n.locale='%s'";
+			$results = $this->conn->_multipleSelect($sql,$exerciseId,$exerciseLanguage);
+		} else {
+			$results = $this->conn->_multipleSelect($sql,$exerciseId);
+		}
+		
 		if($results){
 			$dcodes = array();
 			foreach($results as $result){
+				
 				$dcode = sprintf("D%d_%d_%02d_%d %s", $result->situation, $result->level, $result->competence, $result->number, $result->name);
 				$dcodes[] = $dcode;
 			}
@@ -412,38 +376,12 @@ class Search {
 		return $dcodes;
 	}
 	
-	
-	/**
-	 * The average score is not accurate information in statistical terms, so we use a weighted value
-	 * @param int $exerciseId
-	 */
-	public function getExerciseAvgBayesianScore($exerciseId){
-		if(!isset($this->exerciseMinRatingCount)){
-			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
-			$result = $this->conn->_singleSelect($sql);
-			$this->exerciseMinRatingCount = $result ? $result->prefValue : 0;
-		}
-		
-		if(!isset($this->exerciseGlobalAvgRating)){
-			$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
-			$result = $this->conn->_singleSelect($sql);
-			$this->exerciseGlobalAvgRating = $result ? $result->globalAvgScore : 0;
-		}
-		
-		$sql = "SELECT e.id, avg (suggested_score) as avgScore, count(suggested_score) as scoreCount
-				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
-				WHERE (e.id = %d ) GROUP BY e.id";
-		if($result = $this->conn->_singleSelect($sql,$exerciseId)){
-			$exerciseAvgRating = $result->avgScore ? $result->avgScore : 0;
-			$exerciseRatingCount = $result->scoreCount ? $result->scoreCount : 1;
-			$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
-								   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
-			$result->avgScore = $exerciseBayesianAvg;
-		}
-		return $result;
-	}	
-	
-	
+	private function getExerciseTags($exerciseid){
+		require_once 'Exercise.php';
+		$e = new Exercise();
+		$results = $e->getExerciseTags($exerciseid);
+		return $results;
+	}
 }
 
 ?>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  horizontalAlign="center"
+		  width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+
+			protected function homeButtons_clickHandler(event:MouseEvent, fragment:String):void
+			{
+				URLManager.getInstance().redirect(fragment);
+			}
+			
+			public function resetComponent():void{
+				
+			}
+			
+			public function dispose():void{
+				if(homeUploadButton)
+					homeUploadButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
+				if(homeSubtitleButton)
+					homeSubtitleButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
+				if(homePracticeButton)
+					homePracticeButton.removeEventListener(MouseEvent.CLICK,homeButtons_clickHandler);
+			}
+		]]>
+	</fx:Script>
+
+	<mx:Text htmlText="{resourceManager.getString('myResources','HOME_LOGGED_IN_STATIC_MESSAGE')}"
+			 width="500"/>
+	<s:BorderContainer cornerRadius="6"
+					   borderColor="#ffffff">
+		<s:backgroundFill>
+			<mx:LinearGradient rotation="90">
+				<mx:entries>
+					<mx:GradientEntry color="#ffffff"
+									  ratio="0.5"
+									  alpha="0.9"/>
+					<mx:GradientEntry color="#999999"
+									  ratio="1.0"
+									  alpha="0.9"/>
+				</mx:entries>
+			</mx:LinearGradient>
+		</s:backgroundFill>
+		<s:layout>
+			<s:HorizontalLayout paddingBottom="16"
+								paddingLeft="16"
+								paddingRight="16"
+								paddingTop="16"/>
+		</s:layout>
+
+		<skins:IconButton id="homeUploadButton"
+						  styleName="homeUploadButton"
+						  label="{resourceManager.getString('myResources','CREATE')}"
+						  click="homeButtons_clickHandler(event, '/create')"/>
+		<skins:IconButton id="homeSubtitleButton"
+						  styleName="homeSubtitleButton"
+						  label="{resourceManager.getString('myResources','EVALUATIONS')}"
+						  click="homeButtons_clickHandler(event, '/assessments/pending')"/>
+		<skins:IconButton id="homePracticeButton"
+						  styleName="homePracticeButton"
+						  label="{resourceManager.getString('myResources','EXERCISES')}"
+						  click="homeButtons_clickHandler(event, '/exercises')"/>
+
+	</s:BorderContainer>
+
+</s:HGroup>

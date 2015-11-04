@@ -35,23 +35,16 @@
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="Subtitle"/>
-
-		<!--
-		<mx:RemoteObject id="rolRO"
+		
+		<mx:RemoteObject id="courseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
-						 source="ExerciseRole"/>
-		-->
+						 source="Course"/>
 		
 		<mx:RemoteObject id="exerciseRO"
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="Exercise"/>
-
-		<mx:RemoteObject id="searchRO"
-						 destination="babeliumService"
-						 showBusyCursor="true"
-						 source="Search"/>
 
 		<mx:RemoteObject id="youtubeRO"
 						 destination="babeliumService"
@@ -82,6 +75,11 @@
 						 destination="babeliumService"
 						 showBusyCursor="true"
 						 source="Home"/>
+		
+		<mx:RemoteObject id="createRO"
+						 destination="babeliumService"
+						 showBusyCursor="true"
+						 source="Create"/>
 
 	</fx:Declarations>
 

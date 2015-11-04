@@ -4,66 +4,50 @@ package model
 	
 	import com.adobe.cairngorm.model.IModelLocator;
 	
+	import components.autoevaluation.Evaluation;
+	import components.main.Body;
+	import components.main.LoginPopup;
+	import components.main.LoginRestorePassForm;
+	import components.userManagement.KeepAliveTimer;
+	
 	import flash.media.Camera;
 	import flash.media.Microphone;
 	import flash.net.FileReference;
 	import flash.net.NetConnection;
 	import flash.utils.Dictionary;
 	
-	import modules.autoevaluation.Evaluation;
-	import modules.main.Body;
-	import modules.userManagement.KeepAliveTimer;
-	import modules.userManagement.LoginRestorePassForm;
-	
 	import mx.collections.ArrayCollection;
+	import mx.utils.ObjectProxy;
 	
 	import vo.CreditHistoryVO;
 	import vo.ExerciseVO;
 	import vo.UserVO;
 	import vo.VideoSliceVO;
 
-	public class DataModel implements IModelLocator
+	dynamic public class DataModel implements IModelLocator
 	{
 		//This solution for singleton implementation was found in
 		//http://life.neophi.com/danielr/2006/10/singleton_pattern_in_as3.html		
 		public static var instance:DataModel=new DataModel();
+		
+		public static const SOURCE_LOCALE:String='en_US';
 
 		public var appBody:Body;
 
 		public var localesAndFlags:LocalesAndFlags;
 
-		public static const SUBTITLE_MODULE:int=0;
+		public static const SUBMODULE:int=0;
 		public static const RECORDING_MODULE:int=1;
 		public static const GAPS_TO_ABORT_RECORDING:int=3;
 
 		public static const PURPOSE_EVALUATE:String='evaluate';
 		public static const PURPOSE_PRACTICE:String='practice';
 		
-		/**
-		 * RTMP: The "plain" variant of the protocol that uses TCP port 1935 by default
-		 */
-		public static const RTMP:String = "rtmp";
 		
-		/**
-		 * RTMPT (Tunnelized RTMP): Encapsulates the protocol's messages into HTTP requests to traverse firewalls. 
-		 * Often used to send messages in the clear over TCP to ports 80 and 443. The encapsulated session can contain RTMP, RTMPS or RTMPE packets within.
-		 */
-		public static const RTMPT:String = "rtmpt";
+		[Bindable]
+		public var levels:ArrayCollection = new ArrayCollection([{'level':1,'label':'A1'}, {'level':2,'label':'A2'}, {'level':3,'label':'B1'}, {'level':4,'label':'B2'}, {'level':5,'label':'C1'}]);	
 		
-		/**
-		 * RTMPS (Secure RTMP): Is RTMP over a secure SSL connection using HTTPS
-		 */
-		public static const RTMPS:String = "rtmps";
 		
-		/**
-		 * RTMPE (Encrypted RTMP): Is RTMP encrypted using Adobe's own security mechanism. 
-		 * While the details of the implementation are proprietary, the mechanism uses industry standard cryptography primitive.
-		 */
-		public static const RTMPE:String = "rtmpe";
-		
-		public static const RTMP_PORT:uint=1935;
-		public static const RTMPT_PORT:uint=80;
-
 		//NetConnection management variables
 		[Bindable]
 		public var netConnectionDelegate:NetConnectionDelegate;
@@ -75,29 +59,6 @@ package model
 		public var netConnectOngoingAttempt:Boolean;
 		
 		public var bandwidthInfo:Object;
-
-		//ViewStack management variables
-		[Bindable]
-		public var currentContentViewStackIndex:int=-1;
-		[Bindable]
-		public var currentHomeViewStackIndex:uint;
-		[Bindable]
-		public var currentConfigViewStackIndex:uint;
-		[Bindable]
-		public var currentExerciseViewStackIndex:uint;
-		[Bindable]
-		public var currentEvaluationViewStackIndex:uint;
-		[Bindable]
-		public var currentSubtitleViewStackIndex:uint;
-		[Bindable]
-		public var currentUploadViewStackIndex:uint;
-		[Bindable]
-		public var currentAccountViewStackIndex:uint;
-
-		[Bindable]
-		public var oldContentViewStackIndex:uint;
-		[Bindable]
-		public var newContentViewStackIndex:uint;
 
 		//Application preferences value pair
 		[Bindable]
@@ -131,21 +92,22 @@ package model
 		[Bindable]
 		public var activationEmailResentErrorMessage:String='';
 		[Bindable]
-		public var loginPop:LoginRestorePassForm;
+		public var loginPop:LoginPopup;
 		[Bindable]
 		public var passwordChanged:Boolean=false;
 		[Bindable]
 		public var userPreferredLanguagesModified:Boolean=false;
 		[Bindable]
 		public var userPersonalDataModified:Boolean=false;
+		
 		[Bindable]
 		public var userVideoListRetrieved:Boolean=false;
-		[Bindable]
-		public var userVideoList:ArrayCollection=new ArrayCollection();
+		public var userVideoList:ArrayCollection;
+		
 		[Bindable]
 		public var selectedVideosDeleted:Boolean=false;
 		[Bindable]
-		public var videoDataModified:Boolean=false;
+		public var exerciseDataModified:Boolean=false;
 
 		//Pass recovery
 		[Bindable]
@@ -178,21 +140,6 @@ package model
 		[Bindable]
 		public var subHistoricData:CreditHistoryVO=null;
 
-		//The info of the video searches
-		[Bindable]
-		public var tagCloud:ArrayCollection;
-		[Bindable]
-		public var tagCloudRetrieved:Boolean=false;
-		[Bindable]
-		public var tagCloudClicked:Boolean=false;
-		[Bindable]
-		public var languageChanged:Boolean=false;
-		[Bindable]
-		public var videoSearches:ArrayCollection;
-		[Bindable]
-		public var videoSearchesRetrieved:Boolean=false;
-		[Bindable]
-		public var searchField:String="";
 		[Bindable]
 		public var currentPage:int=1;
 		[Bindable]
@@ -201,15 +148,26 @@ package model
 		public var numberOfPagesNav:int=7; //This number must be odd and greater than three
 
 		//The info of the current video
+		
 		[Bindable]
-		public var currentExercise:ArrayCollection=new ArrayCollection(new Array(null, null));
+		public var watchExerciseDataRetrieved:Boolean;
+		public var watchExerciseData:Object;
 		[Bindable]
-		public var currentExerciseRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
-
+		public var watchExerciseSubtitlesRetrieved:Boolean;
+		public var watchExerciseSubtitles:Object;
+		
+		[Bindable]
+		public var recordMediaDataRetrieved:Boolean;
+		public var recordMediaData:Object;
+		
 		[Bindable]
 		public var availableExercises:ArrayCollection;
 		[Bindable]
 		public var availableRecordableExercises:ArrayCollection;
+		
+		[Bindable]
+		public var availableRecordableExercisesRetrieved:Boolean;
+		
 		[Bindable]
 		public var availableExercisesRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
 
@@ -232,45 +190,13 @@ package model
 		[Bindable]
 		public var server:String='babelium';
 		
-		public var streamingProtocol:String=RTMP;
-		public var streamingPort:uint=1935;
-		public var streamingApp:String='vod';
-		[Bindable] public var streamingResourcesPath:String=streamingProtocol+"://" + server + ":"+ streamingPort + "/" + streamingApp;
-	
-		[Bindable] public var evaluationStreamsFolder:String="evaluations";
-		[Bindable] public var responseStreamsFolder:String="responses";
-		[Bindable] public var exerciseStreamsFolder:String="exercises";
-		[Bindable] public var configStreamsFolder:String="config";
+
+		public var defaultNetConnectionUrl:String;
 
 		[Bindable]
 		public var uploadDomain:String="http://" + server + "/";
 		[Bindable]
 		public var uploadURL:String=uploadDomain + "upload.php";
-		[Bindable]
-		public var thumbURL:String=uploadDomain + "resources/images/thumbs";
-		[Bindalbe]
-		public var posterURL:String=uploadDomain + "resources/images/posters";
-
-		[Bindable]
-		public var uploadFileReference:FileReference=null;
-		[Bindable]
-		public var uploadFileSelected:Boolean=false;
-
-		[Bindable]
-		public var uploadProgressUpdated:Boolean=false;
-		[Bindable]
-		public var uploadBytesLoaded:int;
-		[Bindable]
-		public var uploadBytesTotal:int;
-		[Bindable]
-		public var uploadFinished:Boolean=false;
-		[Bindable]
-		public var uploadFinishedData:Boolean=false;
-		[Bindable]
-		public var uploadErrors:String='';
-		[Bindable]
-		public var uploadFileName:String='';
-
 
 		[Bindable]
 		public var newExerciseData:ExerciseVO=null;
@@ -332,90 +258,87 @@ package model
 
 		//Used to store exercise's roles added by the user  
 		[Bindable]
-		public var availableExerciseRoles:ArrayCollection=new ArrayCollection(new Array(null, null));
+		public var availableExerciseRoles:Object;
 		[Bindable]
-		public var availableExerciseRolesRetrieved:ArrayCollection=new ArrayCollection(new Array(false, false));
+		public var availableExerciseRolesRetrieved:Boolean;
 
 		//Used to store subtitle-lines and roles in the same DP
 		[Bindable]
-		public var availableSubtitles:ArrayCollection=new ArrayCollection();
-		[Bindable]
 		public var availableSubtitlesRetrieved:Boolean=false;
+		public var availableSubtitles:ArrayCollection;
+		public var subtitleMedia:Object;
+		
 		[Bindable]
 		public var availableSubtitleLinesRetrieved:Boolean=false;
-		[Bindable]
-		public var availableSubtitleLines:ArrayCollection=new ArrayCollection();
-		[Bindable]
-		public var unmodifiedAvailableSubtitleLines:ArrayCollection=new ArrayCollection();
+		public var availableSubtitleLines:ArrayCollection;
+		public var unmodifiedAvailableSubtitleLines:ArrayCollection;
 
 		//Evaluation module data
 		[Bindable]
 		public var evaluationChartData:ArrayCollection;
 		[Bindable]
 		public var evaluationChartDataRetrieved:Boolean=false;
+		
+		[Bindable]
+		public var submissionDataRetrieved:Boolean;
+		public var submissionData:Object;
 
-		[Bindable]
-		public var waitingForAssessmentCount:uint;
-		[Bindable]
-		public var waitingForAssessmentData:ArrayCollection;
+		
 		[Bindable]
 		public var waitingForAssessmentDataRetrieved:Boolean=false;
+		public var waitingForAssessmentCount:uint;
+		public var waitingForAssessmentData:ArrayCollection;
 
-		[Bindable]
-		public var assessedToCurrentUserCount:uint;
-		[Bindable]
-		public var assessedToCurrentUserData:ArrayCollection;
 		[Bindable]
 		public var assessedToCurrentUserDataRetrieved:Boolean=false;
-
-		[Bindable]
-		public var assessedByCurrentUserCount:uint;
-		[Bindable]
-		public var assessedByCurrentUserData:ArrayCollection;
+		public var assessedToCurrentUserCount:uint;
+		public var assessedToCurrentUserData:ArrayCollection;
+		
 		[Bindable]
 		public var assessedByCurrentUserDataRetrieved:Boolean=false;
+		public var assessedByCurrentUserCount:uint;
+		public var assessedByCurrentUserData:ArrayCollection;
 
 		[Bindable]
-		public var detailsOfAssessedResponseData:ArrayCollection;
+		public var userActivityDataRetrieved:Boolean;
+		public var userActivityData:Object;
+		
 		[Bindable]
-		public var detailsOfResponseAssessedToUserRetrieved:Boolean=false;
-		[Bindable]
-		public var detailsOfResponseAssessedByUserRetrieved:Boolean=false;
-
+		public var responseAssessmentDataRetrieved:Boolean=false;
+		public var responseAssessmentData:Object;
+	
 		[Bindable]
 		public var addAssessmentRetrieved:Boolean=false;
-
+		public var addAssessmentData:Object;
 
 		//Homepage module data
 		[Bindable]
 		public var messagesOfTheDayRetrieved:Boolean;
-		[Bindable]
-		public var messagesOfTheDayData:ArrayCollection=new ArrayCollection();
+		public var messagesOfTheDayData:ArrayCollection;
 
 		[Bindable]
 		public var userLatestReceivedAssessmentsRetrieved:Boolean;
-		[Bindable]
-		public var userLatestReceivedAssessments:ArrayCollection=new ArrayCollection();
+		public var userLatestReceivedAssessments:ArrayCollection;
+		
 		[Bindable]
 		public var userLatestDoneAssessmentsRetrieved:Boolean;
-		[Bindable]
-		public var userLatestDoneAssessments:ArrayCollection=new ArrayCollection();
-		[Bindable]
-		public var userLatestUploadedVideos:ArrayCollection=new ArrayCollection();
+		public var userLatestDoneAssessments:ArrayCollection;
+		
 		[Bindable]
 		public var userLatestUploadedVideosRetrieved:Boolean;
-		[Bindable]
-		public var signedInBestRatedVideos:ArrayCollection=new ArrayCollection();
+		public var userLatestUploadedVideos:ArrayCollection;
+		
 		[Bindable]
 		public var signedInBestRatedVideosRetrieved:Boolean;
-		[Bindable]
-		public var signedInLatestUploadedVideos:ArrayCollection=new ArrayCollection();
+		public var signedInBestRatedVideos:ArrayCollection;
+		
 		[Bindable]
 		public var signedInLatestUploadedVideosRetrieved:Boolean;
-		[Bindable]
-		public var unsignedBestRatedVideos:ArrayCollection=new ArrayCollection();
+		public var signedInLatestUploadedVideos:ArrayCollection;
+		
 		[Bindable]
 		public var unsignedBestRatedVideosRetrieved:Boolean;
+		public var unsignedBestRatedVideos:ArrayCollection;	
 
 		//Autoevaluation data
 		[Bindable]
@@ -432,14 +355,6 @@ package model
 
 		[Bindable]
 		public var enableAutoevalToExerciseError:String="";
-
-
-		// Flag for stoping video after tab change
-		[Bindable]
-		public var stopVideoFlag:Boolean=false;
-		// In order to avoid tab change if recording exercise
-		[Bindable]
-		public var recordingExercise:Boolean=false;
 
 
 		//Used by configuration module
@@ -488,6 +403,35 @@ package model
 		public var userReportedExercise:Boolean=false;
 		[Bindable]
 		public var userReportedExerciseFlag:Boolean=false;
+		
+		//Create module properties
+		[Bindable]
+		public var enabledCreateStepsChanged:Boolean;
+		public var enabledCreateSteps:Array;
+		
+		[Bindable]
+		public var exerciseDataRetrieved:Boolean;
+		public var exerciseData:ExerciseVO;
+		
+		[Bindable]
+		public var exerciseMediaRetrieved:Boolean;
+		public var exerciseMedia:ArrayCollection;
+		
+		[Bindable]
+		public var exercisePreviewRetrieved:Boolean;
+		public var exercisePreview:Object;
+		
+		[Bindable]
+		public var latestCreationsRetrieved:Boolean;
+		public var latestCreations:ArrayCollection;
+		
+		[Bindable]
+		public var defaultThumbnailModified:Boolean;
+		
+		//Course module properties
+		[Bindable]
+		public var courseListRetrieved:Boolean;
+		public var courseList:ArrayCollection;
 
 		public function DataModel()
 		{

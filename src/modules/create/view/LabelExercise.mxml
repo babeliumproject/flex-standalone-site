@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:common="view.common.*"
+		  xmlns:components="components.*"
+		  xmlns:view="modules.create.view.*" 
+		  width="100%"
+		  creationComplete="completeHandler(event)">
+
+	<s:BorderContainer id="labelExerciseContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
+
+		<s:Label id="editVideoTitle"
+				 text="{ResourceManager.getInstance().getString('myResources','LABEL_THE_EXERCISE')}"
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{labelExerciseContainer.getStyle('borderWeight')}"
+									alpha="{labelExerciseContainer.getStyle('borderAlpha')}"
+									color="{labelExerciseContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+		<s:Form width="100%">
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','TITLE')}"
+						width="100%"
+						required="true">
+				<s:TextInput width="100%"
+							 id="exerciseTitle"
+							 styleName="frm-input"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','DESCRIPTION')}"
+						width="100%"
+						required="true">
+				<mx:RichTextEditor width="100%"
+								   id="exerciseDescription"
+								   dropShadowVisible="false"
+								   headerHeight="0"
+								   fontWeight="normal"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','KEYWORDS')}"
+						width="100%"
+						toolTip="{ResourceManager.getInstance().getString('myResources','COMMA_SEPARATED_WORDS')}"
+						required="true">
+				<s:TextArea width="100%"
+							heightInLines="3"
+							id="exerciseKeywords"
+							styleName="frm-textarea"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','DIFFICULTY_LEVEL')}"
+						required="true"
+						width="100%">
+				<components:EnhancedDropDownList id="difLevelDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   sortItems="true"
+										   change="onConditionalComboChange(event)"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','LANGUAGE')}"
+						required="true">
+				<common:LanguageComboBox id="languageSelector"
+										 displayPrompt="false"/>
+			</s:FormItem>
+			<s:FormItem id="exerciseType"
+						label="{ResourceManager.getInstance().getString('myResources', 'EXERCISE_TYPE')}">
+				<components:EnhancedDropDownList id="exerciseTypeDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   sortItems="true"
+										   change="onConditionalComboChange(event)"/>
+			</s:FormItem>
+			<s:FormItem id="commSituation"
+						label="{ResourceManager.getInstance().getString('myResources','COMMUNICATION_SITUATION')}">
+				<components:EnhancedDropDownList id="commSituationDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   sortItems="true"
+										   change="onConditionalComboChange(event)"/>
+			</s:FormItem>
+			<s:FormItem id="commCompetence"
+						label="{ResourceManager.getInstance().getString('myResources','COMMUNICATIVE_COMPETENCE')}"
+						width="100%">
+				<s:HGroup width="100%">
+					<components:EnhancedDropDownList id="commCompetenceDropdown"
+											   skinClass="skins.BootstrapDropDownList"
+											   cornerRadius="3"
+											   borderColor="0xcccccc"
+											   requireSelection="true"
+											   sortItems="true"
+											   change="onConditionalComboChange(event)"/>
+					<s:Button id="showDescriptorsButton"
+							  styleName="btn-link"
+							  label="{ResourceManager.getInstance().getString('myResources','DESCRIPTORS')}"
+							  click="showHideDescriptorsClickHandler(event)"/>
+				</s:HGroup>
+				<s:VGroup id="descriptorContainer"
+						  width="100%"
+						  visible="false"
+						  includeInLayout="false"/>
+			</s:FormItem>
+			<s:FormItem id="linguisticAspect"
+						label="{ResourceManager.getInstance().getString('myResources','LINGUISTIC_ASPECT')}">
+				<components:EnhancedDropDownList id="lingAspectDropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   sortItems="true"/>
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+						  styleName="btn-success"
+						  buttonMode="true"
+						  label="{ResourceManager.getInstance().getString('myResources','SAVE_AND_CONTINUE')}"
+						  click="saveChangesClickHandler(event)"/>
+	</s:HGroup>
+
+	<fx:Declarations>
+		<mx:StringValidator id="titleValidator"
+							source="{exerciseTitle}"
+							property="text"
+							minLength="3"
+							maxLength="80"/>
+		<mx:StringValidator id="descriptionValidator"
+							source="{exerciseDescription}"
+							property="text"
+							minLength="3"/>
+		<mx:StringValidator id="tagValidator"
+							source="{exerciseKeywords}"
+							property="text"
+							minLength="3"
+							maxLength="255"/>
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import components.EnhancedDropDownList;
+			
+			
+			import model.DataModel;
+			import model.LocalesAndFlags;
+			
+			import modules.create.event.CreateEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.core.IVisualElement;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.resources.ResourceManager;
+			import mx.validators.Validator;
+			
+			import skins.BootstrapCheckBox;
+			
+			import spark.components.CheckBox;
+			import spark.events.IndexChangeEvent;
+			
+			import utils.LocaleUtils;
+			
+			import view.common.CustomAlert;
+			
+			import vo.ExerciseVO;
+
+			private var _dataModel:DataModel=DataModel.getInstance();
+			private var _descriptors:Array;
+			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
+
+			// Holds a reference to the currently focussed control on the form.
+			private var focussedFormControl:DisplayObject;
+
+			public var formIsValid:Boolean=false;
+			
+			private var exerciseData:ExerciseVO;
+
+			
+			private var dpDifficultyLevel:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LEVEL_A1'}, {'code': 1, 'label': 'LEVEL_A2'}, {'code': 2, 'label': 'LEVEL_B1'}, {'code': 3, 'label': 'LEVEL_B2'}, {'code': 4, 'label': 'LEVEL_C1'}]);
+			private var dpExerciseType:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'LANGUAGE_PRACTICE'}, {'code': 1, 'label': 'FREE_CONTEXT'}, {'code': 2, 'label': 'CONVERSATION'}, {'code': 3, 'label': 'STORYTELLING'}, {'code': 4, 'label': 'VOICE_OVER'}, {'code': 5, 'label': 'OTHER'}]);
+			private var dpCommSituation:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'EVERYDAY_LIFE_AND_TOURISM'}, {'code': 1, 'label': 'STUDIES'}, {'code': 2, 'label': 'WORK'}]);
+			private var dpLingAspect:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'ADVERB_ADJECTIVE'}, {'code': 1, 'label': 'FORMS_OF_QUESTIONS'}, {'code': 2, 'label': 'NEGATION'}, {'code': 3, 'label': 'NOUN'}, {'code': 4, 'label': 'PRONOUNS'}, {'code': 5, 'label': 'PRONUNCIATION'}, {'code': 6, 'label': 'VERB'}, {'code': 7, 'label': 'VOCABULARY'}]);
+			private var dpCommCompetence:ArrayCollection;
+
+			private var competenceLabels:Array=['DEALING_WITH_EMERGENCY_SITUATIONS', 'DESCRIBING_EXPERIENCES', 'DEVELOPING_AN_ARGUMENT', 'GENERAL_WORK', 'GIVING_PRESENTATIONS', 'GOING_OUT_TO_EAT', 'GOING_SHOPPING', 'HEALTH', 'MAKING_ARRANGEMENTS', 'PARTICIPATING_IN_AN_INTERVIEW', 'PARTICIPATING_IN_CLASS', 'PARTICIPATING_IN_MEETINGS', 'PUBLIC_SPEAKING', 'SIGHTSEEING', 'SOCIALIZING', 'SPEAKING_ABOUT_ONESELF', 'STAYING_AT_A_HOTEL', 'TELEPHONING', 'TRAVEL', 'USING_FINANCIAL_AND_POSTAL_SERVICES'];
+
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			private var cwdesc:Vector.<ChangeWatcher>;
+
+			private function completeHandler(event:FlexEvent):void
+			{
+				getDescriptorCodesFromResourceFile();
+				
+				difLevelDropdown.localeAwareDataProvider=dpDifficultyLevel;
+				exerciseTypeDropdown.localeAwareDataProvider=dpExerciseType;
+				commSituationDropdown.localeAwareDataProvider=dpCommSituation;
+				lingAspectDropdown.localeAwareDataProvider=dpLingAspect;
+				
+				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
+				
+				cw1=BindingUtils.bindSetter(setInformation,_dataModel,'exerciseDataRetrieved',commitOnly,useWeakReference);
+			}
+
+			public function resetComponent():void
+			{
+				//Reset the combobox components
+				languageSelector.selectedIndex=0;
+				difLevelDropdown.selectedIndex=0;
+
+				descriptorContainer.visible=false;
+				descriptorContainer.includeInLayout=false;
+				removeDescriptors();
+
+				//Reset the video form fields
+				exerciseTitle.removeEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.removeEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.removeEventListener(Event.CHANGE, validateForm);
+				titleValidator.enabled=false;
+				descriptionValidator.enabled=false;
+				tagValidator.enabled=false;
+
+				exerciseTitle.text="";
+				exerciseDescription.htmlText="";
+				exerciseKeywords.text="";
+
+				exerciseTitle.addEventListener(Event.CHANGE, validateForm);
+				exerciseDescription.addEventListener(Event.CHANGE, validateForm);
+				exerciseKeywords.addEventListener(Event.CHANGE, validateForm);
+				titleValidator.enabled=true;
+				descriptionValidator.enabled=true;
+				tagValidator.enabled=true;
+			}
+
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+				
+				unpinDescriptorCW();
+				
+				difLevelDropdown.removeEventListener(IndexChangeEvent.CHANGE, onConditionalComboChange);
+				exerciseTypeDropdown.removeEventListener(IndexChangeEvent.CHANGE, onConditionalComboChange);
+				commSituationDropdown.removeEventListener(IndexChangeEvent.CHANGE, onConditionalComboChange);
+				commCompetenceDropdown.removeEventListener(IndexChangeEvent.CHANGE, onConditionalComboChange);
+				lingAspectDropdown.removeEventListener(IndexChangeEvent.CHANGE, onConditionalComboChange);
+				showDescriptorsButton.removeEventListener(MouseEvent.CLICK,showHideDescriptorsClickHandler);
+				saveButton.removeEventListener(MouseEvent.CLICK, saveChangesClickHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,completeHandler);
+			}
+
+			private function validateForm(event:Event):void
+			{
+				focussedFormControl=event.target as DisplayObject;
+
+				// Mark the form as valid to start with                
+				formIsValid=true;
+
+				validate(titleValidator);
+				validate(descriptionValidator);
+				validate(tagValidator);
+				//validate(fileGridValidator);
+			}
+
+			private function validate(validator:Validator):Boolean
+			{
+				var validatorSource:DisplayObject=validator.source as DisplayObject;
+				var suppressEvents:Boolean=(validatorSource != focussedFormControl);
+				var event:ValidationResultEvent=validator.validate(null, suppressEvents);
+				var currentControlIsValid:Boolean=(event.type == ValidationResultEvent.VALID);
+
+				formIsValid=formIsValid && currentControlIsValid;
+
+				return currentControlIsValid;
+			}
+
+			private function checkExternalUrl(url:String):Boolean
+			{
+				var pattern:RegExp=new RegExp("^http[s]?\:\\/\\/([^\\/]+)");
+				var result:Object=pattern.exec(url);
+				if (result == null || url.length >= 4096)
+				{
+					return (false);
+				}
+				return (true);
+			}
+
+			private function parseTags(tags:String):String
+			{
+				return tags;
+			}
+
+			private function fieldHasData(fieldText:String):Boolean
+			{
+				var fieldData:String=fieldText.replace(/[ ,\;.\:\-_?¿¡!€$']*/, "");
+				return (fieldData.length < 1) ? false : true;
+			}
+
+			private function selectPreviousDescriptors(savedDescriptors:*):void
+			{
+				var containsSaved:Boolean=false;
+				if (savedDescriptors)
+				{
+					var savedDescCollection:ArrayCollection=new ArrayCollection(savedDescriptors);
+					for (var i:int=0; i < descriptorContainer.numElements; i++)
+					{
+						var item:IVisualElement=descriptorContainer.getElementAt(i);
+						if ((item is CheckBox))
+						{
+							var descriptor:String=(item as CheckBox).id;
+							if (savedDescCollection.contains(descriptor))
+							{
+								(item as CheckBox).selected=true;
+								containsSaved=true;
+							}
+						}
+					}
+				}
+				if (containsSaved)
+				{
+					descriptorContainer.visible=true;
+					descriptorContainer.includeInLayout=true;
+				}
+			}
+
+			private function showHideDescriptorsClickHandler(e:MouseEvent):void
+			{
+				descriptorContainer.visible=!descriptorContainer.visible;
+				descriptorContainer.includeInLayout=!descriptorContainer.includeInLayout;
+			}
+
+			private function saveChangesClickHandler(event:MouseEvent):void
+			{
+
+				var validUrl:Boolean=true;
+				if (fieldHasData(exerciseTitle.text) && fieldHasData(exerciseDescription.htmlText) && fieldHasData(exerciseKeywords.text))
+				{
+					exerciseData.title=exerciseTitle.text;
+					exerciseData.description=exerciseDescription.htmlText;
+					exerciseData.tags=parseTags(exerciseKeywords.text);
+					exerciseData.language=languageSelector.selectedItem.code;
+					exerciseData.difficulty=difLevelDropdown.selectedIndex + 1;
+
+					var exercisetype:int=exerciseTypeDropdown.selectedItem['code'];
+					exerciseData.type=exercisetype;
+					exerciseData.situation=0;
+					exerciseData.competence=0;
+					exerciseData.lingaspects=0;
+					if (exercisetype != 0 && exercisetype != 5)
+					{	
+						exerciseData.situation=commSituationDropdown.selectedItem['code'] + 1;
+						exerciseData.competence=commCompetenceDropdown.selectedItem['code'] + 1;
+						exerciseData.lingaspects=lingAspectDropdown.selectedItem['code'] + 1;
+						//If the user chose any level descriptors, those must be saved too
+						var descriptors:Array=new Array();
+						for (var i:int=0; i < descriptorContainer.numElements; i++)
+						{
+							var item:IVisualElement=descriptorContainer.getElementAt(i);
+							if ((item is CheckBox) && (item as CheckBox).selected)
+							{
+								var descriptor:String=(item as CheckBox).id;
+								descriptors.push(descriptor);
+							}
+						}
+						exerciseData.descriptors=descriptors;
+					}
+					new CreateEvent(CreateEvent.SET_EXERCISE_DATA, exerciseData).dispatch();
+				}
+				else
+					CustomAlert.error(ResourceManager.getInstance().getString('myResources', 'FILL_THE_REQUIRED_FIELDS'));
+			}
+
+			public function setInformation(value:Boolean):void
+			{
+				var data:ExerciseVO=DataModel.getInstance().exerciseData;
+				languageSelector.dataProvider=_localesAndFlags.availableLanguages;
+				trace("Set exercise data");
+				if(data){
+					exerciseData=data;
+					exerciseTitle.text=exerciseData.title;
+					exerciseDescription.htmlText=exerciseData.description;
+					exerciseKeywords.text=exerciseData.tags;
+					languageSelector.selectedItem=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(exerciseData.language);
+					
+				} else {
+					exerciseData=new ExerciseVO();
+					exerciseData.type=0;
+					exerciseData.difficulty=1;
+					
+					exerciseTitle.text="";
+					exerciseDescription.htmlText="";
+					exerciseKeywords.text="";
+					languageSelector.selectedIndex=0;
+				}
+				
+				var level:int=parseInt(exerciseData.difficulty) - 1;
+				difLevelDropdown.selectedIndex=level;
+
+				var exerciseType:int=exerciseData.type; // Required, 0 is valid field data
+				for each (var iet:Object in exerciseTypeDropdown.dataProvider)
+				{
+					if (iet['code'] == exerciseType)
+					{
+						exerciseTypeDropdown.selectedItem=iet;
+						break;
+					}
+				}
+
+				//Only communicative exercises should have situation, competence and descriptors
+				displayCommExerciseFields(exerciseTypeDropdown.selectedItem);
+
+				if (exerciseType != 0 && exerciseType != 5)
+				{
+					var situation:int=exerciseData.situation - 1;
+					for each (var ics:Object in commSituationDropdown.dataProvider)
+					{
+						if (ics['code'] == situation)
+						{
+							commSituationDropdown.selectedItem=ics;
+							break;
+						}
+					}
+					updateCommCompetences(level, situation);
+
+					var competence:int=exerciseData.competence - 1;
+					for each (var icc:Object in commCompetenceDropdown.dataProvider)
+					{
+						if (icc['code'] == competence)
+						{
+							commCompetenceDropdown.selectedItem=icc;
+							break;
+						}
+					}
+					updateDescriptors(level, situation, competence);
+					//The previous function should have created the descriptors of the selected level
+					selectPreviousDescriptors(exerciseData.descriptors);
+
+					var lingaspect:int=exerciseData.lingaspects - 1;
+					for each (var ila:Object in lingAspectDropdown.dataProvider)
+					{
+						if (ila['code'] == lingaspect)
+						{
+							lingAspectDropdown.selectedItem=ila;
+							break;
+						}
+					}
+				}
+			}
+
+			public function languageComboBoxLabelFunction(item:Object):String
+			{
+				var locale:String=String(item.code);
+				var upperLocale:String=locale.toUpperCase();
+				return ResourceManager.getInstance().getString('myResources', 'LOCALE_' + upperLocale);
+			}
+
+			/**
+			 * Exercise categorization functions
+			 */
+			protected function onConditionalComboChange(event:IndexChangeEvent):void
+			{
+				var dispatchingComponent:EnhancedDropDownList=EnhancedDropDownList(event.target);
+				var listItem:Object=dispatchingComponent.selectedItem;
+
+				if (dispatchingComponent.id == exerciseTypeDropdown.id)
+				{
+					displayCommExerciseFields(listItem);
+				}
+				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
+				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
+				updateCommCompetences(currentLevel, currentSituation);
+				commCompetenceDropdown.addEventListener(FlexEvent.UPDATE_COMPLETE, deferredConditionalChange);
+			}
+			
+			protected function deferredConditionalChange(event:Event):void{
+				commCompetenceDropdown.removeEventListener(FlexEvent.UPDATE_COMPLETE, deferredConditionalChange);
+				var currentLevel:int=difLevelDropdown && difLevelDropdown.selectedItem != undefined ? difLevelDropdown.selectedItem['code'] : 0;
+				var currentSituation:int=commSituationDropdown && commSituationDropdown.selectedItem != undefined ? commSituationDropdown.selectedItem['code'] : -1;
+				var currentCompetence:int=commCompetenceDropdown && commCompetenceDropdown.selectedItem != undefined ? commCompetenceDropdown.selectedItem['code'] : -1;
+				updateDescriptors(currentLevel, currentSituation, currentCompetence);
+			}
+
+			protected function displayCommExerciseFields(item:Object):void
+			{
+				if (item && item.hasOwnProperty('code') && (item['code'] == 0 || item['code'] == 5))
+				{ //Language practice
+					commSituation.includeInLayout=false;
+					commSituation.visible=false;
+					commCompetence.includeInLayout=false;
+					commCompetence.visible=false;
+					linguisticAspect.includeInLayout=false;
+					linguisticAspect.visible=false;
+				}
+				else
+				{ //Communicative
+					commSituation.includeInLayout=true;
+					commSituation.visible=true;
+					commCompetence.includeInLayout=true;
+					commCompetence.visible=true;
+					linguisticAspect.includeInLayout=true;
+					linguisticAspect.visible=true;
+				}
+			}
+
+			protected function updateCommCompetences(level:int, situation:int):void
+			{
+				if (level == -1 || situation == -1)
+					return;
+				var newCompetences:Array=_descriptors[situation][level];
+				populateCommCompetences(newCompetences);
+			}
+
+			protected function populateCommCompetences(compCodes:Array):void
+			{
+				var startingCompetences:Array=new Array();
+
+				for (var item:Object in compCodes)
+				{
+					var key:int=item as int;
+					startingCompetences.push({'code': key, 'label': competenceLabels[key]});
+				}
+
+				dpCommCompetence=new ArrayCollection(startingCompetences);
+				commCompetenceDropdown.localeAwareDataProvider=dpCommCompetence;
+			}
+
+			protected function updateDescriptors(level:int, situation:int, competence:int):void
+			{
+				trace("Update descriptors: [level]: " + level + " [situation]: " + situation + " [compt]: " + competence);
+				if (level == -1 || situation == -1 || competence == -1)
+					return;
+
+				removeDescriptors();
+				
+				if (!_descriptors)
+					getDescriptorCodesFromResourceFile();
+
+				var compDescriptors:Array=_descriptors[situation][level][competence];
+				if (compDescriptors)
+				{
+					for (var item:Object in compDescriptors)
+					{
+						var chkBox:CheckBox=new CheckBox();
+						var descriptorCode:String=compDescriptors[item];
+						var cw:ChangeWatcher=LocaleUtils.localizedPropertyBind(chkBox,'label','myResources',descriptorCode,commitOnly,useWeakReference);
+						
+						if(cwdesc == null)
+							cwdesc=new Vector.<ChangeWatcher>();
+						cwdesc.push(cw);
+						
+						chkBox.id=descriptorCode;
+						chkBox.percentWidth=100;
+						chkBox.setStyle('skinClass', BootstrapCheckBox);
+						descriptorContainer.addElement(chkBox);
+					}
+				}
+			}
+
+			private function getDescriptorCodesFromResourceFile():void
+			{
+				var resources:Object=ResourceManager.getInstance().getResourceBundle("en_US", "myResources").content;
+				var descriptorPattern:RegExp=/D(\d)_(\d)_(\d{2})_(\d)/;
+				for (var item:Object in resources)
+				{
+					var key:String=item as String;
+					//Filter the keys that match the descriptor pattern
+					var matches:Array=key.match(descriptorPattern);
+					if (matches && matches.length)
+					{
+						if (!_descriptors)
+							_descriptors=new Array();
+
+						var situation:int=int(matches[1]) - 1;
+						if (!_descriptors[situation])
+							_descriptors[situation]=new Array();
+
+						var level:int=int(matches[2]) - 1;
+						if (!_descriptors[situation][level])
+							_descriptors[situation][level]=new Array();
+
+						var competence:int=int(matches[3]) - 1;
+						if (!_descriptors[situation][level][competence])
+							_descriptors[situation][level][competence]=new Array();
+
+						var dnumber:int=int(matches[4]) - 1;
+						_descriptors[situation][level][competence][dnumber]=key;
+					}
+				}
+			}
+
+			private function removeDescriptors():void
+			{
+				if (descriptorContainer.numElements)
+				{
+					descriptorContainer.removeAllElements();
+				}
+				unpinDescriptorCW();
+			}
+			
+			private function unpinDescriptorCW():void{
+				if(cwdesc){
+					var i:int,length:int;
+					length=cwdesc.length;
+					for (i=0;i<length;i++){
+						cwdesc[i].unwatch();
+						cwdesc[i]=null;
+					}
+					cwdesc=null;
+				}
+			}
+		]]>
+	</fx:Script>
+</s:VGroup>

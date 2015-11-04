@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.assessment.view.*"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			
+			import spark.components.List;
+			import spark.events.IndexChangeEvent;
+			
+
+			private var dataModel:DataModel=DataModel.getInstance();
+			private var waitingForAssessmentList:ArrayCollection;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			public function onComplete(event:FlexEvent):void{
+				
+				cw1=BindingUtils.bindSetter(waitingAssessmentRetrievedHandler, dataModel, 'waitingForAssessmentDataRetrieved',commitOnly,useWeakReference);
+				
+			}
+
+			public function resetGroup():void
+			{
+				waitingForAssessmentList=null;
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+			}
+
+			private function waitingAssessmentRetrievedHandler(value:Boolean):void
+			{
+				waitingForAssessmentList=dataModel.waitingForAssessmentData;
+				var length:int = waitingForAssessmentList ? waitingForAssessmentList.length : 0;
+				if(!waitingForAssessmentList){
+					noresultNotice.includeInLayout=true;
+					noresultNotice.visible=true;
+					waitingAssessmentListAndPagination.visible=false;
+					waitingAssessmentListAndPagination.includeInLayout=false;
+				} else {
+					noresultNotice.includeInLayout=false;
+					noresultNotice.visible=false;
+					waitingAssessmentListAndPagination.visible=true;
+					waitingAssessmentListAndPagination.includeInLayout=true;
+				}
+				waitingAssessmentListAndPagination.dataProvider=waitingForAssessmentList;
+			}
+
+			private function waitingAssessmentChangeHandler(event:IndexChangeEvent):void
+			{
+				var selectedItem:Object=(event.target as List).selectedItem;
+				if(selectedItem)
+					assessSubmission(selectedItem.responseId);
+			}
+
+			private function assessSubmission(responseid:int):void
+			{
+				URLManager.getInstance().redirect('/assessments/add/' + responseid);
+			}
+		]]>
+	</fx:Script>
+
+	<s:Label id="assessmentPendingListTitleLabel"
+			 styleName="h2"
+			 text="{ResourceManager.getInstance().getString('myResources', 'ASSESSMENT_PENDING_RESPONSES_LIST')}"/>
+
+	<s:BorderContainer id="noresultNotice"
+					   width="100%"
+					   styleName="lightBorderContainer"
+					   includeInLayout="false" 
+					   visible="false">
+	<s:Label id="noresultLbl" 
+			 paddingLeft="8"
+			 paddingTop="32"
+			 paddingBottom="32"
+			 paddingRight="8"
+			 text="{ResourceManager.getInstance().getString('myResources','THERE_ARE_NO_RESPONSES_FOR_YOU_TO_ASSESS')+'.'}"/>
+	</s:BorderContainer>
+	
+	<view:CustomItemRendererPaginatedTable id="waitingAssessmentListAndPagination"
+										   itemRenderer="modules.assessment.view.ListItemWaitingForAssessment"
+										   width="100%"
+										   changeListener="{waitingAssessmentChangeHandler}"/>
+
+</s:VGroup>

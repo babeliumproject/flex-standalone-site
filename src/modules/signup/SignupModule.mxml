@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.signup.view.*"
+		  implements="modules.IModuleInterface"
+		  width="100%"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" >
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<view:SignUpForm id="signUpIndex" width="100%"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLChangeEvent;
+			
+			import model.DataModel;
+			
+			import control.URLManager;
+			
+			import modules.IPinnedGroupInterface;
+			
+			import mx.events.FlexEvent;
+
+			public var modulename:String = 'signup';
+			
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			
+			/**
+			 * Module interface methods 
+			 */
+			public function getModuleName():String{
+				return modulename;	
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				resetViews();
+			}
+			
+			public function resetViews():void{
+				var v:*=signUpIndex as IPinnedGroupInterface;
+				if (v){
+					v.resetGroup();
+				}
+			}
+			
+			public function unpinViews():void
+			{
+				var v:*=signUpIndex as IPinnedGroupInterface;
+				if (v)
+					v.unpinGroup();
+			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+			}
+				
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange);
+				onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					//If the user is already logged in return to previous page or navigate to home
+					URLManager.getInstance().redirect('home');
+					return;
+				}
+				this.visible=true;
+			}	
+			
+		]]>
+	</fx:Script>
+</s:Module>

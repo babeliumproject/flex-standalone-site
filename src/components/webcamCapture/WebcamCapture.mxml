@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  creationComplete="onComplete()"
+		  width="100%"
+		  height="100%"
+		  horizontalAlign="center" xmlns:view="view.*">
+
+	<fx:Script>
+
+		<![CDATA[
+			import components.videoPlayer.NetStreamClient;
+			import components.videoPlayer.UserDeviceManager;
+			import components.videoPlayer.events.UserDeviceEvent;
+			import components.videoPlayer.events.babelia.VideoPlayerBabeliaEvent;
+			
+			import events.FullStreamingEvent;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.Text;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import skins.IconButtonSkin;
+			
+			import view.common.CustomAlert;
+			import view.common.PrivacyRights;
+			import view.common.TimeFormatter;
+
+
+			/**
+			 *  Constants
+			 */
+			private const COUNTDOWN_TIMER_SECS:int=5; //seconds
+			private const DEFAULT_MIC_GAIN:uint=70;
+			private var _maximumVideoDuration:int=DataModel.getInstance().maxExerciseDuration; //seconds
+			private var _minimumVideoDuration:int=DataModel.getInstance().minExerciseDuration; //seconds
+			private var _defaultVideoWidth:int=DataModel.getInstance().cameraWidth; //pixels
+			private var _defaultVideoHeight:int=DataModel.getInstance().cameraHeight; //pixels
+
+			/**
+			 *  Variable definition
+			 */
+			private var netConnection:NetConnection;
+
+			[Bindable]
+			public var recordingFileName:String;
+
+			[Bindable]
+			public var isRecording:Boolean;
+
+			private var audio_pause:Boolean;
+
+
+			private var _video:Video;
+			[Bindable]
+			private var _videoHeight:int=_defaultVideoHeight;
+			[Bindable]
+			private var _videoWidth:int=_defaultVideoWidth;
+
+			private var _camera:Camera;
+			private var _mic:Microphone;
+			private var _micCamEnabled:Boolean;
+
+			private var _streamsFolder:String='';
+			private var _streamFilePrefix:String='';
+
+			private var _countdown:Timer;
+			private var _countdownTxt:Text;
+
+			private var _recordCountDown:Timer;
+
+			private var _privUnlock:PrivacyRights;
+
+			private var _timeFormatter:TimeFormatter;
+			
+			private var _playns:NetStreamClient;
+			private var _recordns:NetStreamClient;
+
+			private var _userdevmgr:UserDeviceManager;
+			
+			private var playImageEmbed:String = '/resources/images/playerPlayIcon.png';
+			private var pauseImageEmbed:String = 'resources/images/playerPauseIcon.png';
+			private var recImageEmbed:String = 'resources/images/playerRecIcon.png';
+			private var stopImageEmbed:String = 'resources/images/playerStopIcon.png';
+
+
+			public function onComplete():void
+			{
+				//Button icon initialization
+				startStopCapture.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+
+				_timeFormatter=new TimeFormatter();
+				_timeFormatter.outputMilliseconds=false;
+
+				_countdownTxt=new Text();
+				_countdownTxt.text="5";
+				_countdownTxt.setStyle("fontWeight", "bold");
+				_countdownTxt.setStyle("fontSize", 30);
+				_countdownTxt.setStyle("color", 0xFFFFFF);
+				_countdownTxt.selectable=false;
+				_countdownTxt.visible=false;
+
+				audio_pause=false;
+				isRecording=false;
+
+			}
+
+			public function resetComponent():void
+			{
+				trace("["+this.className+"] Reset component");
+				startStopCapture.setStyle('icon', recImageEmbed);
+				startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
+				startStopCapture.enabled=true;
+				playPauseButton.setStyle('icon', playImageEmbed);
+				playPauseButton.enabled=false;
+
+				audio_pause=false;
+				isRecording=false;
+
+				recordingFileName=null;
+				
+				buffering.visible=false;
+
+				if (_countdown && _countdown.running)
+				{
+					_countdown.stop();
+					_countdown.reset();
+					_countdownTxt.text=COUNTDOWN_TIMER_SECS.toString();
+					_countdownTxt.visible=false;
+				}
+				
+				if (_recordCountDown && _recordCountDown.running)
+				{
+					_recordCountDown.stop();
+					_recordCountDown.reset();
+					recordCountdown.text=_timeFormatter.format(0);
+					recordCountdown.visible=false;
+				}
+
+				closeStreams();
+				closeConnection();
+				
+				_camera=null;
+				_mic=null;
+				_micCamEnabled=false;
+				_userdevmgr=null;
+				_privUnlock=null;
+			}
+
+			public function set minimumVideoDuration(duration:uint):void
+			{
+				_minimumVideoDuration=duration;
+			}
+
+			public function set streamsFolder(folder:String):void
+			{
+				_streamsFolder=folder;
+			}
+
+			public function get streamsFolder():String
+			{
+				return _streamsFolder;
+			}
+
+			public function set filePrefix(prefix:String):void
+			{
+				_streamFilePrefix=prefix;
+			}
+
+			public function get filePrefix():String
+			{
+				return _streamFilePrefix;
+			}
+
+			private function connectToStreamingServer():void
+			{
+				if (!DataModel.getInstance().netConnection)
+					new FullStreamingEvent(FullStreamingEvent.SETUP_CONNECTION).dispatch();
+				if (!DataModel.getInstance().netConnection.connected)
+					new FullStreamingEvent(FullStreamingEvent.START_CONNECTION, DataModel.getInstance().defaultNetConnectionUrl).dispatch();
+				else
+					onConnectSuccess(null);
+			}
+
+			private function closeConnection():void
+			{
+				new FullStreamingEvent(FullStreamingEvent.CLOSE_CONNECTION).dispatch();
+			}
+			
+			private function destroyNetstream(nc:NetStreamClient):void{
+				if (nc && nc.netStream)
+				{
+					nc.netStream.attachCamera(null);
+					nc.netStream.attachAudio(null);
+					nc.netStream.close();
+					nc=null;
+				}
+			}
+			
+			private function destroyVideo(video:Video):void{
+				if(video){
+					video.attachNetStream(null);
+					video.attachCamera(null);
+					video.clear();
+					if(this.videoHolder.contains(video))
+						this.videoHolder.removeChild(video);
+					video=null;
+				}
+			}
+
+			private function closeStreams():void
+			{
+				destroyNetstream(_playns);
+				destroyNetstream(_recordns);
+				destroyVideo(_video);
+			}
+
+			private function playStream():void
+			{
+				if(audio_pause){
+					_playns.netStream.resume();
+					audio_pause=false;
+				} else {
+					
+					destroyNetstream(_playns);
+					
+					if (netConnection && netConnection.connected)
+					{
+						var filename:String = _streamsFolder + "/" + recordingFileName;
+						_playns=new NetStreamClient(netConnection,"PlaybackNetStream");
+						_playns.netStream.soundTransform=new SoundTransform(DEFAULT_MIC_GAIN);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_STARTED_PLAYING, onStreamPlayStart, false, 0, true);
+						_playns.addEventListener(VideoPlayerBabeliaEvent.SECONDSTREAM_FINISHED_PLAYING, onStreamPlayFinish, false, 0, true);
+		
+						_video.attachNetStream(_playns.netStream);
+						_video.visible=true;
+						
+						_playns.netStream.play(filename);
+					}
+				}
+
+				playPauseButton.enabled=true;
+				startStopCapture.enabled=true;
+
+				startStopCapture.setStyle('icon', stopImageEmbed);
+				playPauseButton.setStyle('icon', pauseImageEmbed);
+			}
+			
+			private function pauseStream():void
+			{
+				//in_ns.togglePause();
+				_playns.netStream.pause();
+				
+				audio_pause=true;
+				
+				// It's possible recording or save while audio is paused
+				startStopCapture.enabled=true;
+				playPauseButton.enabled=true;
+				
+				
+				startStopCapture.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+			}
+			
+			private function unpublishStream():void
+			{
+				destroyNetstream(_recordns);
+				
+				isRecording=false;
+				
+				// It's not possible playing audio while recording
+				startStopCapture.enabled=true;
+				playPauseButton.enabled=true;
+				
+				startStopCapture.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+			}
+			
+			private function onStreamPlayStart(event:Event):void{
+				
+			}
+			
+			private function onStreamPlayFinish(event:Event):void{
+				trace("["+this.className+"] Stream Play Finished");
+						
+				_video.attachNetStream(null);
+				_video.clear();
+				_video.visible=false;
+				
+				startStopCapture.setStyle('icon', recImageEmbed);
+				playPauseButton.setStyle('icon', playImageEmbed);
+				
+				startStopCapture.enabled=true;
+				playPauseButton.enabled=true;
+				
+				audio_pause=false;
+			}			
+
+			private function onConnectSuccess(event:FullStreamingEvent):void{
+				trace("["+this.className+"] Streaming server connection successful");
+				buffering.visible=false;
+				netConnection=DataModel.getInstance().netConnection;
+				
+				destroyNetstream(_playns);
+				destroyNetstream(_recordns);
+				
+				_recordns=new NetStreamClient(netConnection,"RecordingStream");
+				
+				startStopRecording();
+			}
+			
+			private function onConnectError(event:FullStreamingEvent):void{
+				trace("["+this.className+"] Streaming server connection error");
+				closeStreams();
+			}
+
+			private function startStopRecording(connected:Boolean=false):void
+			{
+				if (!netConnection || !netConnection.connected)
+				{
+					buffering.visible=true;
+					connectToStreamingServer();
+					DataModel.getInstance().netConnectionDelegate.addEventListener(FullStreamingEvent.CONNECTION_READY, onConnectSuccess, false, 0, true);
+				}
+				else
+				{
+					if (!isRecording)
+					{
+						prepareDevices();
+					}
+					else
+					{
+						if (_recordCountDown.running)
+						{
+							_recordCountDown.stop();
+							_recordCountDown.reset();
+							recordCountdown.text=_timeFormatter.format(0);
+							recordCountdown.visible=false;
+						}
+						stopCamera();
+						unpublishStream();
+						if (recordingFileName)
+						{
+							startStopCapture.label=resourceManager.getString('myResources', 'RECORD_AGAIN');
+						}
+						else
+						{
+							startStopCapture.label=resourceManager.getString('myResources', 'START_RECORDING');
+						}
+					}
+				}
+			}
+
+			private function stopCamera():void
+			{
+				_video.attachCamera(null);
+				_video.clear();
+				_video.visible=false;
+			}
+
+			private function playPauseRecording():void
+			{
+				switch (playPauseButton.getStyle('icon'))
+				{
+					case playImageEmbed:
+						playStream();
+						break;
+					case pauseImageEmbed:
+						pauseStream();
+						break;
+				}
+			}
+
+			private function prepareRecording():void
+			{
+				if (_micCamEnabled)
+				{
+					if (_camera != null)
+					{
+						//videoHolder.setActualSize(_camera.width, _camera.height);
+						_video=new Video(_camera.width, _camera.height);
+						if (_recordns && _recordns.netStream)
+							_recordns.netStream.attachCamera(_camera);
+						_video.attachCamera(_camera);
+						_video.smoothing=true;
+						_video.height=videoHolder.height;
+						_video.width=videoHolder.width;
+
+						_countdownTxt.x=videoHolder.width / 2 - 10;
+						_countdownTxt.y=videoHolder.height / 2 - 10;
+						_countdownTxt.width=videoHolder.width;
+						_countdownTxt.height=videoHolder.height;
+
+						videoHolder.addChild(_video);
+						videoHolder.addChild(_countdownTxt);
+						_video.visible=false;
+						_countdownTxt.visible=true;
+					}
+					if (_mic != null)
+					{
+						if (_recordns && _recordns.netStream)
+							_recordns.netStream.attachAudio(_mic);
+
+						startStopCapture.enabled=true;
+						startStopCapture.label=resourceManager.getString('myResources', 'STOP');
+						startStopCapture.setStyle('icon', stopImageEmbed);
+
+						playPauseButton.enabled=false;
+						playPauseButton.setStyle('icon', playImageEmbed);
+						startStopCapture.enabled=false;
+					}
+				}
+			}
+
+			private function startRecordCountDown():void
+			{
+				_recordCountDown=new Timer(1000, _maximumVideoDuration);
+				_recordCountDown.addEventListener(TimerEvent.TIMER, onRecordCountDownTick);
+				_recordCountDown.start();
+			}
+
+			private function onRecordCountDownTick(tick:TimerEvent):void
+			{
+				recordCountdown.text=_timeFormatter.format(_maximumVideoDuration - _recordCountDown.currentCount);
+				if (_recordCountDown.currentCount >= _minimumVideoDuration)
+				{
+					startStopCapture.enabled=true;
+				}
+				if (_recordCountDown.currentCount == _recordCountDown.repeatCount)
+				{
+					//Maximum recording time elapsed stop recording at this point
+					_recordCountDown.stop();
+					_recordCountDown.reset();
+					recordCountdown.text=_timeFormatter.format(0);
+					recordCountdown.visible=false;
+					startStopRecording();
+				}
+			}
+
+			// Prepare countdown timer
+			private function startCountdown():void
+			{
+				_countdown=new Timer(1000, COUNTDOWN_TIMER_SECS)
+				_countdown.addEventListener(TimerEvent.TIMER, onCountdownTick);
+				_countdown.start();
+			}
+
+			// On Countdown tick
+			private function onCountdownTick(tick:TimerEvent):void
+			{
+				if (_countdown.currentCount == _countdown.repeatCount)
+				{
+					_countdownTxt.visible=false;
+					_video.visible=true;
+
+					// Reset countdown timer
+					_countdownTxt.text="5";
+					_countdown.stop();
+					_countdown.reset();
+
+					startRecording();
+				}
+				else
+					_countdownTxt.text=new String(5 - _countdown.currentCount);
+			}
+
+			private function startRecording():void
+			{
+				if (_recordns && _recordns.netStream)
+				{
+					var d:Date=new Date();
+					recordingFileName=_streamFilePrefix + "-" + d.getTime().toString();
+
+					// Publish the stream
+					_recordns.netStream.publish(_streamsFolder + "/" + recordingFileName, "record");
+					isRecording=true;
+
+					//Recording time elpased variables
+					recordCountdown.visible=true;
+					startRecordCountDown();
+				}
+			}
+
+			private function prepareDevices():void
+			{
+				_userdevmgr = new UserDeviceManager();
+				_userdevmgr.useMicAndCamera=true;
+				_userdevmgr.addEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler, false, 0, true);
+				_userdevmgr.initDevices();
+			}
+			
+			private function configureDevices():void
+			{
+				_micCamEnabled=_userdevmgr.deviceAccessGranted;
+				_mic=_userdevmgr.microphone;
+				_camera=_userdevmgr.camera;
+				_camera.setMode(DataModel.getInstance().cameraWidth, DataModel.getInstance().cameraHeight, 15, false);
+				_mic.setUseEchoSuppression(true);
+				_mic.setLoopBack(false);
+				_mic.gain=DEFAULT_MIC_GAIN;
+				_mic.setSilenceLevel(0, 60000);
+				
+				prepareRecording();
+				startCountdown();
+			}
+			
+			private function deviceStateHandler(event:UserDeviceEvent):void{
+				var devstate:int = event.state;
+				if(!_privUnlock){
+					if (devstate == UserDeviceEvent.DEVICE_ACCESS_GRANTED){
+						configureDevices();
+					} else {
+						var appwindow:DisplayObjectContainer = FlexGlobals.topLevelApplication.parent;
+						var modal:Boolean=true;
+						_privUnlock=new PrivacyRights();
+						_privUnlock.addEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler, false, 0 ,true);
+						_privUnlock.addEventListener(UserDeviceEvent.RETRY, privacyRetryHandler, false, 0, true);
+						_privUnlock.addEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler, false, 0, true);
+						_privUnlock.displayState(devstate);
+						PopUpManager.addPopUp(_privUnlock, appwindow, modal);
+						PopUpManager.centerPopUp(_privUnlock);
+						if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+							_userdevmgr.showPrivacySettings();
+						}
+					}
+				} else {
+					_privUnlock.displayState(devstate);
+					if(devstate==UserDeviceEvent.DEVICE_ACCESS_NOT_GRANTED){
+						_userdevmgr.showPrivacySettings();
+					}
+				}
+			}
+			
+			private function privacyAcceptHandler(event:Event):void{
+				PopUpManager.removePopUp(_privUnlock);
+				_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+				_privUnlock=null;
+				_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
+				configureDevices();
+			}
+			
+			private function privacyRetryHandler(event:Event):void{
+				_userdevmgr.initDevices();
+			}
+			
+			private function privacyCancelHandler(event:Event):void{
+				PopUpManager.removePopUp(_privUnlock);
+				_privUnlock.removeEventListener(UserDeviceEvent.ACCEPT, privacyAcceptHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.RETRY, privacyRetryHandler);
+				_privUnlock.removeEventListener(UserDeviceEvent.CANCEL, privacyCancelHandler);
+				_privUnlock=null;
+				_userdevmgr.removeEventListener(UserDeviceEvent.DEVICE_STATE_CHANGE, deviceStateHandler);
+				CustomAlert.error(resourceManager.getString('myResources', 'DEVICES_NOT_ALLOWED_ERROR'));
+			}		
+
+			public function set cancelClickHandler(cancelFunction:Function):void
+			{
+				cancelCapture.addEventListener(MouseEvent.CLICK, cancelFunction, false, 0, true);
+			}
+
+			public function set uploadClickHandler(uploadFunction:Function):void
+			{
+				uploadCapture.addEventListener(MouseEvent.CLICK, uploadFunction, false, 0, true);
+			}
+		]]>
+	</fx:Script>
+
+	<s:SkinnableContainer id="videoBg"
+						  backgroundColor="0x000000"
+						  width="100%"
+						  height="100%">
+		<mx:UIComponent id="videoHolder"
+						width="{Math.round(videoBg.height*4/3)}"
+						height="{videoBg.height}"
+						x="{(videoBg.width-videoHolder.width)/2}" 
+						y="{(videoBg.height-videoHolder.height)/2}"/>
+		<view:BusyIndicator id="buffering" width="48" height="48" symbolColor="#FFFFFF" 
+							x="{(videoBg.width-buffering.width)/2}" 
+							y="{(videoBg.height-buffering.height)/2}"
+							visible="false"/>
+	</s:SkinnableContainer>
+
+	<s:SkinnableContainer width="100%"
+						  backgroundColor="0xCCCCCC">
+		<s:HGroup paddingBottom="2"
+				  paddingTop="2"
+				  paddingLeft="4"
+				  paddingRight="4"
+				  horizontalAlign="left"
+				  verticalAlign="middle"
+				  width="100%"
+				  gap="4">
+			<s:Button click="playPauseRecording()"
+							  id="playPauseButton"
+							  enabled="false"
+							  styleName="btn-default"/>
+			<s:HGroup width="100%"
+					  horizontalAlign="right">
+				<s:Label id="recordCountdown"
+						 visible="false"
+						 text=""/>
+			</s:HGroup>
+		</s:HGroup>
+	</s:SkinnableContainer>
+	<s:HGroup id="actionsGroup"
+			  width="100%"
+			  paddingBottom="10"
+			  paddingLeft="10"
+			  paddingRight="10"
+			  paddingTop="10">
+		<s:Button id="cancelCapture"
+						  styleName="btn-default"
+						  label="{resourceManager.getString('myResources','CANCEL')}"/>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<s:Button id="startStopCapture"
+					  label="{resourceManager.getString('myResources', 'START_RECORDING')}"
+					  styleName="btn-default"
+					  click="startStopRecording()"/>
+		</s:HGroup>
+		<s:Button id="uploadCapture"
+				  label="{resourceManager.getString('myResources', 'UPLOAD')}"
+				  visible="{recordingFileName != null  &amp;&amp; !isRecording}"
+				  styleName="btn-default"/>
+	</s:HGroup>
+
+
+
+</s:VGroup>

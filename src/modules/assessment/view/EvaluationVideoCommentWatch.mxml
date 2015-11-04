@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skins:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:videoPlayer="components.videoPlayer.*"
+						 xmlns:skins="skins.*"
+						 title="{resourceManager.getString('myResources','VIEW_VIDEO_COMMENT')}"
+						 creationComplete="onComplete()">
+
+	<skins:layout>
+		<s:VerticalLayout horizontalAlign="center"
+						  verticalAlign="middle"
+						  paddingBottom="16"
+						  paddingLeft="16"
+						  paddingRight="16"
+						  paddingTop="16"/>
+	</skins:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import components.videoPlayer.events.VideoPlayerEvent;
+			
+			import flash.utils.getQualifiedClassName;
+			
+			import model.DataModel;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			private var _streamSource:String=DataModel.getInstance().defaultNetConnectionUrl;
+
+			[Bindable]
+			private static var _commentSource:String='';
+
+			[Bindable]
+			private var _videoPlayerReady:Boolean=false;
+			
+			public function resetComponent():void{
+				VideoCommentVP.resetComponent();
+			}
+
+			public function set videoSource(source:Object):void
+			{
+				VideoCommentVP.loadVideoByUrl(source);
+			}
+
+			private function onComplete():void
+			{
+				this.addEventListener(CloseEvent.CLOSE, closeButtonClickHandler);
+				setupVideoPlayer();
+			}
+
+			private function setupVideoPlayer():void
+			{
+				VideoCommentVP.addEventListener(VideoPlayerEvent.CONNECTED, onVideoPlayerReady);
+			}
+
+			private function onVideoPlayerReady(e:VideoPlayerEvent):void
+			{
+				_videoPlayerReady=true;
+				VideoCommentVP.loadVideoByUrl(_commentSource);
+				VideoCommentVP.controlsEnabled=true;
+			}
+
+			private function closeButtonClickHandler(event:Event):void
+			{
+				VideoCommentVP.stopVideo();
+				VideoCommentVP.endVideo();
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+
+	<s:VGroup id="videoPlayerBox">
+		<videoPlayer:VideoRecorder id="VideoCommentVP"
+										autoPlay="true"
+										skinUrl="/resources/videoPlayer/skin/white.xml"
+										seekUsingScrubber="true"
+										displayCaptions="false"
+										autoScale="false"
+										subtitlingControls="false"
+										width="400"
+										height="{Math.floor(VideoCommentVP.width * 9 / 16)}"
+										controlsEnabled="true"/>
+	</s:VGroup>
+	<mx:Spacer width="20"/>
+	<s:Button click="closeButtonClickHandler(event)"
+			  buttonMode="true"
+			  label="{resourceManager.getString('myResources','CLOSE')}"/>
+</skins:CustomTitleWindow>

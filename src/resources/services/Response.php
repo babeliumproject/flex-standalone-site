@@ -85,20 +85,50 @@ class Response {
 	 */
 	public function saveResponse($data = null){
 		
-		if(!$data)
-			return false;
+		if(!$data || !isset($data->recordMedia))
+			throw new Exception("Invalid parameters",1000);
+		
+		$selectedRecMedia = $data->recordMedia;
+		
+		if(!isset($selectedRecMedia->mediaUrl) || !isset($selectedRecMedia->netConnectionUrl)){
+			throw new Exception("Invalid record media data",1000);
+		}
+		
+		if(!isset($_SESSION['recmedia']))
+			throw new Exception("Attempted to save recording without a valid session",1009);
+		
+		$recmedialist = $_SESSION['recmedia'];
+		
+		$found=false;
+		foreach($recmedialist as $rmi){
+			if($rmi->mediaUrl == $selectedRecMedia->mediaUrl && $rmi->netConnectionUrl == $selectedRecMedia->netConnectionUrl){
+				$found=true;
+				break;
+			}	
+		}
+
+		if(!$found){
+			throw new Exception("Attempted to save a recording that is not listed",1016);
+		}
+		
+		$mediaUrl = $selectedRecMedia->mediaUrl;
+		
+		$responsecode = substr($mediaUrl,strrpos($mediaUrl,'/')+1,-4);
 		
 		set_time_limit(0);
 		$this->_getResourceDirectories();
 		$thumbnail = 'nothumb.png';
+		$source= 'Red5';
 		
 		try{
-			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $data->fileIdentifier . '.flv';
+			$videoPath = $this->red5Path .'/'. $this->responseFolder .'/'. $responsecode . '.flv';
 			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
 			$duration = $mediaData->duration;
 
 			if($mediaData->hasVideo){
-				$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
+				$thumbdir = $this->imagePath.'/'.$responsecode;
+				$posterdir = $this->posterPath.'/'.$responsecode;
+				$this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $thumbdir, $posterdir);
 				$thumbnail = 'default.jpg';
 			}
 		} catch (Exception $e){
@@ -106,11 +136,71 @@ class Response {
 		}
 		
 
-		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id) ";
-		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d ) ";
+		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id, fk_media_id) ";
+		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d, %d ) ";
 
-		return $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $data->fileIdentifier, $thumbnail, $data->source, $duration, $data->characterName, $data->subtitleId );
+		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $thumbnail, $source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
+		
+		unset($_SESSION['recmedia']);
+		
+		return $responseId;
 
+	}
+	
+	public function saveResponse2($data = null){
+		
+		if(!$data || !isset($data->recordMedia))
+			throw new Exception("Invalid parameters",1000);
+		
+		$selectedRecMedia = $data->recordMedia;
+		
+		if(!isset($selectedRecMedia->mediaUrl) || !isset($selectedRecMedia->netConnectionUrl)){
+			throw new Exception("Invalid record media data",1000);
+		}
+		
+		if(!isset($_SESSION['recmedia']))
+			throw new Exception("Attempted to save recording without a valid session",1009);
+		
+		$recmedialist = $_SESSION['recmedia'];
+		
+		$found=false;
+		foreach($recmedialist as $rmi){
+			if($rmi->mediaUrl == $selectedRecMedia->mediaUrl && $rmi->netConnectionUrl == $selectedRecMedia->netConnectionUrl){
+				$found=true;
+				break;
+			}	
+		}
+
+		if(!$found){
+			throw new Exception("Attempted to save a recording that is not listed",1016);
+		}
+		
+		$mediaUrl = $selectedRecMedia->mediaUrl;
+		$filename = substr($mediaUrl,strrpos($mediaUrl,'/')+1);
+		$mediacode = substr($filename,-4);
+		
+		$optime = time();
+			
+		$fileabspath = $this->cfg->red5Path.'/'.$this->responseFolder.'/'.$filename;
+		$medianfo = $this->mediaHelper->retrieveMediaInfo($fileabspath);
+		$dimension = $medianfo->videoHeight;
+		$filesize = filesize($fileabspath);
+		$thumbdir = $this->cfg->imagePath.'/'.$mediacode;
+		$posterdir = $this->cfg->posterPath.'/'.$mediacode;
+		$this->mediaHelper->takeFolderedRandomSnapshots($fileabspath, $thumbdir, $posterdir);
+		$status = self::STATUS_READY;
+		
+		
+		$contenthash = $medianfo->hash;
+		$duration = $medianfo->duration;
+		$type = $medianfo->hasVideo ? 'video' : 'audio';
+		$metadata = $this->custom_json_encode($medianfo);
+		
+		$insert_m = "INSERT INTO media (mediacode,instanceid,component,type,timecreated,duration,level,fk_user_id,defaultthumbnail) VALUES ('%s',%d,'%d','%s',%d,%d,%d,%d,%d)";
+		$mediaid = $this->conn->_insert($insert_m, $mediacode, $instanceid, 'submission', $type, $optime, $duration, $level, $_SESSION['uid'], 1);
+		
+		$insert_mr = "INSERT INTO media_rendition (fk_media_id,filename,contenthash,status,timecreated,filesize,metadata,dimension) VALUES (%d,'%s','%s',%d,%d,%d,'%s',%d)";
+		$mediarenditionid = $this->conn->_insert($insert_mr, $mediaid, $filename, $status, $optime, $filesize, $metadata,$dimension);
 	}
 
 	/**

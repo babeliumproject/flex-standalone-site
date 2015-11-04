@@ -33,6 +33,8 @@ require_once 'vo/ExerciseLevelVO.php';
 require_once 'vo/UserVO.php';
 require_once 'vo/UserLanguageVO.php';
 
+require_once 'Search.php';
+
 /**
  * Class to perform exercise related operations
  *
@@ -54,7 +56,11 @@ class Exercise {
 	private $exerciseMinRatingCount;
 
 	private $conn;
+	private $cfg;
 	private $mediaHelper;
+	
+	const EXERCISE_READY=1;
+	const EXERCISE_DRAFT=0;
 
 	/**
 	 * Constructor function
@@ -67,186 +73,13 @@ class Exercise {
 		try {
 			$verifySession = new SessionValidation();
 			$settings = new Config ( );
+			$this->cfg = $settings;
 			$this->filePath = $settings->filePath;
 			$this->imagePath = $settings->imagePath;
 			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
 			$this->mediaHelper = new VideoProcessor();
-			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );
-
-		} catch (Exception $e) {
-			throw new Exception($e->getMessage());
-		}
-	}
-
-	/**
-	 * Saves information about a exercise that's being just uploaded and marks it to be reencoded to meet Babelium's video specification via a cron task.
-	 * Videos can be uploaded with two purposes (depending on your Babelium client's configuration): to use them as exercises, or directly to be assessed.
-	 * See the ant & flex configuration parameters for further info.
-	 * 
-	 * @param stdClass $exercise
-	 * 		An object that contains information about the exercise that's going to be saved
-	 * @throws Exception
-	 * 		There was a problem while modifying the database
-	 */
-	public function addUnprocessedExercise($exercise = null) {
-
-		try {
-			$verifySession = new SessionValidation(true);
-
-			if(!$exercise)
-				return false;
-
-			$exerciseLevel = new stdClass();
-			$exerciseLevel->userId = $_SESSION['uid'];
-			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-			
-			$parsedTags = array();
-			$parsedTags = $this->parseExerciseTags($exercise->tags);
-			
-			$parsedDescriptors = $this->parseDescriptors($exercise->descriptors);
-			
-			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, status, type, situation, competence, lingaspect) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', '%s', %d, %d, %d, %d) ";
-				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference, 'UnprocessedNoPractice', $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
-			} else {
-				$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, duration, license, reference, type, situation, competence, lingaspect) ";
-				$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), '%d', '%s', '%s', %d, %d, %d, %d) ";
-				$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-				$exercise->language, $_SESSION['uid'], $exercise->duration, $exercise->license, $exercise->reference, $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
-			}
-			//Exercise was successfully inserted
-			if($lastExerciseId){
-				$exerciseLevel->exerciseId = $lastExerciseId;
-				//Add the tags
-				$this->insertTags($parsedTags, $lastExerciseId);
-				//Add the descriptors, if any
-				$this->insertDescriptors($parsedDescriptors,$lastExerciseId);
-				//Set the level of the exercise
-				if($this->addExerciseLevel($exerciseLevel))
-					return $lastExerciseId;
-			}
-
-		} catch (Exception $e) {
-			throw new Exception($e->getMessage());
-		}
-
-	}
-
-	/**
-	 * Saves information about a exercise that's being published using the webcam.
-	 * Videos can be published with two purposes (depending on your Babelium client's configuration): to use them as exercises, or directly to be assessed.
-	 * See the ant & flex configuration parameters for further info.
-	 * 
-	 * @param stdClass $exercise
-	 * 		An object that contains information about the exercise that's going to be saved
-	 * @throws Exception
-	 * 		There was a problem while modifying the database
-	 */
-	public function addWebcamExercise($exercise = null) {
-
-		try {
-
-			$verifySession = new SessionValidation(true);
-			
-			if(!$exercise)
-				return false;
-
-			$result = 0;
-
-			set_time_limit(0);
-			$this->_getResourceDirectories();
-
-
-			$videoPath = $this->red5Path .'/'. $this->exerciseFolder .'/'. $exercise->name . '.flv';
-			$destPath = $this->red5Path . '/' . $this->responseFolder . '/' . $exercise->name . '.flv';
-
-			$mediaData = $this->mediaHelper->retrieveMediaInfo($videoPath);
-			$duration = $mediaData->duration;
-			$this->mediaHelper->takeFolderedRandomSnapshots($videoPath, $this->imagePath, $this->posterPath);
-
-			$exerciseLevel = new stdClass();
-			$exerciseLevel->userId = $_SESSION['uid'];
-			$exerciseLevel->suggestedLevel = $exercise->avgDifficulty;
-
-			$parsedTags = array();
-			$parsedTags = $this->parseExerciseTags($exercise->tags);
-			
-			$parsedDescriptors = array();
-			$parsedDescriptors = $this->parseDescriptors($exercise->descriptors);
-
-			$this->conn->_startTransaction();
-
-			$sql = "INSERT INTO exercise (name, title, description, tags, language, source, fk_user_id, adding_date, status, thumbnail_uri, duration, license, reference, type, situation, competence, lingaspect) ";
-			$sql .= "VALUES ('%s', '%s', '%s', '%s', '%s', 'Red5', '%d', now(), 'Available', '%s', '%d', '%s', '%s', %d, %d, %d, %d) ";
-
-			$lastExerciseId = $this->conn->_insert( $sql, $exercise->name, $exercise->title, $exercise->description, implode(',',$parsedTags),
-			$exercise->language, $_SESSION['uid'], 'default.jpg', $duration, $exercise->license, $exercise->reference, $exercise->type, $exercise->situation, $exercise->competence, $exercise->lingaspect );
-
-			if(!$lastExerciseId){
-				$this->conn->_failedTransaction();
-				throw new Exception ("Exercise save failed.");
-			}
-
-			//The exercise is being successfully added, now set the tags
-			$this->insertTags($parsedTags, $lastExerciseId);
-			
-			//Add the descriptors, if any
-			$this->insertDescriptors($parsedDescriptors,$lastExerciseId);
-			
-			//Set the exercise's level
-			$exerciseLevel->exerciseId = $lastExerciseId;
-			$insertLevel = $this->addExerciseLevel($exerciseLevel);
-			if(!$insertLevel){
-				$this->conn->_failedTransaction();
-				throw new Exception ("Exercise level save failed.");
-			}
-
-			if(isset($exercise->status) && $exercise->status == 'evaluation-video'){
-
-				$sql = "UPDATE exercise SET name = NULL, thumbnail_uri='nothumb.png' WHERE ( id=%d )";
-				$update = $this->conn->_update($sql,$lastExerciseId);
-				if(!$update){
-					$this->conn->_failedTransaction();
-					throw new Exception("Couldn't update no-practice exercise. Changes rollbacked.");
-				}
-				$sql = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_transcription_id, fk_subtitle_id)
-						VALUES (%d, %d, '%s', false, 'default.jpg', 'Red5', %d, NOW(), 0, 'None', NULL, NULL)";
-				$lastResponseId = $this->conn->_insert($sql,$_SESSION['uid'],$lastExerciseId,$exercise->name,$duration);
-				if(!$lastResponseId){
-					$this->conn->_failedTransaction();
-					throw new Exception("Couldn't insert no-practice response. Changes rollbacked.");
-				}
-				
-				//Move the file from exercises folder to the response folder
-				$renameResult = @rename($videoPath, $destPath);
-				if(!$renameResult){
-					$this->conn->_failedTransaction();
-					throw new Exception("Couldn't move transcoded file. Changes rollbacked.");
-				}
-			}else{
-
-				//Update the user's credit count
-				$creditUpdate = $this->_addCreditsForUploading();
-				if(!$creditUpdate){
-					$this->conn->_failedTransaction();
-					throw new Exception("Credit addition failed");
-				}
-				//Update the credit history
-				$creditHistoryInsert = $this->_addUploadingToCreditHistory($lastExerciseId);
-				if(!$creditHistoryInsert){
-					$this->conn->_failedTransaction();
-					throw new Exception("Credit history update failed");
-				}
-			}
-			
-			$this->conn->_endTransaction();
-			$result = $this->_getUserInfo();
-
-			return $result;
-
+			$this->conn = new Datasource ( $settings->host, $settings->db_name, $settings->db_username, $settings->db_password );			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -260,7 +93,7 @@ class Exercise {
 	 * 		An array of clean tags, if any
 	 */
 	public function parseExerciseTags($tags){
-		//Set the locale for character conversion explicitly to UTF-8. The escapeshellcmd() command
+				//Set the locale for character conversion explicitly to UTF-8. The escapeshellcmd() command
 		//depends on the locale and if not set it might strip non-ASCII characters from the input text.
 		setlocale(LC_CTYPE, "UTF8", "en_US.UTF-8");
 		
@@ -292,8 +125,8 @@ class Exercise {
 	public function insertTags($tags, $exerciseId){
 		if($tags && is_array($tags) && count($tags) && $exerciseId){
 			foreach($tags as $tag){
-				//Check if this tag exists in the `tag` table. The matching is case-sensitive
-				$sql = "SELECT id FROM tag WHERE BINARY name='%s'";
+				//Check if this tag exists in the `tag` table
+				$sql = "SELECT id FROM tag WHERE name='%s'";
 				$exists = $this->conn->_singleSelect($sql, $tag);
 				if(!$exists){
 					$insert = "INSERT INTO tag SET name='%s'";
@@ -302,7 +135,7 @@ class Exercise {
 					$tagId = $exists->id;
 				}
 				$sql = "SELECT fk_tag_id FROM rel_exercise_tag WHERE (fk_exercise_id=%d AND fk_tag_id=%d)";
-				$exist = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
+				$exists = $this->conn->_singleSelect($sql, $exerciseId, $tagId);
 				if(!$exists){
 					$relInsert = "INSERT INTO rel_exercise_tag SET fk_exercise_id=%d, fk_tag_id=%d";
 					$this->conn->_insert($relInsert, $exerciseId, $tagId);
@@ -326,11 +159,9 @@ class Exercise {
 			foreach($descriptors as $d){
 				if(preg_match($pattern,$d,$matches)){
 					// id(1),level(2),type(3),number(4)
-					$sql = "SELECT id FROM exercise_descriptor
-							WHERE situation=%d AND level=%d AND competence=%d AND number=%d";
+					$sql = "SELECT id FROM exercise_descriptor WHERE situation=%d AND level=%d AND competence=%d AND number=%d";
 					$result = $this->conn->_singleSelect($sql, $matches[1], $matches[2], $matches[3], $matches[4]);
-					if($result)
-						$descriptorIds[] = $result->id;
+					if($result) $descriptorIds[] = $result->id;
 				}
 			}
 		}
@@ -358,20 +189,6 @@ class Exercise {
 			$merge = array_merge((array)$sql, $params);
 			$result = $this->conn->_insert($merge);
 		}
-	}
-
-	/**
-	 * Adds a difficulty level for the provided exercise_id
-	 * 
-	 * @param stdClass $exerciseLevel
-	 * 		An object with information about the exercise and the level is supposed to belong to
-	 * @return int
-	 * 		The id of the newly inserted exercise_level
-	 */
-	private function addExerciseLevel($exerciseLevel){
-		$sql = "INSERT INTO exercise_level (fk_exercise_id, fk_user_id, suggested_level, suggest_date)
-						 VALUES ('%d', '%d', '%d', NOW()) ";
-		return $this->conn->_insert($sql, $exerciseLevel->exerciseId, $_SESSION['uid'], $exerciseLevel->suggestedLevel);
 	}
 
 	/**
@@ -418,21 +235,7 @@ class Exercise {
 		return $this->conn->recast('UserVO',$this->conn->_singleSelect($sql, $_SESSION['uid']));
 	}
 
-	/**
-	 * Retrieves the names of the directories in which different kinds of videos are stored
-	 */
-	private function _getResourceDirectories(){
-		$sql = "SELECT prefValue 
-				FROM preferences
-				WHERE (prefName='exerciseFolder' OR prefName='responseFolder' OR prefName='evaluationFolder') 
-				ORDER BY prefName";
-		$result = $this->conn->_multipleSelect($sql);
-		if($result){
-			$this->evaluationFolder = $result[0] ? $result[0]->prefValue : '';
-			$this->exerciseFolder = $result[1] ? $result[1]->prefValue : '';
-			$this->responseFolder = $result[2] ? $result[2]->prefValue : '';
-		}
-	}
+	
 
 	/**
 	 * Gets a list of all the available exercises sorted by date
@@ -445,31 +248,45 @@ class Exercise {
 					   e.title, 
 					   e.description, 
 					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date as addingDate, 
-       				   e.duration, 
+					   e.exercisecode, 
+       				   e.timecreated, 
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
+       				   e.difficulty, 
        				   e.status, 
-       				   e.license, 
-       				   e.reference
+       				   e.likes, 
+       				   e.dislikes 
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
-       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			WHERE (e.status = 'Available')
+       			WHERE (e.status = 1)
 				GROUP BY e.id
-				ORDER BY e.adding_date DESC";
+				ORDER BY e.timecreated DESC";
 
 		$searchResults = $this->conn->_multipleSelect($sql);
 		foreach($searchResults as $searchResult){
-			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+			$data = $this->getPrimaryMediaMinData($searchResult->id);
+			$searchResult->thumbnail = $data ? $data->thumbnail : null;
+			$searchResult->duration = $data ? $data->duration : 0;
+			$searchResult->tags = $this->getExerciseTags($searchResult->id);
 			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
 		}
 
 		return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+	}
+	
+	public function watchExercise($exercisecode){
+		if(!$exercisecode) return;
+		
+		$exdata = $this->getExerciseByCode($exercisecode,self::EXERCISE_READY);
+		if($exdata){
+			$status = 2;
+			$level = array(1,2);
+			$media = $this->getExerciseMedia($exdata->id, $status, $level);
+			if($media)
+				$exdata->media = $media;
+			$related = $this->getRelatedExercises($exdata);
+			if($related)
+				$exdata->related = $related;
+		}
+		return $this->conn->recast('ExerciseVO',$exdata);
 	}
 	
 	/**
@@ -485,27 +302,24 @@ class Exercise {
 					   e.title, 
 					   e.description, 
 					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date as addingDate, 
-       				   e.duration, 
+					   e.exercisecode, 
+       				   e.timecreated, 
        				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
+       				   e.difficulty, 
        				   e.status, 
-       				   e.license, 
-       				   e.reference
+       				   e.likes,
+       				   e.dislikes 
 				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
-       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        			WHERE (e.id = %d)
 				GROUP BY e.id
 				LIMIT 1";
 		
 		$result = $this->conn->_singleSelect($sql,$id);
 		if($result){
-			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
+			$data = $this->getPrimaryMediaMinData($result->id);
+			$result->thumbnail = $data ? $data->thumbnail : null;
+			$result->duration = $data ? $data->duration : 0;
+			$result->tags = $this->getExerciseTags($result->id);
 			$result->descriptors = $this->getExerciseDescriptors($result->id);
 		}
 
@@ -517,39 +331,61 @@ class Exercise {
 	 * @return stdClass
 	 * 		An object with information about the requested exercise or false on error
 	 */
-	public function getExerciseByName($name = null){
-		if(!$name)
+	public function getExerciseByCodeWithMedia($exercisecode = null){
+		if(!$exercisecode)
 			return;
 			
-		$sql = "SELECT e.id, 
-					   e.title, 
-					   e.description, 
-					   e.language, 
-					   e.tags, 
-					   e.source, 
-					   e.name, 
-					   e.thumbnail_uri as thumbnailUri,
-       				   e.adding_date, 
-       				   e.duration, 
-       				   u.username as userName, 
-       				   avg (suggested_level) as avgDifficulty, 
-       				   e.status, 
-       				   e.license, 
-       				   e.reference
-				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
-       				   LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				   LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			WHERE (e.name = '%s')
-				GROUP BY e.id
-				LIMIT 1";
-
-		$result = $this->conn->_singleSelect($sql,$name);
+		$result = $this->getExerciseByCode($exercisecode);
 		if($result){
-			$result->avgRating = $this->getExerciseAvgBayesianScore($result->id)->avgRating;
-			$result->descriptors = $this->getExerciseDescriptors($result->id);
+			$data = $this->getPrimaryMediaMinData($result->id);
+			$result->thumbnail = $data ? $data->thumbnail : null;
+			$result->duration = $data ? $data->duration : 0;
 		}
 
 		return $this->conn->recast('ExerciseVO',$result);
+	}
+	
+	public function getExerciseByCode($exercisecode,$status=0){
+		if(!$exercisecode)
+			return;
+			
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated,
+					   u.username as userName, e.difficulty, e.status, e.likes, e.dislikes, e.type,
+					   e.competence, e.situation, e.lingaspects, e.licence, e.attribution, e.visible 
+				FROM   exercise e INNER JOIN user u ON e.fk_user_id= u.id
+				WHERE e.exercisecode = '%s'";
+		
+		if($status){
+			$cstatus = $status ? 1 : 0;
+			$sql .= " AND e.status=%d LIMIT 1";
+			$result = $this->conn->_singleSelect($sql,$exercisecode,$cstatus);
+		} else {
+			$sql .= " LIMIT 1";
+			$result = $this->conn->_singleSelect($sql,$exercisecode);
+		}
+		
+		if($result){
+			$result->tags = $this->getExerciseTags($result->id);
+			$result->descriptors = $this->getExerciseDescriptors($result->id);
+		}
+		return $this->conn->recast('ExerciseVO',$result);
+	}
+	
+	private function getRelatedExercises($exercise, $howmany=5){
+		if (!$exercise) return;
+		$relatedex = false;
+		$sql = "SELECT e.id  
+				FROM exercise e 
+				WHERE language='%s' AND difficulty=%d AND status=1 ORDER BY RAND() LIMIT %d";
+		$results = $this->conn->_multipleSelect($sql, $exercise->language, $exercise->difficulty, $howmany);
+		if ($results){
+			$relatedex = array();
+			foreach($results as $result){
+				$re = $this->getExerciseById($result->id);
+				if($re) $relatedex[] = $re;
+			}
+		}
+		return $relatedex;
 	}
 
 	/**
@@ -569,29 +405,26 @@ class Exercise {
 						   e.title, 
 						   e.description, 
 						   e.language, 
-						   e.tags, 
-						   e.source, 
-						   e.name, 
-						   e.thumbnail_uri as thumbnailUri,
-       					   e.adding_date as addingDate, 
-       					   e.duration, 
+						   e.exercisecode, 
+       					   e.timecreated, 
        					   u.username as userName, 
-       					   avg (suggested_level) as avgDifficulty, 
-       					   e.status, 
-       					   e.license, 
-       					   e.reference
+       					   e.difficulty, 
+       					   e.likes, 
+       					   e.dislikes, 
+       					   e.status 
 					FROM exercise e 
 					 	 INNER JOIN user u ON e.fk_user_id= u.id
-	 				 	 LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				 	 LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
        				 	 LEFT OUTER JOIN subtitle a ON e.id=a.fk_exercise_id
-       			 	 	 WHERE (e.status = 'Available')
+       			 	 	 WHERE (e.status = 1)
 				 	GROUP BY e.id
-				 	ORDER BY e.adding_date DESC";
+				 	ORDER BY e.timecreated DESC";
 
 			$searchResults = $this->conn->_multipleSelect($sql);
 			foreach($searchResults as $searchResult){
-				$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
+				$data = $this->getPrimaryMediaMinData($searchResult->id);
+				$searchResult->thumbnail = $data ? $data->thumbnail : null;
+				$searchResult->duration = $data ? $data->duration : 0;
+				$searchResult->tags = $this->getExerciseTags($searchResult->id);
 				$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
 			}
 
@@ -603,6 +436,7 @@ class Exercise {
 		}
 	}
 
+
 	/**
 	 * Gets a list of all the exercises that are available and ready to be practiced (it has subtitles and those subtitles are marked as complete).
 	 * If there's an active user session the list is filtered using the user's set of preferred languages.
@@ -610,47 +444,111 @@ class Exercise {
 	 * @return mixed
 	 * 		An array of stdClass on which each element has information about an exercises, or false on error
 	 */
-	public function getRecordableExercises(){
-		$sql = "SELECT e.id, 
-			       e.title, 
-			       e.description, 
-			       e.language, 
-			       e.tags, 
-			       e.source, 
-			       e.name, 
-			       e.thumbnail_uri as thumbnailUri,
-       			   e.adding_date as addingDate, 
-			       e.duration, 
-			       u.username as userName, 
-       			   avg (suggested_level) as avgDifficulty,
-			       e.status, 
-			       e.license, 
-			       e.reference,
-			       e.ismodel,
-			       e.model_id
-			       FROM   exercise e 
-				 		INNER JOIN user u ON e.fk_user_id= u.id
-				 		INNER JOIN subtitle t ON e.id=t.fk_exercise_id
-       				    LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id
-       				    LEFT OUTER JOIN exercise_level l ON e.id=l.fk_exercise_id
-       			 WHERE e.status = 'Available' AND t.complete = 1
-				 GROUP BY e.id
-				 ORDER BY e.adding_date DESC, e.language DESC";
+	public function getRecordableExercises($data){
 		
-		$searchResults = $this->conn->_multipleSelect($sql);
-		foreach($searchResults as $searchResult){
-			$searchResult->avgRating = $this->getExerciseAvgBayesianScore($searchResult->id)->avgRating;
-			$searchResult->descriptors = $this->getExerciseDescriptors($searchResult->id);
+		$sql = "SELECT e.id, e.title, e.description, e.language, e.exercisecode, e.timecreated, u.username as userName, 
+					   e.difficulty, e.status, e.likes, e.dislikes, e.type, e.situation, e.competence, e.lingaspects
+				FROM exercise e INNER JOIN user u ON e.fk_user_id= u.id WHERE e.status = 1 AND e.visible=1";
+		
+		$q = isset($data->q) && strlen($data->q) ? $data->q : null;
+		//$sort = isset($data->sort) ? $data->sort : null;
+		$lang = isset($data->lang) ? $data->lang : null;
+		$difficulty = isset($data->difficulty) ? $data->difficulty : 0;
+		$type = isset($data->type) ? $data->type : -1;
+		$situation = isset($data->situation) ? $data->situation : 0;
+		
+		if($q){
+			$search = new Search();
+			$exidarray = $search->launchSearch($q);
+			if(count($exidarray)){
+				$exids = implode($exidarray,',');
+				$sql .= " AND e.id IN (%s) ";
+				$sql .= " ORDER BY e.timecreated DESC, e.language DESC";
+				$searchResults = $this->conn->_multipleSelect($sql,$exids);
+			} else {
+				$searchResults=null;	
+			}
+		} else {
+			$sql .= " ORDER BY e.timecreated DESC, e.language DESC";
+			$searchResults = $this->conn->_multipleSelect($sql);
+		}
+		
+		if($searchResults){
+			$filtered = $searchResults;
+			if($lang) 
+				$filtered = $this->filterByLang($filtered, $lang);
+			if($difficulty) 
+				$filtered = $this->filterByDifficulty($filtered, $difficulty);
+			if($type>-1) 
+				$filtered = $this->filterByType($filtered, $type);
+			if($situation) 
+				$filtered = $this->filterBySituation($filtered, $situation);
+		
+			if($filtered){
+				foreach($filtered as $r){
+					$data = $this->getPrimaryMediaMinData($r->id);
+					$r->thumbnail = $data ? $data->thumbnail : null;
+					$r->duration = $data ? $data->duration : 0;
+					$r->tags = $this->getExerciseTags($r->id);
+					$r->descriptors = $this->getExerciseDescriptors($r->id);
+				}
+			}
+			$searchResults = $filtered;
 		}
 
 		try {
 			$verifySession = new SessionValidation(true);
 			$filteredResults = $this->filterByLanguage($searchResults, 'practice');
-			return $this->conn->multipleRecast('ExerciseVO',$filteredResults);
+			//return $this->conn->multipleRecast('ExerciseVO',$filteredResults);
+			return $filteredResults;
 		} catch (Exception $e) {
-			return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			//return $this->conn->multipleRecast('ExerciseVO',$searchResults);
+			return $searchResults;
 		}
-
+	}
+	
+	private function filterByLang($list, $lang){
+		if(!$lang || !$list) return;
+		$result = array();
+		foreach($list as $e){
+			if(strpos($e->language, $lang) !== false){
+				array_push($result, $e);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterByDifficulty($list, $difficulty){
+		if(!$difficulty || !$list) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->difficulty==$difficulty){
+				array_push($result,$l);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterByType($list, $type){
+		if($type==-1 || !$list) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->type == $type){
+				array_push($result,$l);
+			}
+		}
+		return $result;
+	}
+	
+	private function filterBySituation($list, $situation){
+		if(!$situation || !$list) return;
+		$result = array();
+		foreach($list as $l){
+			if($l->situation == $situation){
+				array_push($result,$l);
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -688,7 +586,7 @@ class Exercise {
 	}
 	
 	/**
-	 * Returns the descriptors of the provided exercise (if any) formated like this example: D1_1_01_1
+	 * Returns the descriptors of the provided exercise (if any) formated like this example: D000_A1_SI00
 	 * @param int $exerciseId
 	 * 		The exercise id to check for descriptors
 	 * @return mixed $dcodes
@@ -698,8 +596,7 @@ class Exercise {
 		if(!$exerciseId)
 			return false;
 		$dcodes = false;
-		$sql = "SELECT ed.situation, ed.level, ed.competence, ed.number 
-				FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id 
+		$sql = "SELECT ed.* FROM rel_exercise_descriptor red INNER JOIN exercise_descriptor ed ON red.fk_exercise_descriptor_id=ed.id 
 				WHERE red.fk_exercise_id=%d";
 		$results = $this->conn->_multipleSelect($sql,$exerciseId);
 		if($results && count($results)){
@@ -712,22 +609,217 @@ class Exercise {
 		}
 		return $dcodes;
 	}
+	
+	
+	/**
+	 * Returns the tags that were defined for the specified exercise
+	 * 
+	 * @param int $exerciseid
+	 * 		The exercise id whose tags you want to retrieve
+	 * @return mixed $tags
+	 * 		An array of tags or false when no tags are defined for the specified exercise
+	 */
+	public function getExerciseTags($exerciseid){
+		if(!$exerciseid) return;
+		$tags = '';
+		$sql = "SELECT t.name FROM tag t INNER JOIN rel_exercise_tag r ON t.id=r.fk_tag_id WHERE r.fk_exercise_id=%d";
+		$results = $this->conn->_multipleSelect($sql, $exerciseid);
+		if($results){
+			$tags = array();
+			foreach($results as $tag){
+				$tags[] = $tag->name;
+			}
+		}
+		return $tags;
+	}
+	
+	public function getPrimaryMediaMinData($exerciseid){
+		if(!$exerciseid) return;
+		$data = false;
+		$media = $this->getExerciseMedia($exerciseid, 2, 1);
+		if($media && count($media)==1){
+			$data = new stdClass();
+			
+			$thumbdir = '/resources/images/thumbs';
+			$thumbnum = $media[0]->defaultthumbnail;
+			$mediacode = $media[0]->mediacode;
+			
+			$t =  $thumbdir . '/' . $mediacode . '/%02d.jpg';
+			$fragment = sprintf($t, $thumbnum);
+			
+			$data->thumbnail = $fragment;
+			$data->duration = $media[0]->duration;
+		}
+		return $data;
+	}
+	
+	/**
+	 * Retrieves the media associated to the specified exercise.
+	 * 
+	 * @param int $exerciseid
+	 * 		The exercise id whose media you want to retrieve
+	 * @param int $status
+	 * 		The status of the media you want to retrieve. Possible values are:
+	 * 			0: Raw media. Format and dimensions are not consistent
+	 * 			1: Encoding media. Media that is currently being encoded to follow standard formats and dimensions
+	 * 			2: Encoded media. Media with consistent format and dimensions
+	 * 			3: Duplicated media. Media with contenthash already present in the system
+	 * 			4: Corrupt media. Media that can't be displayed or read correctly.
+	 * 			5: Deleted media. Media that is marked as deleted and will be removed periodically.
+	 * @param int $level
+	 * 		The level of the media you want to retrieve. Possible values are:
+	 * 			0: Undefined. This media has not been assigned a level as of yet.
+	 * 			1: Primary. This media is the primary file of the instance and displayed by default.
+	 * 			2: Model. This media is a model associated to a primary media.
+	 * 			3: Attempt. This media is a submission done following some instance.
+	 * 			4: Rendition. This media is a rendition (different dimension version) of a primary media.
+	 * @return mixed $results
+	 * 		An array of objects with data about the media or false when matching media is not found
+	 */
+	public function getExerciseMedia($exerciseid, $status, $level){
+		if(!$exerciseid) return;
+		
+		$component = 'exercise';
+		
+		$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
+				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+				WHERE m.component='%s' AND m.instanceid=%d";
+		
+		if(is_array($status)){
+			if(count($status)>1){
+				$sparam = implode(",",$status);
+				$sql.=" AND mr.status IN (%s) ";
+			} else {
+				$sparam = $status[0];
+				$sql.=" AND mr.status=%d ";
+			}	
+		} else {
+			$sparam=$status;
+			$sql.=" AND mr.status=%d ";
+		}
+		
+		if(is_array($level)){
+			if(count($level)>1){
+				$lparam = implode(",",$level);
+				$sql.=" AND m.level IN (%s) ";
+			} else {
+				$lparam = $level[0];
+				$sql.=" AND m.level=%d ";
+			}
+		} else {
+			$lparam = $level;
+			$sql.=" AND m.level=%d ";
+		}
+		
+		
+		$results = $this->conn->_multipleSelect($sql, $component, $exerciseid, $sparam, $lparam);
+		if($results){
+			foreach($results as $r){
+				$r->netConnectionUrl = $this->cfg->streamingserver;
+				$r->mediaUrl = 'exercises/'.$r->filename;
+			}
+		}
+		return $results;
+	}
+	
+	public function getExerciseDefaultThumbnail($param){
+		if(!$param)
+			throw new Exception("Invalid parameter");
+	
+		$level = 1;
+		$component = 'exercise';
+		$exerciseid = 0;
+		
+		$thumbdir = '/resources/images/thumbs';
+		$url = $this->cfg->wwwroot . $thumbdir . '/nothumb.png';
+	
+		if(!is_numeric($param)){
+			$exercisecode=$param;
+			$data = $this->getExerciseByCode($exercisecode);
+			if($data){
+				$exerciseid = $data->id;
+			}
+		} else {
+			$exerciseid=$param;
+		}
+	
+		if($exerciseid){
+			$sql = "SELECT mediacode, defaultthumbnail
+					FROM media WHERE instanceid=%d AND component='%s' AND level=%d";
+			$mdata = $this->conn->_singleSelect($sql, $exerciseid, $component, $level);
+			if($mdata){
+				$t =  $thumbdir . '/' . $mdata->mediacode . '/%02d.jpg';
+				$fragment = sprintf($t, $mdata->defaultthumbnail);
+				//if(is_file($this->cfg->webRootPath.$fragment)){
+					$url = $this->cfg->wwwroot.$fragment;
+				//}
+			}
+		}
+		return $url;
+	}
+	
+	private function thumbnailAbsUrl($mediacode, $thumbnum){
+		if(!$mediacode)
+			throw new Exception("Invalid parameter");
+		
+		$thumbdir = '/resources/images/thumbs';
+		$url = $this->cfg->wwwroot . $thumbdir . '/nothumb.png';
+		
+		$selectedthumb = ($thumbnum >= 1 && $thumbnum  <= 3) ? $thumbnum : 1;
+		$t =  $thumbdir . '/' . $mediacode . '/%02d.jpg';
+		$fragment = sprintf($t, $thumbnum);
+				
+		$url = $this->cfg->wwwroot.$fragment;
+			
+	}
+	
+	public function requestRecordingSlot(){
+		try{
+			$session = new SessionValidation(true);
+			
+			$prefix = "resp-";
+			$optime = round(microtime(true)*1000); //ms precision to mimic client-side behaviour.
+			$mediadir = 'responses';
+			$mediafilename = $prefix.$optime.'.flv';
+			
+			$mediaUrl = $mediadir.'/'.$mediafilename;
+			
+			$data = new stdClass();
+			$data->mediaUrl = $mediaUrl;
+			$data->netConnectionUrl = $this->cfg->streamingserver;
+			$data->maxDuration = 600;
+			
+			if(isset($_SESSION['recmedia'])){
+				$recmedialist = $_SESSION['recmedia'];
+			} else {
+				$recmedialist = array();
+			}
+			$recmedialist[] = $data;
+			
+			$_SESSION['recmedia'] = $recmedialist;
+			
+			return $data;
+			
+		} catch (Exception $e){
+			throw new  Exception($e->getMessage());
+		}
+	}
 
 	/**
 	 * Gets the available subtitle languages for the provided exercise id
-	 * @param int $exerciseId
-	 * 		The exercise id whose subtitle languages we want to search
+	 * @param int $mediaid
+	 * 		The media file whose subtitle languages we want to search
 	 * @return array $results
-	 * 		An array of subtitle languages available for this exercise
+	 * 		An array of subtitle languages available for this media
 	 */
-	public function getExerciseLocales($exerciseId=0) {
-		if(!$exerciseId)
+	public function getExerciseLocales($mediaid=0) {
+		if(!$mediaid)
 			return false;
 
 		$sql = "SELECT DISTINCT language as locale FROM subtitle
-				WHERE fk_exercise_id = %d";
+				WHERE fk_media_id = %d";
 
-		$results = $this->conn->_multipleSelect ( $sql, $exerciseId );
+		$results = $this->conn->_multipleSelect ( $sql, $mediaid );
 
 		return $results; // return languages
 	}
@@ -782,67 +874,58 @@ class Exercise {
 		return ($mail->send($text, $subject, null));
 	}
 
-	/**
-	 * Adds a new score to the provided exercise id
-	 * 
-	 * @param stdClass $score
-	 * 		An object with the exercise id and the score that the user wishes to give to it
-	 * @return stdClass
-	 * 		An object with information about an exercise
-	 * @throws Exception
-	 * 		There's no active user session
-	 */
-	public function addExerciseScore($score = null){
+	
+	public function addExerciseLike($data = null){
 		try {
 			$verifySession = new SessionValidation(true);
 			
-			if(!$score)
+			if(!$data || $data->like !=0 || $data->like!=1)
 				return false;
 
-			$result = $this->userRatedExercise($score);
-			if (!$result){
-				//The user can add a score
-
-				$sql = "INSERT INTO exercise_score (fk_exercise_id, fk_user_id, suggested_score, suggestion_date)
-			        VALUES ( '%d', '%d', '%d', NOW() )";
-
-				$insert_result = $this->conn->_insert($sql, $score->exerciseId, $_SESSION['uid'], $score->suggestedScore);
-
-				//return $this->getExerciseAvgScore($score->exerciseId);
-				return $this->conn->recast('ExerciseVO',$this->getExerciseAvgBayesianScore($score->exerciseId));
-
+			$optime = time();
+			$alreadyliked = $this->exerciseAlreadyLiked($data);
+			
+			if (!$alreadyliked){
+				$sql = "INSERT INTO exercise_like (fk_exercise_id, fk_user_id, like, timecreated, timemodified) VALUES (%d, %d, %d, %d, %d)";
+				$likeid = $this->conn->_insert($sql, $data->exerciseid, $_SESSION['uid'], $data->like, $optime);
+				$this->updateLikeCount($data->exerciseid);
 			} else {
-				//The user has already given a score ignore the input.
-				return 0;
+				//User changed the opinion regarding this exercise
+				if($alreadyliked->like != $data->like){
+					$sql = "UPDATE execise_like SET like=%d, timemodified=%d WHERE id=%d";
+					$updatedrows = $this->conn->_update($sql, $data->like, $optime, $alreadyliked->id);
+					$this->updateLikeCount($data->exerciseid);
+				}
 			}
+			
+			//Return updated like values
+			return $this->getExerciseById($data->exerciseid);
+			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
 	}
 
-	/**
-	 * Check if the user has already rated this exercise today
-	 * @param stdClass $score
-	 * 		An object with the exercise id and the score that the user wishes to give to it
-	 * @return stdClass
-	 * 		An object with score information about the exercise
-	 * @throws Exception
-	 * 		There's no active user session
-	 */
-	public function userRatedExercise($score = null){
+	private function exerciseAlreadyLiked($data = null){
 		try {
 			$verifySession = new SessionValidation(true);
 	
-			if(!$score)
-				return false;
+			if(!$data) return false;
 			
-			$sql = "SELECT *
-		        	FROM exercise_score 
-		        	WHERE ( fk_exercise_id='%d' AND fk_user_id='%d' AND CURDATE() <= suggestion_date )";
-			return $this->conn->_singleSelect ( $sql, $score->exerciseId, $_SESSION['uid']);
+			$sql = "SELECT id, like FROM exercise_like WHERE (fk_exercise_id=%d AND fk_user_id=%d)";
+			return $this->conn->_singleSelect($sql, $data->exerciseid, $_SESSION['uid']);
+			
 		} catch (Exception $e) {
 			throw new Exception($e->getMessage());
 		}
+	}
+	
+	private function updateLikeCount($exerciseid){
+		$sql = "UPDATE exercise e SET e.likes=(SELECT COUNT(l1.like) exercise_like l1 WHERE l1.fk_exercise_id=%d AND l1.like=1), 
+									e.dislikes=(SELECT COUNT(l2.like) exercise_like l2 WHERE l2.fk_exercise_id=%d AND l2.like=0)
+		        WHERE e.id=%d";
+		
+		$this->conn->_update($sql, $exerciseid, $exerciseid, $exerciseid);
 	}
 
 	/**
@@ -868,81 +951,6 @@ class Exercise {
 			throw new Exception($e->getMessage());
 		}
 	}
-
-	/**
-	 * Gets the average score of the provided exercise id
-	 * @param int $exerciseId
-	 * 		The exercise id we want to calculate the average score of
-	 * @return stdClass
-	 * 		Score information about the provided exercise id false on error or empty query
-	 */
-	private function getExerciseAvgScore($exerciseId){
-
-		$sql = "SELECT e.id, 
-					   avg (suggested_score) as avgRating, 
-					   count(suggested_score) as ratingCount
-				FROM exercise e LEFT OUTER JOIN exercise_score s ON e.id=s.fk_exercise_id    
-				WHERE (e.id = '%d' ) GROUP BY e.id";
-
-		return $this->conn->_singleSelect($sql, $exerciseId);
-	}
-
-	/**
-	 * Returns the bayesian average score of an exercise id (the arithmetic average score is not accurate information in statistical terms
-	 * so a weighted value is used instead)
-	 * @param int $exerciseId
-	 * 		The exercise id we want to calculate the bayesian average score of
-	 * @return stdClass $exerciseRatingData	
-	 * 		Score information about the provided exercise id false on error
-	 */
-	public function getExerciseAvgBayesianScore($exerciseId = 0){
-		if(!$exerciseId)
-			return false;
-		
-		
-		if(!isset($this->exerciseMinRatingCount)){
-			$sql = "SELECT prefValue FROM preferences WHERE (prefName = 'minVideoRatingCount')";
-
-			$result = $this->conn->_singleSelect($sql);
-
-			if($result)
-				$this->exerciseMinRatingCount = $result->prefValue;
-			else
-				$this->exerciseMinRatingCount = 0;
-		}
-
-		if(!isset($this->exerciseGlobalAvgRating)){
-			$this->exerciseGlobalAvgRating = $this->getExercisesGlobalAvgScore();
-		}
-
-		$exerciseRatingData = $this->getExerciseAvgScore($exerciseId);
-
-		$exerciseAvgRating = $exerciseRatingData->avgRating;
-		$exerciseRatingCount = $exerciseRatingData->ratingCount;
-
-		/* Avoid division by zero errors */
-		if ($exerciseRatingCount == 0) $exerciseRatingCount = 1;
-
-		$exerciseBayesianAvg = ($exerciseAvgRating*($exerciseRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount))) +
-							   ($this->exerciseGlobalAvgRating*($this->exerciseMinRatingCount/($exerciseRatingCount + $this->exerciseMinRatingCount)));
-
-		$exerciseRatingData->avgRating = $exerciseBayesianAvg;
-
-		return $exerciseRatingData;
-
-	}
-
-	/**
-	 * Gets the average score of all the available exercises
-	 * @return double
-	 * 		The global average score or false on error
-	 */
-	private function getExercisesGlobalAvgScore(){
-		$sql = "SELECT avg(suggested_score) as globalAvgScore FROM exercise_score ";
-
-		return ($result = $this->conn->_singleSelect($sql)) ? $result->globalAvgScore : 0;
-	}
-
 
 }
 

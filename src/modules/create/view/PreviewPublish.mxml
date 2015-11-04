@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:common="view.common.*"
+		  xmlns:components="components.*"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:view="modules.create.view.*"
+		  width="100%"
+		  creationComplete="onComplete(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import modules.create.event.CreateEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
+			import utils.CollectionUtils;
+
+			private var dpVisibility:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'PRIVATE'}, {'code': 1, 'label': 'PUBLIC'}]);
+			
+			private var _model:DataModel=DataModel.getInstance();
+
+			private var exercisecode:String;
+			private var exerciseid:int;
+			
+			private var _currentData:Object;
+			
+			private var _primaryMediaData:Object;
+			private var _modelMediaData:Object;
+			
+			private var _primaryMediaCaptions:Object;
+			private var _modelMediaCaptions:Object;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void{
+				visibilitydropdown.localeAwareDataProvider=dpVisibility;
+				cw1=BindingUtils.bindSetter(exerciseData,_model,'exercisePreviewRetrieved',commitOnly,useWeakReference);
+			}
+
+			public function resetComponent():void
+			{
+				primarym.resetComponent();
+				modelm.resetComponent();
+				_currentData=null;
+				_primaryMediaData=_modelMediaData=null;
+				_primaryMediaCaptions=_modelMediaCaptions=null;
+				modelmediaformitem.includeInLayout=false;
+				modelmediaformitem.visible=false;
+				saveButton.enabled=false;
+				
+				//Reset the related model data
+				_model.exercisePreview=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+				
+				saveButton.removeEventListener(MouseEvent.CLICK,saveChangesClickHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			public function exerciseData(value:Boolean):void{
+				_currentData=null;
+				_primaryMediaData=_modelMediaData=null;
+				_primaryMediaCaptions=_modelMediaCaptions=null;
+				modelmediaformitem.includeInLayout=false;
+				modelmediaformitem.visible=false;
+				saveButton.enabled=false;
+				
+				if (_model.exercisePreview)
+				{
+					_currentData=_model.exercisePreview;
+					
+					saveButton.enabled=true;
+					
+					var licence:String = _currentData.licence ? _currentData.licence : 'CC-BY';
+					
+					licenseSelector.dataProvider = licenseSelector.licenses;
+					licenseSelector.selectedItem=licenseSelector.getLicenseAndIconGivenCode(licence);			
+					
+					referenceUrl.text = _currentData.attribution ? _currentData.attribution : '';
+					
+					var visible:int = _currentData.visible ? 1 : 0;
+					var vitem:Object = CollectionUtils.findInCollection(visibilitydropdown.dataProvider as ArrayCollection,
+													 				   CollectionUtils.findField('code',visible) as Function);
+					if(vitem){
+						visibilitydropdown.selectedItem=vitem;
+					}
+					
+					if (_currentData.hasOwnProperty('media'))
+					{
+						if (getQualifiedClassName(_currentData.media) == 'Array')
+						{
+							var media:Array=_currentData.media;
+							for each (var item:Object in media)
+							{
+								var level:int=parseInt(item.level);
+								if (level == 1 && !_primaryMediaData)
+								{
+									_primaryMediaData=item;
+									continue;
+								}
+								if (level == 2 && !_modelMediaData)
+								{
+									_modelMediaData=item;
+									continue;
+								}
+							}
+						}
+						else if (getQualifiedClassName(_currentData.media) == 'Object')
+						{
+							_primaryMediaData=_currentData.media;
+						}
+					}
+					checkIfMediaHasSubtitles();
+					loadMedia();
+				}	
+			}
+			
+			protected function checkIfMediaHasSubtitles():void{
+				
+				if(_primaryMediaData && _primaryMediaData.hasOwnProperty('subtitles')){
+					_primaryMediaCaptions = _primaryMediaData.subtitles ? _primaryMediaData.subtitles : null;
+				}
+				if(_modelMediaData && _modelMediaData.hasOwnProperty('subtitles')){
+					_modelMediaCaptions = _modelMediaData.subtitles ? _modelMediaData.subtitles : null;
+				}
+			}
+			
+			protected function loadMedia():void{
+				if(_primaryMediaData){
+					primarym.loadVideoByUrl(_primaryMediaData);
+					primarym.setCaptions(_primaryMediaCaptions);
+				}
+				if(_modelMediaData){
+					modelmediaformitem.includeInLayout=true;
+					modelmediaformitem.visible=true;
+					modelm.loadVideoByUrl(_modelMediaData);
+					modelm.setCaptions(_modelMediaCaptions);
+				}
+			}
+			
+			private function saveChangesClickHandler(event:MouseEvent):void{
+				var visible:int=visibilitydropdown.selectedItem['code'];
+				var licence:String=(licenseSelector.selectedItem['code'] as String).toLowerCase();
+				var attribution:String=referenceUrl.text;
+				
+				var exerciseid:int = _currentData.id;
+				
+				var params:Object = new Object();
+				params.id = exerciseid;
+				params.visible = visible;
+				params.licence = licence;
+				params.attribution = attribution;
+				
+				new CreateEvent(CreateEvent.PUBLISH_EXERCISE,params).dispatch();
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="previewPublishContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"/>
+		</s:layout>
+
+		<s:Label id="editVideoTitle"
+				 text="{ResourceManager.getInstance().getString('myResources','PREVIEW_PUBLISH')}"
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{previewPublishContainer.getStyle('borderWeight')}"
+									alpha="{previewPublishContainer.getStyle('borderAlpha')}"
+									color="{previewPublishContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+
+		<s:Form width="100%">
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','PRIMARY_MEDIA')}"
+						styleName="boldLabel">
+				<videoPlayer:VideoRecorder id="primarym"
+										   autoPlay="false"
+										   skinUrl="resources/videoPlayer/skin/white.xml"
+										   seekUsingScrubber="true"
+										   displayCaptions="true"
+										   autoScale="false"
+										   subtitlingControls="false"
+										   width="640"
+										   height="360"
+										   controlsEnabled="true"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','MODEL_MEDIA')}"
+						styleName="boldLabel" visible="false" includeInLayout="false"
+						id="modelmediaformitem">
+				<videoPlayer:VideoRecorder id="modelm"
+										   autoPlay="false"
+										   skinUrl="resources/videoPlayer/skin/white.xml"
+										   seekUsingScrubber="true"
+										   displayCaptions="true"
+										   autoScale="false"
+										   subtitlingControls="false"
+										   width="640"
+										   height="360"
+										   controlsEnabled="true"/>
+			</s:FormItem>
+			
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke weight="{previewPublishContainer.getStyle('borderWeight')}"
+										alpha="{previewPublishContainer.getStyle('borderAlpha')}"
+										color="{previewPublishContainer.getStyle('borderColor')}"/>
+				</s:stroke>
+			</s:Line>
+			
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','LICENCE')}"
+						styleName="boldLabel"
+						required="true">
+				<common:LicenseComboBox id="licenseSelector"/>
+			</s:FormItem>
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','AUTHORS_NAME_URL')}"
+						styleName="boldLabel"
+						toolTip="{ResourceManager.getInstance().getString('myResources','VIDEO_OWNER_AUTHOR')}"
+						width="100%">
+				<s:TextInput width="100%"
+							 id="referenceUrl"
+							 styleName="frm-input"/>
+			</s:FormItem>
+
+			<s:FormItem label="{ResourceManager.getInstance().getString('myResources','VISIBILITY')}"
+						styleName="boldLabel"
+						width="100%"
+						required="true">
+				<components:EnhancedDropDownList id="visibilitydropdown"
+										   skinClass="skins.BootstrapDropDownList"
+										   cornerRadius="3"
+										   borderColor="0xcccccc"
+										   requireSelection="true"
+										   sortItems="true"/>
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  styleName="btn-success"
+				  label="{resourceManager.getString('myResources','SAVE')}"
+				  click="saveChangesClickHandler(event)"
+				  buttonMode="true"/>
+	</s:HGroup>
+
+
+</s:VGroup>

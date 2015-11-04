@@ -197,14 +197,14 @@ INSERT INTO `user_languages` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `users`
 --
 -- Password for example users are the same as username u: guest1/p: guest1
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES 
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES 
 (1,'guest1','1144e9791066fcc2f911108616deb91e09458c37','guest1@mailinator.com','Guest1','',200,'2009-07-02 12:30:00',1,'',0),
 (2,'guest2','ea4a2ae4287d89d58ca0ff6f475c4dacca456e3b','guest2@mailinator.com','Guest2','',200,'2009-07-02 12:30:00',0,'',0);
 

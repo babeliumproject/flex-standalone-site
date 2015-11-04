@@ -10,9 +10,9 @@ package events
 		public static const REGISTER_USER: String = "registerUser";
 		public static const ACTIVATE_USER: String = "activateUser";
 		
-		public var user:NewUserVO;
+		public var user:Object;
 		
-		public function RegisterUserEvent(type:String, user:NewUserVO)
+		public function RegisterUserEvent(type:String, user:Object)
 		{
 			super(type);
 			this.user = user;

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  horizontalAlign="center"
+		  width="100%"
+		  creationComplete="completeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import components.userManagement.FieldValidator;
+			
+			import events.UserEvent;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.ToolTip;
+			import mx.events.FlexEvent;
+			import mx.managers.ToolTipManager;
+			
+			import view.common.CustomAlert;
+			
+			import vo.UserVO;
+
+			public var errorMessageTooltips:Array=new Array;
+			public var creationCompleted:Boolean=false;
+
+			private var _model:DataModel=DataModel.getInstance();
+			
+			private var cancelFunction:Function;
+
+			private var cw1:ChangeWatcher;
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(onPersonalDataModified, _model, 'userPersonalDataModified', commitOnly, useWeakReference);
+
+				creationCompleted=true;
+				setUserData();
+				focusManager.setFocus(firstname);
+			}
+
+			public function resetComponent():void
+			{
+				resetToolTips();
+				setUserData();
+			}
+
+			public function unpinComponent():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+				
+				saveButton.removeEventListener(MouseEvent.CLICK, modifyPersonalData);
+				if(cancelFunction != null)
+					cancelButton.removeEventListener(MouseEvent.CLICK, cancelFunction);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
+			}
+			
+			private function setUserData():void{
+				firstname.text=_model.loggedUser.firstname;
+				lastname.text=_model.loggedUser.lastname;
+				currentEmailLbl.text=_model.loggedUser.email;
+			}
+
+			private function modifyPersonalData(event:MouseEvent):void
+			{
+				if (FieldValidator.validateTextInput(errorMessageTooltips, newEmail, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false) && FieldValidator.validateTextInput(errorMessageTooltips, newEmailRepeat, 'EMAIL', FieldValidator.MAIL_PATTERN_LAX, false, false))
+				{
+					var modifiedUserData:UserVO=new UserVO();
+
+					modifiedUserData.firstname=firstname.text;
+					modifiedUserData.lastname=lastname.text;
+					modifiedUserData.email=newEmail.text;
+
+					new UserEvent(UserEvent.MODIFY_PERSONAL_DATA, null, modifiedUserData).dispatch();
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources', 'WRONG_FIELDS_IN_FORM'));
+				}
+			}
+
+			public function set cancelClickHandler(closure:Function):void
+			{
+				cancelFunction=closure;
+				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
+			}
+
+			public function resetToolTips():void
+			{
+				if (!creationCompleted)
+					return;
+
+				firstname.text='';
+				lastname.text='';
+				newEmail.text='';
+				newEmailRepeat.text='';
+
+				if (errorMessageTooltips.hasOwnProperty(newEmail.name))
+					ToolTipManager.destroyToolTip(errorMessageTooltips[newEmail.name] as ToolTip);
+				if (errorMessageTooltips.hasOwnProperty(newEmailRepeat.name))
+					ToolTipManager.destroyToolTip(errorMessageTooltips[newEmailRepeat.name] as ToolTip);
+
+				errorMessageTooltips=null;
+				errorMessageTooltips=new Array();
+			}
+
+			public function onPersonalDataModified(value:Boolean):void
+			{
+				if (_model.userPersonalDataModified == true)
+				{
+					CustomAlert.info(resourceManager.getString('myResources', 'PERSONAL_DATA_SUCCESSFULLY_MODIFIED'));
+					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					_model.userPersonalDataModified=false;
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="piContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16"
+							  paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"
+							  gap="4"/>
+		</s:layout>
+
+		<s:Label text="{resourceManager.getString('myResources','PERSONAL_INFO')}"
+				 styleName="h3"/>
+
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{piContainer.getStyle('borderWeight')}"
+									alpha="{piContainer.getStyle('borderAlpha')}"
+									color="{piContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+
+		<s:Form width="100%">
+			<s:FormItem label="{resourceManager.getString('myResources','FIRST_NAME')}"
+						required="true">
+				<s:TextInput id="firstname"
+							 width="300"
+							 styleName="frm-input"
+							 maxChars="40"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','SURNAME')}"
+						required="true">
+
+				<s:TextInput id="lastname"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="40"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','CURRENT_EMAIL')}">
+				<s:Label id="currentEmailLbl"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','NEW_MAIL')}"
+						required="true">
+				<s:TextInput id="newEmail"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="FieldValidator.validateTextInput(errorMessageTooltips, newEmail, 'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageTooltips, newEmail,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false)"/>
+			</s:FormItem>
+			<s:FormItem label="{resourceManager.getString('myResources','REPEAT_NEW_EMAIL')}"
+						required="true">
+
+				<s:TextInput id="newEmailRepeat"
+							 styleName="frm-input"
+							 width="300"
+							 maxChars="80"
+							 change="FieldValidator.validateTextInput(errorMessageTooltips, newEmailRepeat,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false, false, true, 0, 0, newEmail.text)"
+							 focusOut="FieldValidator.validateTextInput(errorMessageTooltips, newEmailRepeat,'EMAIL',FieldValidator.MAIL_PATTERN_LAX, false, false, false, true, 0, 0, newEmail.text)"/>
+
+			</s:FormItem>
+		</s:Form>
+	</s:BorderContainer>
+	
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  label="{resourceManager.getString('myResources','SAVE_NEWPASS')}"
+				  click="modifyPersonalData(event)"
+				  buttonMode="true"
+				  styleName="btn-success"/>
+		<s:Button id="cancelButton"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  buttonMode="true"
+				  styleName="btn-default"/>
+	</s:HGroup>
+
+</s:VGroup>

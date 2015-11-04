@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  height="100%"
+		  width="100%"
+		  paddingBottom="40"
+		  minWidth="1000"
+		  gap="0"
+		  creationComplete="preinitializeHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import view.common.LanguageComboBox;
+			
+			import components.EnhancedDropDownList;
+			import components.videoPlayer.VideoRecorder;
+			
+			import control.URLChangeEvent;
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import modules.IModuleInterface;
+			
+			import mx.events.ModuleEvent;
+			import mx.resources.Locale;
+			
+			import utils.CollectionUtils;
+			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
+			import utils.TimeMetadataParser;
+			
+			import vo.LicenseVO;
+			
+			/**
+			 * Reference site-wide classes here to avoid including them in each Module
+			 */
+			private var components_enhancedDropDownList:EnhancedDropDownList;
+			private var components_main_videoPaginator:VideoPaginator;
+			private var components_videoPlayer_videoRecorder:VideoRecorder;
+			private var utils_collectionUtils:CollectionUtils;
+			private var utils_exerciseRenderUtils:ExerciseRenderUtils;
+			private var utils_localeUtils:LocaleUtils;
+			private var utils_timeMetadataParser:TimeMetadataParser;
+			private var view_common_languageComboBox:LanguageComboBox;
+			private var vo_licenseVo:LicenseVO;
+			
+			
+			private var _currentModuleFile:String;
+			private var _currentModule:String;
+			
+			private var _urlManager:URLManager;
+			private var _lastUrlChangeEvent:Event;
+			private var _dataModel:DataModel=DataModel.getInstance();
+			
+			protected function preinitializeHandler(event:FlexEvent):void{
+				initURLManager();
+			}
+
+			public function initURLManager():void{
+				_urlManager = URLManager.getInstance();
+				_urlManager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				
+				_urlManager.init('/home');
+			}
+
+			public function onURLChange(event:URLChangeEvent):void
+			{
+				_lastUrlChangeEvent = event.clone();
+				if(!event) return;
+				if(event.module == _currentModule) return;
+				_currentModule=event.module;
+				_currentModuleFile = _urlManager.getModuleFileURL(event.module);
+				var ichild:*;
+				if(modloader.child != null){
+					ichild = modloader.child as IModuleInterface;
+					trace("Reset module: "+ichild.getModuleName());
+					ichild.resetModule();
+				}
+				modloader.unloadModule();
+				ichild=null;
+				modloader.loadModule(_currentModuleFile);
+			}
+
+			protected function moduleReadyHandler(event:ModuleEvent):void
+			{
+				/* Cast the ModuleLoader's child to the interface.
+				This child is an instance of the module.
+				You can now call methods on that instance. */
+				var ichild:*=modloader.child as IModuleInterface;
+				var modulename:String='home';
+				if (modloader.child != null)
+				{
+					modulename = ichild.getModuleName();
+					trace("Accessing module interface: "+modulename);
+					URLManager.getInstance().moduleName=modulename;
+					ichild.setDataBindings(sharedData());
+				}
+				else
+				{
+					URLManager.getInstance().moduleName=modulename;
+					trace("Error. The mod.child property is null");
+				}
+			}
+			
+			protected function moduleErrorHandler(event:ModuleEvent):void{
+				trace(event.errorText);
+			}
+			
+			protected function sharedData():Object{
+				var data:Object = {
+					urlmanager: _urlManager,
+					initialurl: _lastUrlChangeEvent,
+					model: _dataModel
+				};
+				return data;
+			}
+		]]>
+	</fx:Script>
+
+	<!--
+	<fx:Binding source="{URLManager.getInstance().module}"
+				destination="onURLChange"/>-->
+
+	<s:ModuleLoader id="modloader"
+					ready="moduleReadyHandler(event)"
+					error="moduleErrorHandler(event)"
+					width="100%"
+					height="100%"/>
+</s:VGroup>

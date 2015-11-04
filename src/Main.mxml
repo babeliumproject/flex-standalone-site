@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   xmlns:control="control.*"
 			   xmlns:business="business.*"
-			   xmlns:main="modules.main.*"
+			   xmlns:main="components.main.*"
 			   preinitialize="init()"
 			   height="100%"
 			   width="100%"
@@ -34,6 +34,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			   creationComplete="onComplete()">
 
 	<fx:Style source="Main.css"/>
+	
+	<fx:Metadata>
+		[ResourceBundle("myResources")]
+	</fx:Metadata>
 
 	<s:layout>
 		<s:VerticalLayout/>
@@ -43,14 +47,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<![CDATA[
 			import control.*;
 			
+			import org.as3commons.logging.api.LOGGER_FACTORY;
+			import org.as3commons.logging.setup.HierarchicalSetup;
+			import org.as3commons.logging.setup.LevelTargetSetup;
+			import org.as3commons.logging.setup.LogSetupLevel;
+			import org.as3commons.logging.setup.log4j.Log4JStyleSetup;
+			import org.as3commons.logging.setup.log4j.log4jPropertiesToSetup;
+			
 			import events.LoginEvent;
 			import events.PreferenceEvent;
-			import events.SetupConnectionEvent;
 			
 			import model.DataModel;
 			
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
+			import mx.utils.ObjectUtil;
 			
 			import skins.ApplicationCustomSkin;
 
@@ -58,20 +69,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 			[Bindable]
 			public var appModelLocator:DataModel;
-			[Bindable]
-			public var cuePointManager:CuePointManager;
-			[Bindable]
-			public var browserManager:BabeliaBrowserManager;
+			
 
 			//Initialization method
 			private function init():void
 			{
 				appModelLocator=DataModel.getInstance();
-				cuePointManager=CuePointManager.getInstance();
-
+				
 				new PreferenceEvent(PreferenceEvent.GET_APP_PREFERENCES).dispatch();
 				new LoginEvent(LoginEvent.PROCESS_LOGIN, null).dispatch();
-				new SetupConnectionEvent().dispatch();
+				//new SetupConnectionEvent().dispatch();
 
 				//Security.allowDomain(appModelLocator.uploadDomain);
 
@@ -80,18 +87,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private function onComplete():void
 			{
 				appModelLocator.appBody=content;
-				browserManager=BabeliaBrowserManager.getInstance();
-				browserManager.parseURL();
+				loadLoggingConfig('logging.properties');
 			}
+			
+			private function loadLoggingConfig(url:String):void{
+				var loader:URLLoader = new URLLoader();
+				loader.addEventListener(Event.COMPLETE, parseLoggingConfig);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, urlNotAvailable);
+				loader.load(new URLRequest(url));
+			}
+			
+			private function parseLoggingConfig(event:Event):void{
+				LOGGER_FACTORY.setup = log4jPropertiesToSetup(event.target.data);
+			}
+			
+			private function urlNotAvailable(e:IOErrorEvent):void{
+				trace("Couldn't load the specified resource from the url. "+e.text);
+			}
+			
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!--This defines the reachable remote services -->
-		<business:Services/>
+		<business:Services id="appServiceLocator"/>
 
 		<!--This defines all the actions available -->
-		<control:Controller/>
+		<control:Controller id="appController"/>
 	</fx:Declarations>
 
 	<s:Scroller id="appScroller"

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:skins="skins.*"
+		 width="100%">
+
+	<s:VGroup width="100%"
+			  minWidth="1000"
+			  height="100%"
+			  gap="0">
+
+		<skins:HorizontalSeparatorLine alpha="0.5"/>
+		<s:BorderContainer id="sectionLinks"
+						   borderVisible="false"
+						   borderWeight="0"
+						   minHeight="0"
+						   width="100%"
+						   height="100%"
+						   backgroundImage="@Embed('/resources/images/rainbow_bgr.png')"
+						   backgroundImageFillMode="scale">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="left"
+									verticalAlign="middle"/>
+			</s:layout>
+
+			<s:HGroup paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="16">
+				<mx:Image source="resources/images/babelium_logo.png"
+						  buttonMode="true"
+						  click="{URLManager.getInstance().redirect('/home')}"/>
+			</s:HGroup>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'MY_ACTIVITY')}"
+							includeInLayout="{DataModel.getInstance().isLoggedIn}"
+							visible="{DataModel.getInstance().isLoggedIn}"
+							selected="{_urlManager.moduleName == 'activity'}"
+							click="changeView('/activity',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'COURSES')}"
+							includeInLayout="{DataModel.getInstance().isLoggedIn &amp;&amp; CONFIG::experimental}"
+							visible="{DataModel.getInstance().isLoggedIn &amp;&amp; CONFIG::experimental}"
+							selected="{_urlManager.moduleName == 'course'}"
+							click="changeView('/course',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'EXPLORE')}"
+							selected="{_urlManager.moduleName == 'exercises'}"
+							click="changeView('/exercises',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
+			<s:ToggleButton label="{resourceManager.getString('myResources', 'CREATE')}"
+							id="createLinkButton"
+							includeInLayout="{DataModel.getInstance().isLoggedIn}"
+							visible="{DataModel.getInstance().isLoggedIn}"
+							selected="{_urlManager.moduleName == 'create'}"
+							click="changeView('/create',event)"
+							height="100%"
+							skinClass="skins.NavigationToggleButton"
+							buttonMode="true"/>
+		</s:BorderContainer>
+		<skins:HorizontalSeparatorLine alpha="0.5"/>
+	</s:VGroup>
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import mx.utils.URLUtil;
+
+			[Bindable]
+			protected var _model:DataModel=DataModel.getInstance();
+			[Bindable]
+			protected var _urlManager:URLManager=URLManager.getInstance();
+
+			//Initialization method
+			private function init():void
+			{
+			}
+
+			private function changeView(destination:String, event:MouseEvent):void
+			{
+//				if(event != null)
+//					unselectNavButtons(event);
+				//new ViewChangeEvent(destination).dispatch();
+				_urlManager.redirect(destination);
+			}
+
+			private function unselectNavButtons(event:MouseEvent):void
+			{
+				var pressedButton:Object=event.target as ToggleButton;
+				for (var i:uint=0; i < sectionLinks.numElements; i++)
+				{
+					if (sectionLinks.getElementAt(i) is ToggleButton)
+					{
+						var navButton:ToggleButton=sectionLinks.getElementAt(i) as ToggleButton;
+						if (navButton != pressedButton)
+							navButton.selected=false;
+					}
+				}
+			}
+
+		]]>
+	</fx:Script>
+
+</s:Group>

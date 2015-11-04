@@ -106,7 +106,7 @@ class Auth{
 	 * Checks the provided authentication data and logs the user in the system if everything is ok
 	 *
 	 * @param stdClass $user
-	 * 		An object with the following properties: (username, password)
+	 * 		An object with the following properties: (name, pass)
 	 * @return mixed $result
 	 * 		Returns the current user data. Or an error message when wrong login data is provided
 	 */
@@ -150,6 +150,15 @@ class Auth{
 			}
 		}
 	}
+	
+	private function getUserPermissions(){
+		$sql = "SELECT p.fk_course_id, p.fk_role_id, r.shortname
+				FROM rel_course_role_user p INNER JOIN role r ON p.fk_role_id=r.id
+			    WHERE fk_user_id=%d";
+		
+		$permissions = $this->conn->_multipleSelect($sql,$_SESSION['uid']);
+		return $permissions;
+	}
 
 	/**
 	 * Checks if the session data is set for this user
@@ -187,6 +196,15 @@ class Auth{
 
 		return $this->conn->_singleSelect($sql, $username);
 	}
+	
+	private function getPermissions($userId){
+		$sql = "SELECT cru.fk_role_id, cru.fk_course_id, r.archetype 
+				FROM rel_course_role_user cru INNER JOIN role r ON cru.fk_role_id=r.id 
+				WHERE cru.fk_user_id = %d";
+		
+		
+		return $this->conn->_multipleSelect($sql,$_SESSION['uid']);
+	}
 
 	/**
 	 * Logs the user out and clears the session data
@@ -209,7 +227,7 @@ class Auth{
 	 * Sends again the account activation email if the provided user is valid and not active.
 	 *
 	 * @param stdClass $user
-	 * 		An object with the following properties: (username, email)
+	 * 		An object with the following properties: (name, email)
 	 * @return string $mailSent
 	 * 		Returns a string telling whether the mail sending operation went well or not
 	 */
@@ -243,8 +261,8 @@ class Auth{
 				$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
 						'USERNAME' => $user->username,
-						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#',
-						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$activationHash.'&user='.$user->username,
+						'PROJECT_SITE' => 'http://'.$_SERVER['HTTP_HOST'].'/',
+						'ACTIVATION_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/#/login/activate/?hash='.$activationHash.'&user='.$user->username,
 						'SIGNATURE' => 'The Babelium Project Team');
 
 				if ( !$mail->makeTemplate("mail_activation", $args, $usersFirstMotherTongue) )
@@ -278,7 +296,7 @@ class Auth{
 	 * Stores current user's data in the session variable
 	 *
 	 * @param stdClass $userData
-	 * 		An object with the following properties: (id, name, realName, realSurname, email, creditCount, joiningDate, isAdmin, userLanguages[])
+	 * 		An object with the following properties: (id, username, firstname, lastname, email, creditCount, joiningDate, isAdmin, userLanguages[])
 	 */
 	private function _setSessionData($userData){
 		//We are changing the privilege level, so we generate a new session id

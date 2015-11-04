@@ -38,6 +38,7 @@ require_once 'vo/UserVO.php';
 class Evaluation {
 
 	private $conn;
+	private $cfg;
 
 	private $imagePath;
 	private $posterPath;
@@ -46,6 +47,7 @@ class Evaluation {
 	private $evaluationFolder = '';
 	private $exerciseFolder = '';
 	private $responseFolder = '';
+	private $evaluationThreshold = 4;
 
 	private $mediaHelper;
 
@@ -60,6 +62,7 @@ class Evaluation {
 		try {
 			$verifySession = new SessionValidation(true);
 			$settings = new Config ( );
+			$this->cfg = $settings;
 			$this->imagePath = $settings->imagePath;
 			$this->posterPath = $settings->posterPath;
 			$this->red5Path = $settings->red5Path;
@@ -70,6 +73,14 @@ class Evaluation {
 			throw new Exception($e->getMessage());
 		}
 	}
+	
+	private function getAssessmentLimit(){
+		$sql = "SELECT prefValue FROM preferences WHERE prefName='trial_threshold'";
+		$result = $this->conn->_singleSelect ( $sql );
+		if($result){
+			$this->evaluationThreshold = $result->prefValue;
+		}
+	}
 
 	/**
 	 * Retrieves all the responses that haven't been evaluated (and can be evaluated) by the current user
@@ -77,13 +88,29 @@ class Evaluation {
 	 * @return array $searchResults
 	 * 		An array of objects with data about the responses that haven't been already evaluated by the current user
 	 */
-	public function getResponsesWaitingAssessment() {
-		$sql = "SELECT prefValue FROM preferences WHERE (prefName='trial.threshold') ";
+	public function getResponsesWaitingAssessment($offset=0, $rowcount=0) {
+		
+		$this->getAssessmentLimit();
+		$assessmentlimit=$this->evaluationThreshold;
 
-		$result = $this->conn->_singleSelect ( $sql );
-		if($result)
-		$evaluationThreshold = $result->prefValue;
-
+		$langpurpose = 'evaluate';
+		
+		$userid = $_SESSION['uid'];
+		$userlanguages = $_SESSION['user-languages'];
+		if($userlanguages){
+			$term = "";
+			foreach($userlanguages as $ul){
+				if($ul->purpose==$langpurpose){
+					$l = substr($ul->language,0,2);
+					$term = $term . " B.language LIKE '".$l."\_%%' OR"; //% must be escaped using a double %%, otherwise vsprintf() fails
+				}
+			}
+		}
+		$finalterm=null;
+		if(!empty($term)){
+			$finalterm = "(".substr($term, 0, -2).")";
+		}
+		
 		$sql = "SELECT DISTINCT A.file_identifier as responseFileIdentifier,
 								A.id as responseId, 
 								A.rating_amount as responseRatingAmount, 
@@ -95,28 +122,39 @@ class Evaluation {
 		                        A.duration as responseDuration, 
 		                        F.username as responseUserName, 
 		                        B.id as exerciseId, 
-		                        B.name as exerciseName, 
-		                        B.duration as exerciseDuration, 
+		                        B.exercisecode as exerciseName, 
 		                        B.language as exerciseLanguage, 
-		                        B.thumbnail_uri as exerciseThumbnailUri, 
 		                        B.title as exerciseTitle, 
-		                        B.source as exerciseSource, 
-		                        AVG(EL.suggested_level) AS exerciseAvgDifficulty
+		                        B.difficulty exerciseAvgDifficulty
 				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
 				     INNER JOIN user AS F on A.fk_user_id = F.id
-				     LEFT OUTER JOIN exercise_level EL ON B.id=EL.fk_exercise_id 
-		     		 LEFT OUTER JOIN evaluation AS C on C.fk_response_id = A.id
-				WHERE B.status = 'Available' AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
-				AND NOT EXISTS (SELECT *
-                                FROM evaluation AS D INNER JOIN response AS E on D.fk_response_id = E.id
-                                WHERE E.id = A.id AND D.fk_user_id = %d)
-                GROUP BY A.id
-                ORDER BY A.priority_date DESC, A.adding_date DESC";
-
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $evaluationThreshold, $_SESSION['uid'], $_SESSION['uid']));
-		$this->checkMerged($searchResults);
+				WHERE B.status = 1 AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
+				AND NOT EXISTS (SELECT D.id FROM evaluation AS D WHERE D.fk_response_id = A.id AND D.fk_user_id = %d)";
+				
+		if($finalterm){
+			$sql.= " AND ".$finalterm;
+		}
 		
-		// error_log(print_r($searchResults,1) . "\n", 3, "/tmp/error.log");
+        $sql .= " GROUP BY A.id ORDER BY A.priority_date DESC, A.adding_date DESC";
+		
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid);
+		}
+		
+		$defresults = null;
+		if($tmpresults){	
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
+		
+		$searchResults = $this->conn->multipleRecast('EvaluationVO',$defresults);
 		
 		return $searchResults;
 	}
@@ -127,11 +165,8 @@ class Evaluation {
 	 * @return array $searchResults
 	 * 		An array of objects with data about the responses of the current user that have been evaluated
 	 */
-	public function getResponsesAssessedToCurrentUser(){
-
-		$querySortField = 'last_date';
-		$queryLimitOffset = 0;
-		$hitCount = 0;
+	public function getResponsesAssessedToCurrentUser($offset=0, $rowcount=0){
+		$userid = $_SESSION['uid'];
 
 		$sql = "SELECT A.file_identifier as responseFileIdentifier,
 					   A.id as responseId, 
@@ -143,40 +178,42 @@ class Evaluation {
 		               A.thumbnail_uri as responseThumbnailUri, 
 		               A.duration as responseDuration,
 		               B.id as exerciseId, 
-		               B.name as exerciseName, 
-		               B.duration as exerciseDuration, 
+		               B.exercisecode as exerciseName, 
 		               B.language AS exerciseLanguage, 
-		               B.thumbnail_uri as exerciseThumbnailUri, 
 		               B.title AS exerciseTitle, 
-		               B.source as exerciseSource,
 		               AVG(C.score_overall) AS overallScoreAverage, 
 		               AVG(C.score_intonation) AS intonationScoreAverage, 
 		               AVG(score_fluency) AS fluencyScoreAverage, 
 		               AVG(score_rhythm) AS rhythmScoreAverage, 
 		               AVG(score_spontaneity) AS spontaneityScoreAverage,
-		               AVG(score_accuracy) AS accuracyScoreAverage,
-		               AVG(score_adequacy) AS adequacyScoreAverage,
-		               AVG(score_comprehensibility) AS comprehensibilityScoreAverage,
-		               AVG(score_pronunciation) AS pronunciationScoreAverage,
-		               AVG(score_range) AS rangeScoreAverage,
-		               AVG(suggested_level) as exerciseAvgDifficulty, 
+		               B.difficulty as exerciseAvgDifficulty, 
 		               MAX(C.adding_date) AS addingDate
 		        FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id
-					 INNER JOIN evaluation AS C ON C.fk_response_id = A.id 
-					 LEFT OUTER JOIN exercise_level E ON B.id=E.fk_exercise_id
-				WHERE ( A.fk_user_id = '%d' ) 
+					 LEFT OUTER JOIN evaluation AS C ON C.fk_response_id = A.id 
+				WHERE ( A.fk_user_id = '%d' AND B.status=1 ) 
 				GROUP BY A.id,B.id 
-				ORDER BY '%s'";
-
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect($sql, $_SESSION['uid'], $querySortField));
-
-		$this->checkMerged($searchResults);
+				ORDER BY A.adding_date DESC";
 		
-		$result = new stdClass();
-		$result->hitCount = $hitCount;
-		$result->data = $searchResults;
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid);
+		}
+		
+		$defresults = null;
+		if($tmpresults){
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
 
-		return $result;
+		$searchResults = $this->conn->multipleRecast('EvaluationVO',$defresults);
+
+		return $searchResults;
 	}
 
 	/**
@@ -185,7 +222,10 @@ class Evaluation {
 	 * @return	array $searchResults
 	 * 		Returns an array of objects with data about the responses the current user evaluated to another user
 	 */
-	public function getResponsesAssessedByCurrentUser(){
+	public function getResponsesAssessedByCurrentUser($offset=0, $rowcount=0){
+		
+		$userid = $_SESSION['uid'];
+		
 		$sql = "SELECT DISTINCT A.file_identifier as responseFileIdentifier,
 								A.id as responseId, 
 								A.rating_amount as responseRatingAmount, 
@@ -201,33 +241,40 @@ class Evaluation {
 		               			C.score_fluency as fluencyScore, 
 		               			C.score_rhythm as rhythmScore,
 		               			C.score_spontaneity as spontaneityScore, 
-		               			C.score_comprehensibility as comprehensibilityScore,
-		               			C.score_pronunciation as pronunciationScore,
-		               			C.score_accuracy as accuracyScore,
-		               			C.score_adequacy as adequacyScore,
-		               			C.score_range as rangeScore,
 		               			C.comment, 
 		               			C.adding_date as addingDate,
 		               			B.id as exerciseId, 
-		               			B.name as exerciseName, 
-		               			B.duration as exerciseDuration, 
+		               			B.exercisecode as exerciseName, 
 		               			B.language as exerciseLanguage, 
-		               			B.thumbnail_uri as exerciseThumbnailUri, 
+		               			B.difficulty as exerciseAvgDifficulty, 
 		               			B.title as exerciseTitle, 
-		               			B.source as exerciseSource, 
 		               			E.video_identifier as evaluationVideoFileIdentifier, 
 		               			E.thumbnail_uri as evaluationVideoThumbnailUri 
 			    FROM response AS A INNER JOIN exercise AS B ON B.id = A.fk_exercise_id  
 			         INNER JOIN evaluation AS C ON C.fk_response_id = A.id
 			         INNER JOIN user AS U ON U.id = A.fk_user_id
 			         LEFT OUTER JOIN evaluation_video AS E ON C.id = E.fk_evaluation_id
-			    WHERE (C.fk_user_id = '%d')
-			    ORDER BY A.adding_date DESC";
+			    WHERE (C.fk_user_id = '%d' AND B.status=1)
+			    ORDER BY C.adding_date DESC";
 		
-		$results = $this->conn->_multipleSelect($sql, $_SESSION['uid']);
-		$this->checkMerged($results);
+		if($rowcount){
+			$sql .= " LIMIT %d,%d";
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid, $offset, $rowcount);
+		} else {
+			$tmpresults = $this->conn->_multipleSelect($sql, $userid);
+		}
 		
-		$searchResults = $this->conn->multipleRecast('EvaluationVO', $results);
+		$defresults = null;
+		if($tmpresults){
+			$defresults = array();
+			foreach ($tmpresults as $r){
+				$rf = $this->getResponseRelatedData($r);
+				$rf = $this->checkMerged($rf);
+				array_push($defresults, $rf);
+			}
+		}
+		
+		$searchResults = $this->conn->multipleRecast('EvaluationVO', $defresults);
 
 		return $searchResults;
 	}
@@ -239,19 +286,41 @@ class Evaluation {
 	 * @param array $results
 	 * 		array of EvaluationVO objects
 	 */
-	public function checkMerged($results){
+	public function checkMerged($response){
+		if(!$response) return;
 		
-		if($results && is_array($results)){	
-			foreach($results as $r){
-					//-1: unknown, 0: not merged, 1: merged
-					$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
-					$r->mergeStatus = $mergeStatus;
-					//
-					//if($mergeStatus == 1){
-					//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
-					//}
-				}
+		$r = $response;
+
+		//-1: unknown, 0: not merged, 1: merged
+		$mergeStatus = $this->_mergedVideoReady($r->responseFileIdentifier);
+		$r->mergeStatus = $mergeStatus;
+		//
+		//if($mergeStatus == 1){
+		//	$r->responseFileIdentifier = $r->responseFileIdentifier . '_merge';
+		//}
+		return $r;
+	}
+	
+	private function getResponseRelatedData($response){
+		if(!$response) return;
+	
+		require_once 'Exercise.php';
+		$ex = new Exercise();
+		$r = $response;
+	
+		$exerciseid = $r->exerciseId;
+		$ethumburl = $ex->getExerciseDefaultThumbnail($exerciseid);
+		$rthumburl = $this->cfg->wwwroot . '/resources/images/thumbs/';
+		if ($r->responseThumbnailUri == 'default.jpg') {
+			$rthumburl .= $r->responseFileIdentifier . '/01.jpg';
+		} else {
+			$rthumburl .= 'nothumb.png';
 		}
+		
+		$r->exerciseThumbnailUri = $ethumburl;
+		$r->responseThumbnailUri = $rthumburl;
+	
+		return $r;
 	}
 	
 	/**
@@ -264,8 +333,12 @@ class Evaluation {
 	 */
 	public function detailsOfAssessedResponse($responseId = 0){
 		if(!$responseId)
-		return false;
-		$sql = "SELECT C.username as userName,
+			throw new Exception("Invalid parameters", 1000);
+				
+		$response = $this->getResponseData($responseId);
+		
+		if($response){
+			$sql = "SELECT C.username as userName,
 					   A.score_overall as overallScore, 
 					   A.score_intonation as intonationScore, 
 					   A.score_fluency as fluencyScore, 
@@ -273,9 +346,9 @@ class Evaluation {
 					   A.score_spontaneity as spontaneityScore,
 					   A.score_comprehensibility as comprehensibilityScore,
 					   A.score_pronunciation as pronunciationScore,
-					   A.score_accuracy as accuracyScore,
 					   A.score_adequacy as adequacyScore,
 					   A.score_range as rangeScore,
+					   A.score_accuracy as accuracyScore,
 					   A.adding_date as addingDate, 
 					   A.comment as comment, 
 					   B.video_identifier as evaluationVideoFileIdentifier, 
@@ -284,9 +357,77 @@ class Evaluation {
 			    	 LEFT OUTER JOIN evaluation_video AS B on A.id = B.fk_evaluation_id 
 				WHERE (A.fk_response_id = '%d') ";
 
-		$searchResults = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
+			$response->assessments = $this->conn->multipleRecast('EvaluationVO',$this->conn->_multipleSelect ( $sql, $responseId ));
+		}
 
-		return $searchResults;
+		return $response;
+	}
+	
+	protected function getResponseById($responseid){
+		if(!$responseid) return;
+		
+		$sql = "SELECT r.*, u.username
+				FROM response r INNER JOIN user u ON r.fk_user_id=u.id
+				WHERE r.id=%d";
+		
+		$result = $this->conn->_singleSelect($sql, $responseid);
+		return $result;
+	}
+	
+	public function getResponseData($responseId){
+		if(!$responseId)
+			throw new Exception("Invalid parameters", 1000);
+		
+		$response = $this->getResponseById($responseId);
+		if(!$response)
+			throw new Exception("Response id does not exist",1006);
+		
+		//require_once 'Exercise.php';
+		//$exservice = new Exercise();
+		
+		$status = 2; //Available media
+		$exmedia = $this->getMediaById($response->fk_media_id,$status);
+		if($exmedia){
+			$response->leftMedia = $exmedia;
+			
+			$rightMedia = new stdClass();
+			$rightMedia->netConnectionUrl = $this->cfg->streamingserver;
+			$rightMedia->mediaUrl = 'responses/'.$response->file_identifier.'.flv';
+			
+			$response->rightMedia = $rightMedia;
+		}
+		
+		return isset($response->leftMedia) ? $response : null;
+	}
+	
+	protected function getMediaById($mediaid,$status){
+		if(!$mediaid)
+			throw new Exception("Invalid parameters",1000);
+		
+		$sql = "SELECT m.id, m.mediacode, m.instanceid, m.component, m.type, m.duration, m.level, m.defaultthumbnail, mr.status, mr.filename
+				FROM media m INNER JOIN media_rendition mr ON m.id=mr.fk_media_id
+				WHERE m.id=%d";
+		 
+		if(is_array($status)){
+			if(count($status)>1){
+				$sparam = implode(",",$status);
+				$sql.=" AND mr.status IN (%s) ";
+			} else {
+				$sparam = $status[0];
+				$sql.=" AND mr.status=%d ";
+			}
+		} else {
+			$sparam=$status;
+			$sql.=" AND mr.status=%d ";
+		}
+		$sql .= " LIMIT 1";
+		 
+		$result = $this->conn->_singleSelect($sql, $mediaid, $sparam);
+		if($result){
+			$result->netConnectionUrl = $this->cfg->streamingserver;
+			$result->mediaUrl = 'exercises/'.$result->filename;
+		}
+		return $result;
 	}
 
 	/**
@@ -337,7 +478,7 @@ class Evaluation {
 	private function _responseRatingCountBelowThreshold($responseId){
 		$sql = "SELECT *
 				FROM response
-				WHERE id = '%d' AND rating_amount < (SELECT prefValue FROM preferences WHERE prefName='trial.threshold')";
+				WHERE id = '%d' AND rating_amount < (SELECT prefValue FROM preferences WHERE prefName='trial_threshold')";
 		return $this->conn->_singleSelect($sql, $responseId);
 	}
 
@@ -364,8 +505,7 @@ class Evaluation {
 		$this->conn->_startTransaction();
 
 		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
-										score_comprehensibility, score_pronunciation, score_accuracy, score_adequacy, score_range,
-									    comment, adding_date) VALUES (";
+		                                score_comprehensibility, score_pronunciation, score_adequacy, score_range, score_accuracy, comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -378,13 +518,11 @@ class Evaluation {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
-		
 		$sql = $sql . "'%s', NOW() )";
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore, $evalData->spontaneityScore,
-		$evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->accuracyScore, $evalData->adequacyScore, $evalData->rangeScore,
-		$evalData->comment );
+		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
+		$evalData->spontaneityScore, $evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->adequacyScore, $evalData->rangeScore, $evalData->accuracyScore, $evalData->comment );
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
 			throw new Exception("Evaluation save failed");
@@ -417,8 +555,7 @@ class Evaluation {
 			throw  new Exception("Pending assessment priority update failed");
 		}
 
-		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert 
-				&& isset($pendingAssessmentsPriority)){
+		if($evaluationId && $update && $creditUpdate && $creditHistoryInsert && isset($pendingAssessmentsPriority)){
 			$this->conn->_endTransaction();
 			$result = $this->_getUserInfo();
 			$this->_notifyUserAboutResponseBeingAssessed($evalData);
@@ -450,9 +587,7 @@ class Evaluation {
 		$this->conn->_startTransaction();
 
 		//Insert the evaluation data
-		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
-										score_comprehensibility, score_pronunciation, score_accuracy, score_adequacy, score_range,
-									    comment, adding_date) VALUES (";
+		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, comment, adding_date) VALUES (";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
@@ -460,16 +595,11 @@ class Evaluation {
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
 		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%d', ";
-		$sql = $sql . "'%d', ";
+		$sql = $sql . "'%s', NOW() )";
 
 		$evaluationId = $this->conn->_insert ( $sql, $evalData->responseId, $_SESSION['uid'], $evalData->overallScore,
-		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore, $evalData->spontaneityScore,
-		$evalData->comprehensibilityScore, $evalData->pronunciationScore, $evalData->accuracyScore, $evalData->adequacyScore, $evalData->rangeScore,
-		$evalData->comment );
+		$evalData->intonationScore, $evalData->fluencyScore, $evalData->rhythmScore,
+		$evalData->spontaneityScore, $evalData->comment );
 
 		if(!$evaluationId){
 			$this->conn->_failedTransaction();
@@ -631,7 +761,7 @@ class Evaluation {
 	 * Attempts to send an email to notify the user whose response's being assessed of this fact
 	 *
 	 * @param stdClass $evaluation
-	 * 		An object with the following properties: (responseId, responseUserName, responseAddingDate, exerciseTitle, userName, responseFileIdentifier)
+	 * 		An object with the grades and the response id for this assessment
 	 * @return boolean $sent
 	 * 		Returns true if the smtp server procedures were successful or false otherways.
 	 */
@@ -644,16 +774,30 @@ class Evaluation {
 		
 		//If the user has not languages defined, fallback to en_US by default
 		$locale = $row ? $row->language : 'en_US';
+		
+		$sql = "SELECT r.adding_date, e.title, u.username  
+				FROM response r INNER JOIN exercise e ON r.fk_exercise_id=e.id 
+				INNER JOIN user u ON r.fk_user_id=u.id 
+				WHERE r.id=%d LIMIT 1";
+		$data = $this->conn->_singleSelect($sql, $evaluation->responseId);
+		if(!$data){
+			throw new Exception("Cannot find response data. User notification aborted.");
+		}
+		
+		$exerciseTitle = $data->title;
+		$submissionDate = $data->adding_date;
+		$assessedBy = $_SESSION['user-data']->username;
+		
 
-		$mail = new Mailer($evaluation->responseUserName);
+		$mail = new Mailer($data->username);
 
 		$subject = 'Babelium Project: You have been assessed';
 
 		$args = array(
-						'DATE' => $evaluation->responseAddingDate,
-						'EXERCISE_TITLE' => $evaluation->exerciseTitle,
-						'EVALUATOR_NAME' => $evaluation->userName,
-						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/Main.html#/evaluation/revise/'.$evaluation->responseFileIdentifier,
+						'DATE' => $submissionDate,
+						'EXERCISE_TITLE' => $exerciseTitle,
+						'EVALUATOR_NAME' => $assessedBy,
+						'ASSESSMENT_LINK' => 'http://'.$_SERVER['HTTP_HOST'].'/#/assessments/view/'.$evaluation->responseId,
 						'SIGNATURE' => 'The Babelium Project Team');
 
 		if ( !$mail->makeTemplate("assessment_notify", $args, $locale) )

@@ -124,6 +124,66 @@ class MediaTask{
 		$client->setHeaders ( 'X-GData-Key', 'key=' . $this->devKey );
 		return $client;
 	}
+	
+	public function processRawMedia(){
+		//Let the script take as much time as it needs
+		set_time_limit(0);
+		
+		//Select fk_media_id's that have a 0 (raw) status but not any 2 (ready) status
+		$sql = "SELECT mr.id, mr.fk_media_id, mr.status, mr.filename, mr.timecreated, m.mediacode 
+				FROM media_rendition mr INNER JOIN media m ON mr.fk_media_id=m.id 
+				WHERE mr.status=0 AND NOT EXISTS(SELECT id FROM media_rendition WHERE status=2 AND fk_media_id=mr.fk_media_id)";
+		$rawfiles = $this->conn->_multipleSelect($sql);
+		
+		if($rawfiles){
+			foreach($rawfiles as $file){
+				$this->processMediaFile($file);
+			}
+		}
+	}
+	
+	public function processMediaFile($fileinfo){
+		$fullpath = $this->filePath.'/'.$fileinfo->filename;
+		if(is_file($fullpath) && filesize($fullpath)){
+			$optime = time();
+			$newfilename = $fileinfo->mediacode.'_'.$optime.'.flv';
+			$transitionalfullpath = $this->filePath .'/'.$newfilename;
+			$finalfullpath = $this->red5Path.'/exercises/'.$newfilename;
+			$encoding_preset = 2;
+			try{
+				$this->mediaHelper->transcodeToFlv($fullpath,$transitionalfullpath,$encoding_preset, Config::LEVEL_360P);
+		
+				$mediainfo = $this->mediaHelper->retrieveMediaInfo($transitionalfullpath);
+		
+				if($mediainfo->hasVideo){
+					$thumbdir = $this->imagePath.'/'.$fileinfo->mediacode;
+					$posterdir = $this->posterPath.'/'.$fileinfo->mediacode;
+		
+					//Take snapshots at 3 random times of the video file
+					$this->mediaHelper->takeFolderedRandomSnapshots($transitionalfullpath,$thumbdir,$posterdir);
+				}
+		
+				//Move file from transitional location to final location
+				$moved = rename($transitionalfullpath,$finalfullpath);
+				if(!$moved){
+					throw new Exception("Unable to move from transitional path: $transitionalfullpath to final path: $finalfullpath");
+				}
+		
+				$insert = "INSERT INTO media_rendition (fk_media_id,filename,contenthash,status,timecreated,filesize,metadata,dimension)
+						   VALUES (%d,'%s','%s',%d,%d,%d,'%s',%d)";
+				$mediaid = $fileinfo->fk_media_id;
+				$contenthash = $mediainfo->hash;
+				$status = 2;
+				$filesize = filesize($finalfullpath);
+				$dimension = $mediainfo->hasVideo ? $mediainfo->videoHeight : 0;
+				$metadata = $this->mediaHelper->custom_json_encode($mediainfo);
+				$this->conn->_insert($insert,$mediaid,$newfilename,$contenthash,$status,$optime,$filesize,$metadata,$dimension);
+		
+			} catch (Exception $e){
+				print $e."\n";
+			}
+		}
+	}
 
 	/**
 	 * Searches the database for exercises with status field set to 'Unprocessed' or 'UnprocessedNoPractice' and reencodes them using a ffmpeg preset.
@@ -155,12 +215,12 @@ class MediaTask{
 					$outputPath = $this->filePath .'/'. $outputName;
 
 					try {
-						$enc_preset_idx=2;
-						$this->mediaHelper->transcodeToFlv($path,$outputPath,$enc_preset_idx);
-
-						if(!$this->checkIfFileExists($outputPath)){
+						$encoding_output = $this->mediaHelper->transcodeToFlv($path,$outputPath);
 							
-							$this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
+						//Check if the video already exists
+						if(!$this->checkIfFileExists($outputPath)){
+							//Asuming everything went ok, take a snapshot of the video
+							$snapshot_output = $this->mediaHelper->takeFolderedRandomSnapshots($outputPath, $this->imagePath, $this->posterPath);
 
 							//move the outputFile to it's final destination
 							$renameResult = rename($outputPath, $this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName);
@@ -221,6 +281,9 @@ class MediaTask{
 							echo "          filesize: ".filesize($path)."\n";
 							echo "          input path: ".$path."\n";
 							echo "          output path: ".$this->red5Path .'/'. $this->exerciseFolder .'/'. $outputName."\n";
+							echo "          encoding output: ".$encoding_output."\n";
+							echo "          snapshot output: ".$snapshot_output."\n";
+
 							//Remove the old file
 							@unlink($path);
 						} else {
@@ -235,7 +298,6 @@ class MediaTask{
 							@unlink($outputPath);
 							//The system tells us that there's another file, that after being transcoded, has the same md5_file() hash this file has
 							//@unlink($path);
-							$this->conn->_endTransaction();
 						}
 					} catch (Exception $e) {
 						$this->conn->_failedTransaction();
@@ -516,6 +578,7 @@ class MediaTask{
 		}
 		unset($r);
 
+
 		$sql = "SELECT file_identifier FROM response WHERE true";
 		$result = $this->conn->_multipleSelect($sql);
 		foreach($result as $r){
@@ -534,7 +597,7 @@ class MediaTask{
 
 		foreach($mediaPaths as $path){
 			try{
-				$this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
+				$result = $this->mediaHelper->takeFolderedRandomSnapshots($path, $this->imagePath, $this->posterPath);
 			} catch(Exception $e){
 				echo $e->getMessage()."\n";
 			}

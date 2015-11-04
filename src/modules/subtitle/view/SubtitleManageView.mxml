@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  implements="modules.IGroupInterface">
+	
+	<s:Label text="{resourceManager.getString('myResources','SUBTITLE_MEDIA')}"
+			 styleName="h2"/>
+	
+	<s:HGroup width="100%">
+		<s:BorderContainer id="mediaPlayerPlaceholder"
+						   backgroundColor="0x000000"
+						   width="480"
+						   height="360">
+			<s:layout>
+				<s:BasicLayout/>
+			</s:layout>
+			<s:BitmapImage id="poster"/>
+		</s:BorderContainer>
+		<s:VGroup>
+			<s:TabBar change="changeSelection(event)" dataProvider="{mediaSubtitles}"/>
+			<mx:ViewStack id="mediaSubtitles">
+				<s:NavigatorContent label="Subtitles">
+					<s:VGroup width="100%">
+						<s:HGroup width="100%" horizontalAlign="right">
+							<s:Button styleName="btn-default" 
+									  label="{ResourceManager.getInstance().getString('myResources','EDIT_SUBTITLES')}" 
+									  click="{URLManager.getInstance().redirect('/subtitle/edit/'+revisionid)}"/>
+						</s:HGroup>
+						<s:Line width="100%">
+							<s:stroke>
+								<s:SolidColorStroke weight="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderWeight')}"
+													alpha="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderAlpha')}"
+													color="{styleManager.getStyleDeclaration('.ligthBorderContainer').getStyle('borderColor')}"/>
+							</s:stroke>
+						</s:Line>
+						<s:Label text="Showing Revision 2 created 2014/11/04 by username"/>
+						
+					</s:VGroup>
+					
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Revisions">
+					
+				</s:NavigatorContent>
+			</mx:ViewStack>
+		</s:VGroup>
+	</s:HGroup>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import mx.resources.ResourceManager;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private var revisionid:int;
+			
+			public function resetGroup():void{
+				//TODO
+			}
+			
+			public function changeSelection(event:IndexChangeEvent):void{
+				
+			}
+			
+		]]>
+	</fx:Script>
+</s:VGroup>

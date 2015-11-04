@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.profile.view.*"
+		  width="100%"
+		  implements="modules.IModuleInterface"
+		  preinitialize="preinitializeHandler(event)"
+		  creationComplete="creationCompleteHandler(event)" xmlns:view1="modules.activity.view.*">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Script>
+		<![CDATA[
+			import control.Controller;
+			import control.URLChangeEvent;
+			import control.URLManager;
+			
+			import flash.utils.getDefinitionByName;
+			
+			import model.DataModel;
+			
+			import modules.IGroupInterface;
+			import modules.IPinnedGroupInterface;
+			import modules.course.command.GetCourses;
+			import modules.course.command.ViewCourse;
+			import modules.course.event.CourseEvent;
+			import modules.activity.event.UserActivityEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			public var modulename:String = 'activity';
+			
+			[Bindable]
+			private var _viewstackIndex:uint;
+			
+			private var _urlmanager:URLManager=URLManager.getInstance();
+			private var _model:DataModel=DataModel.getInstance();
+			
+			private var _creationComplete:Boolean;
+			private var _initialUrl:Event;
+			private var _moduleController:*;
+			
+			public static const INDEX:uint=0;
+			public static const VIEW:uint=1;
+			
+			public function getModuleName():String{
+				return modulename;
+			}
+			
+			public function setDataBindings(data:* = null):void{
+				if(data){
+					if(data['initialurl']){
+						_initialUrl=data['initialurl'];
+					}
+				}
+			}
+			
+			public function resetModule():void{
+				_urlmanager.removeEventListener(URLChangeEvent.CHANGE, onURLChange);
+				_urlmanager=null;
+				
+				this.removeEventListener(FlexEvent.PREINITIALIZE, preinitializeHandler);
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				this.removeEventListener(FlexEvent.ADD, componentAddedHandler);
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler);
+				
+				_moduleController = null;
+				_model = null;
+				resetViews();
+				unpinViews();
+			}
+			
+			public function resetViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.resetGroup();
+						}
+					}
+				}
+			}
+			
+			public function unpinViews():void{
+				if (moduleViewstack)
+				{
+					var views:Array=moduleViewstack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IPinnedGroupInterface;
+							if (v)
+								v.unpinGroup();
+						}
+					}
+				}
+			}
+			
+			public function actionIndex(params:Object = null):void{
+				_viewstackIndex=INDEX;
+				moduleViewstack.selectedIndex=_viewstackIndex;
+				//var params:int=_model.loggedUser.id;
+				new UserActivityEvent(UserActivityEvent.GET_USER_ACTIVITY, false, false).dispatch();
+			}
+			
+			public function actionView(params:Object = null):void{
+				_viewstackIndex=VIEW;
+				moduleViewstack.selectedIndex=_viewstackIndex;
+				new CourseEvent(CourseEvent.VIEW_COURSE, params).dispatch();
+			}
+			
+			public function onURLChange(event:Event):void{
+				if(!event) return;
+				
+				var evt:Object=Object(event);
+				
+				if(!evt.module || evt.module != modulename) return;
+				
+				//Reset the components before changing the foreground
+				resetViews();
+				
+				switch(evt.action)
+				{
+					case "index":
+					{
+						actionIndex();
+						break;
+					}	
+					default:
+					{
+						_urlmanager.redirect('/error');
+						break;
+					}
+				}
+			}
+			
+			protected function preinitializeHandler(event:FlexEvent):void
+			{				
+				this.addEventListener(FlexEvent.ADD, componentAddedHandler, false, 0, true);
+				this.addEventListener(FlexEvent.UPDATE_COMPLETE, componentUpdateCompleteHandler, false, 0, true);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_creationComplete=true;
+				_urlmanager.addEventListener(URLChangeEvent.CHANGE, onURLChange, false, 0, true);
+				onURLChange(_initialUrl);
+			}
+			
+			protected function componentAddedHandler(event:FlexEvent):void{
+				this.visible=false;
+			}
+			
+			protected function componentUpdateCompleteHandler(event:FlexEvent):void{
+				checkPermissions();
+			}
+			
+			protected function checkPermissions():void{
+				if (!DataModel.getInstance().isLoggedIn)
+				{
+					URLManager.getInstance().redirect('/login');
+					return;
+				}
+				this.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="moduleViewstack"
+				  resizeToContent="true"
+				  width="100%"
+				  height="100%">
+		<s:NavigatorContent id="index">
+			<view1:ActivityIndexView id="profileIndex"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+</s:Module>

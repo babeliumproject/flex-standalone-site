@@ -29,25 +29,25 @@
 
 
 --
--- Table structure for table `user`
+-- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `username` varchar(45) NOT NULL,
+CREATE TABLE `users` (
+  `ID` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
-  `firstname` varchar(45) NOT NULL,
-  `lastname` varchar(45) NOT NULL,
+  `realName` varchar(45) NOT NULL,
+  `realSurname` varchar(45) NOT NULL,
   `creditCount` int(10) unsigned NOT NULL default '0',
   `joiningDate` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL default '0',
   `activation_hash` varchar(20) NOT NULL,
   `isAdmin` tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -95,12 +95,10 @@ CREATE TABLE `exercise` (
   `fk_transcription_id` int(10) unsigned default NULL,
   `license` varchar(60) NOT NULL default 'cc-by' COMMENT 'The kind of license this exercise is attached to',
   `reference` text NOT NULL COMMENT 'The url or name of the entity that provided this resource (if any)',
-  `ismodel` tinyint(1) NOT NULL DEFAULT '0',
-  `model_id` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK_exercises_1` (`fk_user_id`),
   KEY `fk_exercise_transcriptions1` (`fk_transcription_id`),
-  CONSTRAINT `FK_exercises_1` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_exercises_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_exercise_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -125,7 +123,7 @@ CREATE TABLE `subtitle` (
   KEY `FK_exercise_subtitle_1` (`fk_exercise_id`),
   KEY `FK_exercise_subtitle_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_subtitle_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_subtitle_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_exercise_subtitle_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -157,7 +155,7 @@ CREATE TABLE `response` (
   KEY `FK_response_2` (`fk_exercise_id`),
   KEY `fk_response_transcriptions1` (`fk_transcription_id`),
   KEY `FK_response_3` (`fk_subtitle_id`),
-  CONSTRAINT `FK_response_1` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_response_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_response_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_response_3` FOREIGN KEY (`fk_subtitle_id`) REFERENCES `subtitle` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_response_transcriptions1` FOREIGN KEY (`fk_transcription_id`) REFERENCES `transcription` (`id`) ON DELETE SET NULL
@@ -185,7 +183,7 @@ CREATE TABLE `credithistory` (
   KEY `FK_credithistory_1` (`fk_user_id`),
   KEY `FK_credithistory_3` (`fk_response_id`),
   KEY `FK_credithistory_2` (`fk_exercise_id`),
-  CONSTRAINT `FK_credithistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_credithistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_credithistory_2` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_credithistory_3` FOREIGN KEY (`fk_response_id`) REFERENCES `response` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -213,7 +211,7 @@ CREATE TABLE `evaluation` (
   KEY `FK_evaluation_1` (`fk_response_id`),
   KEY `FK_evaluation_2` (`fk_user_id`),
   CONSTRAINT `FK_evaluation_1` FOREIGN KEY (`fk_response_id`) REFERENCES `response` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_evaluation_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_evaluation_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -255,7 +253,7 @@ CREATE TABLE `exercise_comment` (
   KEY `FK_exercise_comments_1` (`fk_exercise_id`),
   KEY `FK_exercise_comments_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_comments_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_comments_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_exercise_comments_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -276,7 +274,7 @@ CREATE TABLE `exercise_level` (
   KEY `FK_exercise_level_1` (`fk_exercise_id`),
   KEY `FK_exercise_level_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_level_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_level_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `FK_exercise_level_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -297,7 +295,7 @@ CREATE TABLE `exercise_report` (
   KEY `FK_exercise_report_1` (`fk_exercise_id`),
   KEY `FK_exercise_report_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_report_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_exercise_report_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_exercise_report_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -317,7 +315,7 @@ CREATE TABLE `exercise_role` (
   KEY `FK_exercise_characters_1` (`fk_exercise_id`),
   KEY `FK_exercise_characters_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_characters_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_characters_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_exercise_characters_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -338,7 +336,7 @@ CREATE TABLE `exercise_score` (
   KEY `FK_exercise_score_1` (`fk_exercise_id`),
   KEY `FK_exercise_score_2` (`fk_user_id`),
   CONSTRAINT `FK_exercise_score_1` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_exercise_score_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `FK_exercise_score_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -438,7 +436,7 @@ CREATE TABLE `subtitle_score` (
   KEY `FK_subtitle_score_1` (`fk_subtitle_id`),
   KEY `FK_subtitle_score_2` (`fk_user_id`),
   CONSTRAINT `FK_subtitle_score_1` FOREIGN KEY (`fk_subtitle_id`) REFERENCES `subtitle` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_subtitle_score_2` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_subtitle_score_2` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -459,7 +457,7 @@ CREATE TABLE `user_languages` (
   `purpose` enum('practice','evaluate') NOT NULL default 'practice',
   PRIMARY KEY  (`id`),
   KEY `fk_user_id` (`fk_user_id`),
-  CONSTRAINT `fk_user_id` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_user_id` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -480,7 +478,7 @@ CREATE TABLE `user_session` (
   `closed` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `FK_user_session_1` (`fk_user_id`),
-  CONSTRAINT `FK_user_session_1` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_user_session_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -509,7 +507,7 @@ CREATE TABLE `user_videohistory` (
   KEY `FK_user_videohistory_4` (`fk_response_id`),
   KEY `FK_user_videohistory_5` (`fk_subtitle_id`),
   KEY `FK_user_videohistory_6` (`fk_exercise_role_id`),
-  CONSTRAINT `FK_user_videohistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_user_videohistory_1` FOREIGN KEY (`fk_user_id`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_user_videohistory_2` FOREIGN KEY (`fk_user_session_id`) REFERENCES `user_session` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_user_videohistory_3` FOREIGN KEY (`fk_exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_user_videohistory_4` FOREIGN KEY (`fk_response_id`) REFERENCES `response` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -560,16 +558,14 @@ CREATE  TABLE `rel_exercise_tag` (
 DROP TABLE IF EXISTS `exercise_descriptor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `exercise_descriptor` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `situation` tinyint(2) unsigned NOT NULL DEFAULT '1',
-  `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `competence` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `number` int(10) unsigned NOT NULL DEFAULT '1',
-  `alte` tinyint(1) unsigned NOT NULL DEFAULT '0',
+CREATE  TABLE `exercise_descriptor` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `level` ENUM('A1','A2','B1','B2','C1','C2') NOT NULL ,
+  `type` ENUM('L','R','SI','SP','S','LQ','W') NOT NULL ,
+  `number` INT UNSIGNED NOT NULL ,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`situation`,`level`,`competence`,`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8;
+  UNIQUE KEY(`level`,`type`,`number`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 

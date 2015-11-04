@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:skins="skins.*"
+		  width="100%"
+		  creationComplete="completeHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import events.UserEvent;
+			
+			import flash.utils.getQualifiedClassName;
+			
+			import model.DataModel;
+			import model.LocalesAndFlags;
+			
+			import modules.signup.view.SignUpForm;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			
+			import spark.components.Button;
+			import spark.components.Group;
+			
+			import view.common.CustomAlert;
+			import view.common.IconComboBox;
+			import view.common.LanguageComboBox;
+			
+			import vo.UserLanguageVO;
+
+			private var _model:DataModel=DataModel.getInstance();
+
+			public static const AVAILABLE_LANGUAGES:int=4;
+
+			private var _localesAndFlags:LocalesAndFlags=DataModel.getInstance().localesAndFlags;
+
+			//These variables are used to store the several combobox's info the user might add
+			private var motherLanguagesArray:ArrayCollection=new ArrayCollection();
+			private var interestLanguagesArray:ArrayCollection=new ArrayCollection();
+
+			private var motherTongue:MotherLanguageBox;
+			private var interestLanguage:LanguageKnowledgeBox;
+
+			private var selectedLanguages:ArrayCollection=new ArrayCollection();
+
+			private var cancelFunction:Function;
+
+			private var cw1:ChangeWatcher;
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
+
+			public function completeHandler(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(onLanguagesModified, _model, 'userPreferredLanguagesModified', commitOnly, useWeakReference);
+				
+				currentLanguages();				
+			}
+
+			public function resetComponent():void
+			{
+				//Remove all the listeners that were added to language dropdowns by this component
+				for(var i:int=0;i<interestLanguagesBox.numElements;i++){
+					var ie:*=interestLanguagesBox.getElementAt(i) as LanguageKnowledgeBox;
+					if(ie){
+						ie.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+						ie.deleteButton.removeEventListener(MouseEvent.CLICK, deleteLanguageKnowledgeComboBox);
+					}
+				}
+				for(var j:int=0;j<motherLanguagesBox.numElements;j++){
+					var me:*=motherLanguagesBox.getElementAt(j) as MotherLanguageBox;
+					if(me){
+						me.languageCombo.removeEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+						me.deleteButton.removeEventListener(MouseEvent.CLICK, deleteMotherLanguageBox);
+					}
+				}
+				
+				motherLanguagesBox.removeAllElements();
+				interestLanguagesBox.removeAllElements();
+				motherLanguagesArray.removeAll();
+				interestLanguagesArray.removeAll();
+				
+				currentLanguages();
+			}
+
+			public function unpinComponent():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+
+				addNativeLanguageBtn.removeEventListener(MouseEvent.CLICK, addAnotherMotherLang_clickHandler);
+				addLearnLanguageBtn.removeEventListener(MouseEvent.CLICK, addAnotherInterestLang_clickHandler);
+
+				if (cancelFunction != null)
+					cancelButton.removeEventListener(MouseEvent.CLICK, cancelFunction);
+				saveButton.removeEventListener(MouseEvent.CLICK, saveChangesClickHandler);
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, completeHandler);
+			}
+				
+			public function onLanguagesModified(value:Boolean):void
+			{
+				if (_model.userPreferredLanguagesModified == true)
+				{
+					CustomAlert.info(resourceManager.getString('myResources', 'LANGUAGES_SUCCESSFULLY_MODIFIED'));
+					cancelButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+					_model.userPreferredLanguagesModified=false;
+				}
+			}
+
+			public function currentLanguages():void
+			{
+				for each (var lang:UserLanguageVO in _model.loggedUser.userLanguages)
+				{
+					if (lang.purpose == 'practice')
+					{
+						interestLanguage=new LanguageKnowledgeBox();
+						interestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+						interestLanguagesBox.addElement(interestLanguage);
+						interestLanguagesArray.addItem(interestLanguage);
+						interestLanguage.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+						interestLanguage.levelCombo.prefixedLevel=lang.level - 1;
+						if (interestLanguagesArray.length > 1)
+							interestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
+					}
+					else if (lang.purpose == 'evaluate')
+					{
+						motherTongue=new MotherLanguageBox();
+						motherTongue.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+						motherLanguagesBox.addElement(motherTongue);
+						motherLanguagesArray.addItem(motherTongue);
+						motherTongue.languageCombo.prefixedValue=_localesAndFlags.getLocaleAndFlagGivenLocaleCode(lang.language);
+						if (motherLanguagesArray.length > 1)
+							motherTongue.deleteButtonClickHandler=deleteMotherLanguageBox;
+					}
+				}
+			}
+
+			private function motherLanguageBoxCreated(event:FlexEvent):void
+			{
+				var item:MotherLanguageBox= event.currentTarget as MotherLanguageBox;
+				item.removeEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+				
+				item.languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+				item.languageCombo.name="motherLangs";
+
+				if (item.languageCombo.prefixedValue)
+					item.languageCombo.selectedItem=item.languageCombo.prefixedValue;
+				else
+					item.languageCombo.selectedIndex=-1;
+
+				item.languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+			}
+
+			private function languageKnowledgeBoxCreatedInterest(event:FlexEvent):void
+			{
+				var item:LanguageKnowledgeBox = event.currentTarget as LanguageKnowledgeBox;
+				item.removeEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+				
+				item.languageCombo.dataProvider=_localesAndFlags.availableLanguages;
+
+				item.languageCombo.name="interestLangs";
+
+				if (item.languageCombo.prefixedValue)
+				{
+					item.languageCombo.selectedItem=item.languageCombo.prefixedValue;
+					item.levelCombo.selectedIndex=item.levelCombo.prefixedLevel;
+				}
+				else
+				{
+					item.languageCombo.selectedIndex=-1;
+				}
+
+				item.languageCombo.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
+			}
+
+			public function languageComboBoxChangeHandler(event:ListEvent):void
+			{
+				var dispatchingItem:IconComboBox=IconComboBox(event.target);
+
+				if (dispatchingItem.selectedIndex != -1)
+				{
+					switch (dispatchingItem.name)
+					{
+						case "interestLangs":
+							for each (var ilcb:LanguageKnowledgeBox in interestLanguagesArray)
+							{
+								if (ilcb.languageCombo.selectedIndex != -1 && ilcb.languageCombo != dispatchingItem && ilcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+								{
+									ilcb.languageCombo.selectedIndex=-1;
+								}
+							}
+							break;
+
+						case "motherLangs":
+							for each (var ilcbm:LanguageKnowledgeBox in interestLanguagesArray)
+							{
+								if (ilcbm.languageCombo.selectedIndex != -1 && ilcbm.languageCombo != dispatchingItem && ilcbm.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+								{
+									ilcbm.languageCombo.selectedIndex=-1;
+								}
+							}
+							break;
+					}
+					for each (var mlcb:MotherLanguageBox in motherLanguagesArray)
+					{
+						if (mlcb.languageCombo.selectedIndex != -1 && mlcb.languageCombo != dispatchingItem && mlcb.languageCombo.selectedItem.code == dispatchingItem.selectedItem.code)
+						{
+							mlcb.languageCombo.selectedIndex=-1;
+						}
+					}
+				}
+			}
+
+			protected function addAnotherInterestLang_clickHandler(event:MouseEvent):void
+			{
+				if (interestLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
+				{
+					var otherInterestLanguage:LanguageKnowledgeBox=new LanguageKnowledgeBox();
+					otherInterestLanguage.deleteButtonClickHandler=deleteLanguageKnowledgeComboBox;
+					otherInterestLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, languageKnowledgeBoxCreatedInterest);
+					interestLanguagesBox.addElement(otherInterestLanguage);
+					interestLanguagesArray.addItem(otherInterestLanguage);
+				}
+			}
+
+			protected function addAnotherMotherLang_clickHandler(event:MouseEvent):void
+			{
+				if (motherLanguagesArray.length < SignUpForm.AVAILABLE_LANGUAGES - 1)
+				{
+					var otherMotherLanguage:MotherLanguageBox=new MotherLanguageBox();
+					otherMotherLanguage.deleteButtonClickHandler=deleteMotherLanguageBox;
+					otherMotherLanguage.addEventListener(FlexEvent.CREATION_COMPLETE, motherLanguageBoxCreated);
+					motherLanguagesBox.addElement(otherMotherLanguage);
+					motherLanguagesArray.addItem(otherMotherLanguage);
+				}
+			}
+
+			private function deleteLanguageKnowledgeComboBox(event:MouseEvent):void
+			{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as LanguageKnowledgeBox));
+				var index:uint=0;
+				if ((index=interestLanguagesArray.getItemIndex((event.currentTarget).parent as LanguageKnowledgeBox)) != -1)
+				{
+					interestLanguagesArray.removeItemAt(index);
+				}
+			}
+
+			private function deleteMotherLanguageBox(event:MouseEvent):void
+			{
+				var container:Group=((event.currentTarget).parent).parent;
+				container.removeElement(((event.currentTarget).parent as MotherLanguageBox));
+				var index:uint=0;
+				if ((index=motherLanguagesArray.getItemIndex((event.currentTarget).parent as MotherLanguageBox)) != -1)
+				{
+					motherLanguagesArray.removeItemAt(index);
+				}
+			}
+
+			protected function saveChangesClickHandler(event:MouseEvent):void
+			{
+				var mLangCollection:ArrayCollection=new ArrayCollection();
+				var iLangCollection:ArrayCollection=new ArrayCollection();
+
+				for each (var mLang:MotherLanguageBox in motherLanguagesArray)
+				{
+					if (mLang.languageCombo.selectedIndex != -1)
+						mLangCollection.addItem(new UserLanguageVO(0, mLang.languageCombo.selectedItem.code, 7, DataModel.PURPOSE_EVALUATE, 0));
+				}
+				for each (var iLang:LanguageKnowledgeBox in interestLanguagesArray)
+				{
+					if (iLang.languageCombo.selectedIndex != -1)
+						iLangCollection.addItem(new UserLanguageVO(0, iLang.languageCombo.selectedItem.code, iLang.levelCombo.selectedIndex + 1, DataModel.PURPOSE_PRACTICE, 0));
+				}
+
+				var mLangArray:Array=mLangCollection.toArray();
+				var iLangArray:Array=iLangCollection.toArray();
+				if (mLangArray.length > 0 && iLangArray.length > 0)
+				{
+					var languages:Array=mLangArray.concat(iLangArray);
+
+					new UserEvent(UserEvent.MODIFY_PREFERRED_LANGUAGES, languages).dispatch();
+
+				}
+				else
+				{
+					CustomAlert.error(resourceManager.getString('myResources', 'MOTHER_TONGUE_PRACTICE_LANGUAGE_REQUIRED'));
+				}
+			}
+
+			public function set cancelClickHandler(closure:Function):void
+			{
+				cancelFunction=closure;
+				cancelButton.addEventListener(MouseEvent.CLICK, cancelFunction);
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="mlContainer"
+					   styleName="lightBorderContainer"
+					   width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="16"
+							  paddingTop="16"
+							  paddingLeft="16"
+							  paddingRight="16"
+							  gap="8"/>
+		</s:layout>
+
+		<s:Label id="languagesLbl"
+				 text="{resourceManager.getString('myResources','LANGUAGES')}"
+				 styleName="h3"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke weight="{mlContainer.getStyle('borderWeight')}"
+									alpha="{mlContainer.getStyle('borderAlpha')}"
+									color="{mlContainer.getStyle('borderColor')}"/>
+			</s:stroke>
+		</s:Line>
+
+		<!-- Languages I speak -->
+		<s:Label text="{resourceManager.getString('myResources','I_SPEAK')+':'}"
+				 styleName="boldLabel"
+				 fontSize="16"
+				 paddingTop="8"/>
+		<s:Label text="{resourceManager.getString('myResources','PLASE_CHOOSE_ONLY_LANGUAGES_IN_WHICH_YOU_ARE_EITHER_NATIVE_OR_ADVANCED')}"/>
+		<s:VGroup id="motherLanguagesBox"
+				  paddingLeft="16"
+				  paddingTop="12"/>
+		<s:Button id="addNativeLanguageBtn"
+				  click="addAnotherMotherLang_clickHandler(event)"
+				  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+				  styleName="btn-link"
+				  buttonMode="true"/>
+
+		<!-- Languages I want to learn -->
+		<s:Label text="{resourceManager.getString('myResources','I_WOULD_LIKE_TO_LEARN')+':'}"
+				 styleName="boldLabel"
+				 fontSize="16"/>
+		<s:Label text="{resourceManager.getString('myResources','PLEASE_CHOOSE_AT_LEAST_ONE_LANGUAGE')}"/>
+		<s:VGroup id="interestLanguagesBox"
+				  paddingLeft="16"
+				  paddingTop="12"/>
+		<s:Button id="addLearnLanguageBtn"
+				  click="addAnotherInterestLang_clickHandler(event)"
+				  label="{resourceManager.getString('myResources','ADD_ANOTHER_LANGUAGE')}"
+				  styleName="btn-link"
+				  buttonMode="true"/>
+	</s:BorderContainer>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle">
+		<s:Button id="saveButton"
+				  label="{resourceManager.getString('myResources','SAVE_NEWPASS')}"
+				  click="saveChangesClickHandler(event)"
+				  buttonMode="true"
+				  styleName="btn-success"/>
+
+		<s:Button id="cancelButton"
+				  label="{resourceManager.getString('myResources','CANCEL')}"
+				  buttonMode="true"
+				  styleName="btn-default"/>
+	</s:HGroup>
+
+
+</s:VGroup>

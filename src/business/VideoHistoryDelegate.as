@@ -18,19 +18,19 @@ package business
 			this.responder = responder;
 		}
 		
-		public function exerciseWatched(videoHistoryData:UserVideoHistoryVO):void{
+		public function exerciseWatched(videoHistoryData:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("videoHistoryRO");
 			var pendingCall:AsyncToken = service.exerciseWatched(videoHistoryData);
 			pendingCall.addResponder(responder);
 		}
 		
-		public function exerciseAttemptResponse(videoHistoryData:UserVideoHistoryVO):void{
+		public function exerciseAttemptResponse(videoHistoryData:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("videoHistoryRO");
 			var pendingCall:AsyncToken = service.exerciseAttemptResponse(videoHistoryData);
 			pendingCall.addResponder(responder);	
 		}
 		
-		public function exerciseSaveResponse(videoHistoryData:UserVideoHistoryVO):void{
+		public function exerciseSaveResponse(videoHistoryData:Object):void{
 			var service:RemoteObject = ServiceLocator.getInstance().getRemoteObject("videoHistoryRO");
 			var pendingCall:AsyncToken = service.exerciseSaveResponse(videoHistoryData);
 			pendingCall.addResponder(responder);	

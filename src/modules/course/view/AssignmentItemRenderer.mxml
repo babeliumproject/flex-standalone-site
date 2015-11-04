@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true"
+				initialize="initializeHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import mx.events.FlexEvent;
+
+			protected function goToAssignment_clickHandler(event:MouseEvent):void
+			{
+				URLManager.getInstance().redirect('/assignment/view/'+data.id);
+			}
+			
+			protected function initializeHandler(event:FlexEvent):void
+			{
+				var currentdate:Number = new Date().time;
+				
+				//Decide which phase block should be highlighted based on the current date
+				//TODO
+				submissionDates.styleName = "assignmentHighlightBlock";
+				
+				//Submissions are not open yet. Hide 'Go to assignment' button
+				if(data.allowsubmissionsfromdate > currentdate){
+					goToAssignment.includeInLayout=false;
+					goToAssignment.visible=false;
+				} else {
+					goToAssignment.includeInLayout=true;
+					goToAssignment.visible=true;
+				}
+				
+				//Hid the evaluation block if no evaluation dates are available
+				if(data.allowevaluationsfromdate){
+					evaluationDates.includeInLayout = true;
+					evaluationDates.visible = true;
+				} else {
+					evaluationDates.includeInLayout = false;
+					evaluationDates.visible = false;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:BorderContainer 	id="assignmentHeader"
+						styleName="assignmentTitleContainer">
+		<s:Label id="assignmentTitle" text="{data.name}"/>
+		<s:Button id="goToAssignment" label="Go to assignment" click="goToAssignment_clickHandler(event)"/>
+	</s:BorderContainer>
+	
+	<s:BorderContainer id="submissionDates">
+		<s:Label text="Submission"/>
+	</s:BorderContainer>
+	
+	<s:BorderContainer id="evaluationDates">
+		<s:Label text="Evaluation"/>
+	</s:BorderContainer>
+	
+	<s:BorderContainer id="resultDates">
+		<s:Label text="Results"/>
+	</s:BorderContainer>
+	
+</s:ItemRenderer>

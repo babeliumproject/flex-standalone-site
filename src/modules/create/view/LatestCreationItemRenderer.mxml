@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="middle"
+							paddingTop="4"
+							paddingBottom="4"
+							paddingLeft="8"
+							paddingRight="8"/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			
+			import mx.binding.utils.ChangeWatcher;
+			
+			import flash.globalization.DateTimeNameStyle;
+			import flash.globalization.DateTimeStyle;
+			
+			import mx.resources.ResourceManager;
+			
+			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var cw:ChangeWatcher;
+			
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+				
+				if (value == null)
+					return;
+				
+				thumbnail.source=value.thumbnail;
+				title.text=value.title;
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
+				difLevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
+				creationDateLbl.text=ExerciseRenderUtils.formatTimestamp(value.timecreated,DateTimeStyle.SHORT,DateTimeStyle.NONE);
+				
+				var ready:int=parseInt(value.status);
+				var propname:String = ready ? 'READY' : 'DRAFT';
+				cw=LocaleUtils.localizedPropertyBind(statusValue,'text','myResources',propname,commitOnly,useWeakReference);
+			}
+
+		]]>
+	</fx:Script>
+
+	<s:Group width="120"
+			 height="90">
+		<s:Rect width="120" height="90">
+			<s:stroke>
+				<s:SolidColorStroke weight="1" color="0"/>
+			</s:stroke>
+		</s:Rect>
+		<s:BitmapImage id="thumbnail"
+					   width="120"
+					   height="90"/>
+		<!--
+		<s:TextInput text="{ExerciseRenderUtils.formatDateTime(data.duration,DateTimeStyle.CUSTOM,DateTimeStyle.CUSTOM)}"
+					 styleName="videoDurationLabel"
+					 x="88"
+					 y="0"
+					 width="32"
+					 height="16"
+					 editable="false"
+					 selectable="false"/>
+		-->
+	</s:Group>
+
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  gap="2">
+		<s:Label id="title"
+				 width="180"
+				 styleName="boldLabel"/>
+		<s:Line width="180"
+				alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="2"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+		<s:HGroup gap="20"
+				  verticalAlign="middle">
+			<s:HGroup gap="2"
+					  verticalAlign="middle">
+				<s:BitmapImage width="16"
+							   height="16"
+							   id="exerciseLanguage"/>
+				<s:Label id="difLevelLbl"
+						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:Label
+					 styleName="boldYellowLabel"
+					 id="creationDateLbl"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label id="status"
+					 text="{ResourceManager.getInstance().getString('myResources','STATUS')+':'}"/>
+			<s:Label id="statusValue"/>
+		</s:HGroup>
+	</s:VGroup>
+
+</s:ItemRenderer>

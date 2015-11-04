@@ -14,6 +14,8 @@ package commands.userManagement
 	import mx.rpc.IResponder;
 	import mx.utils.ObjectUtil;
 	
+	import utils.LocaleUtils;
+	
 	import view.common.CustomAlert;
 	
 	public class ActivateUserCommand implements ICommand, IResponder
@@ -21,23 +23,23 @@ package commands.userManagement
 		
 		public function execute(event:CairngormEvent):void
 		{
-			new RegisterUserDelegate(this).activateUser((event as RegisterUserEvent).user);
+			var params:Object = (event as RegisterUserEvent).user;
+			new RegisterUserDelegate(this).activateUser(params);
 		}
 		
 		public function result(data:Object):void
 		{
-			var localeCode:Object = data.result;
-			if(data.result == null)
+			
+			if(!data.result)
 				DataModel.getInstance().accountActivationStatus = 0;
 			else
 			{
+				var localeCode:String = String(data.result);
 				DataModel.getInstance().accountActivationStatus = 1;
-				ResourceManager.getInstance().localeChain=[localeCode];
-				//Updating changes in DataModel, used in Search.mxml 
-				DataModel.getInstance().languageChanged=!DataModel.getInstance().languageChanged;
+				LocaleUtils.arrangeLocaleChain(localeCode);
 			}
 			
-			DataModel.getInstance().accountActivationRetrieved = true;
+			DataModel.getInstance().accountActivationRetrieved = !DataModel.getInstance().accountActivationRetrieved;
 		}
 		
 		public function fault(info:Object):void

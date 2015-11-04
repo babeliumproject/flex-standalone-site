@@ -6,6 +6,7 @@ package vo
 	{
 		public var id:int;
 		public var exerciseId:int;
+		public var mediaId:int;
 		public var fileIdentifier:String;
 		public var isPrivate:Boolean;
 		public var thumbnailUri:String;

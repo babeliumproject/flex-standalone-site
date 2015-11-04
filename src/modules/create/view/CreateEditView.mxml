@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.create.view.*"
+		  width="100%"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			
+			import spark.components.DataGroup;
+			import spark.events.IndexChangeEvent;
+
+			[Bindable]
+			public var viewIndex:uint;
+
+			public static const STEP1:uint=0;
+			public static const STEP2:uint=1;
+			public static const STEP3:uint=2;
+
+			public var exercisecode:String;
+			
+			protected var _model:DataModel=DataModel.getInstance();
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(setEnabledCreateSteps, _model, "enabledCreateStepsChanged", commitOnly, useWeakReference);
+				cw2=BindingUtils.bindProperty(stepViewStack, 'selectedIndex',this,'viewIndex');
+				cw3=BindingUtils.bindProperty(createSteps,'dataProvider',this,'stepViewStack');
+			}
+			
+			public function resetGroup():void
+			{
+				if (exerciseClassification)
+					exerciseClassification.resetComponent();
+				if (mediaUpload)
+					mediaUpload.resetComponent();
+				if (previewpublish)
+					previewpublish.resetComponent();
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				if (exerciseClassification)
+					exerciseClassification.unpinComponent();
+				if (mediaUpload)
+					mediaUpload.unpinComponent();
+				if (previewpublish)
+					previewpublish.unpinComponent();
+				
+				createSteps.removeEventListener(IndexChangeEvent.CHANGING, createSteps_changingHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+
+			public function setEnabledCreateSteps(value:Boolean):void{
+				var te:Array = DataModel.getInstance().enabledCreateSteps;
+				enableTabs(createSteps,te);
+			}
+			
+			private function enableTabs(tabBar:TabBar, toEnable:Array):void{
+				var dg:DataGroup = tabBar ? tabBar.dataGroup : null;
+				if(dg){
+					var numElements:int = dg.numElements;
+					var t:String = toEnable ? toEnable.join(',') : 'none';
+					trace("TabBar has "+numElements+" tabs. To be enabled: "+t); 
+					var i:int=0;
+					for (i; i<numElements; i++){
+						var element:UIComponent = dg.getElementAt(i) as UIComponent;
+						if(toEnable && (toEnable.indexOf(i+1) !=-1)){
+							element.enabled=true;
+						} else {
+							element.enabled=false;
+						}
+					}
+				}
+			}
+
+			protected function createSteps_changingHandler(event:IndexChangeEvent):void
+			{
+				var step:int=event.newIndex;
+				if (exercisecode)
+				{
+					URLManager.getInstance().redirect('/create/edit/' + exercisecode + '?s=' + (step + 1));
+				}
+				else if (step == STEP1)
+				{
+					URLManager.getInstance().redirect('/create/add');
+				}
+			}		
+			
+		]]>
+	</fx:Script>
+
+	<s:Label text="{ResourceManager.getInstance().getString('myResources','CREATE_NEW_EXERCISE')}"
+			 styleName="h2"/>
+
+	<s:TabBar id="createSteps"
+			  skinClass="skins.BootstrapTabBar"
+			  changing="createSteps_changingHandler(event)"
+			  buttonMode="true"/>
+
+	<s:VGroup width="100%">
+		<mx:ViewStack id="stepViewStack"
+					  resizeToContent="true"
+					  width="100%"
+					  height="100%"
+					  creationPolicy="all">
+			<s:NavigatorContent id="exClassNC"
+								label="{'1. '+ResourceManager.getInstance().getString('myResources','LABEL_THE_EXERCISE')}">
+				<view:LabelExercise id="exerciseClassification"
+									width="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="addMediaNC"
+								label="{'2. '+ResourceManager.getInstance().getString('myResources','ADD_MEDIA')}">
+				<view:AddMedia id="mediaUpload"
+							   width="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="previewNC"
+								label="{'3. '+ResourceManager.getInstance().getString('myResources', 'PREVIEW_PUBLISH')}">
+				<view:PreviewPublish id="previewpublish"
+									 width="100%"/>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+
+	</s:VGroup>
+
+</s:VGroup>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:main="components.main.*"
+		  xmlns:common="view.common.*"
+		  verticalAlign="middle"
+		  xmlns:skins="skins.*">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			public var deleteFunction:Function;
+			
+			public function set deleteButtonClickHandler(closure:Function):void{
+				deleteFunction=closure;
+				deleteButton.addEventListener(MouseEvent.CLICK, deleteFunction);
+				deleteButton.visible = true;
+				deleteButton.includeInLayout = true;
+			}
+			
+		]]>
+	</fx:Script>
+
+	<common:LanguageComboBox id="languageCombo"/>
+	<s:Label text="{resourceManager.getString('myResources', 'LEVEL')+':'}"/>
+	<common:DifficultyLevelComboBox id="levelCombo"/>
+	<skins:IconButton id="deleteButton"
+					  styleName="removeLanguageLinkButton"
+					  visible="false"
+					  includeInLayout="false"/>
+
+</s:HGroup>

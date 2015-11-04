@@ -5,6 +5,8 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.URLManager;
+	
 	import events.*;
 	
 	import model.DataModel;
@@ -26,7 +28,8 @@ package commands.userManagement
 
 		public function execute(event:CairngormEvent):void
 		{
-			new RegisterUserDelegate(this).processRegister((event as RegisterUserEvent).user);
+			var params:Object = (event as RegisterUserEvent).user;
+			new RegisterUserDelegate(this).processRegister(params);
 		}
 		
 		public function result(data:Object):void
@@ -38,7 +41,8 @@ package commands.userManagement
 				_dataModel.registrationErrorMessage = null;
 				_dataModel.isSuccessfullyLogged = false;
 				_dataModel.isLoggedIn = false;
-				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				URLManager.getInstance().redirect('/home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','ACTIVATION_EMAIL_SENT'));
 			} else {
 				//Inform about the error

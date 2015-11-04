@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:skins="skins.*"
+		 xmlns:videoUpload="components.videoUpload.*"
+		 xmlns:view="modules.create.view.*"
+		 xmlns:common="view.common.*"
+		 xmlns:webcamCapture="components.webcamCapture.*">
+
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+
+			import modules.create.event.CreateEvent;
+			import modules.create.event.FileUploadEvent;
+
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+
+			public var exerciseid:int;
+			public var exercisecode:String;
+			public var medialevel:int;
+
+			private var fileUpload:FileUpload;
+			private var filename:String;
+			private var filesize:uint;
+
+			public function resetComponent():void
+			{
+				fileUpload=null;
+				filename=null;
+				filesize=0;
+				updateUploadProgress();
+				uploadFilename.text='';
+				recFromWebcamBox.resetComponent();
+				methodSelection.includeInLayout=true;
+				methodSelection.visible=true;
+				uploadWidget.includeInLayout=false;
+				uploadWidget.visible=false;
+				recFromWebcamBox.visible=false;
+				recFromWebcamBox.includeInLayout=false;
+				errorMessageContainer.visible=false;
+				errorMessageContainer.includeInLayout=false;
+			}
+
+			public function unpinComponent():void
+			{
+
+				if (fileUpload)
+				{
+					fileUpload.removeEventListener(FileUploadEvent.FILE_SELECTED, onUploadStart);
+					fileUpload.removeEventListener(FileUploadEvent.IO_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.SECURITY_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.HTTP_STATUS_ERROR, onUploadError);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_PROGRESS, onUploadProgress);
+					fileUpload.removeEventListener(FileUploadEvent.UPLOAD_COMPLETE_DATA, onUploadComplete);
+				}
+
+				uploadFile.removeEventListener(MouseEvent.CLICK, uploadFileClickHandler);
+				recordFile.removeEventListener(MouseEvent.CLICK, webcamCaptureClickHandler);
+				cancelUpload.removeEventListener(MouseEvent.CLICK, cancelUploadFileClickHandler);
+				cancelUploadErrorBtn.removeEventListener(MouseEvent.CLICK, cancelUploadFileClickHandler);
+			}
+
+			protected function uploadFileClickHandler(event:MouseEvent):void
+			{
+				fileUpload=new FileUpload(DataModel.getInstance().maxFileSize);
+				fileUpload.addEventListener(FileUploadEvent.FILE_SELECTED, onUploadStart, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.IO_ERROR, onUploadError, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.SECURITY_ERROR, onUploadError, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_ERROR, onUploadError, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.HTTP_STATUS_ERROR, onUploadError, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_PROGRESS, onUploadProgress, false, 0, true);
+				fileUpload.addEventListener(FileUploadEvent.UPLOAD_COMPLETE_DATA, onUploadComplete, false, 0, true);
+				//fileUpload.addEventListener(FileUploadEvent.UPLOAD_COMPLETE, onUploadComplete, false, 0, true);
+
+				fileUpload.browse();
+			}
+
+			protected function cancelUploadFileClickHandler(event:MouseEvent):void
+			{
+				clearUpload();
+				resetComponent();
+			}
+
+			protected function webcamCaptureClickHandler(event:MouseEvent):void
+			{
+				methodSelection.visible=false;
+				methodSelection.includeInLayout=false;
+				recFromWebcamBox.visible=true;
+				recFromWebcamBox.includeInLayout=true;
+			}
+
+			protected function clearUpload():void
+			{
+				updateUploadProgress();
+				fileUpload.cancel();
+			}
+
+			protected function updateUploadProgress(percentLoaded:Number=0):void
+			{
+				uploadProgressBar.setProgress(percentLoaded, 100);
+				uploadProgressBar.validateNow();
+			}
+
+			private function onUploadStart(event:FileUploadEvent):void
+			{
+				filename=fileUpload.fileName();
+				filesize=fileUpload.fileSize();
+				uploadFilename.text=filename;
+				updateUploadProgress();
+				methodSelection.includeInLayout=false;
+				methodSelection.visible=false;
+				uploadWidget.includeInLayout=true;
+				uploadWidget.visible=true;
+				fileUpload.upload();
+			}
+
+			private function onUploadProgress(event:FileUploadEvent):void
+			{
+				var bytesLoaded:int=event.bytesLoaded;
+				var bytesTotal:int=event.bytesTotal;
+				var percentLoaded:Number=Math.round((bytesLoaded / bytesTotal) * 100);
+				updateUploadProgress(percentLoaded);
+			}
+
+			private function onUploadComplete(event:FileUploadEvent):void
+			{
+				var payload:XML=new XML(event.data);
+				trace(ObjectUtil.toString(payload));
+				if (payload.status == "success")
+				{
+					var internalFilename:String=payload.response.filename;
+					var params:Object=new Object();
+					if (exerciseid)
+						params.exerciseid=exerciseid;
+					if (exercisecode)
+						params.exercisecode=exercisecode;
+					params.filename=internalFilename;
+					params.level=medialevel;
+					new CreateEvent(CreateEvent.SAVE_EXERCISE_MEDIA, params).dispatch();
+				}
+				else
+				{
+					var httpcode:int=parseInt(payload.header.httpstatus);
+					var errormessage:String=payload.response.message;
+					var errorcode:String=payload.response.code;
+					var errordata:int=parseInt(payload.response.data);
+					switch (errorcode)
+					{
+						case 'noaction':
+							break;
+						case 'duplicatedfilename':
+							break;
+						case 'uploadfailed':
+							break;
+						case 'notmediafile':
+							break;
+						case 'invalidmime':
+							break;
+						case 'videotoolong':
+							break;
+						case 'novideotrack':
+							break;
+						case 'videotoobig':
+							break;
+						default:
+							break;
+					}
+					errorMessage.text=errormessage;
+					displayUploadErrors();
+				}
+
+			}
+
+			private function onUploadError(event:FileUploadEvent):void
+			{
+				errorMessage.text=event.data;
+				displayUploadErrors();
+			}
+
+			protected function displayUploadErrors():void
+			{
+				methodSelection.visible=false;
+				methodSelection.includeInLayout=false;
+				//Reset this widget
+				uploadWidget.visible=false;
+				uploadWidget.includeInLayout=false;
+				//Reset this widget
+
+				errorMessageContainer.visible=true;
+				errorMessageContainer.includeInLayout=true;
+				//Add a button to go back to choosemediatypecontainer
+			}
+
+			protected function cancelCaptureClickHandler(event:Event):void
+			{
+				recFromWebcamBox.resetComponent();
+				recFromWebcamBox.includeInLayout=false;
+				recFromWebcamBox.visible=false;
+				methodSelection.visible=true;
+				methodSelection.includeInLayout=true;
+			}
+
+			protected function uploadCaptureClickHandler(event:Event):void
+			{
+				if (recFromWebcamBox.recordingFileName)
+				{
+					var params:Object=new Object();
+					if (exerciseid)
+						params.exerciseid=exerciseid;
+					if (exercisecode)
+						params.exercisecode=exercisecode;
+					params.filename=recFromWebcamBox.recordingFileName + '.flv';
+					params.level=medialevel;
+					new CreateEvent(CreateEvent.SAVE_EXERCISE_MEDIA, params).dispatch();
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="chooseMediaTypeContainer"
+					   styleName="lightBorderContainer"
+					   width="640"
+					   height="380">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+
+		<s:VGroup id="methodSelection"
+				  includeInLayout="true"
+				  visible="true"
+				  width="100%"
+				  height="100%"
+				  horizontalAlign="center"
+				  verticalAlign="middle">
+			<s:Label id="chooseMethod"
+					 text="{ResourceManager.getInstance().getString('myResources','CHOOSE_MEDIA_ORIGIN')}"
+					 fontSize="18"/>
+			<s:HGroup visible="true"
+					  includeInLayout="true"
+					  paddingTop="80">
+				<s:Button id="uploadFile"
+						  styleName="btn-primary"
+						  click="uploadFileClickHandler(event)"
+						  buttonMode="true"
+						  label="{ResourceManager.getInstance().getString('myResources','FILE')}"/>
+				<s:Button id="recordFile"
+						  styleName="btn-primary"
+						  click="webcamCaptureClickHandler(event)"
+						  buttonMode="true"
+						  label="{ResourceManager.getInstance().getString('myResources','WEBCAM_CAPTURE')}"/>
+			</s:HGroup>
+		</s:VGroup>
+
+		<s:VGroup id="uploadWidget"
+				  visible="false"
+				  includeInLayout="false"
+				  width="100%"
+				  height="100%"
+				  paddingBottom="16"
+				  paddingLeft="16"
+				  paddingRight="16"
+				  paddingTop="16"
+				  verticalAlign="middle"
+				  horizontalAlign="center">
+			<s:VGroup width="100%"
+					  height="100%"
+					  verticalAlign="middle"
+					  horizontalAlign="center">
+				<s:Label id="uploadFilename"
+						 fontSize="18"
+						 width="580"
+						 maxDisplayedLines="3"/>
+				<mx:ProgressBar id="uploadProgressBar"
+								mode="manual"
+								labelPlacement="center"
+								label="{ResourceManager.getInstance().getString('myResources','UPLOADING')+' ...'}"
+								styleName="progress-bar"
+								width="100%"/>
+			</s:VGroup>
+			<s:HGroup width="100%"
+					  horizontalAlign="left">
+				<s:Button id="cancelUpload"
+						  click="cancelUploadFileClickHandler(event)"
+						  label="{ResourceManager.getInstance().getString('myResources','CANCEL')}"
+						  styleName="btn-default"
+						  buttonMode="true"/>
+			</s:HGroup>
+		</s:VGroup>
+
+		<webcamCapture:WebcamCapture id="recFromWebcamBox"
+									 streamsFolder="exercises"
+									 filePrefix="upld"
+									 includeInLayout="false"
+									 visible="false"
+									 width="100%"
+									 height="100%"
+									 cancelClickHandler="{cancelCaptureClickHandler}"
+									 uploadClickHandler="{uploadCaptureClickHandler}"/>
+
+		<s:VGroup id="errorMessageContainer"
+				  visible="false"
+				  includeInLayout="false"
+				  width="100%"
+				  height="100%"
+				  paddingBottom="16"
+				  paddingLeft="16"
+				  paddingRight="16"
+				  paddingTop="16"
+				  horizontalAlign="center">
+			<s:BorderContainer width="100%"
+							   styleName="alert-danger">
+				<s:layout>
+					<s:VerticalLayout paddingBottom="16"
+									  paddingLeft="16"
+									  paddingRight="16"
+									  paddingTop="16"/>
+				</s:layout>
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','FILE_UPLOAD_ERROR')}"
+						 fontSize="18"/>
+				<s:Label id="errorMessage"
+						 width="100%"/>
+				<s:Button id="cancelUploadErrorBtn"
+						  click="cancelUploadFileClickHandler(event)"
+						  label="{ResourceManager.getInstance().getString('myResources','OK')}"
+						  styleName="btn-danger"
+						  buttonMode="true"/>
+			</s:BorderContainer>
+		</s:VGroup>
+
+	</s:BorderContainer>
+
+
+
+</s:Group>

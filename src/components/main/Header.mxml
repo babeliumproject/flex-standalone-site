@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 xmlns:main="components.main.*"
+		 xmlns:skins="skins.*"
+		 width="100%"
+		 preinitialize="preinitHandler(event)"
+		 creationComplete="completeHandler(event)" >
+
+	<s:VGroup width="100%"
+			  minWidth="1000"
+			  height="100%"
+			  gap="0">
+
+		<s:BorderContainer id="headerBorderContainer"
+						   styleName="headerBorderContainer"
+						   minHeight="0"
+						   width="100%"
+						   minWidth="1000">
+
+			<s:layout>
+				<s:HorizontalLayout paddingTop="4"
+									paddingBottom="4"
+									paddingLeft="4"
+									paddingRight="4"
+									verticalAlign="middle"/>
+			</s:layout>
+
+			<s:Label text="{resourceManager.getString('myResources','LANGUAGE')}"/>
+			<components:EnhancedDropDownList id="localeComboBox2"
+											 skinClass="skins.BootstrapDropDownList"
+											 cornerRadius="3"
+											 borderColor="0xcccccc"
+											 requireSelection="true"
+											 sortItems="true"
+											 visible="false"
+											 includeInLayout="false"/>
+			<!--
+			<main:LocalizationComboBox id="localeComboBox"/>
+			-->
+
+			<s:HGroup horizontalAlign="right"
+					  verticalAlign="middle"
+					  width="100%"/>
+
+			<!-- Show this box when user is not identified -->
+			<s:HGroup id="anonymousCP"
+					  horizontalAlign="right"
+					  verticalAlign="middle"
+					  visible="true"
+					  includeInLayout="true"
+					  height="100%">
+				<skins:IconButton id="signInButton"
+								  styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources', 'SIGN_IN')}"
+								  click="signInClickHandler()"
+								  visible="{_urlManager.moduleName != 'login'}"
+								  includeInLayout="{_urlManager.moduleName != 'login'}"/>
+				<skins:IconButton id="signUpButton"
+								  styleName="yellowLinkButton"
+								  label="{resourceManager.getString('myResources', 'REGISTER')}"
+								  click="signUpClickHandler()"/>
+			</s:HGroup>
+			<s:HGroup id="userCP"
+					  horizontalAlign="right"
+					  verticalAlign="middle"
+					  visible="false"
+					  includeInLayout="false"
+					  height="100%">
+				<!--
+				<mx:VRule height="20"
+						  styleName="sectionTitleHRule"/>
+				
+				<s:HGroup verticalAlign="middle"
+						  horizontalAlign="center">
+					<s:BitmapImage source="@Embed('/resources/images/coins_icon.png')"/>
+					<s:Label id="uCrds"
+							 text="cr."
+							 styleName="creditLinkButton"
+							 verticalAlign="justify"
+							 toolTip="{resourceManager.getString('myResources','CREDIT_COUNT')}"/>
+				</s:HGroup>
+				<mx:VRule height="20"
+						  styleName="sectionTitleHRule"/>
+				-->
+				<s:BitmapImage source="resources/images/iconmonstr-user-6-icon-48.png" width="24" height="24"/>
+				<s:HGroup gap="0"
+						  verticalAlign="middle"
+						  height="100%">
+					<s:Label text="("
+							 styleName="boldDarkerGreyLabel"/>
+					<skins:IconButton id="userCPName"
+									  styleName="orangeLinkButton"
+									  label="UserName"
+									  click="userOptionsItemClickHandler(event)"/>
+					<s:Label text=")"
+							 styleName="boldDarkerGreyLabel"/>
+				</s:HGroup>
+				<skins:IconButton id="signOutButton"
+								  styleName="signOutLinkButton"
+								  toolTip="{resourceManager.getString('myResources','SIGN_OUT')}"
+								  click="signOutClickHandler()"/>
+			</s:HGroup>
+
+		</s:BorderContainer>
+
+	</s:VGroup>
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import events.LoginEvent;
+			
+			import flash.net.navigateToURL;
+			
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ResourceEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.IResourceBundle;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.CollectionUtils;
+			import utils.LocaleUtils;
+
+			[Bindable]
+			protected var _urlManager:URLManager=URLManager.getInstance();
+			
+			private var siteLanguages:ArrayCollection;
+			private var rm:IResourceManager;
+
+			private var popup:LoginPopup;
+			
+			protected function preinitHandler(event:FlexEvent):void{
+				rm=ResourceManager.getInstance();
+				var loadedLocales:Array=rm.getLocales();
+				if(loadedLocales.length>1){
+					siteLanguages=new ArrayCollection();
+				}
+				for each (var locale:String in loadedLocales){
+					var langcode:String = locale.substring(0,locale.indexOf('_'));
+					var bundle:IResourceBundle=rm.getResourceBundle(locale,'myResources');
+					if(bundle.content.hasOwnProperty('LANGUAGE_'+langcode.toUpperCase())){
+						var name:String = bundle.content['LANGUAGE_'+langcode.toUpperCase()];
+						siteLanguages.addItem({'code': locale, 'label': name});
+					}
+				}
+			}
+
+			protected function completeHandler(event:FlexEvent):void
+			{
+				var model:DataModel=DataModel.getInstance();
+				
+				if(siteLanguages){
+					localeComboBox2.visible=true;
+					localeComboBox2.includeInLayout=true;
+					localeComboBox2.dataProvider=siteLanguages;
+					var initialLocale:String = rm.localeChain[0];
+					var initialItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',initialLocale) as Function);
+					localeComboBox2.selectedItem=initialItem;
+					localeComboBox2.addEventListener(IndexChangeEvent.CHANGE, onLocaleChange);
+				}
+
+				BindingUtils.bindSetter(onUserAuthenticated, model, "isLoggedIn");
+				BindingUtils.bindSetter(creditsUpdated, model, "creditUpdateRetrieved");
+				BindingUtils.bindSetter(onAccountActivation, model, "accountActivationRetrieved");
+			}
+			
+			private function onLocaleChange(event:IndexChangeEvent):void{
+				var newItem:Object=event.target.dataProvider.getItemAt(event.newIndex);
+				if (rm.getLocales().indexOf(newItem.code) != -1)
+				{
+					LocaleUtils.arrangeLocaleChain(newItem.code);
+				}
+				else
+				{
+					//var resourceModuleURL:String="Resources_" + newItem.code + ".swf";
+					//var loader:IEventDispatcher=rm.loadResourceModule(resourceModuleURL);
+					//loader.addEventListener(ResourceEvent.COMPLETE, resourceModuleCompleteHandler);
+				}
+			}
+			
+			private function resourceModuleCompleteHandler(event:ResourceEvent):void
+			{
+				//LocaleUtils.arrangeLocaleChain(newItem.code);
+			}
+			
+
+			public function signInClickHandler():void
+			{
+				//Create and show login popup
+				createLoginPopUp();
+			}
+
+			public function createLoginPopUp():void
+			{
+				var parent:DisplayObject=FlexGlobals.topLevelApplication.parent;
+				var modal:Boolean=true;
+
+				popup=PopUpManager.createPopUp(parent, LoginPopup, modal) as LoginPopup;
+				popup.addEventListener(CloseEvent.CLOSE, destroyLoginPopUp, false, 0, true);
+
+				PopUpManager.centerPopUp(popup);
+			}
+
+			public function destroyLoginPopUp(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(popup);
+				popup=null;
+			}
+
+			public function signUpClickHandler():void
+			{
+				//Change contentViewStack to sign up page
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_REGISTER_MODULE).dispatch();
+				URLManager.getInstance().redirect('signup');
+			}
+
+			public function userOptionsItemClickHandler(event:MouseEvent):void
+			{
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_ACCOUNT_MODULE).dispatch();
+				URLManager.getInstance().redirect('account');
+			}
+
+			public function signOutClickHandler():void
+			{
+				//Since our user isn't signed in we hide the users cp
+				new LoginEvent(LoginEvent.SIGN_OUT, null).dispatch();
+				// Redirecting to home
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				URLManager.getInstance().redirect('home');
+				anonymousCP.includeInLayout=true;
+				anonymousCP.visible=true;
+				userCP.includeInLayout=false;
+				userCP.visible=false;
+			}
+
+			private function onUserAuthenticated(upd:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					anonymousCP.visible=false;
+					anonymousCP.includeInLayout=false;
+					userCPName.label=DataModel.getInstance().loggedUser.username;
+					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					userCP.includeInLayout=true;
+					userCP.visible=true;
+					//callLater(localeComboBox.updateSelectedIndex);
+					if(this.initialized && siteLanguages){
+						var preferredLocale:String = rm.localeChain[0];
+						var preferredItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',preferredLocale) as Function);
+						localeComboBox2.selectedItem=preferredItem;
+					}
+				}
+			}
+
+			/*
+			private function blinkCredits():void
+			{
+				var motion:SimpleMotionPath=new SimpleMotionPath();
+				motion.property="alpha";
+				motion.valueFrom=1.0;
+				motion.valueTo=0.0;
+				var motionVector:Vector.<MotionPath>=new Vector.<MotionPath>();
+				motionVector.push(motion);
+
+				var anim:Animate=new Animate();
+				anim.repeatBehavior=RepeatBehavior.REVERSE;
+				anim.repeatCount=20;
+				anim.duration=300;
+				anim.target=uCrds;
+				anim.motionPaths=motionVector;
+				anim.play();
+			}*/
+
+			private function creditsUpdated(retr:Boolean):void
+			{
+				if (DataModel.getInstance().loggedUser && DataModel.getInstance().creditUpdateRetrieved)
+				{
+					//uCrds.text=DataModel.getInstance().loggedUser.creditCount.toString();
+					//blinkCredits();
+					DataModel.getInstance().creditUpdateRetrieved=false;
+				}
+			}
+
+			private function onAccountActivation(flag:Boolean):void
+			{
+				if (flag == true){
+					//localeComboBox.updateSelectedIndex();
+					if(this.initialized && siteLanguages){
+						var preferredLocale:String = rm.localeChain[0];
+						var preferredItem:Object = CollectionUtils.findInCollection(localeComboBox2.dataProvider as ArrayCollection, CollectionUtils.findField('code',preferredLocale) as Function);
+						localeComboBox2.selectedItem=preferredItem;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+
+</s:Group>

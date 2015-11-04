@@ -23,9 +23,6 @@ package vo
 			this.email = email;
 			this.activationHash = activationHash;
 			this.languages = languages;
-
-		}
-		
-		
+		}	
 	}
 }

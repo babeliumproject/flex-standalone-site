@@ -7,7 +7,6 @@ package view.common
 	
 	import model.DataModel;
 	import model.LocalesAndFlags;
-	import model.ResourceSubscriber;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.events.FlexEvent;
@@ -55,7 +54,7 @@ package view.common
 			this.addEventListener(ListEvent.CHANGE, languageComboBoxChangeHandler);
 			
 			if(_displayPrompt){
-				this.prompt=ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
+				this.prompt=ResourceManager.getInstance().getString('myResources', 'SELECT_LANGUAGE');
 			}
 			updateLanguageComboBox();
 		}
@@ -117,7 +116,7 @@ package view.common
 		private function updateLanguageComboBox(value:Boolean=true):void
 		{
 			if(_displayPrompt)
-				this.prompt = ResourceManager.getInstance().getString('myResources', 'PROMPT_SELECT_LANGUAGE');
+				this.prompt = ResourceManager.getInstance().getString('myResources', 'SELECT_LANGUAGE');
 			if (_currentDataProvider.length > 0)
 			{
 				var oldSelectedItem:Object=this.selectedItem;

@@ -4,27 +4,30 @@
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
 						 xmlns:skins="skins.*"
 						 xmlns:common="view.common.*"
+						 xmlns:components="components.*"
 						 styleName="reportPopup"
-						 title="{resourceManager.getString('myResources','TITLE_REPORT_INAPPROPRIATE')}"
+						 title="{resourceManager.getString('myResources','REPORT_INAPPROPRIATE')}"
 						 creationComplete="creationCompleteHandler()"
 						 autoLayout="true">
 
 	<skins:layout>
-		<s:VerticalLayout paddingLeft="10"
-						  paddingRight="10"
-						  paddingTop="10"
-						  paddingBottom="10"/>
+		<s:VerticalLayout paddingLeft="16"
+						  paddingRight="16"
+						  paddingTop="16"
+						  paddingBottom="16"/>
 	</skins:layout>
 
 	<fx:Script>
 		<![CDATA[
-			import events.ExerciseEvent;
-
 			import model.DataModel;
-
+			
+			import modules.exercise.event.ExerciseEvent;
+			
+			import mx.collections.ArrayCollection;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			import mx.resources.ResourceManager;
+			
 			import vo.ExerciseReportVO;
 			import vo.ExerciseVO;
 
@@ -32,6 +35,9 @@
 
 			[Bindable]
 			private var _isPrompt:Boolean;
+
+			[Bindable]
+			private var reportReasons:ArrayCollection=new ArrayCollection([{'code': 0, 'label': 'REPORT_OBSCENE'}, {'code': 1, 'label': 'REPORT_COPYRIGHTED'}, {'code': 2, 'label': 'REPORT_18_PLUS'}, {'code': 3, 'label': 'REPORT_OFFENSIVE'}, {'code': 4, 'label': 'REPORT_VIOLENCE'}, {'code': 5, 'label': 'REPORT_TECHNICAL'}, {'code': 6, 'label': 'REPORT_DUPLICATED'}, {'code': 7, 'label': 'REPORT_TERMS'}]);
 
 			//The keyCode for ENTER key
 			public static const ENTER_KEY:int=13;
@@ -64,13 +70,14 @@
 
 			public function reportButtonClickHandler(event:Event):void
 			{
-				if (_exercise && reportComboBox.reportInappropriateComboBox.selectedIndex > -1)
+				if (_exercise && reportInappropriateComboBox.selectedIndex > -1)
 				{
+					var item:Object=reportInappropriateComboBox.selectedItem;
 					var report:ExerciseReportVO=new ExerciseReportVO();
 					report.exerciseId=_exercise.id;
-					report.reason=reportComboBox.reportInappropriateComboBox.selectedItem.toString();
+					report.reason=String(item.code).toLowerCase();
 					PopUpManager.removePopUp(this);
-					new ExerciseEvent(ExerciseEvent.REPORT_EXERCISE, null, report, null).dispatch();
+					new ExerciseEvent(ExerciseEvent.REPORT_EXERCISE, report).dispatch();
 				}
 			}
 
@@ -83,24 +90,29 @@
 
 
 
-	<s:Label text="{resourceManager.getString('myResources','MESSAGE_REPORT_SPECIFY_ISSUE')}"
-			 styleName="formLabel"/>
-	<common:ReportInappropriateComboBox id="reportComboBox"
-										paddingLeft="16"/>
+	<s:Label text="{resourceManager.getString('myResources','REPORT_SPECIFY_ISSUE')}"/>
+
+	<components:EnhancedDropDownList id="reportInappropriateComboBox"
+									 localeAwareDataProvider="{reportReasons}"
+									 localeAwarePrompt="CHOOSE_ISSUE"
+									 skinClass="skins.BootstrapDropDownList"
+									 cornerRadius="3"
+									 borderColor="0xcccccc"
+									 sortItems="true"
+									 width="100%"/>
 
 	<s:HGroup width="100%"
 			  horizontalAlign="center"
 			  verticalAlign="middle"
 			  paddingTop="20">
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_REPORT')}"
+		<s:Button label="{ResourceManager.getInstance().getString('myResources','REPORT')}"
 				  id="reportButton"
-				  styleName="bigBlueButton"
+				  styleName="btn-success"
 				  click="reportButtonClickHandler(event)"
-				  enabled="true"
 				  buttonMode="true"/>
-		<s:Button label="{resourceManager.getString('myResources','BUTTON_CANCEL')}"
+		<s:Button label="{ResourceManager.getInstance().getString('myResources','CANCEL')}"
 				  id="cancelButton"
-				  styleName="bigBlueButton"
+				  styleName="btn-default"
 				  click="cancelButtonClickHandler(event)"
 				  buttonMode="true"/>
 	</s:HGroup>

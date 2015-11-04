@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   width="100%"
+				   styleName="lightBorderContainer"
+				   minHeight="100">
+
+	<s:layout>
+		<s:VerticalLayout paddingBottom="10"
+						  paddingLeft="10"
+						  paddingRight="10"
+						  paddingTop="10"
+						  verticalAlign="middle"
+						  horizontalAlign="left"/>
+	</s:layout>
+
+
+	<s:HGroup width="100%">
+		<s:BorderContainer backgroundColor="0x000000"
+						   width="426"
+						   height="240">
+			<s:layout>
+				<s:BasicLayout/>
+			</s:layout>
+			<s:BitmapImage id="poster" width="426" height="240"/>
+		</s:BorderContainer>
+		<s:ButtonBar id="thumbSelectBtnbar"
+					 requireSelection="true"
+					 skinClass="skins.ThumbnailButtonBar"
+					 buttonMode="true"
+					 change="setDefaultThumbnail(event)">
+			<s:layout>
+				<s:VerticalLayout gap="2"/>
+			</s:layout>
+		</s:ButtonBar>
+		<s:VGroup width="100%">
+			<s:VGroup width="100%" paddingBottom="16">
+				<s:Label id="mstatdec"
+						 text="{ResourceManager.getInstance().getString('myResources','MEDIA_STATUS')}"
+						 styleName="frm-label"/>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke />
+					</s:stroke>
+				</s:Line>
+				<s:Label id="mediaStatus"
+						 text="{ResourceManager.getInstance().getString('myResources','PROCESSING')}"/>
+			</s:VGroup>
+			<s:VGroup id="substatcontainer" width="100%" paddingBottom="16">
+				<s:Label id="sstatdec"
+						 text="{ResourceManager.getInstance().getString('myResources','SUBTITLES')}"
+						 styleName="frm-label"/>
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke />
+					</s:stroke>
+				</s:Line>
+				<s:HGroup verticalAlign="middle">
+					<s:Label id="subtitleStatus"
+							 text="{ResourceManager.getInstance().getString('myResources','NONE')}"/>
+					<s:Button id="subtitlemediaBtn"
+							  click="subtitleMediaClickHandler(event)"
+							  styleName="btn-primary"
+							  buttonMode="true"
+							  label="{ResourceManager.getInstance().getString('myResources','ADD_SUBTITLES')}"/>
+				</s:HGroup>
+			</s:VGroup>
+
+		</s:VGroup>
+	</s:HGroup>
+
+	<s:HGroup width="100%"
+			  horizontalAlign="right">
+		<s:Button id="deleteMediaBtn"
+				  click="deleteMediaButtonClickHandler(event)"
+				  styleName="btn-danger"
+				  buttonMode="true"
+				  label="{ResourceManager.getInstance().getString('myResources','DELETE')}"/>
+	</s:HGroup>
+
+
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import flash.events.MouseEvent;
+			
+			import modules.create.event.CreateEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import view.common.CustomAlert;
+
+			public static const STATUS_UNDEF:int=0;
+			public static const STATUS_ENCODING:int=1;
+			public static const STATUS_READY:int=2;
+			public static const STATUS_DUPLICATED:int=3;
+			public static const STATUS_ERROR:int=4;
+
+			public static const LEVEL_UNDEF:int=0;
+			public static const LEVEL_PRIMARY:int=1;
+			public static const LEVEL_MODEL:int=2;
+
+			public static const MEDIA_TYPE_AUDIO:String='audio';
+			public static const MEDIA_TYPE_VIDEO:String='video';
+
+			private var _data:Object;
+
+			private function setDefaultThumbnail(event:IndexChangeEvent):void
+			{
+				if (event.eventPhase != EventPhase.AT_TARGET)
+					return;
+				var mediacode:String=_data.mediacode;
+				var num:int=(event.newIndex) + 1;
+				var params:Object=new Object();
+				params.defaultthumbnail=num;
+				params.mediacode=mediacode;
+				new CreateEvent(CreateEvent.SET_DEFAULT_THUMBNAIL, params).dispatch();
+			}
+
+			private function subtitleMediaClickHandler(event:MouseEvent):void
+			{
+				if(!_data) return;
+				var mediaid:int=parseInt(_data.id);
+				var status:int=_data.hasOwnProperty('subtitlestatus') ? parseInt(_data.subtitlestatus) : 0;
+				if(!status){
+					URLManager.getInstance().redirect('/subtitle/add/' + mediaid);
+				} else {
+					//Manage not available in this iteration
+					//URLManager.getInstance().redirect('/subtitle/manage/' + mediaid);
+					URLManager.getInstance().redirect('/subtitle/edit/' + mediaid);
+				}
+			}
+
+			protected function deleteMediaButtonClickHandler(event:MouseEvent):void
+			{
+				if(!_data) return;
+				CustomAlert.confirm(ResourceManager.getInstance().getString('myResources', 'CONFIRM_VIDEO_DELETE'), Alert.YES | Alert.NO, FlexGlobals.topLevelApplication.parent, deleteMediaCloseHandler, Alert.NO);
+			}
+
+			private function deleteMediaCloseHandler(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES)
+					deleteMedia();
+			}
+
+			private function deleteMedia():void
+			{
+				if(!_data) return;
+				var mediaid:int=parseInt(_data.id);
+				var params:Object = new Object();
+				params.mediaid = mediaid;
+				new CreateEvent(CreateEvent.DELETE_MEDIA, params).dispatch();
+			}
+
+			private function initCompleteHandler(event:FlexEvent):void
+			{
+				if (!event.eventPhase == EventPhase.AT_TARGET)
+					return;
+				if (_data)
+					this.setDataInternal(_data);
+			}
+
+			private function setDataInternal(data:Object):void
+			{
+				if (data && data.hasOwnProperty('status'))
+				{
+					trace("MediaItemStatus: setDataInternal");
+					var status:int=parseInt(data.status);
+					switch (status)
+					{
+						case STATUS_UNDEF:
+						case STATUS_ENCODING:
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','PROCESSING');
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
+							break;
+						case STATUS_READY:
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','READY');
+							substatcontainer.includeInLayout=true;
+							substatcontainer.visible=true;
+							if (data.type == MEDIA_TYPE_VIDEO)
+							{
+								poster.source=data.posterurl;
+								var btnmsg:String = ResourceManager.getInstance().getString('myResources','SET_AS_DEFAULT');
+								thumbSelectBtnbar.dataProvider=new ArrayCollection([{'icon': data.thumburls[0], 'label': btnmsg}, {'icon': data.thumburls[1], 'label': btnmsg}, {'icon': data.thumburls[2], 'label': btnmsg}]);
+								thumbSelectBtnbar.selectedIndex=data.defaultthumbnail - 1;
+							}
+							subtitleStatus.text=ResourceManager.getInstance().getString('myResources','NONE');
+
+							var substat:int=parseInt(data.subtitlestatus);
+							if (substat == 1)
+							{
+								subtitlemediaBtn.label=ResourceManager.getInstance().getString('myResources','EDIT_SUBTITLES');
+								subtitleStatus.text=ResourceManager.getInstance().getString('myResources','DRAFT');
+							}
+							if (substat == 2)
+							{
+								subtitlemediaBtn.label=ResourceManager.getInstance().getString('myResources','EDIT_SUBTITLES');
+								subtitleStatus.text=ResourceManager.getInstance().getString('myResources','COMPLETE');
+							}
+
+							break;
+						case STATUS_DUPLICATED:
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','DUPLICATED');
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
+							break;
+						default:
+							mediaStatus.text=ResourceManager.getInstance().getString('myResources','NO_VALID_MEDIA_FOUND');
+							substatcontainer.includeInLayout=false;
+							substatcontainer.visible=false;
+							break;
+					}
+				}
+			}
+
+			public function setData(data:Object):void
+			{
+				if (_data === data)
+					return;
+
+				_data=data;
+				if (!this.initialized)
+				{
+					this.addEventListener(FlexEvent.CREATION_COMPLETE, initCompleteHandler, false, 0, true);
+				}
+				else
+				{
+					this.setDataInternal(_data);
+				}
+			}
+		]]>
+	</fx:Script>
+
+</s:BorderContainer>

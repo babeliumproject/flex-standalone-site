@@ -55,6 +55,12 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
+		public function getResponseData(id:int):void{	
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
+			var pendingCall:AsyncToken=service.getResponseData(id);
+			pendingCall.addResponder(responder);
+		}
+		
 		public function updateResponseRatingAmount(responseId:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("evaluationRO");
 			var pendingCall:AsyncToken=service.updateResponseRatingAmount(responseId);

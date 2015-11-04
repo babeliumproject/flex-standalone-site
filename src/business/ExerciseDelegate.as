@@ -39,21 +39,15 @@ package business
 			pendingCall.addResponder(responder);
 		}
 		
-		public function getRecordableExercises():void{
+		public function getRecordableExercises(params:Object):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getRecordableExercises();
+			var pendingCall:AsyncToken=service.getRecordableExercises(params);
 			pendingCall.addResponder(responder);
 		}
 
-		public function getExerciseLocales(exercise:ExerciseVO):void{
+		public function getExerciseLocales(mediaid:int):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getExerciseLocales(exercise.id);
-			pendingCall.addResponder(responder);
-		}
-		
-		public function getExerciseRoles(exercise:ExerciseVO) : void{
-			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
-			var pendingCall:AsyncToken=service.getExerciseRoles(exercise.id);
+			var pendingCall:AsyncToken=service.getExerciseLocales(mediaid);
 			pendingCall.addResponder(responder);
 		}
 		
@@ -98,6 +92,18 @@ package business
 		public function userRatedExercise(score:ExerciseScoreVO):void{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
 			var pendingCall:AsyncToken=service.userRatedExercise(score);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function watchExercise(exercisehash:String):void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.watchExercise(exercisehash);
+			pendingCall.addResponder(responder);
+		}
+		
+		public function requestRecordingSlot():void{
+			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("exerciseRO");
+			var pendingCall:AsyncToken=service.requestRecordingSlot();
 			pendingCall.addResponder(responder);
 		}
 		

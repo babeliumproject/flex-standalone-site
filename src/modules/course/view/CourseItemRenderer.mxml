@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true"
+				width="100%">
+	
+	<s:layout>
+		<s:VerticalLayout paddingTop="4"
+						  paddingBottom="4"
+						  paddingLeft="8"
+						  paddingRight="8"
+						  verticalAlign="middle"/>
+	</s:layout>
+	
+	
+	<s:Label id="courseTitleLbl" styleName="h4"/>
+	<s:Label id="courseSummaryLbl"/>
+	
+	<s:HGroup width="100%" horizontalAlign="right">
+		<s:Button id="viewCourse"
+				  label="{ResourceManager.getInstance().getString('myResources','GO_TO_COURSE')}"
+				  click="onViewCourseClick(event)"
+				  buttonMode="true"
+				  styleName="btn-primary"/>
+	</s:HGroup>
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import mx.resources.ResourceManager;
+			
+			override public function set data(value:Object):void{
+				super.data = value;
+				
+				if (value == null)
+					return;
+					
+				courseTitleLbl.text=value.fullname;
+				courseSummaryLbl.text=value.summary;
+			}
+
+			protected function onViewCourseClick(event:MouseEvent):void
+			{
+				URLManager.getInstance().redirect('/course/view/'+data.id);
+			}
+			
+		]]>
+	</fx:Script>
+	
+</s:ItemRenderer>

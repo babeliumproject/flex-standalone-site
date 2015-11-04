@@ -1,20 +1,26 @@
 package control {
 	import com.adobe.cairngorm.control.FrontController;
 	
-	import commands.VideoStopCommand;
 	import commands.autoevaluation.*;
-	import commands.configuration.*;
-	import commands.evaluation.*;
-	import commands.exercises.*;
-	import commands.home.*;
 	import commands.main.*;
-	import commands.search.*;
-	import commands.subtitles.*;
 	import commands.userManagement.*;
 	import commands.videoSlice.*;
-	import commands.videoUpload.*;
 	
 	import events.*;
+	
+	import modules.account.command.*;
+	import modules.assessment.command.*;
+	import modules.assessment.event.*;
+	import modules.course.command.*;
+	import modules.course.event.*;
+	import modules.exercise.command.*;
+	import modules.exercise.event.*;
+	import modules.home.command.*;
+	import modules.home.event.*;
+	import modules.activity.command.GetUserActivity;
+	import modules.activity.event.UserActivityEvent;
+	import modules.subtitle.command.*;
+	import modules.subtitle.event.*;
 
 	public class Controller extends FrontController {
 		//All the application's actions are managed from this controller
@@ -22,48 +28,13 @@ package control {
 			super();
 			
 			//Connection management commands
-			addCommand(SetupConnectionEvent.EVENT_SETUP_CONNECTION, SetupConnectionCommand);
-			addCommand(StartConnectionEvent.EVENT_START_CONNECTION, StartConnectionCommand);
-			addCommand(CloseConnectionEvent.EVENT_CLOSE_CONNECTION, CloseConnectionCommand);
+			addCommand(FullStreamingEvent.SETUP_CONNECTION, SetupConnectionCommand);
+			addCommand(FullStreamingEvent.START_CONNECTION, StartConnectionCommand);
+			addCommand(FullStreamingEvent.CLOSE_CONNECTION, CloseConnectionCommand);
 			
+			addCommand(CourseEvent.GET_COURSES, GetCourses);
+			addCommand(CourseEvent.VIEW_COURSE, ViewCourse);
 			
-			//Content ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_HOME_MODULE, ViewHomeModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_EXERCISE_MODULE, ViewExerciseModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_MODULE, ViewEvaluationModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_REGISTER_MODULE, ViewRegisterModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_MODULE, ViewAccountModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_MODULE, ViewUploadModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLE_MODULE, ViewSubtitleModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_SEARCH_MODULE, ViewSearchModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ABOUT_MODULE, ViewAboutModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_HELP_MODULE, ViewHelpModuleCommand);
-			addCommand(ViewChangeEvent.VIEW_ACTIVATION_MODULE, ViewActivationModuleCommand);
-			
-			//Home ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_HOME_UNSIGNED, ViewHomeUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_HOME_SIGNED_IN, ViewHomeSignedInCommand);
-			
-			//Subtitle ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_SUBTITLES_UNSIGNED, ViewSubtitleUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLES_SIGNED_IN, ViewSubtitleSignedInCommand);
-			addCommand(ViewChangeEvent.VIEW_SUBTITLE_EDITOR, ViewSubtitleEditorCommand);
-			
-			//Upload ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_UNSIGNED, ViewUploadUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_UPLOAD_SIGNED_IN, ViewUploadSignedInCommand);
-			
-			//Evaluation ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_UNSIGNED, ViewEvaluationUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_EVALUATION_SIGNED_IN, ViewEvaluationSignedInCommand);
-			
-			//Configuration ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_CONFIG_UNSIGNED, ViewConfigUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_CONFIG_SIGNED, ViewConfigSignedCommand);
-			
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_UNSIGNED, ViewAccountUnsignedCommand);
-			addCommand(ViewChangeEvent.VIEW_ACCOUNT_SIGNED, ViewAccountSignedCommand);
-
 			//Credit management commands
 			addCommand(CreditEvent.GET_ALL_TIME_CREDIT_HISTORY, GetAllTimeCreditHistoryCommand);
 			addCommand(CreditEvent.GET_CURRENT_DAY_CREDIT_HISTORY, GetCurrentDayCreditHistoryCommand);
@@ -72,7 +43,7 @@ package control {
 			
 			//Homepage management commands
 			addCommand(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, UnsignedMessageOfTheDayCommand);
-			addCommand(MessageOfTheDayEvent.SIGNED_MESSAGE_OF_THE_DAY, SignedMessageOfTheDayCommand);
+			addCommand(MessageOfTheDayEvent.SIGNED_OF_THE_DAY, SignedMessageOfTheDayCommand);
 			addCommand(HomepageEvent.LATEST_RECEIVED_ASSESSMENTS, UsersLatestReceivedAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_DONE_ASSESSMENTS, UsersLatestGivenAssessmentsCommand);
 			addCommand(HomepageEvent.LATEST_USER_UPLOADED_VIDEOS, UsersLatestUploadedVideosCommand);
@@ -93,12 +64,7 @@ package control {
 			addCommand(UserEvent.KEEP_SESSION_ALIVE, KeepSessionAliveCommand);
 			addCommand(UserEvent.MODIFY_PREFERRED_LANGUAGES, ModifyUserLanguagesCommand);
 			addCommand(UserEvent.MODIFY_PERSONAL_DATA, ModifyPersonalDataCommand);
-			addCommand(UserEvent.RETRIEVE_USER_VIDEOS, RetrieveUserVideosCommand);
-			addCommand(UserEvent.DELETE_SELECTED_VIDEOS, DeleteSelectedVideosCommand);
-			addCommand(UserEvent.MODIFY_VIDEO_DATA, ModifyVideoDataCommand);
-
-			//Search management commands
-			addCommand(SearchEvent.LAUNCH_SEARCH, LaunchSearchCommand);
+			addCommand(UserActivityEvent.GET_USER_ACTIVITY, GetUserActivity);
 
 			//Login management commands
 			addCommand(LoginEvent.PROCESS_LOGIN, ProcessLoginCommand);
@@ -110,13 +76,6 @@ package control {
 			// User Registration management
 			addCommand(RegisterUserEvent.REGISTER_USER, RegisterUserCommand);
 			addCommand(RegisterUserEvent.ACTIVATE_USER, ActivateUserCommand);
-
-			//Upload management commands
-			addCommand(UploadEvent.UPLOAD_BROWSE, UploadBrowseCommand);
-			addCommand(UploadEvent.UPLOAD_START, UploadStartCommand);
-			addCommand(UploadEvent.UPLOAD_CANCEL, UploadCancelCommand);
-			addCommand(ExerciseEvent.ADD_UNPROCESSED_EXERCISE, AddUnprocessedExerciseCommand);
-			addCommand(ExerciseEvent.ADD_WEBCAM_EXERCISE, AddWebcamExerciseCommand);
 			
 			//VideoSlice management commands
 			addCommand(VideoSliceEvent.SEARCH_URL, SearchUrlCommand);
@@ -131,8 +90,9 @@ package control {
 			addCommand(ExerciseEvent.EXERCISE_SELECTED, ExerciseSelectedCommand);
 			addCommand(ExerciseEvent.RATE_EXERCISE, RateExerciseCommand);
 			addCommand(ExerciseEvent.REPORT_EXERCISE, ReportInappropriateExerciseCommand);
-			addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
+			//addCommand(ExerciseEvent.USER_RATED_EXERCISE, UserRatedExerciseCommand);
 			addCommand(ExerciseEvent.USER_REPORTED_EXERCISE, UserReportedExerciseCommand);
+			addCommand(ExerciseEvent.REQUEST_RECORDING_SLOT, RequestRecordingSlot);
 			
 			//Evaluation management commands
 			addCommand(EvaluationEvent.GET_RESPONSES_WAITING_ASSESSMENT, GetResponsesWaitingAssessmentCommand);
@@ -143,6 +103,7 @@ package control {
 			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_TO_USER, DetailsOfAssessedResponseCommand);
 			addCommand(EvaluationEvent.DETAILS_OF_RESPONSE_ASSESSED_BY_USER, DetailsOfAssessedResponseCommand);
 			addCommand(EvaluationEvent.GET_EVALUATION_CHART_DATA, GetEvaluationChartDataCommand);
+			addCommand(EvaluationEvent.GET_RESPONSE_DATA, GetResponseData);
 			
 			//Autoevaluation management commands
 			addCommand(EvaluationEvent.AUTOMATIC_EVAL_RESULTS, AutoEvaluateCommand);
@@ -155,22 +116,14 @@ package control {
 			addCommand(ResponseEvent.SAVE_RESPONSE, SaveResponseCommand);
 			addCommand(ResponseEvent.MAKE_RESPONSE_PUBLIC, MakeResponsePublicCommand);
 			addCommand(ResponseEvent.ADD_DUMMY_VIDEO, AddDummyVideoCommand);
-			
-			//Roles management commands
-			addCommand(ExerciseRoleEvent.GET_EXERCISE_ROLES, GetExerciseRolesCommand);
 
 			//Subtitle management commands
-			addCommand(SubtitleEvent.SAVE_SUBTITLE_AND_SUBTITLE_LINES, SaveSubtitlesCommand);
-			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLE_LINES, GetExerciseSubtitleLinesCommand);
+			addCommand(SubtitleEvent.SAVE_SUBAND_SUBLINES, SaveSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_EXERCISE_SUBLINES, GetExerciseSubtitleLinesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITHOUT_SUBTITLES, GetExercisesWithoutSubtitlesCommand);
 			addCommand(SubtitleListEvent.GET_EXERCISES_WITH_SUBTITLES_TO_REVIEW, GetExercisesReviewSubtitlesCommand);
-			addCommand(SubtitleEvent.GET_EXERCISE_SUBTITLES, GetExerciseSubtitlesCommand);
+			addCommand(SubtitleEvent.GET_MEDIA_SUBTITLES, GetMediaSubtitlesCommand);
 			
-			// Video stop after tab changing
-			addCommand(VideoStopEvent.STOP_ALL_VIDEOS, VideoStopCommand);
-			
-			//Configuration ViewStack related commands
-			addCommand(ViewChangeEvent.VIEW_CONFIGURATION_MODULE, ViewConfigurationModuleCommand);
 		}
 
 	}

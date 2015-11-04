@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="100%">
+
+	<s:layout>
+		<s:VerticalLayout paddingTop="4"
+						  paddingBottom="4"
+						  paddingLeft="8"
+						  paddingRight="8"
+						  verticalAlign="middle"/>
+	</s:layout>
+
+	<s:HGroup id="difficultyLanguageTitleBox"
+			  horizontalAlign="left"
+			  verticalAlign="middle"
+			  gap="2"
+			  width="100%">
+		<s:BitmapImage id="exerciseLanguage"
+					   width="16"
+					   height="16"/>
+		<s:HGroup id="avgDifficultyIndicator"
+				  styleName="roundedBorderWhiteBox">
+			<s:Label id="difficultyLbl"
+					 styleName="boldYellowLabel"/>
+		</s:HGroup>
+		<s:Label id="exerciseTitle"
+				 width="100%"
+				 textAlign="left"
+				 styleName="boldLabel"/>
+	</s:HGroup>
+
+	<s:Line width="100%"
+			alpha="0.5">
+		<s:stroke>
+			<mx:SolidColorStroke weight="1"
+								 color="#aaaaaa"/>
+		</s:stroke>
+	</s:Line>
+
+	<s:HGroup width="100%"
+			  verticalAlign="middle">
+
+		<s:BitmapImage id="exerciseThumbnail"
+					   width="120"
+					   height="90"/>
+		<s:BitmapImage id="responseThumbnail"
+					   width="120"
+					   height="90"/>
+
+
+		<s:VGroup id="selectedRoleRatingAmountBox"
+				  width="100%">
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','RECORDED_BY')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label id="submittedByLbl"
+						 styleName="boldBlueLabel"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','EVALUATION_DATE')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label id="evaluationDateLbl"
+						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('myResources','RECORD_DATE')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label id="submissionDateLbl"/>
+			</s:HGroup>
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('myResources','ASSESSMENT_COUNT')+':'}"
+						 styleName="boldLabel"/>
+				<s:Label id="evaluationCountLbl"/>
+			</s:HGroup>
+
+			<s:HGroup verticalAlign="middle">
+				<s:BitmapImage id="roleIcon"
+							   source="/resources/images/roles.png"/>
+				<s:Label id="submissionRoleLbl"/>
+			</s:HGroup>
+		</s:VGroup>
+
+	</s:HGroup>
+
+
+	<fx:Script>
+		<![CDATA[
+			import utils.ExerciseRenderUtils;
+
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+
+				if (value == null)
+					return;
+
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value, 'exerciseLanguage');
+				difficultyLbl.text=ExerciseRenderUtils.getLevelLabel(value.exerciseAvgDifficulty);
+				exerciseTitle.text=value.exerciseTitle;
+
+				exerciseThumbnail.source=value.exerciseThumbnailUri;
+				responseThumbnail.source=value.responseThumbnailUri;
+
+				submittedByLbl.text=value.responseUserName;
+				evaluationDateLbl.text=value.addingDate;
+				evaluationCountLbl.text=value.responseRatingAmount;
+				submissionDateLbl.text=value.responseAddingDate;
+				submissionRoleLbl.text=value.responseCharacterName;
+			}
+		]]>
+	</fx:Script>
+
+</s:ItemRenderer>

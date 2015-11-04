@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:view="modules.assessment.view.*" 
+		 xmlns:videoPlayer="components.videoPlayer.*"
+		 paddingTop="16"
+		 paddingBottom="16"
+		 paddingLeft="16"
+		 paddingRight="16"
+		 implements="modules.IPinnedGroupInterface"
+		 creationComplete="onComplete(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import modules.subtitle.event.SubtitleEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
+			
+			import vo.EvaluationVO;
+			
+			protected var _exerciseTitle:String;
+			
+			protected var dataModel:DataModel=DataModel.getInstance();
+			
+			protected var _currentCaptions:Object;
+			protected var _currentTimeMarkers:Object;
+			
+			protected var _leftMedia:Object;
+			protected var _rightMedia:Object;
+			
+			protected var _selectedRole:String;
+			protected var _subtitleId:int;
+			protected var _rolesReady:Boolean;
+			
+			protected var assessmentCollection:ArrayCollection;
+			
+			protected var commitOnly:Boolean = false;
+			protected var useWeakReference:Boolean = false;
+			
+			protected var cw1:ChangeWatcher,cw2:ChangeWatcher,cw3:ChangeWatcher;
+			
+			protected function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(submissionAssessmentsHandler, dataModel, "responseAssessmentDataRetrieved", commitOnly, useWeakReference);
+				cw2=BindingUtils.bindSetter(onRolesRetrieved, dataModel, "availableExerciseRolesRetrieved", commitOnly, useWeakReference);
+				cw3=BindingUtils.bindSetter(onSubtitlesRetrieved, dataModel, "availableSubtitleLinesRetrieved", commitOnly, useWeakReference);
+			}
+			
+			public function resetGroup():void{
+				VP.resetComponent();
+				_currentCaptions=_currentTimeMarkers=_leftMedia=_rightMedia=null;
+				_subtitleId=0;
+				_selectedRole=null;
+				_rolesReady=false;
+				assessmentsOfSubmission.removeAllElements();
+				assessmentCollection=null;
+				
+				//Before finishing, reset also the related data in the model
+				dataModel.responseAssessmentData=null;
+				dataModel.availableExerciseRoles=null;
+				dataModel.availableSubtitleLines=null;
+			}
+			
+			public function unpinGroup():void{
+				trace("AssessmentDetailView unpinGroup");
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+			}
+			
+			protected function submissionAssessmentsHandler(value:Boolean):void{
+				trace("Assessment details: Submission assessment handler");
+				var data:Object=dataModel.responseAssessmentData;
+				if(data){
+					_selectedRole=data.character_name;
+					_subtitleId=data.fk_subtitle_id;
+					if(data.hasOwnProperty('leftMedia')){
+						_leftMedia=data.leftMedia;
+					}
+					if(data.hasOwnProperty('rightMedia')){
+						_rightMedia=data.rightMedia;
+					}
+					if(data.hasOwnProperty('assessments')){
+						assessmentCollection = data.assessments ? new ArrayCollection(ArrayUtil.toArray(data.assessments)) : null;
+						if(assessmentCollection){
+							noresultNotice.includeInLayout=false;
+							noresultNotice.visible=false;
+							assessmentsOfSubmission.includeInLayout=true;
+							assessmentsOfSubmission.visible=true;		
+						} else {
+							noresultNotice.includeInLayout=true;
+							noresultNotice.visible=true;
+							assessmentsOfSubmission.includeInLayout=false;
+							assessmentsOfSubmission.visible=false;
+						}
+					} else {
+						assessmentCollection = null;
+					}
+					buildEvaluationDatalPanel();
+					fetchSubtitlesById(_subtitleId);
+				}
+			}
+			
+			protected function fetchSubtitlesById(subtitleid:int):void{
+				var params:Object=new Object();
+				params.id=subtitleid;
+				new SubtitleEvent(SubtitleEvent.GET_EXERCISE_SUBLINES, params).dispatch();
+			}
+			
+			protected function onSubtitlesRetrieved(value:Boolean):void{
+				_currentCaptions=dataModel.availableSubtitleLines;
+				VP.setCaptions(_currentCaptions);
+			}
+			
+			protected function onRolesRetrieved(value:Boolean):void
+			{
+				var _roles:Object = dataModel.availableExerciseRoles;
+				if(_roles && _roles.hasOwnProperty(_selectedRole)){
+					_currentTimeMarkers = _roles[_selectedRole];
+					_rolesReady=true;
+					prepareVideoPlayer();
+				} else {
+					_currentTimeMarkers=null;
+					_rolesReady=false;
+				}
+			}
+			
+			protected function prepareVideoPlayer():void{
+				trace("AssessmentDetail: prepareVideoPlayer");
+				var parallelMedia:Object=new Object();
+				parallelMedia.leftMedia=_leftMedia;
+				parallelMedia.rightMedia=_rightMedia;
+				VP.loadVideoByUrl(parallelMedia, _currentTimeMarkers);
+			}
+			
+			protected function buildEvaluationDatalPanel():void{
+				assessmentsOfSubmission.removeAllElements();
+				if(assessmentCollection){
+					for each (var e:EvaluationVO in assessmentCollection)
+					{
+						var edb:EvaluationDetailBox=new EvaluationDetailBox();
+						assessmentsOfSubmission.addElement(edb);
+						edb.evaluationData=e;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:VGroup id="videoPlayerBox"
+			  width="100%"
+			  horizontalAlign="center"
+			  paddingTop="32"
+			  paddingLeft="16"
+			  paddingRight="16"
+			  paddingBottom="32">
+		<!--
+		<s:Label id="exerciseTitle"
+				 text="{_exerciseTitle}"
+				 width="100%"
+				 styleName="exerciseTitleLabel"/>
+		-->
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<videoPlayer:VideoRecorder id="VP"
+									   autoPlay="true"
+									   skinUrl="/resources/videoPlayer/skin/white.xml"
+									   seekUsingScrubber="false"
+									   displayCaptions="true"
+									   autoScale="false"
+									   subtitlingControls="false"
+									   width="640"
+									   height="360"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+	<s:BorderContainer id="noresultNotice"
+					   width="100%"
+					   styleName="lightBorderContainer">
+		<s:Label id="noresultLbl"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"
+				 text="{ResourceManager.getInstance().getString('myResources','THIS_RESPONSE_IS_YET_TO_BE_ASSESSED')+'.'}"/>
+	</s:BorderContainer>
+	
+	
+	<s:VGroup id="assessmentsOfSubmission" width="100%"/>
+	
+</s:VGroup>

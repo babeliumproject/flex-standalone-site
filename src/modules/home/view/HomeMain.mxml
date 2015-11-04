@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import model.DataModel;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.FlexEvent;
+
+			private var _viewstackIndex:int;
+			
+			private static const VISITOR:int=0;
+			private static const USER:int=1;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			
+			private var cw1:ChangeWatcher;
+			
+			private var _model:DataModel=DataModel.getInstance();
+			
+			public function onComplete(event:FlexEvent):void{
+				//Init bindings and event listeners
+				cw1=BindingUtils.bindSetter(onUserAuthenticationStatus, _model, 'isLoggedIn', commitOnly, useWeakReference);
+			}
+			
+			public function resetGroup():void{
+				if (homeMainViewStack)
+				{
+					var views:Array=homeMainViewStack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as Object;
+							if (v) v.resetComponent();
+						}
+					}
+				}
+			}
+			
+			public function unpinGroup():void{
+				if(cw1) cw1.unwatch();
+				cw1=null;
+				
+				if(homeVisitor)
+					homeVisitor.unpinComponent();
+				if(homeUser)
+					homeUser.unpinComponent();
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+
+			private function onUserAuthenticationStatus(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn == true){
+					_viewstackIndex=USER;
+					homeMainViewStack.selectedIndex=_viewstackIndex;
+				}else{
+					_viewstackIndex=VISITOR;
+					homeMainViewStack.selectedIndex=_viewstackIndex;
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<mx:ViewStack id="homeMainViewStack"
+				  width="100%"
+				  minWidth="1000"
+				  resizeToContent="true">
+		<s:NavigatorContent id="homeUnsignedNavContent">
+			<view:HomeUnsigned id="homeVisitor"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="homeSignedInNavContent">
+			<view:HomeSignedIn id="homeUser"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+
+</s:VGroup>

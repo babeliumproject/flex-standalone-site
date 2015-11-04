@@ -18,21 +18,21 @@ package business
 			this.responder=responder;
 		}
 
-		public function saveResponse(response:ResponseVO):void
+		public function saveResponse(response:Object):void
 		{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("responseRO");
 			var pendingCall:AsyncToken=service.saveResponse(response);
 			pendingCall.addResponder(responder);
 		}
 
-		public function makePublic(response:ResponseVO):void
+		public function makePublic(response:Object):void
 		{
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("responseRO");
 			var pendingCall:AsyncToken=service.makePublic(response);
 			pendingCall.addResponder(responder);
 		}
 
-		public function addDummyVideo(response:ResponseVO):void
+		public function addDummyVideo(response:Object):void
 		{
 			var responseId:String=response.fileIdentifier;
 			var service:RemoteObject=ServiceLocator.getInstance().getRemoteObject("responseRO");

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="100%">
+
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="top"
+							paddingTop="16"
+							paddingBottom="16"
+							paddingLeft="8"
+							paddingRight="8"/>
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+			
+			import flash.globalization.DateTimeStyle;
+			
+			import mx.binding.utils.ChangeWatcher;
+			import mx.resources.ResourceManager;
+			
+			import utils.ExerciseRenderUtils;
+			import utils.LocaleUtils;
+
+			private var cwlblvec:Vector.<ChangeWatcher>;
+			private var commitOnly:Boolean;
+			private var useWeakReference:Boolean;
+
+			public function unpinComponent():void
+			{
+				if (cwlblvec)
+				{
+					var i:int, length:int;
+					length=cwlblvec.length;
+					for (i=0; i < length; i++)
+					{
+						cwlblvec[i].unwatch();
+						cwlblvec[i]=null;
+					}
+					cwlblvec=null;
+				}
+
+				//Remove listeners
+				selectionCheckbox.removeEventListener(Event.CHANGE, itemSelectChangeHandler);
+				imgWrapper.removeEventListener(MouseEvent.CLICK, editCreationClickHandler);
+				editBtn.removeEventListener(MouseEvent.CLICK, editCreationClickHandler);
+			}
+
+			override public function set data(value:Object):void
+			{
+				super.data=value;
+
+				if (value == null)
+					return;
+
+				selectionCheckbox.selected=value.itemSelected;
+				thumbnail.source=value.thumbnail;
+				title.text=value.title;
+
+				exerciseLanguage.source=ExerciseRenderUtils.getFlagSource(value);
+				diflevelLbl.text=ExerciseRenderUtils.getLevelLabel(value.difficulty);
+				exerciseDate.text=ExerciseRenderUtils.formatTimestamp(data.timecreated, DateTimeStyle.SHORT, DateTimeStyle.NONE);
+
+				if (!cwlblvec)
+					cwlblvec=new Vector.<ChangeWatcher>();
+
+				var cw1:ChangeWatcher;
+				var prop1:String=parseInt(value.visible) ? 'PUBLIC' : 'PRIVATE';
+				cw1=LocaleUtils.localizedPropertyBind(visibilityLbl, 'text', 'myResources', prop1, commitOnly, useWeakReference);
+				cwlblvec.push(cw1);
+
+				var cw2:ChangeWatcher;
+				var prop2:String=parseInt(value.status) ? 'READY' : 'DRAFT';
+				cw2=LocaleUtils.localizedPropertyBind(statusLbl, 'text', 'myResources', prop2, commitOnly, useWeakReference);
+				cwlblvec.push(cw2);
+
+			}
+
+			override protected function get hovered():Boolean
+			{
+				return false;
+			}
+
+			override protected function get down():Boolean
+			{
+				return false;
+			}
+
+			override public function get selected():Boolean
+			{
+				return false;
+			}
+
+			override public function get showsCaret():Boolean
+			{
+				return false;
+			}
+
+
+			protected function editCreationClickHandler(event:MouseEvent):void
+			{
+				URLManager.getInstance().redirect('/create/edit/' + data.exercisecode + '?s=1');
+			}
+
+			protected function itemSelectChangeHandler(event:Event):void
+			{
+				data.itemSelected=(event.currentTarget as CheckBox).selected;
+			}
+		]]>
+	</fx:Script>
+
+	<s:CheckBox id="selectionCheckbox"
+				change="itemSelectChangeHandler(event)"/>
+
+	<s:Group>
+		<s:Graphic id="imgWrapper" click="editCreationClickHandler(event)" buttonMode="true">
+			<s:BitmapImage id="thumbnail"
+						   width="120"
+						   height="90"/>
+		</s:Graphic>
+	</s:Group>
+
+
+	<s:VGroup width="100%"
+			  horizontalAlign="left"
+			  gap="2">
+		<s:Label id="title"
+				 styleName="boldLabel"/>
+		<s:Line width="100%"
+				alpha="0.5">
+			<s:stroke>
+				<mx:SolidColorStroke weight="1"
+									 color="#aaaaaa"/>
+			</s:stroke>
+		</s:Line>
+		<s:HGroup gap="20"
+				  verticalAlign="middle">
+			<s:HGroup gap="2"
+					  verticalAlign="middle">
+				<s:BitmapImage id="exerciseLanguage"
+							   width="16"
+							   height="16"/>
+				<s:Label id="diflevelLbl"
+						 styleName="boldYellowLabel"/>
+			</s:HGroup>
+			<s:Label id="exerciseDate"
+					 styleName="boldYellowLabel"/>
+		</s:HGroup>
+
+		<s:HGroup width="850"
+				  paddingTop="4"
+				  paddingBottom="4"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('myResources','VISIBILITY')+':'}"/>
+			<s:Label id="visibilityLbl"/>
+		</s:HGroup>
+		<s:HGroup width="100%"
+				  verticalAlign="middle"
+				  paddingBottom="16">
+			<s:Label text="{resourceManager.getString('myResources','STATUS')+':'}"/>
+			<s:Label id="statusLbl"/>
+		</s:HGroup>
+		<s:Button id="editBtn"
+				  label="{resourceManager.getString('myResources','EDIT')}"
+				  click="editCreationClickHandler(event)"
+				  styleName="btn-default"
+				  buttonMode="true"/>
+	</s:VGroup>
+</s:ItemRenderer>

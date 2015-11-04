@@ -62,15 +62,16 @@ package commands.main
 		private function initializePaths():void
 		{
 			var server:String=dataModel.prefDic['web_domain'];
+			var defaultNetConnectionUrl:String=dataModel.prefDic['defaultNetConnectionUrl'];
 			if (server && server.length > 0)
 			{
 				dataModel.server=server;
 				dataModel.uploadDomain="http://" + server + "/";
-				dataModel.streamingResourcesPath="rtmp://" + server + "/" + dataModel.streamingApp;
-				//dataModel.uploadURL="http://" + server + "/upload.php";
-				//dataModel.thumbURL="http://" + server + "/resources/images/thumbs";
-				dataModel.uploadURL="/upload.php";
-				dataModel.thumbURL="/resources/images/thumbs";
+				dataModel.uploadURL="http://" + server + "/upload.php";
+				dataModel.thumbURL="http://" + server + "/resources/images/thumbs";
+			}
+			if(defaultNetConnectionUrl){
+				dataModel.defaultNetConnectionUrl=defaultNetConnectionUrl;
 			}
 		}
 		

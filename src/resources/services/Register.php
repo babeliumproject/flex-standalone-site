@@ -82,10 +82,10 @@ class Register{
 				$insert = "INSERT INTO user (username, password, email, firstname, lastname, creditCount, activation_hash)";
 				$insert .= " VALUES ('%s', '%s', '%s' , '%s', '%s', '%d', '%s' ) ";
 
-				$realName = $user->firstname ? $user->firstname : "unknown";
-				$realSurname = $user->lastname ? $user->lastname : "unknown";
+				$firstname = $user->firstname ? $user->firstname : "unknown";
+				$lastname = $user->lastname ? $user->lastname : "unknown";
 
-				$result = $this->_create ($insert, $user->username, $user->password, $user->email,$realName, $realSurname, $initialCredits, $hash);
+				$result = $this->_create ($insert, $user->username, $user->password, $user->email, $firstname, $lastname, $initialCredits, $hash);
 				if ($result)
 				{
 					//Add the languages selected by the user
@@ -111,7 +111,7 @@ class Register{
 					//$params = new stdClass();
 					//$params->name = $user->name;
 					//$params->activationHash = $hash;
-					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/Main.html#/activation/activate/hash='.$hash.'&user='.$user->username);	
+					$activation_link = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].'/#/login/activate/?hash='.$hash.'&user='.$user->username);	
 
 					$args = array(
 						'PROJECT_NAME' => 'Babelium Project',
@@ -124,7 +124,6 @@ class Register{
 						return "error_sending_email";
 
 					$mail = $mail->send($mail->txtContent, $subject, $mail->htmlContent);
-					if (!$mail) return "error_sending_email";
 
 					return $this->conn->recast('UserVO',$result);
 				}
@@ -184,16 +183,17 @@ class Register{
 		$sql = "SELECT language
 				FROM user AS u INNER JOIN user_languages AS ul ON u.id = ul.fk_user_id 
 				WHERE (u.username = '%s' AND u.activation_hash = '%s') LIMIT 1";
-		$result = $this->conn->_singleSelect($sql, $user->username, $user->activationHash);
+		$result = $this->conn->_singleSelect($sql, $user->username, $user->activation_hash);
 
-		if ( $result )
+		if ($result)
 		{
 			$sql = "UPDATE user SET active = 1, activation_hash = ''
 			        WHERE (username = '%s' AND activation_hash = '%s')";
-			$update = $this->conn->_update($sql, $user->username, $user->activationHash);
+			$update = $this->conn->_update($sql, $user->username, $user->activation_hash);
 		}
 
-		return ($result && $update)? $result->language : NULL ;
+		$active = ($result && $update) ? $result->language : NULL;
+		return $active;
 	}
 
 

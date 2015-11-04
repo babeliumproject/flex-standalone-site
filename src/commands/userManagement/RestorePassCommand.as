@@ -5,6 +5,8 @@ package commands.userManagement
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
+	import control.URLManager;
+	
 	import events.*;
 	
 	import model.DataModel;
@@ -32,7 +34,8 @@ package commands.userManagement
 			if ( error == "Done" )
 			{
 				DataModel.getInstance().passRecoveryDone = !DataModel.getInstance().passRecoveryDone;
-				new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				//new ViewChangeEvent(ViewChangeEvent.VIEW_HOME_MODULE).dispatch();
+				URLManager.getInstance().redirect('/home');
 				CustomAlert.info(ResourceManager.getInstance().getString('myResources','NEW_PASSWORD_SENT'));
 			}
 			else

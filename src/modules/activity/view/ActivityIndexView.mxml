@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  paddingTop="16"
+		  paddingBottom="16"
+		  paddingLeft="16"
+		  paddingRight="16"
+		  gap="16"
+		  width="100%"
+		  horizontalAlign="center"
+		  implements="modules.IPinnedGroupInterface"
+		  creationComplete="onComplete(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import control.URLManager;
+
+			import mx.core.FlexGlobals;
+
+			import model.DataModel;
+
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
+
+			import spark.events.IndexChangeEvent;
+
+			private var _model:DataModel=DataModel.getInstance();
+			private var _useractivity:Object;
+
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+
+			private var cw1:ChangeWatcher;
+
+			[Bindable]
+			private var lineStyle:CSSStyleDeclaration=FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration(".lightBorderContainer");
+
+			protected function onComplete(event:FlexEvent):void
+			{
+				cw1=BindingUtils.bindSetter(userActivityRetrieved, _model, 'userActivityDataRetrieved', commitOnly, useWeakReference);
+				if (lineStyle)
+				{
+					uactassesslinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactassesslinestroke.color=lineStyle.getStyle('borderColor');
+					uactresplinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactresplinestroke.color=lineStyle.getStyle('borderColor');
+					uactpendinglinestroke.alpha=lineStyle.getStyle('borderAlpha');
+					uactpendinglinestroke.color=lineStyle.getStyle('borderColor');
+				}
+			}
+
+			public function resetGroup():void
+			{
+				respcount.text=String(0);
+				assesscount.text=String(0);
+				resetLatestResponses();
+				resetLatestAssessments();
+				resetLatestPending();
+				uactresplist.removeEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler);
+				uactassesslist.removeEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler);
+				uactpendinglist.removeEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged);
+				_useractivity=null;
+
+				//Reset the related model data
+				_model.userActivityData=null;
+			}
+
+			public function unpinGroup():void
+			{
+				if (cw1)
+					cw1.unwatch();
+				cw1=null;
+
+				uactassessbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+				uactpendingbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+				uactrespbtn.removeEventListener(MouseEvent.CLICK, redirectToAssessment);
+
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			}
+
+			protected function userActivityRetrieved(value:Boolean):void
+			{
+				if (_model.userActivityData)
+				{
+					var _useractivity:Object=_model.userActivityData;
+					if (_useractivity.hasOwnProperty('responsecount'))
+					{
+						respcount.text=_useractivity.responsecount;
+					}
+					if (_useractivity.hasOwnProperty('evaluationcount'))
+					{
+						assesscount.text=_useractivity.evaluationcount;
+					}
+					if (_useractivity.hasOwnProperty('responses'))
+					{
+						displayLatestResponses(_useractivity.responses);
+					}
+					if (_useractivity.hasOwnProperty('evaluations'))
+					{
+						displayLatestAssessments(_useractivity.evaluations);
+					}
+					if (_useractivity.hasOwnProperty('pending'))
+					{
+						displayLatestPendingAssessments(_useractivity.pending);
+					}
+				}
+				else
+				{
+					//Reset all the fields
+					resetGroup();
+				}
+			}
+
+			protected function displayLatestResponses(responses:Object):void
+			{
+				uactresplist.removeEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler);
+				if (responses is Array && (responses as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(responses));
+					uactrespnone.visible=false;
+					uactrespnone.includeInLayout=false;
+					uactresplist.addEventListener(IndexChangeEvent.CHANGING, latestResponseSelectionChangeHandler, false, 0, true);
+					uactresplist.visible=true;
+					uactresplist.includeInLayout=true;
+					uactresplist.dataProvider=dp;
+					//Workaround for a bug that makes the container to measure incorrectly when the initial dataprovider=empty
+					uactresplist.layout=new VerticalLayout();
+					uactresplist.percentWidth=100;
+					uactrespviewall.visible=true;
+					uactrespviewall.includeInLayout=true;
+				}
+				else
+				{
+					resetLatestResponses();
+				}
+			}
+
+			protected function resetLatestResponses():void
+			{
+				uactrespnone.visible=true;
+				uactrespnone.includeInLayout=true;
+				uactresplist.visible=false;
+				uactresplist.includeInLayout=false;
+				uactresplist.dataProvider=null;
+				uactrespviewall.visible=false;
+				uactrespviewall.includeInLayout=false;
+			}
+
+			protected function displayLatestAssessments(assessments:Object):void
+			{
+				uactassesslist.removeEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler);
+				if (assessments is Array && (assessments as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(assessments));
+					uactassessnone.visible=false;
+					uactassessnone.includeInLayout=false;
+					uactassesslist.addEventListener(IndexChangeEvent.CHANGING, latestAssessmentSelectionChangeHandler, false, 0, true);
+					uactassesslist.visible=true;
+					uactassesslist.includeInLayout=true;
+					uactassesslist.dataProvider=dp;
+					//Workaround for a bug that makes the container to measure incorrectly when the initial daparovider=empty
+					uactassesslist.layout=new VerticalLayout();
+					uactassesslist.percentWidth=100;
+					uactassessviewall.visible=true;
+					uactassessviewall.includeInLayout=true;
+				}
+				else
+				{
+					resetLatestAssessments();
+				}
+			}
+
+			protected function resetLatestAssessments():void
+			{
+				uactassessnone.visible=true;
+				uactassessnone.includeInLayout=true;
+				uactassesslist.visible=false;
+				uactassesslist.includeInLayout=false;
+				uactassesslist.dataProvider=null;
+				uactrespviewall.visible=false;
+				uactrespviewall.includeInLayout=false;
+			}
+
+			protected function displayLatestPendingAssessments(pending:Object):void
+			{
+				uactpendinglist.removeEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged);
+				if (pending is Array && (pending as Array).length)
+				{
+					var dp:ArrayCollection=new ArrayCollection(ArrayUtil.toArray(pending));
+					uactpendingnone.visible=false;
+					uactpendingnone.includeInLayout=false;
+					uactpendinglist.addEventListener(IndexChangeEvent.CHANGING, latestPendingSelectionChanged, false, 0, true);
+					uactpendinglist.visible=true;
+					uactpendinglist.includeInLayout=true;
+					uactpendinglist.dataProvider=dp;
+					//Workaround for a bug that makes the container to measure incorrectly when the initial daparovider=empty
+					uactpendinglist.layout=new VerticalLayout();
+					uactpendinglist.percentWidth=100;
+					uactpendingviewall.visible=true;
+					uactpendingviewall.includeInLayout=true;
+				}
+				else
+				{
+					resetLatestPending();
+				}
+			}
+
+			protected function resetLatestPending():void
+			{
+				uactpendingnone.visible=true;
+				uactpendingnone.includeInLayout=true;
+				uactpendinglist.visible=false;
+				uactpendinglist.includeInLayout=false;
+				uactpendinglist.dataProvider=null;
+				uactpendingviewall.visible=false;
+				uactpendingviewall.includeInLayout=false;
+			}
+
+			protected function latestResponseSelectionChangeHandler(event:IndexChangeEvent):void
+			{
+				var item:*=uactresplist.dataProvider.getItemAt(event.newIndex);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/view/" + item.responseId);
+				}
+			}
+
+			protected function latestAssessmentSelectionChangeHandler(event:IndexChangeEvent):void
+			{
+				var item:*=uactassesslist.dataProvider.getItemAt(event.newIndex);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/view/" + item.responseId);
+				}
+			}
+
+			protected function latestPendingSelectionChanged(event:IndexChangeEvent):void
+			{
+				var item:*=uactpendinglist.dataProvider.getItemAt(event.newIndex);
+				if (item)
+				{
+					var modulename:String='assessments';
+					URLManager.getInstance().redirect("/" + modulename + "/add/" + item.responseId);
+				}
+			}
+
+			protected function redirectToAssessment(event:MouseEvent, action:String):void
+			{
+				var modulename:String='assessments';
+				URLManager.getInstance().redirect("/" + modulename + "/" + action);
+			}
+		]]>
+	</fx:Script>
+
+	<s:HGroup width="100%">
+		<s:Label id="profiletitlelbl"
+				 text="{ResourceManager.getInstance().getString('myResources','MY_ACTIVITY')}"
+				 styleName="h1"/>
+	</s:HGroup>
+
+	<s:BorderContainer styleName="lightBorderContainer"
+					   width="640">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center"
+							  verticalAlign="middle"
+							  paddingBottom="16"
+							  paddingLeft="16"
+							  paddingRight="16"
+							  paddingTop="16"
+							  gap="16"/>
+		</s:layout>
+		<s:Label id="summarylbl"
+				 text="{ResourceManager.getInstance().getString('myResources','SUMMARY')}"
+				 styleName="h3"/>
+		<s:HGroup width="100%"
+				  gap="16">
+			<s:VGroup width="100%"
+					  horizontalAlign="center">
+				<s:Label id="respcount"
+						 text="0"
+						 fontSize="24"/>
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','RESPONSES')}"/>
+			</s:VGroup>
+			<s:Line height="30">
+				<s:stroke>
+					<s:SolidColorStroke color="0x333333"
+										weight="2"/>
+				</s:stroke>
+			</s:Line>
+			<s:VGroup width="100%"
+					  horizontalAlign="center">
+				<s:Label id="assesscount"
+						 text="0"
+						 fontSize="24"/>
+				<s:Label text="{ResourceManager.getInstance().getString('myResources','ASSESSMENTS')}"/>
+			</s:VGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+
+	<s:BorderContainer styleName="lightBorderContainer"
+					   width="100%"
+					   id="uactresp"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label id="uactresptitle"
+				 text="{ResourceManager.getInstance().getString('myResources','RESPONSES')}"
+				 styleName="exerciseTitleLabel"
+				 paddingTop="8"
+				 paddingLeft="8"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke id="uactresplinestroke"
+									weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Label id="uactrespnone"
+				 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_RECORDED_ANY_EXERCISE_YET')}"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"/>
+		<s:List id="uactresplist"
+				itemRenderer="modules.activity.view.ResponseItemRenderer"
+				width="100%"
+				borderVisible="false"
+				includeInLayout="false"
+				visible="false"/>
+		<s:HGroup width="100%"
+				  paddingRight="8"
+				  horizontalAlign="right"
+				  includeInLayout="false"
+				  visible="false"
+				  id="uactrespviewall">
+			<s:Button id="uactrespbtn"
+					  styleName="btn-link"
+					  buttonMode="true"
+					  click="{redirectToAssessment(event,'for')}"
+					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
+		</s:HGroup>
+
+	</s:BorderContainer>
+
+	<s:BorderContainer styleName="lightBorderContainer"
+					   width="100%"
+					   id="uactassess"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label id="uactassesstitle"
+				 text="{ResourceManager.getInstance().getString('myResources','ASSESSMENTS')}"
+				 styleName="exerciseTitleLabel"
+				 paddingTop="8"
+				 paddingLeft="8"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke id="uactassesslinestroke"
+									weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Label id="uactassessnone"
+				 text="{ResourceManager.getInstance().getString('myResources','YOU_HAVENT_ASSESSED_ANY_RESPONSE_YET')}"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"/>
+		<s:List id="uactassesslist"
+				itemRenderer="modules.activity.view.ResponseItemRenderer"
+				width="100%"
+				borderVisible="false"
+				includeInLayout="false"
+				visible="false"/>
+		<s:HGroup width="100%"
+				  paddingRight="8"
+				  horizontalAlign="right"
+				  includeInLayout="false"
+				  visible="false"
+				  id="uactassessviewall">
+			<s:Button id="uactassessbtn"
+					  styleName="btn-link"
+					  buttonMode="true"
+					  click="{redirectToAssessment(event,'by')}"
+					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
+		</s:HGroup>
+	</s:BorderContainer>
+
+	<s:BorderContainer styleName="lightBorderContainer"
+					   width="100%"
+					   id="uactpending">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label id="uactpendingtitle"
+				 text="{ResourceManager.getInstance().getString('myResources','WAITING_FOR_ASSESSMENT')}"
+				 styleName="exerciseTitleLabel"
+				 paddingTop="8"
+				 paddingLeft="8"/>
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke id="uactpendinglinestroke"
+									weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Label id="uactpendingnone"
+				 text="{ResourceManager.getInstance().getString('myResources','THERE_ARE_NO_RESPONSES_FOR_YOU_TO_ASSESS')}"
+				 paddingLeft="8"
+				 paddingTop="32"
+				 paddingBottom="32"
+				 paddingRight="8"/>
+		<s:List id="uactpendinglist"
+				itemRenderer="modules.activity.view.ResponseItemRenderer"
+				width="100%"
+				borderVisible="false"
+				includeInLayout="false"
+				visible="false"/>
+		<s:HGroup width="100%"
+				  paddingRight="8"
+				  horizontalAlign="right"
+				  includeInLayout="false"
+				  visible="false"
+				  id="uactpendingviewall">
+			<s:Button id="uactpendingbtn"
+					  styleName="btn-link"
+					  buttonMode="true"
+					  click="{redirectToAssessment(event,'pending')}"
+					  label="{ResourceManager.getInstance().getString('myResources','VIEW_ALL')}"/>
+		</s:HGroup>
+	</s:BorderContainer>
+</s:VGroup>

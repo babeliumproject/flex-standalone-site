@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:main="components.main.*"
+		  horizontalAlign="center"
+		  width="100%"
+		  paddingTop="40"
+		  implements="modules.IPinnedGroupInterface">
+
+	<fx:Script>
+		<![CDATA[
+			public function resetGroup():void
+			{
+				loginForm.resetComponent();
+			}
+			
+			public function unpinGroup():void{
+				loginForm.unpinComponent();
+			}
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="loginFormBox"
+					   minWidth="300"
+					   styleName="loginBorderContainer">
+		<s:layout>
+			<s:VerticalLayout paddingBottom="12"
+							  paddingLeft="12"
+							  paddingRight="12"
+							  paddingTop="12"/>
+		</s:layout>
+		<main:LoginRestorePassForm id="loginForm"
+								   width="100%"/>
+	</s:BorderContainer>
+</s:VGroup>

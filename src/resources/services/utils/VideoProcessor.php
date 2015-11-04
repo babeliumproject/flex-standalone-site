@@ -47,6 +47,7 @@ class VideoProcessor{
 
     private $fileCmdPath;
     private $soxCmdPath;
+    private $qtFaststartCmdPath;
 
     private $mediaToolSuite;
     private $mediaToolHome;
@@ -72,10 +73,11 @@ class VideoProcessor{
 
         $this->fileCmdPath = $settings->fileCmdPath ? $settings->fileCmdPath : 'file';
         $this->soxCmdPath = $settings->soxCmdPath ? $settings->soxCmdPath : 'sox';
+        $this->qtFaststartCmdPath = $settings->qtFaststartCmdPath ? $settings->qtFaststartCmdPath : 'qt-faststart';
 
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -b 512k -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
         $this->encodingPresets[] = "-y -v error -i '%s' -s %dx%d -g 25 -qmin 3 -acodec libmp3lame -ar 22050 -ac 2 -f flv '%s'";
-        $this->encodingPresets[] = "-y -v error -i '%s' -strict experimental -codec:v libx264 -profile:v main -preset slow -b:v 250k -maxrate 250k -bufsize 500k -r 24 -g 24 -vf scale=%d:%d -codec:a aac -b:a 96k -ac 2 -ar 22050 '%s'";
+        $this->encodingPresets[] = "-y -v error -i '%s' -strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -maxrate 250k -bufsize 500k -r 24 -g 24 -vf scale=%d:%d -codec:a aac -b:a 96k -ac 2 -ar 22050 '%s'";
     }
 
     /**
@@ -122,7 +124,7 @@ class VideoProcessor{
             return $rpath ? rtrim($rpath,'/').'/' : NULL;
         }
         return NULL;
-    }   
+    }
 
     /**
      * Determines if the given parameter is a media container and if so retrieves information about it's
@@ -152,10 +154,14 @@ class VideoProcessor{
                 $this->mediaContainer = new stdClass();
 
                 //Get file content hash to look for duplicates
-                $this->mediaContainer->hash = md5_file($cleanPath);
+                $this->mediaContainer->hash = sha1_file($cleanPath);
 
                 //Retrieve media file duration (in seconds)
                 $this->mediaContainer->duration = $json_output->format->duration;
+
+                //Initialize these two to false until evaluating the values
+                $this->mediaContainer->hasAudio = false;
+                $this->mediaContainer->hasVideo = false;
 
                 foreach ($json_output->streams as $stream){
                     if($stream->codec_type == 'audio'){
@@ -173,7 +179,7 @@ class VideoProcessor{
                 throw new Exception("Unknown media format\n");
             }
         } else {
-            throw new Exception("Not a file\n");
+            throw new Exception("File does not exist or is not readable: $cleanPath");
         }
     }
 
@@ -211,7 +217,7 @@ class VideoProcessor{
             }
             return $validMime;
         } else {
-            throw new Exception("Not a file\n");
+            throw new Exception("File does not exist or is not readable: $cleanPath");
         }
     }
 
@@ -235,8 +241,8 @@ class VideoProcessor{
             $this->mediaContainer->audioCodec = $streamdata->codec_name;
             $this->mediaContainer->audioRate = $streamdata->sample_rate;
             $this->mediaContainer->audioChannels = $streamdata->channels;
-            $this->mediaContainer->audioBits = isset($streamdata->sample_fmt) ? $streamdata->sample_fmt : NULL;
-            $this->mediaContainer->audioBitrate = $streamdata->bit_rate;
+            $this->mediaContainer->audioBits = isset($streamdata->sample_fmt) ? $streamdata->sample_fmt : 0;
+            $this->mediaContainer->audioBitrate = isset($streamdata->bit_rate) ? $streamdata->bit_rate : 0;
         }
     }
 
@@ -244,10 +250,10 @@ class VideoProcessor{
         if($streamdata->codec_type == 'video'){
             $this->mediaContainer->videoCodec = $streamdata->codec_name;
             $this->mediaContainer->videoColorspace = $streamdata->pix_fmt;
-            $this->mediaContainer->videoTbr = isset($streamdata->r_frame_rate) ? $streamdata->r_frame_rate : NULL;
+            $this->mediaContainer->videoTbr = isset($streamdata->r_frame_rate) ? $streamdata->r_frame_rate : 0;
             $this->mediaContainer->videoTbn = $streamdata->time_base;
             $this->mediaContainer->videoTbc = $streamdata->codec_time_base;
-            $this->mediaContainer->videoBitrate= $streamdata->bit_rate; //expressed in bits per second
+            $this->mediaContainer->videoBitrate= isset($streamdata->bit_rate) ? $streamdata->bit_rate : 0; //expressed in bits per second
 
             //flv1 video streams don't provide duration and frame number information
             if(isset($streamdata->nb_frames) && isset($streamdata->duration))
@@ -286,7 +292,7 @@ class VideoProcessor{
             throw new Exception("You don't have enough permissions to read from the input: ".$cleanPath."\n");
         if(!is_writable(dirname($cleanImagePath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanImagePath."\n");
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanPath)) ){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != sha1_file($cleanPath)) ){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanPath);
@@ -319,18 +325,15 @@ class VideoProcessor{
      * @param string $outputImagePath
      * @throws Exception
      */
-    public function takeFolderedRandomSnapshots($filePath, $thumbPath, $posterPath, $thumbnailWidth = 120, $thumbnailHeight = 90, $snapshotCount = 3){
+    public function takeFolderedRandomSnapshots($filePath, $thumbdir, $posterdir, $thumbnailWidth = 120, $thumbnailHeight = 90, $snapshotCount = 3){
         $cleanVideoPath = escapeshellcmd($filePath);
-        $cleanThumbPath = realpath(escapeshellcmd($thumbPath));
-        $cleanPosterPath = realpath(escapeshellcmd($posterPath));
+        $sanitizedThumbdir = escapeshellcmd($thumbdir);
+        $sanitizedPosterdir = escapeshellcmd($posterdir);
 
-        if( !is_readable($cleanVideoPath) || !is_file($cleanVideoPath) )
-            throw new Exception("You don't have enough permissions to read from the input, or provided path is not a file: ".$cleanVideoPath."\n");
-        if( !is_dir($cleanThumbPath) || !is_writable($cleanThumbPath) || !is_dir($cleanPosterPath) || !is_writable($cleanPosterPath) )
-            throw new Exception("You don't have enough permissions to write to the provided outputs: ".$cleanThumbPath.", ".$cleanPosterPath."\n");
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != md5_file($cleanVideoPath)) ){
+        if( !is_file($cleanVideoPath) )
+            throw new Exception("Value is not a file or cannot be read: ".$cleanVideoPath."\n");
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || ($this->mediaContainer->hash != sha1_file($cleanVideoPath)) ){
             try {
-                //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanVideoPath);
             } catch (Exception $e) {
                 throw new Exception($e->getMessage());
@@ -339,28 +342,22 @@ class VideoProcessor{
 
         if($this->mediaContainer->hasVideo){
 
-            //Create a folder to hold all the thumbnails, only if doesn't exist
-            $path_parts = pathinfo($cleanVideoPath);
-            $hash = $path_parts['filename'];
-            $cleanThumbPath = $cleanThumbPath . '/' . $hash;
-            $cleanPosterPath = $cleanPosterPath . '/' . $hash;
-
-            if(!is_dir($cleanThumbPath)){
-                if(!mkdir($cleanThumbPath)){
-                    throw new Exception("You don't have enough permissions to create a thumbnail folder\n");
+            if(!is_dir($sanitizedThumbdir)){
+                if(!mkdir($sanitizedThumbdir)){
+                    throw new Exception("Cannot create directory: $sanitizedThumbdir\n");
                 }
             }
-            if(!is_dir($cleanThumbPath) || !is_writable($cleanThumbPath)){
-                throw new Exception("Yon don't have enough permissions to write to the thumbnail folder\n");
+            if(!is_dir($sanitizedThumbdir) || !is_writable($sanitizedThumbdir)){
+                throw new Exception("Cannot write in directory: $sanitizedThumbdir\n");
             }
 
-            if(!is_dir($cleanPosterPath)){
-                if(!mkdir($cleanPosterPath)){
-                    throw new Exception("You don't have enough permissions to create a poster folder\n");
+            if(!is_dir($sanitizedPosterdir)){
+                if(!mkdir($sanitizedPosterdir)){
+                    throw new Exception("Cannot create directory: $sanitizedPosterdir\n");
                 }
             }
-            if(!is_dir($cleanPosterPath) || !is_writable($cleanPosterPath)){
-                throw new Exception("Yon don't have enough permissions to write to the poster folder\n");
+            if(!is_dir($sanitizedPosterdir) || !is_writable($sanitizedPosterdir)){
+                throw new Exception("Cannot write in directory: $sanitizedPosterdir\n");
             }
 
             //Default thumbnail time
@@ -372,8 +369,8 @@ class VideoProcessor{
                 $second = rand(1, ($this->mediaContainer->duration - 1));
                 $lastSecond = $second !== $lastSecond ? $second : rand(1, ($this->mediaContainer->duration -1));
 
-                $toPath = $cleanThumbPath . '/' . sprintf('%02d.jpg',$i+1);
-                $poPath = $cleanPosterPath . '/' . sprintf('%02d.jpg',$i+1);
+                $toPath = $sanitizedThumbdir . '/' . sprintf('%02d.jpg',$i+1);
+                $poPath = $sanitizedPosterdir . '/' . sprintf('%02d.jpg',$i+1);
                 if(!is_file($toPath)){
                     $cmd_template = "%s %s";
                     $cmd_name = $this->mediaToolHome;
@@ -398,19 +395,19 @@ class VideoProcessor{
                 }
             }
 
-            //Create a symbolic link to the first generated thumbnail/poster to set it as the default image
-            if( is_link($cleanThumbPath.'/default.jpg') ){
-                unlink($cleanThumbPath.'/default.jpg');
-            }
-            if( is_link($cleanPosterPath.'/default.jpg') ){
-                unlink($cleanPosterPath.'/default.jpg');
-            }
-            if( !symlink($cleanThumbPath.'/01.jpg', $cleanThumbPath.'/default.jpg')  ){
-                throw new Exception ("Couldn't create link for the thumbnail\n");
-            }
-            if( !symlink($cleanPosterPath.'/01.jpg', $cleanPosterPath.'/default.jpg') ){
-                throw new Exception ("Couldn't create link for the poster\n");
-            }
+            $tdef = $sanitizedThumbdir.'/default.jpg';
+            $pdef = $sanitizedPosterdir.'/default.jpg';
+            $tone = $sanitizedThumbdir.'/01.jpg';
+            $pone = $sanitizedPosterdir.'/01.jpg';
+            //if (is_link($tdef)) unlink($tdef);
+            //if (is_link($pdef)) unlink($pdef);
+
+            //if(!symlink($tone, $tdef)){
+            //    throw new Exception ("Cannot make a link $tdef for $tone\n");
+            //}
+            //if(!symlink($pone, $pdef)){
+            //    throw new Exception ("Cannot make a link $pdef for $pone\n");
+            //}
         }
     }
 
@@ -426,7 +423,7 @@ class VideoProcessor{
      * @param int $preset
      * @throws Exception
      */
-    public function transcodeToFlv($inputFilepath, $outputFilepath, $preset = 1){
+    public function transcodeToFlv($inputFilepath, $outputFilepath, $preset = 1, $dimension = 240){
         $cleanInputPath = escapeshellcmd($inputFilepath);
         $cleanOutputPath = escapeshellcmd($outputFilepath);
 
@@ -435,7 +432,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);
@@ -445,12 +442,11 @@ class VideoProcessor{
         }
 
         if ($this->mediaContainer->suggestedTranscodingAspectRatio == 43){
-            $width = $this->frameWidth4_3;
-            $height = $this->frameHeight;
+        	$width = floor($dimension*(4/3));
         } else {
-            $width = $this->frameWidth16_9;
-            $height = $this->frameHeight;
+        	$width = floor($dimension*(16/9));
         }
+        $height = $dimension;
 
         if($this->mediaContainer->hasAudio){
             //5.1 AAC audio can't be downmixed to stereo audio using ffmpeg
@@ -484,7 +480,7 @@ class VideoProcessor{
     public function demuxEncodeAudio($inputFilePath, $outputFilePath, $audioChannels = 2, $audioSamplerate = 44100){
 
         //TODO check ffmpeg is able to encode in the format denoted in the output file ffmpeg -formats E
-        //TODO check the specified audio channel and samplerate are supported by the codec 
+        //TODO check the specified audio channel and samplerate are supported by the codec
         $preset_demux_encode_audio = " -y -v error -i '%s' -ac %d -ar %d '%s'";
 
         $cleanInputPath = escapeshellcmd($inputFilePath);
@@ -495,7 +491,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ".$cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);
@@ -569,7 +565,7 @@ class VideoProcessor{
         if(!is_writable(dirname($cleanOutputPath)))
             throw new Exception("You don't have enough permissions to write to the output: ". $cleanOutputPath."\n");
 
-        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != md5_file($cleanInputPath)){
+        if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($cleanInputPath)){
             try {
                 //This file hasn't been scanned yet
                 $this->retrieveMediaInfo($cleanInputPath);
@@ -597,9 +593,49 @@ class VideoProcessor{
     }
 
     /**
+     * Extracts an audio sample from the two given inputs and mixes the two samples in one
+     *
+     * @param String $input1
+     * @param String $input2
+     * @param String $output
+     * @param int $starttime
+     * @param int $endtime
+     * @param String $cutoff
+     */
+    public function audioSubsampleMix($input1, $input2, $output, $starttime = 0, $endtime = 0, $cutoff='first'){
+
+    	$cutoff_values = array('longest','shortest','first');
+
+    	//Make two temp outputs for the subsamples
+    	$otmp1 = rtrim($output,'.wav').'_a.wav';
+    	$otmp2 = rtrim($output,'.wav').'_b.wav';
+
+    	$internalcutoff = in_array($cutoff, $cutoff_values) ? $cutoff : 'first';
+
+    	$this->audioSubsample($input1, $otmp1,$starttime,$endtime);
+    	$this->audioSubsample($input2, $otmp2,$starttime,$endtime);
+
+    	$preset = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=0 '%s'";
+
+    	$cmd_template = "%s %s";
+    	$cmd_name = $this->mediaToolHome;
+        $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
+        $cmd_options_t = "-y -v error -i '%s' -i '%s' -filter_complex amix=inputs=2:duration=%s:dropout_transition=3 '%s'";
+        $cmd_options = sprintf($cmd_options_t, $otmp1, $otmp2, $internalcutoff, $output);
+
+        $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
+
+        $rc = $this->execWrapper($cmd);
+
+        //If exec was successful remove the temp files
+        @unlink($otmp1);
+        @unlink($otmp2);
+    }
+
+    /**
      * Merges two videos in one. The first input is padded to double its width, then the second video is overlayed in the black space left by the padding.
-     * The original audio is substituted with the provided audio 
-     * 
+     * The original audio is substituted with the provided audio
+     *
      * @param String $inputVideoPath1
      * 		Absolute path of the video that's going to be padded to double its width
      * @param String $inputVideoPath2
@@ -615,15 +651,15 @@ class VideoProcessor{
      * @throws Exception
      * 		One of the provided paths was unreachable for the script (read/write-wise)
      */
-    public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $width = 320, $height = 240){
+    public function mergeVideo($inputVideoPath1, $inputVideoPath2, $outputVideoPath, $inputAudioPath = null, $dimension=240){
         $cleanInputVideoPath1 = escapeshellcmd($inputVideoPath1);
         $cleanInputVideoPath2 = escapeshellcmd($inputVideoPath2);
         $cleanOutputVideoPath = escapeshellcmd($outputVideoPath);
 
         //TODO prepare preset to output the original audio of input1 and another to output silence, maybe use a mapping to /dev/zero or /dev/null
 
-        if($width<8 || $height<8)
-            throw new Exception("Specified size is too small\n");
+        if($dimension<Config::LEVEL_240P)
+            throw new Exception("Specified dimension is too small\n");
 
         if( !is_readable($cleanInputVideoPath1) || !is_readable($cleanInputVideoPath2) )
             throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanInputVideoPath1 .", ".$cleanInputVideoPath2."\n");
@@ -636,21 +672,48 @@ class VideoProcessor{
                 throw new Exception("You don't have enough permissions to read from the input, or the input is not a file: ".$cleanAudioPath."\n");
         }
 
+        //Total dimensions
+        $twidth = floor($dimension*(16/9));
+        $theight = $dimension;
 
-        /**
-         * This preset takes two inputs: the original exercise video and the audio collage
-         * The filters separated by commas between [in] and [out] are the main filter chain
-         * [T0] and [T1] are alternate separated chains. In this script the main chain waits for each alternate chain to finish before it applies the overlay.
-         * After resizing and applying the overlays we encode the input audio to mp3 and exchange the original exercise's audio with the reencoded audio collage
-         * using stream index mapping. -map <input_number>:<stream_index>
-         */
-        $preset_merge_videos = "-y -v error -i '%s' -i '%s' -vf \"[in]settb=1/25,setpts=N/(25*TB),pad=%d:%d:0:0:0x000000, [T1]overlay=W/2:0 [out]; movie='%s':f=flv:si=0,scale=%d:%d,setpts=PTS-STARTPTS[T1]\" -acodec libmp3lame -ab 128 -ac 2 -ar 44100 -map 0:0 -map 1:0 -f flv '%s'";
+        //Dimensions of left-side video
+        $lmedia = $this->retrieveMediaInfo($cleanInputVideoPath1);
+        $lwidth = floor($twidth/2);
+        $lheight = $lmedia->suggestedTranscodingAspectRatio==169 ? round(($lwidth/16)*9) : round(($lwidth/4)*3);
+        $lpaddingy = floor(($theight/2)-($lheight/2));
+
+        //Dimensions of right-side video
+        $rmedia = $this->retrieveMediaInfo($cleanInputVideoPath2);
+        $rwidth = floor($twidth/2);
+        $rheight = $rmedia->suggestedTranscodingAspectRatio==169 ? round(($rwidth/16)*9) : round(($rwidth/4)*3);
+        $rpaddingy = floor(($theight/2)-($rheight/2));
+
+        $t_cmd_options = "%s %s %s %s %s %s";
+        $t_input_files="-i '%s' -i '%s' -i '%s'";
+        $t_filters_avconv="-filter_complex \"[0:v] setpts=PTS-STARTPTS, scale=%d:%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%d:%d [right]; [left] pad=%d:%d:0:%d [padded]; [padded][right] overlay=%d:%d\"";
+        $t_filters_ffmpeg="-filter_complex \"color=c=black@1.0:s=%dx%d [background]; [0:v] setpts=PTS-STARTPTS, scale=%dx%d [left]; [1:v] setpts=PTS-STARTPTS, scale=%dx%d [right]; [background][left] overlay=shortest=1:y=%d [background+left]; [background+left][right] overlay=shortest=1:x=%d:y=%d\"";
+        $t_output_files="'%s'";
+
+        $cmd_overwrite_verbose="-y -v fatal";
+        $cmd_input_files = sprintf($t_input_files, $cleanInputVideoPath1, $cleanInputVideoPath2, $cleanAudioPath);
+
+        if($this->mediaToolSuite == Config::FFMPEG){
+        	$cmd_filters = sprintf($t_filters_ffmpeg, $twidth, $theight, $lwidth, $lheight, $rwidth, $rheight, $lpaddingy, $lwidth, $rpaddingy);
+        } else { //avconv
+        	$cmd_filters = sprintf($t_filters_avconv, $lwidth, $lheight, $rwidth, $rheight, $twidth, $theight, $lpaddingy, $lwidth, $rpaddingy);
+        }
+
+        $cmd_output_encoding="-strict experimental -codec:v libx264 -profile:v main -level 31 -preset slow -b:v 250k -bufsize 500k -r 24 -g 24 -keyint_min 24 -codec:a aac -b:a 96k -ac 2 -ar 22050";
+        $cmd_output_mapping="-map 2:0";
+
+        $cmd_output_files = sprintf($t_output_files, $cleanOutputVideoPath);
+
 
         $cmd_template = "%s %s";
         $cmd_name = $this->mediaToolHome;
         $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
-        $cmd_options_t = $preset_merge_videos;
-        $cmd_options = sprintf($cmd_options_t, $cleanInputVideoPath1, $inputAudioPath, 2*$width, $height, $cleanInputVideoPath2, $width, $height, $cleanOutputVideoPath);
+
+        $cmd_options = sprintf($t_cmd_options, $cmd_overwrite_verbose, $cmd_input_files, $cmd_filters, $cmd_output_encoding, $cmd_output_mapping, $cmd_output_files);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
 
@@ -661,8 +724,8 @@ class VideoProcessor{
 
     /**
      * Concatenates the wav files of the provided path that begin with the provided prefix and puts the concatenated wav file
-     * in the provided path. Uses 'sox' to concatenate the files. 
-     * 
+     * in the provided path. Uses 'sox' to concatenate the files.
+     *
      * @param String $inputPath
      * 		Absolute path of the audio files
      * @param String $filePrefix
@@ -682,7 +745,7 @@ class VideoProcessor{
 
         $cmd_template = "%s %s";
         $cmd_name = $this->soxCmdPath;
-        $cmd_options_t = "'%s/%s_*' '%s/%collage.wav'";
+        $cmd_options_t = "'%s/%s_*' '%s/%scollage.wav'";
         $cmd_options = sprintf($cmd_options_t, $cleanInputPath, $filePrefix, $cleanOutputPath, $filePrefix);
 
         $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
@@ -693,9 +756,73 @@ class VideoProcessor{
     }
 
     /**
+     * Changes the container of the media file without changing any of its streams.
+     *
+     * @param String $input
+     *    Absolute path of media file
+     * @param String $output
+     *    Absolute path of media file. The extension determines the output's container format.
+     * @throws Exception
+     *  The paths cannot be accessed, mediasuite cannot be found or changing from input container to output container
+     *  is not allowed.
+     */
+    public function changeMediaContainer($input, $output){
+      $sinput = escapeshellcmd($input);
+      $soutput = escapeshellcmd($output);
+      if(!is_readable($sinput))
+        throw new Exception("Cannot read input: $sinput");
+      if(!is_writable(dirname($soutput)))
+        throw new Exception("Cannot write output: $soutput");
+
+      $cmd_template = "%s %s";
+      $cmd_name = $this->mediaToolHome;
+      $cmd_name .= $this->mediaToolSuite == Config::FFMPEG ? 'ffmpeg' : 'avconv';
+
+      $cmd_options_t="-y -v error -i '%s' -codec:v copy -codec:a copy '%s'";
+      $cmd_options = sprintf($cmd_options_t, $sinput, $soutput);
+
+      $cmd = sprintf($cmd_template,$cmd_name,$cmd_options);
+      $output = $this->execWrapper($cmd);
+    }
+
+    public function applyFastStart($input,$output){
+      $sinput = escapeshellcmd($input);
+      $soutput = escapeshellcmd($output);
+      if(!is_readable($sinput))
+        throw new Exception("Cannot read input: $sinput");
+      if(!is_writable(dirname($soutput)))
+        throw new Exception("Cannot write output: $soutput");
+
+      $path_parts = pathinfo($sinput);
+      if($path_parts['extension'] != 'mp4')
+        throw new Exception("Input file's container is not MP4");
+
+      //Check if input file is a valid mp4[h264+aac] file.
+      if(!$this->mediaContainer || !$this->mediaContainer->hash || $this->mediaContainer->hash != sha1_file($sinput)){
+          try {
+              //Get media metadata
+              $this->retrieveMediaInfo($sinput);
+          } catch (Exception $e) {
+              throw new Exception($e->getMessage());
+          }
+      }
+      if(!$this->mediaContainer->hasVideo || $this->mediaContainer->videoCodec != 'h264')
+        throw new Exception("Input file has no video stream or stream is not encoded with h264");
+
+      $cmd_template = "%s %s";
+      $cmd_name = $this->qtFaststartCmdPath;
+
+      $cmd_options_t = "'%s' '%s'";
+      $cmd_options = sprintf($cmd_options_t,$sinput,$soutput);
+
+      $cmd = sprintf($cmd_template, $cmd_name, $cmd_options);
+      $output = $this->execWrapper($cmd);
+    }
+
+    /**
      * Fixes the Flash Player 11.2.x bug that makes audio-only FLV files non-playable by adding a 8x8px black image for the video stream.
      * Thus the FLV is no longer audio-only and Flash has no problem with it.
-     * 
+     *
      * @param String $dummyImagePath
      * 		Absolute path of the 8x8px black image file to make the fake video stream
      * @param String $inputPath
@@ -734,6 +861,22 @@ class VideoProcessor{
     }
 
     /**
+     * Encode the given array using Json
+     *
+     * @param Array $data
+     * @param bool $prettyprint
+     * @return mixed $data
+     */
+    public function custom_json_encode($data, $prettyprint=0){
+    	require_once 'Zend/Json.php';
+    	$data = Zend_Json::encode($data,false);
+    	$data = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', create_function('$match', 'return mb_convert_encoding(pack("H*", $match[1]), "UTF-8", "UCS-2BE");'), $data);
+    	if($prettyprint)
+    		$data = Zend_Json::prettyPrint($data);
+    	return $data;
+    }
+
+    /**
      * Returns a provided character long random alphanumeric string
      *
      * @author Peter Mugane Kionga-Kamau
@@ -755,6 +898,7 @@ class VideoProcessor{
             $key .= $charset[(mt_rand(0,(strlen($charset)-1)))];
         return $key;
     }
+
 }
 
 ?>

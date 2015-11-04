@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:home="components.home.*" 
+		  xmlns:skins="skins.*"
+		  xmlns:videoPlayer="components.videoPlayer.*"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  creationComplete="onComplete(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import components.IDisposableObject;
+			
+			import model.DataModel;
+			
+			import modules.home.event.MessageOfTheDayEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Text;
+			import mx.core.Container;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.resources.ResourceManager;
+			import mx.utils.ObjectUtil;
+			
+			import skins.IconButtonVerticalSkin;
+			import skins.StepTabBarSkin;
+			
+			import spark.components.Label;
+			import spark.components.NavigatorContent;
+			import spark.primitives.BitmapImage;
+
+			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
+
+			[Bindable]
+			public var selectedIndex:int=0;
+
+			private var messageArray:ArrayCollection;
+
+			//private var slideTimer:Timer;
+
+			private var staticMotd:StaticUnsignedMotd;
+
+			private var creationComplete:Boolean=false;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+			
+			private var cw1:ChangeWatcher,cw2:ChangeWatcher, cw3:ChangeWatcher;
+
+			protected function onComplete(event:FlexEvent):void
+			{
+				var model:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(onUnsignedMessagesOfTheDayRetrieved,model,'messagesOfTheDayRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindProperty(appDescriptionViewStack,'selectedIndex',this,'selectedIndex',commitOnly,useWeakReference);
+				cw3=BindingUtils.bindProperty(appStepTabBar,'dataProvider',this, 'appDescriptionViewStack', commitOnly, useWeakReference);
+				
+				//slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
+				//slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, useCapture, priority, useWeakReference);
+				getUnsignedMessagesOfTheDay();
+				creationComplete=true;
+			}
+			
+			public function resetComponent():void{
+				if(creationComplete){
+					staticMotd.resetComponent();
+					disposeAndEmptyContainer(appDescriptionViewStack);
+					latestExercises.resetComponent();
+					bestRatedExercises.resetComponent();
+				}
+				
+				//Clear associated data from the model
+				DataModel.getInstance().messagesOfTheDayData=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				
+				latestExercises.dispose();
+				bestRatedExercises.dispose();
+				
+				if(appDescriptionViewStack)
+					appDescriptionViewStack.removeEventListener(IndexChangedEvent.CHANGE,appDescriptionViewStack_changeHandler);
+				if(appStepTabBar)
+					appStepTabBar.removeEventListener(MouseEvent.CLICK, steptabbar_clickHandler);
+				
+				
+				ResourceManager.getInstance().removeEventListener(Event.CHANGE, localeChangeHandler);
+				
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			protected function disposeAndEmptyContainer(value:Container):void{
+				if(value){
+					//First run a dispose process in the children that support it
+					var children:Array=value.getChildren();
+					for each (var nc:NavigatorContent in children)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IDisposableObject;
+							if (v) v.dispose();
+						}
+					}
+					//Remove all the elements (with previous step they "should" be selectable for GC)
+					value.removeAllElements();
+				}
+			}
+
+			/* We don't require timed slides at this moment
+			protected function onTimerTick(event:TimerEvent):void
+			{
+				var slideCount:int=appDescriptionViewStack.numChildren;
+				if (slideCount > 0)
+				{
+					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
+					if (currentlySelectedIndex < (slideCount - 1))
+						selectedIndex=currentlySelectedIndex + 1;
+					else
+						selectedIndex=0;
+				}
+			}
+			*/
+
+			public function getUnsignedMessagesOfTheDay():void
+			{
+				new MessageOfTheDayEvent(MessageOfTheDayEvent.UNSIGNED_MESSAGES_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
+			}
+
+			protected function onUnsignedMessagesOfTheDayRetrieved(value:Boolean):void
+			{
+				messageArray=DataModel.getInstance().messagesOfTheDayData;
+				if (messageArray && messageArray.length > 0)
+				{
+					//slideTimer.stop();
+					disposeAndEmptyContainer(appDescriptionViewStack);
+					callLater(addMessagesToContainer);
+				}
+				else
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					staticMotd=new StaticUnsignedMotd();
+					navc.addElement(staticMotd);
+					appDescriptionViewStack.addChild(navc);
+					navc.label=appDescriptionViewStack.numChildren.toString();
+				}
+			}
+
+			protected function addMessagesToContainer():void
+			{
+				var navcs:NavigatorContent=new NavigatorContent();
+				staticMotd=new StaticUnsignedMotd();
+				navcs.addElement(staticMotd);
+				appDescriptionViewStack.addChild(navcs);
+				navcs.label=appDescriptionViewStack.numChildren.toString();
+				for (var i:uint=0; i < messageArray.length; i++)
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					navc.addElement(generateMessageBox(messageArray[i]));
+					appDescriptionViewStack.addChild(navc);
+					navc.label=appDescriptionViewStack.numChildren.toString();
+				}
+				selectedIndex=0;
+				//slideTimer.start();
+			}
+
+			protected function generateMessageBox(messageData:Object):HGroup
+			{
+				var messageImage:BitmapImage=new BitmapImage();
+				messageImage.source=messageData.resourceUrl;
+				messageImage.width=240;
+				messageImage.height=180;
+
+				var titleLabel:Label=new Label();
+				titleLabel.text=messageData.title;
+				titleLabel.styleName="sectionInfoTitleLabel";
+
+				var messageText:Text=new Text();
+				messageText.text=messageData.message;
+				messageText.percentWidth=100;
+				messageText.percentHeight=100;
+
+				var messageVBox:VGroup=new VGroup();
+				messageVBox.percentWidth=100;
+				messageVBox.percentHeight=100;
+				messageVBox.setStyle("verticalAlign", "middle");
+				messageVBox.addElement(titleLabel);
+				messageVBox.addElement(messageText);
+
+				var motdBox:HGroup=new HGroup();
+				motdBox.percentWidth=100;
+				motdBox.setStyle("verticalAlign", "middle");
+				motdBox.addElement(messageImage);
+				motdBox.addElement(messageVBox);
+
+				return motdBox;
+			}
+
+			public function localeChangeHandler(event:Event):void
+			{
+				getUnsignedMessagesOfTheDay();
+			}
+
+
+			protected function steptabbar_clickHandler(event:MouseEvent):void
+			{
+				//slideTimer.reset();
+				//slideTimer.start();
+			}
+
+			/*
+			protected function howToVideosVS_changeHandler(event:IndexChangedEvent):void
+			{
+				var newIndex:uint=event.newIndex;
+				switch (newIndex)
+				{
+					case howToVideosVS.getChildIndex(howToConfDevNavContent):
+						//howToVideoPlayer.videoSource="config";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_CONFIGURE_YOUR_DEVICES');
+						break;
+					case howToVideosVS.getChildIndex(howToPractLangNavContent):
+						//howToVideoPlayer.videoSource="record";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_PRACTICE_A_LANGUAGE');
+						break;
+					case howToVideosVS.getChildIndex(howToAssessUsersNavContent):
+						//howToVideoPlayer.videoSource="evaluate";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_ASSESS_OTHER_USERS_WORK');
+						break;
+					case howToVideosVS.getChildIndex(howToSubtitleNavContent):
+						//howToVideoPlayer.videoSource="subtitle";
+						howToVideoLabel.text=resourceManager.getString('myResources', 'HOW_TO_SUBTITLE_A_VIDEO');
+						break;
+					default:
+						break;
+				}
+			}
+			*/
+			
+			
+
+			protected function appDescriptionViewStack_changeHandler(event:IndexChangedEvent):void
+			{
+				staticMotd.resetComponent();
+			}
+
+		]]>
+	</fx:Script>
+
+	<s:BorderContainer id="unsignedMotdBox"
+					   styleName="sectionInfoBox"
+					   minHeight="0"
+					   width="100%"
+					   minWidth="1000">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<skins:StepTabBar id="appStepTabBar"
+							  styleName="paginationWhiteBlueButton"
+							  click="steptabbar_clickHandler(event)"/>
+		</s:HGroup>
+
+		<s:HGroup id="descriptionPaginationUnsigned"
+				  paddingLeft="16"
+				  paddingRight="16"/>
+		<mx:ViewStack id="appDescriptionViewStack"
+					  change="appDescriptionViewStack_changeHandler(event)"
+					  width="100%"
+					  minWidth="1000"
+					  resizeToContent="true"
+					  paddingLeft="16"
+					  paddingRight="16"
+					  paddingBottom="16">
+		</mx:ViewStack>
+		<skins:HorizontalSeparatorLine width="100%"/>
+	</s:BorderContainer>
+	
+	<view:LatestUploadedVideos id="latestExercises"/>
+	<view:LatestBestRatedVideos id="bestRatedExercises"/>
+	
+	<!--
+	<home:HowToVideos width="100%"/>
+	-->
+</s:VGroup>

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:home="components.home.*"
+		  xmlns:skins="skins.*"
+		  xmlns:view="modules.home.view.*"
+		  width="100%"
+		  creationComplete="onComplete()">
+
+	<fx:Script>
+		<![CDATA[
+			import components.IDisposableObject;
+			
+			import model.DataModel;
+			
+			import modules.home.event.MessageOfTheDayEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Label;
+			import mx.controls.Text;
+			import mx.core.Container;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			
+			import spark.components.Button;
+			import spark.components.NavigatorContent;
+			import spark.primitives.BitmapImage;
+
+			private const SLIDE_CHANGE_DELAY:uint=10000; //10 seconds
+
+			[Bindable]
+			public var selectedIndex:int=0;
+
+			private var slideTimer:Timer;
+			private var messageArray:ArrayCollection;
+			
+			private var staticSignedMOTD:StaticSignedInMotd;
+			
+			private var commitOnly:Boolean=false;
+			private var useWeakReference:Boolean=false;
+			private var useCapture:Boolean=false;
+			private var priority:int=0;
+
+			private var cw1:ChangeWatcher, cw2:ChangeWatcher, cw3:ChangeWatcher;
+			
+			protected function onComplete():void
+			{
+				var model:DataModel=DataModel.getInstance();
+				cw1=BindingUtils.bindSetter(onSignedInMessagesOfTheDayRetrieved,model,'messagedOfTheDayRetrieved',commitOnly,useWeakReference);
+				cw2=BindingUtils.bindProperty(homeTabBar,'dataProvider',this, 'myHomeViewStack', commitOnly, useWeakReference);
+				cw3=BindingUtils.bindProperty(appDescriptionViewStack,'selectedIndex',this,'selectedIndex',commitOnly,useWeakReference);
+					
+				ResourceManager.getInstance().addEventListener(Event.CHANGE, localeChangeHandler, useCapture, priority, useWeakReference);
+				slideTimer=new Timer(SLIDE_CHANGE_DELAY, 0);
+				slideTimer.addEventListener(TimerEvent.TIMER, onTimerTick, useCapture, priority, useWeakReference);
+				getSignedInMessagesOfTheDay();
+			}
+			
+			public function resetComponent():void{
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				
+				if (myHomeViewStack)
+				{
+					var views:Array=myHomeViewStack.getChildren();
+					for each (var nc:NavigatorContent in views)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as Object;
+							if (v) v.resetComponent();
+						}
+					}
+				}
+				
+				//Reset the related data in the model
+				DataModel.getInstance().messagesOfTheDayData=null;
+			}
+			
+			public function unpinComponent():void{
+				if(cw1) cw1.unwatch();
+				if(cw2) cw2.unwatch();
+				if(cw3) cw3.unwatch();
+				cw1=cw2=cw3=null;
+				
+				disposeAndEmptyContainer(appDescriptionViewStack);
+				disposeAndEmptyContainer(myHomeViewStack);
+				
+				
+				if(slideTimer){
+					slideTimer.stop();
+					slideTimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
+				}
+				
+				ResourceManager.getInstance().removeEventListener(Event.CHANGE,localeChangeHandler);
+				removeEventListener(FlexEvent.CREATION_COMPLETE,onComplete);
+			}
+			
+			protected function disposeAndEmptyContainer(value:Container):void{
+				if(value){
+					//First run a dispose process in the children that support it
+					var children:Array=value.getChildren();
+					for each (var nc:NavigatorContent in children)
+					{
+						if (nc.deferredContentCreated)
+						{
+							var v:*=nc.getElementAt(0) as IDisposableObject;
+							if (v) v.dispose();
+						}
+					}
+					//Remove all the elements (with previous step they "should" be selectable for GC)
+					value.removeAllElements();
+				}
+			}
+
+			protected function onTimerTick(event:TimerEvent):void
+			{
+				var slideCount:int=appDescriptionViewStack.getChildren().length;
+				if (slideCount > 0)
+				{
+					var currentlySelectedIndex:int=appDescriptionViewStack.selectedIndex;
+					if (currentlySelectedIndex < (slideCount - 1))
+						selectedIndex=currentlySelectedIndex + 1;
+					else
+						selectedIndex=0;
+				}
+			}
+
+			public function getSignedInMessagesOfTheDay():void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+					new MessageOfTheDayEvent(MessageOfTheDayEvent.SIGNED_OF_THE_DAY, ResourceManager.getInstance().localeChain[0]).dispatch();
+			}
+
+			protected function onSignedInMessagesOfTheDayRetrieved(value:Boolean):void
+			{
+				if (DataModel.getInstance().isLoggedIn)
+				{
+					messageArray=DataModel.getInstance().messagesOfTheDayData;
+					if (messageArray && messageArray.length > 0)
+					{
+						if(slideTimer && slideTimer.running)
+							slideTimer.stop();
+						appDescriptionViewStack.removeAllChildren();
+						callLater(addMessagesToContainer);
+					}
+					else
+					{
+						var navc:NavigatorContent=new NavigatorContent();
+						staticSignedMOTD=new StaticSignedInMotd();
+						navc.addElement(staticSignedMOTD);
+						appDescriptionViewStack.addChild(navc);
+					}
+				}
+			}
+
+			protected function addMessagesToContainer():void
+			{
+				var navcs:NavigatorContent=new NavigatorContent();
+				staticSignedMOTD=new StaticSignedInMotd();
+				navcs.addElement(staticSignedMOTD);
+				appDescriptionViewStack.addChild(navcs);
+				for each (var messageData:Object in messageArray)
+				{
+					var navc:NavigatorContent=new NavigatorContent();
+					navc.addElement(generateMessageBox(messageData));
+					appDescriptionViewStack.addChild(navc);
+				}
+				selectedIndex=0;
+				slideTimer.start();
+			}
+
+			protected function generateMessageBox(messageData:Object):HGroup
+			{
+				var messageImage:BitmapImage=new BitmapImage();
+				messageImage.source=messageData.resourceUrl;
+				messageImage.width=240;
+				messageImage.height=180;
+
+				var titleLabel:Label=new Label();
+				titleLabel.text=messageData.title;
+				titleLabel.styleName="sectionInfoTitleLabel";
+
+				var messageText:Text=new Text();
+				messageText.text=messageData.message;
+				messageText.percentWidth=100;
+				messageText.percentHeight=100;
+
+				var messageVBox:VGroup=new VGroup();
+				messageVBox.percentWidth=100;
+				messageVBox.percentHeight=100;
+				messageVBox.setStyle("verticalAlign", "middle");
+				messageVBox.addElement(titleLabel);
+				messageVBox.addElement(messageText);
+
+				var motdBox:HGroup=new HGroup();
+				motdBox.percentWidth=100;
+				motdBox.setStyle("verticalAlign", "middle");
+				motdBox.addElement(messageImage);
+				motdBox.addElement(messageVBox);
+
+				return motdBox;
+			}
+
+			public function buildAvailableActionsPanel():void
+			{
+				var homeUploadButton:Button=new Button();
+				homeUploadButton.label=resourceManager.getString('myResources', 'UPLOAD');
+				homeUploadButton.styleName="homeUploadButton";
+			}
+
+			public function localeChangeHandler(event:Event):void
+			{
+				getSignedInMessagesOfTheDay();
+			}
+			
+		]]>
+	</fx:Script>
+
+
+	<s:BorderContainer id="signedMotdBox"
+					   styleName="sectionInfoBox"
+					   width="100%"
+					   minHeight="0">
+		<s:layout>
+			<s:VerticalLayout paddingTop="16"/>
+		</s:layout>
+		<s:HGroup id="descriptionPaginationSigned"
+				  paddingLeft="16"
+				  paddingRight="16"/>
+		<mx:ViewStack id="appDescriptionViewStack"
+					  width="100%"
+					  resizeToContent="true"
+					  paddingLeft="16"
+					  paddingRight="16">
+		</mx:ViewStack>
+
+		<s:HGroup horizontalAlign="right"
+				  width="100%"
+				  verticalAlign="bottom"
+				  gap="0">
+			<skins:HorizontalSeparatorLine width="100%"/>
+			<s:TabBar id="homeTabBar"
+					  skinClass="skins.AccountTabBarSkin"
+					  cornerRadius="8"/>
+			<skins:HorizontalSeparatorLine width="16"/>
+		</s:HGroup>
+	</s:BorderContainer>
+
+	<mx:ViewStack id="myHomeViewStack"
+				  width="100%"
+				  height="100%"
+				  resizeToContent="true">
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_UPLOADED_VIDEOS')}">
+			<view:LatestUploadedVideos id="latestExercises"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="{resourceManager.getString('myResources','LATEST_BEST_RATED_VIDEOS')}">
+			<view:LatestBestRatedVideos id="bestRatedExercises"/>
+		</s:NavigatorContent>
+		<!--
+		<s:NavigatorContent label="{resourceManager.getString('myResources','MY_RECENT_ACTIVITY')}">
+			<view:LatestUserActivity id="latestActivity"/>
+		</s:NavigatorContent>
+		-->
+	</mx:ViewStack>
+
+</s:VGroup>
