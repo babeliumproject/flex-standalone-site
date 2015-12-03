@@ -134,12 +134,16 @@ class Response {
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
-		
+
+		$enrolled = "SELECT fk_user_id FROM enrolment WHERE fk_user_id=%d LIMIT 1";
+		$private = 0;
+		$isEnrolled = $this->conn->_singleSelect($enrolled, $_SESSION['uid']);
+		if ($isEnrolled) $private=1;
 
 		$insert = "INSERT INTO response (fk_user_id, fk_exercise_id, file_identifier, is_private, thumbnail_uri, source, duration, adding_date, rating_amount, character_name, fk_subtitle_id, fk_media_id) ";
-		$insert = $insert . "VALUES ('%d', '%d', '%s', 1, '%s', '%s', '%s', now(), 0, '%s', %d, %d ) ";
+		$insert = $insert . "VALUES ('%d', '%d', '%s', '%d', '%s', '%s', '%s', now(), 0, '%s', %d, %d ) ";
 
-		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $thumbnail, $source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
+		$responseId = $this->conn->_insert($insert, $_SESSION['uid'], $data->exerciseId, $responsecode, $private, $thumbnail, $source, $duration, $data->characterName, $data->subtitleId, $data->mediaId );
 		
 		unset($_SESSION['recmedia']);
 		
@@ -221,14 +225,14 @@ class Response {
 		
 		$this->conn->_startTransaction();
 		
-		$sql = "UPDATE response SET is_private = 0 WHERE (id = '%d' ) ";
+/*		$sql = "UPDATE response SET is_private = 0 WHERE (id = '%d' ) ";
 
 		$update = $this->conn->_update ( $sql, $responseId );
 		if(!$update){
 			$this->conn->_failedTransaction();
 			throw new Exception("Response publication failed");
 		}
-		
+ */		
 		//Update the user's credit count
 		$creditUpdate = $this->_subCreditsForEvalRequest();
 		if(!$creditUpdate){

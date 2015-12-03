@@ -605,6 +605,38 @@ CREATE  TABLE `rel_exercise_descriptor` (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `enrolment`
+--
+
+DROP TABLE IF EXISTS `enrolment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `enrolment` (
+  `fk_group_id` int(11) NOT NULL,
+  `fk_user_id` int(10) NOT NULL,
+  `role` enum('student','teacher') DEFAULT 'student',
+  PRIMARY KEY (`fk_group_id`,`fk_user_id`),
+  KEY `fk_enrolment_1_idx` (`fk_group_id`),
+  CONSTRAINT `fk_group_enrol` FOREIGN KEY (`fk_group_id`) REFERENCES `groups` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `groups`
+--
+
+DROP TABLE IF EXISTS `groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `groups` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  `description` tinytext,
+  `coeval` enum('TRUE','FALSE') DEFAULT 'FALSE',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
