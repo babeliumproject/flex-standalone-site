@@ -19,8 +19,11 @@
 		<sequential>
 			<echo>@{file}</echo>
 		    <mxmlc file="${APP_ROOT}/@{moduleDir}/@{dir}/@{file}.mxml"
-				   output='${DEPLOY_DIR}/@{moduleDir}/@{dir}/@{file}.swf' 
-				   load-externs="${BASE}/link-report.xml">
+				   output='${DEPLOY_DIR}/@{moduleDir}/@{dir}/@{file}.swf'
+		    	   services="${APP_ROOT}/service-config.xml"
+				   load-externs="${BASE}/link-report.xml"
+		    	   locale="${LOCALE_BUNDLES}"
+		    	   accessible="false">
 		    	
 		    	<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 		    				
@@ -49,7 +52,8 @@
 			   output="${DEPLOY_DIR}/Main.swf"
 			   services="${APP_ROOT}/service-config.xml"
 			   link-report="${BASE}/link-report.xml"
-			   locale="${LOCALE_BUNDLES}">
+			   locale="${LOCALE_BUNDLES}"
+			   accessible="false">
 			
 			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
 			
