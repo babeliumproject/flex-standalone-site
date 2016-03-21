@@ -128,8 +128,20 @@ class Evaluation {
 		                        B.difficulty exerciseAvgDifficulty
 				FROM response AS A INNER JOIN exercise AS B on A.fk_exercise_id = B.id 
 				     INNER JOIN user AS F on A.fk_user_id = F.id
-				WHERE B.status = 1 AND A.rating_amount < %d AND A.fk_user_id <> %d AND A.is_private = 0
-				AND NOT EXISTS (SELECT D.id FROM evaluation AS D WHERE D.fk_response_id = A.id AND D.fk_user_id = %d)";
+				     WHERE B.status = 1 AND A.rating_amount < %d AND A.fk_user_id <> %d AND 
+				     (( A.is_private = 0
+				     AND NOT EXISTS (SELECT D.id FROM evaluation AS D WHERE D.fk_response_id = A.id AND D.fk_user_id = %d))
+				     OR
+				     (
+					      A.fk_user_id IN (SELECT fk_user_id FROM enrolment WHERE fk_group_id IN (
+						                  SELECT fk_group_id
+								                  FROM enrolment WHERE fk_user_id = %d)
+										          AND ('TRUE' IN (select coeval from groups where ID = fk_group_id) 
+											             OR EXISTS (SELECT ID from user where ID = %d AND isAdmin=1) 
+												     			)
+								)
+					))
+					     ";
 				
 		if($finalterm){
 			$sql.= " AND ".$finalterm;
@@ -139,9 +151,9 @@ class Evaluation {
 		
 		if($rowcount){
 			$sql .= " LIMIT %d,%d";
-			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid, $offset, $rowcount);
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid, $userid, $userid, $offset, $rowcount);
 		} else {
-			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid);
+			$tmpresults = $this->conn->_multipleSelect($sql, $assessmentlimit, $userid, $userid, $userid, $userid);
 		}
 		
 		$defresults = null;
@@ -584,7 +596,7 @@ class Evaluation {
 		return $result;
 
 
-		$this->conn->_startTransaction();
+		$this->conn->_startTransaction(); 
 
 		//Insert the evaluation data
 		$sql = "INSERT INTO evaluation (fk_response_id, fk_user_id, score_overall, score_intonation, score_fluency, score_rhythm, score_spontaneity, 
