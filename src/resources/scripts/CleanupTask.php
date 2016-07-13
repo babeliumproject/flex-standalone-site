@@ -35,6 +35,7 @@ require_once CLI_SERVICE_PATH . '/utils/Config.php';
 class CleanupTask{
 
 	private $db;
+    private $cfg;
 	private $filePath;
 	private $red5Path;
 
@@ -53,10 +54,10 @@ class CleanupTask{
 	 * 		Throws an error if there was any problem establishing a connection with the database.
 	 */
 	public function CleanupTask(){
-		$cfg = new Config ( );
-		$this->filePath = $cfg->filePath;
-		$this->red5Path = $cfg->red5Path;
-		$this->db = new Datasource ( $cfg->host, $cfg->db_name, $cfg->db_username, $cfg->db_password );
+		$this->cfg = new Config ( );
+		$this->filePath = $this->cfg->filePath;
+		$this->red5Path = $this->cfg->red5Path;
+		$this->db = new Datasource ( $this->cfg->host, $this->cfg->db_name, $this->cfg->db_username, $this->cfg->db_password );
 		
 		$this->_getResourceDirectories();
 	}
@@ -71,6 +72,64 @@ class CleanupTask{
 		$this->_deleteUnreferencedEvaluations();
 		$this->_deleteConfigs();
 	}
+
+    public function deleteOrphanedImages(){
+        $hashes = array();
+              
+        $sql = "SELECT mediacode FROM media WHERE component='exercise'";
+        $data1 = $this->db->_multipleSelect($sql);
+        if($data1){
+            foreach($data1 as $d){
+                $hashes[] = $d->mediacode;
+            }
+        }
+
+        $sql = "SELECT file_identifier FROM response";
+        $data2 = $this->db->_multipleSelect($sql);
+        if($data2){
+            foreach($data2 as $d){
+                $hashes[] = $d->file_identifier;
+            }
+        }
+
+        $sql = "SELECT video_identifier FROM evaluation_video";
+        $data3 = $this->db->_multipleSelect($sql);
+        if($data3){
+            foreach($data3 as $d){
+                $hashes[] = $d->video_identifier;
+            }
+        }
+
+        if(count($hashes)){
+            $titer = dir($this->cfg->imagePath);
+            while (false !== ($entry = $titer->read())) {
+                if (($entry==".")||($entry=="..")) continue;
+                $abspath = $this->cfg->imagePath.'/'.$entry;
+                if(!in_array($entry,$hashes)){
+                    if(is_dir($abspath)){
+                        echo "Removed orphaned dir $abspath\n";
+                        $this->rmdir_recursive($abspath);
+                    } else {
+                        //unlink($abspath);
+                    }
+                }       
+            }
+            $piter = dir($this->cfg->posterPath);
+            while (false !== ($entry = $piter->read())) {
+                if (($entry==".")||($entry=="..")) continue;
+                $abspath = $this->cfg->posterPath.'/'.$entry;
+                if(!in_array($entry,$hashes)){
+                    if(is_dir($abspath)){
+                        echo "Removed orphaned dir $abspath\n";
+                        $this->rmdir_recursive($abspath);
+                    } else {
+                        //unlink($abspath);
+                    }
+                }       
+            }
+        }
+        
+    }
 
 	/**
 	 * Searches the database for users who haven't activated their account in the specified day interval
@@ -278,4 +337,17 @@ class CleanupTask{
 			$folder->close();
 		}
 	}
+
+    /**
+     * Removes the given directory and its contents recursively 
+     * http://stackoverflow.com/a/7288067
+     */
+    private function rmdir_recursive($dir) {
+        foreach(scandir($dir) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+            if (is_dir("$dir/$file")) $this->rmdir_recursive("$dir/$file");
+            else unlink("$dir/$file");
+        }
+        rmdir($dir);
+    }
 }
