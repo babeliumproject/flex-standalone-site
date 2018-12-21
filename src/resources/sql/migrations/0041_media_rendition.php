@@ -10,7 +10,7 @@ function forwards(){
 				`contenthash` varchar(40) NOT NULL,
 				`status` tinyint(10) NOT NULL DEFAULT '0' COMMENT '0: raw 1: encoding, 2: ready, 3: duplicate, 4: error',
 				`timecreated` int(11) NOT NULL,
-				`timemodified` int(11) NOT NULL,
+				`timemodified` int(11) NOT NULL DEFAULT '0',
 				`filesize` int(11) NOT NULL DEFAULT '0',
 				`metadata` text,
 				`dimension` int(10) DEFAULT NULL,
