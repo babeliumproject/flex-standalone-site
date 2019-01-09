@@ -164,10 +164,18 @@ class MediaTask{
 				}
 		
 				//Move file from transitional location to final location
-				$moved = rename($transitionalfullpath,$finalfullpath);
+				//$moved = rename($transitionalfullpath,$finalfullpath);
+				//  looks like rename is not save to use on *nix across filesystems and/or chown/chmod restrictions
+				//  PHP Warning:  rename(src,dst): Invalid argument in ... on line ...
+				//  return value is false and src still exists but dst also exist
+				//  see https://stackoverflow.com/questions/19894649/why-does-rename-return-false-despite-moving-a-file-successully-to-an-nfs-mount
+				$moved = copy($transitionalfullpath,$finalfullpath);
 				if(!$moved){
+					unlink($transitionalfullpath);
+					unlink($finalfullpath);
 					throw new Exception("Unable to move from transitional path: $transitionalfullpath to final path: $finalfullpath");
 				}
+				unlink($transitionalfullpath);
 		
 				$insert = "INSERT INTO media_rendition (fk_media_id,filename,contenthash,status,timecreated,filesize,metadata,dimension)
 						   VALUES (%d,'%s','%s',%d,%d,%d,'%s',%d)";
