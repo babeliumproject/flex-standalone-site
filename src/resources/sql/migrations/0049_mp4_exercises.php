@@ -100,8 +100,8 @@ function backwards(){
               $VP->changeMediaContainer($abspath,$output);
             }
             $mediaData=$VP->retrieveMediaInfo($output);
-            $sql = "UPDATE media_rendition SET filename='%s' metadata='%s' WHERE id=%d";
-            $DB->_update($sql,$output,custom_json_encode($mediaData,false),$video->id);
+            $sql = "UPDATE media_rendition SET filename='%s', metadata='%s' WHERE id=%d";
+            $DB->_update($sql,$filename.'.flv',custom_json_encode($mediaData,false),$video->id);
 
             //Remove the mp4 file
             @unlink($abspath);
