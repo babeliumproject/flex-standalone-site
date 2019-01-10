@@ -52,8 +52,8 @@ function forwards(){
 
                 //Update the database with the new file
                 $mediaData=$VP->retrieveMediaInfo($output);
-                $sql = "UPDATE media_rendition SET filename='%s' metadata='%s' WHERE id=%d";
-                $DB->_update($sql,$output,custom_json_encode($mediaData,false),$video->id);
+                $sql = "UPDATE media_rendition SET filename='%s', metadata='%s' WHERE id=%d";
+                $DB->_update($sql,$filename.'.mp4',custom_json_encode($mediaData,false),$video->id);
             } else {
                 echo "Warning: $abspath does not exist or is not readable\n";
             }
