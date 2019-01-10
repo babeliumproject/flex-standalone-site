@@ -6,16 +6,17 @@ function forwards(){
 	$alter = "ALTER TABLE `subtitle` ADD COLUMN `fk_media_id` INT(10) UNSIGNED NOT NULL AFTER `fk_exercise_id`;";
 	$DB->_update($alter);
 	
-	$update = "UPDATE subtitle
-			   SET fk_media_id = (SELECT m.id FROM media m WHERE m.component='exercise' AND m.instanceid=fk_exercise_id) WHERE id>0;";
+	$update = "UPDATE subtitle SET fk_media_id = (SELECT m.id FROM media m WHERE m.component='exercise' AND m.instanceid=fk_exercise_id) WHERE id>0;";
 	$DB->_update($update);
 	
-	$drop = "ALTER TABLE `subtitle` DROP FOREIGN KEY `FK_exercise_subtitle_1`;
-			 ALTER TABLE `subtitle` DROP COLUMN `fk_exercise_id`, DROP INDEX `FK_exercise_subtitle_1` ;";
+	$drop = "ALTER TABLE `subtitle` DROP FOREIGN KEY `FK_exercise_subtitle_1`;";
+	$DB->_update($drop);
+	$drop= "ALTER TABLE `subtitle` DROP COLUMN `fk_exercise_id`, DROP INDEX `FK_exercise_subtitle_1` ;";
 	$DB->_update($drop);
 	
-	$fkconst = "ALTER TABLE `subtitle` ADD INDEX `fk_subtitle_media_idx` (`fk_media_id` ASC);
-				ALTER TABLE `subtitle` ADD CONSTRAINT `fk_subtitle_media` FOREIGN KEY (`fk_media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;";
+	$fkconst = "ALTER TABLE `subtitle` ADD INDEX `fk_subtitle_media_idx` (`fk_media_id` ASC);";
+	$DB->_update($fkconst);
+	$fkconst = "ALTER TABLE `subtitle` ADD CONSTRAINT `fk_subtitle_media` FOREIGN KEY (`fk_media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;";
 	$DB->_update($fkconst);
 }
 
