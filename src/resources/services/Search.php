@@ -74,6 +74,18 @@ class Search {
 		try{
 			$this->index = Zend_Search_Lucene::open($this->indexPath);
 		}catch (Zend_Search_Lucene_Exception $ex){
+			error_log("Unable to open search index: " . $ex->getMessage());
+			error_log("Try to create search index in " . $this->indexPath);
+			try {
+				$this->index = Zend_Search_Lucene::create($this->indexPath);
+			} catch (Exception $e) {
+				error_log("Failed to create search index: " . $e->getMessage());
+				throw new Exception($e->getMessage());
+			}
+		}
+		try {
+			$this->index = Zend_Search_Lucene::open($this->indexPath);
+		} catch (Zend_Search_Lucene_Exception $ex){
 			throw new Exception($ex->getMessage());
 		}
 	}
@@ -219,10 +231,9 @@ class Search {
 		$sql = "SELECT id as exerciseid, exercisecode, title, description, language
 				FROM exercise WHERE status=1 AND visible=1";
 		$result = $this->conn->_multipleSelect ( $sql );
+		//Create the index
+		$this->index = Zend_Search_Lucene::create($this->indexPath);
 		if($result){
-			//Create the index
-			$this->index = Zend_Search_Lucene::create($this->indexPath);
-
 			//To recognize numerics
 			Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
 

@@ -11,7 +11,7 @@ function forwards(){
 						`instanceid` int(10) unsigned NOT NULL,
 						`component` varchar(45) NOT NULL,
 						`filename` varchar(255) NOT NULL,
-						`contenthash` varchar(32) NOT NULL,
+						`contenthash` varchar(40) NOT NULL,
 						`status` tinyint(10) NOT NULL DEFAULT '0',
 						`timecreated` int(11) NOT NULL DEFAULT '0',
 						`timemodified` int(11) NOT NULL DEFAULT '0',
